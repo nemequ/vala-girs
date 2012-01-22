@@ -710,7 +710,7 @@ and you must not call g_action_group_change_action_state().
 The state type of a particular action will never change but it is
 possible for an action to be removed and for a new action to be added
 with the same name but a different state type.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the state type, if the action is stateful</doc>
           <type name="GLib.VariantType" c:type="GVariantType*"/>
         </return-value>
@@ -1067,7 +1067,7 @@ and you must not call g_action_group_change_action_state().
 The state type of a particular action will never change but it is
 possible for an action to be removed and for a new action to be added
 with the same name but a different state type.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the state type, if the action is stateful</doc>
           <type name="GLib.VariantType" c:type="GVariantType*"/>
         </return-value>
@@ -1331,7 +1331,7 @@ is still visible and can be queried from the signal handler.</doc>
       </field>
       <field name="get_action_state_type">
         <callback name="get_action_state_type">
-          <return-value transfer-ownership="full">
+          <return-value transfer-ownership="none">
             <doc xml:whitespace="preserve">the state type, if the action is stateful</doc>
             <type name="GLib.VariantType" c:type="GVariantType*"/>
           </return-value>
@@ -1802,7 +1802,9 @@ return G_ACTION_GROUP (group);
         <parameters>
           <parameter name="entries" transfer-ownership="none">
             <doc xml:whitespace="preserve">a pointer to the first item in an array of #GActionEntry structs</doc>
-            <type name="ActionEntry" c:type="GActionEntry*"/>
+            <array length="1" zero-terminated="0" c:type="GActionEntry*">
+              <type name="ActionEntry" c:type="GActionEntry"/>
+            </array>
           </parameter>
           <parameter name="n_entries" transfer-ownership="none">
             <doc xml:whitespace="preserve">the length of @entries, or -1 if @entries is %NULL-terminated</doc>
@@ -2319,7 +2321,7 @@ set, based on information provided in @launch_context.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="files" transfer-ownership="none">
+          <parameter name="files" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #GList of #GFile objects</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="File"/>
@@ -2349,7 +2351,7 @@ no way to detect this.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="uris" transfer-ownership="none">
+          <parameter name="uris" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #GList containing URIs to launch.</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="utf8"/>
@@ -2620,7 +2622,7 @@ set, based on information provided in @launch_context.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="files" transfer-ownership="none">
+          <parameter name="files" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #GList of #GFile objects</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="File"/>
@@ -2652,7 +2654,7 @@ no way to detect this.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="uris" transfer-ownership="none">
+          <parameter name="uris" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #GList containing URIs to launch.</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="utf8"/>
@@ -2886,7 +2888,7 @@ list available applications.</doc>
             <parameter name="appinfo" transfer-ownership="none">
               <type name="AppInfo" c:type="GAppInfo*"/>
             </parameter>
-            <parameter name="files" transfer-ownership="none">
+            <parameter name="files" transfer-ownership="none" allow-none="1">
               <doc xml:whitespace="preserve">a #GList of #GFile objects</doc>
               <type name="GLib.List" c:type="GList*">
                 <type name="File"/>
@@ -2937,7 +2939,7 @@ list available applications.</doc>
             <parameter name="appinfo" transfer-ownership="none">
               <type name="AppInfo" c:type="GAppInfo*"/>
             </parameter>
-            <parameter name="uris" transfer-ownership="none">
+            <parameter name="uris" transfer-ownership="none" allow-none="1">
               <doc xml:whitespace="preserve">a #GList containing URIs to launch.</doc>
               <type name="GLib.List" c:type="GList*">
                 <type name="utf8"/>
@@ -4093,9 +4095,6 @@ zero.  Any timeouts currently in progress are not impacted.</doc>
                 transfer-ownership="none">
         <type name="ActionGroup"/>
       </property>
-      <property name="app-menu" writable="1" transfer-ownership="none">
-        <type name="MenuModel"/>
-      </property>
       <property name="application-id"
                 writable="1"
                 construct="1"
@@ -4115,9 +4114,6 @@ zero.  Any timeouts currently in progress are not impacted.</doc>
       </property>
       <property name="is-remote" transfer-ownership="none">
         <type name="gboolean"/>
-      </property>
-      <property name="menubar" writable="1" transfer-ownership="none">
-        <type name="MenuModel"/>
       </property>
       <field name="parent_instance" readable="0" private="1">
         <type name="GObject.Object" c:type="GObject"/>
@@ -9526,7 +9522,10 @@ representing connection features negotiated with the other peer.</doc>
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">A boolean specifying whether the process will be terminated (by
 calling &lt;literal&gt;raise(SIGTERM)&lt;/literal&gt;) if the connection
-is closed by the remote peer.</doc>
+is closed by the remote peer.
+
+Note that #GDBusConnection objects returned by g_bus_get_finish() and
+g_bus_get_sync() will (usually) have this property set to %TRUE.</doc>
         <type name="gboolean"/>
       </property>
       <property name="flags"
@@ -18743,17 +18742,17 @@ been pressed.</doc>
         </callback>
       </field>
     </record>
-    <enumeration name="DriveStartFlags"
-                 version="2.22"
-                 glib:type-name="GDriveStartFlags"
-                 glib:get-type="g_drive_start_flags_get_type"
-                 c:type="GDriveStartFlags">
+    <bitfield name="DriveStartFlags"
+              version="2.22"
+              glib:type-name="GDriveStartFlags"
+              glib:get-type="g_drive_start_flags_get_type"
+              c:type="GDriveStartFlags">
       <doc xml:whitespace="preserve">Flags used when starting a drive.</doc>
       <member name="none"
               value="0"
               c:identifier="G_DRIVE_START_NONE"
               glib:nick="none"/>
-    </enumeration>
+    </bitfield>
     <enumeration name="DriveStartStopType"
                  version="2.22"
                  glib:type-name="GDriveStartStopType"
@@ -33256,8 +33255,8 @@ for @family.</doc>
                    c:identifier="g_inet_address_new_from_bytes"
                    version="2.22">
         <doc xml:whitespace="preserve">Creates a new #GInetAddress from the given @family and @bytes.
-@bytes should be 4 bytes for %G_INET_ADDRESS_IPV4 and 16 bytes for
-%G_INET_ADDRESS_IPV6.</doc>
+@bytes should be 4 bytes for %G_SOCKET_FAMILY_IPV4 and 16 bytes for
+%G_SOCKET_FAMILY_IPV6.</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">a new #GInetAddress corresponding to @family and @bytes.</doc>
           <type name="InetAddress" c:type="GInetAddress*"/>
@@ -33786,6 +33785,16 @@ g_object_ref()'d if it will be stored</doc>
           <type name="InetAddress" c:type="GInetAddress*"/>
         </return-value>
       </method>
+      <method name="get_flowinfo"
+              c:identifier="g_inet_socket_address_get_flowinfo"
+              version="2.32">
+        <doc xml:whitespace="preserve">Gets the &lt;literal&gt;sin6_flowinfo&lt;/literal&gt; field from @address,
+which must be an IPv6 address.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the flowinfo field</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+      </method>
       <method name="get_port"
               c:identifier="g_inet_socket_address_get_port"
               version="2.22">
@@ -33795,13 +33804,33 @@ g_object_ref()'d if it will be stored</doc>
           <type name="guint16" c:type="guint16"/>
         </return-value>
       </method>
+      <method name="get_scope_id"
+              c:identifier="g_inet_socket_address_get_scope_id">
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+      </method>
       <property name="address"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
         <type name="InetAddress"/>
       </property>
+      <property name="flowinfo"
+                version="2.32"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">The &lt;literal&gt;sin6_flowinfo&lt;/literal&gt; field, for IPv6 addresses.</doc>
+        <type name="guint"/>
+      </property>
       <property name="port"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="guint"/>
+      </property>
+      <property name="scope-id"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
@@ -35092,7 +35121,11 @@ version of this function, see g_loadable_icon_load().</doc>
             <doc xml:whitespace="preserve">a #GAsyncResult.</doc>
             <type name="AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
-          <parameter name="type" transfer-ownership="none">
+          <parameter name="type"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">a location to store the type of the loaded icon, %NULL to ignore.</doc>
             <type name="utf8" c:type="char**"/>
           </parameter>
@@ -35171,7 +35204,11 @@ version of this function, see g_loadable_icon_load().</doc>
             <doc xml:whitespace="preserve">a #GAsyncResult.</doc>
             <type name="AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
-          <parameter name="type" transfer-ownership="none">
+          <parameter name="type"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">a location to store the type of the loaded icon, %NULL to ignore.</doc>
             <type name="utf8" c:type="char**"/>
           </parameter>
@@ -35264,7 +35301,11 @@ version of this function, see g_loadable_icon_load().</doc>
               <doc xml:whitespace="preserve">a #GAsyncResult.</doc>
               <type name="AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
-            <parameter name="type" transfer-ownership="none">
+            <parameter name="type"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       allow-none="1">
               <doc xml:whitespace="preserve">a location to store the type of the loaded icon, %NULL to ignore.</doc>
               <type name="utf8" c:type="char**"/>
             </parameter>
@@ -39167,16 +39208,16 @@ finalized.</doc>
         </callback>
       </field>
     </record>
-    <enumeration name="MountMountFlags"
-                 glib:type-name="GMountMountFlags"
-                 glib:get-type="g_mount_mount_flags_get_type"
-                 c:type="GMountMountFlags">
+    <bitfield name="MountMountFlags"
+              glib:type-name="GMountMountFlags"
+              glib:get-type="g_mount_mount_flags_get_type"
+              c:type="GMountMountFlags">
       <doc xml:whitespace="preserve">Flags used when mounting a mount.</doc>
       <member name="none"
               value="0"
               c:identifier="G_MOUNT_MOUNT_NONE"
               glib:nick="none"/>
-    </enumeration>
+    </bitfield>
     <class name="MountOperation"
            c:symbol-prefix="mount_operation"
            c:type="GMountOperation"
@@ -44981,6 +45022,329 @@ from a #GResolver routine.</doc>
     </enumeration>
     <record name="ResolverPrivate" c:type="GResolverPrivate" disguised="1">
     </record>
+    <record name="Resource"
+            c:type="GResource"
+            version="2.32"
+            glib:type-name="GResource"
+            glib:get-type="g_resource_get_type"
+            c:symbol-prefix="resource">
+      <doc xml:whitespace="preserve">Applications and libraries often contain binary or textual data that is really part of the
+application, rather than user data. For instance #GtkBuilder .ui files, splashscreen images,
+GMenu markup xml, CSS files, icons, etc. These are often shipped as files in &lt;filename&gt;$datadir/appname&lt;/filename&gt;, or
+manually included as literal strings in the code.
+
+The #GResource API and the &lt;link linkend="glib-compile-schemas"&gt;glib-compile-resources&lt;/link&gt; program
+provide a convenient and efficient alternative to this which has some nice properties. You
+maintain the files as normal files, so its easy to edit them, but during the build the files
+are combined into a binary bundle that is linked into the executable. This means that loading
+the resource files are efficient (as they are already in memory, shared with other instances) and
+simple (no need to check for things like I/O errors or locate the files in the filesystem). It
+also makes it easier to create relocatable applications.
+
+Resource files can also be marked as compresses. Such files will be included in the resource bundle
+in a compressed form, but will be automatically uncompressed when the resource is used. This
+is very useful e.g. for larger text files that are parsed once (or rarely) and then thrown away.
+
+Resource bundles are created by the &lt;link linkend="glib-compile-schemas"&gt;glib-compile-resources&lt;/link&gt; program
+which takes an xml file that describes the bundle, and a set of files that the xml references. These
+are combined into a binary resource bundle.
+
+&lt;example id="resource-example"&gt;&lt;title&gt;Example resource description&lt;/title&gt;
+&lt;programlisting&gt;&lt;![CDATA[
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;gresources&gt;
+&lt;gresource prefix="/org/gtk/Example"&gt;
+&lt;file&gt;data/splashscreen.png&lt;/file&gt;
+&lt;file compressed="true"&gt;dialog.ui&lt;/file&gt;
+&lt;file&gt;menumarkup.xml&lt;/file&gt;
+&lt;/gresource&gt;
+&lt;/gresources&gt;
+]]&gt;&lt;/programlisting&gt;&lt;/example&gt;
+
+This will create a resource bundle with the following files:
+&lt;programlisting&gt;&lt;![CDATA[
+/org/gtk/Example/data/splashscreen.png
+/org/gtk/Example/dialog.ui
+/org/gtk/Example/menumarkup.xml
+]]&gt;&lt;/programlisting&gt;
+
+Note that all resources in the process share the same namespace, so use java-style
+path prefixes (like in the above example) to avoid conflicts.
+
+You can then use &lt;link linkend="glib-compile-schemas"&gt;glib-compile-resources&lt;/link&gt; to compile the xml to a
+binary bundle that you can load with g_resource_load(). However, its more common to use the --generate-source and
+--generate-header arguments to create a source file and header to link directly into your application.
+
+Once a #GResource has been created and registered all the data in it can be accessed globally in the process by
+using API calls like g_resources_open_stream() to stream the data or g_resources_lookup_data() to get a direct pointer
+to the data. You can also use uris like "resource:///org/gtk/Example/data/splashscreen.png" with #GFile to access
+the resource data.
+
+There are two forms of the generated source, the default version uses the compiler support for constructor
+and destructor functions (where availible) to automatically create and register the #GResource on startup
+or library load time. If you pass --manual-register two functions to register/unregister the resource is instead
+created. This requires an explicit initialization call in your application/library, but it works on all platforms,
+even on the minor ones where this is not availible. (Constructor support is availible for at least Win32, MacOS and Linux.)
+
+Note that resource data can point directly into the data segment of e.g. a library, so if you are unloading libraries
+during runtime you need to be very careful with keeping around pointers to data from a resource, as this goes away
+when the library is unloaded. However, in practice this is not generally a problem, since most resource accesses
+is for your own resources, and resource data is often used once, during parsing, and then released.</doc>
+      <constructor name="new_from_data"
+                   c:identifier="g_resource_new_from_data"
+                   version="2.32"
+                   throws="1">
+        <doc xml:whitespace="preserve">Creates a GResource from a reference to the binary resource bundle.
+This will keep a reference to @data while the resource lives, so
+the data should not be modified or freed.
+
+If you want to use this resource in the global resource namespace you need
+to register it with g_resources_register().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GResource, or %NULL on error.</doc>
+          <type name="Resource" c:type="GResource*"/>
+        </return-value>
+        <parameters>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GBytes.</doc>
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="_register"
+              c:identifier="g_resources_register"
+              version="2.32">
+        <doc xml:whitespace="preserve">Registers the resource with the process-global set of resources.
+Once a resource is registered the files in it can be accessed
+with the global resource lookup functions like g_resources_lookup_data().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </method>
+      <method name="_unregister"
+              c:identifier="g_resources_unregister"
+              version="2.32">
+        <doc xml:whitespace="preserve">Unregisters the resource from the process-global set of resources.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </method>
+      <method name="enumerate_children"
+              c:identifier="g_resource_enumerate_children"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Returns all the names of children at the specified @path in the resource.
+The return result is a %NULL terminated list of strings which should
+be released with g_strfreev().
+
+@lookup_flags controls the behaviour of the lookup.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an array of constant strings</doc>
+          <array c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="lookup_flags" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+            <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_info"
+              c:identifier="g_resource_get_info"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Looks for a file at the specified @path in the resource and
+if found returns information about it.
+
+@lookup_flags controls the behaviour of the lookup.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if the file was found. %FALSE if there were errors.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="lookup_flags" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+            <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+          </parameter>
+          <parameter name="size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a location to place the length of the contents of the file, or %NULL if the length is not needed</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+          <parameter name="flags"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a location to place the flags about the file, or %NULL if the length is not needed</doc>
+            <type name="guint32" c:type="guint32*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="lookup_data"
+              c:identifier="g_resource_lookup_data"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Looks for a file at the specified @path in the resource and
+returns a #GBytes that lets you directly access the data in
+memory.
+
+The data is always followed by a zero byte, so you
+can safely use the data as a C string. However, that byte
+is not included in the size of the GBytes.
+
+For uncompressed resource files this is a pointer directly into
+the resource bundle, which is typically in some readonly data section
+in the program binary. For compressed files we allocate memory on
+the heap and automatically uncompress the data.
+
+@lookup_flags controls the behaviour of the lookup.
+
+Free the returned object with g_bytes_unref().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">#GBytes or %NULL on error.</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
+        </return-value>
+        <parameters>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="lookup_flags" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+            <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="open_stream"
+              c:identifier="g_resource_open_stream"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Looks for a file at the specified @path in the resource and
+returns a #GInputStream that lets you read the data.
+
+@lookup_flags controls the behaviour of the lookup.
+
+Free the returned object with g_object_unref().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">#GInputStream or %NULL on error.</doc>
+          <type name="InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="lookup_flags" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+            <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="g_resource_ref" version="2.32">
+        <doc xml:whitespace="preserve">Atomically increments the reference count of @array by one. This
+function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">The passed in #GResource.</doc>
+          <type name="Resource" c:type="GResource*"/>
+        </return-value>
+      </method>
+      <method name="unref" c:identifier="g_resource_unref" version="2.32">
+        <doc xml:whitespace="preserve">Atomically decrements the reference count of @resource by one. If the
+reference count drops to 0, all memory allocated by the array is
+released. This function is MT-safe and may be called from any
+thread.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </method>
+      <function name="load"
+                c:identifier="g_resource_load"
+                version="2.32"
+                throws="1">
+        <doc xml:whitespace="preserve">Loads a binary resource bundle and creates a #GResource representation of it, allowing
+you to query it for data.
+
+If you want to use this resource in the global resource namespace you need
+to register it with g_resources_register().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GResource, or %NULL on error.</doc>
+          <type name="Resource" c:type="GResource*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the path of a filename to load, in the GLib filename encoding.</doc>
+            <type name="filename" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <enumeration name="ResourceError"
+                 version="2.32"
+                 glib:type-name="GResourceError"
+                 glib:get-type="g_resource_error_get_type"
+                 c:type="GResourceError"
+                 glib:error-domain="g-resource-error-quark">
+      <doc xml:whitespace="preserve">An error code used with %G_RESOURCE_ERROR in a #GError returned
+from a #GResource routine.</doc>
+      <member name="not_found"
+              value="0"
+              c:identifier="G_RESOURCE_ERROR_NOT_FOUND"
+              glib:nick="not-found"/>
+      <member name="internal"
+              value="1"
+              c:identifier="G_RESOURCE_ERROR_INTERNAL"
+              glib:nick="internal"/>
+      <function name="quark"
+                c:identifier="g_resource_error_quark"
+                version="2.32">
+        <doc xml:whitespace="preserve">Gets the #GResource Error Quark.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">a #GQuark.</doc>
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
+    </enumeration>
+    <bitfield name="ResourceFlags"
+              version="2.32"
+              glib:type-name="GResourceFlags"
+              glib:get-type="g_resource_flags_get_type"
+              c:type="GResourceFlags">
+      <doc xml:whitespace="preserve">GResourceFlags give information about a particular file inside a resource
+bundle.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="G_RESOURCE_FLAGS_NONE"
+              glib:nick="none"/>
+      <member name="compressed"
+              value="1"
+              c:identifier="G_RESOURCE_FLAGS_COMPRESSED"
+              glib:nick="compressed"/>
+    </bitfield>
+    <bitfield name="ResourceLookupFlags"
+              version="2.32"
+              glib:type-name="GResourceLookupFlags"
+              glib:get-type="g_resource_lookup_flags_get_type"
+              c:type="GResourceLookupFlags">
+      <doc xml:whitespace="preserve">GResourceLookupFlags determine how resource path lookups are handled.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="G_RESOURCE_LOOKUP_FLAGS_NONE"
+              glib:nick="none"/>
+    </bitfield>
     <interface name="Seekable"
                c:symbol-prefix="seekable"
                c:type="GSeekable"
@@ -45849,6 +46213,18 @@ binding overrides the first one.</doc>
           <parameter name="inverted" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether to 'invert' the value</doc>
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_action"
+              c:identifier="g_settings_create_action"
+              introspectable="0">
+        <return-value>
+          <type name="Action" c:type="GAction*"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -48611,6 +48987,17 @@ you call will then fail with a %G_IO_ERROR_TIMED_OUT.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_available_bytes"
+              c:identifier="g_socket_get_available_bytes"
+              version="2.32">
+        <doc xml:whitespace="preserve">Get the amount of data pending in the OS input buffer.
+
+without blocking or -1 on error.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the number of bytes that can be read from the socket</doc>
+          <type name="gssize" c:type="gssize"/>
+        </return-value>
+      </method>
       <method name="get_blocking"
               c:identifier="g_socket_get_blocking"
               version="2.22">
@@ -48618,6 +49005,17 @@ you call will then fail with a %G_IO_ERROR_TIMED_OUT.</doc>
 see g_socket_set_blocking().</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if blocking I/O is used, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="get_broadcast"
+              c:identifier="g_socket_get_broadcast"
+              version="2.32">
+        <doc xml:whitespace="preserve">Gets the broadcast setting on @socket; if %TRUE,
+it is possible to send packets to broadcast
+addresses or receive from broadcast addresses.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the broadcast setting on @socket</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -48698,6 +49096,27 @@ Free the returned object with g_object_unref().</doc>
           <type name="SocketAddress" c:type="GSocketAddress*"/>
         </return-value>
       </method>
+      <method name="get_multicast_loopback"
+              c:identifier="g_socket_get_multicast_loopback"
+              version="2.32">
+        <doc xml:whitespace="preserve">Gets the multicast loopback setting on @socket; if %TRUE (the
+default), outgoing multicast packets will be looped back to
+multicast listeners on the same host.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the multicast loopback setting on @socket</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="get_multicast_ttl"
+              c:identifier="g_socket_get_multicast_ttl"
+              version="2.32">
+        <doc xml:whitespace="preserve">Gets the multicast time-to-live setting on @socket; see
+g_socket_set_multicast_ttl() for more details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the multicast time-to-live setting on @socket</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+      </method>
       <method name="get_protocol"
               c:identifier="g_socket_get_protocol"
               version="2.22">
@@ -48740,6 +49159,14 @@ g_socket_set_timeout().</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
       </method>
+      <method name="get_ttl" c:identifier="g_socket_get_ttl" version="2.32">
+        <doc xml:whitespace="preserve">Gets the unicast time-to-live setting on @socket; see
+g_socket_set_ttl() for more details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the time-to-live setting on @socket</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+      </method>
       <method name="is_closed"
               c:identifier="g_socket_is_closed"
               version="2.22">
@@ -48758,6 +49185,64 @@ connection-oriented sockets.</doc>
           <doc xml:whitespace="preserve">%TRUE if socket is connected, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+      </method>
+      <method name="join_multicast_group"
+              c:identifier="g_socket_join_multicast_group"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Registers @socket to receive multicast messages sent to @group.
+@socket must be a %G_SOCKET_TYPE_DATAGRAM socket, and must have
+been bound to an appropriate interface and port with
+g_socket_bind().
+
+If @source_specific is %TRUE, source-specific multicast as defined
+in RFC 4604 is used.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="group" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GInetAddress specifying the group address to join.</doc>
+            <type name="InetAddress" c:type="GInetAddress*"/>
+          </parameter>
+          <parameter name="source_specific" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE if source-specific multicast should be used</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="iface" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Interface to use</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="leave_multicast_group"
+              c:identifier="g_socket_leave_multicast_group"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Removes @socket from the multicast group @group (while still
+allowing it to receive unicast messages).
+
+If @source_specific is %TRUE, source-specific multicast as defined
+in RFC 4604 is used.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="group" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GInetAddress specifying the group address to leave.</doc>
+            <type name="InetAddress" c:type="GInetAddress*"/>
+          </parameter>
+          <parameter name="source_specific" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE if source-specific multicast should be used</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="iface" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Interface to use</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
       </method>
       <method name="listen"
               c:identifier="g_socket_listen"
@@ -49240,6 +49725,20 @@ is a GSocket level feature.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_broadcast"
+              c:identifier="g_socket_set_broadcast"
+              version="2.32">
+        <doc xml:whitespace="preserve">Sets whether @socket should allow sending to and receiving from
+broadcast addresses. This is %FALSE by default.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="broadcast" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_keepalive"
               c:identifier="g_socket_set_keepalive"
               version="2.22">
@@ -49288,6 +49787,38 @@ effect if called after that.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_multicast_loopback"
+              c:identifier="g_socket_set_multicast_loopback"
+              version="2.32">
+        <doc xml:whitespace="preserve">Sets whether outgoing multicast packets will be received by sockets
+listening on that multicast address on the same host. This is %TRUE
+by default.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="loopback" transfer-ownership="none">
+            <doc xml:whitespace="preserve">whether @socket should receive messages sent to its multicast groups from the local host</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_multicast_ttl"
+              c:identifier="g_socket_set_multicast_ttl"
+              version="2.32">
+        <doc xml:whitespace="preserve">Sets the time-to-live for outgoing multicast datagrams on @socket.
+By default, this is 1, meaning that multicast packets will not leave
+the local network.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="ttl" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the time-to-live value for all multicast datagrams on @socket</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_timeout"
               c:identifier="g_socket_set_timeout"
               version="2.26">
@@ -49317,6 +49848,19 @@ cause the timeout to be reset.</doc>
         <parameters>
           <parameter name="timeout" transfer-ownership="none">
             <doc xml:whitespace="preserve">the timeout for @socket, in seconds, or 0 for none</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_ttl" c:identifier="g_socket_set_ttl" version="2.32">
+        <doc xml:whitespace="preserve">Sets the time-to-live for outgoing unicast packets on @socket.
+By default the platform-specific default value is used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="ttl" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the time-to-live value for all unicast packets on @socket</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -49373,6 +49917,13 @@ of speaking IPv4.</doc>
       <property name="blocking" writable="1" transfer-ownership="none">
         <type name="gboolean"/>
       </property>
+      <property name="broadcast"
+                version="2.32"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">Whether the socket should allow sending to and receiving from broadcast addresses.</doc>
+        <type name="gboolean"/>
+      </property>
       <property name="family"
                 writable="1"
                 construct-only="1"
@@ -49394,6 +49945,20 @@ of speaking IPv4.</doc>
       <property name="local-address" transfer-ownership="none">
         <type name="SocketAddress"/>
       </property>
+      <property name="multicast-loopback"
+                version="2.32"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">Whether outgoing multicast packets loop back to the local host.</doc>
+        <type name="gboolean"/>
+      </property>
+      <property name="multicast-ttl"
+                version="2.32"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">Time-to-live out outgoing multicast packets</doc>
+        <type name="guint"/>
+      </property>
       <property name="protocol"
                 writable="1"
                 construct-only="1"
@@ -49408,6 +49973,13 @@ of speaking IPv4.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">The timeout in seconds on socket I/O</doc>
+        <type name="guint"/>
+      </property>
+      <property name="ttl"
+                version="2.32"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">Time-to-live for outgoing unicast packets</doc>
         <type name="guint"/>
       </property>
       <property name="type"
@@ -55937,15 +56509,17 @@ and g_tls_database_lookup_issued().</doc>
             c:type="GTlsDatabasePrivate"
             disguised="1">
     </record>
-    <enumeration name="TlsDatabaseVerifyFlags"
-                 glib:type-name="GTlsDatabaseVerifyFlags"
-                 glib:get-type="g_tls_database_verify_flags_get_type"
-                 c:type="GTlsDatabaseVerifyFlags">
+    <bitfield name="TlsDatabaseVerifyFlags"
+              version="2.30"
+              glib:type-name="GTlsDatabaseVerifyFlags"
+              glib:get-type="g_tls_database_verify_flags_get_type"
+              c:type="GTlsDatabaseVerifyFlags">
+      <doc xml:whitespace="preserve">Flags for g_tls_database_verify_chain().</doc>
       <member name="none"
               value="0"
               c:identifier="G_TLS_DATABASE_VERIFY_NONE"
               glib:nick="none"/>
-    </enumeration>
+    </bitfield>
     <enumeration name="TlsError"
                  version="2.28"
                  glib:type-name="GTlsError"
@@ -56908,6 +57482,59 @@ g_object_unref()), %NULL if @error is set.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="receive_credentials_async"
+              c:identifier="g_unix_connection_receive_credentials_async"
+              version="2.32">
+        <doc xml:whitespace="preserve">Asynchronously receive credentials.
+
+For more details, see g_unix_connection_receive_credentials() which is
+the synchronous version of this call.
+
+When the operation is finished, @callback will be called. You can then call
+g_unix_connection_receive_credentials_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="receive_credentials_finish"
+              c:identifier="g_unix_connection_receive_credentials_finish"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Finishes an asynchronous receive credentials operation started with
+g_unix_connection_receive_credentials_async().
+
+Free the returned object with g_object_unref().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a #GCredentials, or %NULL on error.</doc>
+          <type name="Credentials" c:type="GCredentials*"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult.</doc>
+            <type name="AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="receive_fd"
               c:identifier="g_unix_connection_receive_fd"
               version="2.22"
@@ -56957,6 +57584,57 @@ Other ways to exchange credentials with a foreign peer includes the
                      allow-none="1">
             <doc xml:whitespace="preserve">A #GCancellable or %NULL.</doc>
             <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_credentials_async"
+              c:identifier="g_unix_connection_send_credentials_async"
+              version="2.32">
+        <doc xml:whitespace="preserve">Asynchronously send credentials.
+
+For more details, see g_unix_connection_send_credentials() which is
+the synchronous version of this call.
+
+When the operation is finished, @callback will be called. You can then call
+g_unix_connection_send_credentials_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_credentials_finish"
+              c:identifier="g_unix_connection_send_credentials_finish"
+              version="2.32"
+              throws="1">
+        <doc xml:whitespace="preserve">Finishes an asynchronous send credentials operation started with
+g_unix_connection_send_credentials_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if the operation was successful, otherwise %FALSE.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult.</doc>
+            <type name="AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -62917,6 +63595,164 @@ is not supported.</doc>
         <doc xml:whitespace="preserve">a #GQuark.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
+    </function>
+    <function name="resource_error_quark"
+              c:identifier="g_resource_error_quark"
+              moved-to="ResourceError.quark"
+              version="2.32">
+      <doc xml:whitespace="preserve">Gets the #GResource Error Quark.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">a #GQuark.</doc>
+        <type name="GLib.Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
+    <function name="resource_load"
+              c:identifier="g_resource_load"
+              moved-to="Resource.load"
+              version="2.32"
+              throws="1">
+      <doc xml:whitespace="preserve">Loads a binary resource bundle and creates a #GResource representation of it, allowing
+you to query it for data.
+
+If you want to use this resource in the global resource namespace you need
+to register it with g_resources_register().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">a new #GResource, or %NULL on error.</doc>
+        <type name="Resource" c:type="GResource*"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the path of a filename to load, in the GLib filename encoding.</doc>
+          <type name="filename" c:type="gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="resources_enumerate_children"
+              c:identifier="g_resources_enumerate_children"
+              version="2.32"
+              throws="1">
+      <doc xml:whitespace="preserve">Returns all the names of children at the specified @path in the set of
+globally registred resources.
+The return result is a %NULL terminated list of strings which should
+be released with g_strfreev().
+
+@lookup_flags controls the behaviour of the lookup.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">an array of constant strings</doc>
+        <array c:type="char**">
+          <type name="utf8"/>
+        </array>
+      </return-value>
+      <parameters>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+          <type name="utf8" c:type="char*"/>
+        </parameter>
+        <parameter name="lookup_flags" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+          <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="resources_get_info"
+              c:identifier="g_resources_get_info"
+              version="2.32"
+              throws="1">
+      <doc xml:whitespace="preserve">Looks for a file at the specified @path in the set of
+globally registred resources and if found returns information about it.
+
+@lookup_flags controls the behaviour of the lookup.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">%TRUE if the file was found. %FALSE if there were errors.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+          <type name="utf8" c:type="char*"/>
+        </parameter>
+        <parameter name="lookup_flags" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+          <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+        </parameter>
+        <parameter name="size"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   allow-none="1">
+          <doc xml:whitespace="preserve">a location to place the length of the contents of the file, or %NULL if the length is not needed</doc>
+          <type name="gsize" c:type="gsize*"/>
+        </parameter>
+        <parameter name="flags"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   allow-none="1">
+          <doc xml:whitespace="preserve">a location to place the flags about the file, or %NULL if the length is not needed</doc>
+          <type name="guint32" c:type="guint32*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="resources_lookup_data"
+              c:identifier="g_resources_lookup_data"
+              version="2.32"
+              throws="1">
+      <doc xml:whitespace="preserve">Looks for a file at the specified @path in the set of
+globally registred resources and returns a #GBytes that
+lets you directly access the data in memory.
+
+The data is always followed by a zero byte, so you
+can safely use the data as a C string. However, that byte
+is not included in the size of the GBytes.
+
+For uncompressed resource files this is a pointer directly into
+the resource bundle, which is typically in some readonly data section
+in the program binary. For compressed files we allocate memory on
+the heap and automatically uncompress the data.
+
+@lookup_flags controls the behaviour of the lookup.
+
+Free the returned object with g_bytes_unref().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">#GBytes or %NULL on error.</doc>
+        <type name="GLib.Bytes" c:type="GBytes*"/>
+      </return-value>
+      <parameters>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+          <type name="utf8" c:type="char*"/>
+        </parameter>
+        <parameter name="lookup_flags" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+          <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="resources_open_stream"
+              c:identifier="g_resources_open_stream"
+              version="2.32"
+              throws="1">
+      <doc xml:whitespace="preserve">Looks for a file at the specified @path in the set of
+globally registred resources and returns a #GInputStream
+that lets you read the data.
+
+@lookup_flags controls the behaviour of the lookup.
+
+Free the returned object with g_object_unref().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">#GInputStream or %NULL on error.</doc>
+        <type name="InputStream" c:type="GInputStream*"/>
+      </return-value>
+      <parameters>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A pathname inside the resource.</doc>
+          <type name="utf8" c:type="char*"/>
+        </parameter>
+        <parameter name="lookup_flags" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A #GResourceLookupFlags.</doc>
+          <type name="ResourceLookupFlags" c:type="GResourceLookupFlags"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="settings_schema_source_get_default"
               c:identifier="g_settings_schema_source_get_default"

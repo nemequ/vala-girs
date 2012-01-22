@@ -1668,13 +1668,12 @@ of the UI.</doc>
         </return-value>
       </method>
       <method name="get_downloads"
-              c:identifier="ephy_embed_shell_get_downloads"
-              introspectable="0">
+              c:identifier="ephy_embed_shell_get_downloads">
         <doc xml:whitespace="preserve">Gets the global #GList object listing active downloads.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">a #GList object</doc>
           <type name="GLib.List" c:type="GList*">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="Download"/>
           </type>
         </return-value>
       </method>
@@ -3213,8 +3212,8 @@ it.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
       </method>
-      <field name="parent_instance">
-        <type name="Gtk.Action" c:type="GtkAction"/>
+      <field name="parent_instance" introspectable="0">
+        <type c:type="EphyWindowAction"/>
       </field>
       <field name="priv">
         <type name="LinkActionPrivate" c:type="EphyLinkActionPrivate*"/>
@@ -3223,8 +3222,8 @@ it.</doc>
     <record name="LinkActionClass"
             c:type="EphyLinkActionClass"
             glib:is-gtype-struct-for="LinkAction">
-      <field name="parent_class">
-        <type name="Gtk.ActionClass" c:type="GtkActionClass"/>
+      <field name="parent_class" introspectable="0">
+        <type c:type="EphyWindowActionClass"/>
       </field>
     </record>
     <class name="LinkActionGroup"
@@ -3316,22 +3315,21 @@ it.</doc>
         </callback>
       </field>
     </record>
-    <class name="LocationAction"
-           c:symbol-prefix="location_action"
-           c:type="EphyLocationAction"
-           parent="LinkAction"
-           glib:type-name="EphyLocationAction"
-           glib:get-type="ephy_location_action_get_type"
-           glib:type-struct="LocationActionClass">
+    <class name="LocationController"
+           c:symbol-prefix="location_controller"
+           c:type="EphyLocationController"
+           parent="GObject.Object"
+           glib:type-name="EphyLocationController"
+           glib:get-type="ephy_location_controller_get_type"
+           glib:type-struct="LocationControllerClass">
       <implements name="Link"/>
-      <implements name="Gtk.Buildable"/>
       <virtual-method name="lock_clicked">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
       </virtual-method>
       <method name="get_address"
-              c:identifier="ephy_location_action_get_address">
+              c:identifier="ephy_location_controller_get_address">
         <doc xml:whitespace="preserve">Retrieves the currently loaded address.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the current address</doc>
@@ -3339,8 +3337,8 @@ it.</doc>
         </return-value>
       </method>
       <method name="set_address"
-              c:identifier="ephy_location_action_set_address">
-        <doc xml:whitespace="preserve">Sets @address as the address of @action.</doc>
+              c:identifier="ephy_location_controller_set_address">
+        <doc xml:whitespace="preserve">Sets @address as the address of @controller.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3363,6 +3361,14 @@ it.</doc>
         <doc xml:whitespace="preserve">The icon corresponding to the current location.</doc>
         <type name="GdkPixbuf.Pixbuf"/>
       </property>
+      <property name="location-entry"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">The controlled location entry.</doc>
+        <type name="GObject.Object"/>
+      </property>
       <property name="lock-stock-id" writable="1" transfer-ownership="none">
         <doc xml:whitespace="preserve">Stock id of the security icon.</doc>
         <type name="utf8"/>
@@ -3384,11 +3390,11 @@ it.</doc>
         <type name="GObject.Object"/>
       </property>
       <field name="parent">
-        <type name="LinkAction" c:type="EphyLinkAction"/>
+        <type name="GObject.Object" c:type="GObject"/>
       </field>
       <field name="priv" readable="0" private="1">
-        <type name="LocationActionPrivate"
-              c:type="EphyLocationActionPrivate*"/>
+        <type name="LocationControllerPrivate"
+              c:type="EphyLocationControllerPrivate*"/>
       </field>
       <glib:signal name="lock-clicked" when="first">
         <doc xml:whitespace="preserve">Emitted when the user clicks on the security icon of the internal
@@ -3398,11 +3404,11 @@ it.</doc>
         </return-value>
       </glib:signal>
     </class>
-    <record name="LocationActionClass"
-            c:type="EphyLocationActionClass"
-            glib:is-gtype-struct-for="LocationAction">
+    <record name="LocationControllerClass"
+            c:type="EphyLocationControllerClass"
+            glib:is-gtype-struct-for="LocationController">
       <field name="parent_class">
-        <type name="LinkActionClass" c:type="EphyLinkActionClass"/>
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="lock_clicked">
         <callback name="lock_clicked">
@@ -3410,15 +3416,16 @@ it.</doc>
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
-            <parameter name="action" transfer-ownership="none">
-              <type name="LocationAction" c:type="EphyLocationAction*"/>
+            <parameter name="controller" transfer-ownership="none">
+              <type name="LocationController"
+                    c:type="EphyLocationController*"/>
             </parameter>
           </parameters>
         </callback>
       </field>
     </record>
-    <record name="LocationActionPrivate"
-            c:type="EphyLocationActionPrivate"
+    <record name="LocationControllerPrivate"
+            c:type="EphyLocationControllerPrivate"
             disguised="1">
     </record>
     <bitfield name="NewTabFlags"
@@ -5355,23 +5362,6 @@ windows.</doc>
           <type name="WebViewDocumentType" c:type="EphyWebViewDocumentType"/>
         </return-value>
       </method>
-      <method name="get_go_up_list"
-              c:identifier="ephy_web_view_get_go_up_list"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Returns a list of (%char *) URLs to higher-level directories on the same
-server, in order of deepest to shallowest. For example, given
-"http://www.example.com/dir/subdir/file.html", will return a list containing
-"http://www.example.com/dir/subdir/", "http://www.example.com/dir/" and
-"http://www.example.com/".
-
-page's directory hierarchy</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a list of URLs higher up in @view's web</doc>
-          <type name="GLib.SList" c:type="GSList*">
-            <type name="gpointer" c:type="gpointer"/>
-          </type>
-        </return-value>
-      </method>
       <method name="get_icon" c:identifier="ephy_web_view_get_icon">
         <doc xml:whitespace="preserve">Returns the view's site icon as a #GdkPixbuf,
 or %NULL if it is not available.</doc>
@@ -5754,15 +5744,6 @@ ephy_web_view_get_visibility().</doc>
               c:identifier="ephy_web_view_show_page_certificate">
         <doc xml:whitespace="preserve">Shows a dialogue displaying the certificate of the currently loaded page
 of @view, if it was loaded over a secure connection; else does nothing.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </method>
-      <method name="show_print_preview"
-              c:identifier="ephy_web_view_show_print_preview"
-              version="2.30">
-        <doc xml:whitespace="preserve">Generates a print preview of the specified view.
-An external viewer is used to display the preview.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -6219,13 +6200,15 @@ should be used for find implementations.</doc>
     <class name="Window"
            c:symbol-prefix="window"
            c:type="EphyWindow"
-           parent="Gtk.Window"
+           parent="Gtk.ApplicationWindow"
            glib:type-name="EphyWindow"
            glib:get-type="ephy_window_get_type"
            glib:type-struct="WindowClass">
       <implements name="Atk.ImplementorIface"/>
       <implements name="EmbedContainer"/>
       <implements name="Link"/>
+      <implements name="Gio.ActionGroup"/>
+      <implements name="Gio.ActionMap"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="ephy_window_new">
         <doc xml:whitespace="preserve">Equivalent to g_object_new() but returns an #EphyWindow so you don't have
@@ -6260,15 +6243,6 @@ to cast it.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </method>
-      <method name="get_context_event"
-              c:identifier="ephy_window_get_context_event">
-        <doc xml:whitespace="preserve">Returns the #EphyEmbedEvent for the current context menu.
-Use this to get the event from the action callback.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">an #EphyEmbedEvent, or %NULL</doc>
-          <type name="EmbedEvent" c:type="EphyEmbedEvent*"/>
-        </return-value>
-      </method>
       <method name="get_find_toolbar"
               c:identifier="ephy_window_get_find_toolbar">
         <doc xml:whitespace="preserve">Returns the #EphyFindToolbar used by this window.</doc>
@@ -6278,7 +6252,7 @@ Use this to get the event from the action callback.</doc>
         </return-value>
       </method>
       <method name="get_location" c:identifier="ephy_window_get_location">
-        <doc xml:whitespace="preserve">Gets the current address according to @window's #EphyLocationAction.</doc>
+        <doc xml:whitespace="preserve">Gets the current address according to @window's #EphyLocationController.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">current @window address</doc>
           <type name="utf8" c:type="char*"/>
@@ -6312,19 +6286,8 @@ the embed.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_downloads_box_visibility"
-              c:identifier="ephy_window_set_downloads_box_visibility">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="show" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_location" c:identifier="ephy_window_set_location">
-        <doc xml:whitespace="preserve">Sets the internal #EphyLocationAction address to @address.</doc>
+        <doc xml:whitespace="preserve">Sets the internal #EphyLocationController address to @address.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -6349,7 +6312,7 @@ the embed.</doc>
         </parameters>
       </method>
       <field name="parent">
-        <type name="Gtk.Window" c:type="GtkWindow"/>
+        <type name="Gtk.ApplicationWindow" c:type="GtkApplicationWindow"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="WindowPrivate" c:type="EphyWindowPrivate*"/>
@@ -6359,7 +6322,8 @@ the embed.</doc>
             c:type="EphyWindowClass"
             glib:is-gtype-struct-for="Window">
       <field name="parent_class">
-        <type name="Gtk.WindowClass" c:type="GtkWindowClass"/>
+        <type name="Gtk.ApplicationWindowClass"
+              c:type="GtkApplicationWindowClass"/>
       </field>
     </record>
     <record name="WindowPrivate" c:type="EphyWindowPrivate" disguised="1">

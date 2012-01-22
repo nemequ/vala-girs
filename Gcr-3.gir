@@ -3111,6 +3111,7 @@ whether an object should show through the filter or not.</doc>
            glib:type-struct="ImportButtonClass">
       <doc xml:whitespace="preserve">Button which imports parsed certificates and keys.</doc>
       <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Actionable"/>
       <implements name="Gtk.Activatable"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="gcr_import_button_new">
@@ -6764,7 +6765,11 @@ prompt expires, then %GCR_SYSTEM_PROMPT_IN_PROGRESS is returned.</doc>
         <doc xml:whitespace="preserve">Create a new system prompter service. This prompter won't do anything unless
 you connect to its signals and show appropriate prompts.
 
-The @prompt_type #GType must implement the #GcrPrompt interface.</doc>
+If @prompt_type is zero, then the new-prompt signal must be handled and
+return a valid prompt object implementing the #GcrPrompt interface.
+
+If @prompt_type is non-zero then the #GType must implement the #GcrPrompt
+interface.</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">a new prompter service</doc>
           <type name="SystemPrompter" c:type="GcrSystemPrompter*"/>
@@ -6780,6 +6785,11 @@ The @prompt_type #GType must implement the #GcrPrompt interface.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <virtual-method name="new_prompt" introspectable="0">
+        <return-value>
+          <type name="Prompt" c:type="GcrPrompt*"/>
+        </return-value>
+      </virtual-method>
       <method name="get_mode" c:identifier="gcr_system_prompter_get_mode">
         <doc xml:whitespace="preserve">Get the mode for this prompter.
 
@@ -6869,12 +6879,41 @@ return %GCR_SYSTEM_PROMPTER_SINGLE.</doc>
       <field name="pv" readable="0" private="1">
         <type name="SystemPrompterPrivate" c:type="GcrSystemPrompterPrivate*"/>
       </field>
+      <glib:signal name="new-prompt" when="last">
+        <doc xml:whitespace="preserve">Signal emitted to create a new prompt when needed.
+
+The default implementation of this signal creates a prompt of the type
+gcr_system_prompter_get_prompt_type().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the new prompt</doc>
+          <type name="Prompt"/>
+        </return-value>
+      </glib:signal>
     </class>
     <record name="SystemPrompterClass"
             c:type="GcrSystemPrompterClass"
-            disguised="1"
             glib:is-gtype-struct-for="SystemPrompter">
       <doc xml:whitespace="preserve">The class for #GcrSystemPrompter.</doc>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="new_prompt" introspectable="0">
+        <callback name="new_prompt" introspectable="0">
+          <return-value>
+            <type name="Prompt" c:type="GcrPrompt*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SystemPrompter" c:type="GcrSystemPrompter*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="7">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <enumeration name="SystemPrompterMode"
                  glib:type-name="GcrSystemPrompterMode"
@@ -7586,6 +7625,18 @@ an index that is out of bounds.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </method>
+      <method name="get_display_name"
+              c:identifier="gcr_viewer_widget_get_display_name">
+        <doc xml:whitespace="preserve">Get the display name for data being displayed. This is automatically
+calculated from a loaded file, or can be explicitly set.
+
+Used as a hint when displaying a title for the data, but may be
+overridden by the parsed data.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the display name</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
       <method name="get_parser" c:identifier="gcr_viewer_widget_get_parser">
         <doc xml:whitespace="preserve">Get the parser used to parse loaded data into viewable items.</doc>
         <return-value transfer-ownership="none">
@@ -7632,6 +7683,23 @@ be loaded.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_display_name"
+              c:identifier="gcr_viewer_widget_set_display_name">
+        <doc xml:whitespace="preserve">Set the display name for data being displayed. Once explicitly
+set it will no longer be calculated automatically by loading data.
+
+Used as a hint when displaying a title for the data, but may be
+overridden by the parsed data.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="display_name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the display name</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="show_error" c:identifier="gcr_viewer_widget_show_error">
         <doc xml:whitespace="preserve">Show an error on the viewer widget. This is displayed on a info bar near
 the edge of the widget.</doc>
@@ -7649,6 +7717,14 @@ the edge of the widget.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="display-name" writable="1" transfer-ownership="none">
+        <doc xml:whitespace="preserve">Display name for data being displayed. This is automatically
+calculated from a loaded file, or can be explicitly set.
+
+Used as a hint when displaying a title for the data, but may be
+overridden by the parsed data.</doc>
+        <type name="utf8"/>
+      </property>
       <property name="parser" transfer-ownership="none">
         <doc xml:whitespace="preserve">The parser used to parse loaded data into viewable items.</doc>
         <type name="Parser"/>
