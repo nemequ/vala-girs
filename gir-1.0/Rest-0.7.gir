@@ -8,6 +8,7 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="GLib" version="2.0"/>
   <include name="GObject" version="2.0"/>
+  <include name="Gio" version="2.0"/>
   <package name="rest-0.7"/>
   <namespace name="Rest"
              version="0.7"
@@ -492,20 +493,25 @@ has been called.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
-      <method name="new_echo_proxy"
-              c:identifier="oauth_proxy_new_echo_proxy"
-              introspectable="0">
-        <return-value>
+      <method name="new_echo_proxy" c:identifier="oauth_proxy_new_echo_proxy">
+        <doc xml:whitespace="preserve">Create a new &lt;ulink
+url="http://www.scribd.com/doc/26707268/OAuth-Echo-Identity-Veri%EF%AC%81cation-Delegation-Draft"&gt;OAuth
+Echo&lt;/ulink&gt; proxy.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new OAuth Echo proxy</doc>
           <type name="Proxy" c:type="RestProxy*"/>
         </return-value>
         <parameters>
           <parameter name="service_url" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the service URL</doc>
             <type name="utf8" c:type="char*"/>
           </parameter>
           <parameter name="url_format" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the URL format</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
           <parameter name="binding_required" transfer-ownership="none">
+            <doc xml:whitespace="preserve">whether a binding is required</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -726,13 +732,137 @@ secure.</doc>
               c:identifier="HMAC_SHA1"
               glib:nick="hmac-sha1"/>
     </enumeration>
-    <record name="Param" c:type="RestParam" disguised="1">
-      <method name="get_content"
-              c:identifier="rest_param_get_content"
-              introspectable="0">
+    <record name="Param"
+            c:type="RestParam"
+            glib:type-name="RestParam"
+            glib:get-type="rest_param_get_type"
+            c:symbol-prefix="param">
+      <constructor name="new_full" c:identifier="rest_param_new_full">
+        <doc xml:whitespace="preserve">Create a new #RestParam called @name with @length bytes of @data as the
+value.  @content_type is the type of the data as a MIME type, for example
+"text/plain" for simple string parameters.
+
+If the parameter is a file upload it can be passed as @filename.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #RestParam.</doc>
+          <type name="Param" c:type="RestParam*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the parameter name</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="use" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #RestMemoryUse describing how the memory can be used</doc>
+            <type name="MemoryUse" c:type="RestMemoryUse"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a pointer to the start of the data</doc>
+            <array length="3" zero-terminated="0" c:type="gconstpointer">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the length of the data</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the content type of the data</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the original filename, or %NULL</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_string" c:identifier="rest_param_new_string">
+        <doc xml:whitespace="preserve">A convience constructor to create a #RestParam from a given UTF-8 string.
+The resulting #RestParam will have a content type of "text/plain".</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #RestParam.</doc>
+          <type name="Param" c:type="RestParam*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the parameter name</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="use" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #RestMemoryUse describing how the memory can be used</doc>
+            <type name="MemoryUse" c:type="RestMemoryUse"/>
+          </parameter>
+          <parameter name="string" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the parameter value</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_with_owner"
+                   c:identifier="rest_param_new_with_owner">
+        <doc xml:whitespace="preserve">Create a new #RestParam called @name with @length bytes of @data as the
+value.  @content_type is the type of the data as a MIME type, for example
+"text/plain" for simple string parameters.
+
+If the parameter is a file upload it can be passed as @filename.
+
+When the #RestParam is freed, it will call @owner_dnotify, passing @owner to
+it. This allows you to do something like this:
+
+|[
+GMappedFile *map = g_mapped_file_new (filename, FALSE, &amp;error);
+RestParam *param = rest_param_new_with_owner ("media",
+g_mapped_file_get_contents (map),
+g_mapped_file_get_length (map),
+"image/jpeg",
+filename,
+map,
+(GDestroyNotify)g_mapped_file_unref);
+]|</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #RestParam.</doc>
+          <type name="Param" c:type="RestParam*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the parameter name</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a pointer to the start of the data</doc>
+            <array length="2" zero-terminated="0" c:type="gconstpointer">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the length of the data</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the content type of the data</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="filename" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the original filename, or %NULL</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="owner" transfer-ownership="full">
+            <doc xml:whitespace="preserve">pointer to an object that owns @data</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="owner_dnotify"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:whitespace="preserve">a function to free/unref @owner when the buffer is freed</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_content" c:identifier="rest_param_get_content">
         <doc xml:whitespace="preserve">Get the content of @param.  The content should be treated as read-only and
 not modified in any way.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the content.</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </return-value>
@@ -775,9 +905,9 @@ type "text/plain".</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
-      <method name="ref" c:identifier="rest_param_ref" introspectable="0">
+      <method name="ref" c:identifier="rest_param_ref">
         <doc xml:whitespace="preserve">Increase the reference count on @param.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">the #RestParam</doc>
           <type name="Param" c:type="RestParam*"/>
         </return-value>
@@ -789,128 +919,6 @@ reaches 0.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </method>
-      <function name="new_full"
-                c:identifier="rest_param_new_full"
-                introspectable="0">
-        <doc xml:whitespace="preserve">Create a new #RestParam called @name with @length bytes of @data as the
-value.  @content_type is the type of the data as a MIME type, for example
-"text/plain" for simple string parameters.
-
-If the parameter is a file upload it can be passed as @filename.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">a new #RestParam.</doc>
-          <type name="Param" c:type="RestParam*"/>
-        </return-value>
-        <parameters>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the parameter name</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-          <parameter name="use" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the #RestMemoryUse describing how the memory can be used</doc>
-            <type name="MemoryUse" c:type="RestMemoryUse"/>
-          </parameter>
-          <parameter name="data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a pointer to the start of the data</doc>
-            <type name="gpointer" c:type="gconstpointer"/>
-          </parameter>
-          <parameter name="length" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the length of the data</doc>
-            <type name="gsize" c:type="gsize"/>
-          </parameter>
-          <parameter name="content_type" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the content type of the data</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-          <parameter name="filename" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the original filename, or %NULL</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="new_string"
-                c:identifier="rest_param_new_string"
-                introspectable="0">
-        <doc xml:whitespace="preserve">A convience constructor to create a #RestParam from a given UTF-8 string.
-The resulting #RestParam will have a content type of "text/plain".</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">a new #RestParam.</doc>
-          <type name="Param" c:type="RestParam*"/>
-        </return-value>
-        <parameters>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the parameter name</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-          <parameter name="use" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the #RestMemoryUse describing how the memory can be used</doc>
-            <type name="MemoryUse" c:type="RestMemoryUse"/>
-          </parameter>
-          <parameter name="string" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the parameter value</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="new_with_owner"
-                c:identifier="rest_param_new_with_owner"
-                introspectable="0">
-        <doc xml:whitespace="preserve">Create a new #RestParam called @name with @length bytes of @data as the
-value.  @content_type is the type of the data as a MIME type, for example
-"text/plain" for simple string parameters.
-
-If the parameter is a file upload it can be passed as @filename.
-
-When the #RestParam is freed, it will call @owner_dnotify, passing @owner to
-it. This allows you to do something like this:
-
-|[
-GMappedFile *map = g_mapped_file_new (filename, FALSE, &amp;error);
-RestParam *param = rest_param_new_with_owner ("media",
-g_mapped_file_get_contents (map),
-g_mapped_file_get_length (map),
-"image/jpeg",
-filename,
-map,
-(GDestroyNotify)g_mapped_file_unref);
-]|</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">a new #RestParam.</doc>
-          <type name="Param" c:type="RestParam*"/>
-        </return-value>
-        <parameters>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the parameter name</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-          <parameter name="data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a pointer to the start of the data</doc>
-            <type name="gpointer" c:type="gconstpointer"/>
-          </parameter>
-          <parameter name="length" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the length of the data</doc>
-            <type name="gsize" c:type="gsize"/>
-          </parameter>
-          <parameter name="content_type" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the content type of the data</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-          <parameter name="filename" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the original filename, or %NULL</doc>
-            <type name="utf8" c:type="char*"/>
-          </parameter>
-          <parameter name="owner" transfer-ownership="none">
-            <doc xml:whitespace="preserve">pointer to an object that owns @data</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-          <parameter name="owner_dnotify"
-                     transfer-ownership="none"
-                     scope="async">
-            <doc xml:whitespace="preserve">a function to free/unref @owner when the buffer is freed</doc>
-            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
-          </parameter>
-        </parameters>
-      </function>
     </record>
     <record name="Params" c:type="RestParams" disguised="1">
       <method name="add" c:identifier="rest_params_add">
@@ -934,18 +942,17 @@ map,
         </return-value>
       </method>
       <method name="as_string_hash_table"
-              c:identifier="rest_params_as_string_hash_table"
-              introspectable="0">
+              c:identifier="rest_params_as_string_hash_table">
         <doc xml:whitespace="preserve">Create a new #GHashTable which contains the name and value of all string
 (content type of text/plain) parameters.
 
 The values are owned by the #RestParams, so don't destroy the #RestParams
 before the hash table.</doc>
-        <return-value>
+        <return-value transfer-ownership="container">
           <doc xml:whitespace="preserve">a new #GHashTable.</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
-            <type name="gpointer" c:type="gpointer"/>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
+            <type name="Param"/>
           </type>
         </return-value>
       </method>
@@ -955,9 +962,9 @@ before the hash table.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </method>
-      <method name="get" c:identifier="rest_params_get" introspectable="0">
+      <method name="get" c:identifier="rest_params_get">
         <doc xml:whitespace="preserve">Return the #RestParam called @name, or %NULL if it doesn't exist.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">a #RestParam or %NULL if the name doesn't exist</doc>
           <type name="Param" c:type="RestParam*"/>
         </return-value>
@@ -1105,8 +1112,11 @@ using rest_proxy_bind() before invoking the proxy.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="new_call" invoker="new_call" introspectable="0">
-        <return-value>
+      <virtual-method name="new_call" invoker="new_call">
+        <doc xml:whitespace="preserve">Create a new #RestProxyCall for making a call to the web service.  This call
+is one-shot and should not be re-used for making multiple calls.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #RestProxyCall.</doc>
           <type name="ProxyCall" c:type="RestProxyCall*"/>
         </return-value>
       </virtual-method>
@@ -1159,10 +1169,11 @@ using rest_proxy_bind() before invoking the proxy.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
-      <method name="new_call"
-              c:identifier="rest_proxy_new_call"
-              introspectable="0">
-        <return-value>
+      <method name="new_call" c:identifier="rest_proxy_new_call">
+        <doc xml:whitespace="preserve">Create a new #RestProxyCall for making a call to the web service.  This call
+is one-shot and should not be re-used for making multiple calls.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #RestProxyCall.</doc>
           <type name="ProxyCall" c:type="RestProxyCall*"/>
         </return-value>
       </method>
@@ -1433,9 +1444,14 @@ internal reference, or you may unref in the callback.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="cancel" c:identifier="rest_proxy_call_cancel">
+      <method name="cancel"
+              c:identifier="rest_proxy_call_cancel"
+              introspectable="0">
         <doc xml:whitespace="preserve">Cancel this call.  It may be too late to not actually send the message, but
-the callback will not be invoked.</doc>
+the callback will not be invoked.
+
+N.B. this method should only be used with rest_proxy_call_async() and NOT
+rest_proxy_call_invoke_async().</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1461,7 +1477,8 @@ internal reference, or you may unref in the callback.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="cb" transfer-ownership="none" closure="2">
+          <parameter name="callback" transfer-ownership="none" closure="2">
+            <doc xml:whitespace="preserve">a #RestProxyCallContinuousCallback to invoke when data is available</doc>
             <type name="ProxyCallContinuousCallback"
                   c:type="RestProxyCallContinuousCallback"/>
           </parameter>
@@ -1509,12 +1526,11 @@ not be freed.</doc>
         </return-value>
       </method>
       <method name="get_response_headers"
-              c:identifier="rest_proxy_call_get_response_headers"
-              introspectable="0">
-        <doc xml:whitespace="preserve">changed. You should call g_hash_table_unref() when you have finished with
-it.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">pointer to a hash table of headers. This hash table must not be</doc>
+              c:identifier="rest_proxy_call_get_response_headers">
+        <doc xml:whitespace="preserve">headers. This hash table must not be changed. You should call
+g_hash_table_unref() when you have finished with it.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:whitespace="preserve">pointer to a hash table of</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
             <type name="gpointer" c:type="gpointer"/>
             <type name="gpointer" c:type="gpointer"/>
@@ -1538,6 +1554,46 @@ should not be freed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <method name="invoke_async" c:identifier="rest_proxy_call_invoke_async">
+        <doc xml:whitespace="preserve">A GIO-style version of rest_proxy_call_async().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">an optional #GCancellable that can be used to cancel the call, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:whitespace="preserve">callback to call when the async call is finished</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">user data for the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="invoke_finish"
+              c:identifier="rest_proxy_call_invoke_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the result from the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="lookup_header"
               c:identifier="rest_proxy_call_lookup_header">
         <doc xml:whitespace="preserve">Get the value of the header called @header.
@@ -1554,13 +1610,11 @@ owned by the #RestProxyCall and should not be freed.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="lookup_param"
-              c:identifier="rest_proxy_call_lookup_param"
-              introspectable="0">
+      <method name="lookup_param" c:identifier="rest_proxy_call_lookup_param">
         <doc xml:whitespace="preserve">Get the value of the parameter called @name.
 
 owned by the #RestProxyCall and should not be freed.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">The parameter value, or %NULL if it does not exist. This string is</doc>
           <type name="Param" c:type="RestParam*"/>
         </return-value>
@@ -1706,7 +1760,8 @@ internal reference, or you may unref in the callback.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="cb" transfer-ownership="none" closure="2">
+          <parameter name="callback" transfer-ownership="none" closure="2">
+            <doc xml:whitespace="preserve">a #RestProxyCallUploadCallback to invoke when a chunk of data was uploaded</doc>
             <type name="ProxyCallUploadCallback"
                   c:type="RestProxyCallUploadCallback"/>
           </parameter>
@@ -1911,9 +1966,10 @@ Typically subclasses will override @new_call to construct a subclass of
           </parameters>
         </callback>
       </field>
-      <field name="new_call" introspectable="0">
-        <callback name="new_call" introspectable="0">
-          <return-value>
+      <field name="new_call">
+        <callback name="new_call">
+          <return-value transfer-ownership="full">
+            <doc xml:whitespace="preserve">a new #RestProxyCall.</doc>
             <type name="ProxyCall" c:type="RestProxyCall*"/>
           </return-value>
           <parameters>
@@ -2217,7 +2273,7 @@ not be freed.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
-      <method name="ref" c:identifier="rest_xml_node_ref">
+      <method name="ref" c:identifier="rest_xml_node_ref" introspectable="0">
         <doc xml:whitespace="preserve">Increases the reference count of @node.</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">the same @node.</doc>
@@ -2236,7 +2292,9 @@ not be freed.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="unref" c:identifier="rest_xml_node_unref">
+      <method name="unref"
+              c:identifier="rest_xml_node_unref"
+              introspectable="0">
         <doc xml:whitespace="preserve">Decreases the reference count of @node. When its reference count drops to 0,
 the node is finalized (i.e. its memory is freed).</doc>
         <return-value transfer-ownership="none">
