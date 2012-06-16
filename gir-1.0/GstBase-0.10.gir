@@ -61,25 +61,25 @@ in 512-byte chunks could be implemented like this:
 static GstFlowReturn
 sink_pad_chain (GstPad *pad, GstBuffer *buffer)
 {
-MyElement *this;
-GstAdapter *adapter;
-GstFlowReturn ret = GST_FLOW_OK;
+  MyElement *this;
+  GstAdapter *adapter;
+  GstFlowReturn ret = GST_FLOW_OK;
 
-// will give the element an extra ref; remember to drop it
-this = MY_ELEMENT (gst_pad_get_parent (pad));
-adapter = this-&gt;adapter;
+  // will give the element an extra ref; remember to drop it
+  this = MY_ELEMENT (gst_pad_get_parent (pad));
+  adapter = this-&gt;adapter;
 
-// put buffer into adapter
-gst_adapter_push (adapter, buffer);
-// while we can read out 512 bytes, process them
-while (gst_adapter_available (adapter) &gt;= 512 &amp;&amp; ret == GST_FLOW_OK) {
-// use flowreturn as an error value
-ret = my_library_foo (gst_adapter_peek (adapter, 512));
-gst_adapter_flush (adapter, 512);
-}
+  // put buffer into adapter
+  gst_adapter_push (adapter, buffer);
+  // while we can read out 512 bytes, process them
+  while (gst_adapter_available (adapter) &gt;= 512 &amp;&amp; ret == GST_FLOW_OK) {
+    // use flowreturn as an error value
+    ret = my_library_foo (gst_adapter_peek (adapter, 512));
+    gst_adapter_flush (adapter, 512);
+  }
 
-gst_object_unref (this);
-return ret;
+  gst_object_unref (this);
+  return ret;
 }
 ]|
 
@@ -141,11 +141,9 @@ returning NULL.</doc>
       <method name="available_fast" c:identifier="gst_adapter_available_fast">
         <doc xml:whitespace="preserve">Gets the maximum number of bytes that are immediately available without
 requiring any expensive operations (like copying the data into a
-temporary buffer).
-
-operations</doc>
+temporary buffer).</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">number of bytes that are available in @adapter without expensive</doc>
+          <doc xml:whitespace="preserve">number of bytes that are available in @adapter without expensive operations</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
       </method>
@@ -217,30 +215,9 @@ It is an error to call this function without making sure that there is
 enough data (offset+size bytes) in the adapter.
 
 This function calls gst_adapter_masked_scan_uint32_peek() passing NULL
-for value.
-
-
-Example:
-&lt;programlisting&gt;
-// Assume the adapter contains 0x00 0x01 0x02 ... 0xfe 0xff
-
-gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 0, 256);
-// -&gt; returns 0
-gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 1, 255);
-// -&gt; returns -1
-gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x01020304, 1, 255);
-// -&gt; returns 1
-gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0001, 0, 256);
-// -&gt; returns -1
-gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0203, 0, 256);
-// -&gt; returns 0
-gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 256);
-// -&gt; returns 2
-gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 4);
-// -&gt; returns -1
-&lt;/programlisting&gt;</doc>
+for value.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">offset of the first match, or -1 if no match was found.</doc>
+          <doc xml:whitespace="preserve">offset of the first match, or -1 if no match was found.  Example: &lt;programlisting&gt; // Assume the adapter contains 0x00 0x01 0x02 ... 0xfe 0xff  gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 0, 256); // -&gt; returns 0 gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 1, 255); // -&gt; returns -1 gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x01020304, 1, 255); // -&gt; returns 1 gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0001, 0, 256); // -&gt; returns -1 gst_adapter_masked_scan_uint32 (adapter, 0xffff, 0x0203, 0, 256); // -&gt; returns 0 gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 256); // -&gt; returns 2 gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 4); // -&gt; returns -1 &lt;/programlisting&gt;</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -315,11 +292,9 @@ gst_adapter_take(), which returns a freshly-allocated buffer that you can set
 as #GstBuffer malloc_data or the potentially more performant
 gst_adapter_take_buffer().
 
-Returns #NULL if @size bytes are not available.
-
-@size bytes of data, or NULL</doc>
+Returns #NULL if @size bytes are not available.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a pointer to the first</doc>
+          <doc xml:whitespace="preserve">a pointer to the first @size bytes of data, or NULL</doc>
           <array length="0" zero-terminated="0" c:type="guint8*">
             <type name="guint8" c:type="guint8"/>
           </array>
@@ -379,11 +354,9 @@ ownership of the buffer.</doc>
 
 Caller owns returned value. g_free after usage.
 
-Free-function: g_free
-
-#NULL if @nbytes bytes are not available</doc>
+Free-function: g_free</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">oven-fresh hot data, or</doc>
+          <doc xml:whitespace="preserve">oven-fresh hot data, or #NULL if @nbytes bytes are not available</doc>
           <array length="0" zero-terminated="0" c:type="guint8*">
             <type name="guint8" c:type="guint8"/>
           </array>
@@ -409,11 +382,9 @@ or merging.
 
 Caller owns returned value. gst_buffer_unref() after usage.
 
-Free-function: gst_buffer_unref
-
-the adapter, or #NULL if @nbytes bytes are not available</doc>
+Free-function: gst_buffer_unref</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a #GstBuffer containing the first @nbytes of</doc>
+          <doc xml:whitespace="preserve">a #GstBuffer containing the first @nbytes of the adapter, or #NULL if @nbytes bytes are not available</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -432,12 +403,9 @@ When the caller can deal with individual buffers, this function is more
 performant because no memory should be copied.
 
 Caller owns returned list and contained buffers. gst_buffer_unref() each
-buffer in the list before freeing the list after usage.
-
-containing the first @nbytes of the adapter, or #NULL if @nbytes bytes
-are not available</doc>
+buffer in the list before freeing the list after usage.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a #GList of buffers</doc>
+          <doc xml:whitespace="preserve">a #GList of buffers containing the first @nbytes of the adapter, or #NULL if @nbytes bytes are not available</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Gst.Buffer"/>
           </type>
@@ -533,15 +501,15 @@ into separate audio/video/whatever frames.
 
 It provides for:
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;provides one sink pad and one source pad&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;handles state changes&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;can operate in pull mode or push mode&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;handles seeking in both modes&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;handles events (NEWSEGMENT/EOS/FLUSH)&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-handles queries (POSITION/DURATION/SEEKING/FORMAT/CONVERT)
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;handles flushing&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;provides one sink pad and one source pad&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;handles state changes&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;can operate in pull mode or push mode&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;handles seeking in both modes&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;handles events (NEWSEGMENT/EOS/FLUSH)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+       handles queries (POSITION/DURATION/SEEKING/FORMAT/CONVERT)
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;handles flushing&lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 The purpose of this base class is to provide the basic functionality of
@@ -550,82 +518,82 @@ a parser and share a lot of rather complex code.
 Description of the parsing mechanism:
 &lt;orderedlist&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;&lt;title&gt;Set-up phase&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-GstBaseParse class calls @set_sink_caps to inform the subclass about
-incoming sinkpad caps. Subclass should set the srcpad caps accordingly.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-GstBaseParse calls @start to inform subclass that data processing is
-about to start now.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-At least at this point subclass needs to tell the GstBaseParse class
-how big data chunks it wants to receive (min_frame_size). It can do
-this with gst_base_parse_set_min_frame_size().
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-GstBaseParse class sets up appropriate data passing mode (pull/push)
-and starts to process the data.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;Set-up phase&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    GstBaseParse class calls @set_sink_caps to inform the subclass about
+    incoming sinkpad caps. Subclass should set the srcpad caps accordingly.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    GstBaseParse calls @start to inform subclass that data processing is
+    about to start now.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     At least at this point subclass needs to tell the GstBaseParse class
+     how big data chunks it wants to receive (min_frame_size). It can do
+     this with gst_base_parse_set_min_frame_size().
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     GstBaseParse class sets up appropriate data passing mode (pull/push)
+     and starts to process the data.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Parsing phase&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-GstBaseParse gathers at least min_frame_size bytes of data either
-by pulling it from upstream or collecting buffers in an internal
-#GstAdapter.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-A buffer of (at least) min_frame_size bytes is passed to subclass with
-@check_valid_frame. Subclass checks the contents and returns TRUE
-if the buffer contains a valid frame. It also needs to set the
-@framesize according to the detected frame size. If buffer didn't
-contain a valid frame, this call must return FALSE and optionally
-set the @skipsize value to inform base class that how many bytes
-it needs to skip in order to find a valid frame. @framesize can always
-indicate a new minimum for current frame parsing.  Indicating G_MAXUINT
-for requested amount means subclass simply needs best available
-subsequent data.  In push mode this amounts to an additional input buffer
-(thus minimal additional latency), in pull mode this amounts to some
-arbitrary reasonable buffer size increase.  The passed buffer
-is read-only.  Note that @check_valid_frame might receive any small
-amount of input data when leftover data is being drained (e.g. at EOS).
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-After valid frame is found, it will be passed again to subclass with
-@parse_frame call. Now subclass is responsible for parsing the
-frame contents and setting the caps, and buffer metadata (e.g.
-buffer timestamp and duration, or keyframe if applicable).
-(although the latter can also be done by GstBaseParse if it is
-appropriately configured, see below).  Frame is provided with
-timestamp derived from upstream (as much as generally possible),
-duration obtained from configuration (see below), and offset
-if meaningful (in pull mode).
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Finally the buffer can be pushed downstream and the parsing loop starts
-over again.  Just prior to actually pushing the buffer in question,
-it is passed to @pre_push_frame which gives subclass yet one
-last chance to examine buffer metadata, or to send some custom (tag)
-events, or to perform custom (segment) filtering.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-During the parsing process GstBaseParseClass will handle both srcpad
-and sinkpad events. They will be passed to subclass if @event or
-@src_event callbacks have been provided.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Parsing phase&lt;/title&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      GstBaseParse gathers at least min_frame_size bytes of data either
+      by pulling it from upstream or collecting buffers in an internal
+      #GstAdapter.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      A buffer of (at least) min_frame_size bytes is passed to subclass with
+      @check_valid_frame. Subclass checks the contents and returns TRUE
+      if the buffer contains a valid frame. It also needs to set the
+      @framesize according to the detected frame size. If buffer didn't
+      contain a valid frame, this call must return FALSE and optionally
+      set the @skipsize value to inform base class that how many bytes
+      it needs to skip in order to find a valid frame. @framesize can always
+      indicate a new minimum for current frame parsing.  Indicating G_MAXUINT
+      for requested amount means subclass simply needs best available
+      subsequent data.  In push mode this amounts to an additional input buffer
+      (thus minimal additional latency), in pull mode this amounts to some
+      arbitrary reasonable buffer size increase.  The passed buffer
+      is read-only.  Note that @check_valid_frame might receive any small
+      amount of input data when leftover data is being drained (e.g. at EOS).
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      After valid frame is found, it will be passed again to subclass with
+      @parse_frame call. Now subclass is responsible for parsing the
+      frame contents and setting the caps, and buffer metadata (e.g.
+      buffer timestamp and duration, or keyframe if applicable).
+      (although the latter can also be done by GstBaseParse if it is
+      appropriately configured, see below).  Frame is provided with
+      timestamp derived from upstream (as much as generally possible),
+      duration obtained from configuration (see below), and offset
+      if meaningful (in pull mode).
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      Finally the buffer can be pushed downstream and the parsing loop starts
+      over again.  Just prior to actually pushing the buffer in question,
+      it is passed to @pre_push_frame which gives subclass yet one
+      last chance to examine buffer metadata, or to send some custom (tag)
+      events, or to perform custom (segment) filtering.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      During the parsing process GstBaseParseClass will handle both srcpad
+      and sinkpad events. They will be passed to subclass if @event or
+      @src_event callbacks have been provided.
+    &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;&lt;title&gt;Shutdown phase&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-GstBaseParse class calls @stop to inform the subclass that data
-parsing will be stopped.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;Shutdown phase&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    GstBaseParse class calls @stop to inform the subclass that data
+    parsing will be stopped.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;/orderedlist&gt;
 
@@ -647,45 +615,45 @@ and end of data processing.
 
 Things that subclass need to take care of:
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;Provide pad templates&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Fixate the source pad caps when appropriate
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Inform base class how big data chunks should be retrieved. This is
-done with gst_base_parse_set_min_frame_size() function.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Examine data chunks passed to subclass with @check_valid_frame
-and tell if they contain a valid frame
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Set the caps and timestamp to frame that is passed to subclass with
-@parse_frame function.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;Provide conversion functions&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Update the duration information with gst_base_parse_set_duration()
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Optionally passthrough using gst_base_parse_set_passthrough()
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Configure various baseparse parameters using
-gst_base_parse_set_average_bitrate(), gst_base_parse_set_syncable()
-and gst_base_parse_set_frame_rate().
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-In particular, if subclass is unable to determine a duration, but
-parsing (or specs) yields a frames per seconds rate, then this can be
-provided to GstBaseParse to enable it to cater for
-buffer time metadata (which will be taken from upstream as much as
-possible). Internally keeping track of frame durations and respective
-sizes that have been pushed provides GstBaseParse with an estimated
-bitrate. A default @convert (used if not overriden) will then use these
-rates to perform obvious conversions.  These rates are also used to
-update (estimated) duration at regular frame intervals.
-&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Provide pad templates&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Fixate the source pad caps when appropriate
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Inform base class how big data chunks should be retrieved. This is
+     done with gst_base_parse_set_min_frame_size() function.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Examine data chunks passed to subclass with @check_valid_frame
+     and tell if they contain a valid frame
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Set the caps and timestamp to frame that is passed to subclass with
+     @parse_frame function.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Provide conversion functions&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Update the duration information with gst_base_parse_set_duration()
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Optionally passthrough using gst_base_parse_set_passthrough()
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Configure various baseparse parameters using
+     gst_base_parse_set_average_bitrate(), gst_base_parse_set_syncable()
+     and gst_base_parse_set_frame_rate().
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     In particular, if subclass is unable to determine a duration, but
+     parsing (or specs) yields a frames per seconds rate, then this can be
+     provided to GstBaseParse to enable it to cater for
+     buffer time metadata (which will be taken from upstream as much as
+     possible). Internally keeping track of frame durations and respective
+     sizes that have been pushed provides GstBaseParse with an estimated
+     bitrate. A default @convert (used if not overriden) will then use these
+     rates to perform obvious conversions.  These rates are also used to
+     update (estimated) duration at regular frame intervals.
+  &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;</doc>
       <virtual-method name="check_valid_frame">
         <return-value transfer-ownership="none">
@@ -1063,7 +1031,8 @@ is possible for a format/stream.</doc>
     </class>
     <record name="BaseParseClass"
             c:type="GstBaseParseClass"
-            glib:is-gtype-struct-for="BaseParse">
+            glib:is-gtype-struct-for="BaseParse"
+            version="0.10.36">
       <doc xml:whitespace="preserve">Subclasses can override any of the available virtual methods or not, as
 needed. At minimum @check_valid_frame and @parse_frame needs to be
 overridden.</doc>
@@ -1287,12 +1256,9 @@ of each frame's processing, i.e. parsing virtual method invocation sequence.</do
                    version="0.10.33">
         <doc xml:whitespace="preserve">Allocates a new #GstBaseParseFrame. This function is mainly for bindings,
 elements written in C should usually allocate the frame on the stack and
-then use gst_base_parse_frame_init() to initialise it.
-
-gst_base_parse_frame_free() when no longer needed, unless you gave
-away ownership to gst_base_parse_push_frame().</doc>
+then use gst_base_parse_frame_init() to initialise it.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a newly-allocated #GstBaseParseFrame. Free with</doc>
+          <doc xml:whitespace="preserve">a newly-allocated #GstBaseParseFrame. Free with gst_base_parse_frame_free() when no longer needed, unless you gave away ownership to gst_base_parse_push_frame().</doc>
           <type name="BaseParseFrame" c:type="GstBaseParseFrame*"/>
         </return-value>
         <parameters>
@@ -1369,14 +1335,14 @@ install a pad template in its base_init function, like so:
 static void
 my_element_base_init (gpointer g_class)
 {
-GstElementClass *gstelement_class = GST_ELEMENT_CLASS (g_class);
+  GstElementClass *gstelement_class = GST_ELEMENT_CLASS (g_class);
 
-// sinktemplate should be a #GstStaticPadTemplate with direction
-// #GST_PAD_SINK and name "sink"
-gst_element_class_add_pad_template (gstelement_class,
-gst_static_pad_template_get (&amp;amp;sinktemplate));
-// see #GstElementDetails
-gst_element_class_set_details (gstelement_class, &amp;amp;details);
+  // sinktemplate should be a #GstStaticPadTemplate with direction
+  // #GST_PAD_SINK and name "sink"
+  gst_element_class_add_pad_template (gstelement_class,
+      gst_static_pad_template_get (&amp;amp;sinktemplate));
+  // see #GstElementDetails
+  gst_element_class_set_details (gstelement_class, &amp;amp;details);
 }
 ]|
 
@@ -1621,11 +1587,9 @@ should call this method after it has pulled a buffer. If the element needed
 to preroll, this function will perform the preroll and will then block
 until the element state is changed.
 
-This function should be called with the PREROLL_LOCK held.
-
-continue. Any other return value should be returned from the render vmethod.</doc>
+This function should be called with the PREROLL_LOCK held.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#GST_FLOW_OK if the preroll completed and processing can</doc>
+          <doc xml:whitespace="preserve">#GST_FLOW_OK if the preroll completed and processing can continue. Any other return value should be returned from the render vmethod.</doc>
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
         <parameters>
@@ -1653,12 +1617,9 @@ rendering. This property can be used to generate thumbnails.
 
 The #GstCaps on the buffer can be used to determine the type of the buffer.
 
-Free-function: gst_buffer_unref
-
-This function returns NULL when no buffer has arrived in the sink yet
-or when the sink is not in PAUSED or PLAYING.</doc>
+Free-function: gst_buffer_unref</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a #GstBuffer. gst_buffer_unref() after usage.</doc>
+          <doc xml:whitespace="preserve">a #GstBuffer. gst_buffer_unref() after usage. This function returns NULL when no buffer has arrived in the sink yet or when the sink is not in PAUSED or PLAYING.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
       </method>
@@ -1675,12 +1636,9 @@ or when the sink is not in PAUSED or PLAYING.</doc>
               c:identifier="gst_base_sink_get_max_lateness"
               version="0.10.4">
         <doc xml:whitespace="preserve">Gets the max lateness value. See gst_base_sink_set_max_lateness for
-more details.
-
-before it is dropped and not rendered. A value of -1 means an
-unlimited time.</doc>
+more details.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The maximum time in nanoseconds that a buffer can be late</doc>
+          <doc xml:whitespace="preserve">The maximum time in nanoseconds that a buffer can be late before it is dropped and not rendered. A value of -1 means an unlimited time.</doc>
           <type name="gint64" c:type="gint64"/>
         </return-value>
       </method>
@@ -1727,11 +1685,9 @@ maximum buffers per second.</doc>
               c:identifier="gst_base_sink_is_async_enabled"
               version="0.10.15">
         <doc xml:whitespace="preserve">Checks if @sink is currently configured to perform asynchronous state
-changes to PAUSED.
-
-changes.</doc>
+changes to PAUSED.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if the sink is configured to perform asynchronous state</doc>
+          <doc xml:whitespace="preserve">TRUE if the sink is configured to perform asynchronous state changes.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -2039,11 +1995,9 @@ to a state change to READY or a FLUSH event (in which case this function
 returns #GST_FLOW_WRONG_STATE).
 
 This function should only be called with the PREROLL_LOCK held, like in the
-render function.
-
-continue. Any other return value should be returned from the render vmethod.</doc>
+render function.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#GST_FLOW_OK if the preroll completed and processing can</doc>
+          <doc xml:whitespace="preserve">#GST_FLOW_OK if the preroll completed and processing can continue. Any other return value should be returned from the render vmethod.</doc>
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
       </method>
@@ -2475,9 +2429,9 @@ output/present buffers.</doc>
       <doc xml:whitespace="preserve">This is a generice base class for source elements. The following
 types of sources are supported:
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;random access sources like files&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;seekable sources&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;live sources&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;random access sources like files&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;seekable sources&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;live sources&lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 The source can be configured to operate in any #GstFormat with the
@@ -2488,10 +2442,10 @@ events. The default format for #GstBaseSrc is #GST_FORMAT_BYTES.
 #GstBaseSrc always supports push mode scheduling. If the following
 conditions are met, it also supports pull mode scheduling:
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;The format is set to #GST_FORMAT_BYTES (default).&lt;/para&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;#GstBaseSrcClass.is_seekable() returns %TRUE.&lt;/para&gt;
-&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;The format is set to #GST_FORMAT_BYTES (default).&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;#GstBaseSrcClass.is_seekable() returns %TRUE.&lt;/para&gt;
+  &lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 Since 0.10.9, any #GstBaseSrc can enable pull based scheduling at any time
@@ -2502,17 +2456,17 @@ automatically seekable in push mode as well. The following conditions must
 be met to make the element seekable in push mode when the format is not
 #GST_FORMAT_BYTES:
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;
-#GstBaseSrcClass.is_seekable() returns %TRUE.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-#GstBaseSrcClass.query() can convert all supported seek formats to the
-internal format as set with gst_base_src_set_format().
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-#GstBaseSrcClass.do_seek() is implemented, performs the seek and returns
-%TRUE.
-&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    #GstBaseSrcClass.is_seekable() returns %TRUE.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    #GstBaseSrcClass.query() can convert all supported seek formats to the
+    internal format as set with gst_base_src_set_format().
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    #GstBaseSrcClass.do_seek() is implemented, performs the seek and returns
+     %TRUE.
+  &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 When the element does not meet the requirements to operate in pull mode, the
@@ -2566,13 +2520,13 @@ should install a pad template in its class_init function, like so:
 static void
 my_element_class_init (GstMyElementClass *klass)
 {
-GstElementClass *gstelement_class = GST_ELEMENT_CLASS (klass);
-// srctemplate should be a #GstStaticPadTemplate with direction
-// #GST_PAD_SRC and name "src"
-gst_element_class_add_pad_template (gstelement_class,
-gst_static_pad_template_get (&amp;amp;srctemplate));
-// see #GstElementDetails
-gst_element_class_set_details (gstelement_class, &amp;amp;details);
+  GstElementClass *gstelement_class = GST_ELEMENT_CLASS (klass);
+  // srctemplate should be a #GstStaticPadTemplate with direction
+  // #GST_PAD_SRC and name "src"
+  gst_element_class_add_pad_template (gstelement_class,
+      gst_static_pad_template_get (&amp;amp;srctemplate));
+  // see #GstElementDetails
+  gst_element_class_set_details (gstelement_class, &amp;amp;details);
 }
 ]|
 
@@ -2942,12 +2896,9 @@ and call this method before continuing to produce the remaining data.
 This function will block until a state change to PLAYING happens (in which
 case this function returns #GST_FLOW_OK) or the processing must be stopped due
 to a state change to READY or a FLUSH event (in which case this function
-returns #GST_FLOW_WRONG_STATE).
-
-
-continue. Any other return value should be returned from the create vmethod.</doc>
+returns #GST_FLOW_WRONG_STATE).</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#GST_FLOW_OK if @src is PLAYING and processing can</doc>
+          <doc xml:whitespace="preserve">#GST_FLOW_OK if @src is PLAYING and processing can continue. Any other return value should be returned from the create vmethod.</doc>
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
       </method>
@@ -3044,7 +2995,8 @@ continue. Any other return value should be returned from the create vmethod.</do
     </class>
     <record name="BaseSrcClass"
             c:type="GstBaseSrcClass"
-            glib:is-gtype-struct-for="BaseSrc">
+            glib:is-gtype-struct-for="BaseSrc"
+            version="0.10.13">
       <doc xml:whitespace="preserve">Subclasses can override any of the available virtual methods or not, as
 needed. At the minimum, the @create method should be overridden to produce
 buffers.</doc>
@@ -3338,18 +3290,18 @@ buffers.</doc>
 
 It provides for:
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;one sinkpad and one srcpad&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Possible formats on sink and source pad implemented
-with custom transform_caps function. By default uses
-same format on sink and source.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;Handles state changes&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;Does flushing&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;Push mode&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Pull mode if the sub-class transform can operate on arbitrary data
-&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;one sinkpad and one srcpad&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+     Possible formats on sink and source pad implemented
+     with custom transform_caps function. By default uses
+     same format on sink and source.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Handles state changes&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Does flushing&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Push mode&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+      Pull mode if the sub-class transform can operate on arbitrary data
+   &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 &lt;refsect2&gt;
@@ -3357,115 +3309,115 @@ Pull mode if the sub-class transform can operate on arbitrary data
 &lt;para&gt;
 &lt;orderedlist&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;&lt;title&gt;Passthrough mode&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-Element has no interest in modifying the buffer. It may want to inspect it,
-in which case the element should have a transform_ip function. If there
-is no transform_ip function in passthrough mode, the buffer is pushed
-intact.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-On the GstBaseTransformClass is the passthrough_on_same_caps variable
-which will automatically set/unset passthrough based on whether the
-element negotiates the same caps on both pads.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-passthrough_on_same_caps on an element that doesn't implement a
-transform_caps function is useful for elements that only inspect data
-(such as level)
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Example elements&lt;/title&gt;
-&lt;listitem&gt;Level&lt;/listitem&gt;
-&lt;listitem&gt;Videoscale, audioconvert, ffmpegcolorspace, audioresample in
-certain modes.&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;Passthrough mode&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Element has no interest in modifying the buffer. It may want to inspect it,
+    in which case the element should have a transform_ip function. If there
+    is no transform_ip function in passthrough mode, the buffer is pushed
+    intact.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    On the GstBaseTransformClass is the passthrough_on_same_caps variable
+    which will automatically set/unset passthrough based on whether the
+    element negotiates the same caps on both pads.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    passthrough_on_same_caps on an element that doesn't implement a
+    transform_caps function is useful for elements that only inspect data
+    (such as level)
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Example elements&lt;/title&gt;
+    &lt;listitem&gt;Level&lt;/listitem&gt;
+    &lt;listitem&gt;Videoscale, audioconvert, ffmpegcolorspace, audioresample in
+    certain modes.&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Modifications in-place - input buffer and output buffer are the
-same thing.&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-The element must implement a transform_ip function.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Output buffer size must &lt;= input buffer size
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-If the always_in_place flag is set, non-writable buffers will be copied
-and passed to the transform_ip function, otherwise a new buffer will be
-created and the transform function called.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Incoming writable buffers will be passed to the transform_ip function
-immediately.  &lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-only implementing transform_ip and not transform implies always_in_place
-= TRUE
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Example elements&lt;/title&gt;
-&lt;listitem&gt;Volume&lt;/listitem&gt;
-&lt;listitem&gt;Audioconvert in certain modes (signed/unsigned
-conversion)&lt;/listitem&gt;
-&lt;listitem&gt;ffmpegcolorspace in certain modes (endianness
-swapping)&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+    &lt;title&gt;Modifications in-place - input buffer and output buffer are the
+    same thing.&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    The element must implement a transform_ip function.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Output buffer size must &lt;= input buffer size
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    If the always_in_place flag is set, non-writable buffers will be copied
+    and passed to the transform_ip function, otherwise a new buffer will be
+    created and the transform function called.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Incoming writable buffers will be passed to the transform_ip function
+    immediately.  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    only implementing transform_ip and not transform implies always_in_place
+    = TRUE
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Example elements&lt;/title&gt;
+    &lt;listitem&gt;Volume&lt;/listitem&gt;
+    &lt;listitem&gt;Audioconvert in certain modes (signed/unsigned
+    conversion)&lt;/listitem&gt;
+    &lt;listitem&gt;ffmpegcolorspace in certain modes (endianness
+    swapping)&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+ &lt;/listitem&gt;
+&lt;listitem&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Modifications only to the caps/metadata of a buffer&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    The element does not require writable data, but non-writable buffers
+    should be subbuffered so that the meta-information can be replaced.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Elements wishing to operate in this mode should replace the
+    prepare_output_buffer method to create subbuffers of the input buffer
+    and set always_in_place to TRUE
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Example elements&lt;/title&gt;
+    &lt;listitem&gt;Capsfilter when setting caps on outgoing buffers that have
+    none.&lt;/listitem&gt;
+    &lt;listitem&gt;identity when it is going to re-timestamp buffers by
+    datarate.&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Modifications only to the caps/metadata of a buffer&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-The element does not require writable data, but non-writable buffers
-should be subbuffered so that the meta-information can be replaced.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Elements wishing to operate in this mode should replace the
-prepare_output_buffer method to create subbuffers of the input buffer
-and set always_in_place to TRUE
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Example elements&lt;/title&gt;
-&lt;listitem&gt;Capsfilter when setting caps on outgoing buffers that have
-none.&lt;/listitem&gt;
-&lt;listitem&gt;identity when it is going to re-timestamp buffers by
-datarate.&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;Normal mode&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    always_in_place flag is not set, or there is no transform_ip function
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Element will receive an input buffer and output buffer to operate on.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Output buffer is allocated by calling the prepare_output_buffer function.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Example elements&lt;/title&gt;
+    &lt;listitem&gt;Videoscale, ffmpegcolorspace, audioconvert when doing
+    scaling/conversions&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;listitem&gt;
-&lt;itemizedlist&gt;&lt;title&gt;Normal mode&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-always_in_place flag is not set, or there is no transform_ip function
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Element will receive an input buffer and output buffer to operate on.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Output buffer is allocated by calling the prepare_output_buffer function.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Example elements&lt;/title&gt;
-&lt;listitem&gt;Videoscale, ffmpegcolorspace, audioconvert when doing
-scaling/conversions&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-&lt;itemizedlist&gt;&lt;title&gt;Special output buffer allocations&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-Elements which need to do special allocation of their output buffers
-other than what gst_buffer_pad_alloc allows should implement a
-prepare_output_buffer method, which calls the parent implementation and
-passes the newly allocated buffer.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;itemizedlist&gt;
-&lt;title&gt;Example elements&lt;/title&gt;
-&lt;listitem&gt;efence&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;Special output buffer allocations&lt;/title&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Elements which need to do special allocation of their output buffers
+    other than what gst_buffer_pad_alloc allows should implement a
+    prepare_output_buffer method, which calls the parent implementation and
+    passes the newly allocated buffer.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;
+  &lt;title&gt;Example elements&lt;/title&gt;
+    &lt;listitem&gt;efence&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;/orderedlist&gt;
 &lt;/para&gt;
@@ -3475,31 +3427,31 @@ passes the newly allocated buffer.
 &lt;para&gt;
 &lt;itemizedlist&gt;
 &lt;listitem&gt;&lt;para&gt;
-&lt;itemizedlist&gt;&lt;title&gt;passthrough&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-Implies that in the current configuration, the sub-class is not
-interested in modifying the buffers.
+  &lt;itemizedlist&gt;&lt;title&gt;passthrough&lt;/title&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      Implies that in the current configuration, the sub-class is not
+      interested in modifying the buffers.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      Elements which are always in passthrough mode whenever the same caps
+      has been negotiated on both pads can set the class variable
+      passthrough_on_same_caps to have this behaviour automatically.
+    &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/para&gt;&lt;/listitem&gt;
 &lt;listitem&gt;&lt;para&gt;
-Elements which are always in passthrough mode whenever the same caps
-has been negotiated on both pads can set the class variable
-passthrough_on_same_caps to have this behaviour automatically.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-&lt;itemizedlist&gt;&lt;title&gt;always_in_place&lt;/title&gt;
-&lt;listitem&gt;&lt;para&gt;
-Determines whether a non-writable buffer will be copied before passing
-to the transform_ip function.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Implied TRUE if no transform function is implemented.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Implied FALSE if ONLY transform function is implemented.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;always_in_place&lt;/title&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      Determines whether a non-writable buffer will be copied before passing
+      to the transform_ip function.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      Implied TRUE if no transform function is implemented.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;
+      Implied FALSE if ONLY transform function is implemented.
+    &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
 &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 &lt;/para&gt;
@@ -3690,35 +3642,26 @@ Implied FALSE if ONLY transform function is implemented.
         </parameters>
       </virtual-method>
       <method name="is_in_place" c:identifier="gst_base_transform_is_in_place">
-        <doc xml:whitespace="preserve">See if @trans is configured as a in_place transform.
-
-
-MT safe.</doc>
+        <doc xml:whitespace="preserve">See if @trans is configured as a in_place transform.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE is the transform is configured in in_place mode.</doc>
+          <doc xml:whitespace="preserve">TRUE is the transform is configured in in_place mode.  MT safe.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
       <method name="is_passthrough"
               c:identifier="gst_base_transform_is_passthrough">
-        <doc xml:whitespace="preserve">See if @trans is configured as a passthrough transform.
-
-
-MT safe.</doc>
+        <doc xml:whitespace="preserve">See if @trans is configured as a passthrough transform.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE is the transform is configured in passthrough mode.</doc>
+          <doc xml:whitespace="preserve">TRUE is the transform is configured in passthrough mode.  MT safe.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
       <method name="is_qos_enabled"
               c:identifier="gst_base_transform_is_qos_enabled"
               version="0.10.5">
-        <doc xml:whitespace="preserve">Queries if the transform will handle QoS.
-
-
-MT safe.</doc>
+        <doc xml:whitespace="preserve">Queries if the transform will handle QoS.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if QoS is enabled.</doc>
+          <doc xml:whitespace="preserve">TRUE if QoS is enabled.  MT safe.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -3758,8 +3701,8 @@ MT safe.</doc>
         <doc xml:whitespace="preserve">Determines whether a non-writable buffer will be copied before passing
 to the transform_ip function.
 &lt;itemizedlist&gt;
-&lt;listitem&gt;Always TRUE if no transform function is implemented.&lt;/listitem&gt;
-&lt;listitem&gt;Always FALSE if ONLY transform function is implemented.&lt;/listitem&gt;
+  &lt;listitem&gt;Always TRUE if no transform function is implemented.&lt;/listitem&gt;
+  &lt;listitem&gt;Always FALSE if ONLY transform function is implemented.&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 MT safe.</doc>
@@ -4463,11 +4406,9 @@ can be called on already initialized instances.</doc>
       <method name="set_pos"
               c:identifier="gst_bit_reader_set_pos"
               version="0.10.22">
-        <doc xml:whitespace="preserve">Sets the new position of a #GstBitReader instance to @pos in bits.
-
-otherwise.</doc>
+        <doc xml:whitespace="preserve">Sets the new position of a #GstBitReader instance to @pos in bits.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the position could be set successfully, %FALSE</doc>
+          <doc xml:whitespace="preserve">%TRUE if the position could be set successfully, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -4604,11 +4545,9 @@ endianness.
 This function will fail if no NUL-terminator was found in in the data.
 
 Note: there is no peek or get variant of this function to ensure correct
-byte alignment of the UTF-16 string.
-
-string put into @str must be freed with g_free() when no longer needed.</doc>
+byte alignment of the UTF-16 string.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if a string could be read, %FALSE otherwise. The</doc>
+          <doc xml:whitespace="preserve">%TRUE if a string could be read, %FALSE otherwise. The string put into @str must be freed with g_free() when no longer needed.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -4639,11 +4578,9 @@ endianness.
 This function will fail if no NUL-terminator was found in in the data.
 
 Note: there is no peek or get variant of this function to ensure correct
-byte alignment of the UTF-32 string.
-
-string put into @str must be freed with g_free() when no longer needed.</doc>
+byte alignment of the UTF-32 string.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if a string could be read, %FALSE otherwise. The</doc>
+          <doc xml:whitespace="preserve">%TRUE if a string could be read, %FALSE otherwise. The string put into @str must be freed with g_free() when no longer needed.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -4668,11 +4605,9 @@ advancing the current position to the byte after the string. This will work
 for any NUL-terminated string with a character width of 8 bits, so ASCII,
 UTF-8, ISO-8859-N etc. No input checking for valid UTF-8 is done.
 
-This function will fail if no NUL-terminator was found in in the data.
-
-string put into @str must be freed with g_free() when no longer needed.</doc>
+This function will fail if no NUL-terminator was found in in the data.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if a string could be read into @str, %FALSE otherwise. The</doc>
+          <doc xml:whitespace="preserve">%TRUE if a string could be read into @str, %FALSE otherwise. The string put into @str must be freed with g_free() when no longer needed.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -5244,30 +5179,9 @@ byte reader data for it to match, even if the first or last bytes are masked
 out.
 
 It is an error to call this function without making sure that there is
-enough data (offset+size bytes) in the byte reader.
-
-
-Example:
-&lt;programlisting&gt;
-// Assume the reader contains 0x00 0x01 0x02 ... 0xfe 0xff
-
-gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x00010203, 0, 256);
-// -&gt; returns 0
-gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x00010203, 1, 255);
-// -&gt; returns -1
-gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x01020304, 1, 255);
-// -&gt; returns 1
-gst_byte_reader_masked_scan_uint32 (reader, 0xffff, 0x0001, 0, 256);
-// -&gt; returns -1
-gst_byte_reader_masked_scan_uint32 (reader, 0xffff, 0x0203, 0, 256);
-// -&gt; returns 0
-gst_byte_reader_masked_scan_uint32 (reader, 0xffff0000, 0x02030000, 0, 256);
-// -&gt; returns 2
-gst_byte_reader_masked_scan_uint32 (reader, 0xffff0000, 0x02030000, 0, 4);
-// -&gt; returns -1
-&lt;/programlisting&gt;</doc>
+enough data (offset+size bytes) in the byte reader.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">offset of the first match, or -1 if no match was found.</doc>
+          <doc xml:whitespace="preserve">offset of the first match, or -1 if no match was found.  Example: &lt;programlisting&gt; // Assume the reader contains 0x00 0x01 0x02 ... 0xfe 0xff  gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x00010203, 0, 256); // -&gt; returns 0 gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x00010203, 1, 255); // -&gt; returns -1 gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x01020304, 1, 255); // -&gt; returns 1 gst_byte_reader_masked_scan_uint32 (reader, 0xffff, 0x0001, 0, 256); // -&gt; returns -1 gst_byte_reader_masked_scan_uint32 (reader, 0xffff, 0x0203, 0, 256); // -&gt; returns 0 gst_byte_reader_masked_scan_uint32 (reader, 0xffff0000, 0x02030000, 0, 256); // -&gt; returns 2 gst_byte_reader_masked_scan_uint32 (reader, 0xffff0000, 0x02030000, 0, 4); // -&gt; returns -1 &lt;/programlisting&gt;</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -5765,11 +5679,9 @@ but keep the current position.</doc>
       <method name="set_pos"
               c:identifier="gst_byte_reader_set_pos"
               version="0.10.22">
-        <doc xml:whitespace="preserve">Sets the new position of a #GstByteReader instance to @pos in bytes.
-
-otherwise.</doc>
+        <doc xml:whitespace="preserve">Sets the new position of a #GstByteReader instance to @pos in bytes.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the position could be set successfully, %FALSE</doc>
+          <doc xml:whitespace="preserve">%TRUE if the position could be set successfully, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -5948,11 +5860,9 @@ available and reallocates if necessary.</doc>
         <doc xml:whitespace="preserve">Frees @writer and all memory allocated by it except
 the current data, which is returned as #GstBuffer.
 
-Free-function: gst_buffer_unref
-
-after usage.</doc>
+Free-function: gst_buffer_unref</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the current data as buffer. gst_buffer_unref()</doc>
+          <doc xml:whitespace="preserve">the current data as buffer. gst_buffer_unref() after usage.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
       </method>
@@ -6468,11 +6378,9 @@ owned by @writer.</doc>
               version="0.10.26">
         <doc xml:whitespace="preserve">Resets @writer and returns the current data as buffer.
 
-Free-function: gst_buffer_unref
-
-after usage.</doc>
+Free-function: gst_buffer_unref</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the current data as buffer. gst_buffer_unref()</doc>
+          <doc xml:whitespace="preserve">the current data as buffer. gst_buffer_unref() after usage.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
       </method>
@@ -6637,12 +6545,8 @@ Free-function: gst_byte_writer_free</doc>
         <type name="CollectPads2StateFlags"
               c:type="GstCollectPads2StateFlags"/>
       </field>
-      <field name="destroy_notify" readable="0" private="1">
-        <type name="CollectData2DestroyNotify"
-              c:type="GstCollectData2DestroyNotify"/>
-      </field>
-      <field name="refcount" readable="0" private="1">
-        <type name="gint" c:type="gint"/>
+      <field name="priv" readable="0" private="1">
+        <type name="CollectData2Private" c:type="GstCollectData2Private*"/>
       </field>
       <field name="_gst_reserved" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
@@ -6666,6 +6570,10 @@ memory and resources allocated for it.</doc>
         </parameter>
       </parameters>
     </callback>
+    <record name="CollectData2Private"
+            c:type="GstCollectData2Private"
+            disguised="1">
+    </record>
     <callback name="CollectDataDestroyNotify"
               c:type="GstCollectDataDestroyNotify"
               version="0.10.12">
@@ -6692,47 +6600,47 @@ memory and resources allocated for it.</doc>
       <doc xml:whitespace="preserve">Manages a set of pads that operate in collect mode. This means that control
 is given to the manager of this object when all pads have data.
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;
-Collectpads are created with gst_collect_pads_new(). A callback should then
-be installed with gst_collect_pads_set_function ().
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Pads are added to the collection with gst_collect_pads_add_pad()/
-gst_collect_pads_remove_pad(). The pad
-has to be a sinkpad. The chain and event functions of the pad are
-overridden. The element_private of the pad is used to store
-private information for the collectpads.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-For each pad, data is queued in the _chain function or by
-performing a pull_range.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-When data is queued on all pads, the callback function is called.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Data can be dequeued from the pad with the gst_collect_pads_pop() method.
-One can peek at the data with the gst_collect_pads_peek() function.
-These functions will return NULL if the pad received an EOS event. When all
-pads return NULL from a gst_collect_pads_peek(), the element can emit an EOS
-event itself.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Data can also be dequeued in byte units using the gst_collect_pads_available(),
-gst_collect_pads_read() and gst_collect_pads_flush() calls.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Elements should call gst_collect_pads_start() and gst_collect_pads_stop() in
-their state change functions to start and stop the processing of the collecpads.
-The gst_collect_pads_stop() call should be called before calling the parent
-element state change function in the PAUSED_TO_READY state change to ensure
-no pad is blocked and the element can finish streaming.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-gst_collect_pads_collect() and gst_collect_pads_collect_range() can be used by
-elements that start a #GstTask to drive the collect_pads. This feature is however
-not yet implemented.
-&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Collectpads are created with gst_collect_pads_new(). A callback should then
+    be installed with gst_collect_pads_set_function ().
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Pads are added to the collection with gst_collect_pads_add_pad()/
+    gst_collect_pads_remove_pad(). The pad
+    has to be a sinkpad. The chain and event functions of the pad are
+    overridden. The element_private of the pad is used to store
+    private information for the collectpads.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    For each pad, data is queued in the _chain function or by
+    performing a pull_range.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    When data is queued on all pads, the callback function is called.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Data can be dequeued from the pad with the gst_collect_pads_pop() method.
+    One can peek at the data with the gst_collect_pads_peek() function.
+    These functions will return NULL if the pad received an EOS event. When all
+    pads return NULL from a gst_collect_pads_peek(), the element can emit an EOS
+    event itself.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Data can also be dequeued in byte units using the gst_collect_pads_available(),
+    gst_collect_pads_read() and gst_collect_pads_flush() calls.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Elements should call gst_collect_pads_start() and gst_collect_pads_stop() in
+    their state change functions to start and stop the processing of the collecpads.
+    The gst_collect_pads_stop() call should be called before calling the parent
+    element state change function in the PAUSED_TO_READY state change to ensure
+    no pad is blocked and the element can finish streaming.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    gst_collect_pads_collect() and gst_collect_pads_collect_range() can be used by
+    elements that start a #GstTask to drive the collect_pads. This feature is however
+    not yet implemented.
+  &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 Last reviewed on 2006-05-10 (0.10.6)</doc>
@@ -6766,11 +6674,9 @@ started.
 This function calls gst_collect_pads_add_pad_full() passing a value of NULL
 for destroy_notify.
 
-MT safe.
-
-if wrong parameters are supplied.</doc>
+MT safe.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">a new #GstCollectData to identify the new pad. Or NULL</doc>
+          <doc xml:whitespace="preserve">a new #GstCollectData to identify the new pad. Or NULL if wrong parameters are supplied.</doc>
           <type name="CollectData" c:type="GstCollectData*"/>
         </return-value>
         <parameters>
@@ -6804,12 +6710,9 @@ allocated for it.
 The pad will be automatically activated in push mode when @pads is
 started.
 
-MT safe.
-
-
-if wrong parameters are supplied.</doc>
+MT safe.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">a new #GstCollectData to identify the new pad. Or NULL</doc>
+          <doc xml:whitespace="preserve">a new #GstCollectData to identify the new pad. Or NULL if wrong parameters are supplied.</doc>
           <type name="CollectData" c:type="GstCollectData*"/>
         </return-value>
         <parameters>
@@ -6836,11 +6739,9 @@ be read from each of the pads.
 This function should be called with @pads LOCK held, such as
 in the callback.
 
-MT safe.
-
-returns 0 if a pad has no queued buffer.</doc>
+MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The maximum number of bytes queued on all pads. This function</doc>
+          <doc xml:whitespace="preserve">The maximum number of bytes queued on all pads. This function returns 0 if a pad has no queued buffer.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
       </method>
@@ -6885,11 +6786,9 @@ MT safe.</doc>
 This function should be called with @pads LOCK held, such as
 in the callback.
 
-MT safe.
-
-is 0 if the pad was end-of-stream.</doc>
+MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The number of bytes flushed. This can be less than @size and</doc>
+          <doc xml:whitespace="preserve">The number of bytes flushed. This can be less than @size and is 0 if the pad was end-of-stream.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -6925,11 +6824,9 @@ MT safe.</doc>
 should be called with the @pads LOCK held, such as in the callback
 handler.
 
-MT safe.
-
-should unref the buffer after usage.</doc>
+MT safe.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer is queued.</doc>
+          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer is queued. should unref the buffer after usage.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -6946,11 +6843,9 @@ handler.
 
 Free-function: gst_buffer_unref
 
-MT safe.
-
-queued. You should unref the buffer after usage.</doc>
+MT safe.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer was</doc>
+          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer was queued. You should unref the buffer after usage.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -6967,12 +6862,9 @@ given pad @data.
 This function should be called with @pads LOCK held, such as
 in the callback.
 
-MT safe.
-
-memory pointed to by @bytes. This can be less than @size and
-is 0 if the pad is end-of-stream.</doc>
+MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The number of bytes available for consumption in the</doc>
+          <doc xml:whitespace="preserve">The number of bytes available for consumption in the memory pointed to by @bytes. This can be less than @size and is 0 if the pad is end-of-stream.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -7005,14 +6897,9 @@ is 0 if the pad is end-of-stream.</doc>
 
 This function should be called with @pads LOCK held, such as in the callback.
 
-Free-function: gst_buffer_unref
-
-that requested. A return of NULL signals that the pad is end-of-stream.
-Unref the buffer with gst_buffer_unref() after use.
-
-MT safe.</doc>
+Free-function: gst_buffer_unref</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a #GstBuffer. The size of the buffer can be less</doc>
+          <doc xml:whitespace="preserve">a #GstBuffer. The size of the buffer can be less that requested. A return of NULL signals that the pad is end-of-stream. Unref the buffer with gst_buffer_unref() after use.  MT safe.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -7132,12 +7019,9 @@ This function should be called with @pads LOCK held, such as in the callback.
 
 Free-function: gst_buffer_unref
 
-MT safe.
-
-that requested. A return of NULL signals that the pad is end-of-stream.
-Unref the buffer after use.</doc>
+MT safe.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a #GstBuffer. The size of the buffer can be less</doc>
+          <doc xml:whitespace="preserve">a #GstBuffer. The size of the buffer can be less that requested. A return of NULL signals that the pad is end-of-stream. Unref the buffer after use.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -7218,53 +7102,53 @@ Unref the buffer after use.</doc>
       <doc xml:whitespace="preserve">Manages a set of pads that operate in collect mode. This means that control
 is given to the manager of this object when all pads have data.
 &lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;
-Collectpads are created with gst_collect_pads2_new(). A callback should then
-be installed with gst_collect_pads2_set_function ().
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Pads are added to the collection with gst_collect_pads2_add_pad()/
-gst_collect_pads2_remove_pad(). The pad
-has to be a sinkpad. The chain and event functions of the pad are
-overridden. The element_private of the pad is used to store
-private information for the collectpads.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-For each pad, data is queued in the _chain function or by
-performing a pull_range.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-When data is queued on all pads in waiting mode, the callback function is called.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Data can be dequeued from the pad with the gst_collect_pads2_pop() method.
-One can peek at the data with the gst_collect_pads2_peek() function.
-These functions will return NULL if the pad received an EOS event. When all
-pads return NULL from a gst_collect_pads2_peek(), the element can emit an EOS
-event itself.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Data can also be dequeued in byte units using the gst_collect_pads2_available(),
-gst_collect_pads2_read() and gst_collect_pads2_flush() calls.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-Elements should call gst_collect_pads2_start() and gst_collect_pads2_stop() in
-their state change functions to start and stop the processing of the collectpads.
-The gst_collect_pads2_stop() call should be called before calling the parent
-element state change function in the PAUSED_TO_READY state change to ensure
-no pad is blocked and the element can finish streaming.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-gst_collect_pads2_collect() and gst_collect_pads2_collect_range() can be used by
-elements that start a #GstTask to drive the collect_pads2. This feature is however
-not yet implemented.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-gst_collect_pads2_set_waiting() sets a pad to waiting or non-waiting mode.
-CollectPads element is not waiting for data to be collected on non-waiting pads.
-Thus these pads may but need not have data when the callback is called.
-All pads are in waiting mode by default.
-&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Collectpads are created with gst_collect_pads2_new(). A callback should then
+    be installed with gst_collect_pads2_set_function ().
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Pads are added to the collection with gst_collect_pads2_add_pad()/
+    gst_collect_pads2_remove_pad(). The pad
+    has to be a sinkpad. The chain and event functions of the pad are
+    overridden. The element_private of the pad is used to store
+    private information for the collectpads.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    For each pad, data is queued in the _chain function or by
+    performing a pull_range.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    When data is queued on all pads in waiting mode, the callback function is called.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Data can be dequeued from the pad with the gst_collect_pads2_pop() method.
+    One can peek at the data with the gst_collect_pads2_peek() function.
+    These functions will return NULL if the pad received an EOS event. When all
+    pads return NULL from a gst_collect_pads2_peek(), the element can emit an EOS
+    event itself.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Data can also be dequeued in byte units using the gst_collect_pads2_available(),
+    gst_collect_pads2_read() and gst_collect_pads2_flush() calls.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Elements should call gst_collect_pads2_start() and gst_collect_pads2_stop() in
+    their state change functions to start and stop the processing of the collectpads.
+    The gst_collect_pads2_stop() call should be called before calling the parent
+    element state change function in the PAUSED_TO_READY state change to ensure
+    no pad is blocked and the element can finish streaming.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    gst_collect_pads2_collect() and gst_collect_pads2_collect_range() can be used by
+    elements that start a #GstTask to drive the collect_pads2. This feature is however
+    not yet implemented.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    gst_collect_pads2_set_waiting() sets a pad to waiting or non-waiting mode.
+    CollectPads element is not waiting for data to be collected on non-waiting pads.
+    Thus these pads may but need not have data when the callback is called.
+    All pads are in waiting mode by default.
+  &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;
 
 Last reviewed on 2011-10-28 (0.10.36)</doc>
@@ -7272,7 +7156,6 @@ Last reviewed on 2011-10-28 (0.10.36)</doc>
                    c:identifier="gst_collect_pads2_new"
                    version="0.10.36">
         <doc xml:whitespace="preserve">Create a new instance of #GstCollectsPads.
-
 
 MT safe.</doc>
         <return-value transfer-ownership="full">
@@ -7295,14 +7178,12 @@ so that you can use it to store additional information.
 The pad will be automatically activated in push mode when @pads is
 started.
 
-This function calls gst_collect_pads2_add_pad() passing a value of NULL
+This function calls gst_collect_pads2_add_pad_full() passing a value of NULL
 for destroy_notify and TRUE for locked.
-
-if wrong parameters are supplied.
 
 MT safe.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">a new #GstCollectData2 to identify the new pad. Or NULL</doc>
+          <doc xml:whitespace="preserve">a new #GstCollectData2 to identify the new pad. Or NULL if wrong parameters are supplied.</doc>
           <type name="CollectData2" c:type="GstCollectData2*"/>
         </return-value>
         <parameters>
@@ -7344,12 +7225,9 @@ when initial headers have to be written.
 The pad will be automatically activated in push mode when @pads is
 started.
 
-
-if wrong parameters are supplied.
-
 MT safe.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">a new #GstCollectData2 to identify the new pad. Or NULL</doc>
+          <doc xml:whitespace="preserve">a new #GstCollectData2 to identify the new pad. Or NULL if wrong parameters are supplied.</doc>
           <type name="CollectData2" c:type="GstCollectData2*"/>
         </return-value>
         <parameters>
@@ -7382,30 +7260,35 @@ be read from each of the pads.
 This function should be called with @pads STREAM_LOCK held, such as
 in the callback.
 
-returns 0 if a pad has no queued buffer.
-
 MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The maximum number of bytes queued on all pads. This function</doc>
+          <doc xml:whitespace="preserve">The maximum number of bytes queued on all pads. This function returns 0 if a pad has no queued buffer.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
       </method>
       <method name="clip_running_time"
-              c:identifier="gst_collect_pads2_clip_running_time">
+              c:identifier="gst_collect_pads2_clip_running_time"
+              version="0.10.37">
+        <doc xml:whitespace="preserve">Convenience clipping function that converts incoming buffer's timestamp
+to running time, or clips the buffer if outside configured segment.</doc>
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
         <parameters>
           <parameter name="cdata" transfer-ownership="none">
+            <doc xml:whitespace="preserve">collect data of corresponding pad</doc>
             <type name="CollectData2" c:type="GstCollectData2*"/>
           </parameter>
           <parameter name="buf" transfer-ownership="none">
+            <doc xml:whitespace="preserve">buffer being clipped</doc>
             <type name="Gst.Buffer" c:type="GstBuffer*"/>
           </parameter>
           <parameter name="outbuf" transfer-ownership="none">
+            <doc xml:whitespace="preserve">output buffer with running time, or NULL if clipped</doc>
             <type name="Gst.Buffer" c:type="GstBuffer**"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">user data (unused)</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -7417,7 +7300,6 @@ MT safe.</doc>
 from a #GstTask function in an element. 
 
 This function is currently not implemented.
-
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -7432,7 +7314,6 @@ MT safe.</doc>
 is typically called in the getrange function of an element. 
 
 This function is currently not implemented.
-
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -7458,11 +7339,9 @@ MT safe.</doc>
 This function should be called with @pads STREAM_LOCK held, such as
 in the callback.
 
-is 0 if the pad was end-of-stream.
-
 MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The number of bytes flushed This can be less than @size and</doc>
+          <doc xml:whitespace="preserve">The number of bytes flushed This can be less than @size and is 0 if the pad was end-of-stream.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -7482,7 +7361,6 @@ MT safe.</doc>
         <doc xml:whitespace="preserve">Check if a pad is active.
 
 This function is currently not implemented.
-
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -7504,11 +7382,9 @@ MT safe.</doc>
 should be called with the @pads STREAM_LOCK held, such as in the callback
 handler.
 
-should unref the buffer after usage.
-
 MT safe.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer is queued.</doc>
+          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer is queued. should unref the buffer after usage.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -7520,17 +7396,14 @@ MT safe.</doc>
       </method>
       <method name="pop"
               c:identifier="gst_collect_pads2_pop"
-              version="0.10.36"
-              introspectable="0">
+              version="0.10.36">
         <doc xml:whitespace="preserve">Pop the buffer currently queued in @data. This function
 should be called with the @pads STREAM_LOCK held, such as in the callback
 handler.
 
-You should unref the buffer after usage.
-
 MT safe.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer was queued.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">The buffer in @data or NULL if no buffer was queued. You should unref the buffer after usage.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -7549,12 +7422,9 @@ given pad data.
 This function should be called with @pads STREAM_LOCK held, such as
 in the callback.
 
-memory pointed to by @bytes. This can be less than @size and
-is 0 if the pad is end-of-stream.
-
 MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The number of bytes available for consumption in the</doc>
+          <doc xml:whitespace="preserve">The number of bytes available for consumption in the memory pointed to by @bytes. This can be less than @size and is 0 if the pad is end-of-stream.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -7562,11 +7432,19 @@ MT safe.</doc>
             <doc xml:whitespace="preserve">the data to use</doc>
             <type name="CollectData2" c:type="GstCollectData2*"/>
           </parameter>
-          <parameter name="bytes" transfer-ownership="none">
+          <parameter name="bytes"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none">
             <doc xml:whitespace="preserve">a pointer to a byte array</doc>
-            <type name="guint8" c:type="guint8**"/>
+            <array length="2" zero-terminated="0" c:type="guint8**">
+              <type name="guint8" c:type="guint8*"/>
+            </array>
           </parameter>
-          <parameter name="size" transfer-ownership="none">
+          <parameter name="size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">the number of bytes to read</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
@@ -7574,20 +7452,15 @@ MT safe.</doc>
       </method>
       <method name="read_buffer"
               c:identifier="gst_collect_pads2_read_buffer"
-              version="0.10.36"
-              introspectable="0">
+              version="0.10.36">
         <doc xml:whitespace="preserve">Get a subbuffer of @size bytes from the given pad @data.
 
 This function should be called with @pads STREAM_LOCK held, such as in the
 callback.
 
-
-A return of NULL signals that the pad is end-of-stream.
-Unref the buffer after use.
-
 MT safe.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">A sub buffer. The size of the buffer can be less that requested.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">A sub buffer. The size of the buffer can be less that requested. A return of NULL signals that the pad is end-of-stream. Unref the buffer after use.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -7609,7 +7482,6 @@ free the #GstCollectData2 and all the resources that were allocated with
 gst_collect_pads2_add_pad().
 
 The pad will be deactivated automatically when @pads is stopped.
-
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -7822,13 +7694,9 @@ of read bytes.
 This function should be called with @pads STREAM_LOCK held, such as in the
 callback.
 
-
-A return of NULL signals that the pad is end-of-stream.
-Unref the buffer after use.
-
 MT safe.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">A sub buffer. The size of the buffer can be less that requested.</doc>
+          <doc xml:whitespace="preserve">A sub buffer. The size of the buffer can be less that requested. A return of NULL signals that the pad is end-of-stream. Unref the buffer after use.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -7853,77 +7721,8 @@ MT safe.</doc>
       <field name="stream_lock" introspectable="0" readable="0" private="1">
         <type c:type="GStaticRecMutex"/>
       </field>
-      <field name="started" readable="0" private="1">
-        <type name="gboolean" c:type="gboolean"/>
-      </field>
-      <field name="cookie" readable="0" private="1">
-        <type name="guint32" c:type="guint32"/>
-      </field>
-      <field name="numpads" readable="0" private="1">
-        <type name="guint" c:type="guint"/>
-      </field>
-      <field name="queuedpads" readable="0" private="1">
-        <type name="guint" c:type="guint"/>
-      </field>
-      <field name="eospads" readable="0" private="1">
-        <type name="guint" c:type="guint"/>
-      </field>
-      <field name="earliest_time" readable="0" private="1">
-        <type name="Gst.ClockTime" c:type="GstClockTime"/>
-      </field>
-      <field name="earliest_data" readable="0" private="1">
-        <type name="CollectData2" c:type="GstCollectData2*"/>
-      </field>
-      <field name="pad_list" readable="0" private="1">
-        <type name="GLib.SList" c:type="GSList*">
-          <type name="gpointer" c:type="gpointer"/>
-        </type>
-      </field>
-      <field name="pad_cookie" readable="0" private="1">
-        <type name="guint32" c:type="guint32"/>
-      </field>
-      <field name="func" readable="0" private="1">
-        <type name="CollectPads2Function" c:type="GstCollectPads2Function"/>
-      </field>
-      <field name="user_data" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="buffer_func" readable="0" private="1">
-        <type name="CollectPads2BufferFunction"
-              c:type="GstCollectPads2BufferFunction"/>
-      </field>
-      <field name="buffer_user_data" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="compare_func" readable="0" private="1">
-        <type name="CollectPads2CompareFunction"
-              c:type="GstCollectPads2CompareFunction"/>
-      </field>
-      <field name="compare_user_data" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="event_func" readable="0" private="1">
-        <type name="CollectPads2EventFunction"
-              c:type="GstCollectPads2EventFunction"/>
-      </field>
-      <field name="event_user_data" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="clip_func" readable="0" private="1">
-        <type name="CollectPads2ClipFunction"
-              c:type="GstCollectPads2ClipFunction"/>
-      </field>
-      <field name="clip_user_data" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="evt_lock" readable="0" private="1">
-        <type name="GLib.Mutex" c:type="GMutex*"/>
-      </field>
-      <field name="evt_cond" readable="0" private="1">
-        <type name="GLib.Cond" c:type="GCond*"/>
-      </field>
-      <field name="evt_cookie" readable="0" private="1">
-        <type name="guint32" c:type="guint32"/>
+      <field name="priv" readable="0" private="1">
+        <type name="CollectPads2Private" c:type="GstCollectPads2Private*"/>
       </field>
       <field name="_gst_reserved" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
@@ -8013,12 +7812,9 @@ This function takes ownership of @inbuffer and should output a buffer in
     <callback name="CollectPads2CompareFunction"
               c:type="GstCollectPads2CompareFunction"
               version="0.10.36">
-      <doc xml:whitespace="preserve">A function for comparing two timestamps of buffers or newsegments collected on one pad.
-
-Zero if the timestamps are deemed equally old.
-Integer greate than zero when second timestamp is deemed older than the first one.</doc>
+      <doc xml:whitespace="preserve">A function for comparing two timestamps of buffers or newsegments collected on one pad.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">Integer less than zero when first timestamp is deemed older than the second one.</doc>
+        <doc xml:whitespace="preserve">Integer less than zero when first timestamp is deemed older than the second one. Zero if the timestamps are deemed equally old. Integer greate than zero when second timestamp is deemed older than the first one.</doc>
         <type name="gint" c:type="gint"/>
       </return-value>
       <parameters>
@@ -8094,6 +7890,10 @@ Integer greate than zero when second timestamp is deemed older than the first on
         </parameter>
       </parameters>
     </callback>
+    <record name="CollectPads2Private"
+            c:type="GstCollectPads2Private"
+            disguised="1">
+    </record>
     <bitfield name="CollectPads2StateFlags"
               version="0.10.36"
               c:type="GstCollectPads2StateFlags">
@@ -8133,11 +7933,9 @@ by @data in the collecpad object @pads.
 The function should use the segment of @data and the negotiated media type on
 the pad to perform clipping of @buffer. 
 
-This function takes ownership of @buffer.
-
-the buffer has been clipped completely.</doc>
+This function takes ownership of @buffer.</doc>
       <return-value>
-        <doc xml:whitespace="preserve">a #GstBuffer that contains the clipped data of @buffer or NULL when</doc>
+        <doc xml:whitespace="preserve">a #GstBuffer that contains the clipped data of @buffer or NULL when the buffer has been clipped completely.</doc>
         <type name="Gst.Buffer" c:type="GstBuffer*"/>
       </return-value>
       <parameters>
@@ -8693,11 +8491,9 @@ This function is supposed to behave exactly like a #GstPadGetRangeFunction.</doc
     <function name="type_find_helper" c:identifier="gst_type_find_helper">
       <doc xml:whitespace="preserve">Tries to find what type of data is flowing from the given source #GstPad.
 
-Free-function: gst_caps_unref
-
-Returns #NULL if no #GstCaps matches the data stream.</doc>
+Free-function: gst_caps_unref</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data stream.</doc>
+        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data stream. Returns #NULL if no #GstCaps matches the data stream.</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </return-value>
       <parameters>
@@ -8724,12 +8520,9 @@ right away. Otherwise, all available typefind functions will the tried,
 and the caps with the highest probability will be returned, or #NULL if
 the content of the buffer could not be identified.
 
-Free-function: gst_caps_unref
-
-if no type could be found. The caller should free the caps returned
-with gst_caps_unref().</doc>
+Free-function: gst_caps_unref</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data, or #NULL</doc>
+        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data, or #NULL if no type could be found. The caller should free the caps returned with gst_caps_unref().</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </return-value>
       <parameters>
@@ -8761,12 +8554,9 @@ All available typefinders will be checked against the extension in order
 of rank. The caps of the first typefinder that can handle @extension will be
 returned.
 
-Free-function: gst_caps_unref
-
-#NULL if no type could be found. The caller should free the caps
-returned with gst_caps_unref().</doc>
+Free-function: gst_caps_unref</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GstCaps corresponding to @extension, or</doc>
+        <doc xml:whitespace="preserve">the #GstCaps corresponding to @extension, or #NULL if no type could be found. The caller should free the caps returned with gst_caps_unref().</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </return-value>
       <parameters>
@@ -8791,11 +8581,9 @@ the stripped data stream before adding their own source pad (the specified
 callback can then call the upstream peer pad with offsets adjusted for the
 tag size, for example).
 
-Free-function: gst_caps_unref
-
-Returns #NULL if no #GstCaps matches the data stream.</doc>
+Free-function: gst_caps_unref</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data stream.</doc>
+        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data stream. Returns #NULL if no #GstCaps matches the data stream.</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </return-value>
       <parameters>
@@ -8839,11 +8627,9 @@ When @extension is not NULL, this function will first try the typefind
 functions for the given extension, which might speed up the typefinding
 in many cases.
 
-Free-function: gst_caps_unref
-
-Returns #NULL if no #GstCaps matches the data stream.</doc>
+Free-function: gst_caps_unref</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data stream.</doc>
+        <doc xml:whitespace="preserve">the #GstCaps corresponding to the data stream. Returns #NULL if no #GstCaps matches the data stream.</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </return-value>
       <parameters>

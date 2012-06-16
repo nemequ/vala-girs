@@ -8,6 +8,10 @@ namespace TelepathyGLib {
 		public Account (TelepathyGLib.DBusDaemon bus_daemon, string object_path) throws GLib.Error;
 		public bool associated_with_uri_scheme (string scheme);
 		public unowned GLib.Binding bind_connection_status_to_property (void* target, string target_property, bool invert);
+		public string dup_detailed_error_vardict (out GLib.Variant details);
+		public GLib.Variant dup_parameters_vardict ();
+		public GLib.Variant dup_storage_identifier_variant ();
+		public async GLib.Variant dup_storage_specific_information_vardict_async () throws GLib.Error;
 		public unowned TelepathyGLib.Connection ensure_connection (string path);
 		public TelepathyGLib.ConnectionPresenceType get_automatic_presence (out unowned string status, out string status_message);
 		public async unowned GLib.Array<uint8> get_avatar_async () throws GLib.Error;
@@ -36,6 +40,8 @@ namespace TelepathyGLib {
 		public TelepathyGLib.StorageRestrictionFlags get_storage_restrictions ();
 		public async unowned GLib.HashTable<string,GLib.Value?> get_storage_specific_information_async () throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_supersedes ();
+		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_uri_schemes ();
 		public static void init_known_interfaces ();
 		public bool is_enabled ();
@@ -53,7 +59,8 @@ namespace TelepathyGLib {
 		public async bool set_nickname_async (string nickname) throws GLib.Error;
 		public async bool set_service_async (string service) throws GLib.Error;
 		public async bool set_uri_scheme_association_async (string scheme, bool associate) throws GLib.Error;
-		public async void update_parameters_async (GLib.HashTable<string,GLib.Value?> parameters, string unset_parameters);
+		public async bool update_parameters_async (GLib.HashTable<string,GLib.Value?> parameters, string unset_parameters, [CCode (array_length = false, array_null_terminated = true)] out string[] reconnect_required) throws GLib.Error;
+		public async void update_parameters_vardict_async (GLib.Variant parameters, string unset_parameters);
 		[NoAccessorMethod]
 		public uint automatic_presence_type { get; }
 		[NoAccessorMethod]
@@ -94,8 +101,12 @@ namespace TelepathyGLib {
 		public string requested_status_message { owned get; }
 		public string service { get; }
 		public GLib.Value storage_identifier { get; }
+		[NoAccessorMethod]
+		public GLib.Variant storage_identifier_variant { owned get; }
 		public string storage_provider { get; }
 		public uint storage_restrictions { get; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] supersedes { get; }
 		[NoAccessorMethod]
 		public bool valid { get; }
 		public signal void presence_changed (uint presence, string status, string status_message);
@@ -105,12 +116,18 @@ namespace TelepathyGLib {
 	public class AccountChannelRequest : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public AccountChannelRequest (TelepathyGLib.Account account, GLib.HashTable<string,GLib.Value?> request, int64 user_action_time);
+		[CCode (has_construct_function = false)]
+		public AccountChannelRequest.audio_call (TelepathyGLib.Account account, int64 user_action_time);
+		[CCode (has_construct_function = false)]
+		public AccountChannelRequest.audio_video_call (TelepathyGLib.Account account, int64 user_action_time);
 		public async TelepathyGLib.Channel create_and_handle_channel_async (GLib.Cancellable? cancellable, out TelepathyGLib.HandleChannelsContext context) throws GLib.Error;
 		public async TelepathyGLib.Channel create_and_observe_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool create_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async TelepathyGLib.Channel ensure_and_handle_channel_async (GLib.Cancellable? cancellable, out TelepathyGLib.HandleChannelsContext context) throws GLib.Error;
 		public async TelepathyGLib.Channel ensure_and_observe_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool ensure_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public AccountChannelRequest.file_transfer (TelepathyGLib.Account account, string filename, string? mime_type, uint64 size, int64 user_action_time);
 		public unowned TelepathyGLib.Account get_account ();
 		public unowned TelepathyGLib.ChannelRequest get_channel_request ();
 		public unowned GLib.HashTable<void*,void*> get_request ();
@@ -118,7 +135,16 @@ namespace TelepathyGLib {
 		public void set_channel_factory (TelepathyGLib.ClientChannelFactory factory);
 		public void set_delegate_to_preferred_handler (bool @delegate);
 		public void set_delegated_channel_callback (owned TelepathyGLib.AccountChannelRequestDelegatedChannelCb callback);
+		public void set_file_transfer_description (string description);
+		public void set_file_transfer_initial_offset (uint64 offset);
+		public void set_file_transfer_timestamp (uint64 timestamp);
+		public void set_file_transfer_uri (string uri);
 		public void set_hints (GLib.HashTable<void*,void*> hints);
+		public void set_request_property (string name, GLib.Variant value);
+		public void set_target_contact (TelepathyGLib.Contact contact);
+		public void set_target_id (TelepathyGLib.HandleType handle_type, string identifier);
+		[CCode (has_construct_function = false)]
+		public AccountChannelRequest.text (TelepathyGLib.Account account, int64 user_action_time);
 		public TelepathyGLib.Account account { get; construct; }
 		public TelepathyGLib.ChannelRequest channel_request { get; }
 		public int64 user_action_time { get; construct; }
@@ -146,6 +172,67 @@ namespace TelepathyGLib {
 		public signal void account_validity_changed (TelepathyGLib.Account account, bool valid);
 		public signal void most_available_presence_changed (uint presence, string status, string message);
 	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_account_request_get_type ()")]
+	public class AccountRequest : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public AccountRequest (TelepathyGLib.AccountManager account_manager, string manager, string protocol, string display_name);
+		public void add_supersedes (string superseded_path);
+		public async TelepathyGLib.Account create_account_async () throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public AccountRequest.from_protocol (TelepathyGLib.AccountManager account_manager, TelepathyGLib.Protocol protocol, string display_name);
+		public void set_automatic_presence (TelepathyGLib.ConnectionPresenceType presence, string status, string message);
+		public void set_avatar ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[]? avatar, string? mime_type);
+		public void set_connect_automatically (bool connect_automatically);
+		public void set_display_name (string name);
+		public void set_enabled (bool enabled);
+		public void set_icon_name (string icon);
+		public void set_nickname (string nickname);
+		public void set_parameter (string key, GLib.Variant value);
+		public void set_requested_presence (TelepathyGLib.ConnectionPresenceType presence, string status, string message);
+		public void set_service (string service);
+		public void unset_parameter (string key);
+		[NoAccessorMethod]
+		public TelepathyGLib.AccountManager account_manager { owned get; construct; }
+		[NoAccessorMethod]
+		public uint automatic_presence_type { get; }
+		[NoAccessorMethod]
+		public string automatic_status { owned get; }
+		[NoAccessorMethod]
+		public string automatic_status_message { owned get; }
+		[NoAccessorMethod]
+		public GLib.Array<weak void*> avatar { owned get; }
+		[NoAccessorMethod]
+		public string avatar_mime_type { owned get; }
+		[NoAccessorMethod]
+		public bool connect_automatically { get; }
+		[NoAccessorMethod]
+		public string connection_manager { owned get; construct; }
+		[NoAccessorMethod]
+		public string display_name { owned get; construct; }
+		[NoAccessorMethod]
+		public bool enabled { get; }
+		[NoAccessorMethod]
+		public string icon_name { owned get; }
+		[NoAccessorMethod]
+		public string nickname { owned get; }
+		[NoAccessorMethod]
+		public GLib.Variant parameters { owned get; }
+		[NoAccessorMethod]
+		public GLib.Variant properties { owned get; }
+		[NoAccessorMethod]
+		public string protocol { owned get; construct; }
+		[NoAccessorMethod]
+		public uint requested_presence_type { get; }
+		[NoAccessorMethod]
+		public string requested_status { owned get; }
+		[NoAccessorMethod]
+		public string requested_status_message { owned get; }
+		[NoAccessorMethod]
+		public string service { owned get; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public string[] supersedes { owned get; }
+	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_add_dispatch_operation_context_get_type ()")]
 	public class AddDispatchOperationContext : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -165,7 +252,7 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_automatic_client_factory_get_type ()")]
 	public class AutomaticClientFactory : TelepathyGLib.SimpleClientFactory {
 		[CCode (has_construct_function = false)]
-		public AutomaticClientFactory (TelepathyGLib.DBusDaemon dbus);
+		public AutomaticClientFactory (TelepathyGLib.DBusDaemon? dbus);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_automatic_proxy_factory_get_type ()")]
 	public class AutomaticProxyFactory : GLib.Object, TelepathyGLib.ClientChannelFactory {
@@ -203,9 +290,12 @@ namespace TelepathyGLib {
 		public void be_a_handler ();
 		public async bool delegate_channels_async (GLib.List<TelepathyGLib.Channel> channels, int64 user_action_time, string preferred_handler, out GLib.GenericArray<weak TelepathyGLib.Channel> delegated, out GLib.HashTable<weak TelepathyGLib.Channel,weak GLib.Error> not_delegated) throws GLib.Error;
 		public unowned string get_bus_name ();
+		public unowned TelepathyGLib.DBusDaemon get_dbus_daemon ();
 		public GLib.List<weak TelepathyGLib.Channel> get_handled_channels ();
+		public unowned string get_name ();
 		public unowned string get_object_path ();
 		public GLib.List<weak TelepathyGLib.ChannelRequest> get_pending_requests ();
+		public bool get_uniquify_name ();
 		public bool is_handling_channel (TelepathyGLib.Channel channel);
 		public bool register () throws GLib.Error;
 		public void set_channel_factory (TelepathyGLib.ClientChannelFactory factory);
@@ -219,29 +309,27 @@ namespace TelepathyGLib {
 		public TelepathyGLib.AccountManager account_manager { owned get; construct; }
 		[NoAccessorMethod]
 		public GLib.Object channel_factory { owned get; construct; }
-		[NoAccessorMethod]
-		public TelepathyGLib.DBusDaemon dbus_daemon { owned get; construct; }
+		public TelepathyGLib.DBusDaemon dbus_daemon { get; construct; }
 		[NoAccessorMethod]
 		public TelepathyGLib.SimpleClientFactory factory { owned get; construct; }
-		[NoAccessorMethod]
-		public string name { owned get; construct; }
-		[NoAccessorMethod]
+		public string name { get; construct; }
 		public bool uniquify_name { get; construct; }
 		public signal void request_added (TelepathyGLib.Account account, TelepathyGLib.ChannelRequest request);
 		public signal void request_removed (TelepathyGLib.ChannelRequest request, string error, string message);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_base_connection_get_type ()")]
 	public abstract class BaseConnection : GLib.Object {
-		public weak string bus_name;
-		public weak string object_path;
-		public TelepathyGLib.Handle self_handle;
-		public TelepathyGLib.ConnectionStatus status;
 		[CCode (has_construct_function = false)]
 		protected BaseConnection ();
 		public void add_client_interest (string unique_name, string token, bool only_if_uninterested);
 		public void add_possible_client_interest (GLib.Quark token);
 		public void change_status (TelepathyGLib.ConnectionStatus status, TelepathyGLib.ConnectionStatusReason reason);
+		public bool check_connected () throws GLib.Error;
+		public unowned string get_bus_name ();
 		public unowned TelepathyGLib.HandleRepoIface get_handles (TelepathyGLib.HandleType handle_type);
+		public unowned string get_object_path ();
+		public TelepathyGLib.ConnectionStatus get_status ();
+		public bool is_destroyed ();
 		public bool register (string cm_name, out string bus_name, out string object_path) throws GLib.Error;
 		public void set_self_handle (TelepathyGLib.Handle self_handle);
 		[NoAccessorMethod]
@@ -255,18 +343,132 @@ namespace TelepathyGLib {
 		public BasicProxyFactory ();
 		public static TelepathyGLib.BasicProxyFactory dup ();
 	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_call_channel_get_type ()")]
+	public class CallChannel : TelepathyGLib.Channel {
+		[CCode (has_construct_function = false)]
+		protected CallChannel ();
+		public async bool accept_async () throws GLib.Error;
+		public async TelepathyGLib.CallContent add_content_async (string name, TelepathyGLib.MediaStreamType type, TelepathyGLib.MediaStreamDirection initial_direction) throws GLib.Error;
+		public unowned GLib.GenericArray<TelepathyGLib.CallContent> get_contents ();
+		public static GLib.Quark get_feature_quark_core ();
+		public unowned GLib.HashTable<TelepathyGLib.Contact,uint> get_members ();
+		public TelepathyGLib.CallState get_state (out TelepathyGLib.CallFlags flags, out unowned GLib.HashTable<void*,void*> details, out unowned TelepathyGLib.CallStateReason reason);
+		public async bool hangup_async (TelepathyGLib.CallStateChangeReason reason, string detailed_reason, string message) throws GLib.Error;
+		public bool has_dtmf ();
+		public bool has_hardware_streaming ();
+		public bool has_hold ();
+		public bool has_initial_audio (out unowned string initial_audio_name);
+		public bool has_initial_video (out unowned string initial_video_name);
+		public bool has_mutable_contents ();
+		public async bool request_hold_async (bool hold) throws GLib.Error;
+		public async bool send_tones_async (string tones, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool set_queued_async () throws GLib.Error;
+		public async bool set_ringing_async () throws GLib.Error;
+		public GLib.GenericArray<weak void*> contents { get; }
+		[NoAccessorMethod]
+		public uint flags { get; }
+		[NoAccessorMethod]
+		public bool hardware_streaming { get; }
+		[NoAccessorMethod]
+		public uint hold_state { get; }
+		[NoAccessorMethod]
+		public uint hold_state_reason { get; }
+		[NoAccessorMethod]
+		public bool initial_audio { get; }
+		[NoAccessorMethod]
+		public string initial_audio_name { owned get; }
+		[NoAccessorMethod]
+		public bool initial_video { get; }
+		[NoAccessorMethod]
+		public string initial_video_name { owned get; }
+		[NoAccessorMethod]
+		public bool mutable_contents { get; }
+		[NoAccessorMethod]
+		public uint state { get; }
+		[NoAccessorMethod]
+		public GLib.HashTable<weak void*,weak void*> state_details { owned get; }
+		[NoAccessorMethod]
+		public TelepathyGLib.CallStateReason state_reason { owned get; }
+		public signal void content_added (GLib.Object content);
+		public signal void content_removed (GLib.Object content, TelepathyGLib.CallStateReason reason);
+		public signal void members_changed (GLib.HashTable<TelepathyGLib.Contact,uint> updates, GLib.GenericArray<TelepathyGLib.Contact> removed, TelepathyGLib.CallStateReason reason);
+		public signal void state_changed (uint state, uint flags, TelepathyGLib.CallStateReason reason, GLib.HashTable<string,GLib.Value?> details);
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_call_content_get_type ()")]
+	public class CallContent : TelepathyGLib.Proxy {
+		[CCode (has_construct_function = false)]
+		protected CallContent ();
+		public TelepathyGLib.CallContentDisposition get_disposition ();
+		public static GLib.Quark get_feature_quark_core ();
+		public TelepathyGLib.MediaStreamType get_media_type ();
+		public unowned string get_name ();
+		public unowned GLib.GenericArray<TelepathyGLib.CallStream> get_streams ();
+		public static void init_known_interfaces ();
+		public async bool remove_async () throws GLib.Error;
+		public async bool send_tones_async (string tones, GLib.Cancellable? cancellable) throws GLib.Error;
+		[NoAccessorMethod]
+		public TelepathyGLib.CallChannel channel { owned get; construct; }
+		[NoAccessorMethod]
+		public TelepathyGLib.Connection connection { owned get; construct; }
+		public uint disposition { get; }
+		public uint media_type { get; }
+		public string name { get; }
+		public GLib.GenericArray<weak void*> streams { get; }
+		public signal void removed ();
+		public signal void streams_added (GLib.GenericArray<TelepathyGLib.CallStream> streams);
+		public signal void streams_removed (GLib.GenericArray<TelepathyGLib.CallStream> streams, TelepathyGLib.CallStateReason reason);
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "tp_call_state_reason_get_type ()")]
+	[Compact]
+	public class CallStateReason {
+		public TelepathyGLib.Handle actor;
+		public weak string dbus_reason;
+		public weak string message;
+		public TelepathyGLib.CallStateChangeReason reason;
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_call_stream_get_type ()")]
+	public class CallStream : TelepathyGLib.Proxy {
+		[CCode (has_construct_function = false)]
+		protected CallStream ();
+		public static GLib.Quark get_feature_quark_core ();
+		public TelepathyGLib.SendingState get_local_sending_state ();
+		public unowned GLib.HashTable<TelepathyGLib.Contact,uint> get_remote_members ();
+		public static void init_known_interfaces ();
+		public async bool request_receiving_async (TelepathyGLib.Contact contact, bool receive) throws GLib.Error;
+		public async bool set_sending_async (bool send) throws GLib.Error;
+		[NoAccessorMethod]
+		public bool can_request_receiving { get; }
+		[NoAccessorMethod]
+		public TelepathyGLib.Connection connection { owned get; construct; }
+		[NoAccessorMethod]
+		public TelepathyGLib.CallContent content { owned get; construct; }
+		public uint local_sending_state { get; }
+		public signal void local_sending_state_changed (uint object, uint p0, TelepathyGLib.CallStateReason p1, GLib.HashTable<void*,void*> p2);
+		public signal void remote_members_changed (GLib.HashTable<TelepathyGLib.Contact,uint> updates, GLib.GenericArray<TelepathyGLib.Contact> removed, TelepathyGLib.CallStateReason reason);
+	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_capabilities_get_type ()")]
 	public class Capabilities : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Capabilities ();
+		public GLib.Variant dup_channel_classes_variant ();
 		public unowned GLib.GenericArray<void*> get_channel_classes ();
 		public bool is_specific_to_contact ();
+		public bool supports_audio_call (TelepathyGLib.HandleType handle_type);
+		public bool supports_audio_video_call (TelepathyGLib.HandleType handle_type);
 		public bool supports_contact_search (out bool with_limit, out bool with_server);
 		public bool supports_dbus_tubes (TelepathyGLib.HandleType handle_type, string service_name);
+		public bool supports_file_transfer ();
+		public bool supports_file_transfer_description ();
+		public bool supports_file_transfer_initial_offset ();
+		public bool supports_file_transfer_timestamp ();
+		public bool supports_file_transfer_uri ();
 		public bool supports_room_list (out bool with_server);
+		public bool supports_sms ();
 		public bool supports_stream_tubes (TelepathyGLib.HandleType handle_type, string service);
 		public bool supports_text_chatrooms ();
 		public bool supports_text_chats ();
+		[NoAccessorMethod]
+		public GLib.Variant channel_classes_variant { owned get; }
 		[NoAccessorMethod]
 		public bool contact_specific { get; construct; }
 	}
@@ -291,6 +493,7 @@ namespace TelepathyGLib {
 		public TelepathyGLib.Handle get_handle (out TelepathyGLib.HandleType handle_type);
 		public unowned string get_identifier ();
 		public unowned TelepathyGLib.Contact get_initiator_contact ();
+		public bool get_requested ();
 		public unowned TelepathyGLib.Contact get_target_contact ();
 		public GLib.GenericArray<weak TelepathyGLib.Contact> group_dup_local_pending_contacts ();
 		public GLib.GenericArray<weak TelepathyGLib.Contact> group_dup_members_contacts ();
@@ -309,6 +512,7 @@ namespace TelepathyGLib {
 		public async bool join_async (string message) throws GLib.Error;
 		public async bool leave_async (TelepathyGLib.ChannelGroupChangeReason reason, string message) throws GLib.Error;
 		public async bool provide_password_async (string password) throws GLib.Error;
+		[Deprecated (since = "0.17.6")]
 		[NoAccessorMethod]
 		public bool channel_ready { get; }
 		[NoAccessorMethod]
@@ -327,7 +531,6 @@ namespace TelepathyGLib {
 		public string initiator_identifier { owned get; }
 		[NoAccessorMethod]
 		public bool password_needed { get; }
-		[NoAccessorMethod]
 		public bool requested { get; }
 		public TelepathyGLib.Contact target_contact { get; }
 		public signal void chat_state_changed (uint contact, uint state);
@@ -402,8 +605,11 @@ namespace TelepathyGLib {
 		public unowned GLib.Binding bind_connection_status_to_property (void* target, string target_property, bool invert);
 		public async bool block_contacts_async ([CCode (array_length_cname = "n_contacts", array_length_pos = 0.5, array_length_type = "guint")] TelepathyGLib.Contact[] contacts, bool report_abusive) throws GLib.Error;
 		public bool can_set_contact_alias ();
+		public async bool disconnect_async () throws GLib.Error;
+		public async TelepathyGLib.Contact dup_contact_by_id_async (string id, [CCode (array_length_cname = "n_features", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.ContactFeature[]? features) throws GLib.Error;
 		public TelepathyGLib.Contact dup_contact_if_possible (TelepathyGLib.Handle handle, string identifier);
 		public GLib.GenericArray<weak TelepathyGLib.Contact> dup_contact_list ();
+		public string dup_detailed_error_vardict (out GLib.Variant details);
 		public unowned TelepathyGLib.Account get_account ();
 		public unowned TelepathyGLib.AvatarRequirements get_avatar_requirements ();
 		public bool get_balance (out int balance, out uint scale, out unowned string currency);
@@ -460,6 +666,7 @@ namespace TelepathyGLib {
 		public void unref_handles (TelepathyGLib.HandleType handle_type, [CCode (array_length_cname = "n_handles", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.Handle[] handles);
 		public async bool unsubscribe_async ([CCode (array_length_cname = "n_contacts", array_length_pos = 0.5, array_length_type = "guint")] TelepathyGLib.Contact[] contacts) throws GLib.Error;
 		public void upgrade_contacts ([CCode (array_length_cname = "n_contacts", array_length_pos = 0.5, array_length_type = "guint")] TelepathyGLib.Contact[] contacts, [CCode (array_length_cname = "n_features", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.ContactFeature[] features, [CCode (delegate_target_pos = 3.33333, destroy_notify_pos = 3.66667)] owned TelepathyGLib.ConnectionUpgradeContactsCb callback, GLib.Object? weak_object);
+		public async bool upgrade_contacts_async ([CCode (array_length_cname = "n_contacts", array_length_pos = 0.5, array_length_type = "guint")] TelepathyGLib.Contact[] contacts, [CCode (array_length_cname = "n_features", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.ContactFeature[] features, out GLib.GenericArray<weak TelepathyGLib.Contact> contacts_out) throws GLib.Error;
 		[NoAccessorMethod]
 		public int balance { get; }
 		[NoAccessorMethod]
@@ -473,6 +680,7 @@ namespace TelepathyGLib {
 		public bool can_report_abusive { get; }
 		public TelepathyGLib.Capabilities capabilities { get; }
 		public string connection_manager_name { get; }
+		[Deprecated (since = "0.17.6")]
 		[NoAccessorMethod]
 		public bool connection_ready { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -498,14 +706,13 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_connection_manager_get_type ()")]
 	public class ConnectionManager : TelepathyGLib.Proxy {
-		public weak string name;
-		public weak TelepathyGLib.ConnectionManagerProtocol protocols;
-		public uint reserved_flags;
-		public uint running;
 		[CCode (has_construct_function = false)]
 		public ConnectionManager (TelepathyGLib.DBusDaemon dbus, string name, string? manager_filename) throws GLib.Error;
 		public static bool check_valid_name (string name) throws GLib.Error;
 		public static bool check_valid_protocol_name (string name) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] dup_protocol_names ();
+		public GLib.List<TelepathyGLib.Protocol> dup_protocols ();
 		public static GLib.Quark get_feature_quark_core ();
 		public TelepathyGLib.CMInfoSource get_info_source ();
 		public unowned string get_name ();
@@ -528,12 +735,8 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "tp_connection_manager_param_get_type ()")]
 	[Compact]
 	public class ConnectionManagerParam {
-		public weak string dbus_signature;
-		public GLib.Value default_value;
-		public uint flags;
-		public weak string name;
-		public void* priv;
 		public TelepathyGLib.ConnectionManagerParam copy ();
+		public GLib.Variant dup_default_variant ();
 		public void free ();
 		public unowned string get_dbus_signature ();
 		public bool get_default (GLib.Value value);
@@ -550,6 +753,8 @@ namespace TelepathyGLib {
 		public weak TelepathyGLib.ConnectionManagerParam @params;
 		public bool can_register ();
 		public TelepathyGLib.ConnectionManagerProtocol copy ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] dup_param_names ();
 		public void free ();
 		public unowned TelepathyGLib.ConnectionManagerParam get_param (string param);
 		public bool has_param (string param);
@@ -561,6 +766,7 @@ namespace TelepathyGLib {
 		public async bool add_to_group_async (string group) throws GLib.Error;
 		public async bool authorize_publication_async () throws GLib.Error;
 		public async bool block_async (bool report_abusive) throws GLib.Error;
+		public unowned TelepathyGLib.Account get_account ();
 		public unowned string get_alias ();
 		public unowned GLib.File get_avatar_file ();
 		public unowned string get_avatar_mime_type ();
@@ -693,8 +899,43 @@ namespace TelepathyGLib {
 	public class DBusTubeChannel : TelepathyGLib.Channel {
 		[CCode (has_construct_function = false)]
 		protected DBusTubeChannel ();
+		public async GLib.DBusConnection accept_async () throws GLib.Error;
+		public static GLib.Quark feature_quark_core ();
+		public unowned string get_service_name ();
+		public async GLib.DBusConnection offer_async (GLib.HashTable<void*,void*>? @params) throws GLib.Error;
+		public string service_name { get; }
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_debug_client_get_type ()")]
+	public class DebugClient : TelepathyGLib.Proxy {
+		[CCode (has_construct_function = false)]
+		public DebugClient (TelepathyGLib.DBusDaemon dbus, string unique_name) throws GLib.Error;
+		public static GLib.Quark get_feature_quark_core ();
+		public async GLib.GenericArray<TelepathyGLib.DebugMessage> get_messages_async () throws GLib.Error;
+		public static void init_known_interfaces ();
+		public bool is_enabled ();
+		public async bool set_enabled_async (bool enabled) throws GLib.Error;
 		[NoAccessorMethod]
-		public string service_name { owned get; }
+		public bool enabled { get; }
+		public signal void new_debug_message (TelepathyGLib.DebugMessage message);
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_debug_message_get_type ()")]
+	public class DebugMessage : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected DebugMessage ();
+		public unowned string get_category ();
+		public unowned string get_domain ();
+		public GLib.LogLevelFlags get_level ();
+		public unowned string get_message ();
+		public unowned GLib.DateTime get_time ();
+		public string category { get; }
+		public string domain { get; }
+		public uint level { get; }
+		public string message { get; }
+		public GLib.DateTime time { get; }
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[Compact]
+	public class DebugMessagePriv {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_file_transfer_channel_get_type ()")]
 	public class FileTransferChannel : TelepathyGLib.Channel {
@@ -843,10 +1084,15 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false)]
 		public Protocol (TelepathyGLib.DBusDaemon dbus, string cm_name, string protocol_name, GLib.HashTable<void*,void*> immutable_properties) throws GLib.Error;
 		public bool can_register ();
+		public TelepathyGLib.ConnectionManagerParam dup_param (string param);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] dup_param_names ();
+		public GLib.List<TelepathyGLib.ConnectionManagerParam> dup_params ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_authentication_types ();
 		public unowned TelepathyGLib.AvatarRequirements get_avatar_requirements ();
 		public unowned TelepathyGLib.Capabilities get_capabilities ();
+		public unowned string get_cm_name ();
 		public unowned string get_english_name ();
 		public static GLib.Quark get_feature_quark_core ();
 		public static GLib.Quark get_feature_quark_parameters ();
@@ -860,6 +1106,7 @@ namespace TelepathyGLib {
 		public string[] authentication_types { get; }
 		public void* avatar_requirements { get; }
 		public TelepathyGLib.Capabilities capabilities { get; }
+		public string cm_name { get; construct; }
 		public string english_name { get; }
 		public string icon_name { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -902,6 +1149,43 @@ namespace TelepathyGLib {
 	public class ProxySignalConnection {
 		public void disconnect ();
 	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_room_info_get_type ()")]
+	public class RoomInfo : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected RoomInfo ();
+		public unowned string get_channel_type ();
+		public unowned string get_description ();
+		public TelepathyGLib.Handle get_handle ();
+		public unowned string get_handle_name ();
+		public bool get_invite_only (bool known);
+		public uint get_members_count (bool known);
+		public unowned string get_name ();
+		public bool get_requires_password (bool known);
+		public unowned string get_room_id ();
+		public unowned string get_server ();
+		public unowned string get_subject ();
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[Compact]
+	public class RoomInfoPriv {
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_room_list_get_type ()")]
+	public class RoomList : GLib.Object, GLib.AsyncInitable {
+		[CCode (cname = "tp_room_list_new_async")]
+		public async RoomList (TelepathyGLib.Account account, string server);
+		[CCode (has_construct_function = false)]
+		public RoomList.finish (GLib.AsyncResult result) throws GLib.Error;
+		public unowned TelepathyGLib.Account get_account ();
+		public unowned string get_server ();
+		public bool is_listing ();
+		public void start ();
+		public TelepathyGLib.Account account { get; construct; }
+		[NoAccessorMethod]
+		public bool listing { get; }
+		public string server { get; construct; }
+		public signal void failed (GLib.Error error);
+		public signal void got_room (TelepathyGLib.RoomInfo room);
+	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_signalled_message_get_type ()")]
 	public class SignalledMessage : TelepathyGLib.Message {
 		[CCode (has_construct_function = false)]
@@ -925,7 +1209,7 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_simple_client_factory_get_type ()")]
 	public class SimpleClientFactory : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public SimpleClientFactory (TelepathyGLib.DBusDaemon dbus);
+		public SimpleClientFactory (TelepathyGLib.DBusDaemon? dbus);
 		public void add_account_features ([CCode (array_length = false, array_null_terminated = true)] GLib.Quark[]? features);
 		public void add_channel_features ([CCode (array_length = false, array_null_terminated = true)] GLib.Quark[]? features);
 		public void add_connection_features ([CCode (array_length = false, array_null_terminated = true)] GLib.Quark[]? features);
@@ -938,7 +1222,9 @@ namespace TelepathyGLib {
 		public TelepathyGLib.Channel ensure_channel (TelepathyGLib.Connection connection, string object_path, GLib.HashTable<string,GLib.Value?> immutable_properties) throws GLib.Error;
 		public TelepathyGLib.Connection ensure_connection (string object_path, GLib.HashTable<string,GLib.Value?> immutable_properties) throws GLib.Error;
 		public TelepathyGLib.Contact ensure_contact (TelepathyGLib.Connection connection, TelepathyGLib.Handle handle, string identifier);
+		public async TelepathyGLib.Contact ensure_contact_by_id_async (TelepathyGLib.Connection connection, string identifier) throws GLib.Error;
 		public unowned TelepathyGLib.DBusDaemon get_dbus_daemon ();
+		public async bool upgrade_contacts_async (TelepathyGLib.Connection connection, [CCode (array_length_cname = "n_contacts", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.Contact[] contacts, out GLib.GenericArray<weak TelepathyGLib.Contact> contacts_out) throws GLib.Error;
 		public TelepathyGLib.DBusDaemon dbus_daemon { get; construct; }
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_simple_handler_get_type ()")]
@@ -973,22 +1259,60 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false)]
 		public StreamTubeChannel (TelepathyGLib.Connection conn, string object_path, GLib.HashTable<string,GLib.Value?> immutable_properties) throws GLib.Error;
 		public async TelepathyGLib.StreamTubeConnection accept_async () throws GLib.Error;
+		public unowned string get_service ();
 		public async bool offer_async (GLib.HashTable<void*,void*>? @params) throws GLib.Error;
-		[NoAccessorMethod]
-		public string service { owned get; }
+		public string service { get; }
 		public signal void incoming (TelepathyGLib.StreamTubeConnection tube_connection);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_stream_tube_connection_get_type ()")]
 	public class StreamTubeConnection : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected StreamTubeConnection ();
+		public unowned TelepathyGLib.StreamTubeChannel get_channel ();
+		public unowned TelepathyGLib.Contact get_contact ();
+		public unowned GLib.SocketConnection get_socket_connection ();
+		public TelepathyGLib.StreamTubeChannel channel { get; construct; }
+		public TelepathyGLib.Contact contact { get; construct; }
+		public GLib.SocketConnection socket_connection { get; construct; }
+		public signal void closed (GLib.Error error);
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_tls_certificate_get_type ()")]
+	public class TLSCertificate : TelepathyGLib.Proxy {
+		[CCode (has_construct_function = false)]
+		public TLSCertificate (TelepathyGLib.Proxy conn_or_chan, string object_path) throws GLib.Error;
+		public async bool accept_async () throws GLib.Error;
+		public void add_rejection (TelepathyGLib.TLSCertificateRejectReason reason, string dbus_error, GLib.Variant? details);
+		public unowned GLib.GenericArray<GLib.Bytes> get_cert_data ();
+		public unowned string get_cert_type ();
+		public static GLib.Quark get_feature_quark_core ();
+		public unowned TelepathyGLib.TLSCertificateRejection get_nth_rejection (uint n);
+		public unowned TelepathyGLib.TLSCertificateRejection get_rejection ();
+		public TelepathyGLib.TLSCertificateState get_state ();
+		public static void init_known_interfaces ();
+		public async bool reject_async () throws GLib.Error;
+		public GLib.GenericArray<weak void*> cert_data { get; }
+		public string cert_type { get; }
 		[NoAccessorMethod]
-		public TelepathyGLib.StreamTubeChannel channel { owned get; construct; }
-		[NoAccessorMethod]
-		public TelepathyGLib.Contact contact { owned get; construct; }
-		[NoAccessorMethod]
-		public GLib.SocketConnection socket_connection { owned get; construct; }
-		public signal void closed (void* error);
+		public TelepathyGLib.Proxy parent { owned get; construct; }
+		public uint state { get; }
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_tls_certificate_rejection_get_type ()")]
+	public class TLSCertificateRejection : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected TLSCertificateRejection ();
+		public unowned string get_dbus_error ();
+		public GLib.Variant get_details ();
+		public unowned GLib.Error get_error ();
+		public TelepathyGLib.TLSCertificateRejectReason get_reason ();
+		public bool raise_error () throws GLib.Error;
+		public string dbus_error { get; construct; }
+		public GLib.Variant details { owned get; construct; }
+		public GLib.Error error { get; construct; }
+		public uint reason { get; construct; }
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[Compact]
+	public class TLSCertificateRejectionPriv {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_text_channel_get_type ()")]
 	public class TextChannel : TelepathyGLib.Channel {
@@ -997,24 +1321,29 @@ namespace TelepathyGLib {
 		public async bool ack_all_pending_messages_async () throws GLib.Error;
 		public async bool ack_message_async (TelepathyGLib.Message message) throws GLib.Error;
 		public async bool ack_messages_async (GLib.List<TelepathyGLib.SignalledMessage> messages) throws GLib.Error;
+		public TelepathyGLib.ChannelChatState get_chat_state (TelepathyGLib.Contact contact);
+		public TelepathyGLib.DeliveryReportingSupportFlags get_delivery_reporting_support ();
+		public static GLib.Quark get_feature_quark_chat_states ();
 		public static GLib.Quark get_feature_quark_incoming_messages ();
 		public static GLib.Quark get_feature_quark_sms ();
+		public TelepathyGLib.MessagePartSupportFlags get_message_part_support_flags ();
+		public unowned GLib.Array<TelepathyGLib.ChannelTextMessageType> get_message_types ();
 		public GLib.List<weak TelepathyGLib.SignalledMessage> get_pending_messages ();
 		public bool get_sms_flash ();
 		public async bool get_sms_length_async (TelepathyGLib.Message message, out uint chunks_required, out int remaining_characters, out int estimated_cost) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_supported_content_types ();
 		public async bool send_message_async (TelepathyGLib.Message message, TelepathyGLib.MessageSendingFlags flags, out string token) throws GLib.Error;
 		public async bool set_chat_state_async (TelepathyGLib.ChannelChatState state) throws GLib.Error;
 		public bool supports_message_type (TelepathyGLib.ChannelTextMessageType message_type);
-		[NoAccessorMethod]
 		public uint delivery_reporting_support { get; }
 		[NoAccessorMethod]
 		public bool is_sms_channel { get; }
-		[NoAccessorMethod]
 		public uint message_part_support_flags { get; }
 		public bool sms_flash { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
-		[NoAccessorMethod]
-		public string[] supported_content_types { owned get; }
+		public string[] supported_content_types { get; }
+		public signal void contact_chat_state_changed (TelepathyGLib.Contact contact, uint state);
 		public signal void message_received (TelepathyGLib.SignalledMessage message);
 		public signal void message_sent (TelepathyGLib.SignalledMessage message, uint flags, string token);
 		public signal void pending_message_removed (TelepathyGLib.SignalledMessage message);
@@ -1134,960 +1463,731 @@ namespace TelepathyGLib {
 	public struct _DBusPropertiesMixinClass {
 		public TelepathyGLib.DBusPropertiesMixinIfaceImpl interfaces;
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ACCESS_CONTROL_TYPE_")]
 	public enum AccessControlType {
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_WHITELIST")]
 		WHITELIST,
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_PUBLISH_LIST")]
 		PUBLISH_LIST,
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_GROUP")]
 		GROUP,
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_OPEN")]
 		OPEN,
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_SUBSCRIBE_OR_PUBLISH_LIST")]
 		SUBSCRIBE_OR_PUBLISH_LIST,
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_CLOSED")]
 		CLOSED,
-		[CCode (cname = "TP_ACCESS_CONTROL_TYPE_NOT_UNDERSTOOD")]
 		NOT_UNDERSTOOD
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ANONYMITY_MODE_")]
 	[Flags]
 	public enum AnonymityModeFlags {
-		[CCode (cname = "TP_ANONYMITY_MODE_CLIENT_INFO")]
 		CLIENT_INFO,
-		[CCode (cname = "TP_ANONYMITY_MODE_SHOW_CLIENT_INFO")]
 		SHOW_CLIENT_INFO,
-		[CCode (cname = "TP_ANONYMITY_MODE_NETWORK_INFO")]
 		NETWORK_INFO
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CM_INFO_SOURCE_")]
 	public enum CMInfoSource {
-		[CCode (cname = "TP_CM_INFO_SOURCE_NONE")]
 		NONE,
-		[CCode (cname = "TP_CM_INFO_SOURCE_FILE")]
 		FILE,
-		[CCode (cname = "TP_CM_INFO_SOURCE_LIVE")]
 		LIVE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_CONTENT_DISPOSITION_")]
+	public enum CallContentDisposition {
+		NONE,
+		INITIAL
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_CONTENT_PACKETIZATION_TYPE_")]
+	public enum CallContentPacketizationType {
+		RTP,
+		RAW,
+		MSN_WEBCAM
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_FLAG_")]
 	[Flags]
-	public enum ChannelCallStateFlags {
-		[CCode (cname = "TP_CHANNEL_CALL_STATE_RINGING")]
-		RINGING,
-		[CCode (cname = "TP_CHANNEL_CALL_STATE_QUEUED")]
-		QUEUED,
-		[CCode (cname = "TP_CHANNEL_CALL_STATE_HELD")]
-		HELD,
-		[CCode (cname = "TP_CHANNEL_CALL_STATE_FORWARDED")]
+	public enum CallFlags {
+		LOCALLY_HELD,
+		LOCALLY_RINGING,
+		LOCALLY_QUEUED,
 		FORWARDED,
-		[CCode (cname = "TP_CHANNEL_CALL_STATE_IN_PROGRESS")]
-		IN_PROGRESS,
-		[CCode (cname = "TP_CHANNEL_CALL_STATE_CONFERENCE_HOST")]
+		CLEARING
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_MEMBER_FLAG_")]
+	[Flags]
+	public enum CallMemberFlags {
+		RINGING,
+		HELD,
 		CONFERENCE_HOST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
-	public enum ChannelChatState {
-		[CCode (cname = "TP_CHANNEL_CHAT_STATE_GONE")]
-		GONE,
-		[CCode (cname = "TP_CHANNEL_CHAT_STATE_INACTIVE")]
-		INACTIVE,
-		[CCode (cname = "TP_CHANNEL_CHAT_STATE_ACTIVE")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STATE_")]
+	public enum CallState {
+		UNKNOWN,
+		PENDING_INITIATOR,
+		INITIALISING,
+		INITIALISED,
+		ACCEPTED,
 		ACTIVE,
-		[CCode (cname = "TP_CHANNEL_CHAT_STATE_PAUSED")]
-		PAUSED,
-		[CCode (cname = "TP_CHANNEL_CHAT_STATE_COMPOSING")]
-		COMPOSING
+		ENDED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
-	public enum ChannelContactSearchState {
-		[CCode (cname = "TP_CHANNEL_CONTACT_SEARCH_STATE_NOT_STARTED")]
-		NOT_STARTED,
-		[CCode (cname = "TP_CHANNEL_CONTACT_SEARCH_STATE_IN_PROGRESS")]
-		IN_PROGRESS,
-		[CCode (cname = "TP_CHANNEL_CONTACT_SEARCH_STATE_MORE_AVAILABLE")]
-		MORE_AVAILABLE,
-		[CCode (cname = "TP_CHANNEL_CONTACT_SEARCH_STATE_COMPLETED")]
-		COMPLETED,
-		[CCode (cname = "TP_CHANNEL_CONTACT_SEARCH_STATE_FAILED")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STATE_CHANGE_REASON_")]
+	public enum CallStateChangeReason {
+		UNKNOWN,
+		PROGRESS_MADE,
+		USER_REQUESTED,
+		FORWARDED,
+		REJECTED,
+		NO_ANSWER,
+		INVALID_CONTACT,
+		PERMISSION_DENIED,
+		BUSY,
+		INTERNAL_ERROR,
+		SERVICE_ERROR,
+		NETWORK_ERROR,
+		MEDIA_ERROR,
+		CONNECTIVITY_ERROR
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STREAM_CANDIDATE_TYPE_")]
+	public enum CallStreamCandidateType {
+		NONE,
+		HOST,
+		SERVER_REFLEXIVE,
+		PEER_REFLEXIVE,
+		RELAY,
+		MULTICAST
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_CANCEL_REASON_")]
+	public enum CaptchaCancelReason {
+		USER_CANCELLED,
+		NOT_SUPPORTED,
+		SERVICE_CONFUSED
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_FLAGS_")]
+	[Flags]
+	public enum CaptchaFlags {
+		[CCode (cname = "TP_CAPTCHA_FLAGS_REQUIRED")]
+		CAPTCHA_FLAGS_REQUIRED
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_STATUS_")]
+	public enum CaptchaStatus {
+		LOCAL_PENDING,
+		REMOTE_PENDING,
+		SUCCEEDED,
+		TRY_AGAIN,
 		FAILED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CALL_STATE_")]
+	[Flags]
+	public enum ChannelCallStateFlags {
+		RINGING,
+		QUEUED,
+		HELD,
+		FORWARDED,
+		IN_PROGRESS,
+		CONFERENCE_HOST
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CHAT_STATE_")]
+	public enum ChannelChatState {
+		GONE,
+		INACTIVE,
+		ACTIVE,
+		PAUSED,
+		COMPOSING
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CONTACT_SEARCH_STATE_")]
+	public enum ChannelContactSearchState {
+		NOT_STARTED,
+		IN_PROGRESS,
+		MORE_AVAILABLE,
+		COMPLETED,
+		FAILED
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_GROUP_CHANGE_REASON_")]
 	public enum ChannelGroupChangeReason {
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_NONE")]
 		NONE,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_OFFLINE")]
 		OFFLINE,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_KICKED")]
 		KICKED,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_BUSY")]
 		BUSY,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_INVITED")]
 		INVITED,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_BANNED")]
 		BANNED,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_ERROR")]
 		ERROR,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_INVALID_CONTACT")]
 		INVALID_CONTACT,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_NO_ANSWER")]
 		NO_ANSWER,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED")]
 		RENAMED,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_PERMISSION_DENIED")]
 		PERMISSION_DENIED,
-		[CCode (cname = "TP_CHANNEL_GROUP_CHANGE_REASON_SEPARATED")]
 		SEPARATED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_GROUP_FLAG_")]
 	[Flags]
 	public enum ChannelGroupFlags {
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_CAN_ADD")]
 		CAN_ADD,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_CAN_REMOVE")]
 		CAN_REMOVE,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_CAN_RESCIND")]
 		CAN_RESCIND,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MESSAGE_ADD")]
 		MESSAGE_ADD,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MESSAGE_REMOVE")]
 		MESSAGE_REMOVE,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MESSAGE_ACCEPT")]
 		MESSAGE_ACCEPT,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MESSAGE_REJECT")]
 		MESSAGE_REJECT,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MESSAGE_RESCIND")]
 		MESSAGE_RESCIND,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_CHANNEL_SPECIFIC_HANDLES")]
 		CHANNEL_SPECIFIC_HANDLES,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_ONLY_ONE_GROUP")]
 		ONLY_ONE_GROUP,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_HANDLE_OWNERS_NOT_AVAILABLE")]
 		HANDLE_OWNERS_NOT_AVAILABLE,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_PROPERTIES")]
 		PROPERTIES,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MEMBERS_CHANGED_DETAILED")]
 		MEMBERS_CHANGED_DETAILED,
-		[CCode (cname = "TP_CHANNEL_GROUP_FLAG_MESSAGE_DEPART")]
 		MESSAGE_DEPART
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_MEDIA_CAPABILITY_")]
 	[Flags]
 	public enum ChannelMediaCapabilities {
-		[CCode (cname = "TP_CHANNEL_MEDIA_CAPABILITY_AUDIO")]
 		AUDIO,
-		[CCode (cname = "TP_CHANNEL_MEDIA_CAPABILITY_VIDEO")]
 		VIDEO,
-		[CCode (cname = "TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_STUN")]
 		NAT_TRAVERSAL_STUN,
-		[CCode (cname = "TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_GTALK_P2P")]
 		NAT_TRAVERSAL_GTALK_P2P,
-		[CCode (cname = "TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_ICE_UDP")]
 		NAT_TRAVERSAL_ICE_UDP,
-		[CCode (cname = "TP_CHANNEL_MEDIA_CAPABILITY_IMMUTABLE_STREAMS")]
 		IMMUTABLE_STREAMS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_PASSWORD_FLAG_")]
 	[Flags]
 	public enum ChannelPasswordFlags {
-		[CCode (cname = "TP_CHANNEL_PASSWORD_FLAG_PROVIDE")]
 		PROVIDE,
-		[CCode (cname = "TP_CHANNEL_PASSWORD_FLAG_HINT")]
 		HINT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_MESSAGE_FLAG_")]
 	[Flags]
 	public enum ChannelTextMessageFlags {
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_FLAG_TRUNCATED")]
 		TRUNCATED,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_FLAG_NON_TEXT_CONTENT")]
 		NON_TEXT_CONTENT,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_FLAG_SCROLLBACK")]
 		SCROLLBACK,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_FLAG_RESCUED")]
 		RESCUED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_MESSAGE_TYPE_")]
 	public enum ChannelTextMessageType {
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_TYPE_NORMAL")]
 		NORMAL,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_TYPE_ACTION")]
 		ACTION,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_TYPE_NOTICE")]
 		NOTICE,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_TYPE_AUTO_REPLY")]
 		AUTO_REPLY,
-		[CCode (cname = "TP_CHANNEL_TEXT_MESSAGE_TYPE_DELIVERY_REPORT")]
 		DELIVERY_REPORT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_SEND_ERROR_")]
 	public enum ChannelTextSendError {
-		[CCode (cname = "TP_CHANNEL_TEXT_SEND_ERROR_UNKNOWN")]
 		UNKNOWN,
-		[CCode (cname = "TP_CHANNEL_TEXT_SEND_ERROR_OFFLINE")]
 		OFFLINE,
-		[CCode (cname = "TP_CHANNEL_TEXT_SEND_ERROR_INVALID_CONTACT")]
 		INVALID_CONTACT,
-		[CCode (cname = "TP_CHANNEL_TEXT_SEND_ERROR_PERMISSION_DENIED")]
 		PERMISSION_DENIED,
-		[CCode (cname = "TP_CHANNEL_TEXT_SEND_ERROR_TOO_LONG")]
 		TOO_LONG,
-		[CCode (cname = "TP_CHANNEL_TEXT_SEND_ERROR_NOT_IMPLEMENTED")]
 		NOT_IMPLEMENTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONN_MGR_PARAM_FLAG_")]
 	[Flags]
 	public enum ConnMgrParamFlags {
-		[CCode (cname = "TP_CONN_MGR_PARAM_FLAG_REQUIRED")]
 		REQUIRED,
-		[CCode (cname = "TP_CONN_MGR_PARAM_FLAG_REGISTER")]
 		REGISTER,
-		[CCode (cname = "TP_CONN_MGR_PARAM_FLAG_HAS_DEFAULT")]
 		HAS_DEFAULT,
-		[CCode (cname = "TP_CONN_MGR_PARAM_FLAG_SECRET")]
 		SECRET,
-		[CCode (cname = "TP_CONN_MGR_PARAM_FLAG_DBUS_PROPERTY")]
 		DBUS_PROPERTY
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_ALIAS_FLAG_USER_")]
 	[Flags]
 	public enum ConnectionAliasFlags {
 		[CCode (cname = "TP_CONNECTION_ALIAS_FLAG_USER_SET")]
 		CONNECTION_ALIAS_FLAG_USER_SET
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_CAPABILITY_FLAG_")]
 	[Flags]
 	public enum ConnectionCapabilityFlags {
-		[CCode (cname = "TP_CONNECTION_CAPABILITY_FLAG_CREATE")]
 		CREATE,
-		[CCode (cname = "TP_CONNECTION_CAPABILITY_FLAG_INVITE")]
 		INVITE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_PRESENCE_TYPE_")]
 	public enum ConnectionPresenceType {
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_UNSET")]
 		UNSET,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_OFFLINE")]
 		OFFLINE,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_AVAILABLE")]
 		AVAILABLE,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_AWAY")]
 		AWAY,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY")]
 		EXTENDED_AWAY,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_HIDDEN")]
 		HIDDEN,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_BUSY")]
 		BUSY,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_UNKNOWN")]
 		UNKNOWN,
-		[CCode (cname = "TP_CONNECTION_PRESENCE_TYPE_ERROR")]
 		ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_STATUS_")]
 	public enum ConnectionStatus {
-		[CCode (cname = "TP_CONNECTION_STATUS_CONNECTED")]
 		CONNECTED,
-		[CCode (cname = "TP_CONNECTION_STATUS_CONNECTING")]
 		CONNECTING,
-		[CCode (cname = "TP_CONNECTION_STATUS_DISCONNECTED")]
 		DISCONNECTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_STATUS_REASON_")]
 	public enum ConnectionStatusReason {
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED")]
 		NONE_SPECIFIED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_REQUESTED")]
 		REQUESTED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_NETWORK_ERROR")]
 		NETWORK_ERROR,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_AUTHENTICATION_FAILED")]
 		AUTHENTICATION_FAILED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_ENCRYPTION_ERROR")]
 		ENCRYPTION_ERROR,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_NAME_IN_USE")]
 		NAME_IN_USE,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_NOT_PROVIDED")]
 		CERT_NOT_PROVIDED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_UNTRUSTED")]
 		CERT_UNTRUSTED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_EXPIRED")]
 		CERT_EXPIRED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_NOT_ACTIVATED")]
 		CERT_NOT_ACTIVATED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_HOSTNAME_MISMATCH")]
 		CERT_HOSTNAME_MISMATCH,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_FINGERPRINT_MISMATCH")]
 		CERT_FINGERPRINT_MISMATCH,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_SELF_SIGNED")]
 		CERT_SELF_SIGNED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_OTHER_ERROR")]
 		CERT_OTHER_ERROR,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_REVOKED")]
 		CERT_REVOKED,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_INSECURE")]
 		CERT_INSECURE,
-		[CCode (cname = "TP_CONNECTION_STATUS_REASON_CERT_LIMIT_EXCEEDED")]
 		CERT_LIMIT_EXCEEDED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_")]
 	[Flags]
 	public enum ContactBlockingCapabilities {
 		[CCode (cname = "TP_CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_ABUSIVE")]
 		CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_ABUSIVE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_FEATURE_")]
 	public enum ContactFeature {
-		[CCode (cname = "TP_CONTACT_FEATURE_ALIAS")]
 		ALIAS,
-		[CCode (cname = "TP_CONTACT_FEATURE_AVATAR_TOKEN")]
 		AVATAR_TOKEN,
-		[CCode (cname = "TP_CONTACT_FEATURE_PRESENCE")]
 		PRESENCE,
-		[CCode (cname = "TP_CONTACT_FEATURE_LOCATION")]
 		LOCATION,
-		[CCode (cname = "TP_CONTACT_FEATURE_CAPABILITIES")]
 		CAPABILITIES,
-		[CCode (cname = "TP_CONTACT_FEATURE_AVATAR_DATA")]
 		AVATAR_DATA,
-		[CCode (cname = "TP_CONTACT_FEATURE_CONTACT_INFO")]
 		CONTACT_INFO,
-		[CCode (cname = "TP_CONTACT_FEATURE_CLIENT_TYPES")]
 		CLIENT_TYPES,
-		[CCode (cname = "TP_CONTACT_FEATURE_SUBSCRIPTION_STATES")]
 		SUBSCRIPTION_STATES,
-		[CCode (cname = "TP_CONTACT_FEATURE_CONTACT_GROUPS")]
 		CONTACT_GROUPS,
-		[CCode (cname = "TP_CONTACT_FEATURE_CONTACT_BLOCKING")]
 		CONTACT_BLOCKING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_INFO_FIELD_FLAG_")]
 	[Flags]
 	public enum ContactInfoFieldFlags {
-		[CCode (cname = "TP_CONTACT_INFO_FIELD_FLAG_PARAMETERS_EXACT")]
 		PARAMETERS_EXACT,
-		[CCode (cname = "TP_CONTACT_INFO_FIELD_FLAG_OVERWRITTEN_BY_NICKNAME")]
 		OVERWRITTEN_BY_NICKNAME
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_INFO_FLAG_")]
 	[Flags]
 	public enum ContactInfoFlags {
-		[CCode (cname = "TP_CONTACT_INFO_FLAG_CAN_SET")]
 		CAN_SET,
-		[CCode (cname = "TP_CONTACT_INFO_FLAG_PUSH")]
 		PUSH
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_LIST_STATE_")]
 	public enum ContactListState {
-		[CCode (cname = "TP_CONTACT_LIST_STATE_NONE")]
 		NONE,
-		[CCode (cname = "TP_CONTACT_LIST_STATE_WAITING")]
 		WAITING,
-		[CCode (cname = "TP_CONTACT_LIST_STATE_FAILURE")]
 		FAILURE,
-		[CCode (cname = "TP_CONTACT_LIST_STATE_SUCCESS")]
 		SUCCESS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_METADATA_STORAGE_TYPE_")]
 	public enum ContactMetadataStorageType {
-		[CCode (cname = "TP_CONTACT_METADATA_STORAGE_TYPE_NONE")]
 		NONE,
-		[CCode (cname = "TP_CONTACT_METADATA_STORAGE_TYPE_SUBSCRIBED_OR_PENDING")]
 		SUBSCRIBED_OR_PENDING,
-		[CCode (cname = "TP_CONTACT_METADATA_STORAGE_TYPE_SUBSCRIBED")]
 		SUBSCRIBED,
-		[CCode (cname = "TP_CONTACT_METADATA_STORAGE_TYPE_ANYONE")]
 		ANYONE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_ERROR_")]
 	public enum DBusError {
-		[CCode (cname = "TP_DBUS_ERROR_UNKNOWN_REMOTE_ERROR")]
 		UNKNOWN_REMOTE_ERROR,
-		[CCode (cname = "TP_DBUS_ERROR_PROXY_UNREFERENCED")]
 		PROXY_UNREFERENCED,
-		[CCode (cname = "TP_DBUS_ERROR_NO_INTERFACE")]
 		NO_INTERFACE,
-		[CCode (cname = "TP_DBUS_ERROR_NAME_OWNER_LOST")]
 		NAME_OWNER_LOST,
-		[CCode (cname = "TP_DBUS_ERROR_INVALID_BUS_NAME")]
 		INVALID_BUS_NAME,
-		[CCode (cname = "TP_DBUS_ERROR_INVALID_INTERFACE_NAME")]
 		INVALID_INTERFACE_NAME,
-		[CCode (cname = "TP_DBUS_ERROR_INVALID_OBJECT_PATH")]
 		INVALID_OBJECT_PATH,
-		[CCode (cname = "TP_DBUS_ERROR_INVALID_MEMBER_NAME")]
 		INVALID_MEMBER_NAME,
-		[CCode (cname = "TP_DBUS_ERROR_OBJECT_REMOVED")]
 		OBJECT_REMOVED,
-		[CCode (cname = "TP_DBUS_ERROR_CANCELLED")]
 		CANCELLED,
-		[CCode (cname = "TP_DBUS_ERROR_INCONSISTENT")]
 		INCONSISTENT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_NAME_TYPE_")]
 	[Flags]
 	public enum DBusNameType {
-		[CCode (cname = "TP_DBUS_NAME_TYPE_UNIQUE")]
 		UNIQUE,
-		[CCode (cname = "TP_DBUS_NAME_TYPE_WELL_KNOWN")]
 		WELL_KNOWN,
-		[CCode (cname = "TP_DBUS_NAME_TYPE_BUS_DAEMON")]
 		BUS_DAEMON,
-		[CCode (cname = "TP_DBUS_NAME_TYPE_NOT_BUS_DAEMON")]
 		NOT_BUS_DAEMON,
-		[CCode (cname = "TP_DBUS_NAME_TYPE_ANY")]
 		ANY
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_PROPERTIES_MIXIN_FLAG_")]
 	[Flags]
 	public enum DBusPropertiesMixinFlags {
-		[CCode (cname = "TP_DBUS_PROPERTIES_MIXIN_FLAG_READ")]
 		READ,
-		[CCode (cname = "TP_DBUS_PROPERTIES_MIXIN_FLAG_WRITE")]
 		WRITE,
-		[CCode (cname = "TP_DBUS_PROPERTIES_MIXIN_FLAG_EMITS_CHANGED")]
 		EMITS_CHANGED,
-		[CCode (cname = "TP_DBUS_PROPERTIES_MIXIN_FLAG_EMITS_INVALIDATED")]
 		EMITS_INVALIDATED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DTMF_EVENT_")]
 	public enum DTMFEvent {
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_0")]
 		DIGIT_0,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_1")]
 		DIGIT_1,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_2")]
 		DIGIT_2,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_3")]
 		DIGIT_3,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_4")]
 		DIGIT_4,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_5")]
 		DIGIT_5,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_6")]
 		DIGIT_6,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_7")]
 		DIGIT_7,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_8")]
 		DIGIT_8,
-		[CCode (cname = "TP_DTMF_EVENT_DIGIT_9")]
 		DIGIT_9,
-		[CCode (cname = "TP_DTMF_EVENT_ASTERISK")]
 		ASTERISK,
-		[CCode (cname = "TP_DTMF_EVENT_HASH")]
 		HASH,
-		[CCode (cname = "TP_DTMF_EVENT_LETTER_A")]
 		LETTER_A,
-		[CCode (cname = "TP_DTMF_EVENT_LETTER_B")]
 		LETTER_B,
-		[CCode (cname = "TP_DTMF_EVENT_LETTER_C")]
 		LETTER_C,
-		[CCode (cname = "TP_DTMF_EVENT_LETTER_D")]
 		LETTER_D
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DEBUG_LEVEL_")]
 	public enum DebugLevel {
-		[CCode (cname = "TP_DEBUG_LEVEL_ERROR")]
 		ERROR,
-		[CCode (cname = "TP_DEBUG_LEVEL_CRITICAL")]
 		CRITICAL,
-		[CCode (cname = "TP_DEBUG_LEVEL_WARNING")]
 		WARNING,
-		[CCode (cname = "TP_DEBUG_LEVEL_MESSAGE")]
 		MESSAGE,
-		[CCode (cname = "TP_DEBUG_LEVEL_INFO")]
 		INFO,
-		[CCode (cname = "TP_DEBUG_LEVEL_DEBUG")]
 		DEBUG
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_")]
 	[Flags]
 	public enum DeliveryReportingSupportFlags {
-		[CCode (cname = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_FAILURES")]
 		FAILURES,
-		[CCode (cname = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_SUCCESSES")]
 		SUCCESSES,
-		[CCode (cname = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_READ")]
 		READ,
-		[CCode (cname = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_DELETED")]
 		DELETED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DELIVERY_STATUS_")]
 	public enum DeliveryStatus {
-		[CCode (cname = "TP_DELIVERY_STATUS_UNKNOWN")]
 		UNKNOWN,
-		[CCode (cname = "TP_DELIVERY_STATUS_DELIVERED")]
 		DELIVERED,
-		[CCode (cname = "TP_DELIVERY_STATUS_TEMPORARILY_FAILED")]
 		TEMPORARILY_FAILED,
-		[CCode (cname = "TP_DELIVERY_STATUS_PERMANENTLY_FAILED")]
 		PERMANENTLY_FAILED,
-		[CCode (cname = "TP_DELIVERY_STATUS_ACCEPTED")]
 		ACCEPTED,
-		[CCode (cname = "TP_DELIVERY_STATUS_READ")]
 		READ,
-		[CCode (cname = "TP_DELIVERY_STATUS_DELETED")]
 		DELETED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_HASH_TYPE_")]
 	public enum FileHashType {
-		[CCode (cname = "TP_FILE_HASH_TYPE_NONE")]
 		NONE,
-		[CCode (cname = "TP_FILE_HASH_TYPE_MD5")]
 		MD5,
-		[CCode (cname = "TP_FILE_HASH_TYPE_SHA1")]
 		SHA1,
-		[CCode (cname = "TP_FILE_HASH_TYPE_SHA256")]
 		SHA256
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_TRANSFER_STATE_")]
 	public enum FileTransferState {
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_NONE")]
 		NONE,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_PENDING")]
 		PENDING,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_ACCEPTED")]
 		ACCEPTED,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_OPEN")]
 		OPEN,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_COMPLETED")]
 		COMPLETED,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CANCELLED")]
 		CANCELLED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_")]
 	public enum FileTransferStateChangeReason {
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_NONE")]
 		NONE,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_REQUESTED")]
 		REQUESTED,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_LOCAL_STOPPED")]
 		LOCAL_STOPPED,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_REMOTE_STOPPED")]
 		REMOTE_STOPPED,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_LOCAL_ERROR")]
 		LOCAL_ERROR,
-		[CCode (cname = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_REMOTE_ERROR")]
 		REMOTE_ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_HTTP_METHOD_")]
 	public enum HTTPMethod {
-		[CCode (cname = "TP_HTTP_METHOD_GET")]
 		GET,
-		[CCode (cname = "TP_HTTP_METHOD_POST")]
 		POST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_HANDLE_TYPE_")]
 	public enum HandleType {
-		[CCode (cname = "TP_HANDLE_TYPE_NONE")]
 		NONE,
-		[CCode (cname = "TP_HANDLE_TYPE_CONTACT")]
 		CONTACT,
-		[CCode (cname = "TP_HANDLE_TYPE_ROOM")]
 		ROOM,
-		[CCode (cname = "TP_HANDLE_TYPE_LIST")]
 		LIST,
-		[CCode (cname = "TP_HANDLE_TYPE_GROUP")]
 		GROUP;
 		public static bool is_valid (TelepathyGLib.HandleType type) throws GLib.Error;
 		public static unowned string to_string (TelepathyGLib.HandleType type);
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_")]
 	public enum LocalHoldState {
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_UNHELD")]
 		UNHELD,
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_HELD")]
 		HELD,
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_PENDING_HOLD")]
 		PENDING_HOLD,
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_PENDING_UNHOLD")]
 		PENDING_UNHOLD
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_REASON_")]
 	public enum LocalHoldStateReason {
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_REASON_NONE")]
 		NONE,
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_REASON_REQUESTED")]
 		REQUESTED,
-		[CCode (cname = "TP_LOCAL_HOLD_STATE_REASON_RESOURCE_NOT_AVAILABLE")]
 		RESOURCE_NOT_AVAILABLE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCATION_FEATURE_CAN_")]
 	[Flags]
 	public enum LocationFeatures {
 		[CCode (cname = "TP_LOCATION_FEATURE_CAN_SET")]
 		LOCATION_FEATURE_CAN_SET
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MAIL_NOTIFICATION_FLAG_")]
 	[Flags]
 	public enum MailNotificationFlags {
-		[CCode (cname = "TP_MAIL_NOTIFICATION_FLAG_SUPPORTS_UNREAD_MAIL_COUNT")]
 		SUPPORTS_UNREAD_MAIL_COUNT,
-		[CCode (cname = "TP_MAIL_NOTIFICATION_FLAG_SUPPORTS_UNREAD_MAILS")]
 		SUPPORTS_UNREAD_MAILS,
-		[CCode (cname = "TP_MAIL_NOTIFICATION_FLAG_EMITS_MAILS_RECEIVED")]
 		EMITS_MAILS_RECEIVED,
-		[CCode (cname = "TP_MAIL_NOTIFICATION_FLAG_SUPPORTS_REQUEST_INBOX_URL")]
 		SUPPORTS_REQUEST_INBOX_URL,
-		[CCode (cname = "TP_MAIL_NOTIFICATION_FLAG_SUPPORTS_REQUEST_MAIL_URL")]
 		SUPPORTS_REQUEST_MAIL_URL,
-		[CCode (cname = "TP_MAIL_NOTIFICATION_FLAG_THREAD_BASED")]
 		THREAD_BASED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_BASE_PROTO_")]
 	public enum MediaStreamBaseProto {
-		[CCode (cname = "TP_MEDIA_STREAM_BASE_PROTO_UDP")]
 		UDP,
-		[CCode (cname = "TP_MEDIA_STREAM_BASE_PROTO_TCP")]
 		TCP
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_DIRECTION_")]
 	public enum MediaStreamDirection {
-		[CCode (cname = "TP_MEDIA_STREAM_DIRECTION_NONE")]
 		NONE,
-		[CCode (cname = "TP_MEDIA_STREAM_DIRECTION_SEND")]
 		SEND,
-		[CCode (cname = "TP_MEDIA_STREAM_DIRECTION_RECEIVE")]
 		RECEIVE,
-		[CCode (cname = "TP_MEDIA_STREAM_DIRECTION_BIDIRECTIONAL")]
 		BIDIRECTIONAL
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_ERROR_")]
 	public enum MediaStreamError {
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_UNKNOWN")]
 		UNKNOWN,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_EOS")]
 		EOS,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_CODEC_NEGOTIATION_FAILED")]
 		CODEC_NEGOTIATION_FAILED,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_CONNECTION_FAILED")]
 		CONNECTION_FAILED,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_NETWORK_ERROR")]
 		NETWORK_ERROR,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_NO_CODECS")]
 		NO_CODECS,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_INVALID_CM_BEHAVIOR")]
 		INVALID_CM_BEHAVIOR,
-		[CCode (cname = "TP_MEDIA_STREAM_ERROR_MEDIA_ERROR")]
 		MEDIA_ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_PENDING_")]
 	[Flags]
 	public enum MediaStreamPendingSend {
-		[CCode (cname = "TP_MEDIA_STREAM_PENDING_LOCAL_SEND")]
 		LOCAL_SEND,
-		[CCode (cname = "TP_MEDIA_STREAM_PENDING_REMOTE_SEND")]
 		REMOTE_SEND
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_STATE_")]
 	public enum MediaStreamState {
-		[CCode (cname = "TP_MEDIA_STREAM_STATE_DISCONNECTED")]
 		DISCONNECTED,
-		[CCode (cname = "TP_MEDIA_STREAM_STATE_CONNECTING")]
 		CONNECTING,
-		[CCode (cname = "TP_MEDIA_STREAM_STATE_CONNECTED")]
 		CONNECTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_TRANSPORT_TYPE_")]
 	public enum MediaStreamTransportType {
-		[CCode (cname = "TP_MEDIA_STREAM_TRANSPORT_TYPE_LOCAL")]
 		LOCAL,
-		[CCode (cname = "TP_MEDIA_STREAM_TRANSPORT_TYPE_DERIVED")]
 		DERIVED,
-		[CCode (cname = "TP_MEDIA_STREAM_TRANSPORT_TYPE_RELAY")]
 		RELAY
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_TYPE_")]
 	public enum MediaStreamType {
-		[CCode (cname = "TP_MEDIA_STREAM_TYPE_AUDIO")]
 		AUDIO,
-		[CCode (cname = "TP_MEDIA_STREAM_TYPE_VIDEO")]
 		VIDEO
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MESSAGE_PART_SUPPORT_FLAG_")]
 	[Flags]
 	public enum MessagePartSupportFlags {
-		[CCode (cname = "TP_MESSAGE_PART_SUPPORT_FLAG_ONE_ATTACHMENT")]
 		ONE_ATTACHMENT,
-		[CCode (cname = "TP_MESSAGE_PART_SUPPORT_FLAG_MULTIPLE_ATTACHMENTS")]
 		MULTIPLE_ATTACHMENTS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MESSAGE_SENDING_FLAG_REPORT_")]
 	[Flags]
 	public enum MessageSendingFlags {
-		[CCode (cname = "TP_MESSAGE_SENDING_FLAG_REPORT_DELIVERY")]
 		DELIVERY,
-		[CCode (cname = "TP_MESSAGE_SENDING_FLAG_REPORT_READ")]
 		READ,
-		[CCode (cname = "TP_MESSAGE_SENDING_FLAG_REPORT_DELETED")]
 		DELETED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_PROPERTY_FLAG_")]
 	[Flags]
 	public enum PropertyFlags {
-		[CCode (cname = "TP_PROPERTY_FLAG_READ")]
 		READ,
-		[CCode (cname = "TP_PROPERTY_FLAG_WRITE")]
 		WRITE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RCPT_XR_RTT_MODE_")]
+	public enum RCPTXRRTTMode {
+		ALL,
+		SENDER
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RTCP_XR_STATISTICS_FLAGS_")]
+	[Flags]
+	public enum RTCPXRStatisticsFlags {
+		LOSS,
+		DUPLICATE,
+		JITTER,
+		TTL,
+		HL
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_")]
 	public enum RichPresenceAccessControlType {
-		[CCode (cname = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_WHITELIST")]
 		WHITELIST,
-		[CCode (cname = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_PUBLISH_LIST")]
 		PUBLISH_LIST,
-		[CCode (cname = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_GROUP")]
 		GROUP,
-		[CCode (cname = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_OPEN")]
 		OPEN
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SASL_ABORT_REASON_")]
 	public enum SASLAbortReason {
-		[CCode (cname = "TP_SASL_ABORT_REASON_INVALID_CHALLENGE")]
 		INVALID_CHALLENGE,
-		[CCode (cname = "TP_SASL_ABORT_REASON_USER_ABORT")]
 		USER_ABORT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SASL_STATUS_")]
 	public enum SASLStatus {
-		[CCode (cname = "TP_SASL_STATUS_NOT_STARTED")]
 		NOT_STARTED,
-		[CCode (cname = "TP_SASL_STATUS_IN_PROGRESS")]
 		IN_PROGRESS,
-		[CCode (cname = "TP_SASL_STATUS_SERVER_SUCCEEDED")]
 		SERVER_SUCCEEDED,
-		[CCode (cname = "TP_SASL_STATUS_CLIENT_ACCEPTED")]
 		CLIENT_ACCEPTED,
-		[CCode (cname = "TP_SASL_STATUS_SUCCEEDED")]
 		SUCCEEDED,
-		[CCode (cname = "TP_SASL_STATUS_SERVER_FAILED")]
 		SERVER_FAILED,
-		[CCode (cname = "TP_SASL_STATUS_CLIENT_FAILED")]
 		CLIENT_FAILED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
-	public enum ServicePointType {
-		[CCode (cname = "TP_SERVICE_POINT_TYPE_NONE")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SENDING_STATE_")]
+	public enum SendingState {
 		NONE,
-		[CCode (cname = "TP_SERVICE_POINT_TYPE_EMERGENCY")]
+		PENDING_SEND,
+		SENDING,
+		PENDING_STOP_SENDING
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SERVICE_POINT_TYPE_")]
+	public enum ServicePointType {
+		NONE,
 		EMERGENCY,
-		[CCode (cname = "TP_SERVICE_POINT_TYPE_COUNSELING")]
 		COUNSELING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SOCKET_ACCESS_CONTROL_")]
 	public enum SocketAccessControl {
-		[CCode (cname = "TP_SOCKET_ACCESS_CONTROL_LOCALHOST")]
 		LOCALHOST,
-		[CCode (cname = "TP_SOCKET_ACCESS_CONTROL_PORT")]
 		PORT,
-		[CCode (cname = "TP_SOCKET_ACCESS_CONTROL_NETMASK")]
 		NETMASK,
-		[CCode (cname = "TP_SOCKET_ACCESS_CONTROL_CREDENTIALS")]
 		CREDENTIALS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SOCKET_ADDRESS_TYPE_")]
 	public enum SocketAddressType {
-		[CCode (cname = "TP_SOCKET_ADDRESS_TYPE_UNIX")]
 		UNIX,
-		[CCode (cname = "TP_SOCKET_ADDRESS_TYPE_ABSTRACT_UNIX")]
 		ABSTRACT_UNIX,
-		[CCode (cname = "TP_SOCKET_ADDRESS_TYPE_IPV4")]
 		IPV4,
-		[CCode (cname = "TP_SOCKET_ADDRESS_TYPE_IPV6")]
 		IPV6
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_")]
 	[Flags]
 	public enum StorageRestrictionFlags {
-		[CCode (cname = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS")]
 		PARAMETERS,
-		[CCode (cname = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_ENABLED")]
 		ENABLED,
-		[CCode (cname = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PRESENCE")]
 		PRESENCE,
-		[CCode (cname = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_SERVICE")]
 		SERVICE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
-	public enum SubscriptionState {
-		[CCode (cname = "TP_SUBSCRIPTION_STATE_UNKNOWN")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_COMPONENT_")]
+	public enum StreamComponent {
 		UNKNOWN,
-		[CCode (cname = "TP_SUBSCRIPTION_STATE_NO")]
+		DATA,
+		CONTROL
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_ENDPOINT_STATE_")]
+	public enum StreamEndpointState {
+		CONNECTING,
+		PROVISIONALLY_CONNECTED,
+		FULLY_CONNECTED,
+		EXHAUSTED_CANDIDATES,
+		FAILED
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_FLOW_STATE_")]
+	public enum StreamFlowState {
+		STOPPED,
+		PENDING_START,
+		PENDING_STOP,
+		STARTED
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_TRANSPORT_TYPE_")]
+	public enum StreamTransportType {
+		UNKNOWN,
+		RAW_UDP,
+		ICE,
+		GTALK_P2P,
+		WLM_2009,
+		SHM,
+		MULTICAST
+	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SUBSCRIPTION_STATE_")]
+	public enum SubscriptionState {
+		UNKNOWN,
 		NO,
-		[CCode (cname = "TP_SUBSCRIPTION_STATE_REMOVED_REMOTELY")]
 		REMOVED_REMOTELY,
-		[CCode (cname = "TP_SUBSCRIPTION_STATE_ASK")]
 		ASK,
-		[CCode (cname = "TP_SUBSCRIPTION_STATE_YES")]
 		YES
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TLS_CERTIFICATE_REJECT_REASON_")]
 	public enum TLSCertificateRejectReason {
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN")]
 		UNKNOWN,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED")]
 		UNTRUSTED,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_EXPIRED")]
 		EXPIRED,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_NOT_ACTIVATED")]
 		NOT_ACTIVATED,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_FINGERPRINT_MISMATCH")]
 		FINGERPRINT_MISMATCH,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH")]
 		HOSTNAME_MISMATCH,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_SELF_SIGNED")]
 		SELF_SIGNED,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_REVOKED")]
 		REVOKED,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_INSECURE")]
 		INSECURE,
-		[CCode (cname = "TP_TLS_CERTIFICATE_REJECT_REASON_LIMIT_EXCEEDED")]
 		LIMIT_EXCEEDED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TLS_CERTIFICATE_STATE_")]
 	public enum TLSCertificateState {
-		[CCode (cname = "TP_TLS_CERTIFICATE_STATE_PENDING")]
 		PENDING,
-		[CCode (cname = "TP_TLS_CERTIFICATE_STATE_ACCEPTED")]
 		ACCEPTED,
-		[CCode (cname = "TP_TLS_CERTIFICATE_STATE_REJECTED")]
 		REJECTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_CHANNEL_STATE_")]
 	public enum TubeChannelState {
-		[CCode (cname = "TP_TUBE_CHANNEL_STATE_LOCAL_PENDING")]
 		LOCAL_PENDING,
-		[CCode (cname = "TP_TUBE_CHANNEL_STATE_REMOTE_PENDING")]
 		REMOTE_PENDING,
-		[CCode (cname = "TP_TUBE_CHANNEL_STATE_OPEN")]
 		OPEN,
-		[CCode (cname = "TP_TUBE_CHANNEL_STATE_NOT_OFFERED")]
 		NOT_OFFERED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_STATE_")]
 	public enum TubeState {
-		[CCode (cname = "TP_TUBE_STATE_LOCAL_PENDING")]
 		LOCAL_PENDING,
-		[CCode (cname = "TP_TUBE_STATE_REMOTE_PENDING")]
 		REMOTE_PENDING,
-		[CCode (cname = "TP_TUBE_STATE_OPEN")]
 		OPEN
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_TYPE_")]
 	public enum TubeType {
-		[CCode (cname = "TP_TUBE_TYPE_DBUS")]
 		DBUS,
-		[CCode (cname = "TP_TUBE_TYPE_STREAM")]
 		STREAM
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ERROR_")]
 	public errordomain Error {
-		[CCode (cname = "TP_ERROR_NETWORK_ERROR")]
 		NETWORK_ERROR,
-		[CCode (cname = "TP_ERROR_NOT_IMPLEMENTED")]
 		NOT_IMPLEMENTED,
-		[CCode (cname = "TP_ERROR_INVALID_ARGUMENT")]
 		INVALID_ARGUMENT,
-		[CCode (cname = "TP_ERROR_NOT_AVAILABLE")]
 		NOT_AVAILABLE,
-		[CCode (cname = "TP_ERROR_PERMISSION_DENIED")]
 		PERMISSION_DENIED,
-		[CCode (cname = "TP_ERROR_DISCONNECTED")]
 		DISCONNECTED,
-		[CCode (cname = "TP_ERROR_INVALID_HANDLE")]
 		INVALID_HANDLE,
-		[CCode (cname = "TP_ERROR_CHANNEL_BANNED")]
 		CHANNEL_BANNED,
-		[CCode (cname = "TP_ERROR_CHANNEL_FULL")]
 		CHANNEL_FULL,
-		[CCode (cname = "TP_ERROR_CHANNEL_INVITE_ONLY")]
 		CHANNEL_INVITE_ONLY,
-		[CCode (cname = "TP_ERROR_NOT_YOURS")]
 		NOT_YOURS,
-		[CCode (cname = "TP_ERROR_CANCELLED")]
 		CANCELLED,
-		[CCode (cname = "TP_ERROR_AUTHENTICATION_FAILED")]
 		AUTHENTICATION_FAILED,
-		[CCode (cname = "TP_ERROR_ENCRYPTION_NOT_AVAILABLE")]
 		ENCRYPTION_NOT_AVAILABLE,
-		[CCode (cname = "TP_ERROR_ENCRYPTION_ERROR")]
 		ENCRYPTION_ERROR,
-		[CCode (cname = "TP_ERROR_CERT_NOT_PROVIDED")]
 		CERT_NOT_PROVIDED,
-		[CCode (cname = "TP_ERROR_CERT_UNTRUSTED")]
 		CERT_UNTRUSTED,
-		[CCode (cname = "TP_ERROR_CERT_EXPIRED")]
 		CERT_EXPIRED,
-		[CCode (cname = "TP_ERROR_CERT_NOT_ACTIVATED")]
 		CERT_NOT_ACTIVATED,
-		[CCode (cname = "TP_ERROR_CERT_FINGERPRINT_MISMATCH")]
 		CERT_FINGERPRINT_MISMATCH,
-		[CCode (cname = "TP_ERROR_CERT_HOSTNAME_MISMATCH")]
 		CERT_HOSTNAME_MISMATCH,
-		[CCode (cname = "TP_ERROR_CERT_SELF_SIGNED")]
 		CERT_SELF_SIGNED,
-		[CCode (cname = "TP_ERROR_CERT_INVALID")]
 		CERT_INVALID,
-		[CCode (cname = "TP_ERROR_NOT_CAPABLE")]
 		NOT_CAPABLE,
-		[CCode (cname = "TP_ERROR_OFFLINE")]
 		OFFLINE,
-		[CCode (cname = "TP_ERROR_CHANNEL_KICKED")]
 		CHANNEL_KICKED,
-		[CCode (cname = "TP_ERROR_BUSY")]
 		BUSY,
-		[CCode (cname = "TP_ERROR_NO_ANSWER")]
 		NO_ANSWER,
-		[CCode (cname = "TP_ERROR_DOES_NOT_EXIST")]
 		DOES_NOT_EXIST,
-		[CCode (cname = "TP_ERROR_TERMINATED")]
 		TERMINATED,
-		[CCode (cname = "TP_ERROR_CONNECTION_REFUSED")]
 		CONNECTION_REFUSED,
-		[CCode (cname = "TP_ERROR_CONNECTION_FAILED")]
 		CONNECTION_FAILED,
-		[CCode (cname = "TP_ERROR_CONNECTION_LOST")]
 		CONNECTION_LOST,
-		[CCode (cname = "TP_ERROR_ALREADY_CONNECTED")]
 		ALREADY_CONNECTED,
-		[CCode (cname = "TP_ERROR_CONNECTION_REPLACED")]
 		CONNECTION_REPLACED,
-		[CCode (cname = "TP_ERROR_REGISTRATION_EXISTS")]
 		REGISTRATION_EXISTS,
-		[CCode (cname = "TP_ERROR_SERVICE_BUSY")]
 		SERVICE_BUSY,
-		[CCode (cname = "TP_ERROR_RESOURCE_UNAVAILABLE")]
 		RESOURCE_UNAVAILABLE,
-		[CCode (cname = "TP_ERROR_WOULD_BREAK_ANONYMITY")]
 		WOULD_BREAK_ANONYMITY,
-		[CCode (cname = "TP_ERROR_CERT_REVOKED")]
 		CERT_REVOKED,
-		[CCode (cname = "TP_ERROR_CERT_INSECURE")]
 		CERT_INSECURE,
-		[CCode (cname = "TP_ERROR_CERT_LIMIT_EXCEEDED")]
 		CERT_LIMIT_EXCEEDED,
-		[CCode (cname = "TP_ERROR_NOT_YET")]
 		NOT_YET,
-		[CCode (cname = "TP_ERROR_REJECTED")]
 		REJECTED,
-		[CCode (cname = "TP_ERROR_PICKED_UP_ELSEWHERE")]
 		PICKED_UP_ELSEWHERE,
-		[CCode (cname = "TP_ERROR_CONFUSED")]
 		CONFUSED,
-		[CCode (cname = "TP_ERROR_SERVICE_CONFUSED")]
 		SERVICE_CONFUSED,
-		[CCode (cname = "TP_ERROR_EMERGENCY_CALLS_NOT_SUPPORTED")]
 		EMERGENCY_CALLS_NOT_SUPPORTED,
-		[CCode (cname = "TP_ERROR_SOFTWARE_UPGRADE_REQUIRED")]
 		SOFTWARE_UPGRADE_REQUIRED,
-		[CCode (cname = "TP_ERROR_INSUFFICIENT_BALANCE")]
 		INSUFFICIENT_BALANCE,
-		[CCode (cname = "TP_ERROR_MEDIA_CODECS_INCOMPATIBLE")]
 		MEDIA_CODECS_INCOMPATIBLE,
-		[CCode (cname = "TP_ERROR_MEDIA_UNSUPPORTED_TYPE")]
 		MEDIA_UNSUPPORTED_TYPE,
-		[CCode (cname = "TP_ERROR_MEDIA_STREAMING_ERROR")]
-		MEDIA_STREAMING_ERROR;
+		MEDIA_STREAMING_ERROR,
+		CAPTCHA_NOT_SUPPORTED;
 		public static unowned string get_dbus_name (TelepathyGLib.Error error);
 		public static GLib.Quark quark ();
 	}
@@ -2187,6 +2287,8 @@ namespace TelepathyGLib {
 	public const string CONN_BUS_NAME_BASE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_CONN_OBJECT_PATH_BASE")]
 	public const string CONN_OBJECT_PATH_BASE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_DEBUG_OBJECT_PATH")]
+	public const string DEBUG_OBJECT_PATH;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_ERROR_PREFIX")]
 	public const string ERROR_PREFIX;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_ACCOUNT")]
@@ -2201,6 +2303,30 @@ namespace TelepathyGLib {
 	public const string IFACE_ACCOUNT_MANAGER;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_AUTHENTICATION_TLS_CERTIFICATE")]
 	public const string IFACE_AUTHENTICATION_TLS_CERTIFICATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT")]
+	public const string IFACE_CALL_CONTENT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_INTERFACE_AUDIO_CONTROL")]
+	public const string IFACE_CALL_CONTENT_INTERFACE_AUDIO_CONTROL;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_INTERFACE_DTMF")]
+	public const string IFACE_CALL_CONTENT_INTERFACE_DTMF;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_INTERFACE_MEDIA")]
+	public const string IFACE_CALL_CONTENT_INTERFACE_MEDIA;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_INTERFACE_VIDEO_CONTROL")]
+	public const string IFACE_CALL_CONTENT_INTERFACE_VIDEO_CONTROL;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_MEDIA_DESCRIPTION")]
+	public const string IFACE_CALL_CONTENT_MEDIA_DESCRIPTION;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS")]
+	public const string IFACE_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_FEEDBACK")]
+	public const string IFACE_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_FEEDBACK;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTP_HEADER_EXTENSIONS")]
+	public const string IFACE_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTP_HEADER_EXTENSIONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_STREAM")]
+	public const string IFACE_CALL_STREAM;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_STREAM_ENDPOINT")]
+	public const string IFACE_CALL_STREAM_ENDPOINT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CALL_STREAM_INTERFACE_MEDIA")]
+	public const string IFACE_CALL_STREAM_INTERFACE_MEDIA;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL")]
 	public const string IFACE_CHANNEL;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_DISPATCHER")]
@@ -2213,6 +2339,8 @@ namespace TelepathyGLib {
 	public const string IFACE_CHANNEL_INTERFACE_ANONYMITY;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_INTERFACE_CALL_STATE")]
 	public const string IFACE_CHANNEL_INTERFACE_CALL_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION")]
+	public const string IFACE_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_INTERFACE_CHAT_STATE")]
 	public const string IFACE_CHANNEL_INTERFACE_CHAT_STATE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_INTERFACE_CONFERENCE")]
@@ -2251,6 +2379,8 @@ namespace TelepathyGLib {
 	public const string IFACE_CHANNEL_INTERFACE_TUBE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_REQUEST")]
 	public const string IFACE_CHANNEL_REQUEST;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_TYPE_CALL")]
+	public const string IFACE_CHANNEL_TYPE_CALL;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_TYPE_CONTACT_LIST")]
 	public const string IFACE_CHANNEL_TYPE_CONTACT_LIST;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CHANNEL_TYPE_CONTACT_SEARCH")]
@@ -2285,6 +2415,8 @@ namespace TelepathyGLib {
 	public const string IFACE_CLIENT_OBSERVER;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CONNECTION")]
 	public const string IFACE_CONNECTION;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CONNECTION_INTERFACE_ADDRESSING")]
+	public const string IFACE_CONNECTION_INTERFACE_ADDRESSING;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CONNECTION_INTERFACE_ALIASING")]
 	public const string IFACE_CONNECTION_INTERFACE_ALIASING;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_CONNECTION_INTERFACE_ANONYMITY")]
@@ -2351,6 +2483,114 @@ namespace TelepathyGLib {
 	public const string IFACE_PROTOCOL_INTERFACE_AVATARS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_IFACE_PROTOCOL_INTERFACE_PRESENCE")]
 	public const string IFACE_PROTOCOL_INTERFACE_PRESENCE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_ACCESS_CONTROL_TYPES")]
+	public const int NUM_ACCESS_CONTROL_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CALL_CONTENT_DISPOSITIONS")]
+	public const int NUM_CALL_CONTENT_DISPOSITIONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CALL_CONTENT_PACKETIZATION_TYPES")]
+	public const int NUM_CALL_CONTENT_PACKETIZATION_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CALL_STATES")]
+	public const int NUM_CALL_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CALL_STATE_CHANGE_REASONS")]
+	public const int NUM_CALL_STATE_CHANGE_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CALL_STREAM_CANDIDATE_TYPES")]
+	public const int NUM_CALL_STREAM_CANDIDATE_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CAPTCHA_CANCEL_REASONS")]
+	public const int NUM_CAPTCHA_CANCEL_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CAPTCHA_STATUSES")]
+	public const int NUM_CAPTCHA_STATUSES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CHANNEL_CHAT_STATES")]
+	public const int NUM_CHANNEL_CHAT_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CHANNEL_CONTACT_SEARCH_STATES")]
+	public const int NUM_CHANNEL_CONTACT_SEARCH_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CHANNEL_GROUP_CHANGE_REASONS")]
+	public const int NUM_CHANNEL_GROUP_CHANGE_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CHANNEL_TEXT_MESSAGE_TYPES")]
+	public const int NUM_CHANNEL_TEXT_MESSAGE_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CHANNEL_TEXT_SEND_ERRORS")]
+	public const int NUM_CHANNEL_TEXT_SEND_ERRORS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CONNECTION_PRESENCE_TYPES")]
+	public const int NUM_CONNECTION_PRESENCE_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CONNECTION_STATUSES")]
+	public const int NUM_CONNECTION_STATUSES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CONNECTION_STATUS_REASONS")]
+	public const int NUM_CONNECTION_STATUS_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CONTACT_FEATURES")]
+	public const int NUM_CONTACT_FEATURES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CONTACT_LIST_STATES")]
+	public const int NUM_CONTACT_LIST_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_CONTACT_METADATA_STORAGE_TYPES")]
+	public const int NUM_CONTACT_METADATA_STORAGE_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_DBUS_ERRORS")]
+	public const int NUM_DBUS_ERRORS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_DEBUG_LEVELS")]
+	public const int NUM_DEBUG_LEVELS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_DELIVERY_STATUSES")]
+	public const int NUM_DELIVERY_STATUSES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_DTMF_EVENTS")]
+	public const int NUM_DTMF_EVENTS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_FILE_HASH_TYPES")]
+	public const int NUM_FILE_HASH_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_FILE_TRANSFER_STATES")]
+	public const int NUM_FILE_TRANSFER_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_FILE_TRANSFER_STATE_CHANGE_REASONS")]
+	public const int NUM_FILE_TRANSFER_STATE_CHANGE_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_HANDLE_TYPES")]
+	public const int NUM_HANDLE_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_HTTP_METHODS")]
+	public const int NUM_HTTP_METHODS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_LOCAL_HOLD_STATES")]
+	public const int NUM_LOCAL_HOLD_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_LOCAL_HOLD_STATE_REASONS")]
+	public const int NUM_LOCAL_HOLD_STATE_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_MEDIA_STREAM_BASE_PROTOS")]
+	public const int NUM_MEDIA_STREAM_BASE_PROTOS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_MEDIA_STREAM_DIRECTIONS")]
+	public const int NUM_MEDIA_STREAM_DIRECTIONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_MEDIA_STREAM_ERRORS")]
+	public const int NUM_MEDIA_STREAM_ERRORS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_MEDIA_STREAM_STATES")]
+	public const int NUM_MEDIA_STREAM_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_MEDIA_STREAM_TRANSPORT_TYPES")]
+	public const int NUM_MEDIA_STREAM_TRANSPORT_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_MEDIA_STREAM_TYPES")]
+	public const int NUM_MEDIA_STREAM_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_RCPT_XR_RTT_MODES")]
+	public const int NUM_RCPT_XR_RTT_MODES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_RICH_PRESENCE_ACCESS_CONTROL_TYPES")]
+	public const int NUM_RICH_PRESENCE_ACCESS_CONTROL_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SASL_ABORT_REASONS")]
+	public const int NUM_SASL_ABORT_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SASL_STATUSES")]
+	public const int NUM_SASL_STATUSES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SENDING_STATES")]
+	public const int NUM_SENDING_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SERVICE_POINT_TYPES")]
+	public const int NUM_SERVICE_POINT_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SOCKET_ACCESS_CONTROLS")]
+	public const int NUM_SOCKET_ACCESS_CONTROLS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SOCKET_ADDRESS_TYPES")]
+	public const int NUM_SOCKET_ADDRESS_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_STREAM_COMPONENTS")]
+	public const int NUM_STREAM_COMPONENTS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_STREAM_ENDPOINT_STATES")]
+	public const int NUM_STREAM_ENDPOINT_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_STREAM_FLOW_STATES")]
+	public const int NUM_STREAM_FLOW_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_STREAM_TRANSPORT_TYPES")]
+	public const int NUM_STREAM_TRANSPORT_TYPES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_SUBSCRIPTION_STATES")]
+	public const int NUM_SUBSCRIPTION_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_TLS_CERTIFICATE_REJECT_REASONS")]
+	public const int NUM_TLS_CERTIFICATE_REJECT_REASONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_TLS_CERTIFICATE_STATES")]
+	public const int NUM_TLS_CERTIFICATE_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_TUBE_CHANNEL_STATES")]
+	public const int NUM_TUBE_CHANNEL_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_TUBE_STATES")]
+	public const int NUM_TUBE_STATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_NUM_TUBE_TYPES")]
+	public const int NUM_TUBE_TYPES;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_ACCOUNT_AUTOMATIC_PRESENCE")]
 	public const string PROP_ACCOUNT_AUTOMATIC_PRESENCE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_ACCOUNT_CHANGING_PRESENCE")]
@@ -2409,6 +2649,8 @@ namespace TelepathyGLib {
 	public const string PROP_ACCOUNT_REQUESTED_PRESENCE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_ACCOUNT_SERVICE")]
 	public const string PROP_ACCOUNT_SERVICE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_ACCOUNT_SUPERSEDES")]
+	public const string PROP_ACCOUNT_SUPERSEDES;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_ACCOUNT_VALID")]
 	public const string PROP_ACCOUNT_VALID;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_AUTHENTICATION_TLS_CERTIFICATE_CERTIFICATE_CHAIN_DATA")]
@@ -2419,6 +2661,122 @@ namespace TelepathyGLib {
 	public const string PROP_AUTHENTICATION_TLS_CERTIFICATE_REJECTIONS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_AUTHENTICATION_TLS_CERTIFICATE_STATE")]
 	public const string PROP_AUTHENTICATION_TLS_CERTIFICATE_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_DISPOSITION")]
+	public const string PROP_CALL_CONTENT_DISPOSITION;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACES")]
+	public const string PROP_CALL_CONTENT_INTERFACES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_AUDIO_CONTROL_REQUESTED_INPUT_VOLUME")]
+	public const string PROP_CALL_CONTENT_INTERFACE_AUDIO_CONTROL_REQUESTED_INPUT_VOLUME;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_AUDIO_CONTROL_REQUESTED_OUTPUT_VOLUME")]
+	public const string PROP_CALL_CONTENT_INTERFACE_AUDIO_CONTROL_REQUESTED_OUTPUT_VOLUME;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_DTMF_CURRENTLY_SENDING_TONES")]
+	public const string PROP_CALL_CONTENT_INTERFACE_DTMF_CURRENTLY_SENDING_TONES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_DTMF_DEFERRED_TONES")]
+	public const string PROP_CALL_CONTENT_INTERFACE_DTMF_DEFERRED_TONES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_MEDIA_CURRENT_DTMF_EVENT")]
+	public const string PROP_CALL_CONTENT_INTERFACE_MEDIA_CURRENT_DTMF_EVENT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_MEDIA_CURRENT_DTMF_STATE")]
+	public const string PROP_CALL_CONTENT_INTERFACE_MEDIA_CURRENT_DTMF_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_MEDIA_LOCAL_MEDIA_DESCRIPTIONS")]
+	public const string PROP_CALL_CONTENT_INTERFACE_MEDIA_LOCAL_MEDIA_DESCRIPTIONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_MEDIA_MEDIA_DESCRIPTION_OFFER")]
+	public const string PROP_CALL_CONTENT_INTERFACE_MEDIA_MEDIA_DESCRIPTION_OFFER;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_MEDIA_PACKETIZATION")]
+	public const string PROP_CALL_CONTENT_INTERFACE_MEDIA_PACKETIZATION;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_MEDIA_REMOTE_MEDIA_DESCRIPTIONS")]
+	public const string PROP_CALL_CONTENT_INTERFACE_MEDIA_REMOTE_MEDIA_DESCRIPTIONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_BITRATE")]
+	public const string PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_BITRATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_FRAMERATE")]
+	public const string PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_FRAMERATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_MANUAL_KEY_FRAMES")]
+	public const string PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_MANUAL_KEY_FRAMES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_MTU")]
+	public const string PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_MTU;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_VIDEO_RESOLUTION")]
+	public const string PROP_CALL_CONTENT_INTERFACE_VIDEO_CONTROL_VIDEO_RESOLUTION;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_CODECS")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_CODECS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_FURTHER_NEGOTIATION_REQUIRED")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_FURTHER_NEGOTIATION_REQUIRED;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_HAS_REMOTE_INFORMATION")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_HAS_REMOTE_INFORMATION;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACES")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_DLRR_MAX_SIZE")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_DLRR_MAX_SIZE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_DUPLICATE_RLE_MAX_SIZE")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_DUPLICATE_RLE_MAX_SIZE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_ENABLE_METRICS")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_ENABLE_METRICS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_LOSS_RLE_MAX_SIZE")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_LOSS_RLE_MAX_SIZE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_PACKET_RECEIPT_TIMES_MAX_SIZE")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_PACKET_RECEIPT_TIMES_MAX_SIZE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_RTT_MODE")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_RTT_MODE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_STATISTICS_FLAGS")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_EXTENDED_REPORTS_STATISTICS_FLAGS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_FEEDBACK_DOES_AVPF")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_FEEDBACK_DOES_AVPF;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_FEEDBACK_FEEDBACK_MESSAGES")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTCP_FEEDBACK_FEEDBACK_MESSAGES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTP_HEADER_EXTENSIONS_HEADER_EXTENSIONS")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_INTERFACE_RTP_HEADER_EXTENSIONS_HEADER_EXTENSIONS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_REMOTE_CONTACT")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_REMOTE_CONTACT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_MEDIA_DESCRIPTION_SSRCS")]
+	public const string PROP_CALL_CONTENT_MEDIA_DESCRIPTION_SSRCS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_NAME")]
+	public const string PROP_CALL_CONTENT_NAME;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_STREAMS")]
+	public const string PROP_CALL_CONTENT_STREAMS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_CONTENT_TYPE")]
+	public const string PROP_CALL_CONTENT_TYPE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_CAN_REQUEST_RECEIVING")]
+	public const string PROP_CALL_STREAM_CAN_REQUEST_RECEIVING;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_CONTROLLING")]
+	public const string PROP_CALL_STREAM_ENDPOINT_CONTROLLING;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_ENDPOINT_STATE")]
+	public const string PROP_CALL_STREAM_ENDPOINT_ENDPOINT_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_IS_ICE_LITE")]
+	public const string PROP_CALL_STREAM_ENDPOINT_IS_ICE_LITE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_REMOTE_CANDIDATES")]
+	public const string PROP_CALL_STREAM_ENDPOINT_REMOTE_CANDIDATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_REMOTE_CREDENTIALS")]
+	public const string PROP_CALL_STREAM_ENDPOINT_REMOTE_CREDENTIALS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_SELECTED_CANDIDATE_PAIRS")]
+	public const string PROP_CALL_STREAM_ENDPOINT_SELECTED_CANDIDATE_PAIRS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_ENDPOINT_TRANSPORT")]
+	public const string PROP_CALL_STREAM_ENDPOINT_TRANSPORT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACES")]
+	public const string PROP_CALL_STREAM_INTERFACES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_ENDPOINTS")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_ENDPOINTS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_HAS_SERVER_INFO")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_HAS_SERVER_INFO;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_ICE_RESTART_PENDING")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_ICE_RESTART_PENDING;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_LOCAL_CANDIDATES")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_LOCAL_CANDIDATES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_LOCAL_CREDENTIALS")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_LOCAL_CREDENTIALS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_RECEIVING_STATE")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_RECEIVING_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_RELAY_INFO")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_RELAY_INFO;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_SENDING_STATE")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_SENDING_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_STUN_SERVERS")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_STUN_SERVERS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_INTERFACE_MEDIA_TRANSPORT")]
+	public const string PROP_CALL_STREAM_INTERFACE_MEDIA_TRANSPORT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_LOCAL_SENDING_STATE")]
+	public const string PROP_CALL_STREAM_LOCAL_SENDING_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_REMOTE_MEMBERS")]
+	public const string PROP_CALL_STREAM_REMOTE_MEMBERS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CALL_STREAM_REMOTE_MEMBER_IDENTIFIERS")]
+	public const string PROP_CALL_STREAM_REMOTE_MEMBER_IDENTIFIERS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_CHANNEL_TYPE")]
 	public const string PROP_CHANNEL_CHANNEL_TYPE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_DISPATCHER_INTERFACES")]
@@ -2449,6 +2807,14 @@ namespace TelepathyGLib {
 	public const string PROP_CHANNEL_INTERFACE_ANONYMITY_ANONYMITY_MODES;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_ANONYMITY_ANONYMOUS_ID")]
 	public const string PROP_CHANNEL_INTERFACE_ANONYMITY_ANONYMOUS_ID;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAN_RETRY_CAPTCHA")]
+	public const string PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAN_RETRY_CAPTCHA;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAPTCHA_ERROR")]
+	public const string PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAPTCHA_ERROR;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAPTCHA_ERROR_DETAILS")]
+	public const string PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAPTCHA_ERROR_DETAILS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAPTCHA_STATUS")]
+	public const string PROP_CHANNEL_INTERFACE_CAPTCHA_AUTHENTICATION_CAPTCHA_STATUS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_CHAT_STATE_CHAT_STATES")]
 	public const string PROP_CHANNEL_INTERFACE_CHAT_STATE_CHAT_STATES;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_INTERFACE_CONFERENCE_CHANNELS")]
@@ -2601,6 +2967,34 @@ namespace TelepathyGLib {
 	public const string PROP_CHANNEL_TARGET_HANDLE_TYPE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TARGET_ID")]
 	public const string PROP_CHANNEL_TARGET_ID;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_CALL_FLAGS")]
+	public const string PROP_CHANNEL_TYPE_CALL_CALL_FLAGS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_CALL_MEMBERS")]
+	public const string PROP_CHANNEL_TYPE_CALL_CALL_MEMBERS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_CALL_STATE")]
+	public const string PROP_CHANNEL_TYPE_CALL_CALL_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_CALL_STATE_DETAILS")]
+	public const string PROP_CHANNEL_TYPE_CALL_CALL_STATE_DETAILS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_CALL_STATE_REASON")]
+	public const string PROP_CHANNEL_TYPE_CALL_CALL_STATE_REASON;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_CONTENTS")]
+	public const string PROP_CHANNEL_TYPE_CALL_CONTENTS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_HARDWARE_STREAMING")]
+	public const string PROP_CHANNEL_TYPE_CALL_HARDWARE_STREAMING;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_INITIAL_AUDIO")]
+	public const string PROP_CHANNEL_TYPE_CALL_INITIAL_AUDIO;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_INITIAL_AUDIO_NAME")]
+	public const string PROP_CHANNEL_TYPE_CALL_INITIAL_AUDIO_NAME;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_INITIAL_TRANSPORT")]
+	public const string PROP_CHANNEL_TYPE_CALL_INITIAL_TRANSPORT;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_INITIAL_VIDEO")]
+	public const string PROP_CHANNEL_TYPE_CALL_INITIAL_VIDEO;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_INITIAL_VIDEO_NAME")]
+	public const string PROP_CHANNEL_TYPE_CALL_INITIAL_VIDEO_NAME;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_MEMBER_IDENTIFIERS")]
+	public const string PROP_CHANNEL_TYPE_CALL_MEMBER_IDENTIFIERS;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CALL_MUTABLE_CONTENTS")]
+	public const string PROP_CHANNEL_TYPE_CALL_MUTABLE_CONTENTS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CONTACT_SEARCH_AVAILABLE_SEARCH_KEYS")]
 	public const string PROP_CHANNEL_TYPE_CONTACT_SEARCH_AVAILABLE_SEARCH_KEYS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CHANNEL_TYPE_CONTACT_SEARCH_LIMIT")]
@@ -2739,6 +3133,8 @@ namespace TelepathyGLib {
 	public const string PROP_CONNECTION_INTERFACE_CONTACT_LIST_CONTACT_LIST_PERSISTS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CONNECTION_INTERFACE_CONTACT_LIST_CONTACT_LIST_STATE")]
 	public const string PROP_CONNECTION_INTERFACE_CONTACT_LIST_CONTACT_LIST_STATE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CONNECTION_INTERFACE_CONTACT_LIST_DOWNLOAD_AT_CONNECTION")]
+	public const string PROP_CONNECTION_INTERFACE_CONTACT_LIST_DOWNLOAD_AT_CONNECTION;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CONNECTION_INTERFACE_CONTACT_LIST_REQUEST_USES_MESSAGE")]
 	public const string PROP_CONNECTION_INTERFACE_CONTACT_LIST_REQUEST_USES_MESSAGE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_PROP_CONNECTION_INTERFACE_LOCATION_LOCATION_ACCESS_CONTROL")]
@@ -2831,8 +3227,24 @@ namespace TelepathyGLib {
 	public const string TOKEN_CHANNEL_INTERFACE_MEDIA_SIGNALLING_WLM_2009;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_INTERFACE_MEDIA_SIGNALLING_WLM_8_5")]
 	public const string TOKEN_CHANNEL_INTERFACE_MEDIA_SIGNALLING_WLM_8_5;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_TYPE_CALL_AUDIO")]
+	public const string TOKEN_CHANNEL_TYPE_CALL_AUDIO;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_TYPE_CALL_GTALK_P2P")]
+	public const string TOKEN_CHANNEL_TYPE_CALL_GTALK_P2P;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_TYPE_CALL_ICE")]
+	public const string TOKEN_CHANNEL_TYPE_CALL_ICE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_TYPE_CALL_SHM")]
+	public const string TOKEN_CHANNEL_TYPE_CALL_SHM;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_TYPE_CALL_VIDEO")]
+	public const string TOKEN_CHANNEL_TYPE_CALL_VIDEO;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CHANNEL_TYPE_CALL_WLM_2009")]
+	public const string TOKEN_CHANNEL_TYPE_CALL_WLM_2009;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CONNECTION_CONTACT_ID")]
 	public const string TOKEN_CONNECTION_CONTACT_ID;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CONNECTION_INTERFACE_ADDRESSING_ADDRESSES")]
+	public const string TOKEN_CONNECTION_INTERFACE_ADDRESSING_ADDRESSES;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CONNECTION_INTERFACE_ADDRESSING_URIS")]
+	public const string TOKEN_CONNECTION_INTERFACE_ADDRESSING_URIS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CONNECTION_INTERFACE_ALIASING_ALIAS")]
 	public const string TOKEN_CONNECTION_INTERFACE_ALIASING_ALIAS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CONNECTION_INTERFACE_AVATARS_TOKEN")]
@@ -2934,6 +3346,30 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_authentication_tls_certificate ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_interface_audio_control ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_interface_dtmf ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_interface_media ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_interface_video_control ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_media_description ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_media_description_interface_rtcp_extended_reports ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_media_description_interface_rtcp_feedback ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_content_media_description_interface_rtp_header_extensions ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_stream ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_stream_endpoint ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_call_stream_interface_media ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel_dispatch_operation ();
@@ -2945,6 +3381,8 @@ namespace TelepathyGLib {
 	public static GLib.Quark iface_quark_channel_interface_anonymity ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel_interface_call_state ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_channel_interface_captcha_authentication ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel_interface_chat_state ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
@@ -2984,6 +3422,8 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel_request ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_channel_type_call ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel_type_contact_list ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_channel_type_contact_search ();
@@ -3017,6 +3457,8 @@ namespace TelepathyGLib {
 	public static GLib.Quark iface_quark_client_observer ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_connection ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static GLib.Quark iface_quark_connection_interface_addressing ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_connection_interface_aliasing ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
@@ -3085,6 +3527,8 @@ namespace TelepathyGLib {
 	public static GLib.Quark iface_quark_protocol_interface_presence ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static void list_connection_managers (TelepathyGLib.DBusDaemon bus_daemon, [CCode (delegate_target_pos = 2.33333, destroy_notify_pos = 2.66667)] owned TelepathyGLib.ConnectionManagerListCb callback, GLib.Object? weak_object);
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static async GLib.List<TelepathyGLib.ConnectionManager> list_connection_managers_async (TelepathyGLib.DBusDaemon? dbus_daemon) throws GLib.Error;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static void list_connection_names (TelepathyGLib.DBusDaemon bus_daemon, [CCode (delegate_target_pos = 2.33333, destroy_notify_pos = 2.66667)] owned TelepathyGLib.ConnectionNameListCb callback, GLib.Object? weak_object);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]

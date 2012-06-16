@@ -53,6 +53,10 @@
 		<member name="urls" c:identifier="FOLKS_PERSONA_DETAIL_URLS" value="14"/>
 		<member name="web_service_addresses" c:identifier="FOLKS_PERSONA_DETAIL_WEB_SERVICE_ADDRESSES" value="15"/>
 		<member name="groups" c:identifier="FOLKS_PERSONA_DETAIL_GROUPS" value="16"/>
+		<member name="im_interaction_count" c:identifier="FOLKS_PERSONA_DETAIL_IM_INTERACTION_COUNT" value="17"/>
+		<member name="last_im_interaction_datetime" c:identifier="FOLKS_PERSONA_DETAIL_LAST_IM_INTERACTION_DATETIME" value="18"/>
+		<member name="call_interaction_count" c:identifier="FOLKS_PERSONA_DETAIL_CALL_INTERACTION_COUNT" value="19"/>
+		<member name="last_call_interaction_datetime" c:identifier="FOLKS_PERSONA_DETAIL_LAST_CALL_INTERACTION_DATETIME" value="20"/>
 	</enumeration>
 	<enumeration name="MaybeBool" c:type="FolksMaybeBool" glib:type-name="FolksMaybeBool" glib:get-type="folks_maybe_bool_get_type">
 		<member name="unset" c:identifier="FOLKS_MAYBE_BOOL_UNSET" value="0"/>
@@ -60,6 +64,7 @@
 		<member name="true" c:identifier="FOLKS_MAYBE_BOOL_TRUE" value="2"/>
 	</enumeration>
 	<enumeration name="MatchResult" c:type="FolksMatchResult" glib:type-name="FolksMatchResult" glib:get-type="folks_match_result_get_type">
+		<member name="none" c:identifier="FOLKS_MATCH_RESULT_NONE" value="-1"/>
 		<member name="very_low" c:identifier="FOLKS_MATCH_RESULT_VERY_LOW" value="0"/>
 		<member name="low" c:identifier="FOLKS_MATCH_RESULT_LOW" value="1"/>
 		<member name="medium" c:identifier="FOLKS_MATCH_RESULT_MEDIUM" value="2"/>
@@ -1009,6 +1014,11 @@
 				<type name="Folks.PostalAddress" c:type="FolksPostalAddress*"/>
 			</return-value>
 		</constructor>
+		<method name="is_empty" c:identifier="folks_postal_address_is_empty">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
 		<method name="equal" c:identifier="folks_postal_address_equal">
 			<parameters>
 				<parameter name="with" transfer-ownership="none">
@@ -1113,6 +1123,11 @@
 				<type name="Folks.Role" c:type="FolksRole*"/>
 			</return-value>
 		</constructor>
+		<method name="is_empty" c:identifier="folks_role_is_empty">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
 		<function name="equal" c:identifier="folks_role_equal">
 			<parameters>
 				<parameter name="a" transfer-ownership="none">
@@ -1243,6 +1258,7 @@
 		<implements name="Folks.GenderDetails"/>
 		<implements name="Folks.GroupDetails"/>
 		<implements name="Folks.ImDetails"/>
+		<implements name="Folks.InteractionDetails"/>
 		<implements name="Folks.LocalIdDetails"/>
 		<implements name="Folks.NameDetails"/>
 		<implements name="Folks.NoteDetails"/>
@@ -1553,6 +1569,32 @@
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="Folks.Persona" c:type="FolksPersona*"/>
+			</return-value>
+		</method>
+		<method name="look_up_individual" c:identifier="folks_individual_aggregator_look_up_individual">
+			<parameters>
+				<parameter name="id" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="look_up_individual_finish" c:identifier="folks_individual_aggregator_look_up_individual_finish" throws="1">
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Folks.Individual" c:type="FolksIndividual*"/>
 			</return-value>
 		</method>
 		<property name="is-prepared">
@@ -2402,11 +2444,6 @@
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="Folks.MatchResult" c:type="FolksMatchResult"/>
-			</return-value>
-		</method>
-		<method name="_inspect_im_addresses" c:identifier="_folks_potential_match_inspect_im_addresses">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
 			</return-value>
 		</method>
 		<constructor name="new" c:identifier="folks_potential_match_new">
@@ -3928,6 +3965,26 @@
 			</callback>
 		</field>
 	</record>
+	<interface name="InteractionDetails" c:type="FolksInteractionDetails" glib:type-name="FolksInteractionDetails" glib:get-type="folks_interaction_details_get_type" glib:type-struct="InteractionDetailsIface">
+		<prerequisite name="GObject.Object"/>
+		<property name="im-interaction-count">
+			<type name="guint" c:type="guint"/>
+		</property>
+		<property name="last-im-interaction-datetime">
+			<type name="GLib.DateTime" c:type="GDateTime*"/>
+		</property>
+		<property name="call-interaction-count">
+			<type name="guint" c:type="guint"/>
+		</property>
+		<property name="last-call-interaction-datetime">
+			<type name="GLib.DateTime" c:type="GDateTime*"/>
+		</property>
+	</interface>
+	<record name="InteractionDetailsIface" c:type="FolksInteractionDetailsIface" glib:is-gtype-struct-for="InteractionDetails">
+		<field name="parent_iface">
+			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+		</field>
+	</record>
 	<interface name="LocalIdDetails" c:type="FolksLocalIdDetails" glib:type-name="FolksLocalIdDetails" glib:get-type="folks_local_id_details_get_type" glib:type-struct="LocalIdDetailsIface">
 		<prerequisite name="GObject.Object"/>
 		<method name="change_local_ids" c:identifier="folks_local_id_details_change_local_ids">
@@ -4639,6 +4696,16 @@
 	</record>
 	<interface name="PresenceDetails" c:type="FolksPresenceDetails" glib:type-name="FolksPresenceDetails" glib:get-type="folks_presence_details_get_type" glib:type-struct="PresenceDetailsIface">
 		<prerequisite name="GObject.Object"/>
+		<function name="get_default_message_from_type" c:identifier="folks_presence_details_get_default_message_from_type">
+			<parameters>
+				<parameter name="type" transfer-ownership="none">
+					<type name="Folks.PresenceType" c:type="FolksPresenceType"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</function>
 		<function name="typecmp" c:identifier="folks_presence_details_typecmp">
 			<parameters>
 				<parameter name="type_a" transfer-ownership="none">

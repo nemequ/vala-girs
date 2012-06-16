@@ -17,12 +17,7 @@ and/or use gtk-doc annotations.  -->
   <include name="Pango" version="1.0"/>
   <include name="cairo" version="1.0"/>
   <include name="xlib" version="2.0"/>
-  <package name="gdk-pixbuf-2.0"/>
-  <package name="gio-2.0"/>
-  <package name="glib-2.0"/>
-  <package name="gobject-2.0"/>
-  <package name="gsettings-desktop-schemas"/>
-  <package name="gtk+-3.0"/>
+  <package name="gnome-desktop-3.0"/>
   <c:include name="libgnome-desktop/gnome-bg-crossfade.h"/>
   <c:include name="libgnome-desktop/gnome-bg.h"/>
   <c:include name="libgnome-desktop/gnome-desktop-thumbnail.h"/>
@@ -32,9 +27,10 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libgnome-desktop/gnome-rr-labeler.h"/>
   <c:include name="libgnome-desktop/gnome-rr.h"/>
   <c:include name="libgnome-desktop/gnome-wall-clock.h"/>
+  <c:include name="libgnome-desktop/gnome-xkb-info.h"/>
   <namespace name="GnomeDesktop"
              version="3.0"
-             shared-library="libgnome-desktop-3.so.2"
+             shared-library="libgnome-desktop-3.so.4"
              c:identifier-prefixes="Gnome"
              c:symbol-prefixes="gnome_">
     <class name="BG"
@@ -120,11 +116,9 @@ current root pixmap to the new one.</doc>
               c:identifier="gnome_bg_create_frame_thumbnail">
         <doc xml:whitespace="preserve">Creates a thumbnail for a certain frame, where 'frame' is somewhat
 vaguely defined as 'suitable point to show while single-stepping
-through the slideshow'.
-
-or NULL if frame_num is out of bounds.</doc>
+through the slideshow'.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the newly created thumbnail or</doc>
+          <doc xml:whitespace="preserve">the newly created thumbnail or or NULL if frame_num is out of bounds.</doc>
           <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
         </return-value>
         <parameters>
@@ -421,11 +415,9 @@ information on how to initiate a crossfade.</doc>
               c:identifier="gnome_bg_crossfade_set_end_surface">
         <doc xml:whitespace="preserve">Before initiating a crossfade with gnome_bg_crossfade_start()
 a start and end surface have to be set.  This function sets
-the surface shown at the end of the crossfade effect.
-
-could not be copied.</doc>
+the surface shown at the end of the crossfade effect.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if successful, or %FALSE if the surface</doc>
+          <doc xml:whitespace="preserve">%TRUE if successful, or %FALSE if the surface could not be copied.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -439,11 +431,9 @@ could not be copied.</doc>
               c:identifier="gnome_bg_crossfade_set_start_surface">
         <doc xml:whitespace="preserve">Before initiating a crossfade with gnome_bg_crossfade_start()
 a start and end surface have to be set.  This function sets
-the surface shown at the beginning of the crossfade effect.
-
-could not be copied.</doc>
+the surface shown at the beginning of the crossfade effect.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if successful, or %FALSE if the surface</doc>
+          <doc xml:whitespace="preserve">%TRUE if successful, or %FALSE if the surface could not be copied.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -748,11 +738,9 @@ a new one if none have been created.</doc>
         </return-value>
       </constructor>
       <method name="get_pnp_id" c:identifier="gnome_pnp_ids_get_pnp_id">
-        <doc xml:whitespace="preserve">Find the full manufacturer name for the given PNP ID.
-
-or %NULL when not found.</doc>
+        <doc xml:whitespace="preserve">Find the full manufacturer name for the given PNP ID.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new string representing the manufacturer name,</doc>
+          <doc xml:whitespace="preserve">a new string representing the manufacturer name, or %NULL when not found.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -883,10 +871,8 @@ or %NULL when not found.</doc>
         </parameters>
       </method>
       <method name="get_clone" c:identifier="gnome_rr_config_get_clone">
-        <doc xml:whitespace="preserve">have the same width/height.  Those outputs are of course connected and on
-(i.e. they have a CRTC assigned).</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">whether at least two outputs are at (0, 0) offset and they</doc>
+          <doc xml:whitespace="preserve">whether at least two outputs are at (0, 0) offset and they have the same width/height.  Those outputs are of course connected and on (i.e. they have a CRTC assigned).</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -1140,6 +1126,10 @@ or %NULL when not found.</doc>
            glib:get-type="gnome_rr_labeler_get_type"
            glib:type-struct="RRLabelerClass">
       <constructor name="new" c:identifier="gnome_rr_labeler_new">
+        <doc xml:whitespace="preserve">Create a GUI element that will display colored labels on each connected monitor.
+This is useful when users are required to identify which monitor is which, e.g. for
+for configuring multiple monitors.
+The labels will be shown by default, use gnome_rr_labeler_hide to hide them.</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">A new #GnomeRRLabeler</doc>
           <type name="RRLabeler" c:type="GnomeRRLabeler*"/>
@@ -1151,8 +1141,9 @@ or %NULL when not found.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="get_color_for_output"
-              c:identifier="gnome_rr_labeler_get_color_for_output">
+      <method name="get_rgba_for_output"
+              c:identifier="gnome_rr_labeler_get_rgba_for_output">
+        <doc xml:whitespace="preserve">Get the color used for the label on a given output (monitor).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1161,21 +1152,23 @@ or %NULL when not found.</doc>
             <doc xml:whitespace="preserve">Output device (i.e. monitor) to query</doc>
             <type name="RROutputInfo" c:type="GnomeRROutputInfo*"/>
           </parameter>
-          <parameter name="color_out"
+          <parameter name="rgba_out"
                      direction="out"
                      caller-allocates="1"
                      transfer-ownership="none">
             <doc xml:whitespace="preserve">Color of selected monitor.</doc>
-            <type name="Gdk.Color" c:type="GdkColor*"/>
+            <type name="Gdk.RGBA" c:type="GdkRGBA*"/>
           </parameter>
         </parameters>
       </method>
       <method name="hide" c:identifier="gnome_rr_labeler_hide">
+        <doc xml:whitespace="preserve">Hide ouput labels.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
       </method>
       <method name="show" c:identifier="gnome_rr_labeler_show">
+        <doc xml:whitespace="preserve">Show the labels.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1608,6 +1601,9 @@ or %NULL when not found.</doc>
             disguised="1">
     </record>
     <bitfield name="RRRotation" c:type="GnomeRRRotation">
+      <member name="rotation_next"
+              value="0"
+              c:identifier="GNOME_RR_ROTATION_NEXT"/>
       <member name="rotation_0" value="1" c:identifier="GNOME_RR_ROTATION_0"/>
       <member name="rotation_90"
               value="2"
@@ -1630,10 +1626,9 @@ or %NULL when not found.</doc>
            glib:type-struct="RRScreenClass">
       <implements name="Gio.Initable"/>
       <constructor name="new" c:identifier="gnome_rr_screen_new" throws="1">
-        <doc xml:whitespace="preserve">if this could not be created, for instance if the driver does not support
-Xrandr 1.2.  Each #GdkScreen thus has a single instance of #GnomeRRScreen.</doc>
+        <doc xml:whitespace="preserve">Creates a unique #GnomeRRScreen instance for the specified @screen.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a unique #GnomeRRScreen instance, specific to the @screen, or NULL</doc>
+          <doc xml:whitespace="preserve">a unique #GnomeRRScreen instance, specific to the @screen, or NULL if this could not be created, for instance if the driver does not support Xrandr 1.2.  Each #GdkScreen thus has a single instance of #GnomeRRScreen.</doc>
           <type name="RRScreen" c:type="GnomeRRScreen*"/>
         </return-value>
         <parameters>
@@ -1794,13 +1789,9 @@ the latest change request.</doc>
       </method>
       <method name="refresh" c:identifier="gnome_rr_screen_refresh" throws="1">
         <doc xml:whitespace="preserve">Refreshes the screen configuration, and calls the screen's callback if it
-exists and if the screen's configuration changed.
-
-function returns FALSE and a NULL error if the configuration didn't change,
-or FALSE and a non-NULL error if there was an error while refreshing the
-configuration.</doc>
+exists and if the screen's configuration changed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if the screen's configuration changed; otherwise, the</doc>
+          <doc xml:whitespace="preserve">TRUE if the screen's configuration changed; otherwise, the function returns FALSE and a NULL error if the configuration didn't change, or FALSE and a non-NULL error if there was an error while refreshing the configuration.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -1997,9 +1988,206 @@ idle function.</doc>
             c:type="GnomeWallClockPrivate"
             disguised="1">
     </record>
+    <class name="XkbInfo"
+           c:symbol-prefix="xkb_info"
+           c:type="GnomeXkbInfo"
+           parent="GObject.Object"
+           glib:type-name="GnomeXkbInfo"
+           glib:get-type="gnome_xkb_info_get_type"
+           glib:type-struct="XkbInfoClass">
+      <constructor name="new" c:identifier="gnome_xkb_info_new">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GnomeXkbInfo instance.</doc>
+          <type name="XkbInfo" c:type="GnomeXkbInfo*"/>
+        </return-value>
+      </constructor>
+      <function name="free_var_defs"
+                c:identifier="gnome_xkb_info_free_var_defs"
+                version="3.6"
+                introspectable="0">
+        <doc xml:whitespace="preserve">Frees an #XkbRF_VarDefsRec instance allocated by
+gnome_xkb_info_get_var_defs().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="var_defs" transfer-ownership="none">
+            <doc xml:whitespace="preserve">#XkbRF_VarDefsRec instance to free</doc>
+            <type c:type="XkbRF_VarDefsRec*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="get_var_defs"
+                c:identifier="gnome_xkb_info_get_var_defs"
+                version="3.6"
+                introspectable="0">
+        <doc xml:whitespace="preserve">Gets both the XKB rules file path and the current XKB parameters in
+use by the X server.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="rules"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">location to store the rules file path. Use g_free() when it's no longer needed</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="var_defs"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">location to store a #XkbRF_VarDefsRec pointer. Use gnome_xkb_info_free_var_defs() to free it</doc>
+            <type c:type="XkbRF_VarDefsRec**"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_all_layouts"
+              c:identifier="gnome_xkb_info_get_all_layouts"
+              version="3.6">
+        <doc xml:whitespace="preserve">Returns a list of all layout identifiers we know about.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:whitespace="preserve">the list of layout names. The caller takes ownership of the #GList but not of the strings themselves, those are internally allocated and must not be modified.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="gchar"/>
+          </type>
+        </return-value>
+      </method>
+      <method name="get_layout_info"
+              c:identifier="gnome_xkb_info_get_layout_info"
+              version="3.6">
+        <doc xml:whitespace="preserve">Retrieves information about a layout. Both @display_name and
+@short_name are suitable to show in UIs and might be localized if
+translations are available.
+
+Some layouts don't provide a short name (2 or 3 letters) or don't
+specify a XKB variant, in those cases @short_name or @xkb_variant
+are empty strings, i.e. "".
+
+If the given layout doesn't exist the return value is %FALSE and
+all the (out) parameters are set to %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if the layout exists or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:whitespace="preserve">layout's identifier about which to retrieve the info</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="display_name"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's display name, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="short_name"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's short name, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="xkb_layout"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's XKB name, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="xkb_variant"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's XKB variant, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_layout_info_for_language"
+              c:identifier="gnome_xkb_info_get_layout_info_for_language"
+              version="3.6">
+        <doc xml:whitespace="preserve">Retrieves the layout that better fits @language. It also fetches
+information about that layout like gnome_xkb_info_get_layout_info().
+
+If a layout can't be found the return value is %FALSE and all the
+(out) parameters are set to %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if a layout exists or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="language" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an ISO 639 code</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="id"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's indentifier, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="display_name"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's display name, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="short_name"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's short name, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="xkb_layout"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's XKB name, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="xkb_variant"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">location to store the layout's XKB variant, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_object">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="XkbInfoPrivate" c:type="GnomeXkbInfoPrivate*"/>
+      </field>
+    </class>
+    <record name="XkbInfoClass"
+            c:type="GnomeXkbInfoClass"
+            glib:is-gtype-struct-for="XkbInfo">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="XkbInfoPrivate" c:type="GnomeXkbInfoPrivate" disguised="1">
+    </record>
     <function name="desktop_prepend_terminal_to_vector"
               c:identifier="gnome_desktop_prepend_terminal_to_vector">
-      <doc xml:whitespace="preserve">Description:  Prepends a terminal (either the one configured as default in
+      <doc xml:whitespace="preserve">Prepends a terminal (either the one configured as default in
 the user's GNOME setup, or one of the common xterm emulators) to the passed
 in vector, modifying it in the process.  The vector should be allocated with
 #g_malloc, as this will #g_free the original vector.  Also all elements must

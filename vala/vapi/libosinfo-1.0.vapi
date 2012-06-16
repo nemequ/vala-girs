@@ -20,6 +20,7 @@ namespace Osinfo {
 		public unowned Osinfo.Platform get_platform (string id);
 		public Osinfo.PlatformList get_platform_list ();
 		public unowned Osinfo.Os guess_os_from_media (Osinfo.Media media, out unowned Osinfo.Media matched_media);
+		public unowned Osinfo.Os guess_os_from_tree (Osinfo.Tree tree, out unowned Osinfo.Tree matched_tree);
 		public Osinfo.OsList unique_values_for_os_relationship (Osinfo.ProductRelationship relshp);
 		public Osinfo.PlatformList unique_values_for_platform_relationship (Osinfo.ProductRelationship relshp);
 		public GLib.List<weak string> unique_values_for_property_in_deployment (string propName);
@@ -58,7 +59,9 @@ namespace Osinfo {
 		public unowned string get_class ();
 		public unowned string get_name ();
 		public unowned string get_product ();
+		public unowned string get_product_id ();
 		public unowned string get_vendor ();
+		public unowned string get_vendor_id ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "devicelink", type_id = "osinfo_devicelink_get_type ()")]
 	public class DeviceLink : Osinfo.Entity {
@@ -140,8 +143,11 @@ namespace Osinfo {
 		public Loader ();
 		public unowned Osinfo.Db get_db ();
 		public void process_default_path () throws GLib.Error;
+		public void process_local_path () throws GLib.Error;
 		public void process_path (string path) throws GLib.Error;
+		public void process_system_path () throws GLib.Error;
 		public void process_uri (string uri) throws GLib.Error;
+		public void process_user_path () throws GLib.Error;
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_media_get_type ()")]
 	public class Media : Osinfo.Entity {
@@ -150,6 +156,7 @@ namespace Osinfo {
 		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
+		public unowned string get_application_id ();
 		public unowned string get_architecture ();
 		public unowned string get_initrd_path ();
 		public bool get_installer ();
@@ -159,6 +166,8 @@ namespace Osinfo {
 		public unowned string get_system_id ();
 		public unowned string get_url ();
 		public unowned string get_volume_id ();
+		[NoAccessorMethod]
+		public string application_id { owned get; set; }
 		[NoAccessorMethod]
 		public string architecture { owned get; set; }
 		[NoAccessorMethod]
@@ -195,12 +204,18 @@ namespace Osinfo {
 		public void add_media (Osinfo.Media media);
 		public void add_minimum_resources (Osinfo.Resources resources);
 		public void add_recommended_resources (Osinfo.Resources resources);
+		public void add_tree (Osinfo.Tree tree);
+		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
 		public Osinfo.DeviceLinkList get_device_links (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
+		public Osinfo.DeviceList get_devices_by_property (string property, string value, bool inherited);
+		public unowned string get_distro ();
 		public unowned string get_family ();
 		public Osinfo.MediaList get_media_list ();
 		public Osinfo.ResourcesList get_minimum_resources ();
 		public Osinfo.ResourcesList get_recommended_resources ();
+		public Osinfo.TreeList get_tree_list ();
+		public string distro { get; }
 		public string family { get; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "oslist", type_id = "osinfo_oslist_get_type ()")]
@@ -234,11 +249,17 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		protected Product ();
 		public void add_related (Osinfo.ProductRelationship relshp, Osinfo.Product otherproduct);
+		public unowned string get_codename ();
+		public GLib.Date get_eol_date ();
+		public unowned string get_eol_date_string ();
 		public unowned string get_name ();
 		public Osinfo.ProductList get_related (Osinfo.ProductRelationship relshp);
+		public GLib.Date get_release_date ();
+		public unowned string get_release_date_string ();
 		public unowned string get_short_id ();
 		public unowned string get_vendor ();
 		public unowned string get_version ();
+		public string codename { get; }
 		public string name { get; }
 		public string short_id { get; }
 		public string vendor { get; }
@@ -249,6 +270,7 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public ProductFilter ();
 		public int add_product_constraint (Osinfo.ProductRelationship relshp, Osinfo.Product product);
+		public void add_support_date_constraint (GLib.Date when);
 		public void clear_product_constraint (Osinfo.ProductRelationship relshp);
 		public void clear_product_constraints ();
 		public GLib.List<weak Osinfo.Product> get_product_constraint_values (Osinfo.ProductRelationship relshp);
@@ -290,6 +312,50 @@ namespace Osinfo {
 		public Osinfo.ResourcesList new_intersection (Osinfo.ResourcesList sourceTwo);
 		public Osinfo.ResourcesList new_union (Osinfo.ResourcesList sourceTwo);
 	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_tree_get_type ()")]
+	public class Tree : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public Tree (string id, string architecture);
+		public static Osinfo.Tree create_from_location (string location, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static async Osinfo.Tree create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static GLib.Quark error_quark ();
+		public unowned string get_architecture ();
+		public unowned string get_boot_iso_path ();
+		public unowned string get_initrd_path ();
+		public unowned string get_kernel_path ();
+		public unowned string get_treeinfo_arch ();
+		public unowned string get_treeinfo_family ();
+		public unowned string get_treeinfo_variant ();
+		public unowned string get_treeinfo_version ();
+		public unowned string get_url ();
+		[NoAccessorMethod]
+		public string application_id { owned get; set; }
+		[NoAccessorMethod]
+		public string architecture { owned get; set; }
+		[NoAccessorMethod]
+		public string boot_iso_path { owned get; set; }
+		[NoAccessorMethod]
+		public string initrd_path { owned get; set; }
+		[NoAccessorMethod]
+		public string kernel_path { owned get; set; }
+		[NoAccessorMethod]
+		public string publisher_id { owned get; set; }
+		[NoAccessorMethod]
+		public string system_id { owned get; set; }
+		[NoAccessorMethod]
+		public string url { owned get; set; }
+		[NoAccessorMethod]
+		public string volume_id { owned get; set; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "treelist", type_id = "osinfo_treelist_get_type ()")]
+	public class TreeList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public TreeList ();
+		public Osinfo.TreeList new_copy ();
+		public Osinfo.TreeList new_filtered (Osinfo.Filter filter);
+		public Osinfo.TreeList new_intersection (Osinfo.TreeList sourceTwo);
+		public Osinfo.TreeList new_union (Osinfo.TreeList sourceTwo);
+	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
 	public enum MediaError {
 		NO_DESCRIPTORS,
@@ -316,14 +382,22 @@ namespace Osinfo {
 	public const string DEVICE_PROP_NAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_PRODUCT")]
 	public const string DEVICE_PROP_PRODUCT;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_PRODUCT_ID")]
+	public const string DEVICE_PROP_PRODUCT_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_VENDOR")]
 	public const string DEVICE_PROP_VENDOR;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_VENDOR_ID")]
+	public const string DEVICE_PROP_VENDOR_ID;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_ENTITY_PROP_ID")]
+	public const string ENTITY_PROP_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_GIBIBYTES")]
 	public const int GIBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_KIBIBYTES")]
 	public const int KIBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEBIBYTES")]
 	public const int MEBIBYTES;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_APPLICATION_ID")]
+	public const string MEDIA_PROP_APPLICATION_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_ARCHITECTURE")]
 	public const string MEDIA_PROP_ARCHITECTURE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_INITRD")]
@@ -344,10 +418,18 @@ namespace Osinfo {
 	public const string MEDIA_PROP_VOLUME_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEGAHERTZ")]
 	public const int MEGAHERTZ;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_DISTRO")]
+	public const string OS_PROP_DISTRO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_FAMILY")]
 	public const string OS_PROP_FAMILY;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_CODENAME")]
+	public const string PRODUCT_PROP_CODENAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_EOL_DATE")]
+	public const string PRODUCT_PROP_EOL_DATE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_NAME")]
 	public const string PRODUCT_PROP_NAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_RELEASE_DATE")]
+	public const string PRODUCT_PROP_RELEASE_DATE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_SHORT_ID")]
 	public const string PRODUCT_PROP_SHORT_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_VENDOR")]
@@ -364,4 +446,22 @@ namespace Osinfo {
 	public const string RESOURCES_PROP_RAM;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_RESOURCES_PROP_STORAGE")]
 	public const string RESOURCES_PROP_STORAGE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_ARCHITECTURE")]
+	public const string TREE_PROP_ARCHITECTURE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_BOOT_ISO")]
+	public const string TREE_PROP_BOOT_ISO;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_INITRD")]
+	public const string TREE_PROP_INITRD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_KERNEL")]
+	public const string TREE_PROP_KERNEL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_TREEINFO_ARCH")]
+	public const string TREE_PROP_TREEINFO_ARCH;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_TREEINFO_FAMILY")]
+	public const string TREE_PROP_TREEINFO_FAMILY;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_TREEINFO_VARIANT")]
+	public const string TREE_PROP_TREEINFO_VARIANT;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_TREEINFO_VERSION")]
+	public const string TREE_PROP_TREEINFO_VERSION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_URL")]
+	public const string TREE_PROP_URL;
 }

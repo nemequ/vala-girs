@@ -197,9 +197,6 @@ namespace Zeitgeist {
 		public unowned GLib.Variant to_variant ();
 	}
 	[CCode (cheader_filename = "zeitgeist.h")]
-	public interface EggZeitgeistMonitor : GLib.Object {
-	}
-	[CCode (cheader_filename = "zeitgeist.h")]
 	public interface ResultSet : GLib.Object {
 		public abstract uint estimated_matches ();
 		public abstract bool has_next ();
@@ -238,6 +235,14 @@ namespace Zeitgeist {
 		LEAST_RECENT_MIMETYPE,
 		MOST_POPULAR_MIMETYPE,
 		LEAST_POPULAR_MIMETYPE,
+		MOST_RECENT_CURRENT_URI,
+		LEAST_RECENT_CURRENT_URI,
+		MOST_POPULAR_CURRENT_URI,
+		LEAST_POPULAR_CURRENT_URI,
+		MOST_RECENT_EVENT_ORIGIN,
+		LEAST_RECENT_EVENT_ORIGIN,
+		MOST_POPULAR_EVENT_ORIGIN,
+		LEAST_POPULAR_EVENT_ORIGIN,
 		RELEVANCY
 	}
 	[CCode (cheader_filename = "zeitgeist.h", cprefix = "ZEITGEIST_STORAGE_STATE_")]

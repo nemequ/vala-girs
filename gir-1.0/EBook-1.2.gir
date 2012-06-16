@@ -12,10 +12,10 @@ and/or use gtk-doc annotations.  -->
   <include name="Gio" version="2.0"/>
   <include name="libxml2" version="2.0"/>
   <package name="libebook-1.2"/>
-  <c:include name="libebook/e-book-client.h"/>
+  <c:include name="libebook/libebook.h"/>
   <namespace name="EBook"
              version="1.2"
-             shared-library="libebook-1.2.so.13,libedataserver-1.2.so.16"
+             shared-library="libebook-1.2.so.14,libedataserver-1.2.so.17"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <record name="AddressWestern" c:type="EAddressWestern">
@@ -89,48 +89,6 @@ e_book_open(), and e_book_remove().</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="new_default_addressbook"
-                   c:identifier="e_book_new_default_addressbook"
-                   deprecated="Use e_book_client_new_default() instead."
-                   deprecated-version="3.2"
-                   throws="1">
-        <doc xml:whitespace="preserve">Creates a new #EBook corresponding to the user's default address book.
-See the documentation for e_book_new() for further information.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new but unopened #EBook</doc>
-          <type name="Book" c:type="EBook*"/>
-        </return-value>
-      </constructor>
-      <constructor name="new_from_uri"
-                   c:identifier="e_book_new_from_uri"
-                   deprecated="Use e_book_client_new_from_uri() instead."
-                   deprecated-version="3.2"
-                   throws="1">
-        <doc xml:whitespace="preserve">Creates a new #EBook corresponding to the given uri.  See the
-documentation for e_book_new for further information.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new but unopened #EBook.</doc>
-          <type name="Book" c:type="EBook*"/>
-        </return-value>
-        <parameters>
-          <parameter name="uri" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the URI to load</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <constructor name="new_system_addressbook"
-                   c:identifier="e_book_new_system_addressbook"
-                   deprecated="Use e_book_client_new_system() instead."
-                   deprecated-version="3.2"
-                   throws="1">
-        <doc xml:whitespace="preserve">Creates a new #EBook corresponding to the user's system address book.
-See the documentation for e_book_new() for further information.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new but unopened #EBook.</doc>
-          <type name="Book" c:type="EBook*"/>
-        </return-value>
-      </constructor>
       <function name="error_quark" c:identifier="e_book_error_quark">
         <return-value transfer-ownership="none">
           <type name="GLib.Quark" c:type="GQuark"/>
@@ -153,27 +111,6 @@ See the documentation for e_book_new() for further information.</doc>
           </parameter>
         </parameters>
       </function>
-      <function name="get_addressbooks"
-                c:identifier="e_book_get_addressbooks"
-                deprecated="Use e_book_client_get_sources() instead."
-                deprecated-version="3.2"
-                throws="1">
-        <doc xml:whitespace="preserve">Populate *addressbook_sources with the list of all sources which have been
-added to Evolution.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if @addressbook_sources was set, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="addressbook_sources"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:whitespace="preserve">A pointer to a #ESourceList to set</doc>
-            <type name="EDataServer.SourceList" c:type="ESourceList**"/>
-          </parameter>
-        </parameters>
-      </function>
       <function name="get_self"
                 c:identifier="e_book_get_self"
                 deprecated="Use e_book_client_get_self() instead."
@@ -186,6 +123,10 @@ and set it in @contact and @book.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <parameter name="registry" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ESourceRegistry</doc>
+            <type name="EDataServer.SourceRegistry" c:type="ESourceRegistry*"/>
+          </parameter>
           <parameter name="contact"
                      direction="out"
                      caller-allocates="0"
@@ -244,29 +185,6 @@ and set it in @contact and @book.</doc>
           </parameter>
         </parameters>
       </function>
-      <function name="set_default_source"
-                c:identifier="e_book_set_default_source"
-                deprecated="Use e_book_client_set_default_source() instead."
-                deprecated-version="3.2"
-                throws="1">
-        <doc xml:whitespace="preserve">Sets @source as the default address book.  This is the source that
-will be loaded in the e_book_get_default_addressbook call.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the setting was stored in libebook's ESourceList, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="source" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #ESource</doc>
-            <type name="EDataServer.Source" c:type="ESource*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <virtual-method name="auth_required">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </virtual-method>
       <virtual-method name="backend_died">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -351,41 +269,6 @@ will be loaded in the e_book_get_default_addressbook call.</doc>
           <parameter name="cb" transfer-ownership="none" scope="async">
             <doc xml:whitespace="preserve">function to call when the operation finishes</doc>
             <type name="BookIdCallback" c:type="EBookIdCallback"/>
-          </parameter>
-          <parameter name="closure" transfer-ownership="none">
-            <doc xml:whitespace="preserve">data to pass to callback function</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="async_authenticate_user"
-              c:identifier="e_book_async_authenticate_user"
-              deprecated="Use e_book_authenticate_user_async() instead."
-              deprecated-version="3.0">
-        <doc xml:whitespace="preserve">Authenticate @user with @passwd, using the auth method
-@auth_method. @auth_method must be one of the authentication
-methods returned using e_book_get_supported_auth_methods.
-This function does not block.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%FALSE if successful, %TRUE otherwise.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="user" transfer-ownership="none">
-            <doc xml:whitespace="preserve">user name</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="passwd" transfer-ownership="none">
-            <doc xml:whitespace="preserve">password</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="auth_method" transfer-ownership="none">
-            <doc xml:whitespace="preserve">string indicating authentication method</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="cb" transfer-ownership="none" scope="async">
-            <doc xml:whitespace="preserve">function to call when the operation finishes</doc>
-            <type name="BookCallback" c:type="EBookCallback"/>
           </parameter>
           <parameter name="closure" transfer-ownership="none">
             <doc xml:whitespace="preserve">data to pass to callback function</doc>
@@ -718,69 +601,6 @@ as a batch request.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="authenticate_user"
-              c:identifier="e_book_authenticate_user"
-              deprecated="Connect to EClient::authenticate signal instead."
-              deprecated-version="3.2"
-              throws="1">
-        <doc xml:whitespace="preserve">Authenticates @user with @passwd, using the auth method
-@auth_method.  @auth_method must be one of the authentication
-methods returned using e_book_get_supported_auth_methods.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="user" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a string</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="passwd" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a string</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="auth_method" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a string</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="authenticate_user_async"
-              c:identifier="e_book_authenticate_user_async"
-              version="2.32"
-              deprecated="Connect to EClient::authenticate signal instead."
-              deprecated-version="3.2">
-        <doc xml:whitespace="preserve">Authenticate @user with @passwd, using the auth method
-@auth_method. @auth_method must be one of the authentication
-methods returned using e_book_get_supported_auth_methods.
-This function does not block.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%FALSE if successful, %TRUE otherwise.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="user" transfer-ownership="none">
-            <doc xml:whitespace="preserve">user name</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="passwd" transfer-ownership="none">
-            <doc xml:whitespace="preserve">password</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="auth_method" transfer-ownership="none">
-            <doc xml:whitespace="preserve">string indicating authentication method</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-          <parameter name="cb" transfer-ownership="none" scope="async">
-            <doc xml:whitespace="preserve">function to call when the operation finishes</doc>
-            <type name="BookAsyncCallback" c:type="EBookAsyncCallback"/>
-          </parameter>
-          <parameter name="closure" transfer-ownership="none">
-            <doc xml:whitespace="preserve">data to pass to callback function</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="cancel"
               c:identifier="e_book_cancel"
               deprecated="Use e_client_cancel_all() or e_client_cancel_op() on an #EBookClient object instead."
@@ -1022,8 +842,11 @@ corresponding to @id.</doc>
             <doc xml:whitespace="preserve">a unique string ID specifying the contact</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
-          <parameter name="contact" transfer-ownership="none">
-            <doc xml:whitespace="preserve">(out) (transfer: full): an #EContact</doc>
+          <parameter name="contact"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">an #EContact</doc>
             <type name="Contact" c:type="EContact**"/>
           </parameter>
         </parameters>
@@ -1107,16 +930,13 @@ matched. On failed, @error will be set and %FALSE returned.</doc>
       </method>
       <method name="get_required_fields"
               c:identifier="e_book_get_required_fields"
-              deprecated="Use e_client_get_backend_property_sync() on"
+              deprecated="Use e_client_get_backend_property_sync() on an #EBookClient object with #BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS instead."
               deprecated-version="3.2"
               throws="1">
         <doc xml:whitespace="preserve">Gets a list of fields that are required to be filled in for
 all contacts in this @book. The list will contain pointers
 to allocated strings, and both the #GList and the strings
-must be freed by the caller.
-
-
-an #EBookClient object with #BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS instead.</doc>
+must be freed by the caller.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1136,14 +956,10 @@ an #EBookClient object with #BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS instead.</doc
       <method name="get_required_fields_async"
               c:identifier="e_book_get_required_fields_async"
               version="2.32"
-              deprecated="Use e_client_get_backend_property() and e_client_get_backend_property_finish()"
+              deprecated="Use e_client_get_backend_property() and e_client_get_backend_property_finish() on an #EBookClient object with #BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS instead."
               deprecated-version="3.2">
         <doc xml:whitespace="preserve">Gets a list of fields that are required to be filled in for
-all contacts in this @book. This function does not block.
-
-
-
-on an #EBookClient object with #BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS instead.</doc>
+all contacts in this @book. This function does not block.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if the operation was started, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1184,15 +1000,12 @@ supports. This string should not be freed.</doc>
       </method>
       <method name="get_supported_auth_methods"
               c:identifier="e_book_get_supported_auth_methods"
-              deprecated="Use e_client_get_backend_property_sync() on"
+              deprecated="Use e_client_get_backend_property_sync() on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS instead."
               deprecated-version="3.2"
               throws="1">
         <doc xml:whitespace="preserve">Queries @book for the list of authentication methods it supports.
 The list will contain pointers to allocated strings, and both the
-#GList and the strings must be freed by the caller.
-
-
-an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS instead.</doc>
+#GList and the strings must be freed by the caller.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1212,14 +1025,10 @@ an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS instea
       <method name="get_supported_auth_methods_async"
               c:identifier="e_book_get_supported_auth_methods_async"
               version="2.32"
-              deprecated="Use e_client_get_backend_property() and e_client_get_backend_property_finish()"
+              deprecated="Use e_client_get_backend_property() and e_client_get_backend_property_finish() on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS instead."
               deprecated-version="3.2">
         <doc xml:whitespace="preserve">Queries @book for the list of authentication methods it supports.
-This function does not block.
-
-
-
-on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS instead.</doc>
+This function does not block.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1238,16 +1047,13 @@ on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS ins
       </method>
       <method name="get_supported_fields"
               c:identifier="e_book_get_supported_fields"
-              deprecated="Use e_client_get_backend_property_sync() on"
+              deprecated="Use e_client_get_backend_property_sync() on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS instead."
               deprecated-version="3.2"
               throws="1">
         <doc xml:whitespace="preserve">Gets a list of fields that can be stored for contacts
 in this @book. Other fields may be discarded. The list
 will contain pointers to allocated strings, and both the
-#GList and the strings must be freed by the caller.
-
-
-an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS instead.</doc>
+#GList and the strings must be freed by the caller.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1267,15 +1073,11 @@ an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS instead.</do
       <method name="get_supported_fields_async"
               c:identifier="e_book_get_supported_fields_async"
               version="2.32"
-              deprecated="Use e_client_get_backend_property() and e_client_get_backend_property_finish()"
+              deprecated="Use e_client_get_backend_property() and e_client_get_backend_property_finish() on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS instead."
               deprecated-version="3.2">
         <doc xml:whitespace="preserve">Gets a list of fields that can be stored for contacts
 in this @book. Other fields may be discarded. This
-function does not block.
-
-
-
-on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS instead.</doc>
+function does not block.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1291,16 +1093,6 @@ on an #EBookClient object with #BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS instead.<
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
-      </method>
-      <method name="get_uri"
-              c:identifier="e_book_get_uri"
-              deprecated="Use e_client_get_uri() on an #EBookClient object instead."
-              deprecated-version="3.2">
-        <doc xml:whitespace="preserve">Get the URI that this book has loaded. This string should not be freed.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The URI.</doc>
-          <type name="utf8" c:type="gchar*"/>
-        </return-value>
       </method>
       <method name="is_online"
               c:identifier="e_book_is_online"
@@ -1530,18 +1322,6 @@ as a batch request.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_default_addressbook"
-              c:identifier="e_book_set_default_addressbook"
-              deprecated="Use e_book_client_set_default_addressbook() instead."
-              deprecated-version="3.2"
-              throws="1">
-        <doc xml:whitespace="preserve">sets the #ESource of the #EBook as the "default" addressbook.  This is the source
-that will be loaded in the e_book_get_default_addressbook call.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the setting was stored in libebook's ESourceList, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-      </method>
       <method name="set_self"
               c:identifier="e_book_set_self"
               deprecated="Use e_book_client_set_self() instead."
@@ -1566,11 +1346,6 @@ refers to the user of the address book.</doc>
       <field name="priv" readable="0" private="1">
         <type name="BookPrivate" c:type="EBookPrivate*"/>
       </field>
-      <glib:signal name="auth-required" when="last">
-        <return-value transfer-ownership="none">
-          <type name="none"/>
-        </return-value>
-      </glib:signal>
       <glib:signal name="backend-died" when="last">
         <return-value transfer-ownership="none">
           <type name="none"/>
@@ -1679,14 +1454,22 @@ refers to the user of the address book.</doc>
         <type name="Contact" c:type="EContact*"/>
       </field>
     </record>
-    <enumeration name="BookChangeType" c:type="EBookChangeType">
-      <member name="added" value="0" c:identifier="E_BOOK_CHANGE_CARD_ADDED"/>
+    <enumeration name="BookChangeType"
+                 glib:type-name="EBookChangeType"
+                 glib:get-type="e_book_change_type_get_type"
+                 c:type="EBookChangeType">
+      <member name="added"
+              value="0"
+              c:identifier="E_BOOK_CHANGE_CARD_ADDED"
+              glib:nick="added"/>
       <member name="deleted"
               value="1"
-              c:identifier="E_BOOK_CHANGE_CARD_DELETED"/>
+              c:identifier="E_BOOK_CHANGE_CARD_DELETED"
+              glib:nick="deleted"/>
       <member name="modified"
               value="2"
-              c:identifier="E_BOOK_CHANGE_CARD_MODIFIED"/>
+              c:identifier="E_BOOK_CHANGE_CARD_MODIFIED"
+              glib:nick="modified"/>
     </enumeration>
     <record name="BookClass"
             c:type="EBookClass"
@@ -1720,18 +1503,6 @@ refers to the user of the address book.</doc>
             </parameter>
             <parameter name="connected" transfer-ownership="none">
               <type name="gboolean" c:type="gboolean"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="auth_required">
-        <callback name="auth_required">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="book" transfer-ownership="none">
-              <type name="Book" c:type="EBook*"/>
             </parameter>
           </parameters>
         </callback>
@@ -1812,57 +1583,11 @@ e_client_open(), and e_client_remove().</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="new_default"
-                   c:identifier="e_book_client_new_default"
-                   version="3.2"
-                   throws="1">
-        <doc xml:whitespace="preserve">Creates a new #EBookClient corresponding to the user's default
-address book.  See the documentation for e_book_client_new() for
-further information.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new but unopened #EBookClient</doc>
-          <type name="BookClient" c:type="EBookClient*"/>
-        </return-value>
-      </constructor>
-      <constructor name="new_from_uri"
-                   c:identifier="e_book_client_new_from_uri"
-                   version="3.2"
-                   throws="1">
-        <doc xml:whitespace="preserve">Creates a new #EBookClient corresponding to the given uri.  See the
-documentation for e_book_client_new() for further information.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new but unopened #EBookClient.</doc>
-          <type name="BookClient" c:type="EBookClient*"/>
-        </return-value>
-        <parameters>
-          <parameter name="uri" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the URI to load</doc>
-            <type name="utf8" c:type="gchar*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <constructor name="new_system"
-                   c:identifier="e_book_client_new_system"
-                   version="3.2"
-                   throws="1">
-        <doc xml:whitespace="preserve">Creates a new #EBookClient corresponding to the user's system
-addressbook.  See the documentation for e_book_client_new() for further
-information.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new but unopened #EBookClient.</doc>
-          <type name="BookClient" c:type="EBookClient*"/>
-        </return-value>
-      </constructor>
       <function name="error_create"
                 c:identifier="e_book_client_error_create"
                 version="3.2">
-        <doc xml:whitespace="preserve">@code. If the @custom_msg is NULL, then the error message is
-the one returned from e_book_client_error_to_string() for the @code,
-otherwise the given message is used.
-
-Returned pointer should be freed with g_error_free().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new #GError containing an E_BOOK_CLIENT_ERROR of the given</doc>
+          <doc xml:whitespace="preserve">a new #GError containing an E_BOOK_CLIENT_ERROR of the given @code. If the @custom_msg is NULL, then the error message is the one returned from e_book_client_error_to_string() for the @code, otherwise the given message is used.  Returned pointer should be freed with g_error_free().</doc>
           <type name="GLib.Error" c:type="GError*"/>
         </return-value>
         <parameters>
@@ -1905,6 +1630,10 @@ and set it in @contact and @client.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <parameter name="registry" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ESourceRegistry</doc>
+            <type name="EDataServer.SourceRegistry" c:type="ESourceRegistry*"/>
+          </parameter>
           <parameter name="contact"
                      direction="out"
                      caller-allocates="0"
@@ -1921,26 +1650,6 @@ and set it in @contact and @client.</doc>
           </parameter>
         </parameters>
       </function>
-      <function name="get_sources"
-                c:identifier="e_book_client_get_sources"
-                version="3.2"
-                throws="1">
-        <doc xml:whitespace="preserve">Populate @*sources with the list of all sources which have been
-added to Evolution.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if @sources was set, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="sources"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:whitespace="preserve">A pointer to an #ESourceList to set</doc>
-            <type name="EDataServer.SourceList" c:type="ESourceList**"/>
-          </parameter>
-        </parameters>
-      </function>
       <function name="is_self"
                 c:identifier="e_book_client_is_self"
                 version="3.2">
@@ -1953,23 +1662,6 @@ added to Evolution.</doc>
           <parameter name="contact" transfer-ownership="none">
             <doc xml:whitespace="preserve">an #EContact</doc>
             <type name="Contact" c:type="EContact*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="set_default_source"
-                c:identifier="e_book_client_set_default_source"
-                version="3.2"
-                throws="1">
-        <doc xml:whitespace="preserve">Sets @source as the "default" addressbook.  This is the source that
-will be loaded in the e_book_client_get_default_addressbook() call.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the setting was stored in libebook's ESourceList, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="source" transfer-ownership="none">
-            <doc xml:whitespace="preserve">An #ESource pointer</doc>
-            <type name="EDataServer.Source" c:type="ESource*"/>
           </parameter>
         </parameters>
       </function>
@@ -2551,8 +2243,11 @@ to a string with e_book_query_to_string().</doc>
             <doc xml:whitespace="preserve">an S-expression representing the query</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
-          <parameter name="view" transfer-ownership="none">
-            <doc xml:whitespace="preserve">(out) an #EBookClientView</doc>
+          <parameter name="view"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">an #EBookClientView</doc>
             <type name="BookClientView" c:type="EBookClientView**"/>
           </parameter>
           <parameter name="cancellable"
@@ -2938,17 +2633,6 @@ as a batch request.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
-      </method>
-      <method name="set_default"
-              c:identifier="e_book_client_set_default"
-              version="3.2"
-              throws="1">
-        <doc xml:whitespace="preserve">Sets the #ESource of the #EBookClient as the "default" addressbook.  This is the source
-that will be loaded in the e_book_client_get_default_addressbook() call.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the setting was stored in libebook's ESourceList, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
       </method>
       <method name="set_self"
               c:identifier="e_book_client_set_self"
@@ -3546,11 +3230,9 @@ it will simply return object as is stored in the cache.</doc>
         </return-value>
       </method>
       <method name="to_string" c:identifier="e_book_query_to_string">
-        <doc xml:whitespace="preserve">Return the string representation of @q.
-
-finished with.</doc>
+        <doc xml:whitespace="preserve">Return the string representation of @q.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">The string form of the query. This string should be freed when</doc>
+          <doc xml:whitespace="preserve">The string form of the query. This string should be freed when finished with.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
@@ -3713,76 +3395,110 @@ should be a vCard field name, such as #FN or #X-MSN.</doc>
               value="3"
               c:identifier="E_BOOK_QUERY_ENDS_WITH"/>
     </enumeration>
-    <enumeration name="BookStatus" c:type="EBookStatus">
-      <member name="ok" value="0" c:identifier="E_BOOK_ERROR_OK"/>
+    <enumeration name="BookStatus"
+                 glib:type-name="EBookStatus"
+                 glib:get-type="e_book_status_get_type"
+                 c:type="EBookStatus">
+      <member name="ok"
+              value="0"
+              c:identifier="E_BOOK_ERROR_OK"
+              glib:nick="ok"/>
       <member name="invalid_arg"
               value="1"
-              c:identifier="E_BOOK_ERROR_INVALID_ARG"/>
-      <member name="busy" value="2" c:identifier="E_BOOK_ERROR_BUSY"/>
+              c:identifier="E_BOOK_ERROR_INVALID_ARG"
+              glib:nick="invalid-arg"/>
+      <member name="busy"
+              value="2"
+              c:identifier="E_BOOK_ERROR_BUSY"
+              glib:nick="busy"/>
       <member name="repository_offline"
               value="3"
-              c:identifier="E_BOOK_ERROR_REPOSITORY_OFFLINE"/>
+              c:identifier="E_BOOK_ERROR_REPOSITORY_OFFLINE"
+              glib:nick="repository-offline"/>
       <member name="no_such_book"
               value="4"
-              c:identifier="E_BOOK_ERROR_NO_SUCH_BOOK"/>
+              c:identifier="E_BOOK_ERROR_NO_SUCH_BOOK"
+              glib:nick="no-such-book"/>
       <member name="no_self_contact"
               value="5"
-              c:identifier="E_BOOK_ERROR_NO_SELF_CONTACT"/>
+              c:identifier="E_BOOK_ERROR_NO_SELF_CONTACT"
+              glib:nick="no-self-contact"/>
       <member name="source_not_loaded"
               value="6"
-              c:identifier="E_BOOK_ERROR_SOURCE_NOT_LOADED"/>
+              c:identifier="E_BOOK_ERROR_SOURCE_NOT_LOADED"
+              glib:nick="source-not-loaded"/>
       <member name="source_already_loaded"
               value="7"
-              c:identifier="E_BOOK_ERROR_SOURCE_ALREADY_LOADED"/>
+              c:identifier="E_BOOK_ERROR_SOURCE_ALREADY_LOADED"
+              glib:nick="source-already-loaded"/>
       <member name="permission_denied"
               value="8"
-              c:identifier="E_BOOK_ERROR_PERMISSION_DENIED"/>
+              c:identifier="E_BOOK_ERROR_PERMISSION_DENIED"
+              glib:nick="permission-denied"/>
       <member name="contact_not_found"
               value="9"
-              c:identifier="E_BOOK_ERROR_CONTACT_NOT_FOUND"/>
+              c:identifier="E_BOOK_ERROR_CONTACT_NOT_FOUND"
+              glib:nick="contact-not-found"/>
       <member name="contact_id_already_exists"
               value="10"
-              c:identifier="E_BOOK_ERROR_CONTACT_ID_ALREADY_EXISTS"/>
+              c:identifier="E_BOOK_ERROR_CONTACT_ID_ALREADY_EXISTS"
+              glib:nick="contact-id-already-exists"/>
       <member name="protocol_not_supported"
               value="11"
-              c:identifier="E_BOOK_ERROR_PROTOCOL_NOT_SUPPORTED"/>
+              c:identifier="E_BOOK_ERROR_PROTOCOL_NOT_SUPPORTED"
+              glib:nick="protocol-not-supported"/>
       <member name="cancelled"
               value="12"
-              c:identifier="E_BOOK_ERROR_CANCELLED"/>
+              c:identifier="E_BOOK_ERROR_CANCELLED"
+              glib:nick="cancelled"/>
       <member name="could_not_cancel"
               value="13"
-              c:identifier="E_BOOK_ERROR_COULD_NOT_CANCEL"/>
+              c:identifier="E_BOOK_ERROR_COULD_NOT_CANCEL"
+              glib:nick="could-not-cancel"/>
       <member name="authentication_failed"
               value="14"
-              c:identifier="E_BOOK_ERROR_AUTHENTICATION_FAILED"/>
+              c:identifier="E_BOOK_ERROR_AUTHENTICATION_FAILED"
+              glib:nick="authentication-failed"/>
       <member name="authentication_required"
               value="15"
-              c:identifier="E_BOOK_ERROR_AUTHENTICATION_REQUIRED"/>
+              c:identifier="E_BOOK_ERROR_AUTHENTICATION_REQUIRED"
+              glib:nick="authentication-required"/>
       <member name="tls_not_available"
               value="16"
-              c:identifier="E_BOOK_ERROR_TLS_NOT_AVAILABLE"/>
+              c:identifier="E_BOOK_ERROR_TLS_NOT_AVAILABLE"
+              glib:nick="tls-not-available"/>
       <member name="dbus_exception"
               value="17"
-              c:identifier="E_BOOK_ERROR_DBUS_EXCEPTION"/>
+              c:identifier="E_BOOK_ERROR_DBUS_EXCEPTION"
+              glib:nick="dbus-exception"/>
       <member name="no_such_source"
               value="18"
-              c:identifier="E_BOOK_ERROR_NO_SUCH_SOURCE"/>
+              c:identifier="E_BOOK_ERROR_NO_SUCH_SOURCE"
+              glib:nick="no-such-source"/>
       <member name="offline_unavailable"
               value="19"
-              c:identifier="E_BOOK_ERROR_OFFLINE_UNAVAILABLE"/>
+              c:identifier="E_BOOK_ERROR_OFFLINE_UNAVAILABLE"
+              glib:nick="offline-unavailable"/>
       <member name="other_error"
               value="20"
-              c:identifier="E_BOOK_ERROR_OTHER_ERROR"/>
+              c:identifier="E_BOOK_ERROR_OTHER_ERROR"
+              glib:nick="other-error"/>
       <member name="invalid_server_version"
               value="21"
-              c:identifier="E_BOOK_ERROR_INVALID_SERVER_VERSION"/>
+              c:identifier="E_BOOK_ERROR_INVALID_SERVER_VERSION"
+              glib:nick="invalid-server-version"/>
       <member name="unsupported_authentication_method"
               value="22"
-              c:identifier="E_BOOK_ERROR_UNSUPPORTED_AUTHENTICATION_METHOD"/>
-      <member name="no_space" value="23" c:identifier="E_BOOK_ERROR_NO_SPACE"/>
+              c:identifier="E_BOOK_ERROR_UNSUPPORTED_AUTHENTICATION_METHOD"
+              glib:nick="unsupported-authentication-method"/>
+      <member name="no_space"
+              value="23"
+              c:identifier="E_BOOK_ERROR_NO_SPACE"
+              glib:nick="no-space"/>
       <member name="not_supported"
               value="24"
-              c:identifier="E_BOOK_ERROR_NOT_SUPPORTED"/>
+              c:identifier="E_BOOK_ERROR_NOT_SUPPORTED"
+              glib:nick="not-supported"/>
     </enumeration>
     <class name="BookView"
            c:symbol-prefix="book_view"
@@ -4094,23 +3810,34 @@ should be a vCard field name, such as #FN or #X-MSN.</doc>
     </record>
     <record name="BookViewPrivate" c:type="EBookViewPrivate" disguised="1">
     </record>
-    <enumeration name="BookViewStatus" c:type="EBookViewStatus">
-      <member name="status_ok" value="0" c:identifier="E_BOOK_VIEW_STATUS_OK"/>
+    <enumeration name="BookViewStatus"
+                 glib:type-name="EBookViewStatus"
+                 glib:get-type="e_book_view_status_get_type"
+                 c:type="EBookViewStatus">
+      <member name="status_ok"
+              value="0"
+              c:identifier="E_BOOK_VIEW_STATUS_OK"
+              glib:nick="status-ok"/>
       <member name="status_time_limit_exceeded"
               value="1"
-              c:identifier="E_BOOK_VIEW_STATUS_TIME_LIMIT_EXCEEDED"/>
+              c:identifier="E_BOOK_VIEW_STATUS_TIME_LIMIT_EXCEEDED"
+              glib:nick="status-time-limit-exceeded"/>
       <member name="status_size_limit_exceeded"
               value="2"
-              c:identifier="E_BOOK_VIEW_STATUS_SIZE_LIMIT_EXCEEDED"/>
+              c:identifier="E_BOOK_VIEW_STATUS_SIZE_LIMIT_EXCEEDED"
+              glib:nick="status-size-limit-exceeded"/>
       <member name="error_invalid_query"
               value="3"
-              c:identifier="E_BOOK_VIEW_ERROR_INVALID_QUERY"/>
+              c:identifier="E_BOOK_VIEW_ERROR_INVALID_QUERY"
+              glib:nick="error-invalid-query"/>
       <member name="error_query_refused"
               value="4"
-              c:identifier="E_BOOK_VIEW_ERROR_QUERY_REFUSED"/>
+              c:identifier="E_BOOK_VIEW_ERROR_QUERY_REFUSED"
+              glib:nick="error-query-refused"/>
       <member name="error_other_error"
               value="5"
-              c:identifier="E_BOOK_VIEW_ERROR_OTHER_ERROR"/>
+              c:identifier="E_BOOK_VIEW_ERROR_OTHER_ERROR"
+              glib:nick="error-other-error"/>
     </enumeration>
     <class name="Contact"
            c:symbol-prefix="contact"
@@ -4249,11 +3976,9 @@ of @field_id.</doc>
         </parameters>
       </method>
       <method name="get_attributes" c:identifier="e_contact_get_attributes">
-        <doc xml:whitespace="preserve">Gets a list of the vcard attributes for @contact's @field_id.
-
-to #EVCardAttribute, owned by the caller.</doc>
+        <doc xml:whitespace="preserve">Gets a list of the vcard attributes for @contact's @field_id.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A #GList of pointers</doc>
+          <doc xml:whitespace="preserve">A #GList of pointers to #EVCardAttribute, owned by the caller.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="VCardAttribute"/>
           </type>
@@ -4267,11 +3992,9 @@ to #EVCardAttribute, owned by the caller.</doc>
       </method>
       <method name="get_const" c:identifier="e_contact_get_const">
         <doc xml:whitespace="preserve">Gets the value of @contact's field specified by @field_id, caching
-the result so it can be freed later.
-
-#EContact.</doc>
+the result so it can be freed later.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">Depends on the field's type, owned by the</doc>
+          <doc xml:whitespace="preserve">Depends on the field's type, owned by the #EContact.</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </return-value>
         <parameters>
@@ -4287,11 +4010,9 @@ the result so it can be freed later.
               throws="1">
         <doc xml:whitespace="preserve">Tries to modify any #EContactPhoto fields which are
 stored on the local file system as type %E_CONTACT_PHOTO_TYPE_URI
-to be inlined and stored as %E_CONTACT_PHOTO_TYPE_INLINED instead.
-
-and @error is set.</doc>
+to be inlined and stored as %E_CONTACT_PHOTO_TYPE_INLINED instead.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if there were no errors, upon error %FALSE is returned</doc>
+          <doc xml:whitespace="preserve">%TRUE if there were no errors, upon error %FALSE is returned and @error is set.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -4656,6 +4377,9 @@ Attributes are added to the contact in the same order as they are in @attributes
       </property>
       <property name="im-skype-work-3" writable="1" transfer-ownership="none">
         <type name="utf8"/>
+      </property>
+      <property name="im-twitter" writable="1" transfer-ownership="none">
+        <type name="gpointer"/>
       </property>
       <property name="im-yahoo" writable="1" transfer-ownership="none">
         <type name="gpointer"/>
@@ -5264,8 +4988,11 @@ on the values of @dt.</doc>
       <member name="im_google_talk"
               value="133"
               c:identifier="E_CONTACT_IM_GOOGLE_TALK"/>
-      <member name="field_last"
+      <member name="im_twitter"
               value="134"
+              c:identifier="E_CONTACT_IM_TWITTER"/>
+      <member name="field_last"
+              value="135"
               c:identifier="E_CONTACT_FIELD_LAST"/>
       <member name="field_first"
               value="1"
@@ -5418,11 +5145,9 @@ on the values of @dt.</doc>
       <method name="get_inlined"
               c:identifier="e_contact_photo_get_inlined"
               version="3.2">
-        <doc xml:whitespace="preserve">Gets the @photo's data.
-
-#EContactPhoto, or %NULL if it has not been set.</doc>
+        <doc xml:whitespace="preserve">Gets the @photo's data.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the inlined image in the</doc>
+          <doc xml:whitespace="preserve">the inlined image in the #EContactPhoto, or %NULL if it has not been set.</doc>
           <array length="0" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -5512,6 +5237,111 @@ on the values of @dt.</doc>
     </enumeration>
     <record name="ContactPrivate" c:type="EContactPrivate" disguised="1">
     </record>
+    <enumeration name="DataBookStatus"
+                 glib:type-name="EDataBookStatus"
+                 glib:get-type="e_data_book_status_get_type"
+                 c:type="EDataBookStatus">
+      <member name="success"
+              value="0"
+              c:identifier="E_DATA_BOOK_STATUS_SUCCESS"
+              glib:nick="success"/>
+      <member name="busy"
+              value="1"
+              c:identifier="E_DATA_BOOK_STATUS_BUSY"
+              glib:nick="busy"/>
+      <member name="repository_offline"
+              value="2"
+              c:identifier="E_DATA_BOOK_STATUS_REPOSITORY_OFFLINE"
+              glib:nick="repository-offline"/>
+      <member name="permission_denied"
+              value="3"
+              c:identifier="E_DATA_BOOK_STATUS_PERMISSION_DENIED"
+              glib:nick="permission-denied"/>
+      <member name="contact_not_found"
+              value="4"
+              c:identifier="E_DATA_BOOK_STATUS_CONTACT_NOT_FOUND"
+              glib:nick="contact-not-found"/>
+      <member name="contactid_already_exists"
+              value="5"
+              c:identifier="E_DATA_BOOK_STATUS_CONTACTID_ALREADY_EXISTS"
+              glib:nick="contactid-already-exists"/>
+      <member name="authentication_failed"
+              value="6"
+              c:identifier="E_DATA_BOOK_STATUS_AUTHENTICATION_FAILED"
+              glib:nick="authentication-failed"/>
+      <member name="authentication_required"
+              value="7"
+              c:identifier="E_DATA_BOOK_STATUS_AUTHENTICATION_REQUIRED"
+              glib:nick="authentication-required"/>
+      <member name="unsupported_field"
+              value="8"
+              c:identifier="E_DATA_BOOK_STATUS_UNSUPPORTED_FIELD"
+              glib:nick="unsupported-field"/>
+      <member name="unsupported_authentication_method"
+              value="9"
+              c:identifier="E_DATA_BOOK_STATUS_UNSUPPORTED_AUTHENTICATION_METHOD"
+              glib:nick="unsupported-authentication-method"/>
+      <member name="tls_not_available"
+              value="10"
+              c:identifier="E_DATA_BOOK_STATUS_TLS_NOT_AVAILABLE"
+              glib:nick="tls-not-available"/>
+      <member name="no_such_book"
+              value="11"
+              c:identifier="E_DATA_BOOK_STATUS_NO_SUCH_BOOK"
+              glib:nick="no-such-book"/>
+      <member name="book_removed"
+              value="12"
+              c:identifier="E_DATA_BOOK_STATUS_BOOK_REMOVED"
+              glib:nick="book-removed"/>
+      <member name="offline_unavailable"
+              value="13"
+              c:identifier="E_DATA_BOOK_STATUS_OFFLINE_UNAVAILABLE"
+              glib:nick="offline-unavailable"/>
+      <member name="search_size_limit_exceeded"
+              value="14"
+              c:identifier="E_DATA_BOOK_STATUS_SEARCH_SIZE_LIMIT_EXCEEDED"
+              glib:nick="search-size-limit-exceeded"/>
+      <member name="search_time_limit_exceeded"
+              value="15"
+              c:identifier="E_DATA_BOOK_STATUS_SEARCH_TIME_LIMIT_EXCEEDED"
+              glib:nick="search-time-limit-exceeded"/>
+      <member name="invalid_query"
+              value="16"
+              c:identifier="E_DATA_BOOK_STATUS_INVALID_QUERY"
+              glib:nick="invalid-query"/>
+      <member name="query_refused"
+              value="17"
+              c:identifier="E_DATA_BOOK_STATUS_QUERY_REFUSED"
+              glib:nick="query-refused"/>
+      <member name="could_not_cancel"
+              value="18"
+              c:identifier="E_DATA_BOOK_STATUS_COULD_NOT_CANCEL"
+              glib:nick="could-not-cancel"/>
+      <member name="other_error"
+              value="19"
+              c:identifier="E_DATA_BOOK_STATUS_OTHER_ERROR"
+              glib:nick="other-error"/>
+      <member name="invalid_server_version"
+              value="20"
+              c:identifier="E_DATA_BOOK_STATUS_INVALID_SERVER_VERSION"
+              glib:nick="invalid-server-version"/>
+      <member name="no_space"
+              value="21"
+              c:identifier="E_DATA_BOOK_STATUS_NO_SPACE"
+              glib:nick="no-space"/>
+      <member name="invalid_arg"
+              value="22"
+              c:identifier="E_DATA_BOOK_STATUS_INVALID_ARG"
+              glib:nick="invalid-arg"/>
+      <member name="not_supported"
+              value="23"
+              c:identifier="E_DATA_BOOK_STATUS_NOT_SUPPORTED"
+              glib:nick="not-supported"/>
+      <member name="not_opened"
+              value="24"
+              c:identifier="E_DATA_BOOK_STATUS_NOT_OPENED"
+              glib:nick="not-opened"/>
+    </enumeration>
     <class name="Destination"
            c:symbol-prefix="destination"
            c:type="EDestination"
@@ -5566,11 +5396,9 @@ elements in @destv.</doc>
         </parameters>
       </function>
       <function name="import" c:identifier="e_destination_import">
-        <doc xml:whitespace="preserve">Creates an #EDestination from an XML document.
-
-well-formed.</doc>
+        <doc xml:whitespace="preserve">Creates an #EDestination from an XML document.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">An #EDestination, or %NULL if the document was not</doc>
+          <doc xml:whitespace="preserve">An #EDestination, or %NULL if the document was not well-formed.</doc>
           <type name="Destination" c:type="EDestination*"/>
         </return-value>
         <parameters>
@@ -5582,11 +5410,9 @@ well-formed.</doc>
       </function>
       <function name="importv" c:identifier="e_destination_importv">
         <doc xml:whitespace="preserve">Creates an array of pointers to #EDestination elements
-from an XML document.
-
-#EDestination elements.</doc>
+from an XML document.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A %NULL-terminated array of pointers to</doc>
+          <doc xml:whitespace="preserve">A %NULL-terminated array of pointers to #EDestination elements.</doc>
           <type name="Destination" c:type="EDestination**"/>
         </return-value>
         <parameters>
@@ -5652,11 +5478,9 @@ and values in @attr, suitable for an address book.</doc>
       <method name="get_address" c:identifier="e_destination_get_address">
         <doc xml:whitespace="preserve">Gets the encoded name and email address, or in the case of lists, the
 encoded list of email addresses, from @dest.  The returned string is
-suitable for use in an email header, but not for displaying to users.
-
-email header, or %NULL if the destination was empty</doc>
+suitable for use in an email header, but not for displaying to users.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">an encoded destination string suitable for use in an</doc>
+          <doc xml:whitespace="preserve">an encoded destination string suitable for use in an email header, or %NULL if the destination was empty</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
@@ -5991,6 +5815,10 @@ parsing the supplied string. Useful for user input.</doc>
         </callback>
       </field>
     </record>
+    <record name="DestinationPrivate"
+            c:type="EDestinationPrivate"
+            disguised="1">
+    </record>
     <record name="NameWestern" c:type="ENameWestern">
       <field name="prefix" writable="1">
         <type name="utf8" c:type="gchar*"/>
@@ -6269,11 +6097,9 @@ parse the vcard if not already parsed.</doc>
       </method>
       <method name="get_attributes" c:identifier="e_vcard_get_attributes">
         <doc xml:whitespace="preserve">Gets the list of attributes from @evcard. The list and its
-contents are owned by @evcard, and must not be freed.
-
-of type #EVCardAttribute.</doc>
+contents are owned by @evcard, and must not be freed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A list of attributes</doc>
+          <doc xml:whitespace="preserve">A list of attributes of type #EVCardAttribute.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="VCardAttribute"/>
           </type>
@@ -6314,7 +6140,7 @@ their group names.</doc>
             <doc xml:whitespace="preserve">group name of attributes to be removed</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
-          <parameter name="attr_name" transfer-ownership="none" allow-none="1">
+          <parameter name="attr_name" transfer-ownership="none">
             <doc xml:whitespace="preserve">name of the arributes to be removed</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
@@ -6491,11 +6317,9 @@ adds it to @attr's list of values.</doc>
       </method>
       <method name="get_param" c:identifier="e_vcard_attribute_get_param">
         <doc xml:whitespace="preserve">Gets the list of values for the paramater @name from @attr. The list and its
-contents are owned by @attr, and must not be freed.
-
-representing the parameter's values.</doc>
+contents are owned by @attr, and must not be freed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A list of string elements</doc>
+          <doc xml:whitespace="preserve">A list of string elements representing the parameter's values.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="utf8"/>
           </type>
@@ -6509,11 +6333,9 @@ representing the parameter's values.</doc>
       </method>
       <method name="get_params" c:identifier="e_vcard_attribute_get_params">
         <doc xml:whitespace="preserve">Gets the list of parameters from @attr. The list and its
-contents are owned by @attr, and must not be freed.
-
-elements of type #EVCardAttributeParam.</doc>
+contents are owned by @attr, and must not be freed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A list of</doc>
+          <doc xml:whitespace="preserve">A list of elements of type #EVCardAttributeParam.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="VCardAttributeParam"/>
           </type>
@@ -6539,12 +6361,9 @@ Note: this function seems currently to be unused. Could be removed.</doc>
       </method>
       <method name="get_values" c:identifier="e_vcard_attribute_get_values">
         <doc xml:whitespace="preserve">Gets the list of values from @attr. The list and its
-contents are owned by @attr, and must not be freed.
-
-will all be non-%NULL, but may be empty strings. The list itself may be
-empty.</doc>
+contents are owned by @attr, and must not be freed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A list of string values. They</doc>
+          <doc xml:whitespace="preserve">A list of string values. They will all be non-%NULL, but may be empty strings. The list itself may be empty.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="utf8"/>
           </type>
@@ -6710,11 +6529,9 @@ and must not be freed.</doc>
       <method name="get_values"
               c:identifier="e_vcard_attribute_param_get_values">
         <doc xml:whitespace="preserve">Gets the list of values from @param. The list and its
-contents are owned by @param, and must not be freed.
-
-representing the parameter's values.</doc>
+contents are owned by @param, and must not be freed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A list of string elements</doc>
+          <doc xml:whitespace="preserve">A list of string elements representing the parameter's values.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="utf8"/>
           </type>

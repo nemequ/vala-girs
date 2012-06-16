@@ -122,8 +122,8 @@ All other structs can be casted to a #GIBaseInfo, for instance:
 &lt;example&gt;
 &lt;title&gt;Casting a #GIFunctionInfo to #GIBaseInfo&lt;/title&gt;
 &lt;programlisting&gt;
-GIFunctionInfo *function_info = ...;
-GIBaseInfo *info = (GIBaseInfo*)function_info;
+   GIFunctionInfo *function_info = ...;
+   GIBaseInfo *info = (GIBaseInfo*)function_info;
 &lt;/programlisting&gt;
 &lt;/example&gt;
 Most #GIRepository APIs returning a #GIBaseInfo is actually creating a new struct, in other
@@ -134,23 +134,23 @@ g_irepository_find_by_name(), g_irepository_find_by_gtype() or g_irepository_get
 &lt;example&gt;
 &lt;title&gt;Getting the Button of the Gtk typelib&lt;/title&gt;
 &lt;programlisting&gt;
-GIBaseInfo *button_info = g_irepository_find_by_name(NULL, "Gtk", "Button");
-... use button_info ...
-g_base_info_unref(button_info);
+   GIBaseInfo *button_info = g_irepository_find_by_name(NULL, "Gtk", "Button");
+   ... use button_info ...
+   g_base_info_unref(button_info);
 &lt;/programlisting&gt;
 &lt;/example&gt;
 
 &lt;refsect1 id="gi-gibaseinfo.struct-hierarchy" role="struct_hierarchy"&gt;
 &lt;title role="struct_hierarchy.title"&gt;Struct hierarchy&lt;/title&gt;
 &lt;synopsis&gt;
-GIBaseInfo
-+----&lt;link linkend="gi-GIArgInfo"&gt;GIArgInfo&lt;/link&gt;
-+----&lt;link linkend="gi-GICallableInfo"&gt;GICallableInfo&lt;/link&gt;
-+----&lt;link linkend="gi-GIConstantInfo"&gt;GIConstantInfo&lt;/link&gt;
-+----&lt;link linkend="gi-GIFieldInfo"&gt;GIFieldInfo&lt;/link&gt;
-+----&lt;link linkend="gi-GIPropertyInfo"&gt;GIPropertyInfo&lt;/link&gt;
-+----&lt;link linkend="gi-GIRegisteredTypeInfo"&gt;GIRegisteredTypeInfo&lt;/link&gt;
-+----&lt;link linkend="gi-GITypeInfo"&gt;GITypeInfo&lt;/link&gt;
+  GIBaseInfo
+   +----&lt;link linkend="gi-GIArgInfo"&gt;GIArgInfo&lt;/link&gt;
+   +----&lt;link linkend="gi-GICallableInfo"&gt;GICallableInfo&lt;/link&gt;
+   +----&lt;link linkend="gi-GIConstantInfo"&gt;GIConstantInfo&lt;/link&gt;
+   +----&lt;link linkend="gi-GIFieldInfo"&gt;GIFieldInfo&lt;/link&gt;
+   +----&lt;link linkend="gi-GIPropertyInfo"&gt;GIPropertyInfo&lt;/link&gt;
+   +----&lt;link linkend="gi-GIRegisteredTypeInfo"&gt;GIRegisteredTypeInfo&lt;/link&gt;
+   +----&lt;link linkend="gi-GITypeInfo"&gt;GITypeInfo&lt;/link&gt;
 &lt;/synopsis&gt;
 &lt;/refsect1&gt;</doc>
       <method name="equal" c:identifier="g_base_info_equal">
@@ -208,6 +208,13 @@ the name of the function.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <method name="get_type" c:identifier="g_base_info_get_type">
+        <doc xml:whitespace="preserve">Obtain the info type of the GIBaseInfo.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the info type of @info</doc>
+          <type name="InfoType" c:type="GIInfoType"/>
+        </return-value>
+      </method>
       <method name="get_typelib" c:identifier="g_base_info_get_typelib">
         <doc xml:whitespace="preserve">Obtain the typelib this @info belongs to</doc>
         <return-value transfer-ownership="none">
@@ -238,13 +245,13 @@ and must not be freed.
 void
 print_attributes (GIBaseInfo *info)
 {
-GIAttributeIter iter = { 0, };
-char *name;
-char *value;
-while (g_base_info_iterate_attributes (info, &amp;iter, &amp;name, &amp;value))
-{
-g_print ("attribute name: %s value: %s", name, value);
-}
+  GIAttributeIter iter = { 0, };
+  char *name;
+  char *value;
+  while (g_base_info_iterate_attributes (info, &amp;iter, &amp;name, &amp;value))
+    {
+      g_print ("attribute name: %s value: %s", name, value);
+    }
 }
 &lt;/programlisting&gt;
 &lt;/example&gt;</doc>
@@ -432,6 +439,7 @@ particular process, but this function is provided in the unlikely
 eventuality that it would become possible, and as a convenience for
 higher level language bindings to conform to the GObject method
 call conventions.
+
 All methods on #GIRepository also accept %NULL as an instance
 parameter to mean this default repository, which is usually more
 convenient for C.</doc>
@@ -497,11 +505,9 @@ available) for @namespace_ in this @repository.</doc>
         <doc xml:whitespace="preserve">Searches for the enum type corresponding to the given #GError
 domain. Before calling this function for a particular namespace,
 you must call g_irepository_require() once to load the namespace, or
-otherwise ensure the namespace has already been loaded.
-
-enum type, or %NULL</doc>
+otherwise ensure the namespace has already been loaded.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">#GIEnumInfo representing metadata about @domain's</doc>
+          <doc xml:whitespace="preserve">#GIEnumInfo representing metadata about @domain's enum type, or %NULL</doc>
           <type name="EnumInfo" c:type="GIEnumInfo*"/>
         </return-value>
         <parameters>
@@ -948,11 +954,16 @@ free them.</doc>
     </record>
     <bitfield name="VFuncInfoFlags" c:type="GIVFuncInfoFlags">
       <doc xml:whitespace="preserve">Flags of a #GIVFuncInfo struct.</doc>
-      <member name="chain_up" value="1" c:identifier="GI_VFUNC_MUST_CHAIN_UP"/>
-      <member name="override" value="2" c:identifier="GI_VFUNC_MUST_OVERRIDE"/>
-      <member name="not_override"
+      <member name="must_chain_up"
+              value="1"
+              c:identifier="GI_VFUNC_MUST_CHAIN_UP"/>
+      <member name="must_override"
+              value="2"
+              c:identifier="GI_VFUNC_MUST_OVERRIDE"/>
+      <member name="must_not_override"
               value="4"
               c:identifier="GI_VFUNC_MUST_NOT_OVERRIDE"/>
+      <member name="throws" value="8" c:identifier="GI_VFUNC_THROWS"/>
     </bitfield>
     <union name="_Argument" c:type="_GIArgument">
       <field name="v_boolean" writable="1">
@@ -1124,11 +1135,9 @@ the resources required to invoke it can be freed.
       </parameters>
     </function>
     <function name="arg_info_get_type" c:identifier="g_arg_info_get_type">
-      <doc xml:whitespace="preserve">Obtain the type information for @info.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for @info.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIArgInfo, free it with</doc>
+        <doc xml:whitespace="preserve">the #GIArgInfo, free it with g_base_info_unref() when done.</doc>
         <type name="TypeInfo" c:type="GITypeInfo*"/>
       </return-value>
       <parameters>
@@ -1236,26 +1245,11 @@ The initialized @type must not be referenced after @info is deallocated.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="base_info_get_type" c:identifier="g_base_info_get_type">
-      <doc xml:whitespace="preserve">Obtain the info type of the GIBaseInfo.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">the info type of @info</doc>
-        <type name="InfoType" c:type="GIInfoType"/>
-      </return-value>
-      <parameters>
-        <parameter name="info" transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #GIBaseInfo</doc>
-          <type name="BaseInfo" c:type="GIBaseInfo*"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="callable_info_get_arg"
               c:identifier="g_callable_info_get_arg">
-      <doc xml:whitespace="preserve">Obtain information about a particular argument of this callable.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain information about a particular argument of this callable.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIArgInfo. Free it with</doc>
+        <doc xml:whitespace="preserve">the #GIArgInfo. Free it with g_base_info_unref() when done.</doc>
         <type name="ArgInfo" c:type="GIArgInfo*"/>
       </return-value>
       <parameters>
@@ -1318,17 +1312,52 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="callable_info_get_return_type"
               c:identifier="g_callable_info_get_return_type">
-      <doc xml:whitespace="preserve">Obtain the return type of a callable item as a #GITypeInfo.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the return type of a callable item as a #GITypeInfo.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GITypeInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GITypeInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="TypeInfo" c:type="GITypeInfo*"/>
       </return-value>
       <parameters>
         <parameter name="info" transfer-ownership="none">
           <doc xml:whitespace="preserve">a #GICallableInfo</doc>
           <type name="CallableInfo" c:type="GICallableInfo*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="callable_info_invoke"
+              c:identifier="g_callable_info_invoke"
+              introspectable="0"
+              throws="1">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="info" transfer-ownership="none">
+          <type name="CallableInfo" c:type="GICallableInfo*"/>
+        </parameter>
+        <parameter name="function" transfer-ownership="none">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="in_args" transfer-ownership="none">
+          <type c:type="GIArgument*"/>
+        </parameter>
+        <parameter name="n_in_args" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="out_args" transfer-ownership="none">
+          <type c:type="GIArgument*"/>
+        </parameter>
+        <parameter name="n_out_args" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="return_value" transfer-ownership="none">
+          <type c:type="GIArgument*"/>
+        </parameter>
+        <parameter name="is_method" transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+        <parameter name="throws" transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
         </parameter>
       </parameters>
     </function>
@@ -1473,11 +1502,9 @@ The initialized @type must not be referenced after @info is deallocated.</doc>
     </function>
     <function name="constant_info_get_type"
               c:identifier="g_constant_info_get_type">
-      <doc xml:whitespace="preserve">Obtain the type of the constant as a #GITypeInfo.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type of the constant as a #GITypeInfo.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GITypeInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GITypeInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="TypeInfo" c:type="GITypeInfo*"/>
       </return-value>
       <parameters>
@@ -1526,11 +1553,9 @@ Free the value with g_constant_info_free_value().</doc>
     <function name="enum_info_get_method"
               c:identifier="g_enum_info_get_method"
               version="1.29.17">
-      <doc xml:whitespace="preserve">Obtain an enum type method at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an enum type method at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -1561,11 +1586,14 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="enum_info_get_n_values"
               c:identifier="g_enum_info_get_n_values">
+      <doc xml:whitespace="preserve">Obtain the number of values this enumeration contains.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">the number of enumeration values</doc>
         <type name="gint" c:type="gint"/>
       </return-value>
       <parameters>
         <parameter name="info" transfer-ownership="none">
+          <doc xml:whitespace="preserve">a #GIEnumInfo</doc>
           <type name="EnumInfo" c:type="GIEnumInfo*"/>
         </parameter>
       </parameters>
@@ -1574,6 +1602,7 @@ g_base_info_unref() when done.</doc>
               c:identifier="g_enum_info_get_storage_type">
       <doc xml:whitespace="preserve">Obtain the tag of the type used for the enum in the C ABI. This will
 will be a signed or unsigned integral type.
+
 Note that in the current implementation the width of the type is
 computed correctly, but the signed or unsigned nature of the type
 may not match the sign of the type used by the C compiler.</doc>
@@ -1589,11 +1618,9 @@ may not match the sign of the type used by the C compiler.</doc>
       </parameters>
     </function>
     <function name="enum_info_get_value" c:identifier="g_enum_info_get_value">
-      <doc xml:whitespace="preserve">Obtain a value for this enumeration.
-
-free the struct with g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain a value for this enumeration.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the enumeration value or %NULL if type tag is wrong,</doc>
+        <doc xml:whitespace="preserve">the enumeration value or %NULL if type tag is wrong, free the struct with g_base_info_unref() when done.</doc>
         <type name="ValueInfo" c:type="GIValueInfo*"/>
       </return-value>
       <parameters>
@@ -1678,11 +1705,9 @@ much space you need to allocate to store the field.</doc>
       </parameters>
     </function>
     <function name="field_info_get_type" c:identifier="g_field_info_get_type">
-      <doc xml:whitespace="preserve">Obtain the type of a field as a #GITypeInfo.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type of a field as a #GITypeInfo.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GITypeInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GITypeInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="TypeInfo" c:type="GITypeInfo*"/>
       </return-value>
       <parameters>
@@ -1739,11 +1764,9 @@ with a type such as 'char *' must be set with a setter function.</doc>
       <doc xml:whitespace="preserve">Obtain the property associated with this #GIFunctionInfo.
 Only #GIFunctionInfo with the flag %GI_FUNCTION_IS_GETTER or
 %GI_FUNCTION_IS_SETTER have a property set. For other cases,
-%NULL will be returned.
-
-g_base_info_unref() when done.</doc>
+%NULL will be returned.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the property or %NULL if not set. Free it with</doc>
+        <doc xml:whitespace="preserve">the property or %NULL if not set. Free it with g_base_info_unref() when done.</doc>
         <type name="PropertyInfo" c:type="GIPropertyInfo*"/>
       </return-value>
       <parameters>
@@ -1773,11 +1796,9 @@ g_module_symbol().</doc>
               c:identifier="g_function_info_get_vfunc">
       <doc xml:whitespace="preserve">Obtain the virtual function associated with this #GIFunctionInfo.
 Only #GIFunctionInfo with the flag %GI_FUNCTION_WRAPS_VFUNC has
-a virtual function set. For other cases, %NULL will be returned.
-
-Free it by calling g_base_info_unref() when done.</doc>
+a virtual function set. For other cases, %NULL will be returned.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the virtual function or %NULL if not set.</doc>
+        <doc xml:whitespace="preserve">the virtual function or %NULL if not set. Free it by calling g_base_info_unref() when done.</doc>
         <type name="VFuncInfo" c:type="GIVFuncInfo*"/>
       </return-value>
       <parameters>
@@ -1796,11 +1817,9 @@ arguments. Note that inout parameters must appear in both
 argument lists. This function uses dlsym() to obtain a pointer
 to the function, so the library or shared object containing the
 described function must either be linked to the caller, or must
-have been g_module_symbol()&lt;!-- --&gt;ed before calling this function.
-
-error occurred.</doc>
+have been g_module_symbol()&lt;!-- --&gt;ed before calling this function.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">%TRUE if the function has been invoked, %FALSE if an</doc>
+        <doc xml:whitespace="preserve">%TRUE if the function has been invoked, %FALSE if an error occurred.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
@@ -1865,11 +1884,9 @@ error occurred.</doc>
     <function name="interface_info_find_method"
               c:identifier="g_interface_info_find_method">
       <doc xml:whitespace="preserve">Obtain a method of the interface type given a @name. %NULL will be
-returned if there's no method available with that name.
-
-Free the struct by calling g_base_info_unref() when done.</doc>
+returned if there's no method available with that name.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo or %NULL if none found.</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo or %NULL if none found. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -1886,11 +1903,9 @@ Free the struct by calling g_base_info_unref() when done.</doc>
     <function name="interface_info_find_vfunc"
               c:identifier="g_interface_info_find_vfunc">
       <doc xml:whitespace="preserve">Locate a virtual function slot with name @name. See the documentation
-for g_object_info_find_vfunc() for more information on virtuals.
-
-g_base_info_unref() when done.</doc>
+for g_object_info_find_vfunc() for more information on virtuals.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIVFuncInfo, or %NULL. Free it with</doc>
+        <doc xml:whitespace="preserve">the #GIVFuncInfo, or %NULL. Free it with g_base_info_unref() when done.</doc>
         <type name="VFuncInfo" c:type="GIVFuncInfo*"/>
       </return-value>
       <parameters>
@@ -1906,11 +1921,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="interface_info_get_constant"
               c:identifier="g_interface_info_get_constant">
-      <doc xml:whitespace="preserve">Obtain an interface type constant at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an interface type constant at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIConstantInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIConstantInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="ConstantInfo" c:type="GIConstantInfo*"/>
       </return-value>
       <parameters>
@@ -1926,11 +1939,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="interface_info_get_iface_struct"
               c:identifier="g_interface_info_get_iface_struct">
-      <doc xml:whitespace="preserve">Returns the layout C structure associated with this #GInterface.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Returns the layout C structure associated with this #GInterface.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIStructInfo or %NULL. Free it with</doc>
+        <doc xml:whitespace="preserve">the #GIStructInfo or %NULL. Free it with g_base_info_unref() when done.</doc>
         <type name="StructInfo" c:type="GIStructInfo*"/>
       </return-value>
       <parameters>
@@ -1942,11 +1953,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="interface_info_get_method"
               c:identifier="g_interface_info_get_method">
-      <doc xml:whitespace="preserve">Obtain an interface type method at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an interface type method at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -2048,11 +2057,9 @@ interface, similar to an base class for GObjects.</doc>
     </function>
     <function name="interface_info_get_prerequisite"
               c:identifier="g_interface_info_get_prerequisite">
-      <doc xml:whitespace="preserve">Obtain an interface type prerequisites index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an interface type prerequisites index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the prerequisites as a #GIBaseInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the prerequisites as a #GIBaseInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="BaseInfo" c:type="GIBaseInfo*"/>
       </return-value>
       <parameters>
@@ -2068,11 +2075,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="interface_info_get_property"
               c:identifier="g_interface_info_get_property">
-      <doc xml:whitespace="preserve">Obtain an interface type property at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an interface type property at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIPropertyInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIPropertyInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="PropertyInfo" c:type="GIPropertyInfo*"/>
       </return-value>
       <parameters>
@@ -2088,11 +2093,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="interface_info_get_signal"
               c:identifier="g_interface_info_get_signal">
-      <doc xml:whitespace="preserve">Obtain an interface type signal at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an interface type signal at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GISignalInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GISignalInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="SignalInfo" c:type="GISignalInfo*"/>
       </return-value>
       <parameters>
@@ -2108,11 +2111,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="interface_info_get_vfunc"
               c:identifier="g_interface_info_get_vfunc">
-      <doc xml:whitespace="preserve">Obtain an interface type virtual function at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an interface type virtual function at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIVFuncInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIVFuncInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="VFuncInfo" c:type="GIVFuncInfo*"/>
       </return-value>
       <parameters>
@@ -2147,11 +2148,9 @@ g_function_info_invoke().</doc>
     <function name="object_info_find_method"
               c:identifier="g_object_info_find_method">
       <doc xml:whitespace="preserve">Obtain a method of the object type given a @name. %NULL will be
-returned if there's no method available with that name.
-
-g_base_info_unref() when done.</doc>
+returned if there's no method available with that name.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -2172,11 +2171,9 @@ object @info and any interfaces it implements.  %NULL will be
 returned if there's no method available with that name.
 
 Note that this function does *not* search parent classes; you will have
-to chain up if that's desired.
-
-g_base_info_unref() when done.</doc>
+to chain up if that's desired.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -2223,11 +2220,9 @@ a concrete method associated for a virtual. If there is one, it may
 be retrieved using g_vfunc_info_get_invoker(), otherwise %NULL will be
 returned.
 See the documentation for g_vfunc_info_get_invoker() for more
-information on invoking virtuals.
-
-g_base_info_unref() when done.</doc>
+information on invoking virtuals.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIVFuncInfo, or %NULL. Free it with</doc>
+        <doc xml:whitespace="preserve">the #GIVFuncInfo, or %NULL. Free it with g_base_info_unref() when done.</doc>
         <type name="VFuncInfo" c:type="GIVFuncInfo*"/>
       </return-value>
       <parameters>
@@ -2238,6 +2233,39 @@ g_base_info_unref() when done.</doc>
         <parameter name="name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of a virtual function to find.</doc>
           <type name="utf8" c:type="gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="object_info_find_vfunc_using_interfaces"
+              c:identifier="g_object_info_find_vfunc_using_interfaces">
+      <doc xml:whitespace="preserve">Locate a virtual function slot with name @name, searching both the object
+@info and any interfaces it implements.  Note that the namespace for
+virtuals is distinct from that of methods; there may or may not be a
+concrete method associated for a virtual. If there is one, it may be
+retrieved using g_vfunc_info_get_invoker(), otherwise %NULL will be
+returned.
+
+Note that this function does *not* search parent classes; you will have
+to chain up if that's desired.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling g_base_info_unref() when done.</doc>
+        <type name="VFuncInfo" c:type="GIVFuncInfo*"/>
+      </return-value>
+      <parameters>
+        <parameter name="info" transfer-ownership="none">
+          <doc xml:whitespace="preserve">a #GIObjectInfo</doc>
+          <type name="ObjectInfo" c:type="GIObjectInfo*"/>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <doc xml:whitespace="preserve">name of method to obtain</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+        <parameter name="implementor"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:whitespace="preserve">The implementor of the interface</doc>
+          <type name="ObjectInfo" c:type="GIObjectInfo**"/>
         </parameter>
       </parameters>
     </function>
@@ -2259,11 +2287,9 @@ instantiated</doc>
     <function name="object_info_get_class_struct"
               c:identifier="g_object_info_get_class_struct">
       <doc xml:whitespace="preserve">Every #GObject has two structures; an instance structure and a class
-structure.  This function returns the metadata for the class structure.
-
-g_base_info_unref() when done.</doc>
+structure.  This function returns the metadata for the class structure.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIStructInfo or %NULL. Free with</doc>
+        <doc xml:whitespace="preserve">the #GIStructInfo or %NULL. Free with g_base_info_unref() when done.</doc>
         <type name="StructInfo" c:type="GIStructInfo*"/>
       </return-value>
       <parameters>
@@ -2275,11 +2301,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="object_info_get_constant"
               c:identifier="g_object_info_get_constant">
-      <doc xml:whitespace="preserve">Obtain an object type constant at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type constant at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIConstantInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIConstantInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="ConstantInfo" c:type="GIConstantInfo*"/>
       </return-value>
       <parameters>
@@ -2295,11 +2319,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="object_info_get_field"
               c:identifier="g_object_info_get_field">
-      <doc xml:whitespace="preserve">Obtain an object type field at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type field at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFieldInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIFieldInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FieldInfo" c:type="GIFieldInfo*"/>
       </return-value>
       <parameters>
@@ -2367,11 +2389,9 @@ the base classes of this type, starting at the top type.</doc>
     </function>
     <function name="object_info_get_interface"
               c:identifier="g_object_info_get_interface">
-      <doc xml:whitespace="preserve">Obtain an object type interface at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type interface at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIInterfaceInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIInterfaceInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="InterfaceInfo" c:type="GIInterfaceInfo*"/>
       </return-value>
       <parameters>
@@ -2387,11 +2407,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="object_info_get_method"
               c:identifier="g_object_info_get_method">
-      <doc xml:whitespace="preserve">Obtain an object type method at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type method at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -2505,11 +2523,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="object_info_get_parent"
               c:identifier="g_object_info_get_parent">
-      <doc xml:whitespace="preserve">Obtain the parent of the object type.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the parent of the object type.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIObjectInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIObjectInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="ObjectInfo" c:type="GIObjectInfo*"/>
       </return-value>
       <parameters>
@@ -2521,11 +2537,9 @@ g_base_info_unref() when done.</doc>
     </function>
     <function name="object_info_get_property"
               c:identifier="g_object_info_get_property">
-      <doc xml:whitespace="preserve">Obtain an object type property at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type property at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIPropertyInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIPropertyInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="PropertyInfo" c:type="GIPropertyInfo*"/>
       </return-value>
       <parameters>
@@ -2613,11 +2627,9 @@ the base classes of this type, starting at the top type.</doc>
     </function>
     <function name="object_info_get_signal"
               c:identifier="g_object_info_get_signal">
-      <doc xml:whitespace="preserve">Obtain an object type signal at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type signal at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GISignalInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GISignalInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="SignalInfo" c:type="GISignalInfo*"/>
       </return-value>
       <parameters>
@@ -2698,11 +2710,9 @@ the base classes of this type, starting at the top type.</doc>
     </function>
     <function name="object_info_get_vfunc"
               c:identifier="g_object_info_get_vfunc">
-      <doc xml:whitespace="preserve">Obtain an object type virtual function at index @n.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain an object type virtual function at index @n.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIVFuncInfo. Free the struct by calling</doc>
+        <doc xml:whitespace="preserve">the #GIVFuncInfo. Free the struct by calling g_base_info_unref() when done.</doc>
         <type name="VFuncInfo" c:type="GIVFuncInfo*"/>
       </return-value>
       <parameters>
@@ -2748,11 +2758,9 @@ information about transfer values.</doc>
     </function>
     <function name="property_info_get_type"
               c:identifier="g_property_info_get_type">
-      <doc xml:whitespace="preserve">Obtain the type information for the property @info.
-
-g_base_info_unref() when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for the property @info.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GITypeInfo, free it with</doc>
+        <doc xml:whitespace="preserve">the #GITypeInfo, free it with g_base_info_unref() when done.</doc>
         <type name="TypeInfo" c:type="GITypeInfo*"/>
       </return-value>
       <parameters>
@@ -2784,11 +2792,9 @@ that the shared library which provides the type_init function for this
       <doc xml:whitespace="preserve">Obtain the type init function for @info. The type init function is the
 function which will register the GType within the GObject type system.
 Usually this is not called by langauge bindings or applications, use
-g_registered_type_info_get_g_type() directly instead.
-
-passing into g_module_symbol().</doc>
+g_registered_type_info_get_g_type() directly instead.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">the symbol name of the type init function, suitable for</doc>
+        <doc xml:whitespace="preserve">the symbol name of the type init function, suitable for passing into g_module_symbol().</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
@@ -2861,11 +2867,9 @@ stop the emission of the signal.</doc>
     </function>
     <function name="struct_info_find_method"
               c:identifier="g_struct_info_find_method">
-      <doc xml:whitespace="preserve">Obtain the type information for method named @name.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for method named @name.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -2895,11 +2899,9 @@ when done.</doc>
     </function>
     <function name="struct_info_get_field"
               c:identifier="g_struct_info_get_field">
-      <doc xml:whitespace="preserve">Obtain the type information for field with specified index.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for field with specified index.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFieldInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIFieldInfo, free it with g_base_info_unref() when done.</doc>
         <type name="FieldInfo" c:type="GIFieldInfo*"/>
       </return-value>
       <parameters>
@@ -2915,11 +2917,9 @@ when done.</doc>
     </function>
     <function name="struct_info_get_method"
               c:identifier="g_struct_info_get_method">
-      <doc xml:whitespace="preserve">Obtain the type information for method with specified index.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for method with specified index.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -3053,11 +3053,9 @@ returned.</doc>
       <doc xml:whitespace="preserve">For types which have #GI_TYPE_TAG_INTERFACE such as GObjects and boxed values,
 this function returns full information about the referenced type.  You can then
 inspect the type of the returned #GIBaseInfo to further query whether it is
-a concrete GObject, a GInterface, a structure, etc. using g_base_info_get_type().
-
-g_base_info_unref() when done.</doc>
+a concrete GObject, a GInterface, a structure, etc. using g_base_info_get_type().</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIBaseInfo, or %NULL. Free it with</doc>
+        <doc xml:whitespace="preserve">the #GIBaseInfo, or %NULL. Free it with g_base_info_unref() when done.</doc>
         <type name="BaseInfo" c:type="GIBaseInfo*"/>
       </return-value>
       <parameters>
@@ -3143,11 +3141,9 @@ of type tags.</doc>
     </function>
     <function name="union_info_find_method"
               c:identifier="g_union_info_find_method">
-      <doc xml:whitespace="preserve">Obtain the type information for method named @name.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for method named @name.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -3179,11 +3175,9 @@ when done.</doc>
               c:identifier="g_union_info_get_discriminator">
       <doc xml:whitespace="preserve">Obtain discriminator value assigned for n-th union field, i.e. n-th
 union field is the active one if discriminator contains this
-constant.
-
-when done.</doc>
+constant.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIConstantInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIConstantInfo, free it with g_base_info_unref() when done.</doc>
         <type name="ConstantInfo" c:type="GIConstantInfo*"/>
       </return-value>
       <parameters>
@@ -3210,11 +3204,9 @@ when done.</doc>
     </function>
     <function name="union_info_get_discriminator_type"
               c:identifier="g_union_info_get_discriminator_type">
-      <doc xml:whitespace="preserve">Obtain the type information of the union discriminator.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information of the union discriminator.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GITypeInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GITypeInfo, free it with g_base_info_unref() when done.</doc>
         <type name="TypeInfo" c:type="GITypeInfo*"/>
       </return-value>
       <parameters>
@@ -3226,11 +3218,9 @@ when done.</doc>
     </function>
     <function name="union_info_get_field"
               c:identifier="g_union_info_get_field">
-      <doc xml:whitespace="preserve">Obtain the type information for field with specified index.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for field with specified index.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFieldInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIFieldInfo, free it with g_base_info_unref() when done.</doc>
         <type name="FieldInfo" c:type="GIFieldInfo*"/>
       </return-value>
       <parameters>
@@ -3246,11 +3236,9 @@ when done.</doc>
     </function>
     <function name="union_info_get_method"
               c:identifier="g_union_info_get_method">
-      <doc xml:whitespace="preserve">Obtain the type information for method with specified index.
-
-when done.</doc>
+      <doc xml:whitespace="preserve">Obtain the type information for method with specified index.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref()</doc>
+        <doc xml:whitespace="preserve">the #GIFunctionInfo, free it with g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -3321,12 +3309,9 @@ when done.</doc>
     </function>
     <function name="value_info_get_value"
               c:identifier="g_value_info_get_value">
-      <doc xml:whitespace="preserve">Obtain the enumeration value of the #GIValueInfo.
-
-as a 32-bit signed or unsigned value. The use of gint64 as the
-return type is to allow both.</doc>
+      <doc xml:whitespace="preserve">Obtain the enumeration value of the #GIValueInfo.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">the enumeration value. This will always be representable</doc>
+        <doc xml:whitespace="preserve">the enumeration value. This will always be representable as a 32-bit signed or unsigned value. The use of gint64 as the return type is to allow both.</doc>
         <type name="gint64" c:type="gint64"/>
       </return-value>
       <parameters>
@@ -3377,11 +3362,9 @@ more information about possible flag values.</doc>
       <doc xml:whitespace="preserve">If this virtual function has an associated invoker method, this
 method will return it.  An invoker method is a C entry point.
 
-Not all virtuals will have invokers.
-
-g_base_info_unref() when done.</doc>
+Not all virtuals will have invokers.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">the #GIVFuncInfo or %NULL. Free it with</doc>
+        <doc xml:whitespace="preserve">the #GIVFuncInfo or %NULL. Free it with g_base_info_unref() when done.</doc>
         <type name="FunctionInfo" c:type="GIFunctionInfo*"/>
       </return-value>
       <parameters>
@@ -3428,11 +3411,9 @@ this virtual function belongs.</doc>
               throws="1">
       <doc xml:whitespace="preserve">Invokes the function described in @info with the given
 arguments. Note that inout parameters must appear in both
-argument lists.
-
-error occurred.</doc>
+argument lists.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">%TRUE if the function has been invoked, %FALSE if an</doc>
+        <doc xml:whitespace="preserve">%TRUE if the function has been invoked, %FALSE if an error occurred.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>

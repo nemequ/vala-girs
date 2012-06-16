@@ -646,7 +646,7 @@ convenience of checking whether a domain is authorized by the #GDataAuthorizer r
 For example:
 |[
 if (gdata_authorizer_is_authorized_for_domain (gdata_service_get_authorizer (my_service), my_domain) == TRUE) {
-/&lt;!-- --&gt;* Code to execute only if we're authorized for the given domain *&lt;!-- --&gt;/
+	/&lt;!-- --&gt;* Code to execute only if we're authorized for the given domain *&lt;!-- --&gt;/
 }
 ]|
 
@@ -795,7 +795,7 @@ convenience of checking whether a domain is authorized by the #GDataAuthorizer r
 For example:
 |[
 if (gdata_authorizer_is_authorized_for_domain (gdata_service_get_authorizer (my_service), my_domain) == TRUE) {
-/&lt;!-- --&gt;* Code to execute only if we're authorized for the given domain *&lt;!-- --&gt;/
+	/&lt;!-- --&gt;* Code to execute only if we're authorized for the given domain *&lt;!-- --&gt;/
 }
 ]|
 
@@ -6605,6 +6605,11 @@ which is the base asynchronous query function.</doc>
               c:type="GDATA_DOCUMENTS_TEXT_HTML">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DOCUMENTS_TEXT_JPEG"
+              value="jpeg"
+              c:type="GDATA_DOCUMENTS_TEXT_JPEG">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DOCUMENTS_TEXT_ODT"
               value="odt"
               c:type="GDATA_DOCUMENTS_TEXT_ODT">
@@ -6640,12 +6645,26 @@ which is the base asynchronous query function.</doc>
            c:type="GDataDocumentsDocument"
            version="0.7.0"
            parent="DocumentsEntry"
-           abstract="1"
            glib:type-name="GDataDocumentsDocument"
            glib:get-type="gdata_documents_document_get_type"
            glib:type-struct="DocumentsDocumentClass">
       <doc xml:whitespace="preserve">All the fields in the #GDataDocumentsDocument structure are private and should never be accessed directly.</doc>
       <implements name="AccessHandler"/>
+      <constructor name="new"
+                   c:identifier="gdata_documents_document_new"
+                   version="0.13.0">
+        <doc xml:whitespace="preserve">Creates a new #GDataDocumentsDocument with the given entry ID (#GDataEntry:id).</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GDataDocumentsDocument, or %NULL; unref with g_object_unref()</doc>
+          <type name="DocumentsDocument" c:type="GDataDocumentsDocument*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the entry's ID (not the document ID), or %NULL</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <method name="download"
               c:identifier="gdata_documents_document_download"
               version="0.8.0"
@@ -6658,7 +6677,7 @@ is set in @error.
 
 If @self is a #GDataDocumentsSpreadsheet, only the first grid, or sheet, in the spreadsheet will be downloaded for some export formats. To download
 a specific a specific grid, use gdata_documents_spreadsheet_get_download_uri() with #GDataDownloadStream to download the grid manually. See the
-&lt;ulink type="http" url="http://code.google.com/apis/documents/docs/2.0/developers_guide_protocol.html#DownloadingSpreadsheets"&gt;GData protocol
+&lt;ulink type="http" url="https://developers.google.com/google-apps/documents-list/#downloading_spreadsheets"&gt;GData protocol
 specification&lt;/ulink&gt; for more information.
 
 To get the content type of the downloaded file, gdata_download_stream_get_content_type() can be called on the returned #GDataDownloadStream.
@@ -6750,7 +6769,9 @@ this URI isn't possible, as authentication is required. You should instead use g
               version="0.4.0"
               deprecated="0.11.0.)"
               deprecated-version="Use gdata_documents_entry_get_resource_id() instead. See #GDataDocumentsEntry:document-id. (Since">
-        <doc xml:whitespace="preserve">Gets the #GDataDocumentsEntry:document-id property.</doc>
+        <doc xml:whitespace="preserve">Gets the #GDataDocumentsEntry:document-id property. The
+&lt;ulink type="http" url="https://developers.google.com/google-apps/documents-list/#terminology_used_in_this_guide"&gt;online GData Documentation&lt;/ulink&gt;
+refers to these as “untyped resource IDs”.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the document's document ID</doc>
           <type name="utf8" c:type="gchar*"/>
@@ -6796,6 +6817,15 @@ and not the entries' human-readable names (#GDataEntry:title).</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">the folder hierarchy path containing the document, or %NULL; free with g_free()</doc>
           <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_quota_used"
+              c:identifier="gdata_documents_entry_get_quota_used"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Gets the #GDataDocumentsEntry:quota-used property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the number of quota bytes used by the document</doc>
+          <type name="gint64" c:type="goffset"/>
         </return-value>
       </method>
       <method name="get_resource_id"
@@ -6844,7 +6874,9 @@ and not the entries' human-readable names (#GDataEntry:title).</doc>
                 deprecated="0.11.0.)"
                 deprecated-version="This a substring of the #GDataDocumentsEntry:resource-id, which is more general and should be used instead. (Since"
                 transfer-ownership="none">
-        <doc xml:whitespace="preserve">The document ID of the document, which is different from its entry ID (GDataEntry:id).</doc>
+        <doc xml:whitespace="preserve">The document ID of the document, which is different from its entry ID (GDataEntry:id). The
+&lt;ulink type="http" url="https://developers.google.com/google-apps/documents-list/#terminology_used_in_this_guide"&gt;online GData
+Documentation&lt;/ulink&gt; refers to these as “untyped resource IDs”.</doc>
         <type name="utf8"/>
       </property>
       <property name="edited" version="0.4.0" transfer-ownership="none">
@@ -6872,14 +6904,25 @@ appear in query results if the #GDataDocumentsQuery:show-deleted property is %TR
         <doc xml:whitespace="preserve">The last time the document was viewed.</doc>
         <type name="gint64"/>
       </property>
+      <property name="quota-used" version="0.13.0" transfer-ownership="none">
+        <doc xml:whitespace="preserve">The amount of user quota the document is occupying. Currently, only arbitrary files consume file space quota (whereas standard document
+formats, such as #GDataDocumentsText, #GDataDocumentsSpreadsheet and #GDataDocumentsFolder don't). Measured in bytes.
+
+This property will be &lt;code class="literal"&gt;0&lt;/code&gt; for documents which aren't consuming any quota.</doc>
+        <type name="gint64"/>
+      </property>
       <property name="resource-id" version="0.11.0" transfer-ownership="none">
         <doc xml:whitespace="preserve">The resource ID of the document. This should not normally need to be used in client code, and is mostly for internal use. To uniquely
 identify a given document or folder, use its #GDataEntry:id.
 
 Resource IDs have the form:
-&lt;literal&gt;&lt;replaceable&gt;document|spreadsheet|presentation|folder&lt;/replaceable&gt;:&lt;replaceable&gt;document ID&lt;/replaceable&gt;&lt;/literal&gt;; whereas entry
-IDs have the form:
-&lt;literal&gt;https://docs.google.com/feeds/documents/private/full/&lt;replaceable&gt;resource ID&lt;/replaceable&gt;&lt;/literal&gt;.</doc>
+&lt;literal&gt;&lt;replaceable&gt;document|spreadsheet|presentation|folder&lt;/replaceable&gt;:&lt;replaceable&gt;untyped resource ID&lt;/replaceable&gt;&lt;/literal&gt;; whereas
+entry IDs have the form:
+&lt;literal&gt;https://docs.google.com/feeds/id/&lt;replaceable&gt;resource ID&lt;/replaceable&gt;&lt;/literal&gt; in version 3 of the API.
+
+For more information, see the
+&lt;ulink type="http" url="https://developers.google.com/google-apps/documents-list/#resource_ids_explained"&gt;Google Documents
+API reference&lt;/ulink&gt;.</doc>
         <type name="utf8"/>
       </property>
       <property name="writers-can-invite"
@@ -7112,11 +7155,9 @@ applied.</doc>
       <method name="get_collaborator_addresses"
               c:identifier="gdata_documents_query_get_collaborator_addresses"
               version="0.4.0">
-        <doc xml:whitespace="preserve">Gets a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the document collaborators whose documents will be queried.
-
-query, or %NULL</doc>
+        <doc xml:whitespace="preserve">Gets a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the document collaborators whose documents will be queried.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the collaborators concerned by the</doc>
+          <doc xml:whitespace="preserve">a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the collaborators concerned by the query, or %NULL</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="GDEmailAddress"/>
           </type>
@@ -7143,11 +7184,9 @@ query, or %NULL</doc>
       <method name="get_reader_addresses"
               c:identifier="gdata_documents_query_get_reader_addresses"
               version="0.4.0">
-        <doc xml:whitespace="preserve">Gets a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the document readers whose documents will be queried.
-
-or %NULL</doc>
+        <doc xml:whitespace="preserve">Gets a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the document readers whose documents will be queried.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the readers concerned by the query,</doc>
+          <doc xml:whitespace="preserve">a list of #GDataGDEmailAddress&lt;!-- --&gt;es of the readers concerned by the query, or %NULL</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="GDEmailAddress"/>
           </type>
@@ -7679,6 +7718,10 @@ gdata_documents_service_remove_entry_from_folder_async().</doc>
         <doc xml:whitespace="preserve">Update the document using the properties from @document and the document data written to the resulting #GDataUploadStream. If the document data does
 not need to be changed, just the metadata, use gdata_service_update_entry() instead.
 
+This performs a non-resumable upload, unlike gdata_documents_service_update_document(). This means that errors during transmission will cause the
+upload to fail, and the entire document will have to be re-uploaded. It is recommended that gdata_documents_service_update_document_resumable()
+be used instead.
+
 The stream returned by this function should be written to using the standard #GOutputStream methods, asychronously or synchronously. Once the stream
 is closed (using g_output_stream_close()), gdata_documents_service_finish_upload() should be called on it to parse and return the updated
 #GDataDocumentsDocument for the document. This must be done, as @document isn't updated in-place.
@@ -7715,6 +7758,57 @@ For more information, see gdata_service_update_entry().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="update_document_resumable"
+              c:identifier="gdata_documents_service_update_document_resumable"
+              version="0.13.0"
+              throws="1">
+        <doc xml:whitespace="preserve">Update the document using the properties from @document and the document data written to the resulting #GDataUploadStream. If the document data does
+not need to be changed, just the metadata, use gdata_service_update_entry() instead.
+
+Unlike gdata_documents_service_update_document(), this method performs a
+&lt;ulink type="http" url="http://code.google.com/apis/gdata/docs/resumable_upload.html"&gt;resumable upload&lt;/ulink&gt; which allows for correction of
+transmission errors without re-uploading the entire file. Use of this method is preferred over gdata_documents_service_update_document().
+
+The stream returned by this function should be written to using the standard #GOutputStream methods, asychronously or synchronously. Once the stream
+is closed (using g_output_stream_close()), gdata_documents_service_finish_upload() should be called on it to parse and return the updated
+#GDataDocumentsDocument for the document. This must be done, as @document isn't updated in-place.
+
+In order to cancel the update, a #GCancellable passed in to @cancellable must be cancelled using g_cancellable_cancel(). Cancelling the individual
+#GOutputStream operations on the #GDataUploadStream will not cancel the entire update; merely the write or close operation in question. See the
+#GDataUploadStream:cancellable for more details.
+
+Any upload errors will be thrown by the stream methods, and may come from the #GDataServiceError domain.
+
+For more information, see gdata_service_update_entry().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a #GDataUploadStream to write the document data to; unref with g_object_unref()</doc>
+          <type name="UploadStream" c:type="GDataUploadStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="document" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #GDataDocumentsDocument to update</doc>
+            <type name="DocumentsDocument" c:type="GDataDocumentsDocument*"/>
+          </parameter>
+          <parameter name="slug" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the filename to give to the uploaded document</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the content type of the uploaded data</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="content_length" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the size (in bytes) of the file being uploaded</doc>
+            <type name="gint64" c:type="goffset"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable for the entire upload stream, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="upload_document"
               c:identifier="gdata_documents_service_upload_document"
               version="0.8.0"
@@ -7722,6 +7816,10 @@ For more information, see gdata_service_update_entry().</doc>
         <doc xml:whitespace="preserve">Uploads a document to Google Documents, using the properties from @document and the document data written to the resulting #GDataUploadStream. If
 the document data does not need to be provided at the moment, just the metadata, use gdata_service_insert_entry() instead (e.g. in the case of
 creating a new, empty file to be edited at a later date).
+
+This performs a non-resumable upload, unlike gdata_documents_service_upload_document(). This means that errors during transmission will cause the
+upload to fail, and the entire document will have to be re-uploaded. It is recommended that gdata_documents_service_upload_document_resumable()
+be used instead.
 
 If @document is %NULL, only the document data will be uploaded. The new document entry will be named using @slug, and will have default metadata.
 
@@ -7754,6 +7852,70 @@ Any upload errors will be thrown by the stream methods, and may come from the #G
           <parameter name="folder" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">the folder to which the document should be uploaded, or %NULL</doc>
             <type name="DocumentsFolder" c:type="GDataDocumentsFolder*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable for the entire upload stream, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="upload_document_resumable"
+              c:identifier="gdata_documents_service_upload_document_resumable"
+              version="0.13.0"
+              throws="1">
+        <doc xml:whitespace="preserve">Uploads a document to Google Documents, using the properties from @document and the document data written to the resulting #GDataUploadStream. If
+the document data does not need to be provided at the moment, just the metadata, use gdata_service_insert_entry() instead (e.g. in the case of
+creating a new, empty file to be edited at a later date).
+
+Unlike gdata_documents_service_upload_document(), this method performs a
+&lt;ulink type="http" url="http://code.google.com/apis/gdata/docs/resumable_upload.html"&gt;resumable upload&lt;/ulink&gt; which allows for correction of
+transmission errors without re-uploading the entire file. Use of this method is preferred over gdata_documents_service_upload_document().
+
+If @document is %NULL, only the document data will be uploaded. The new document entry will be named using @slug, and will have default metadata.
+
+If non-%NULL, the @query specifies parameters for the upload, such as a #GDataDocumentsFolder to upload the document into; and whether to treat
+the document as an opaque file, or convert it to a standard format. If @query is %NULL, the document will be uploaded into the root folder, and
+automatically converted to a standard format. No OCR or automatic language translation will be performed by default.
+
+If @query is non-%NULL and #GDataDocumentsUploadQuery:convert is %FALSE, @document must be an instance of #GDataDocumentsDocument. Otherwise,
+@document must be a subclass of it, such as #GDataDocumentsPresentation.
+
+The stream returned by this function should be written to using the standard #GOutputStream methods, asychronously or synchronously. Once the stream
+is closed (using g_output_stream_close()), gdata_documents_service_finish_upload() should be called on it to parse and return the updated
+#GDataDocumentsDocument for the document. This must be done, as @document isn't updated in-place.
+
+In order to cancel the upload, a #GCancellable passed in to @cancellable must be cancelled using g_cancellable_cancel(). Cancelling the individual
+#GOutputStream operations on the #GDataUploadStream will not cancel the entire upload; merely the write or close operation in question. See the
+#GDataUploadStream:cancellable for more details.
+
+Any upload errors will be thrown by the stream methods, and may come from the #GDataServiceError domain.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a #GDataUploadStream to write the document data to, or %NULL; unref with g_object_unref()</doc>
+          <type name="UploadStream" c:type="GDataUploadStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="document" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the #GDataDocumentsDocument to insert, or %NULL</doc>
+            <type name="DocumentsDocument" c:type="GDataDocumentsDocument*"/>
+          </parameter>
+          <parameter name="slug" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the filename to give to the uploaded document</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the content type of the uploaded data</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="content_length" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the size (in bytes) of the file being uploaded</doc>
+            <type name="gint64" c:type="goffset"/>
+          </parameter>
+          <parameter name="query" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">a query specifying parameters for the upload, or %NULL</doc>
+            <type name="DocumentsUploadQuery"
+                  c:type="GDataDocumentsUploadQuery*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -7919,6 +8081,127 @@ spreadsheet).</doc>
     </record>
     <record name="DocumentsTextPrivate"
             c:type="GDataDocumentsTextPrivate"
+            disguised="1">
+    </record>
+    <class name="DocumentsUploadQuery"
+           c:symbol-prefix="documents_upload_query"
+           c:type="GDataDocumentsUploadQuery"
+           version="0.13.0"
+           parent="GObject.Object"
+           glib:type-name="GDataDocumentsUploadQuery"
+           glib:get-type="gdata_documents_upload_query_get_type"
+           glib:type-struct="DocumentsUploadQueryClass">
+      <doc xml:whitespace="preserve">All the fields in the #GDataDocumentsUploadQuery structure are private and should never be accessed directly.</doc>
+      <constructor name="new"
+                   c:identifier="gdata_documents_upload_query_new"
+                   version="0.13.0">
+        <doc xml:whitespace="preserve">Constructs a new empty #GDataDocumentsUploadQuery.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GDataDocumentsUploadQuery; unref with g_object_unref()</doc>
+          <type name="DocumentsUploadQuery"
+                c:type="GDataDocumentsUploadQuery*"/>
+        </return-value>
+      </constructor>
+      <method name="build_uri"
+              c:identifier="gdata_documents_upload_query_build_uri"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Builds an upload URI suitable for passing to gdata_upload_stream_new_resumable() in order to upload a document to Google Documents as described in
+the
+&lt;ulink type="http" url="https://developers.google.com/google-apps/documents-list/#uploading_a_new_document_or_file_with_both_metadata_and_content"&gt;
+online documentation&lt;/ulink&gt;.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a complete upload URI; free with g_free()</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_convert"
+              c:identifier="gdata_documents_upload_query_get_convert"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Gets #GDataDocumentsUploadQuery:convert.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE to convert documents to common formats, %FALSE to upload them unmodified</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="get_folder"
+              c:identifier="gdata_documents_upload_query_get_folder"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Gets #GDataDocumentsUploadQuery:folder.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the folder to upload into, or %NULL</doc>
+          <type name="DocumentsFolder" c:type="GDataDocumentsFolder*"/>
+        </return-value>
+      </method>
+      <method name="set_convert"
+              c:identifier="gdata_documents_upload_query_set_convert"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Sets #GDataDocumentsUploadQuery:convert to @convert.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="convert" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE to convert documents to common formats, %FALSE to upload them unmodified</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_folder"
+              c:identifier="gdata_documents_upload_query_set_folder"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Sets #GDataDocumentsUploadQuery:folder to @folder.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="folder" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">a new folder to upload into, or %NULL</doc>
+            <type name="DocumentsFolder" c:type="GDataDocumentsFolder*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="convert"
+                version="0.13.0"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">%TRUE to automatically convert the uploaded document into a standard format (such as a text document, spreadsheet, presentation, etc.).
+%FALSE to upload the document without converting it; this allows for arbitrary files to be uploaded to Google Documents.
+
+For more information, see the
+&lt;ulink type="http" url="https://developers.google.com/google-apps/documents-list/#creating_or_uploading_files"&gt;online documentation&lt;/ulink&gt;.
+
+Note that uploading with this property set to %FALSE will only have an effect when using gdata_documents_service_update_document_resumable()
+and not gdata_documents_service_update_document(). Additionally, the #GDataDocumentsDocument passed to
+gdata_documents_service_update_document_resumable() must be a #GDataDocumentsDocument if this property is %FALSE, and a subclass of it
+otherwise.</doc>
+        <type name="gboolean"/>
+      </property>
+      <property name="folder"
+                version="0.13.0"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">Folder to upload the document into. If this is %NULL, the document will be uploaded into the root folder.</doc>
+        <type name="DocumentsFolder"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="DocumentsUploadQueryPrivate"
+              c:type="GDataDocumentsUploadQueryPrivate*"/>
+      </field>
+    </class>
+    <record name="DocumentsUploadQueryClass"
+            c:type="GDataDocumentsUploadQueryClass"
+            glib:is-gtype-struct-for="DocumentsUploadQuery"
+            version="0.13.0">
+      <doc xml:whitespace="preserve">All the fields in the #GDataDocumentsUploadQueryClass structure are private and should never be accessed directly.</doc>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="DocumentsUploadQueryPrivate"
+            c:type="GDataDocumentsUploadQueryPrivate"
             disguised="1">
     </record>
     <class name="DownloadStream"
@@ -8299,11 +8582,9 @@ In the rare event of requiring a list of links with the same @rel value, use gda
         <doc xml:whitespace="preserve">Looks up a list of links by relation type from the list of links in the entry. If the links have one of the standard Atom
 relation types, use one of the defined @rel values, instead of a static string. e.g. %GDATA_LINK_EDIT or %GDATA_LINK_SELF.
 
-If you will only use the first link found, consider calling gdata_entry_look_up_link() instead.
-
-g_list_free()</doc>
+If you will only use the first link found, consider calling gdata_entry_look_up_link() instead.</doc>
         <return-value transfer-ownership="container">
-          <doc xml:whitespace="preserve">a #GList of #GDataLink&lt;!-- --&gt;s, or %NULL if none were found; free the list with</doc>
+          <doc xml:whitespace="preserve">a #GList of #GDataLink&lt;!-- --&gt;s, or %NULL if none were found; free the list with g_list_free()</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Link"/>
           </type>
@@ -13289,6 +13570,16 @@ Atom specification&lt;/ulink&gt;.</doc>
               c:type="GDATA_LINK_RELATED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="LINK_RESUMABLE_CREATE_MEDIA"
+              value="http://schemas.google.com/g/2005#resumable-create-media"
+              c:type="GDATA_LINK_RESUMABLE_CREATE_MEDIA">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="LINK_RESUMABLE_EDIT_MEDIA"
+              value="http://schemas.google.com/g/2005#resumable-edit-media"
+              c:type="GDATA_LINK_RESUMABLE_EDIT_MEDIA">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="LINK_SELF"
               value="http://www.iana.org/assignments/relation/self"
               c:type="GDATA_LINK_SELF">
@@ -13564,10 +13855,10 @@ For more information, see the
     <constant name="MAJOR_VERSION" value="0" c:type="GDATA_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="0" c:type="GDATA_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="1" c:type="GDATA_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="11" c:type="GDATA_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="13" c:type="GDATA_MINOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <class name="MediaCategory"
@@ -14281,8 +14572,8 @@ When freeing @token_secret, it's advisable to set it to all zeros first, to redu
 free memory pool and (accidentally) leaked by a different part of the process. This can be achieved with the following code:
 |[
 if (token_secret != NULL) {
-memset (token_secret, 0, strlen (token_secret));
-g_free (token_secret);
+	memset (token_secret, 0, strlen (token_secret));
+	g_free (token_secret);
 }
 ]|</doc>
         <return-value transfer-ownership="full">
@@ -14359,8 +14650,8 @@ When freeing @token_secret, it's advisable to set it to all zeros first, to redu
 free memory pool and (accidentally) leaked by a different part of the process. This can be achieved with the following code:
 |[
 if (token_secret != NULL) {
-memset (token_secret, 0, strlen (token_secret));
-g_free (token_secret);
+	memset (token_secret, 0, strlen (token_secret));
+	g_free (token_secret);
 }
 ]|</doc>
         <return-value transfer-ownership="full">
@@ -16619,11 +16910,9 @@ operation.</doc>
               version="0.6.0"
               throws="1">
         <doc xml:whitespace="preserve">Inserts a new album described by @album. A user must be
-authenticated to use this function.
-
-g_object_unref()</doc>
+authenticated to use this function.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the inserted #GDataPicasaWebAlbum; unref with</doc>
+          <doc xml:whitespace="preserve">the inserted #GDataPicasaWebAlbum; unref with g_object_unref()</doc>
           <type name="PicasaWebAlbum" c:type="GDataPicasaWebAlbum*"/>
         </return-value>
         <parameters>
@@ -17618,11 +17907,9 @@ the #GAsyncReadyCallback which signals the completion of the query is called.</d
 #GDataAuthorizationDomain&lt;!-- --&gt;s are unique and interned, so can be compared with other domains by simple pointer comparison.
 
 Note that in addition to this method, #GDataService subclasses may expose some or all of their authorization domains individually by means of
-individual accessor functions.
-
-g_list_free()</doc>
+individual accessor functions.</doc>
         <return-value transfer-ownership="container">
-          <doc xml:whitespace="preserve">an unordered list of #GDataAuthorizationDomain&lt;!-- --&gt;s; free with</doc>
+          <doc xml:whitespace="preserve">an unordered list of #GDataAuthorizationDomain&lt;!-- --&gt;s; free with g_list_free()</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="AuthorizationDomain"/>
           </type>
@@ -18619,6 +18906,81 @@ Note that network communication won't begin until the first call to g_output_str
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_resumable"
+                   c:identifier="gdata_upload_stream_new_resumable"
+                   version="0.13.0">
+        <doc xml:whitespace="preserve">Creates a new resumable #GDataUploadStream, allowing a file to be uploaded from a GData service using standard #GOutputStream API. The upload will
+use GData's resumable upload API, so should be more reliable than a normal upload (especially if the file is large). See the
+&lt;ulink type="http" url="http://code.google.com/apis/gdata/docs/resumable_upload.html"&gt;GData documentation on resumable uploads&lt;/ulink&gt; for more
+information.
+
+The HTTP method to use should be specified in @method, and will typically be either %SOUP_METHOD_POST (for insertions) or %SOUP_METHOD_PUT
+(for updates), according to the server and the @upload_uri.
+
+If @entry is specified, it will be attached to the upload as the entry to which the file being uploaded belongs. Otherwise, just the file
+written to the stream will be uploaded, and given a default entry as determined by the server.
+
+@slug, @content_type and @content_length must be specified before the upload begins, as they describe the file being streamed. @slug is the filename
+given to the file, which will typically be stored on the server and made available when downloading the file again. @content_type must be the
+correct content type for the file, and should be in the service's list of acceptable content types. @content_length must be the size of the file
+being uploaded (not including the XML for any associated #GDataEntry) in bytes. Zero is accepted if a metadata-only upload is being performed.
+
+As well as the standard GIO errors, calls to the #GOutputStream API on a #GDataUploadStream can also return any relevant specific error from
+#GDataServiceError, or %GDATA_SERVICE_ERROR_PROTOCOL_ERROR in the general case.
+
+If a #GCancellable is provided in @cancellable, the upload operation may be cancelled at any time from another thread using g_cancellable_cancel().
+In this case, any ongoing network activity will be stopped, and any pending or future calls to #GOutputStream API on the #GDataUploadStream will
+return %G_IO_ERROR_CANCELLED. Note that the #GCancellable objects which can be passed to individual #GOutputStream operations will not cancel the
+upload operation proper if cancelled — they will merely cancel that API call. The only way to cancel the upload operation completely is using this
+@cancellable.
+
+Note that network communication won't begin until the first call to g_output_stream_write() on the #GDataUploadStream.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GOutputStream, or %NULL; unref with g_object_unref()</doc>
+          <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="service" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GDataService</doc>
+            <type name="Service" c:type="GDataService*"/>
+          </parameter>
+          <parameter name="domain" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the #GDataAuthorizationDomain to authorize the upload, or %NULL</doc>
+            <type name="AuthorizationDomain"
+                  c:type="GDataAuthorizationDomain*"/>
+          </parameter>
+          <parameter name="method" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the HTTP method to use</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="upload_uri" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the URI to upload</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="entry" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the entry to upload as metadata, or %NULL</doc>
+            <type name="Entry" c:type="GDataEntry*"/>
+          </parameter>
+          <parameter name="slug" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the file's slug (filename)</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the content type of the file being uploaded</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="content_length" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the size (in bytes) of the file being uploaded</doc>
+            <type name="gint64" c:type="goffset"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable for the entire upload stream, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <method name="get_authorization_domain"
               c:identifier="gdata_upload_stream_get_authorization_domain"
               version="0.9.0">
@@ -18636,6 +18998,16 @@ needed for the upload.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the #GCancellable for the entire upload operation</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </return-value>
+      </method>
+      <method name="get_content_length"
+              c:identifier="gdata_upload_stream_get_content_length"
+              version="0.13.0">
+        <doc xml:whitespace="preserve">Gets the size (in bytes) of the file being uploaded. This will be &lt;code class="literal"&gt;-1&lt;/code&gt; for a non-resumable upload, and zero or greater
+for a resumable upload.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the size of the file being uploaded</doc>
+          <type name="gint64" c:type="goffset"/>
         </return-value>
       </method>
       <method name="get_content_type"
@@ -18746,6 +19118,17 @@ to #GOutputStream API on the #GDataUploadStream will return %G_IO_ERROR_CANCELLE
 to individual #GOutputStream operations will not cancel the upload operation proper if cancelled — they will merely cancel that API call.
 The only way to cancel the upload operation completely is using #GDataUploadStream:cancellable.</doc>
         <type name="Gio.Cancellable"/>
+      </property>
+      <property name="content-length"
+                version="0.13.0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">The content length (in bytes) of the file being uploaded (i.e. as returned by g_file_info_get_size()). Note that this does not include the
+length of the XML serialisation of #GDataUploadStream:entry, if set.
+
+If this is &lt;code class="literal"&gt;-1&lt;/code&gt; the upload will be non-resumable; if it is non-negative, the upload will be resumable.</doc>
+        <type name="gint64"/>
       </property>
       <property name="content-type"
                 version="0.5.0"

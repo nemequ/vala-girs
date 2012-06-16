@@ -15,6 +15,73 @@ and/or use gtk-doc annotations.  -->
              shared-library="libtelepathy-logger.so.2"
              c:identifier-prefixes="Tpl"
              c:symbol-prefixes="tpl">
+    <class name="CallEvent"
+           c:symbol-prefix="call_event"
+           c:type="TplCallEvent"
+           parent="Event"
+           glib:type-name="TplCallEvent"
+           glib:get-type="tpl_call_event_get_type"
+           glib:type-struct="CallEventClass">
+      <doc xml:whitespace="preserve">An object representing a call log event.</doc>
+      <method name="get_detailed_end_reason"
+              c:identifier="tpl_call_event_get_detailed_end_reason">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the same string as the #TplCallEvent:detailed-end-reason property</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_duration" c:identifier="tpl_call_event_get_duration">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the same duration as the #TplCallEvent:duration property</doc>
+          <type name="GLib.TimeSpan" c:type="GTimeSpan"/>
+        </return-value>
+      </method>
+      <method name="get_end_actor" c:identifier="tpl_call_event_get_end_actor">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the same #TplEntity as #TplCallEvent:end-actor property</doc>
+          <type name="Entity" c:type="TplEntity*"/>
+        </return-value>
+      </method>
+      <method name="get_end_reason"
+              c:identifier="tpl_call_event_get_end_reason">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the same #TpCallStateChangeReason as #TplCallEvent:end-reason property</doc>
+          <type name="TelepathyGLib.CallStateChangeReason"
+                c:type="TpCallStateChangeReason"/>
+        </return-value>
+      </method>
+      <property name="detailed-end-reason"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="duration"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gint64"/>
+      </property>
+      <property name="end-actor"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Entity"/>
+      </property>
+      <property name="end-reason"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gint"/>
+      </property>
+    </class>
+    <record name="CallEventClass"
+            c:type="TplCallEventClass"
+            disguised="1"
+            glib:is-gtype-struct-for="CallEvent">
+    </record>
+    <record name="CallEventPriv" c:type="TplCallEventPriv" disguised="1">
+    </record>
     <class name="Entity"
            c:symbol-prefix="entity"
            c:type="TplEntity"
@@ -43,10 +110,8 @@ and/or use gtk-doc annotations.  -->
       </constructor>
       <constructor name="new_from_room_id"
                    c:identifier="tpl_entity_new_from_room_id">
-        <doc xml:whitespace="preserve">@room_id. It also sets %TPL_ENTITY_ROOM as type for
-the #TplEntity returned.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a TplEntity instance with identifier, alias copied from</doc>
+          <doc xml:whitespace="preserve">a TplEntity instance with identifier, alias copied from @room_id. It also sets %TPL_ENTITY_ROOM as type for the #TplEntity returned.</doc>
           <type name="Entity" c:type="TplEntity*"/>
         </return-value>
         <parameters>
@@ -58,12 +123,8 @@ the #TplEntity returned.</doc>
       </constructor>
       <constructor name="new_from_tp_contact"
                    c:identifier="tpl_entity_new_from_tp_contact">
-        <doc xml:whitespace="preserve">avatar's token copied. Type parameter is useful to differentiate between
-normal contact and self contact, thus only %TPL_ENTITY_CONTACT and
-%TPL_ENTITY_SELF are accepted. If contact is %NULL, an entity of type
-%TPL_ENTITY_UNKNOWN with id set to "unknown" is returned.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a TplEntity instance with identifier, alias and</doc>
+          <doc xml:whitespace="preserve">a TplEntity instance with identifier, alias and avatar's token copied. Type parameter is useful to differentiate between normal contact and self contact, thus only %TPL_ENTITY_CONTACT and %TPL_ENTITY_SELF are accepted. If contact is %NULL, an entity of type %TPL_ENTITY_UNKNOWN with id set to "unknown" is returned.</doc>
           <type name="Entity" c:type="TplEntity*"/>
         </return-value>
         <parameters>
@@ -155,11 +216,9 @@ normal contact and self contact, thus only %TPL_ENTITY_CONTACT and
            glib:type-struct="EventClass">
       <doc xml:whitespace="preserve">An object representing a generic log event.</doc>
       <method name="equal" c:identifier="tpl_event_equal">
-        <doc xml:whitespace="preserve">Checks if two instances of TplEvent represent the same data
-
-data, %FALSE otherwise</doc>
+        <doc xml:whitespace="preserve">Checks if two instances of TplEvent represent the same data</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if @data is the same type of @self and they hold the same</doc>
+          <doc xml:whitespace="preserve">%TRUE if @data is the same type of @self and they hold the same data, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -178,7 +237,9 @@ data, %FALSE otherwise</doc>
       </method>
       <method name="get_account_path"
               c:identifier="tpl_event_get_account_path">
+        <doc xml:whitespace="preserve">&lt;!-- no more to say --&gt;</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the path as the #TplEvent:account property</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
@@ -518,7 +579,8 @@ property %TRUE.</doc>
           </parameter>
           <parameter name="filter"
                      transfer-ownership="none"
-                     scope="async"
+                     allow-none="1"
+                     scope="call"
                      closure="5">
             <doc xml:whitespace="preserve">an optional filter function</doc>
             <type name="LogEventFilter" c:type="TplLogEventFilter"/>
@@ -557,7 +619,7 @@ property %TRUE.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:whitespace="preserve"> a pointer to a #GList used to return the list #TplEvent</doc>
+            <doc xml:whitespace="preserve">a pointer to a #GList used to return the list #TplEvent</doc>
             <type name="GLib.List" c:type="GList**">
               <type name="Event"/>
             </type>
@@ -685,10 +747,8 @@ property %TRUE.</doc>
       </method>
       <method name="get_supersedes"
               c:identifier="tpl_text_event_get_supersedes">
-        <doc xml:whitespace="preserve">of #TplTextEvent that this event
-supersedes.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A #GList</doc>
+          <doc xml:whitespace="preserve">A #GList of #TplTextEvent that this event supersedes.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="TextEvent"/>
           </type>

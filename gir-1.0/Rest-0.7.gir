@@ -169,11 +169,9 @@ done automatically</doc>
       </method>
       <method name="get_access_token"
               c:identifier="oauth2_proxy_get_access_token">
-        <doc xml:whitespace="preserve">Get the current request or access token.
-
-by #OAuth2Proxy and should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the current request or access token.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the token, or %NULL if there is no token yet.  This string is owned</doc>
+          <doc xml:whitespace="preserve">the token, or %NULL if there is no token yet.  This string is owned by #OAuth2Proxy and should not be freed.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
@@ -376,11 +374,9 @@ that the user enters in some other manner (for example in a popup dialog) if
 "oob" was passed to oauth_proxy_request_token().  For OAuth 1.0, pass %NULL.
 
 This method will return once the method has been queued, @callback will be
-invoked when it has completed.
-
-failure. On failure @error is set.</doc>
+invoked when it has completed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the method was successfully queued, or %FALSE on</doc>
+          <doc xml:whitespace="preserve">%TRUE if the method was successfully queued, or %FALSE on failure. On failure @error is set.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -457,30 +453,24 @@ rest_proxy_call_set_function().</doc>
       </method>
       <method name="get_signature_host"
               c:identifier="oauth_proxy_get_signature_host">
-        <doc xml:whitespace="preserve">Get the signature hostname used when creating a signature base string.
-
-This string is owned by #OAuthProxy and should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the signature hostname used when creating a signature base string.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the signature hostname, or %NULL if there is none set.</doc>
+          <doc xml:whitespace="preserve">the signature hostname, or %NULL if there is none set. This string is owned by #OAuthProxy and should not be freed.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
       <method name="get_token" c:identifier="oauth_proxy_get_token">
-        <doc xml:whitespace="preserve">Get the current request or access token.
-
-by #OAuthProxy and should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the current request or access token.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the token, or %NULL if there is no token yet.  This string is owned</doc>
+          <doc xml:whitespace="preserve">the token, or %NULL if there is no token yet.  This string is owned by #OAuthProxy and should not be freed.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
       <method name="get_token_secret"
               c:identifier="oauth_proxy_get_token_secret">
-        <doc xml:whitespace="preserve">Get the current request or access token secret.
-
-string is owned by #OAuthProxy and should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the current request or access token secret.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the token secret, or %NULL if there is no token secret yet.  This</doc>
+          <doc xml:whitespace="preserve">the token secret, or %NULL if there is no token secret yet.  This string is owned by #OAuthProxy and should not be freed.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
@@ -552,11 +542,9 @@ If you wish to use 1.0 then callback must be NULL.  To use 1.0a then
 @callback should either be your callback URI, or "oob" (out-of-band).
 
 This method will return once the method has been queued, @callback will be
-invoked when it has completed.
-
-failure. On failure @error is set.</doc>
+invoked when it has completed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the method was successfully queued, or %FALSE on</doc>
+          <doc xml:whitespace="preserve">%TRUE if the method was successfully queued, or %FALSE on failure. On failure @error is set.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -812,12 +800,12 @@ it. This allows you to do something like this:
 |[
 GMappedFile *map = g_mapped_file_new (filename, FALSE, &amp;error);
 RestParam *param = rest_param_new_with_owner ("media",
-g_mapped_file_get_contents (map),
-g_mapped_file_get_length (map),
-"image/jpeg",
-filename,
-map,
-(GDestroyNotify)g_mapped_file_unref);
+                                              g_mapped_file_get_contents (map),
+                                              g_mapped_file_get_length (map),
+                                              "image/jpeg",
+                                              filename,
+                                              map,
+                                              (GDestroyNotify)g_mapped_file_unref);
 ]|</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">a new #RestParam.</doc>
@@ -1006,7 +994,7 @@ RestParam *param;
 
 rest_params_iter_init (&amp;iter, params);
 while (rest_params_iter_next (&amp;iter, &amp;name, &amp;param)) {
-/&amp;ast; do something with name and param &amp;ast;/
+  /&amp;ast; do something with name and param &amp;ast;/
 }
 ]|</doc>
         <return-value transfer-ownership="none">
@@ -1245,6 +1233,9 @@ is one-shot and should not be re-used for making multiple calls.</doc>
                 transfer-ownership="none">
         <type name="utf8"/>
       </property>
+      <property name="ssl-strict" writable="1" transfer-ownership="none">
+        <type name="gboolean"/>
+      </property>
       <property name="url-format" writable="1" transfer-ownership="none">
         <type name="utf8"/>
       </property>
@@ -1417,41 +1408,23 @@ already exists, the new value will replace the old.</doc>
               c:identifier="rest_proxy_call_async"
               introspectable="0"
               throws="1">
-        <doc xml:whitespace="preserve">Asynchronously invoke @call.
-
-When the call has finished, @callback will be called.  If @weak_object is
-disposed during the call then this call will be cancelled. If the call is
-cancelled then the callback will be invoked with an error state.
-
-You may unref the call after calling this function since there is an
-internal reference, or you may unref in the callback.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="callback" transfer-ownership="none" closure="2">
-            <doc xml:whitespace="preserve">a #RestProxyCallAsyncCallback to invoke on completion of the call</doc>
             <type name="ProxyCallAsyncCallback"
                   c:type="RestProxyCallAsyncCallback"/>
           </parameter>
           <parameter name="weak_object" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #GObject to weakly reference and tie the lifecycle too</doc>
             <type name="GObject.Object" c:type="GObject*"/>
           </parameter>
           <parameter name="userdata" transfer-ownership="none">
-            <doc xml:whitespace="preserve">data to pass to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
-      <method name="cancel"
-              c:identifier="rest_proxy_call_cancel"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Cancel this call.  It may be too late to not actually send the message, but
-the callback will not be invoked.
-
-N.B. this method should only be used with rest_proxy_call_async() and NOT
-rest_proxy_call_invoke_async().</doc>
+      <method name="cancel" c:identifier="rest_proxy_call_cancel">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1509,11 +1482,9 @@ should call g_hash_table_unref() when they have finished using it.</doc>
         </return-value>
       </method>
       <method name="get_payload" c:identifier="rest_proxy_call_get_payload">
-        <doc xml:whitespace="preserve">Get the return payload.
-
-not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the return payload.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A pointer to the payload. This is owned by #RestProxyCall and should</doc>
+          <doc xml:whitespace="preserve">A pointer to the payload. This is owned by #RestProxyCall and should not be freed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
@@ -1527,10 +1498,8 @@ not be freed.</doc>
       </method>
       <method name="get_response_headers"
               c:identifier="rest_proxy_call_get_response_headers">
-        <doc xml:whitespace="preserve">headers. This hash table must not be changed. You should call
-g_hash_table_unref() when you have finished with it.</doc>
         <return-value transfer-ownership="container">
-          <doc xml:whitespace="preserve">pointer to a hash table of</doc>
+          <doc xml:whitespace="preserve">pointer to a hash table of headers. This hash table must not be changed. You should call g_hash_table_unref() when you have finished with it.</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
             <type name="gpointer" c:type="gpointer"/>
             <type name="gpointer" c:type="gpointer"/>
@@ -1546,11 +1515,9 @@ g_hash_table_unref() when you have finished with it.</doc>
       </method>
       <method name="get_status_message"
               c:identifier="rest_proxy_call_get_status_message">
-        <doc xml:whitespace="preserve">Get the human-readable HTTP status message for the call.
-
-should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the human-readable HTTP status message for the call.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The status message. This string is owned by #RestProxyCall and</doc>
+          <doc xml:whitespace="preserve">The status message. This string is owned by #RestProxyCall and should not be freed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
@@ -1596,11 +1563,9 @@ should not be freed.</doc>
       </method>
       <method name="lookup_header"
               c:identifier="rest_proxy_call_lookup_header">
-        <doc xml:whitespace="preserve">Get the value of the header called @header.
-
-owned by the #RestProxyCall and should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the value of the header called @header.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The header value, or %NULL if it does not exist. This string is</doc>
+          <doc xml:whitespace="preserve">The header value, or %NULL if it does not exist. This string is owned by the #RestProxyCall and should not be freed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -1611,11 +1576,9 @@ owned by the #RestProxyCall and should not be freed.</doc>
         </parameters>
       </method>
       <method name="lookup_param" c:identifier="rest_proxy_call_lookup_param">
-        <doc xml:whitespace="preserve">Get the value of the parameter called @name.
-
-owned by the #RestProxyCall and should not be freed.</doc>
+        <doc xml:whitespace="preserve">Get the value of the parameter called @name.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">The parameter value, or %NULL if it does not exist. This string is</doc>
+          <doc xml:whitespace="preserve">The parameter value, or %NULL if it does not exist. This string is owned by the #RestProxyCall and should not be freed.</doc>
           <type name="Param" c:type="RestParam*"/>
         </return-value>
         <parameters>
@@ -2220,11 +2183,9 @@ Typically subclasses will override @new_call to construct a subclass of
       </method>
       <method name="add_child" c:identifier="rest_xml_node_add_child">
         <doc xml:whitespace="preserve">Adds a new node to the given parent node; to create the top-level node,
-parent should be %NULL.
-
-is owned by, and valid for the life time of, the #RestXmlCreator.</doc>
+parent should be %NULL.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the newly added #RestXmlNode; the node object</doc>
+          <doc xml:whitespace="preserve">the newly added #RestXmlNode; the node object is owned by, and valid for the life time of, the #RestXmlCreator.</doc>
           <type name="XmlNode" c:type="RestXmlNode*"/>
         </return-value>
         <parameters>
@@ -2254,11 +2215,9 @@ is owned by, and valid for the life time of, the #RestXmlCreator.</doc>
       </method>
       <method name="get_attr" c:identifier="rest_xml_node_get_attr">
         <doc xml:whitespace="preserve">Get the value of the attribute named @attr_name, or %NULL if it doesn't
-exist.
-
-not be freed.</doc>
+exist.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the attribute value. This string is owned by #RestXmlNode and should</doc>
+          <doc xml:whitespace="preserve">the attribute value. This string is owned by #RestXmlNode and should not be freed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -2273,10 +2232,8 @@ not be freed.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
-      <method name="ref" c:identifier="rest_xml_node_ref" introspectable="0">
-        <doc xml:whitespace="preserve">Increases the reference count of @node.</doc>
+      <method name="ref" c:identifier="rest_xml_node_ref">
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the same @node.</doc>
           <type name="XmlNode" c:type="RestXmlNode*"/>
         </return-value>
       </method>
@@ -2292,11 +2249,7 @@ not be freed.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="unref"
-              c:identifier="rest_xml_node_unref"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Decreases the reference count of @node. When its reference count drops to 0,
-the node is finalized (i.e. its memory is freed).</doc>
+      <method name="unref" c:identifier="rest_xml_node_unref">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>

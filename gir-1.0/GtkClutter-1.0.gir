@@ -91,11 +91,9 @@ GtkWidget *bin;
 
 bin = gtk_clutter_actor_get_widget (GTK_CLUTTER_ACTOR (actor));
 return gtk_bin_get_child (GTK_BIN (bin));
-]|
-
-has been set</doc>
+]|</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #GtkWidget, or %NULL if not content</doc>
+          <doc xml:whitespace="preserve">a #GtkWidget, or %NULL if not content has been set</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
       </method>
@@ -195,14 +193,55 @@ used to build a scene using Clutter API into a GTK+ application.</doc>
       </constructor>
       <method name="get_stage" c:identifier="gtk_clutter_embed_get_stage">
         <doc xml:whitespace="preserve">Retrieves the #ClutterStage from @embed. The returned stage can be
-used to add actors to the Clutter scene.
-
-destroy or unref the returned actor.</doc>
+used to add actors to the Clutter scene.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the Clutter stage. You should never</doc>
+          <doc xml:whitespace="preserve">the Clutter stage. You should never destroy or unref the returned actor.</doc>
           <type name="Clutter.Actor" c:type="ClutterActor*"/>
         </return-value>
       </method>
+      <method name="get_use_layout_size"
+              c:identifier="gtk_clutter_embed_get_use_layout_size"
+              version="1.4">
+        <doc xml:whitespace="preserve">Retrieves whether the embedding uses the layout size, see
+gtk_clutter_embed_set_use_layout_size() for details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if reporting stage size as widget size, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="set_use_layout_size"
+              c:identifier="gtk_clutter_embed_set_use_layout_size"
+              version="1.4">
+        <doc xml:whitespace="preserve">Changes the way @embed requests size. If @use_layout_size is
+%TRUE, the @embed widget will request the size that the
+LayoutManager reports as the preferred size. This means that
+a Gtk+ window will automatically get the natural and minimum
+toplevel window sizes. This is useful when the contents of the
+clutter stage is similar to a traditional UI.
+
+If @use_layout_size is %FALSE (which is the default) then @embed
+will not request any size and its up to the embedder to make sure
+there is some size (by setting a custom size on the widget or a default
+size on the toplevel. This makes more sense when using the @embed
+as a viewport into a potentially unlimited clutter space.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="use_layout_size" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a boolean</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="use-layout-size"
+                version="1.4"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">The #GtkWidget to be embedded into the #GtkClutterActor</doc>
+        <type name="gboolean"/>
+      </property>
       <field name="parent_instance" readable="0" private="1">
         <type name="Gtk.Container" c:type="GtkContainer"/>
       </field>
@@ -277,15 +316,14 @@ data.</doc>
 only private data and should be accessed using the provided API.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Clutter.Animatable"/>
+      <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
       <constructor name="new"
                    c:identifier="gtk_clutter_texture_new"
                    version="1.0">
-        <doc xml:whitespace="preserve">Creates a new #GtkClutterTexture actor.
-
-instance</doc>
+        <doc xml:whitespace="preserve">Creates a new #GtkClutterTexture actor.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the newly created #GtkClutterTexture</doc>
+          <doc xml:whitespace="preserve">the newly created #GtkClutterTexture instance</doc>
           <type name="Clutter.Actor" c:type="ClutterActor*"/>
         </return-value>
       </constructor>
@@ -500,36 +538,32 @@ containing the returned #GOptionGroupwith will result in Clutter's and
 GTK-Clutter's initialisation.  That is, the following code:
 
 |[
-g_option_context_add_group (context, gtk_get_option_group (TRUE));
-g_option_context_add_group (context, cogl_get_option_group ());
-g_option_context_add_group (context, clutter_get_option_group_without_init ());
-g_option_context_add_group (context, gtk_clutter_get_option_group ());
-res = g_option_context_parse (context, &amp;amp;argc, &amp;amp;argc, NULL);
+  g_option_context_add_group (context, gtk_get_option_group (TRUE));
+  g_option_context_add_group (context, cogl_get_option_group ());
+  g_option_context_add_group (context, clutter_get_option_group_without_init ());
+  g_option_context_add_group (context, gtk_clutter_get_option_group ());
+  res = g_option_context_parse (context, &amp;amp;argc, &amp;amp;argc, NULL);
 ]|
 
 is functionally equivalent to:
 
 |[
-gtk_clutter_init (&amp;amp;argc, &amp;amp;argv);
+  gtk_clutter_init (&amp;amp;argc, &amp;amp;argv);
 ]|
 
 After g_option_context_parse() on a #GOptionContext containing the
 the returned #GOptionGroup has returned %TRUE, Clutter and GTK-Clutter are
-guaranteed to be initialized.
-
-recognized by ClutterGtk</doc>
+guaranteed to be initialized.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">a #GOptionGroup for the commandline arguments</doc>
+        <doc xml:whitespace="preserve">a #GOptionGroup for the commandline arguments recognized by ClutterGtk</doc>
         <type name="GLib.OptionGroup" c:type="GOptionGroup*"/>
       </return-value>
     </function>
     <function name="init" c:identifier="gtk_clutter_init">
       <doc xml:whitespace="preserve">This function should be called instead of clutter_init() and
-gtk_init().
-
-on failure.</doc>
+gtk_init().</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">%CLUTTER_INIT_SUCCESS on success, a negative integer</doc>
+        <doc xml:whitespace="preserve">%CLUTTER_INIT_SUCCESS on success, a negative integer on failure.</doc>
         <type name="Clutter.InitError" c:type="ClutterInitError"/>
       </return-value>
       <parameters>
@@ -557,11 +591,9 @@ on failure.</doc>
               c:identifier="gtk_clutter_init_with_args"
               throws="1">
       <doc xml:whitespace="preserve">This function should be called instead of clutter_init() and
-gtk_init_with_args().
-
-on failure.</doc>
+gtk_init_with_args().</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">%CLUTTER_INIT_SUCCESS on success, a negative integer</doc>
+        <doc xml:whitespace="preserve">%CLUTTER_INIT_SUCCESS on success, a negative integer on failure.</doc>
         <type name="Clutter.InitError" c:type="ClutterInitError"/>
       </return-value>
       <parameters>

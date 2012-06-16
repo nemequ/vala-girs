@@ -47,9 +47,19 @@ and/or use gtk-doc annotations.  -->
               c:type="OSINFO_DEVICE_PROP_PRODUCT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_PROP_PRODUCT_ID"
+              value="product-id"
+              c:type="OSINFO_DEVICE_PROP_PRODUCT_ID">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_PROP_VENDOR"
               value="vendor"
               c:type="OSINFO_DEVICE_PROP_VENDOR">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_PROP_VENDOR_ID"
+              value="vendor-id"
+              c:type="OSINFO_DEVICE_PROP_VENDOR_ID">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="Db"
@@ -219,6 +229,28 @@ and/or use gtk-doc annotations.  -->
                      allow-none="1">
             <doc xml:whitespace="preserve">the matched operating system media</doc>
             <type name="Media" c:type="OsinfoMedia**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="guess_os_from_tree"
+              c:identifier="osinfo_db_guess_os_from_tree">
+        <doc xml:whitespace="preserve">Guess operating system given a #OsinfoTree object.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the operating system, or NULL if guessing failed</doc>
+          <type name="Os" c:type="OsinfoOs*"/>
+        </return-value>
+        <parameters>
+          <parameter name="tree" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the installation tree</doc>
+            <type name="Tree" c:type="OsinfoTree*"/>
+          </parameter>
+          <parameter name="matched_tree"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">the matched operating system tree</doc>
+            <type name="Tree" c:type="OsinfoTree**"/>
           </parameter>
         </parameters>
       </method>
@@ -607,7 +639,18 @@ deployments that are present in either @sourceOne and @sourceTwo.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <method name="get_product_id"
+              c:identifier="osinfo_device_get_product_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
       <method name="get_vendor" c:identifier="osinfo_device_get_vendor">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_vendor_id" c:identifier="osinfo_device_get_vendor_id">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="gchar*"/>
         </return-value>
@@ -925,6 +968,9 @@ devices that are present in either @sourceOne and @sourceTwo.</doc>
     </record>
     <record name="DevicePrivate" c:type="OsinfoDevicePrivate" disguised="1">
     </record>
+    <constant name="ENTITY_PROP_ID" value="id" c:type="OSINFO_ENTITY_PROP_ID">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <class name="Entity"
            c:symbol-prefix="entity"
            c:type="OsinfoEntity"
@@ -1313,7 +1359,7 @@ unique identifier.</doc>
       </method>
       <method name="get_element_type"
               c:identifier="osinfo_list_get_element_type">
-        <doc xml:whitespace="preserve">Retrieves the type of the subclass of #OsinfoEntity 
+        <doc xml:whitespace="preserve">Retrieves the type of the subclass of #OsinfoEntity
 that may be stored in the list</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the type of entity stored</doc>
@@ -1401,7 +1447,13 @@ the specified type.</doc>
       <method name="process_default_path"
               c:identifier="osinfo_loader_process_default_path"
               throws="1">
-        <doc xml:whitespace="preserve">Loads data from the default path.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </method>
+      <method name="process_local_path"
+              c:identifier="osinfo_loader_process_local_path"
+              throws="1">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1423,6 +1475,14 @@ be recursively traversed, loading all files as XML.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="process_system_path"
+              c:identifier="osinfo_loader_process_system_path"
+              throws="1">
+        <doc xml:whitespace="preserve">Loads data from the default paths.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </method>
       <method name="process_uri"
               c:identifier="osinfo_loader_process_uri"
               throws="1">
@@ -1439,6 +1499,13 @@ be recursively traversed, loading all files as XML.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
+      </method>
+      <method name="process_user_path"
+              c:identifier="osinfo_loader_process_user_path"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
       </method>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
@@ -1458,6 +1525,11 @@ be recursively traversed, loading all files as XML.</doc>
     </record>
     <constant name="MEBIBYTES" value="1048576" c:type="OSINFO_MEBIBYTES">
       <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="MEDIA_PROP_APPLICATION_ID"
+              value="application-id"
+              c:type="OSINFO_MEDIA_PROP_APPLICATION_ID">
+      <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="MEDIA_PROP_ARCHITECTURE"
               value="architecture"
@@ -1605,6 +1677,19 @@ NOTE: Currently this only works for ISO images/devices.</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
+      <method name="get_application_id"
+              c:identifier="osinfo_media_get_application_id">
+        <doc xml:whitespace="preserve">If @media is an ISO9660 image/device, this function retrieves the expected
+application ID.
+
+Note: In practice, this will usually not be the exact copy of the application
+ID string on the ISO image/device but rather a regular expression that
+matches it.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the application id, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
       <method name="get_architecture"
               c:identifier="osinfo_media_get_architecture">
         <doc xml:whitespace="preserve">Retrieves the target hardware architecture of the OS @media provides.</doc>
@@ -1617,7 +1702,7 @@ NOTE: Currently this only works for ISO images/devices.</doc>
               c:identifier="osinfo_media_get_initrd_path">
         <doc xml:whitespace="preserve">Retrieves the path to the initrd image in the install tree.
 
-Note: This only applies to installer medias of 'Linux' OS family.</doc>
+Note: This only applies to installer medias of 'linux' OS family.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the path to initrd image, or NULL</doc>
           <type name="utf8" c:type="gchar*"/>
@@ -1634,7 +1719,7 @@ Note: This only applies to installer medias of 'Linux' OS family.</doc>
               c:identifier="osinfo_media_get_kernel_path">
         <doc xml:whitespace="preserve">Retrieves the path to the kernel image in the install tree.
 
-Note: This only applies to installer medias of 'Linux' OS family.</doc>
+Note: This only applies to installer medias of 'linux' OS family.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the path to kernel image, or NULL</doc>
           <type name="utf8" c:type="gchar*"/>
@@ -1691,6 +1776,9 @@ it.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <property name="application-id" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
       <property name="architecture" writable="1" transfer-ownership="none">
         <type name="utf8"/>
       </property>
@@ -1842,6 +1930,11 @@ medias that are present in either @sourceOne and @sourceTwo.</doc>
     </record>
     <record name="MediaPrivate" c:type="OsinfoMediaPrivate" disguised="1">
     </record>
+    <constant name="OS_PROP_DISTRO"
+              value="distro"
+              c:type="OSINFO_OS_PROP_DISTRO">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="OS_PROP_FAMILY"
               value="family"
               c:type="OSINFO_OS_PROP_FAMILY">
@@ -1920,6 +2013,33 @@ extra metadata against the link</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="add_tree" c:identifier="osinfo_os_add_tree">
+        <doc xml:whitespace="preserve">Adds installation tree @tree to operating system @os.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="tree" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the tree to add</doc>
+            <type name="Tree" c:type="OsinfoTree*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_all_devices" c:identifier="osinfo_os_get_all_devices">
+        <doc xml:whitespace="preserve">Get all devices matching a given filter but unlike osinfo_os_get_devices
+this function also retreives devices from all derived and cloned operating
+systems.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">A list of devices</doc>
+          <type name="DeviceList" c:type="OsinfoDeviceList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filter" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">an optional device property filter</doc>
+            <type name="Filter" c:type="OsinfoFilter*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_device_links"
               c:identifier="osinfo_os_get_device_links">
         <doc xml:whitespace="preserve">Get all devices matching a given filter. The filter
@@ -1948,9 +2068,40 @@ matches against the links, not the devices.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_devices_by_property"
+              c:identifier="osinfo_os_get_devices_by_property">
+        <doc xml:whitespace="preserve">A utility function that gets devices found from the list of devices
+@os supports, for which the value of @property is @value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">The found devices</doc>
+          <type name="DeviceList" c:type="OsinfoDeviceList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="property" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the property of interest</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the required value of property @property</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="inherited" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Should devices from inherited and cloned OSs be included in the search.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_distro" c:identifier="osinfo_os_get_distro">
+        <doc xml:whitespace="preserve">Retrieves the generic family the OS @os belongs to, for example fedora,
+ubuntu, windows, solaris, freebsd etc.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the distro of this os</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
       <method name="get_family" c:identifier="osinfo_os_get_family">
-        <doc xml:whitespace="preserve">Retrieves the generic family the OS @os belongs to, for example Linux,
-Windows, Solaris, UNIX etc.</doc>
+        <doc xml:whitespace="preserve">Retrieves the generic family the OS @os belongs to, based upon its kernel,
+for example linux, winnt, solaris, freebsd etc.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the family of this os</doc>
           <type name="utf8" c:type="gchar*"/>
@@ -1979,9 +2130,21 @@ Windows, Solaris, UNIX etc.</doc>
           <type name="ResourcesList" c:type="OsinfoResourcesList*"/>
         </return-value>
       </method>
+      <method name="get_tree_list" c:identifier="osinfo_os_get_tree_list">
+        <doc xml:whitespace="preserve">Get all installation trees associated with operating system @os.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">A list of trees</doc>
+          <type name="TreeList" c:type="OsinfoTreeList*"/>
+        </return-value>
+      </method>
+      <property name="distro" transfer-ownership="none">
+        <doc xml:whitespace="preserve">The generic distro this OS belongs to, for example fedora, windows,
+solaris, freebsd etc.</doc>
+        <type name="utf8"/>
+      </property>
       <property name="family" transfer-ownership="none">
-        <doc xml:whitespace="preserve">The generic family this OS belongs to, for example Linux, Windows,
-Solaris, UNIX etc.</doc>
+        <doc xml:whitespace="preserve">The generic family this OS belongs to, based upon its kernel,
+for example linux, winnt, solaris, freebsd etc.</doc>
         <type name="utf8"/>
       </property>
       <field name="parent_instance">
@@ -2081,9 +2244,24 @@ oss that are present in either @sourceOne and @sourceTwo.</doc>
     </record>
     <record name="OsPrivate" c:type="OsinfoOsPrivate" disguised="1">
     </record>
+    <constant name="PRODUCT_PROP_CODENAME"
+              value="codename"
+              c:type="OSINFO_PRODUCT_PROP_CODENAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="PRODUCT_PROP_EOL_DATE"
+              value="eol-date"
+              c:type="OSINFO_PRODUCT_PROP_EOL_DATE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="PRODUCT_PROP_NAME"
               value="name"
               c:type="OSINFO_PRODUCT_PROP_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="PRODUCT_PROP_RELEASE_DATE"
+              value="release-date"
+              c:type="OSINFO_PRODUCT_PROP_RELEASE_DATE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="PRODUCT_PROP_SHORT_ID"
@@ -2291,13 +2469,29 @@ platforms that are present in either @sourceOne and @sourceTwo.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_codename" c:identifier="osinfo_product_get_codename">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_eol_date" c:identifier="osinfo_product_get_eol_date">
+        <return-value transfer-ownership="full">
+          <type name="GLib.Date" c:type="GDate*"/>
+        </return-value>
+      </method>
+      <method name="get_eol_date_string"
+              c:identifier="osinfo_product_get_eol_date_string">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
       <method name="get_name" c:identifier="osinfo_product_get_name">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
       <method name="get_related" c:identifier="osinfo_product_get_related">
-        <doc xml:whitespace="preserve">Get a list of products satisfying the the requested
+        <doc xml:whitespace="preserve">Get a list of products satisfying the requested
 relationship</doc>
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">a list of related products</doc>
@@ -2310,6 +2504,18 @@ relationship</doc>
                   c:type="OsinfoProductRelationship"/>
           </parameter>
         </parameters>
+      </method>
+      <method name="get_release_date"
+              c:identifier="osinfo_product_get_release_date">
+        <return-value transfer-ownership="full">
+          <type name="GLib.Date" c:type="GDate*"/>
+        </return-value>
+      </method>
+      <method name="get_release_date_string"
+              c:identifier="osinfo_product_get_release_date_string">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
       </method>
       <method name="get_short_id" c:identifier="osinfo_product_get_short_id">
         <return-value transfer-ownership="none">
@@ -2326,6 +2532,9 @@ relationship</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <property name="codename" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
       <property name="name" transfer-ownership="none">
         <type name="utf8"/>
       </property>
@@ -2385,6 +2594,17 @@ all must match</doc>
           <parameter name="product" transfer-ownership="none">
             <doc xml:whitespace="preserve">the target product to filter on</doc>
             <type name="Product" c:type="OsinfoProduct*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_support_date_constraint"
+              c:identifier="osinfo_productfilter_add_support_date_constraint">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="when" transfer-ownership="none">
+            <type name="GLib.Date" c:type="GDate*"/>
           </parameter>
         </parameters>
       </method>
@@ -2800,6 +3020,370 @@ resources instances that are present in either @sourceOne and @sourceTwo.</doc>
     <record name="ResourcesPrivate"
             c:type="OsinfoResourcesPrivate"
             disguised="1">
+    </record>
+    <constant name="TREE_PROP_ARCHITECTURE"
+              value="architecture"
+              c:type="OSINFO_TREE_PROP_ARCHITECTURE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_BOOT_ISO"
+              value="boot-iso"
+              c:type="OSINFO_TREE_PROP_BOOT_ISO">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_INITRD"
+              value="initrd"
+              c:type="OSINFO_TREE_PROP_INITRD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_KERNEL"
+              value="kernel"
+              c:type="OSINFO_TREE_PROP_KERNEL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_TREEINFO_ARCH"
+              value="treeinfo-arch"
+              c:type="OSINFO_TREE_PROP_TREEINFO_ARCH">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_TREEINFO_FAMILY"
+              value="treeinfo-family"
+              c:type="OSINFO_TREE_PROP_TREEINFO_FAMILY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_TREEINFO_VARIANT"
+              value="treeinfo-variant"
+              c:type="OSINFO_TREE_PROP_TREEINFO_VARIANT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_TREEINFO_VERSION"
+              value="treeinfo-version"
+              c:type="OSINFO_TREE_PROP_TREEINFO_VERSION">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TREE_PROP_URL" value="url" c:type="OSINFO_TREE_PROP_URL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <class name="Tree"
+           c:symbol-prefix="tree"
+           c:type="OsinfoTree"
+           parent="Entity"
+           glib:type-name="OsinfoTree"
+           glib:get-type="osinfo_tree_get_type"
+           glib:type-struct="TreeClass">
+      <constructor name="new" c:identifier="osinfo_tree_new">
+        <return-value transfer-ownership="full">
+          <type name="Tree" c:type="OsinfoTree*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="architecture" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="create_from_location"
+                c:identifier="osinfo_tree_create_from_location"
+                throws="1">
+        <doc xml:whitespace="preserve">Creates a new #OsinfoTree for installation tree at @location. The @location
+could be any URI that GIO can handle or a local path.
+
+NOTE: Currently this only works for trees with a .treeinfo file</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #OsinfoTree , or NULL on error</doc>
+          <type name="Tree" c:type="OsinfoTree*"/>
+        </return-value>
+        <parameters>
+          <parameter name="location" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the location of an installation tree</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="create_from_location_async"
+                c:identifier="osinfo_tree_create_from_location_async">
+        <doc xml:whitespace="preserve">Asynchronous variant of #osinfo_tree_create_from_location.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="location" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the location of an installation tree</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="priority" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the I/O priority of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:whitespace="preserve">Function to call when result of this call is ready</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The user data to pass to @callback, or %NULL</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="create_from_location_finish"
+                c:identifier="osinfo_tree_create_from_location_finish"
+                throws="1">
+        <doc xml:whitespace="preserve">Finishes an asynchronous tree object creation process started with
+#osinfo_tree_create_from_location_async.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #OsinfoTree , or NULL on error</doc>
+          <type name="Tree" c:type="OsinfoTree*"/>
+        </return-value>
+        <parameters>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="error_quark" c:identifier="osinfo_tree_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
+      <method name="get_architecture"
+              c:identifier="osinfo_tree_get_architecture">
+        <doc xml:whitespace="preserve">Retrieves the target hardware architecture of the OS @tree provides.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the hardware architecture, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_boot_iso_path"
+              c:identifier="osinfo_tree_get_boot_iso_path">
+        <doc xml:whitespace="preserve">Retrieves the path to the boot_iso image in the install tree.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the path to boot_iso image, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_initrd_path"
+              c:identifier="osinfo_tree_get_initrd_path">
+        <doc xml:whitespace="preserve">Retrieves the path to the initrd image in the install tree.
+
+Note: This only applies to installer trees of 'linux' OS family.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the path to initrd image, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_kernel_path"
+              c:identifier="osinfo_tree_get_kernel_path">
+        <doc xml:whitespace="preserve">Retrieves the path to the kernel image in the install tree.
+
+Note: This only applies to installer trees of 'linux' OS family.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the path to kernel image, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_treeinfo_arch"
+              c:identifier="osinfo_tree_get_treeinfo_arch">
+        <doc xml:whitespace="preserve">If @tree is an ISO9660 image/device, this function retrieves the expected
+system ID.
+
+Note: In practice, this will usually not be the exact copy of the system ID
+string on the ISO image/device but rather a regular expression that matches
+it.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the system id, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_treeinfo_family"
+              c:identifier="osinfo_tree_get_treeinfo_family">
+        <doc xml:whitespace="preserve">If @tree is an ISO9660 image/device, this function retrieves the expected
+volume ID.
+
+Note: In practice, this will usually not be the exact copy of the volume ID
+string on the ISO image/device but rather a regular expression that matches
+it.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the volume id, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_treeinfo_variant"
+              c:identifier="osinfo_tree_get_treeinfo_variant">
+        <doc xml:whitespace="preserve">If @tree is an ISO9660 image/device, this function retrieves the expected
+publisher ID.
+
+Note: In practice, this will usually not be the exact copy of the publisher
+ID string on the ISO image/device but rather a regular expression that
+matches it.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the publisher id, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_treeinfo_version"
+              c:identifier="osinfo_tree_get_treeinfo_version">
+        <doc xml:whitespace="preserve">If @tree is an ISO9660 image/device, this function retrieves the expected
+application ID.
+
+Note: In practice, this will usually not be the exact copy of the application
+ID string on the ISO image/device but rather a regular expression that
+matches it.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the application id, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_url" c:identifier="osinfo_tree_get_url">
+        <doc xml:whitespace="preserve">The URL to the @tree</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the URL, or NULL</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
+      <property name="application-id" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="architecture" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="boot-iso-path" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="initrd-path" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="kernel-path" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="publisher-id" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="system-id" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="url" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="volume-id" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Entity" c:type="OsinfoEntity"/>
+      </field>
+      <field name="priv">
+        <type name="TreePrivate" c:type="OsinfoTreePrivate*"/>
+      </field>
+    </class>
+    <record name="TreeClass"
+            c:type="OsinfoTreeClass"
+            glib:is-gtype-struct-for="Tree">
+      <field name="parent_class">
+        <type name="EntityClass" c:type="OsinfoEntityClass"/>
+      </field>
+    </record>
+    <class name="TreeList"
+           c:symbol-prefix="treelist"
+           c:type="OsinfoTreeList"
+           parent="List"
+           glib:type-name="OsinfoTreeList"
+           glib:get-type="osinfo_treelist_get_type"
+           glib:type-struct="TreeListClass">
+      <constructor name="new" c:identifier="osinfo_treelist_new">
+        <doc xml:whitespace="preserve">Construct a new tree list that is initially empty.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an empty tree list</doc>
+          <type name="TreeList" c:type="OsinfoTreeList*"/>
+        </return-value>
+      </constructor>
+      <method name="new_copy" c:identifier="osinfo_treelist_new_copy">
+        <doc xml:whitespace="preserve">Construct a new tree list that is filled with trees
+from @source</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a copy of the tree list</doc>
+          <type name="TreeList" c:type="OsinfoTreeList*"/>
+        </return-value>
+      </method>
+      <method name="new_filtered" c:identifier="osinfo_treelist_new_filtered">
+        <doc xml:whitespace="preserve">Construct a new tree list that is filled with trees
+from @source that match @filter</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a filtered copy of the tree list</doc>
+          <type name="TreeList" c:type="OsinfoTreeList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filter" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the filter to apply</doc>
+            <type name="Filter" c:type="OsinfoFilter*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_intersection"
+              c:identifier="osinfo_treelist_new_intersection">
+        <doc xml:whitespace="preserve">Construct a new tree list that is filled with only the
+trees that are present in both @sourceOne and @sourceTwo.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an intersection of the two tree lists</doc>
+          <type name="TreeList" c:type="OsinfoTreeList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="sourceTwo" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the second tree list to copy</doc>
+            <type name="TreeList" c:type="OsinfoTreeList*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_union" c:identifier="osinfo_treelist_new_union">
+        <doc xml:whitespace="preserve">Construct a new tree list that is filled with all the
+trees that are present in either @sourceOne and @sourceTwo.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a union of the two tree lists</doc>
+          <type name="TreeList" c:type="OsinfoTreeList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="sourceTwo" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the second tree list to copy</doc>
+            <type name="TreeList" c:type="OsinfoTreeList*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="List" c:type="OsinfoList"/>
+      </field>
+      <field name="priv">
+        <type name="TreeListPrivate" c:type="OsinfoTreeListPrivate*"/>
+      </field>
+    </class>
+    <record name="TreeListClass"
+            c:type="OsinfoTreeListClass"
+            glib:is-gtype-struct-for="TreeList">
+      <field name="parent_class">
+        <type name="ListClass" c:type="OsinfoListClass"/>
+      </field>
+    </record>
+    <record name="TreeListPrivate"
+            c:type="OsinfoTreeListPrivate"
+            disguised="1">
+    </record>
+    <record name="TreePrivate" c:type="OsinfoTreePrivate" disguised="1">
     </record>
   </namespace>
 </repository>

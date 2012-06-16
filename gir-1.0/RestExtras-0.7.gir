@@ -8,33 +8,209 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="GLib" version="2.0"/>
   <include name="GObject" version="2.0"/>
+  <include name="Gio" version="2.0"/>
   <include name="Rest" version="0.7"/>
   <include name="libxml2" version="2.0"/>
-  <package name="gobject-2.0"/>
-  <package name="libsoup-2.4"/>
-  <package name="libxml-2.0"/>
+  <package name="rest-extras-0.7"/>
   <namespace name="RestExtras"
              version="0.7"
              shared-library="librest-extras-0.7.so.0"
              c:identifier-prefixes=""
              c:symbol-prefixes="">
-    <record name="FlickrProxy" c:type="FlickrProxy">
+    <class name="FlickrProxy"
+           c:symbol-prefix="flickr_proxy"
+           c:type="FlickrProxy"
+           parent="Rest.Proxy"
+           glib:type-name="FlickrProxy"
+           glib:get-type="flickr_proxy_get_type"
+           glib:type-struct="FlickrProxyClass">
       <doc xml:whitespace="preserve">#FlickrProxy has no publicly available members.</doc>
-      <field name="parent" writable="1">
+      <constructor name="new" c:identifier="flickr_proxy_new">
+        <return-value transfer-ownership="full">
+          <type name="Rest.Proxy" c:type="RestProxy*"/>
+        </return-value>
+        <parameters>
+          <parameter name="api_key" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="shared_secret" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_with_token"
+                   c:identifier="flickr_proxy_new_with_token">
+        <return-value transfer-ownership="full">
+          <type name="Rest.Proxy" c:type="RestProxy*"/>
+        </return-value>
+        <parameters>
+          <parameter name="api_key" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="shared_secret" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="token" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="is_successful"
+                c:identifier="flickr_proxy_is_successful"
+                throws="1">
+        <doc xml:whitespace="preserve">Examines the Flickr response and if it not a successful reply, set @error and
+return FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if this response is successful, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="root" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The root node of a parsed Flickr response</doc>
+            <type name="Rest.XmlNode" c:type="RestXmlNode*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="build_login_url"
+              c:identifier="flickr_proxy_build_login_url">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <parameter name="frob" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="perms" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_api_key" c:identifier="flickr_proxy_get_api_key">
+        <doc xml:whitespace="preserve">Get the API key.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the API key. This string is owned by #FlickrProxy and should not be freed.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+      </method>
+      <method name="get_shared_secret"
+              c:identifier="flickr_proxy_get_shared_secret">
+        <doc xml:whitespace="preserve">Get the shared secret for authentication.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the shared secret. This string is owned by #FlickrProxy and should not be freed.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+      </method>
+      <method name="get_token" c:identifier="flickr_proxy_get_token">
+        <doc xml:whitespace="preserve">Get the current token.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the token, or %NULL if there is no token yet.  This string is owned by #FlickrProxy and should not be freed.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+      </method>
+      <method name="new_upload" c:identifier="flickr_proxy_new_upload">
+        <doc xml:whitespace="preserve">Create a new #RestProxyCall that can be used for uploading.
+
+See http://www.flickr.com/services/api/upload.api.html for details on
+uploading to Flickr.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #FlickrProxyCall</doc>
+          <type name="FlickrProxyCall" c:type="RestProxyCall*"/>
+        </return-value>
+      </method>
+      <method name="new_upload_for_file"
+              c:identifier="flickr_proxy_new_upload_for_file"
+              throws="1">
+        <doc xml:whitespace="preserve">Create a new #RestProxyCall that can be used for uploading.  @filename will
+be set as the "photo" parameter for you, avoiding you from having to open the
+file and determine the MIME type.
+
+Note that this function can in theory block.
+
+See http://www.flickr.com/services/api/upload.api.html for details on
+uploading to Flickr.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #FlickrProxyCall</doc>
+          <type name="FlickrProxyCall" c:type="RestProxyCall*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the file to upload</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_token" c:identifier="flickr_proxy_set_token">
+        <doc xml:whitespace="preserve">Set the token.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="token" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the access token</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="sign" c:identifier="flickr_proxy_sign">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <parameter name="params" transfer-ownership="none">
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="api-key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="shared-secret"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="token" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <field name="parent">
         <type name="Rest.Proxy" c:type="RestProxy"/>
       </field>
-      <field name="priv" writable="1">
+      <field name="priv">
         <type name="FlickrProxyPrivate" c:type="FlickrProxyPrivate*"/>
       </field>
-    </record>
-    <record name="FlickrProxyCall" c:type="FlickrProxyCall">
+    </class>
+    <class name="FlickrProxyCall"
+           c:symbol-prefix="flickr_proxy_call"
+           c:type="FlickrProxyCall"
+           parent="Rest.ProxyCall"
+           glib:type-name="FlickrProxyCall"
+           glib:get-type="flickr_proxy_call_get_type"
+           glib:type-struct="FlickrProxyCallClass">
       <doc xml:whitespace="preserve">#FlickrProxyCall has no publicly available members.</doc>
-      <field name="parent" writable="1">
+      <property name="upload"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">Set if the call should be sent to the photo upload endpoint and not the
+general-purpose endpoint.</doc>
+        <type name="gboolean"/>
+      </property>
+      <field name="parent">
         <type name="Rest.ProxyCall" c:type="RestProxyCall"/>
       </field>
-    </record>
-    <record name="FlickrProxyCallClass" c:type="FlickrProxyCallClass">
-      <field name="parent_class" writable="1">
+    </class>
+    <record name="FlickrProxyCallClass"
+            c:type="FlickrProxyCallClass"
+            glib:is-gtype-struct-for="FlickrProxyCall">
+      <field name="parent_class">
         <type name="Rest.ProxyCallClass" c:type="RestProxyCallClass"/>
       </field>
       <field name="_padding_dummy" readable="0" private="1">
@@ -43,8 +219,10 @@ and/or use gtk-doc annotations.  -->
         </array>
       </field>
     </record>
-    <record name="FlickrProxyClass" c:type="FlickrProxyClass">
-      <field name="parent_class" writable="1">
+    <record name="FlickrProxyClass"
+            c:type="FlickrProxyClass"
+            glib:is-gtype-struct-for="FlickrProxy">
+      <field name="parent_class">
         <type name="Rest.ProxyClass" c:type="RestProxyClass"/>
       </field>
       <field name="_padding_dummy" readable="0" private="1">
@@ -57,23 +235,157 @@ and/or use gtk-doc annotations.  -->
             c:type="FlickrProxyPrivate"
             disguised="1">
     </record>
-    <record name="LastfmProxy" c:type="LastfmProxy">
+    <class name="LastfmProxy"
+           c:symbol-prefix="lastfm_proxy"
+           c:type="LastfmProxy"
+           parent="Rest.Proxy"
+           glib:type-name="LastfmProxy"
+           glib:get-type="lastfm_proxy_get_type"
+           glib:type-struct="LastfmProxyClass">
       <doc xml:whitespace="preserve">#LastfmProxy has no publicly available members.</doc>
-      <field name="parent" writable="1">
+      <constructor name="new" c:identifier="lastfm_proxy_new">
+        <return-value transfer-ownership="full">
+          <type name="Rest.Proxy" c:type="RestProxy*"/>
+        </return-value>
+        <parameters>
+          <parameter name="api_key" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="secret" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_with_session"
+                   c:identifier="lastfm_proxy_new_with_session">
+        <return-value transfer-ownership="full">
+          <type name="Rest.Proxy" c:type="RestProxy*"/>
+        </return-value>
+        <parameters>
+          <parameter name="api_key" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="secret" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+          <parameter name="session_key" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="is_successful"
+                c:identifier="lastfm_proxy_is_successful"
+                throws="1">
+        <doc xml:whitespace="preserve">Examines the Lastfm response and if it not a successful reply, set @error and
+return FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if this response is successful, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="root" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The root node of a parsed Lastfm response</doc>
+            <type name="Rest.XmlNode" c:type="RestXmlNode*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="build_login_url"
+              c:identifier="lastfm_proxy_build_login_url">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <parameter name="token" transfer-ownership="none">
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_api_key" c:identifier="lastfm_proxy_get_api_key">
+        <doc xml:whitespace="preserve">Get the API key.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the API key. This string is owned by #LastfmProxy and should not be freed.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+      </method>
+      <method name="get_secret" c:identifier="lastfm_proxy_get_secret">
+        <doc xml:whitespace="preserve">Get the secret for authentication.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the secret. This string is owned by #LastfmProxy and should not be freed.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+      </method>
+      <method name="get_session_key"
+              c:identifier="lastfm_proxy_get_session_key">
+        <doc xml:whitespace="preserve">Get the current session key.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the session key, or %NULL if there is no session key yet.  This string is owned by #LastfmProxy and should not be freed.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+      </method>
+      <method name="set_session_key"
+              c:identifier="lastfm_proxy_set_session_key">
+        <doc xml:whitespace="preserve">Set the session key.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="session_key" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the access session_key</doc>
+            <type name="utf8" c:type="char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="sign" c:identifier="lastfm_proxy_sign">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <parameter name="params" transfer-ownership="none">
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="api-key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="secret"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="session-key" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <field name="parent">
         <type name="Rest.Proxy" c:type="RestProxy"/>
       </field>
-      <field name="priv" writable="1">
+      <field name="priv">
         <type name="LastfmProxyPrivate" c:type="LastfmProxyPrivate*"/>
       </field>
-    </record>
-    <record name="LastfmProxyCall" c:type="LastfmProxyCall">
+    </class>
+    <class name="LastfmProxyCall"
+           c:symbol-prefix="lastfm_proxy_call"
+           c:type="LastfmProxyCall"
+           parent="Rest.ProxyCall"
+           glib:type-name="LastfmProxyCall"
+           glib:get-type="lastfm_proxy_call_get_type"
+           glib:type-struct="LastfmProxyCallClass">
       <doc xml:whitespace="preserve">#LastfmProxyCall has no publicly available members.</doc>
-      <field name="parent" writable="1">
+      <field name="parent">
         <type name="Rest.ProxyCall" c:type="RestProxyCall"/>
       </field>
-    </record>
-    <record name="LastfmProxyCallClass" c:type="LastfmProxyCallClass">
-      <field name="parent_class" writable="1">
+    </class>
+    <record name="LastfmProxyCallClass"
+            c:type="LastfmProxyCallClass"
+            glib:is-gtype-struct-for="LastfmProxyCall">
+      <field name="parent_class">
         <type name="Rest.ProxyCallClass" c:type="RestProxyCallClass"/>
       </field>
       <field name="_padding_dummy" readable="0" private="1">
@@ -82,8 +394,10 @@ and/or use gtk-doc annotations.  -->
         </array>
       </field>
     </record>
-    <record name="LastfmProxyClass" c:type="LastfmProxyClass">
-      <field name="parent_class" writable="1">
+    <record name="LastfmProxyClass"
+            c:type="LastfmProxyClass"
+            glib:is-gtype-struct-for="LastfmProxy">
+      <field name="parent_class">
         <type name="Rest.ProxyClass" c:type="RestProxyClass"/>
       </field>
       <field name="_padding_dummy" readable="0" private="1">
@@ -96,17 +410,109 @@ and/or use gtk-doc annotations.  -->
             c:type="LastfmProxyPrivate"
             disguised="1">
     </record>
-    <record name="YoutubeProxy" c:type="YoutubeProxy">
+    <class name="YoutubeProxy"
+           c:symbol-prefix="youtube_proxy"
+           c:type="YoutubeProxy"
+           parent="Rest.Proxy"
+           glib:type-name="YoutubeProxy"
+           glib:get-type="youtube_proxy_get_type"
+           glib:type-struct="YoutubeProxyClass">
       <doc xml:whitespace="preserve">#YoutubeProxy has no publicly available members.</doc>
-      <field name="parent" writable="1">
+      <constructor name="new" c:identifier="youtube_proxy_new">
+        <return-value transfer-ownership="full">
+          <type name="Rest.Proxy" c:type="RestProxy*"/>
+        </return-value>
+        <parameters>
+          <parameter name="developer_key" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_with_auth"
+                   c:identifier="youtube_proxy_new_with_auth">
+        <return-value transfer-ownership="full">
+          <type name="Rest.Proxy" c:type="RestProxy*"/>
+        </return-value>
+        <parameters>
+          <parameter name="developer_key" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="user_auth" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="set_user_auth" c:identifier="youtube_proxy_set_user_auth">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="user_auth" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="upload_async"
+              c:identifier="youtube_proxy_upload_async"
+              throws="1">
+        <doc xml:whitespace="preserve">Upload a file.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE, or %FALSE if the file could not be opened</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:whitespace="preserve">filename</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="fields" transfer-ownership="none">
+            <doc xml:whitespace="preserve">fields</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="incomplete" transfer-ownership="none">
+            <doc xml:whitespace="preserve">incomplete</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="5">
+            <doc xml:whitespace="preserve">callback to invoke upon completion</doc>
+            <type name="YoutubeProxyUploadCallback"
+                  c:type="YoutubeProxyUploadCallback"/>
+          </parameter>
+          <parameter name="weak_object" transfer-ownership="none">
+            <type name="GObject.Object" c:type="GObject*"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">user data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="developer-key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="user-auth" writable="1" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <field name="parent">
         <type name="Rest.Proxy" c:type="RestProxy"/>
       </field>
-      <field name="priv" writable="1">
+      <field name="priv">
         <type name="YoutubeProxyPrivate" c:type="YoutubeProxyPrivate*"/>
       </field>
-    </record>
-    <record name="YoutubeProxyClass" c:type="YoutubeProxyClass">
-      <field name="parent_class" writable="1">
+    </class>
+    <record name="YoutubeProxyClass"
+            c:type="YoutubeProxyClass"
+            glib:is-gtype-struct-for="YoutubeProxy">
+      <field name="parent_class">
         <type name="Rest.ProxyClass" c:type="RestProxyClass"/>
       </field>
       <field name="_padding_dummy" readable="0" private="1">
@@ -143,7 +549,7 @@ and/or use gtk-doc annotations.  -->
         <parameter name="weak_object" transfer-ownership="none">
           <type name="GObject.Object" c:type="GObject*"/>
         </parameter>
-        <parameter name="userdata" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="6">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>

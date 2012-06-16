@@ -17,6 +17,8 @@ and/or use gtk-doc annotations.  -->
   <include name="Pango" version="1.0"/>
   <include name="cairo" version="1.0"/>
   <include name="xlib" version="2.0"/>
+  <package name="vte-2.90"/>
+  <c:include name="vte/vte.h"/>
   <namespace name="Vte"
              version="2.90"
              shared-library="libvte2_90.so.9"
@@ -45,6 +47,11 @@ If using fork(), you MUST call vte_pty_child_setup() in the child.
 If using g_spawn_async() and friends, you MUST either use
 vte_pty_child_setup() directly as the child setup function, or call
 vte_pty_child_setup() from your own child setup function supplied.
+
+When using vte_terminal_fork_command_full() with a custom child setup
+function, vte_pty_child_setup() will be called before the supplied
+function; you must not call it again.
+
 Also, you MUST pass the %G_SPAWN_DO_NOT_REAP_CHILD flag.
 
 If GNOME PTY Helper is available and
@@ -105,9 +112,8 @@ The file descriptor to the PTY master remains open.</doc>
         </return-value>
       </method>
       <method name="get_fd" c:identifier="vte_pty_get_fd">
-        <doc xml:whitespace="preserve">file descriptor belongs to @pty and must not be closed</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the file descriptor of the PTY master in @pty. The</doc>
+          <doc xml:whitespace="preserve">the file descriptor of the PTY master in @pty. The file descriptor belongs to @pty and must not be closed</doc>
           <type name="gint" c:type="int"/>
         </return-value>
       </method>
@@ -539,7 +545,9 @@ to mess with your users.</doc>
         <parameters>
           <parameter name="data" transfer-ownership="none">
             <doc xml:whitespace="preserve">a string in the terminal's current encoding</doc>
-            <type name="utf8" c:type="char*"/>
+            <array length="1" zero-terminated="0" c:type="char*">
+              <type name="guint8"/>
+            </array>
           </parameter>
           <parameter name="length" transfer-ownership="none">
             <doc xml:whitespace="preserve">the length of the string</doc>
@@ -635,7 +643,7 @@ See vte_pty_new(), g_spawn_async() and vte_terminal_watch_child() for more infor
                      allow-none="1"
                      scope="call"
                      closure="6">
-            <doc xml:whitespace="preserve">function to run in the child just before exec(), or %NULL</doc>
+            <doc xml:whitespace="preserve">an extra child setup function to run in the child just before exec(), or %NULL</doc>
             <type name="GLib.SpawnChildSetupFunc"
                   c:type="GSpawnChildSetupFunc"/>
           </parameter>
@@ -730,7 +738,12 @@ coordinate is absolute.</doc>
             <doc xml:whitespace="preserve">a location to store the column, or %NULL</doc>
             <type name="glong" c:type="glong*"/>
           </parameter>
-          <parameter name="row" transfer-ownership="none">
+          <parameter name="row"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a location to store the row, or %NULL</doc>
             <type name="glong" c:type="glong*"/>
           </parameter>
         </parameters>
@@ -748,21 +761,17 @@ coordinate is absolute.</doc>
               c:identifier="vte_terminal_get_default_emulation"
               version="0.11.11">
         <doc xml:whitespace="preserve">Queries the terminal for its default emulation, which is attempted if the
-terminal type passed to vte_terminal_set_emulation() is %NULL.
-
-type the widget attempts to emulate</doc>
+terminal type passed to vte_terminal_set_emulation() is %NULL.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">an interned string containing the name of the default terminal</doc>
+          <doc xml:whitespace="preserve">an interned string containing the name of the default terminal type the widget attempts to emulate</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
       <method name="get_emulation" c:identifier="vte_terminal_get_emulation">
         <doc xml:whitespace="preserve">Queries the terminal for its current emulation, as last set by a call to
-vte_terminal_set_emulation().
-
-widget is attempting to emulate</doc>
+vte_terminal_set_emulation().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">an interned string containing the name of the terminal type the</doc>
+          <doc xml:whitespace="preserve">an interned string containing the name of the terminal type the widget is attempting to emulate</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
@@ -776,11 +785,9 @@ encoded.</doc>
       </method>
       <method name="get_font" c:identifier="vte_terminal_get_font">
         <doc xml:whitespace="preserve">Queries the terminal for information about the fonts which will be
-used to draw text in the terminal.
-
-currently using to render text</doc>
+used to draw text in the terminal.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #PangoFontDescription describing the font the terminal is</doc>
+          <doc xml:whitespace="preserve">a #PangoFontDescription describing the font the terminal is currently using to render text</doc>
           <type name="Pango.FontDescription" c:type="PangoFontDescription*"/>
         </return-value>
       </method>
@@ -830,12 +837,9 @@ using vte_terminal_set_mouse_autohide().</doc>
               c:identifier="vte_terminal_get_status_line">
         <doc xml:whitespace="preserve">Some terminal emulations specify a status line which is separate from the
 main display area, and define a means for applications to move the cursor
-to the status line and back.
-
-For terminals like "xterm", this will usually be the empty string.  The string
-must not be modified or freed by the caller.</doc>
+to the status line and back.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the current contents of the terminal's status line.</doc>
+          <doc xml:whitespace="preserve">the current contents of the terminal's status line. For terminals like "xterm", this will usually be the empty string.  The string must not be modified or freed by the caller.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
       </method>
@@ -1031,11 +1035,9 @@ associated with the matched regular expression will be stored in @tag.
 
 If more than one regular expression has been set with
 vte_terminal_match_add(), then expressions are checked in the order in
-which they were added.
-
-set regular expressions</doc>
+which they were added.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a newly allocated string which matches one of the previously</doc>
+          <doc xml:whitespace="preserve">a newly allocated string which matches one of the previously set regular expressions</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
@@ -2029,12 +2031,8 @@ repainting text with a different offset.</doc>
         <type name="gboolean"/>
       </property>
       <property name="background-image-file"
-                version="0.20"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:whitespace="preserve">Sets a background image file for the widget.  If specified by
-#VteTerminal:background-saturation:, the terminal will tint its
-in-memory copy of the image before applying it to the terminal.</doc>
         <type name="utf8"/>
       </property>
       <property name="background-image-pixbuf"
@@ -2533,7 +2531,6 @@ circumstances.</doc>
                  glib:type-name="VteTerminalAntiAlias"
                  glib:get-type="vte_terminal_anti_alias_get_type"
                  c:type="VteTerminalAntiAlias">
-      <doc xml:whitespace="preserve">An enumeration describing which anti-alias setting to use.</doc>
       <member name="use_default"
               value="0"
               c:identifier="VTE_ANTI_ALIAS_USE_DEFAULT"
@@ -3057,11 +3054,9 @@ to an output stream.</doc>
               c:identifier="vte_get_user_shell"
               version="0.28">
       <doc xml:whitespace="preserve">Gets the user's shell, or %NULL. In the latter case, the
-system default (usually "/bin/sh") should be used.
-
-user's shell, or %NULL</doc>
+system default (usually "/bin/sh") should be used.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:whitespace="preserve">a newly allocated string with the</doc>
+        <doc xml:whitespace="preserve">a newly allocated string with the user's shell, or %NULL</doc>
         <type name="filename" c:type="char*"/>
       </return-value>
     </function>

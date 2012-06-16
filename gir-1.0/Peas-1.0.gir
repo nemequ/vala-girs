@@ -10,6 +10,7 @@ and/or use gtk-doc annotations.  -->
   <include name="GLib" version="2.0"/>
   <include name="GModule" version="2.0"/>
   <include name="GObject" version="2.0"/>
+  <include name="Gio" version="2.0"/>
   <package name="libpeas-1.0"/>
   <c:include name="libpeas/peas.h"/>
   <namespace name="Peas"
@@ -162,22 +163,32 @@ of this function will return a new instance of #PeasEngine.</doc>
           <type name="Engine" c:type="PeasEngine*"/>
         </return-value>
       </function>
-      <virtual-method name="load_plugin">
+      <virtual-method name="load_plugin" invoker="load_plugin">
+        <doc xml:whitespace="preserve">Loads the plugin corresponding to @info if it's not currently loaded.
+Emits the "load-plugin" signal; loading the plugin
+actually occurs in the default signal handler.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">whether the plugin has been successfully loaded.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="info" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #PeasPluginInfo.</doc>
             <type name="PluginInfo" c:type="PeasPluginInfo*"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="unload_plugin">
+      <virtual-method name="unload_plugin" invoker="unload_plugin">
+        <doc xml:whitespace="preserve">Unloads the plugin corresponding to @info.
+Emits the "unload-plugin" signal; unloading the plugin
+actually occurs in the default signal handler.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">whether the plugin has been successfully unloaded.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="info" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #PeasPluginInfo.</doc>
             <type name="PluginInfo" c:type="PeasPluginInfo*"/>
           </parameter>
         </parameters>
@@ -229,11 +240,9 @@ handler (exactly like if you had called g_object_new() yourself).
 The new extension instance produced by this function will always be
 returned wrapped in a #PeasExtension proxy, following the current libpeas
 principle of never giving you the actual object (also because it might as
-well *not* be an actual object).
-
-the @extension_type instance, or %NULL.</doc>
+well *not* be an actual object).</doc>
         <return-value>
-          <doc xml:whitespace="preserve">a new instance of #PeasExtension wrapping</doc>
+          <doc xml:whitespace="preserve">a new instance of #PeasExtension wrapping the @extension_type instance, or %NULL.</doc>
           <type name="Extension" c:type="PeasExtension*"/>
         </return-value>
         <parameters>
@@ -262,11 +271,9 @@ the @extension_type instance, or %NULL.</doc>
 then this function will return a new instance of this implementation,
 wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
 
-See peas_engine_create_extension() for more information.
-
-the @extension_type instance, or %NULL.</doc>
+See peas_engine_create_extension() for more information.</doc>
         <return-value>
-          <doc xml:whitespace="preserve">a new instance of #PeasExtension wrapping</doc>
+          <doc xml:whitespace="preserve">a new instance of #PeasExtension wrapping the @extension_type instance, or %NULL.</doc>
           <type name="Extension" c:type="PeasExtension*"/>
         </return-value>
         <parameters>
@@ -295,11 +302,9 @@ the @extension_type instance, or %NULL.</doc>
 then this function will return a new instance of this implementation,
 wrapped in a new #PeasExtension instance. Otherwise, it will return %NULL.
 
-See peas_engine_create_extension() for more information.
-
-the @extension_type instance, or %NULL.</doc>
+See peas_engine_create_extension() for more information.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new instance of #PeasExtension wrapping</doc>
+          <doc xml:whitespace="preserve">a new instance of #PeasExtension wrapping the @extension_type instance, or %NULL.</doc>
           <type name="Extension" c:type="PeasExtension*"/>
         </return-value>
         <parameters>
@@ -318,7 +323,7 @@ the @extension_type instance, or %NULL.</doc>
           <parameter name="parameters"
                      transfer-ownership="none"
                      allow-none="1">
-            <doc xml:whitespace="preserve"> an array of #GParameter.</doc>
+            <doc xml:whitespace="preserve">an array of #GParameter.</doc>
             <array length="2" zero-terminated="0" c:type="GParameter*">
               <type name="GObject.Parameter" c:type="GParameter"/>
             </array>
@@ -336,7 +341,7 @@ peas_engine_enable_loader (engine, "python");
 ]|
 
 Note: plugin loaders are shared across #PeasEngines so enabling
-a loader on one #PeasEngine will enable it on all #PeasEngines.</doc>
+      a loader on one #PeasEngine will enable it on all #PeasEngines.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -363,11 +368,9 @@ disappear.</doc>
 containing a single %NULL element if there is no plugin currently loaded.
 
 Please note that the returned array is a newly allocated one: you will need
-to free it using g_strfreev().
-
-%NULL-terminated array of strings.</doc>
+to free it using g_strfreev().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A newly-allocated</doc>
+          <doc xml:whitespace="preserve">A newly-allocated %NULL-terminated array of strings.</doc>
           <array c:type="gchar**">
             <type name="utf8"/>
           </array>
@@ -376,11 +379,9 @@ to free it using g_strfreev().
       <method name="get_plugin_info"
               c:identifier="peas_engine_get_plugin_info">
         <doc xml:whitespace="preserve">Gets the #PeasPluginInfo corresponding with @plugin_name,
-or %NULL if @plugin_name was not found.
-
-a given plugin module name.</doc>
+or %NULL if @plugin_name was not found.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the #PeasPluginInfo corresponding with</doc>
+          <doc xml:whitespace="preserve">the #PeasPluginInfo corresponding with a given plugin module name.</doc>
           <type name="PluginInfo" c:type="PeasPluginInfo*"/>
         </return-value>
         <parameters>
@@ -392,12 +393,9 @@ a given plugin module name.</doc>
       </method>
       <method name="get_plugin_list"
               c:identifier="peas_engine_get_plugin_list">
-        <doc xml:whitespace="preserve">Returns the list of #PeasPluginInfo known to the engine.
-
-#PeasPluginInfo. Note that the list belongs to the engine and should
-not be freed.</doc>
+        <doc xml:whitespace="preserve">Returns the list of #PeasPluginInfo known to the engine.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #GList of</doc>
+          <doc xml:whitespace="preserve">a #GList of #PeasPluginInfo. Note that the list belongs to the engine and should not be freed.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="PluginInfo"/>
           </type>
@@ -415,6 +413,26 @@ actually occurs in the default signal handler.</doc>
           <parameter name="info" transfer-ownership="none">
             <doc xml:whitespace="preserve">A #PeasPluginInfo.</doc>
             <type name="PluginInfo" c:type="PeasPluginInfo*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepend_search_path"
+              c:identifier="peas_engine_prepend_search_path">
+        <doc xml:whitespace="preserve">This function prepends a search path to the list of paths where to
+look for plugins.
+
+See Also: peas_engine_add_search_path()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="module_dir" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the plugin module directory.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="data_dir" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the plugin data directory.</doc>
+            <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -492,11 +510,11 @@ peas_engine_unload_plugin() is called.
 This can be used with GSettings to save the loaded plugins by binding
 to this property after instantiating the engine by doing:
 |[
-g_settings_bind (gsettings_object,
-LOADED_PLUGINS_KEY,
-engine,
-"loaded-plugins",
-G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind (gsettings_object,
+                   LOADED_PLUGINS_KEY,
+                   engine,
+                   "loaded-plugins",
+                   G_SETTINGS_BIND_DEFAULT);
 ]|
 
 Note: notify will not be called when the engine is being destroyed.</doc>
@@ -566,6 +584,7 @@ use g_signal_connect_after().</doc>
       <field name="load_plugin">
         <callback name="load_plugin">
           <return-value transfer-ownership="none">
+            <doc xml:whitespace="preserve">whether the plugin has been successfully loaded.</doc>
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
@@ -573,6 +592,7 @@ use g_signal_connect_after().</doc>
               <type name="Engine" c:type="PeasEngine*"/>
             </parameter>
             <parameter name="info" transfer-ownership="none">
+              <doc xml:whitespace="preserve">A #PeasPluginInfo.</doc>
               <type name="PluginInfo" c:type="PeasPluginInfo*"/>
             </parameter>
           </parameters>
@@ -581,6 +601,7 @@ use g_signal_connect_after().</doc>
       <field name="unload_plugin">
         <callback name="unload_plugin">
           <return-value transfer-ownership="none">
+            <doc xml:whitespace="preserve">whether the plugin has been successfully unloaded.</doc>
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
@@ -588,6 +609,7 @@ use g_signal_connect_after().</doc>
               <type name="Engine" c:type="PeasEngine*"/>
             </parameter>
             <parameter name="info" transfer-ownership="none">
+              <doc xml:whitespace="preserve">A #PeasPluginInfo.</doc>
               <type name="PluginInfo" c:type="PeasPluginInfo*"/>
             </parameter>
           </parameters>
@@ -613,21 +635,17 @@ use g_signal_connect_after().</doc>
       <method name="get_data_dir"
               c:identifier="peas_extension_base_get_data_dir">
         <doc xml:whitespace="preserve">Get the path of the directory where the plugin should look for
-its data files.
-
-directory where the plugin should look for its data files</doc>
+its data files.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A newly allocated string with the path of the</doc>
+          <doc xml:whitespace="preserve">A newly allocated string with the path of the directory where the plugin should look for its data files</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
       <method name="get_plugin_info"
               c:identifier="peas_extension_base_get_plugin_info">
-        <doc xml:whitespace="preserve">Get information relative to @extbase.
-
-to the #PeasExtensionBase.</doc>
+        <doc xml:whitespace="preserve">Get information relative to @extbase.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the #PeasPluginInfo relative</doc>
+          <doc xml:whitespace="preserve">the #PeasPluginInfo relative to the #PeasExtensionBase.</doc>
           <type name="PluginInfo" c:type="PeasPluginInfo*"/>
         </return-value>
       </method>
@@ -1320,6 +1338,27 @@ The relevant key in the plugin info file is "Description".</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <method name="get_external_data"
+              c:identifier="peas_plugin_info_get_external_data">
+        <doc xml:whitespace="preserve">Gets external data specified for the plugin.
+
+External data is specified in the plugin info file prefixed with X-. For
+example, if a key/value pair X-Peas=1 is specified in the key file, you
+can use "Peas" for @key to retrieve the value "1".
+
+Note: that you can omit the X- prefix when retrieving the value,
+but not when specifying the value in the file.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the external data, or %NULL if the external data could not be found.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The key to lookup.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_help_uri" c:identifier="peas_plugin_info_get_help_uri">
         <doc xml:whitespace="preserve">Gets the help URI of the plugin.
 
@@ -1385,6 +1424,21 @@ The relevant key in the plugin info file is "Name".</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <method name="get_settings" c:identifier="peas_plugin_info_get_settings">
+        <doc xml:whitespace="preserve">Creates a new #GSettings for the given @schema_id and if
+gschemas.compiled is not in the module directory an attempt
+will be made to create it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GSettings, or %NULL.</doc>
+          <type name="Gio.Settings" c:type="GSettings*"/>
+        </return-value>
+        <parameters>
+          <parameter name="schema_id" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">The schema id.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_version" c:identifier="peas_plugin_info_get_version">
         <doc xml:whitespace="preserve">Gets the version of the plugin.
 
@@ -1439,11 +1493,9 @@ unloading such plugins is the responsibility of the application alone.
 Most applications will usually load those plugins immediately after
 the initialization of the #PeasEngine.
 
-The relevant key in the plugin info file is "Builtin".
-
-if not.</doc>
+The relevant key in the plugin info file is "Builtin".</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the plugin is a builtin plugin, %FALSE</doc>
+          <doc xml:whitespace="preserve">%TRUE if the plugin is a builtin plugin, %FALSE if not.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
@@ -1455,11 +1507,9 @@ user through a plugin manager (like #PeasGtkPluginManager). Loading and
 unloading such plugins is the responsibility of the application alone or
 through plugins that depend on them.
 
-The relevant key in the plugin info file is "Hidden".
-
-if not.</doc>
+The relevant key in the plugin info file is "Hidden".</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the plugin is a hidden plugin, %FALSE</doc>
+          <doc xml:whitespace="preserve">%TRUE if the plugin is a hidden plugin, %FALSE if not.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>

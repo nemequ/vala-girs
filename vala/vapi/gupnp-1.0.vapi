@@ -195,12 +195,12 @@ namespace GUPnP {
 		public unowned GUPnP.ServiceProxyAction begin_action_list (string action, GLib.List in_names, GLib.List in_values, GUPnP.ServiceProxyActionCallback callback);
 		public void cancel_action (GUPnP.ServiceProxyAction action);
 		public bool end_action (GUPnP.ServiceProxyAction action, ...) throws GLib.Error;
-		public bool end_action_hash (GUPnP.ServiceProxyAction action, GLib.HashTable hash) throws GLib.Error;
-		public bool end_action_list (GUPnP.ServiceProxyAction action, GLib.List out_names, GLib.List out_types, GLib.List out_values) throws GLib.Error;
+		public bool end_action_hash (GUPnP.ServiceProxyAction action, [CCode (pos = -0.9)] GLib.HashTable<string,weak GLib.Value*> hash) throws GLib.Error;
+		public bool end_action_list (GUPnP.ServiceProxyAction action, [CCode (pos = -0.9)] GLib.List<string> out_names, [CCode (pos = -0.8)] GLib.List<GLib.Type?> out_types, [CCode (pos = -0.7)] out GLib.List<weak GLib.Value*> out_values) throws GLib.Error;
 		public bool remove_notify (string variable, GUPnP.ServiceProxyNotifyCallback callback);
 		public bool send_action (string action, ...) throws GLib.Error;
-		public bool send_action_hash (string action, GLib.HashTable in_hash, ref unowned GLib.HashTable out_hash) throws GLib.Error;
-		public bool send_action_list (string action, GLib.List in_names, GLib.List in_values, GLib.List out_names, GLib.List out_types, GLib.List out_values) throws GLib.Error;
+		public bool send_action_hash (string action, [CCode (pos = -0.9)] GLib.HashTable<string,GLib.Value?> in_hash, [CCode (pos = -0.8)] GLib.HashTable<string,weak GLib.Value*> out_hash) throws GLib.Error;
+		public bool send_action_list (string action, [CCode (pos = -0.9)] GLib.List<string> in_names, [CCode (pos = -0.8)] GLib.List<weak GLib.Value?> in_values, [CCode (pos = -0.7)] GLib.List<string> out_names, [CCode (pos = -0.6)] GLib.List<GLib.Type?> out_types, [CCode (pos = -0.5)] out GLib.List<weak GLib.Value*> out_values) throws GLib.Error;
 		public bool subscribed { get; set; }
 		public virtual signal void subscription_lost (GLib.Error reason);
 	}
@@ -298,6 +298,10 @@ namespace GUPnP {
 	public delegate void ServiceProxyActionCallback (GUPnP.ServiceProxy proxy, GUPnP.ServiceProxyAction action);
 	[CCode (cheader_filename = "libgupnp/gupnp.h")]
 	public delegate void ServiceProxyNotifyCallback (GUPnP.ServiceProxy proxy, string variable, GLib.Value value);
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	public static void value_hash_free (GLib.HashTable<string,weak GLib.Value*> hash);
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	public static void value_list_free (GLib.List<weak GLib.Value*> list);
 	[CCode (cheader_filename = "libgupnp/gupnp.h")]
 	public static GLib.Quark xml_error_quark ();
 }

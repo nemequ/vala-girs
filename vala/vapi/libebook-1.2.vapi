@@ -2,7 +2,7 @@
 
 [CCode (cprefix = "E", gir_namespace = "EBook", gir_version = "1.2", lower_case_cprefix = "e_")]
 namespace E {
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_book_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_get_type ()")]
 	public class Book : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Deprecated (since = "3.2")]
@@ -13,8 +13,6 @@ namespace E {
 		public bool add_contact_async (E.Contact contact, E.BookIdAsyncCallback cb, void* closure);
 		[Deprecated (since = "3.0")]
 		public bool async_add_contact (E.Contact contact, E.BookIdCallback cb, void* closure);
-		[Deprecated (since = "3.0")]
-		public bool async_authenticate_user (string user, string passwd, string auth_method, E.BookCallback cb, void* closure);
 		[Deprecated (since = "3.0")]
 		public bool async_commit_contact (E.Contact contact, E.BookCallback cb, void* closure);
 		[Deprecated (since = "3.0")]
@@ -38,10 +36,6 @@ namespace E {
 		[Deprecated (since = "3.0")]
 		public bool async_remove_contacts (GLib.List<string> ids, E.BookCallback cb, void* closure);
 		[Deprecated (since = "3.2")]
-		public bool authenticate_user (string user, string passwd, string auth_method) throws GLib.Error;
-		[Deprecated (since = "3.2")]
-		public bool authenticate_user_async (string user, string passwd, string auth_method, E.BookAsyncCallback cb, void* closure);
-		[Deprecated (since = "3.2")]
 		public bool cancel () throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public bool cancel_async_op () throws GLib.Error;
@@ -51,23 +45,15 @@ namespace E {
 		public bool commit_contact (E.Contact contact) throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public bool commit_contact_async (E.Contact contact, E.BookAsyncCallback cb, void* closure);
-		[CCode (has_construct_function = false)]
-		[Deprecated (since = "3.2")]
-		public Book.default_addressbook () throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[Deprecated (since = "3.2")]
 		public static void free_change_list (GLib.List<E.BookChange> change_list);
-		[CCode (has_construct_function = false)]
-		[Deprecated (since = "3.2")]
-		public Book.from_uri (string uri) throws GLib.Error;
-		[Deprecated (since = "3.2")]
-		public static bool get_addressbooks (out E.SourceList addressbook_sources) throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public bool get_book_view (E.BookQuery query, GLib.List<string>? requested_fields, int max_results, out E.BookView book_view) throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public bool get_book_view_async (E.BookQuery query, GLib.List<string>? requested_fields, int max_results, E.BookBookViewAsyncCallback cb, void* closure);
 		[Deprecated (since = "3.2")]
-		public bool get_contact (string id, E.Contact contact) throws GLib.Error;
+		public bool get_contact (string id, out E.Contact contact) throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public bool get_contact_async (string id, E.BookContactAsyncCallback cb, void* closure);
 		[Deprecated (since = "3.2")]
@@ -77,7 +63,7 @@ namespace E {
 		[Deprecated (since = "3.2")]
 		public bool get_required_fields_async (E.BookEListAsyncCallback cb, void* closure);
 		[Deprecated (since = "3.2")]
-		public static bool get_self (out E.Contact contact, out E.Book book) throws GLib.Error;
+		public static bool get_self (E.SourceRegistry registry, out E.Contact contact, out E.Book book) throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public unowned E.Source get_source ();
 		[Deprecated (since = "3.2")]
@@ -90,8 +76,6 @@ namespace E {
 		public bool get_supported_fields (out GLib.List<string> fields) throws GLib.Error;
 		[Deprecated (since = "3.2")]
 		public bool get_supported_fields_async (E.BookEListAsyncCallback cb, void* closure);
-		[Deprecated (since = "3.2")]
-		public unowned string get_uri ();
 		[Deprecated (since = "3.2")]
 		public bool is_online ();
 		[Deprecated (since = "3.2")]
@@ -120,42 +104,29 @@ namespace E {
 		[Deprecated (since = "3.2")]
 		public bool remove_contacts_async (GLib.List<string> ids, E.BookAsyncCallback cb, void* closure);
 		[Deprecated (since = "3.2")]
-		public bool set_default_addressbook () throws GLib.Error;
-		[Deprecated (since = "3.2")]
-		public static bool set_default_source (E.Source source) throws GLib.Error;
-		[Deprecated (since = "3.2")]
 		public bool set_self (E.Contact contact) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		[Deprecated (since = "3.2")]
-		public Book.system_addressbook () throws GLib.Error;
-		public virtual signal void auth_required ();
 		public virtual signal void backend_died ();
 		public virtual signal void connection_status (bool connected);
 		public virtual signal void writable_status (bool writable);
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_book_client_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_client_get_type ()")]
 	public class BookClient : E.Client {
 		[CCode (has_construct_function = false)]
 		public BookClient (E.Source source) throws GLib.Error;
 		public async bool add_contact (E.Contact contact, GLib.Cancellable? cancellable, out string added_uid) throws GLib.Error;
 		public bool add_contact_sync (E.Contact contact, out string added_uid, GLib.Cancellable? cancellable) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public BookClient.@default () throws GLib.Error;
 		public static GLib.Error error_create (E.BookClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.BookClientError code);
-		[CCode (has_construct_function = false)]
-		public BookClient.from_uri (string uri) throws GLib.Error;
 		public async bool get_contact (string uid, GLib.Cancellable? cancellable, out E.Contact contact) throws GLib.Error;
 		public bool get_contact_sync (string uid, out E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool get_contacts (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.Contact> contacts) throws GLib.Error;
 		public bool get_contacts_sync (string sexp, out GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool get_contacts_uids (string sexp, GLib.Cancellable? cancellable, out GLib.SList<string> contacts_uids) throws GLib.Error;
 		public bool get_contacts_uids_sync (string sexp, out GLib.SList<string> contacts_uids, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static bool get_self (out E.Contact contact, out E.BookClient client) throws GLib.Error;
-		public static bool get_sources (out E.SourceList sources) throws GLib.Error;
+		public static bool get_self (E.SourceRegistry registry, out E.Contact contact, out E.BookClient client) throws GLib.Error;
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.BookClientView view) throws GLib.Error;
-		public bool get_view_sync (string sexp, E.BookClientView view, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_view_sync (string sexp, out E.BookClientView view, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static bool is_self (E.Contact contact);
 		public async bool modify_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool modify_contact_sync (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -166,13 +137,9 @@ namespace E {
 		public bool remove_contact_sync (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool remove_contacts (GLib.SList<string> uids, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool remove_contacts_sync (GLib.SList<string> uids, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool set_default () throws GLib.Error;
-		public static bool set_default_source (E.Source source) throws GLib.Error;
 		public bool set_self (E.Contact contact) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public BookClient.system () throws GLib.Error;
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_book_client_view_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_client_view_get_type ()")]
 	public class BookClientView : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected BookClientView ();
@@ -188,7 +155,7 @@ namespace E {
 		public signal void objects_removed (GLib.List<void*> object);
 		public virtual signal void progress (uint percent, string message);
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_book_query_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_book_query_get_type ()")]
 	[Compact]
 	public class BookQuery {
 		public static E.BookQuery and (int nqs, E.BookQuery qs, bool unref);
@@ -205,7 +172,7 @@ namespace E {
 		public static E.BookQuery vcard_field_exists (string field);
 		public static E.BookQuery vcard_field_test (string field, E.BookQueryTest test, string value);
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_book_view_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_view_get_type ()")]
 	public class BookView : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected BookView ();
@@ -219,7 +186,7 @@ namespace E {
 		public virtual signal void status_message (string message);
 		public virtual signal void view_complete (uint status, string error_msg);
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_contact_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_contact_get_type ()")]
 	public class Contact : E.VCard {
 		[CCode (has_construct_function = false)]
 		public Contact ();
@@ -432,6 +399,8 @@ namespace E {
 		[NoAccessorMethod]
 		public string im_skype_work_3 { owned get; set; }
 		[NoAccessorMethod]
+		public void* im_twitter { get; set; }
+		[NoAccessorMethod]
 		public void* im_yahoo { get; set; }
 		[NoAccessorMethod]
 		public string im_yahoo_home_1 { owned get; set; }
@@ -506,7 +475,7 @@ namespace E {
 		[NoAccessorMethod]
 		public E.ContactCert x509Cert { owned get; set; }
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_address_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_address_get_type ()")]
 	[Compact]
 	public class ContactAddress {
 		public string address_format;
@@ -521,14 +490,14 @@ namespace E {
 		public ContactAddress ();
 		public void free ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_cert_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_cert_get_type ()")]
 	[Compact]
 	public class ContactCert {
 		public weak string data;
 		public size_t length;
 		public void free ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_date_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_date_get_type ()")]
 	[Compact]
 	public class ContactDate {
 		public uint day;
@@ -541,14 +510,14 @@ namespace E {
 		public static E.ContactDate from_string (string str);
 		public string to_string ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_geo_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_geo_get_type ()")]
 	[Compact]
 	public class ContactGeo {
 		public double latitude;
 		public double longitude;
 		public void free ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_name_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_name_get_type ()")]
 	[Compact]
 	public class ContactName {
 		public string additional;
@@ -563,7 +532,7 @@ namespace E {
 		public static E.ContactName from_string (string name_str);
 		public string to_string ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_photo_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_photo_get_type ()")]
 	[Compact]
 	public class ContactPhoto {
 		[CCode (cname = "data.inlined.data")]
@@ -586,7 +555,7 @@ namespace E {
 		public void set_mime_type (string mime_type);
 		public void set_uri (string uri);
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_destination_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_destination_get_type ()")]
 	public class Destination : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Destination ();
@@ -628,7 +597,7 @@ namespace E {
 		public void set_raw (string raw);
 		public virtual signal void changed ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", type_id = "e_vcard_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_vcard_get_type ()")]
 	public class VCard : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public VCard ();
@@ -647,11 +616,11 @@ namespace E {
 		public unowned GLib.List<E.VCardAttribute> get_attributes ();
 		public bool is_parsed ();
 		public void remove_attribute (E.VCardAttribute attr);
-		public void remove_attributes (string? attr_group, string? attr_name);
+		public void remove_attributes (string? attr_group, string attr_name);
 		public string to_string (E.VCardFormat format);
 		public static string unescape_string (string s);
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_vcard_attribute_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_vcard_attribute_get_type ()")]
 	[Compact]
 	public class VCardAttribute {
 		[CCode (has_construct_function = false)]
@@ -678,7 +647,7 @@ namespace E {
 		public void remove_value (string s);
 		public void remove_values ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_vcard_attribute_param_get_type ()")]
+	[CCode (cheader_filename = "libebook/libebook.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_vcard_attribute_param_get_type ()")]
 	[Compact]
 	public class VCardAttributeParam {
 		[CCode (has_construct_function = false)]
@@ -690,7 +659,7 @@ namespace E {
 		public unowned GLib.List<string> get_values ();
 		public void remove_values ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_type_id = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_type_id = false)]
 	public struct AddressWestern {
 		public weak string po_box;
 		public weak string extended;
@@ -701,12 +670,12 @@ namespace E {
 		public weak string country;
 		public void free ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_type_id = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_type_id = false)]
 	public struct BookChange {
 		public E.BookChangeType change_type;
 		public weak E.Contact contact;
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_type_id = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_type_id = false)]
 	public struct NameWestern {
 		public weak string prefix;
 		public weak string first;
@@ -717,13 +686,13 @@ namespace E {
 		public weak string full;
 		public void free ();
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_BOOK_CHANGE_CARD_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CHANGE_CARD_")]
 	public enum BookChangeType {
 		ADDED,
 		DELETED,
 		MODIFIED
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_BOOK_CLIENT_ERROR_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CLIENT_ERROR_")]
 	public enum BookClientError {
 		NO_SUCH_BOOK,
 		CONTACT_NOT_FOUND,
@@ -731,20 +700,20 @@ namespace E {
 		NO_SUCH_SOURCE,
 		NO_SPACE
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_BOOK_CLIENT_VIEW_FLAGS_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CLIENT_VIEW_FLAGS_")]
 	[Flags]
 	public enum BookClientViewFlags {
 		NONE,
 		NOTIFY_INITIAL
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_BOOK_QUERY_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_QUERY_")]
 	public enum BookQueryTest {
 		IS,
 		CONTAINS,
 		BEGINS_WITH,
 		ENDS_WITH
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_BOOK_ERROR_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_ERROR_")]
 	public enum BookStatus {
 		OK,
 		INVALID_ARG,
@@ -772,7 +741,7 @@ namespace E {
 		NO_SPACE,
 		NOT_SUPPORTED
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_BOOK_VIEW_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_VIEW_")]
 	public enum BookViewStatus {
 		STATUS_OK,
 		STATUS_TIME_LIMIT_EXCEEDED,
@@ -781,7 +750,7 @@ namespace E {
 		ERROR_QUERY_REFUSED,
 		ERROR_OTHER_ERROR
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_CONTACT_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_CONTACT_")]
 	public enum ContactField {
 		UID,
 		FILE_AS,
@@ -916,6 +885,7 @@ namespace E {
 		IM_GOOGLE_TALK_WORK_2,
 		IM_GOOGLE_TALK_WORK_3,
 		IM_GOOGLE_TALK,
+		IM_TWITTER,
 		FIELD_LAST,
 		FIELD_FIRST,
 		LAST_SIMPLE_STRING,
@@ -928,40 +898,68 @@ namespace E {
 		FIRST_LABEL_ID,
 		LAST_LABEL_ID
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "E_CONTACT_PHOTO_TYPE_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_CONTACT_PHOTO_TYPE_")]
 	public enum ContactPhotoType {
 		INLINED,
 		URI
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", cprefix = "EVC_FORMAT_VCARD_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_DATA_BOOK_STATUS_")]
+	public enum DataBookStatus {
+		SUCCESS,
+		BUSY,
+		REPOSITORY_OFFLINE,
+		PERMISSION_DENIED,
+		CONTACT_NOT_FOUND,
+		CONTACTID_ALREADY_EXISTS,
+		AUTHENTICATION_FAILED,
+		AUTHENTICATION_REQUIRED,
+		UNSUPPORTED_FIELD,
+		UNSUPPORTED_AUTHENTICATION_METHOD,
+		TLS_NOT_AVAILABLE,
+		NO_SUCH_BOOK,
+		BOOK_REMOVED,
+		OFFLINE_UNAVAILABLE,
+		SEARCH_SIZE_LIMIT_EXCEEDED,
+		SEARCH_TIME_LIMIT_EXCEEDED,
+		INVALID_QUERY,
+		QUERY_REFUSED,
+		COULD_NOT_CANCEL,
+		OTHER_ERROR,
+		INVALID_SERVER_VERSION,
+		NO_SPACE,
+		INVALID_ARG,
+		NOT_SUPPORTED,
+		NOT_OPENED
+	}
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "EVC_FORMAT_VCARD_")]
 	public enum VCardFormat {
 		@21,
 		@30
 	}
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookAsyncCallback (E.Book book, GLib.Error error, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookBookViewAsyncCallback (E.Book book, GLib.Error error, E.BookView book_view, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookBookViewCallback (E.Book book, E.BookStatus status, E.BookView book_view, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookCallback (E.Book book, E.BookStatus status, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookContactAsyncCallback (E.Book book, GLib.Error error, E.Contact contact, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookContactCallback (E.Book book, E.BookStatus status, E.Contact contact, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookEListAsyncCallback (E.Book book, GLib.Error error, E.List list, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookEListCallback (E.Book book, E.BookStatus status, E.List list, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookIdAsyncCallback (E.Book book, GLib.Error error, string id, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookIdCallback (E.Book book, E.BookStatus status, string id, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", has_target = false)]
+	[CCode (cheader_filename = "libebook/libebook.h", has_target = false)]
 	public delegate void BookOpenProgressCallback (E.Book book, string status_message, short percent, void* closure);
-	[CCode (cheader_filename = "libebook/e-book-client.h", cname = "E_VCARD_21_VALID_PARAMETERS")]
+	[CCode (cheader_filename = "libebook/libebook.h", cname = "E_VCARD_21_VALID_PARAMETERS")]
 	public const string VCARD_21_VALID_PARAMETERS;
-	[CCode (cheader_filename = "libebook/e-book-client.h", cname = "E_VCARD_21_VALID_PROPERTIES")]
+	[CCode (cheader_filename = "libebook/libebook.h", cname = "E_VCARD_21_VALID_PROPERTIES")]
 	public const string VCARD_21_VALID_PROPERTIES;
 }
