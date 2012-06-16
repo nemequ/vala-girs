@@ -31,6 +31,11 @@ and/or use gtk-doc annotations.  -->
               c:type="DBUSMENU_CLIENT_PROP_DBUS_OBJECT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_PROP_GROUP_EVENTS"
+              value="group-events"
+              c:type="DBUSMENU_CLIENT_PROP_GROUP_EVENTS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_PROP_STATUS"
               value="status"
               c:type="DBUSMENU_CLIENT_PROP_STATUS">
@@ -93,6 +98,8 @@ and/or use gtk-doc annotations.  -->
            glib:type-name="DbusmenuClient"
            glib:get-type="dbusmenu_client_get_type"
            glib:type-struct="ClientClass">
+      <doc xml:whitespace="preserve">The client for a #DbusmenuServer creating a shared
+	object set of #DbusmenuMenuitem objects.</doc>
       <constructor name="new" c:identifier="dbusmenu_client_new">
         <doc xml:whitespace="preserve">This function creates a new client that connects to a specific
 server on DBus.  That server is at a specific location sharing
@@ -184,12 +191,9 @@ can make choices about the menu item types availble.</doc>
       </method>
       <method name="get_icon_paths"
               c:identifier="dbusmenu_client_get_icon_paths">
-        <doc xml:whitespace="preserve">Gets the stored and exported icon paths from the client.
-
-memory managed by the client.  Duplicate if you want
-to keep them.</doc>
+        <doc xml:whitespace="preserve">Gets the stored and exported icon paths from the client.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A NULL-terminated list of icon paths with</doc>
+          <doc xml:whitespace="preserve">A NULL-terminated list of icon paths with memory managed by the client.  Duplicate if you want to keep them.</doc>
           <array c:type="GStrv">
             <type name="utf8"/>
           </array>
@@ -202,23 +206,30 @@ call to update the layout, it will block on that layout
 updated and then return the newly updated layout.  Chances
 are that this update is in the queue for the mainloop as
 it would have been requested some time ago, but in theory
-it could block longer.
-
-menu on the server.  If there is no server or there is
-an error receiving its layout it'll return #NULL.</doc>
+it could block longer.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A #DbusmenuMenuitem representing the root of</doc>
+          <doc xml:whitespace="preserve">A #DbusmenuMenuitem representing the root of menu on the server.  If there is no server or there is an error receiving its layout it'll return #NULL.</doc>
           <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
         </return-value>
       </method>
       <method name="get_status" c:identifier="dbusmenu_client_get_status">
+        <doc xml:whitespace="preserve">Gets the recommended current status that the server
+	is exporting for the menus.  In situtations where the
+	value is #DBUSMENU_STATUS_NOTICE it is recommended that
+	the client show the menus to the user an a more noticible
+	way.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">Status being exported.</doc>
           <type name="Status" c:type="DbusmenuStatus"/>
         </return-value>
       </method>
       <method name="get_text_direction"
               c:identifier="dbusmenu_client_get_text_direction">
+        <doc xml:whitespace="preserve">Gets the text direction that the server is exporting.  If
+	the server is not exporting a direction then the value
+	#DBUSMENU_TEXT_DIRECTION_NONE will be returned.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">Text direction being exported.</doc>
           <type name="TextDirection" c:type="DbusmenuTextDirection"/>
         </return-value>
       </method>
@@ -233,6 +244,9 @@ an error receiving its layout it'll return #NULL.</doc>
                 construct-only="1"
                 transfer-ownership="none">
         <type name="utf8"/>
+      </property>
+      <property name="group-events" writable="1" transfer-ownership="none">
+        <type name="gboolean"/>
       </property>
       <property name="status" introspectable="0" transfer-ownership="none">
         <type/>
@@ -271,24 +285,30 @@ an error receiving its layout it'll return #NULL.</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="icon-theme-dirs-changed" when="last">
+        <doc xml:whitespace="preserve">Signaled when the theme directories are changed by the server.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GStrv of theme directories</doc>
             <type name="gpointer"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="item-activate" when="last">
+        <doc xml:whitespace="preserve">Signaled when the server wants to activate an item in
+		order to display the menu.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The #DbusmenuMenuitem activated</doc>
             <type name="GObject.Object"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A timestamp that the event happened at</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
@@ -299,21 +319,30 @@ an error receiving its layout it'll return #NULL.</doc>
         </return-value>
       </glib:signal>
       <glib:signal name="new-menuitem" when="last">
+        <doc xml:whitespace="preserve">Signaled when the client creates a new menuitem.  This
+		doesn't mean that it's placed anywhere.  The parent that
+		it's applied to will signal #DbusmenuMenuitem::child-added
+		when it gets parented.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The new #DbusmenuMenuitem created</doc>
             <type name="GObject.Object"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="root-changed" when="last">
+        <doc xml:whitespace="preserve">The layout has changed in a way that can not be
+		represented by the individual items changing as the
+		root of this client has changed.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The new root #DbusmenuMenuitem</doc>
             <type name="GObject.Object"/>
           </parameter>
         </parameters>
@@ -322,6 +351,9 @@ an error receiving its layout it'll return #NULL.</doc>
     <record name="ClientClass"
             c:type="DbusmenuClientClass"
             glib:is-gtype-struct-for="Client">
+      <doc xml:whitespace="preserve">A simple class that takes all of the information from a
+	#DbusmenuServer over DBus and makes the same set of 
+	#DbusmenuMenuitem objects appear on the other side.</doc>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -452,20 +484,27 @@ an error receiving its layout it'll return #NULL.</doc>
     <record name="ClientPrivate" c:type="DbusmenuClientPrivate" disguised="1">
     </record>
     <callback name="ClientTypeHandler" c:type="DbusmenuClientTypeHandler">
+      <doc xml:whitespace="preserve">The type handler is called when a dbusmenu item is created
+	with a matching type as setup in #dbusmenu_client_add_type_handler</doc>
       <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">#TRUE if the type has been handled.  #FALSE if this function was somehow unable to handle it.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="newitem" transfer-ownership="none">
+          <doc xml:whitespace="preserve">The #DbusmenuMenuitem that was created</doc>
           <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
         </parameter>
         <parameter name="parent" transfer-ownership="none">
+          <doc xml:whitespace="preserve">The parent of @newitem or #NULL if none</doc>
           <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
         </parameter>
         <parameter name="client" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A pointer to the #DbusmenuClient</doc>
           <type name="Client" c:type="DbusmenuClient*"/>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="3">
+          <doc xml:whitespace="preserve">The data you gave us</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -841,11 +880,9 @@ not call #g_object_unref on @child.</doc>
       </method>
       <method name="child_find" c:identifier="dbusmenu_menuitem_child_find">
         <doc xml:whitespace="preserve">Search the children of @mi to find one with the ID of @id.
-If it doesn't exist then we return #NULL.
-
-can't be found.</doc>
+If it doesn't exist then we return #NULL.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The menu item with the ID @id or #NULL if it</doc>
+          <doc xml:whitespace="preserve">The menu item with the ID @id or #NULL if it can't be found.</doc>
           <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
         </return-value>
         <parameters>
@@ -893,12 +930,9 @@ new location.</doc>
       <method name="find_id" c:identifier="dbusmenu_menuitem_find_id">
         <doc xml:whitespace="preserve">This function searchs the whole tree of children that
 are attached to @mi.  This could be quite a few nodes, all
-the way down the tree.  It is a depth first search.
-
-or #NULL if there isn't such a menu item in the tree
-represented by @mi.</doc>
+the way down the tree.  It is a depth first search.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The #DbusmenuMenuitem with the ID of @id</doc>
+          <doc xml:whitespace="preserve">The #DbusmenuMenuitem with the ID of @id or #NULL if there isn't such a menu item in the tree represented by @mi.</doc>
           <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
         </return-value>
         <parameters>
@@ -1030,11 +1064,9 @@ and puts them into a #GHashTable that is referenced by the
 key of a string and has the value of a string.  The hash
 table may not have any entries if there aren't any or there
 is an error in processing.  It is the caller's responsibility
-to destroy the created #GHashTable.
-
-theroperties that are on this #DbusmenuMenuitem @mi.</doc>
+to destroy the created #GHashTable.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A brand new #GHashTable that contains all of</doc>
+          <doc xml:whitespace="preserve">A brand new #GHashTable that contains all of theroperties that are on this #DbusmenuMenuitem @mi.</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
             <type name="gpointer" c:type="gpointer"/>
             <type name="gpointer" c:type="gpointer"/>
@@ -1046,11 +1078,9 @@ theroperties that are on this #DbusmenuMenuitem @mi.</doc>
         <doc xml:whitespace="preserve">This functiong gets a list of the names of all the properties
 that are set on this menu item.  This data on the list is owned
 by the menuitem but the list is not and should be freed using
-g_list_free() when the calling function is done with it.
-
-strings or NULL if there are none.</doc>
+g_list_free() when the calling function is done with it.</doc>
         <return-value transfer-ownership="container">
-          <doc xml:whitespace="preserve">A list of</doc>
+          <doc xml:whitespace="preserve">A list of strings or NULL if there are none.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="utf8"/>
           </type>
@@ -1075,12 +1105,9 @@ returns #TRUE if so.</doc>
               c:identifier="dbusmenu_menuitem_property_get">
         <doc xml:whitespace="preserve">Look up a property on @mi and return the value of it if
 it exits.  #NULL will be returned if the property doesn't
-exist.
-
-that shouldn't be free'd.  Or #NULL if the property
-is not set or is not a string.</doc>
+exist.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A string with the value of the property</doc>
+          <doc xml:whitespace="preserve">A string with the value of the property that shouldn't be free'd.  Or #NULL if the property is not set or is not a string.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -1109,12 +1136,9 @@ it exits.  Returns #FALSE if the property doesn't exist.</doc>
               c:identifier="dbusmenu_menuitem_property_get_byte_array">
         <doc xml:whitespace="preserve">Look up a property on @mi and return the value of it if
 it exits.  #NULL will be returned if the property doesn't
-exist.
-
-value of the property that shouldn't be free'd.  Or #NULL if the property
-is not set or is not a byte array.</doc>
+exist.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A byte array with the</doc>
+          <doc xml:whitespace="preserve">A byte array with the value of the property that shouldn't be free'd.  Or #NULL if the property is not set or is not a byte array.</doc>
           <array length="1" zero-terminated="0" c:type="guchar*">
             <type name="guint8"/>
           </array>
@@ -1368,10 +1392,9 @@ bus.</doc>
 does.  It takes the list of children from the @mi and clears the
 internal list.  The calling function is now in charge of the ref's
 on the children it has taken.  A lot of responsibility involved
-in taking children.
-
-A #GList of pointers to #DbusmenuMenuitem objects.</doc>
+in taking children.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">A #GList of pointers to #DbusmenuMenuitem objects.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Menuitem"/>
           </type>
@@ -1401,99 +1424,135 @@ normally be called directly</doc>
         <type name="MenuitemPrivate" c:type="DbusmenuMenuitemPrivate*"/>
       </field>
       <glib:signal name="about-to-show" when="last">
+        <doc xml:whitespace="preserve">Emitted when the submenu for this item
+		is about to be shown</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean"/>
         </return-value>
       </glib:signal>
       <glib:signal name="child-added" when="last">
+        <doc xml:whitespace="preserve">Signaled when the child menuitem has been added to
+		the parent.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The #DbusmenuMenuitem which is the child.</doc>
             <type name="GObject.Object"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The position that the child is being added in.</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="child-moved" when="last">
+        <doc xml:whitespace="preserve">Signaled when the child menuitem has had it's location
+		in the list change.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The #DbusmenuMenuitem which is the child.</doc>
             <type name="GObject.Object"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The position that the child is being moved to.</doc>
             <type name="guint"/>
           </parameter>
-          <parameter name="p1" transfer-ownership="none">
+          <parameter name="arg3" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The position that the child is was in.</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="child-removed" when="last">
+        <doc xml:whitespace="preserve">Signaled when the child menuitem has been requested to
+		be removed from the parent.  This signal is called when
+		it has been removed from the list but not yet had
+		#g_object_unref called on it.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The #DbusmenuMenuitem which was the child.</doc>
             <type name="GObject.Object"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="event" when="last" detailed="1">
+        <doc xml:whitespace="preserve">Emitted when an event is passed through.  The event is signalled
+		after handle_event is called.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Name of the event</doc>
             <type name="utf8"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Information passed along with the event</doc>
             <type name="GLib.Variant"/>
           </parameter>
-          <parameter name="p1" transfer-ownership="none">
+          <parameter name="arg3" transfer-ownership="none">
+            <doc xml:whitespace="preserve">X11 timestamp of when the event happened</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="item-activated" when="last">
+        <doc xml:whitespace="preserve">Emitted on the objects on the server side when
+		they are signaled on the client side.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The timestamp of when it was activated</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="property-changed" when="last">
+        <doc xml:whitespace="preserve">Emitted everytime a property on a menuitem is either
+		updated or added.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The name of the property that changed</doc>
             <type name="utf8"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The new value of the property</doc>
             <type name="GLib.Variant"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="realized" when="last">
+        <doc xml:whitespace="preserve">Emitted when the initial request for properties
+		is complete on the item.  If there is a type
+		handler configured for the "type" parameter
+		that will be executed before this is signaled.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
       </glib:signal>
       <glib:signal name="show-to-user" when="last">
+        <doc xml:whitespace="preserve">Signaled when the application would like the visualization
+		of this menu item shown to the user.  This usually requires
+		going over the bus to get it done.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Timestamp the event happened at</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
@@ -1715,6 +1774,9 @@ about.</doc>
     <record name="MenuitemPrivate"
             c:type="DbusmenuMenuitemPrivate"
             disguised="1">
+      <doc xml:whitespace="preserve">These are the little secrets that we don't want getting
+	out of data that we have.  They can still be gotten using
+	accessor functions, but are protected appropriately.</doc>
     </record>
     <class name="MenuitemProxy"
            c:symbol-prefix="menuitem_proxy"
@@ -1723,6 +1785,7 @@ about.</doc>
            glib:type-name="DbusmenuMenuitemProxy"
            glib:get-type="dbusmenu_menuitem_proxy_get_type"
            glib:type-struct="MenuitemProxyClass">
+      <doc xml:whitespace="preserve">Public instance data for a #DbusmenuMenuitemProxy.</doc>
       <constructor name="new" c:identifier="dbusmenu_menuitem_proxy_new">
         <doc xml:whitespace="preserve">Builds a new #DbusmenuMenuitemProxy object that proxies
 all of the values for @mi.</doc>
@@ -1740,11 +1803,9 @@ all of the values for @mi.</doc>
       <method name="get_wrapped"
               c:identifier="dbusmenu_menuitem_proxy_get_wrapped">
         <doc xml:whitespace="preserve">Accesses the private variable of which #DbusmenuMenuitem
-we are doing the proxying for.
-
-don't have one or there is an error.</doc>
+we are doing the proxying for.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A #DbusmenuMenuitem object or a #NULL if we</doc>
+          <doc xml:whitespace="preserve">A #DbusmenuMenuitem object or a #NULL if we don't have one or there is an error.</doc>
           <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
         </return-value>
       </method>
@@ -1765,6 +1826,7 @@ don't have one or there is an error.</doc>
     <record name="MenuitemProxyClass"
             c:type="DbusmenuMenuitemProxyClass"
             glib:is-gtype-struct-for="MenuitemProxy">
+      <doc xml:whitespace="preserve">Functions and signal slots for #DbusmenuMenuitemProxy.</doc>
       <field name="parent_class">
         <type name="MenuitemClass" c:type="DbusmenuMenuitemClass"/>
       </field>
@@ -1853,42 +1915,56 @@ don't have one or there is an error.</doc>
            glib:type-name="DbusmenuServer"
            glib:get-type="dbusmenu_server_get_type"
            glib:type-struct="ServerClass">
+      <doc xml:whitespace="preserve">A server which represents a sharing of a set of
+	#DbusmenuMenuitems across DBus to a #DbusmenuClient.</doc>
       <constructor name="new" c:identifier="dbusmenu_server_new">
+        <doc xml:whitespace="preserve">Creates a new #DbusmenuServer object with a specific object
+	path on DBus.  If @object is set to NULL the default object
+	name of "/com/canonical/dbusmenu" will be used.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">A brand new #DbusmenuServer</doc>
           <type name="Server" c:type="DbusmenuServer*"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The object name to show for this menu structure on DBus.  May be NULL.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </constructor>
       <method name="get_icon_paths"
               c:identifier="dbusmenu_server_get_icon_paths">
-        <doc xml:whitespace="preserve">Gets the stored and exported icon paths from the server.
-
-memory managed by the server.  Duplicate if you want
-to keep them.</doc>
+        <doc xml:whitespace="preserve">Gets the stored and exported icon paths from the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A NULL-terminated list of icon paths with</doc>
+          <doc xml:whitespace="preserve">A NULL-terminated list of icon paths with memory managed by the server.  Duplicate if you want to keep them.</doc>
           <array c:type="GStrv">
             <type name="utf8"/>
           </array>
         </return-value>
       </method>
       <method name="get_status" c:identifier="dbusmenu_server_get_status">
+        <doc xml:whitespace="preserve">Gets the current statust hat the server is sending out over
+	DBus.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">The current status the server is sending</doc>
           <type name="Status" c:type="DbusmenuStatus"/>
         </return-value>
       </method>
       <method name="get_text_direction"
               c:identifier="dbusmenu_server_get_text_direction">
+        <doc xml:whitespace="preserve">Returns the value of the text direction that is being exported
+	over DBus for this server.  It should relate to the direction
+	of the labels and other text fields that are being exported by
+	this server.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">Text direction exported for this server.</doc>
           <type name="TextDirection" c:type="DbusmenuTextDirection"/>
         </return-value>
       </method>
       <method name="set_icon_paths"
               c:identifier="dbusmenu_server_set_icon_paths">
+        <doc xml:whitespace="preserve">Sets the icon paths for the server.  This will replace previously
+	set icon theme paths.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1901,32 +1977,43 @@ to keep them.</doc>
         </parameters>
       </method>
       <method name="set_root" c:identifier="dbusmenu_server_set_root">
+        <doc xml:whitespace="preserve">This function contains all of the #GValue wrapping
+	required to set the property #DbusmenuServer:root-node
+	on the server @self.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="root" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The new root #DbusmenuMenuitem tree</doc>
             <type name="Menuitem" c:type="DbusmenuMenuitem*"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_status" c:identifier="dbusmenu_server_set_status">
+        <doc xml:whitespace="preserve">Changes the status of the server.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="status" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Status value to set on the server</doc>
             <type name="Status" c:type="DbusmenuStatus"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_text_direction"
               c:identifier="dbusmenu_server_set_text_direction">
+        <doc xml:whitespace="preserve">Sets the text direction that should be exported over DBus for
+	this server.  If the value is set to #DBUSMENU_TEXT_DIRECTION_NONE
+	the default detection will be used for setting the value and
+	exported over DBus.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="dir" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Direction of the text</doc>
             <type name="TextDirection" c:type="DbusmenuTextDirection"/>
           </parameter>
         </parameters>
@@ -1962,14 +2049,18 @@ to keep them.</doc>
         <type name="ServerPrivate" c:type="DbusmenuServerPrivate*"/>
       </field>
       <glib:signal name="item-activation-requested" when="last">
+        <doc xml:whitespace="preserve">This is signaled when a menuitem under this server
+		sends it's activate signal.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The ID of the parent for this update.</doc>
             <type name="gint"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The timestamp of when the event happened</doc>
             <type name="guint"/>
           </parameter>
         </parameters>
@@ -2001,14 +2092,18 @@ to keep them.</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="layout-updated" when="last">
+        <doc xml:whitespace="preserve">This signal is emitted any time the layout of the
+		menuitems under this server is changed.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="arg1" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A revision number representing which revision the update represents itself as.</doc>
             <type name="guint"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="arg2" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The ID of the parent for this update.</doc>
             <type name="gint"/>
           </parameter>
         </parameters>
@@ -2017,6 +2112,7 @@ to keep them.</doc>
     <record name="ServerClass"
             c:type="DbusmenuServerClass"
             glib:is-gtype-struct-for="Server">
+      <doc xml:whitespace="preserve">The class implementing the virtual functions for #DbusmenuServer.</doc>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -2123,10 +2219,13 @@ to keep them.</doc>
     <record name="ServerPrivate" c:type="DbusmenuServerPrivate" disguised="1">
     </record>
     <enumeration name="Status" c:type="DbusmenuStatus">
+      <doc xml:whitespace="preserve">Tracks how the menus should be presented to the user.</doc>
       <member name="normal" value="0" c:identifier="DBUSMENU_STATUS_NORMAL"/>
       <member name="notice" value="1" c:identifier="DBUSMENU_STATUS_NOTICE"/>
     </enumeration>
     <enumeration name="TextDirection" c:type="DbusmenuTextDirection">
+      <doc xml:whitespace="preserve">The direction of text that the strings that this server
+	will be sending strings as.</doc>
       <member name="none"
               value="0"
               c:identifier="DBUSMENU_TEXT_DIRECTION_NONE"/>
