@@ -15,7 +15,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libecal/libecal.h"/>
   <namespace name="ECalendar"
              version="1.2"
-             shared-library="libecal-1.2.so.15,libedataserver-1.2.so.17,libcamel-1.2.so.37"
+             shared-library="libecal-1.2.so.15,libedataserver-1.2.so.17,libcamel-1.2.so.39"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <class name="Cal"
@@ -93,14 +93,14 @@ accordingly.</doc>
             <doc xml:whitespace="preserve">a VCALENDAR containing a list of VTIMEZONE and arbitrary other components, in arbitrary order: these other components are modified by this call</doc>
             <type c:type="icalcomponent*"/>
           </parameter>
-          <parameter name="comps" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a list of icalcomponent instances which also have to be patched; may be NULL</doc>
+          <parameter name="comps" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">a list of #icalcomponent instances which also have to be patched; may be %NULL</doc>
             <type name="GLib.List" c:type="GList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
-          <parameter name="tzlookup" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a callback function which is called to retrieve a calendar's VTIMEZONE definition; the returned definition is *not* freed by e_cal_check_timezones() (to be compatible with e_cal_get_timezone()); NULL indicates that no such timezone exists or an error occurred</doc>
+          <parameter name="tzlookup" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">a callback function which is called to retrieve a calendar's VTIMEZONE definition; the returned definition is *not* freed by e_cal_check_timezones() (to be compatible with e_cal_get_timezone()); %NULL indicates that no such timezone exists or an error occurred</doc>
             <type name="gpointer" c:type="gpointer*"/>
           </parameter>
           <parameter name="custom" transfer-ownership="none">
@@ -133,7 +133,7 @@ e_cal_get_alarms_in_range().</doc>
                 introspectable="0"
                 deprecated="Use () instead."
                 deprecated-version="3.2">
-        <doc xml:whitespace="preserve">Free a list of changes as returned by #e_cal_get_changes.</doc>
+        <doc xml:whitespace="preserve">Free a list of changes as returned by e_cal_get_changes().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -171,7 +171,7 @@ e_cal_get_alarms_in_range().</doc>
         <doc xml:whitespace="preserve">Gets an error message for the given status code.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the error message.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <parameter name="status" transfer-ownership="none">
@@ -196,7 +196,7 @@ e_cal_get_alarms_in_range().</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="param_values" transfer-ownership="none">
-            <type name="GObject.Value" c:type="GValue*"/>
+            <type name="GObject.Value" c:type="const GValue*"/>
           </parameter>
           <parameter name="invocation_hint" transfer-ownership="none">
             <type name="gpointer" c:type="gpointer"/>
@@ -222,7 +222,7 @@ e_cal_get_alarms_in_range().</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="param_values" transfer-ownership="none">
-            <type name="GObject.Value" c:type="GValue*"/>
+            <type name="GObject.Value" c:type="const GValue*"/>
           </parameter>
           <parameter name="invocation_hint" transfer-ownership="none">
             <type name="gpointer" c:type="gpointer"/>
@@ -248,7 +248,7 @@ e_cal_get_alarms_in_range().</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="param_values" transfer-ownership="none">
-            <type name="GObject.Value" c:type="GValue*"/>
+            <type name="GObject.Value" c:type="const GValue*"/>
           </parameter>
           <parameter name="invocation_hint" transfer-ownership="none">
             <type name="gpointer" c:type="gpointer"/>
@@ -264,12 +264,12 @@ e_cal_get_alarms_in_range().</doc>
         <doc xml:whitespace="preserve">Matches @tzid against the system timezone definitions
 and returns the matching TZID, or %NULL if none found</doc>
         <return-value transfer-ownership="none">
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
             <doc xml:whitespace="preserve">a timezone ID</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </function>
@@ -285,20 +285,28 @@ was changed, i.e. if the component should be saved at some point.
 We store the enddate in the "X-EVOLUTION-ENDDATE" parameter of the RRULE
 or EXRULE.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if the component was changed, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="comp" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ECalComponent</doc>
             <type name="CalComponent" c:type="ECalComponent*"/>
           </parameter>
           <parameter name="refresh" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE to recalculate all end dates</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="tz_cb" transfer-ownership="none" closure="3">
+          <parameter name="tz_cb"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="3">
+            <doc xml:whitespace="preserve">function to call to resolve timezones</doc>
             <type name="CalRecurResolveTimezoneFn"
                   c:type="ECalRecurResolveTimezoneFn"/>
           </parameter>
           <parameter name="tz_cb_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">data to pass to @tz_cb</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -327,36 +335,42 @@ are DATE values or do not have a TZID (i.e. floating times).</doc>
         </return-value>
         <parameters>
           <parameter name="comp" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A calendar component object.</doc>
+            <doc xml:whitespace="preserve">A calendar component object</doc>
             <type name="CalComponent" c:type="ECalComponent*"/>
           </parameter>
           <parameter name="start" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Range start time.</doc>
+            <doc xml:whitespace="preserve">Range start time</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="end" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Range end time.</doc>
+            <doc xml:whitespace="preserve">Range end time</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
-          <parameter name="cb" transfer-ownership="none" closure="4">
-            <doc xml:whitespace="preserve">Callback function.</doc>
+          <parameter name="cb"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="4">
+            <doc xml:whitespace="preserve">Callback function</doc>
             <type name="CalRecurInstanceFn" c:type="ECalRecurInstanceFn"/>
           </parameter>
           <parameter name="cb_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Closure data for the callback function.</doc>
+            <doc xml:whitespace="preserve">Closure data for the callback function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
-          <parameter name="tz_cb" transfer-ownership="none" closure="6">
-            <doc xml:whitespace="preserve">Callback for retrieving timezones.</doc>
+          <parameter name="tz_cb"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="6">
+            <doc xml:whitespace="preserve">Callback for retrieving timezones</doc>
             <type name="CalRecurResolveTimezoneFn"
                   c:type="ECalRecurResolveTimezoneFn"/>
           </parameter>
           <parameter name="tz_cb_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Closure data for the timezone callback.</doc>
+            <doc xml:whitespace="preserve">Closure data for the timezone callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="default_timezone" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Default timezone to use when a timezone cannot be found.</doc>
+            <doc xml:whitespace="preserve">Default timezone to use when a timezone cannot be found</doc>
             <type c:type="icaltimezone*"/>
           </parameter>
         </parameters>
@@ -369,7 +383,7 @@ are DATE values or do not have a TZID (i.e. floating times).</doc>
         </return-value>
         <parameters>
           <parameter name="ir" transfer-ownership="none">
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icalrecurrencetype*"/>
           </parameter>
           <parameter name="prop" transfer-ownership="none">
             <type c:type="icalproperty*"/>
@@ -395,7 +409,7 @@ are DATE values or do not have a TZID (i.e. floating times).</doc>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
             <doc xml:whitespace="preserve">ID of the timezone to resolve.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:whitespace="preserve">Closure data for the callback.</doc>
@@ -429,7 +443,7 @@ can use. Calls e_cal_get_timezone().</doc>
         </return-value>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="custom" transfer-ownership="none">
             <doc xml:whitespace="preserve">must be a valid ECal pointer</doc>
@@ -452,7 +466,7 @@ in the component list.</doc>
         </return-value>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="custom" transfer-ownership="none">
             <doc xml:whitespace="preserve">must be a icalcomponent pointer which contains either a VCALENDAR with VTIMEZONEs or VTIMEZONES directly</doc>
@@ -600,7 +614,7 @@ if so, generates a copy of @comp containing a RECURRENCE-ID of @rid.</doc>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">The RECURRENCE-ID to construct a component for</doc>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="icaltimetype"/>
           </parameter>
         </parameters>
       </function>
@@ -627,23 +641,23 @@ if so, generates a copy of @comp containing a RECURRENCE-ID of @rid.</doc>
                 c:identifier="e_cal_util_generate_alarms_for_comp"
                 introspectable="0">
         <doc xml:whitespace="preserve">Generates alarm instances for a calendar component.  Returns the instances
-structure, or NULL if no alarm instances occurred in the specified time
+structure, or %NULL if no alarm instances occurred in the specified time
 range.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">a list of all the alarms found for the given component on the given time tange. The list of alarms should be freed by using the #e_cal_component_free_alarm_list function.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a list of all the alarms found for the given component in the given time range. The list of alarms should be freed by using e_cal_component_free_alarm_list().</doc>
           <type name="CalComponentAlarms" c:type="ECalComponentAlarms*"/>
         </return-value>
         <parameters>
           <parameter name="comp" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ECalComponent to generate alarms from.</doc>
+            <doc xml:whitespace="preserve">The #ECalComponent to generate alarms from</doc>
             <type name="CalComponent" c:type="ECalComponent*"/>
           </parameter>
           <parameter name="start" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Start time.</doc>
+            <doc xml:whitespace="preserve">Start time</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="end" transfer-ownership="none">
-            <doc xml:whitespace="preserve">End time.</doc>
+            <doc xml:whitespace="preserve">End time</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="omit" transfer-ownership="none">
@@ -651,7 +665,10 @@ range.</doc>
             <type name="CalComponentAlarmAction"
                   c:type="ECalComponentAlarmAction*"/>
           </parameter>
-          <parameter name="resolve_tzid" transfer-ownership="none" closure="5">
+          <parameter name="resolve_tzid"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="5">
             <doc xml:whitespace="preserve">Callback for resolving timezones</doc>
             <type name="CalRecurResolveTimezoneFn"
                   c:type="ECalRecurResolveTimezoneFn"/>
@@ -672,22 +689,22 @@ range.</doc>
         <doc xml:whitespace="preserve">Iterates through all the components in the @comps list and generates alarm
 instances for them; putting them in the @comp_alarms list.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the number of elements it added to the list.</doc>
+          <doc xml:whitespace="preserve">the number of elements it added to the list</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <parameter name="comps" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of #ECalComponent's.</doc>
+            <doc xml:whitespace="preserve">List of #ECalComponent&lt;!-- --&gt;s</doc>
             <type name="GLib.List" c:type="GList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponent"/>
             </type>
           </parameter>
           <parameter name="start" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Start time.</doc>
+            <doc xml:whitespace="preserve">Start time</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="end" transfer-ownership="none">
-            <doc xml:whitespace="preserve">End time.</doc>
+            <doc xml:whitespace="preserve">End time</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="omit" transfer-ownership="none">
@@ -695,13 +712,19 @@ instances for them; putting them in the @comp_alarms list.</doc>
             <type name="CalComponentAlarmAction"
                   c:type="ECalComponentAlarmAction*"/>
           </parameter>
-          <parameter name="comp_alarms" transfer-ownership="none">
+          <parameter name="comp_alarms"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">List to be returned</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentAlarms"/>
             </type>
           </parameter>
-          <parameter name="resolve_tzid" transfer-ownership="none" closure="6">
+          <parameter name="resolve_tzid"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="6">
             <doc xml:whitespace="preserve">Callback for resolving timezones</doc>
             <type name="CalRecurResolveTimezoneFn"
                   c:type="ECalRecurResolveTimezoneFn"/>
@@ -727,15 +750,25 @@ recurrences.</doc>
         </return-value>
         <parameters>
           <parameter name="comp" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ECalComponent</doc>
             <type name="CalComponent" c:type="ECalComponent*"/>
           </parameter>
-          <parameter name="start" transfer-ownership="none">
+          <parameter name="start"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="glong" c:type="time_t*"/>
           </parameter>
-          <parameter name="end" transfer-ownership="none">
+          <parameter name="end"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="glong" c:type="time_t*"/>
           </parameter>
-          <parameter name="tz_cb" transfer-ownership="none" closure="4">
+          <parameter name="tz_cb"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="4">
             <type name="CalRecurResolveTimezoneFn"
                   c:type="ECalRecurResolveTimezoneFn"/>
           </parameter>
@@ -743,7 +776,7 @@ recurrences.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="default_timezone" transfer-ownership="none">
-            <type c:type="icaltimezone*"/>
+            <type c:type="const icaltimezone*"/>
           </parameter>
           <parameter name="kind" transfer-ownership="none">
             <type c:type="icalcomponent_kind"/>
@@ -805,7 +838,7 @@ parse it and return a new #icalcomponent.</doc>
         <parameters>
           <parameter name="filename" transfer-ownership="none">
             <doc xml:whitespace="preserve">Name of the file to be parsed.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </function>
@@ -823,7 +856,7 @@ support.</doc>
         <parameters>
           <parameter name="string" transfer-ownership="none">
             <doc xml:whitespace="preserve">iCalendar string to be parsed.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </function>
@@ -837,7 +870,7 @@ support.</doc>
         <parameters>
           <parameter name="string" transfer-ownership="none">
             <doc xml:whitespace="preserve">A string representing the PRIORITY value.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </function>
@@ -847,7 +880,7 @@ support.</doc>
 priority value (i.e. not 0-9) will be returned as "" (undefined).</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">a string representing the PRIORITY value. This value is a constant, so it should never be freed.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <parameter name="priority" transfer-ownership="none">
@@ -873,7 +906,7 @@ FIXME: should probably have a return value indicating whether or not
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">The base RECURRENCE-ID to remove</doc>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="icaltimetype"/>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
             <doc xml:whitespace="preserve">How to interpret @rid</doc>
@@ -892,7 +925,7 @@ FIXME: should probably have a return value indicating whether or not
         </return-value>
         <parameters>
           <parameter name="message" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -912,7 +945,7 @@ FIXME: should probably have a return value indicating whether or not
         </return-value>
         <parameters>
           <parameter name="error" transfer-ownership="none">
-            <type name="GLib.Error" c:type="GError*"/>
+            <type name="GLib.Error" c:type="const GError*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -993,7 +1026,7 @@ CALOBJ_MOD_ONLY_THIS is not supported in this call.</doc>
           </parameter>
           <parameter name="auid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier of the alarm to be discarded.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -1098,7 +1131,7 @@ specified range of time.</doc>
         <parameters>
           <parameter name="id" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component.</doc>
-            <type name="CalComponentId" c:type="ECalComponentId*"/>
+            <type name="CalComponentId" c:type="const ECalComponentId*"/>
           </parameter>
           <parameter name="start" transfer-ownership="none">
             <doc xml:whitespace="preserve">Start time for query.</doc>
@@ -1153,11 +1186,11 @@ identifier and gets the attachments for the component.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="list" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return the list of attachment uris.</doc>
@@ -1194,13 +1227,13 @@ identifier and gets the attachments for the component.</doc>
 is identified by the @change_id argument, which is used by the backend to
 compute the changes done.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if the call was successful, FALSE otherwise.</doc>
+          <doc xml:whitespace="preserve">%TRUE if the call was successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="change_id" transfer-ownership="none">
             <doc xml:whitespace="preserve">ID to use for comparing changes.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="changes" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the list of changes.</doc>
@@ -1319,7 +1352,7 @@ unless it specifically uses the attachments for open/sending
 operations.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">The URL where the attachments are serialized in the local filesystem.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
       </method>
       <method name="get_object"
@@ -1337,11 +1370,11 @@ identifier.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="icalcomp" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the calendar component object.</doc>
@@ -1365,7 +1398,7 @@ should be freed by using the #e_cal_free_object_list function.</doc>
         <parameters>
           <parameter name="query" transfer-ownership="none">
             <doc xml:whitespace="preserve">Query string.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="objects"
                      direction="out"
@@ -1394,7 +1427,7 @@ argument, which is a list of #ECalComponent.</doc>
         <parameters>
           <parameter name="query" transfer-ownership="none">
             <doc xml:whitespace="preserve">Query string.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="objects" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for list of objects.</doc>
@@ -1420,7 +1453,7 @@ For non-recurring events, it will just return the object with that ID.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="objects" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the list of objects obtained from the backend.</doc>
@@ -1474,7 +1507,7 @@ meetings.</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">S-expression representing the query.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="query"
                      direction="out"
@@ -1549,7 +1582,7 @@ meetings.</doc>
         <parameters>
           <parameter name="cap" transfer-ownership="none">
             <doc xml:whitespace="preserve">Name of the static capability to check.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -1567,7 +1600,7 @@ meetings.</doc>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
             <doc xml:whitespace="preserve">ID of the timezone to retrieve.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="zone" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the timezone.</doc>
@@ -1721,7 +1754,7 @@ be notified and they will emit the "obj_removed" signal.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier of the calendar component to remove.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -1772,11 +1805,11 @@ it. Previous releases did not check consistently for unknown
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">UID of the object to remove.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence ID of the specific recurrence to remove.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
             <doc xml:whitespace="preserve">Type of removal.</doc>
@@ -1977,7 +2010,7 @@ the calendar.</doc>
               <type name="Cal" c:type="ECal*"/>
             </parameter>
             <parameter name="error" transfer-ownership="none">
-              <type name="GLib.Error" c:type="GError*"/>
+              <type name="GLib.Error" c:type="const GError*"/>
             </parameter>
           </parameters>
         </callback>
@@ -2010,7 +2043,7 @@ the calendar.</doc>
               <type name="Cal" c:type="ECal*"/>
             </parameter>
             <parameter name="message" transfer-ownership="none">
-              <type name="utf8" c:type="gchar*"/>
+              <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
         </callback>
@@ -2097,7 +2130,7 @@ definition until the TZID is unique. A running count is appended to
 the TZID. All items referencing the renamed TZID are adapted
 accordingly.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if successful, FALSE otherwise.</doc>
+          <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -2105,10 +2138,10 @@ accordingly.</doc>
             <doc xml:whitespace="preserve">a VCALENDAR containing a list of VTIMEZONE and arbitrary other components, in arbitrary order: these other components are modified by this call</doc>
             <type c:type="icalcomponent*"/>
           </parameter>
-          <parameter name="comps" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a list of icalcomponent instances which also have to be patched; may be NULL</doc>
+          <parameter name="comps" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">a list of #icalcomponent instances which also have to be patched; may be %NULL</doc>
             <type name="GLib.List" c:type="GList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
           <parameter name="tzlookup" transfer-ownership="none">
@@ -2141,7 +2174,7 @@ accordingly.</doc>
           </parameter>
           <parameter name="custom_msg" transfer-ownership="none">
             <doc xml:whitespace="preserve">custom message to use for the error; can be %NULL</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </function>
@@ -2155,7 +2188,7 @@ accordingly.</doc>
                 version="3.2">
         <doc xml:whitespace="preserve">FIXME: Document me.</doc>
         <return-value transfer-ownership="none">
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <parameter name="code" transfer-ownership="none">
@@ -2165,18 +2198,17 @@ accordingly.</doc>
       </function>
       <function name="free_ecalcomp_slist"
                 c:identifier="e_cal_client_free_ecalcomp_slist"
-                version="3.2"
-                introspectable="0">
-        <doc xml:whitespace="preserve">Frees each element of @ecalcomps list and the list itself.
-Each element is an object of ECalComponent type.</doc>
+                version="3.2">
+        <doc xml:whitespace="preserve">Frees each element of the @ecalcomps list and the list itself.
+Each element is an object of type #ECalComponent.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="ecalcomps" transfer-ownership="none">
-            <doc xml:whitespace="preserve">list of ECalComponent objects</doc>
+            <doc xml:whitespace="preserve">list of #ECalComponent objects</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponent"/>
             </type>
           </parameter>
         </parameters>
@@ -2185,16 +2217,16 @@ Each element is an object of ECalComponent type.</doc>
                 c:identifier="e_cal_client_free_icalcomp_slist"
                 version="3.2"
                 introspectable="0">
-        <doc xml:whitespace="preserve">Frees each element of @icalcomps list and the list itself.
-Each element is an object of icalcomponent type.</doc>
+        <doc xml:whitespace="preserve">Frees each element of the @icalcomps list and the list itself.
+Each element is an object of type #icalcomponent.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="icalcomps" transfer-ownership="none">
-            <doc xml:whitespace="preserve">slist of icalcomponent objects</doc>
+            <doc xml:whitespace="preserve">list of icalcomponent objects</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
         </parameters>
@@ -2211,7 +2243,7 @@ Each element is an object of icalcomponent type.</doc>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
             <doc xml:whitespace="preserve">ID of the timezone to resolve.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:whitespace="preserve">Closure data for the callback, in this case #ECalClient.</doc>
@@ -2231,7 +2263,7 @@ can use. Calls e_cal_client_get_timezone_sync().</doc>
         </return-value>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="ecalclient" transfer-ownership="none">
             <doc xml:whitespace="preserve">must be a valid ECalCleint pointer</doc>
@@ -2257,7 +2289,7 @@ in the component list.</doc>
         </return-value>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="custom" transfer-ownership="none">
             <doc xml:whitespace="preserve">must be a icalcomponent pointer which contains either a VCALENDAR with VTIMEZONEs or VTIMEZONES directly</doc>
@@ -2276,7 +2308,7 @@ in the component list.</doc>
         </return-value>
         <parameters>
           <parameter name="free_busy_ecalcomps" transfer-ownership="none">
-            <type name="GLib.SList" c:type="GSList*">
+            <type name="GLib.SList" c:type="const GSList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
           </parameter>
@@ -2514,7 +2546,7 @@ the @callback.</doc>
           <parameter name="icalcomps" transfer-ownership="none">
             <doc xml:whitespace="preserve">The components to create</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -2540,7 +2572,6 @@ the @callback.</doc>
       <method name="create_objects_finish"
               c:identifier="e_cal_client_create_objects_finish"
               version="3.6"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Finishes previous call of e_cal_client_create_objects() and
 sets @uids to newly assigned UIDs for the created objects.
@@ -2560,7 +2591,7 @@ This @uids should be freed with e_client_util_free_string_slist().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the UIDs assigned to the new components by the calendar backend</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -2583,7 +2614,7 @@ Returned @uid should be freed with e_client_util_free_string_slist().</doc>
           <parameter name="icalcomps" transfer-ownership="none">
             <doc xml:whitespace="preserve">The components to create</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
           <parameter name="uids"
@@ -2592,7 +2623,7 @@ Returned @uid should be freed with e_client_util_free_string_slist().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the UIDs assigned to the new components by the calendar backend</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -2615,15 +2646,15 @@ the @callback.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="auid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Alarm identifier to remove</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -2673,15 +2704,15 @@ the @callback.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="auid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Alarm identifier to remove</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -2809,55 +2840,60 @@ as soon as the callback returns.</doc>
         </return-value>
         <parameters>
           <parameter name="icalcomp" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Object to generate instances from.</doc>
+            <doc xml:whitespace="preserve">Object to generate instances from</doc>
             <type c:type="icalcomponent*"/>
           </parameter>
           <parameter name="start" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Start time for query.</doc>
+            <doc xml:whitespace="preserve">Start time for query</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="end" transfer-ownership="none">
-            <doc xml:whitespace="preserve">End time for query.</doc>
+            <doc xml:whitespace="preserve">End time for query</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
-          <parameter name="cb" transfer-ownership="none" closure="4">
-            <doc xml:whitespace="preserve">Callback for each generated instance.</doc>
+          <parameter name="cb"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="4">
+            <doc xml:whitespace="preserve">Callback for each generated instance</doc>
             <type name="CalRecurInstanceFn" c:type="ECalRecurInstanceFn"/>
           </parameter>
           <parameter name="cb_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Closure data for the callback.</doc>
+            <doc xml:whitespace="preserve">Closure data for the callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
       <method name="generate_instances_sync"
               c:identifier="e_cal_client_generate_instances_sync"
-              version="3.2"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Does a combination of #e_cal_client_get_object_list () and
-#e_cal_client_recur_generate_instances().
+              version="3.2">
+        <doc xml:whitespace="preserve">Does a combination of e_cal_client_get_object_list() and
+e_cal_client_recur_generate_instances().
 
 The callback function should do a g_object_ref() of the calendar component
-it gets passed if it intends to keep it around, since it will be unref'ed
+it gets passed if it intends to keep it around, since it will be unreffed
 as soon as the callback returns.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="start" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Start time for query.</doc>
+            <doc xml:whitespace="preserve">Start time for query</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
           <parameter name="end" transfer-ownership="none">
-            <doc xml:whitespace="preserve">End time for query.</doc>
+            <doc xml:whitespace="preserve">End time for query</doc>
             <type name="glong" c:type="time_t"/>
           </parameter>
-          <parameter name="cb" transfer-ownership="none" closure="3">
-            <doc xml:whitespace="preserve">Callback for each generated instance.</doc>
+          <parameter name="cb"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="3">
+            <doc xml:whitespace="preserve">Callback for each generated instance</doc>
             <type name="CalRecurInstanceFn" c:type="ECalRecurInstanceFn"/>
           </parameter>
           <parameter name="cb_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Closure data for the callback.</doc>
+            <doc xml:whitespace="preserve">Closure data for the callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2874,11 +2910,11 @@ the @callback.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -2903,7 +2939,6 @@ the @callback.</doc>
       <method name="get_attachment_uris_finish"
               c:identifier="e_cal_client_get_attachment_uris_finish"
               version="3.2"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Finishes previous call of e_cal_client_get_attachment_uris() and
 sets @attachment_uris to uris for component's attachments.
@@ -2917,10 +2952,13 @@ The list should be freed with e_client_util_free_string_slist().</doc>
             <doc xml:whitespace="preserve">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
-          <parameter name="attachment_uris" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Return the list of attachment uris</doc>
+          <parameter name="attachment_uris"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">Return the list of attachment URIs</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -2928,9 +2966,8 @@ The list should be freed with e_client_util_free_string_slist().</doc>
       <method name="get_attachment_uris_sync"
               c:identifier="e_cal_client_get_attachment_uris_sync"
               version="3.2"
-              introspectable="0"
               throws="1">
-        <doc xml:whitespace="preserve">Queries a calendar for a specified component's object attachment uris.
+        <doc xml:whitespace="preserve">Queries a calendar for a specified component's object attachment URIs.
 The list should be freed with e_client_util_free_string_slist().</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if successful, %FALSE otherwise.</doc>
@@ -2939,16 +2976,19 @@ The list should be freed with e_client_util_free_string_slist().</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="attachment_uris" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Return the list of attachment uris</doc>
+          <parameter name="attachment_uris"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">Return the list of attachment URIs</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -3072,8 +3112,7 @@ icalcomponent_free().</doc>
       </method>
       <method name="get_free_busy"
               c:identifier="e_cal_client_get_free_busy"
-              version="3.2"
-              introspectable="0">
+              version="3.2">
         <doc xml:whitespace="preserve">Begins retrieval of free/busy information from the calendar server
 as a list of #ECalComponent-s. Connect to "free-busy-data" signal
 to receive chunks of free/busy components.
@@ -3093,8 +3132,8 @@ the @callback.</doc>
           </parameter>
           <parameter name="users" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of users to retrieve free/busy information for</doc>
-            <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -3137,7 +3176,6 @@ All VFREEBUSY #ECalComponent-s were received by "free-busy-data" signal.</doc>
       <method name="get_free_busy_sync"
               c:identifier="e_cal_client_get_free_busy_sync"
               version="3.2"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Gets free/busy information from the calendar server.
 All VFREEBUSY #ECalComponent-s were received by "free-busy-data" signal.</doc>
@@ -3156,8 +3194,8 @@ All VFREEBUSY #ECalComponent-s were received by "free-busy-data" signal.</doc>
           </parameter>
           <parameter name="users" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of users to retrieve free/busy information for</doc>
-            <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -3178,7 +3216,7 @@ unless it specifically uses the attachments for open/sending
 operations.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">The URL where the attachments are serialized in the local filesystem.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
       </method>
       <method name="get_object"
@@ -3197,11 +3235,11 @@ all detached instances.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -3267,7 +3305,7 @@ the @callback.</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">an S-expression representing the query</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -3302,7 +3340,7 @@ the @callback.</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">an S-expression representing the query</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -3327,7 +3365,6 @@ the @callback.</doc>
       <method name="get_object_list_as_comps_finish"
               c:identifier="e_cal_client_get_object_list_as_comps_finish"
               version="3.2"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Finishes previous call of e_cal_client_get_object_list_as_comps() and
 sets @ecalcomps to a matching list of #ECalComponent-s.
@@ -3345,9 +3382,9 @@ This list should be freed with #e_cal_client_free_ecalcomp_slist().</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:whitespace="preserve">list of matching #ECalComponent-s</doc>
+            <doc xml:whitespace="preserve">list of matching #ECalComponent&lt;!-- --&gt;s</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponent"/>
             </type>
           </parameter>
         </parameters>
@@ -3355,7 +3392,6 @@ This list should be freed with #e_cal_client_free_ecalcomp_slist().</doc>
       <method name="get_object_list_as_comps_sync"
               c:identifier="e_cal_client_get_object_list_as_comps_sync"
               version="3.2"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Gets a list of objects from the calendar that match the query specified
 by the @sexp argument. The objects will be returned in the @ecalcomps
@@ -3368,15 +3404,15 @@ This list should be freed with #e_cal_client_free_ecalcomp_slist().</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">an S-expression representing the query</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="ecalcomps"
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:whitespace="preserve">list of matching #ECalComponent-s</doc>
+            <doc xml:whitespace="preserve">list of matching #ECalComponent&lt;!-- --&gt;s</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponent"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -3408,9 +3444,9 @@ This list should be freed with #e_cal_client_free_icalcomp_slist().</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:whitespace="preserve">list of matching #icalcomponent-s</doc>
+            <doc xml:whitespace="preserve">list of matching #icalcomponent&lt;!-- --&gt;s</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
         </parameters>
@@ -3431,15 +3467,15 @@ This list should be freed with #e_cal_client_free_icalcomp_slist().</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">an S-expression representing the query</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="icalcomps"
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:whitespace="preserve">list of matching #icalcomponent-s</doc>
+            <doc xml:whitespace="preserve">list of matching #icalcomponent&lt;!-- --&gt;s</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -3470,11 +3506,11 @@ all detached instances.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence identifier.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="icalcomp"
                      direction="out"
@@ -3505,7 +3541,7 @@ the @callback.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -3530,10 +3566,9 @@ the @callback.</doc>
       <method name="get_objects_for_uid_finish"
               c:identifier="e_cal_client_get_objects_for_uid_finish"
               version="3.2"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Finishes previous call of e_cal_client_get_objects_for_uid() and
-sets @ecalcomps to a list of #ECalComponent-s corresponding to
+sets @ecalcomps to a list of #ECalComponent&lt;!-- --&gt;s corresponding to
 found components for a given uid of the same type as this client.
 This list should be freed with e_cal_client_free_ecalcomp_slist().</doc>
         <return-value transfer-ownership="none">
@@ -3551,7 +3586,7 @@ This list should be freed with e_cal_client_free_ecalcomp_slist().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the list of objects obtained from the backend</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponent"/>
             </type>
           </parameter>
         </parameters>
@@ -3559,7 +3594,6 @@ This list should be freed with e_cal_client_free_ecalcomp_slist().</doc>
       <method name="get_objects_for_uid_sync"
               c:identifier="e_cal_client_get_objects_for_uid_sync"
               version="3.2"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Queries a calendar for all calendar components with the given unique
 ID. This will return any recurring event and all its detached recurrences.
@@ -3572,7 +3606,7 @@ This list should be freed with e_cal_client_free_ecalcomp_slist().</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for a calendar component</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="ecalcomps"
                      direction="out"
@@ -3580,7 +3614,7 @@ This list should be freed with e_cal_client_free_ecalcomp_slist().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the list of objects obtained from the backend</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponent"/>
             </type>
           </parameter>
           <parameter name="cancellable"
@@ -3612,7 +3646,7 @@ the @callback.</doc>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
             <doc xml:whitespace="preserve">ID of the timezone to retrieve</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -3674,7 +3708,7 @@ This object is owned by the @client, thus do not free it.</doc>
         <parameters>
           <parameter name="tzid" transfer-ownership="none">
             <doc xml:whitespace="preserve">ID of the timezone to retrieve</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="zone"
                      direction="out"
@@ -3703,7 +3737,7 @@ from the @callback.</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">an S-expression representing the query.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -3764,7 +3798,7 @@ which should be freed with g_object_unref().</doc>
         <parameters>
           <parameter name="sexp" transfer-ownership="none">
             <doc xml:whitespace="preserve">an S-expression representing the query.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="view"
                      direction="out"
@@ -3897,7 +3931,7 @@ the @callback.</doc>
           <parameter name="comps" transfer-ownership="none">
             <doc xml:whitespace="preserve">Components to modify</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
@@ -3960,7 +3994,7 @@ CALOBJ_MOD_THISANDFUTURE).</doc>
           <parameter name="comps" transfer-ownership="none">
             <doc xml:whitespace="preserve">Components to modify</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalcomponent"/>
             </type>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
@@ -4072,11 +4106,11 @@ the @callback.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">UID of the object to remove</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence ID of the specific recurrence to remove</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
             <doc xml:whitespace="preserve">Type of the removal</doc>
@@ -4135,11 +4169,11 @@ for the @mod.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">UID of the object to remove</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="rid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Recurrence ID of the specific recurrence to remove</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
             <doc xml:whitespace="preserve">Type of the removal</doc>
@@ -4170,8 +4204,8 @@ the @callback.</doc>
         <parameters>
           <parameter name="ids" transfer-ownership="none">
             <doc xml:whitespace="preserve">A list of #ECalComponentId objects identifying the objects to remove</doc>
-            <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="CalComponentId"/>
             </type>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
@@ -4230,8 +4264,8 @@ for the @mod.</doc>
         <parameters>
           <parameter name="ids" transfer-ownership="none">
             <doc xml:whitespace="preserve">A list of #ECalComponentId objects identifying the objects to remove</doc>
-            <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="CalComponentId"/>
             </type>
           </parameter>
           <parameter name="mod" transfer-ownership="none">
@@ -4306,7 +4340,7 @@ the @modified_icalcomp should be freed with icalcomponent_free().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">List of users to send the @modified_icalcomp to</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="modified_icalcomp"
@@ -4342,7 +4376,7 @@ the @modified_icalcomp should be freed with icalcomponent_free().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">List of users to send the @modified_icalcomp to</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="modified_icalcomp"
@@ -4410,7 +4444,7 @@ before using any other object fetching functions.</doc>
               <type name="CalClient" c:type="ECalClient*"/>
             </parameter>
             <parameter name="free_busy_ecalcomps" transfer-ownership="none">
-              <type name="GLib.SList" c:type="GSList*">
+              <type name="GLib.SList" c:type="const GSList*">
                 <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
@@ -4489,7 +4523,7 @@ functions below.</doc>
         </return-value>
         <parameters>
           <parameter name="error" transfer-ownership="none">
-            <type name="GLib.Error" c:type="GError*"/>
+            <type name="GLib.Error" c:type="const GError*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -4499,7 +4533,7 @@ functions below.</doc>
         </return-value>
         <parameters>
           <parameter name="objects" transfer-ownership="none">
-            <type name="GLib.SList" c:type="GSList*">
+            <type name="GLib.SList" c:type="const GSList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
           </parameter>
@@ -4511,7 +4545,7 @@ functions below.</doc>
         </return-value>
         <parameters>
           <parameter name="objects" transfer-ownership="none">
-            <type name="GLib.SList" c:type="GSList*">
+            <type name="GLib.SList" c:type="const GSList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
           </parameter>
@@ -4523,7 +4557,7 @@ functions below.</doc>
         </return-value>
         <parameters>
           <parameter name="uids" transfer-ownership="none">
-            <type name="GLib.SList" c:type="GSList*">
+            <type name="GLib.SList" c:type="const GSList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
           </parameter>
@@ -4538,18 +4572,17 @@ functions below.</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="message" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <method name="get_client"
               c:identifier="e_cal_client_view_get_client"
-              version="3.2"
-              introspectable="0">
+              version="3.2">
         <doc xml:whitespace="preserve">Get the #ECalClient associated with this view.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the associated client.</doc>
-          <type name="gpointer" c:type="gpointer*"/>
+          <type name="gpointer" c:type="_ECalClient*"/>
         </return-value>
       </method>
       <method name="is_running"
@@ -4563,7 +4596,6 @@ all events sent from the server.</doc>
       </method>
       <method name="set_fields_of_interest"
               c:identifier="e_cal_client_view_set_fields_of_interest"
-              introspectable="0"
               throws="1">
         <doc xml:whitespace="preserve">Client can instruct server to which fields it is interested in only, thus
 the server can return less data over the wire. The server can still return
@@ -4579,10 +4611,12 @@ it will simply return object as is stored in the cache.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="fields_of_interest" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of field names in which the client is interested</doc>
-            <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+          <parameter name="fields_of_interest"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">List of field names in which the client is interested, or %NULL to reset the fields of interest</doc>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -4714,7 +4748,7 @@ it will simply return object as is stored in the cache.</doc>
               <type name="CalClientView" c:type="ECalClientView*"/>
             </parameter>
             <parameter name="objects" transfer-ownership="none">
-              <type name="GLib.SList" c:type="GSList*">
+              <type name="GLib.SList" c:type="const GSList*">
                 <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
@@ -4731,7 +4765,7 @@ it will simply return object as is stored in the cache.</doc>
               <type name="CalClientView" c:type="ECalClientView*"/>
             </parameter>
             <parameter name="objects" transfer-ownership="none">
-              <type name="GLib.SList" c:type="GSList*">
+              <type name="GLib.SList" c:type="const GSList*">
                 <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
@@ -4748,7 +4782,7 @@ it will simply return object as is stored in the cache.</doc>
               <type name="CalClientView" c:type="ECalClientView*"/>
             </parameter>
             <parameter name="uids" transfer-ownership="none">
-              <type name="GLib.SList" c:type="GSList*">
+              <type name="GLib.SList" c:type="const GSList*">
                 <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
@@ -4768,7 +4802,7 @@ it will simply return object as is stored in the cache.</doc>
               <type name="guint" c:type="guint"/>
             </parameter>
             <parameter name="message" transfer-ownership="none">
-              <type name="utf8" c:type="gchar*"/>
+              <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
         </callback>
@@ -4783,7 +4817,7 @@ it will simply return object as is stored in the cache.</doc>
               <type name="CalClientView" c:type="ECalClientView*"/>
             </parameter>
             <parameter name="error" transfer-ownership="none">
-              <type name="GLib.Error" c:type="GError*"/>
+              <type name="GLib.Error" c:type="const GError*"/>
             </parameter>
           </parameters>
         </callback>
@@ -4850,38 +4884,36 @@ is freed.</doc>
         <parameters>
           <parameter name="calobj" transfer-ownership="none">
             <doc xml:whitespace="preserve">A string representation of an iCalendar component.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </constructor>
       <function name="free_attendee_list"
-                c:identifier="e_cal_component_free_attendee_list"
-                introspectable="0">
+                c:identifier="e_cal_component_free_attendee_list">
         <doc xml:whitespace="preserve">Frees a list of #ECalComponentAttendee structures.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="attendee_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of attendees.</doc>
+            <doc xml:whitespace="preserve">List of attendees</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentAttendee"/>
             </type>
           </parameter>
         </parameters>
       </function>
       <function name="free_categories_list"
-                c:identifier="e_cal_component_free_categories_list"
-                introspectable="0">
+                c:identifier="e_cal_component_free_categories_list">
         <doc xml:whitespace="preserve">Frees a list of category strings.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="categ_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of category strings.</doc>
+            <doc xml:whitespace="preserve">List of category strings</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -4900,8 +4932,7 @@ is freed.</doc>
         </parameters>
       </function>
       <function name="free_exdate_list"
-                c:identifier="e_cal_component_free_exdate_list"
-                introspectable="0">
+                c:identifier="e_cal_component_free_exdate_list">
         <doc xml:whitespace="preserve">Frees a list of #ECalComponentDateTime structures as returned by the
 e_cal_component_get_exdate_list() function.</doc>
         <return-value transfer-ownership="none">
@@ -4909,9 +4940,9 @@ e_cal_component_get_exdate_list() function.</doc>
         </return-value>
         <parameters>
           <parameter name="exdate_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of #ECalComponentDateTime structures.</doc>
+            <doc xml:whitespace="preserve">List of #ECalComponentDateTime structures</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentDateTime"/>
             </type>
           </parameter>
         </parameters>
@@ -4925,7 +4956,7 @@ functions.</doc>
         <parameters>
           <parameter name="geo" transfer-ownership="none">
             <doc xml:whitespace="preserve">An #icalgeotype structure.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icalgeotype*"/>
           </parameter>
         </parameters>
       </function>
@@ -4939,7 +4970,7 @@ functions.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">An #icaltimetype structure.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icaltimetype*"/>
           </parameter>
         </parameters>
       </function>
@@ -4970,17 +5001,16 @@ function.</doc>
         </parameters>
       </function>
       <function name="free_period_list"
-                c:identifier="e_cal_component_free_period_list"
-                introspectable="0">
+                c:identifier="e_cal_component_free_period_list">
         <doc xml:whitespace="preserve">Frees a list of #ECalComponentPeriod structures.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="period_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of #ECalComponentPeriod structures.</doc>
+            <doc xml:whitespace="preserve">List of #ECalComponentPeriod structures</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentPeriod"/>
             </type>
           </parameter>
         </parameters>
@@ -5022,7 +5052,7 @@ function.</doc>
           <parameter name="recur_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of struct #icalrecurrencetype structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -5041,8 +5071,7 @@ function.</doc>
         </parameters>
       </function>
       <function name="free_text_list"
-                c:identifier="e_cal_component_free_text_list"
-                introspectable="0">
+                c:identifier="e_cal_component_free_text_list">
         <doc xml:whitespace="preserve">Frees a list of #ECalComponentText structures.  This function should only be
 used to free lists of text values as returned by the other getter functions
 of #ECalComponent.</doc>
@@ -5053,7 +5082,7 @@ of #ECalComponent.</doc>
           <parameter name="text_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of #ECalComponentText structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentText"/>
             </type>
           </parameter>
         </parameters>
@@ -5091,12 +5120,10 @@ e_cal_component_alarm_free().</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="clone"
-              c:identifier="e_cal_component_clone"
-              introspectable="0">
+      <method name="clone" c:identifier="e_cal_component_clone">
         <doc xml:whitespace="preserve">Creates a new calendar component object by copying the information from
 another one.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">A newly-created calendar component with the same values as the original one.</doc>
           <type name="CalComponent" c:type="ECalComponent*"/>
         </return-value>
@@ -5140,19 +5167,18 @@ taken into account here.</doc>
         <parameters>
           <parameter name="auid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier for the sought alarm subcomponent.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_alarm_uids"
-              c:identifier="e_cal_component_get_alarm_uids"
-              introspectable="0">
+              c:identifier="e_cal_component_get_alarm_uids">
         <doc xml:whitespace="preserve">Builds a list of the unique identifiers of the alarm subcomponents inside a
 calendar component.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">List of unique identifiers for alarms.  This should be freed using cal_obj_uid_list_free().</doc>
           <type name="GLib.List" c:type="GList*">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
           </type>
         </return-value>
       </method>
@@ -5167,34 +5193,38 @@ component's sequence number is consistent with the state of the object.</doc>
         </return-value>
       </method>
       <method name="get_attachment_list"
-              c:identifier="e_cal_component_get_attachment_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_attachment_list">
         <doc xml:whitespace="preserve">Queries the attachment properties of the calendar component object. When done,
-the @attachment_list should be freed by calling #g_slist_free.</doc>
+the @attachment_list should be freed by calling g_slist_free().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="attachment_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Return list of URLS to attachments.</doc>
+          <parameter name="attachment_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">Return list of URIs to attachments</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
       </method>
       <method name="get_attendee_list"
-              c:identifier="e_cal_component_get_attendee_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_attendee_list">
         <doc xml:whitespace="preserve">Queries the attendee properties of the calendar component object</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="attendee_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Return value for the attendee property. This should be freed using the e_cal_component_free_attendee_list () function.</doc>
+          <parameter name="attendee_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">Return value for the attendee property. This should be freed using e_cal_component_free_attendee_list().</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentAttendee"/>
             </type>
           </parameter>
         </parameters>
@@ -5210,23 +5240,25 @@ a comma-separated list of all categories set in the component.</doc>
         <parameters>
           <parameter name="categories" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return holder for the categories.</doc>
-            <type name="utf8" c:type="gchar**"/>
+            <type name="utf8" c:type="const gchar**"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_categories_list"
-              c:identifier="e_cal_component_get_categories_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_categories_list">
         <doc xml:whitespace="preserve">Queries the list of categories of a calendar component object.  Each element
 in the returned categ_list is a string with the corresponding category.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="categ_list" transfer-ownership="none">
+          <parameter name="categ_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the list of strings, where each string is a category. This should be freed using e_cal_component_free_categories_list().</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -5248,8 +5280,7 @@ classification property is not set on this component, this function returns
         </parameters>
       </method>
       <method name="get_comment_list"
-              c:identifier="e_cal_component_get_comment_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_comment_list">
         <doc xml:whitespace="preserve">Queries the comments of a calendar component object.  The comment property can
 appear several times inside a calendar component, and so a list of
 #ECalComponentText is returned.</doc>
@@ -5257,10 +5288,13 @@ appear several times inside a calendar component, and so a list of
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="text_list" transfer-ownership="none">
+          <parameter name="text_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the comment properties and their parameters, as a list of #ECalComponentText structures.  This should be freed using the e_cal_component_free_text_list() function.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentText"/>
             </type>
           </parameter>
         </parameters>
@@ -5274,13 +5308,12 @@ appear several times inside a calendar component, and so a list of
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the completion date.  This should be freed using the e_cal_component_free_icaltimetype() function.</doc>
-            <type name="gpointer" c:type="gpointer**"/>
+            <type name="gpointer" c:type="icaltimetype**"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_contact_list"
-              c:identifier="e_cal_component_get_contact_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_contact_list">
         <doc xml:whitespace="preserve">Queries the contact of a calendar component object.  The contact property can
 appear several times inside a calendar component, and so a list of
 #ECalComponentText is returned.</doc>
@@ -5288,10 +5321,13 @@ appear several times inside a calendar component, and so a list of
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="text_list" transfer-ownership="none">
+          <parameter name="text_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the contact properties and their parameters, as a list of #ECalComponentText structures.  This should be freed using the e_cal_component_free_text_list() function.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentText"/>
             </type>
           </parameter>
         </parameters>
@@ -5305,13 +5341,12 @@ calendar store.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the creation date.  This should be freed using the e_cal_component_free_icaltimetype() function.</doc>
-            <type name="gpointer" c:type="gpointer**"/>
+            <type name="gpointer" c:type="icaltimetype**"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_description_list"
-              c:identifier="e_cal_component_get_description_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_description_list">
         <doc xml:whitespace="preserve">Queries the description of a calendar component object.  Journal components
 may have more than one description, and as such this function returns a list
 of #ECalComponentText structures.  All other types of components can have at
@@ -5320,10 +5355,13 @@ most one description.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="text_list" transfer-ownership="none">
+          <parameter name="text_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the description properties and their parameters, as a list of #ECalComponentText structures.  This should be freed using the e_cal_component_free_text_list() function.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentText"/>
             </type>
           </parameter>
         </parameters>
@@ -5349,7 +5387,7 @@ the last time at which the object was modified by a calendar user agent.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">A value for the date/timestamp.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icaltimetype*"/>
           </parameter>
         </parameters>
       </method>
@@ -5378,17 +5416,19 @@ the last time at which the object was modified by a calendar user agent.</doc>
         </parameters>
       </method>
       <method name="get_exdate_list"
-              c:identifier="e_cal_component_get_exdate_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_exdate_list">
         <doc xml:whitespace="preserve">Queries the list of exception date properties in a calendar component object.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="exdate_list" transfer-ownership="none">
+          <parameter name="exdate_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the list of exception dates, as a list of #ECalComponentDateTime structures.  This should be freed using the e_cal_component_free_exdate_list() function.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentDateTime"/>
             </type>
           </parameter>
         </parameters>
@@ -5402,10 +5442,13 @@ object.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="recur_list" transfer-ownership="none">
+          <parameter name="recur_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">List of exception rules as struct #icalrecurrencetype structures.  This should be freed using the e_cal_component_free_recur_list() function.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -5418,10 +5461,13 @@ object.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="recur_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Returns a list of exception rule properties.</doc>
+          <parameter name="recur_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none">
+            <doc xml:whitespace="preserve">Returns a list of exception rule properties</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -5434,7 +5480,7 @@ object.</doc>
         <parameters>
           <parameter name="geo" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the geographic position property.  This should be freed using the e_cal_component_free_geo() function.</doc>
-            <type name="gpointer" c:type="gpointer**"/>
+            <type name="gpointer" c:type="icalgeotype**"/>
           </parameter>
         </parameters>
       </method>
@@ -5468,7 +5514,7 @@ the calendar store.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the last modified time value.</doc>
-            <type name="gpointer" c:type="gpointer**"/>
+            <type name="gpointer" c:type="icaltimetype**"/>
           </parameter>
         </parameters>
       </method>
@@ -5480,7 +5526,7 @@ the calendar store.</doc>
         <parameters>
           <parameter name="location" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the location.</doc>
-            <type name="utf8" c:type="gchar**"/>
+            <type name="utf8" c:type="const gchar**"/>
           </parameter>
         </parameters>
       </method>
@@ -5538,18 +5584,20 @@ the calendar store.</doc>
         </parameters>
       </method>
       <method name="get_rdate_list"
-              c:identifier="e_cal_component_get_rdate_list"
-              introspectable="0">
+              c:identifier="e_cal_component_get_rdate_list">
         <doc xml:whitespace="preserve">Queries the list of recurrence date properties in a calendar component
 object.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="period_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">Return value for the list of recurrence dates, as a list of #ECalComponentPeriod structures.  This should be freed using the e_cal_component_free_period_list() function.</doc>
+          <parameter name="period_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">Return value for the list of recurrence dates, as a list of #ECalComponentPeriod structures.  This should be freed using e_cal_component_free_period_list()</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentPeriod"/>
             </type>
           </parameter>
         </parameters>
@@ -5583,10 +5631,13 @@ object.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="recur_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of recurrence rules as struct #icalrecurrencetype structures.  This should be freed using the e_cal_component_free_recur_list() function.</doc>
+          <parameter name="recur_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:whitespace="preserve">List of recurrence rules as struct #icalrecurrencetype structures.  This should be freed using e_cal_component_free_recur_list().</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -5599,10 +5650,13 @@ object.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="recur_list" transfer-ownership="none">
+          <parameter name="recur_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none">
             <doc xml:whitespace="preserve">Returns a list of recurrence rule properties.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -5627,7 +5681,10 @@ object.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="status" transfer-ownership="none">
+          <parameter name="status"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the status value.  It is set to #ICAL_STATUS_NONE if the component has no status property.</doc>
             <type c:type="icalproperty_status*"/>
           </parameter>
@@ -5667,7 +5724,7 @@ object.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the UID string.</doc>
-            <type name="utf8" c:type="gchar**"/>
+            <type name="utf8" c:type="const gchar**"/>
           </parameter>
         </parameters>
       </method>
@@ -5679,7 +5736,7 @@ object.</doc>
         <parameters>
           <parameter name="url" transfer-ownership="none">
             <doc xml:whitespace="preserve">Return value for the URL.</doc>
-            <type name="utf8" c:type="gchar**"/>
+            <type name="utf8" c:type="const gchar**"/>
           </parameter>
         </parameters>
       </method>
@@ -5800,7 +5857,7 @@ function.</doc>
         <parameters>
           <parameter name="auid" transfer-ownership="none">
             <doc xml:whitespace="preserve">UID of the alarm to remove.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -5819,9 +5876,8 @@ would replace any value that was changed in the wrapped #icalcomponent.</doc>
         </return-value>
       </method>
       <method name="set_attachment_list"
-              c:identifier="e_cal_component_set_attachment_list"
-              introspectable="0">
-        <doc xml:whitespace="preserve">This currently handles only attachments that are urls
+              c:identifier="e_cal_component_set_attachment_list">
+        <doc xml:whitespace="preserve">This currently handles only attachments that are URIs
 in the file system - not inline binaries.
 
 Sets the attachments of a calendar component object</doc>
@@ -5830,16 +5886,15 @@ Sets the attachments of a calendar component object</doc>
         </return-value>
         <parameters>
           <parameter name="attachment_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">list of urls to attachment pointers.</doc>
+            <doc xml:whitespace="preserve">list of URIs to attachment pointers</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
       </method>
       <method name="set_attendee_list"
-              c:identifier="e_cal_component_set_attendee_list"
-              introspectable="0">
+              c:identifier="e_cal_component_set_attendee_list">
         <doc xml:whitespace="preserve">Sets the attendees of a calendar component object</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -5848,7 +5903,7 @@ Sets the attachments of a calendar component object</doc>
           <parameter name="attendee_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">Values for attendee properties</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentAttendee"/>
             </type>
           </parameter>
         </parameters>
@@ -5862,13 +5917,12 @@ Sets the attachments of a calendar component object</doc>
         <parameters>
           <parameter name="categories" transfer-ownership="none">
             <doc xml:whitespace="preserve">Comma-separated list of categories.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_categories_list"
-              c:identifier="e_cal_component_set_categories_list"
-              introspectable="0">
+              c:identifier="e_cal_component_set_categories_list">
         <doc xml:whitespace="preserve">Sets the list of categories of a calendar component object.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -5877,7 +5931,7 @@ Sets the attachments of a calendar component object</doc>
           <parameter name="categ_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of strings, one for each category.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -5898,8 +5952,7 @@ the property, specify E_CAL_COMPONENT_CLASS_NONE for @classif.</doc>
         </parameters>
       </method>
       <method name="set_comment_list"
-              c:identifier="e_cal_component_set_comment_list"
-              introspectable="0">
+              c:identifier="e_cal_component_set_comment_list">
         <doc xml:whitespace="preserve">Sets the comments of a calendar component object.  The comment property can
 appear several times inside a calendar component, and so a list of
 #ECalComponentText structures is used.</doc>
@@ -5910,7 +5963,7 @@ appear several times inside a calendar component, and so a list of
           <parameter name="text_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of #ECalComponentText structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentText"/>
             </type>
           </parameter>
         </parameters>
@@ -5924,13 +5977,12 @@ appear several times inside a calendar component, and so a list of
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Value for the completion date.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icaltimetype*"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_contact_list"
-              c:identifier="e_cal_component_set_contact_list"
-              introspectable="0">
+              c:identifier="e_cal_component_set_contact_list">
         <doc xml:whitespace="preserve">Sets the contact of a calendar component object.  The contact property can
 appear several times inside a calendar component, and so a list of
 #ECalComponentText structures is used.</doc>
@@ -5941,7 +5993,7 @@ appear several times inside a calendar component, and so a list of
           <parameter name="text_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of #ECalComponentText structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentText"/>
             </type>
           </parameter>
         </parameters>
@@ -5956,7 +6008,7 @@ not by calendar user agents.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Value for the creation date.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icaltimetype*"/>
           </parameter>
         </parameters>
       </method>
@@ -5974,7 +6026,7 @@ at most one description.</doc>
           <parameter name="text_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of #ECalComponentSummary structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="ECalComponentSummary"/>
             </type>
           </parameter>
         </parameters>
@@ -6001,7 +6053,7 @@ properties.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Date/timestamp value.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icaltimetype*"/>
           </parameter>
         </parameters>
       </method>
@@ -6030,8 +6082,7 @@ properties.</doc>
         </parameters>
       </method>
       <method name="set_exdate_list"
-              c:identifier="e_cal_component_set_exdate_list"
-              introspectable="0">
+              c:identifier="e_cal_component_set_exdate_list">
         <doc xml:whitespace="preserve">Sets the list of exception dates in a calendar component object.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -6040,7 +6091,7 @@ properties.</doc>
           <parameter name="exdate_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of #ECalComponentDateTime structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentDateTime"/>
             </type>
           </parameter>
         </parameters>
@@ -6056,7 +6107,7 @@ properties.</doc>
           <parameter name="recur_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of struct #icalrecurrencetype structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -6069,7 +6120,7 @@ properties.</doc>
         <parameters>
           <parameter name="geo" transfer-ownership="none">
             <doc xml:whitespace="preserve">Value for the geographic position property.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icalgeotype*"/>
           </parameter>
         </parameters>
       </method>
@@ -6102,7 +6153,7 @@ calendar store.  This should not be called by plain calendar user agents.</doc>
         <parameters>
           <parameter name="t" transfer-ownership="none">
             <doc xml:whitespace="preserve">Value for the last time modified.</doc>
-            <type name="gpointer" c:type="gpointer*"/>
+            <type name="gpointer" c:type="icaltimetype*"/>
           </parameter>
         </parameters>
       </method>
@@ -6114,7 +6165,7 @@ calendar store.  This should not be called by plain calendar user agents.</doc>
         <parameters>
           <parameter name="location" transfer-ownership="none">
             <doc xml:whitespace="preserve">Location value.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -6184,17 +6235,16 @@ that will be set in the new component will be its unique identifier.</doc>
         </parameters>
       </method>
       <method name="set_rdate_list"
-              c:identifier="e_cal_component_set_rdate_list"
-              introspectable="0">
+              c:identifier="e_cal_component_set_rdate_list">
         <doc xml:whitespace="preserve">Sets the list of recurrence dates in a calendar component object.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="period_list" transfer-ownership="none">
-            <doc xml:whitespace="preserve">List of #ECalComponentPeriod structures.</doc>
+            <doc xml:whitespace="preserve">List of #ECalComponentPeriod structures</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentPeriod"/>
             </type>
           </parameter>
         </parameters>
@@ -6222,7 +6272,7 @@ that will be set in the new component will be its unique identifier.</doc>
           <parameter name="recur_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of struct #icalrecurrencetype structures.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type c:type="icalrecurrencetype"/>
             </type>
           </parameter>
         </parameters>
@@ -6289,7 +6339,7 @@ automatically at the proper times.</doc>
         <parameters>
           <parameter name="uid" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique identifier.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -6301,7 +6351,7 @@ automatically at the proper times.</doc>
         <parameters>
           <parameter name="url" transfer-ownership="none">
             <doc xml:whitespace="preserve">URL value.</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -6365,17 +6415,19 @@ one of its fields.</doc>
         </parameters>
       </method>
       <method name="get_attendee_list"
-              c:identifier="e_cal_component_alarm_get_attendee_list"
-              introspectable="0">
+              c:identifier="e_cal_component_alarm_get_attendee_list">
         <doc xml:whitespace="preserve">Gets the list of attendees associated with an alarm.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="attendee_list" transfer-ownership="none">
+          <parameter name="attendee_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:whitespace="preserve">Return value for the list of attendees.</doc>
             <type name="GLib.SList" c:type="GSList**">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentAttendee"/>
             </type>
           </parameter>
         </parameters>
@@ -6434,7 +6486,7 @@ one of its fields.</doc>
         <doc xml:whitespace="preserve">Queries the unique identifier of an alarm subcomponent.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">UID of the alarm.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
       </method>
       <method name="has_attendees"
@@ -6474,8 +6526,7 @@ one of its fields.</doc>
         </parameters>
       </method>
       <method name="set_attendee_list"
-              c:identifier="e_cal_component_alarm_set_attendee_list"
-              introspectable="0">
+              c:identifier="e_cal_component_alarm_set_attendee_list">
         <doc xml:whitespace="preserve">Sets the list of attendees for an alarm.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -6484,7 +6535,7 @@ one of its fields.</doc>
           <parameter name="attendee_list" transfer-ownership="none">
             <doc xml:whitespace="preserve">List of attendees.</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="CalComponentAttendee"/>
             </type>
           </parameter>
         </parameters>
@@ -6579,7 +6630,7 @@ one of its fields.</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="duration" writable="1">
-        <type name="gpointer" c:type="gpointer"/>
+        <type name="gpointer" c:type="icaldurationtype"/>
       </field>
     </record>
     <record name="CalComponentAlarmTrigger" c:type="ECalComponentAlarmTrigger">
@@ -6589,10 +6640,10 @@ one of its fields.</doc>
       </field>
       <union name="u" c:type="u">
         <field name="rel_duration" writable="1">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="icaldurationtype"/>
         </field>
         <field name="abs_time" writable="1">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="icaltimetype"/>
         </field>
       </union>
     </record>
@@ -6629,10 +6680,10 @@ one of its fields.</doc>
     </record>
     <record name="CalComponentAttendee" c:type="ECalComponentAttendee">
       <field name="value" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="member" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="cutype" introspectable="0" writable="1">
         <type c:type="icalparameter_cutype"/>
@@ -6647,19 +6698,19 @@ one of its fields.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </field>
       <field name="delto" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="delfrom" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="sentby" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="cn" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="language" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
     </record>
     <record name="CalComponentClass"
@@ -6687,10 +6738,10 @@ one of its fields.</doc>
     </enumeration>
     <record name="CalComponentDateTime" c:type="ECalComponentDateTime">
       <field name="value" writable="1">
-        <type name="gpointer" c:type="gpointer*"/>
+        <type name="gpointer" c:type="icaltimetype*"/>
       </field>
       <field name="tzid" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
     </record>
     <enumeration name="CalComponentField" c:type="ECalComponentField">
@@ -6765,16 +6816,16 @@ one of its fields.</doc>
     </record>
     <record name="CalComponentOrganizer" c:type="ECalComponentOrganizer">
       <field name="value" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="sentby" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="cn" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="language" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
     </record>
     <record name="CalComponentPeriod" c:type="ECalComponentPeriod">
@@ -6782,14 +6833,14 @@ one of its fields.</doc>
         <type name="CalComponentPeriodType" c:type="ECalComponentPeriodType"/>
       </field>
       <field name="start" writable="1">
-        <type name="gpointer" c:type="gpointer"/>
+        <type name="gpointer" c:type="icaltimetype"/>
       </field>
       <union name="u" c:type="u">
         <field name="end" writable="1">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="icaltimetype"/>
         </field>
         <field name="duration" writable="1">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="icaldurationtype"/>
         </field>
       </union>
     </record>
@@ -6827,10 +6878,10 @@ one of its fields.</doc>
     </enumeration>
     <record name="CalComponentText" c:type="ECalComponentText">
       <field name="value" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="altrep" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
     </record>
     <enumeration name="CalComponentTransparency"
@@ -6896,7 +6947,7 @@ one of its fields.</doc>
       </return-value>
       <parameters>
         <parameter name="tzid" transfer-ownership="none">
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="data" transfer-ownership="none">
           <type name="gpointer" c:type="gpointer"/>
@@ -7002,7 +7053,7 @@ one of its fields.</doc>
             <type name="CalendarStatus" c:type="ECalendarStatus"/>
           </parameter>
           <parameter name="error_msg" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -7036,9 +7087,9 @@ one of its fields.</doc>
               deprecated="Use #ECalClientView"
               deprecated-version="3.2">
         <doc xml:whitespace="preserve">Get the #ECal associated with this view.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the associated client.</doc>
-          <type name="gpointer" c:type="gpointer*"/>
+          <type name="gpointer" c:type="_ECal*"/>
         </return-value>
       </method>
       <method name="start"
@@ -7255,7 +7306,7 @@ one of its fields.</doc>
               <type name="CalendarStatus" c:type="ECalendarStatus"/>
             </parameter>
             <parameter name="error_msg" transfer-ownership="none">
-              <type name="utf8" c:type="gchar*"/>
+              <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
         </callback>

@@ -18,11 +18,11 @@ namespace GUsb {
 	public class Device : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Device ();
-		public bool bulk_transfer (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, size_t actual_length, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool bulk_transfer (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, size_t actual_length, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async ssize_t bulk_transfer_async (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool claim_interface (int @interface, GUsb.DeviceClaimInterfaceFlags flags) throws GLib.Error;
 		public bool close () throws GLib.Error;
-		public bool control_transfer (GUsb.DeviceDirection direction, GUsb.DeviceRequestType request_type, GUsb.DeviceRecipient recipient, uint8 request, uint16 value, uint16 idx, [CCode (array_length_cname = "length", array_length_pos = 7.5, array_length_type = "gsize")] uint8[] data, size_t actual_length, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool control_transfer (GUsb.DeviceDirection direction, GUsb.DeviceRequestType request_type, GUsb.DeviceRecipient recipient, uint8 request, uint16 value, uint16 idx, [CCode (array_length_cname = "length", array_length_pos = 7.5, array_length_type = "gsize")] uint8[] data, size_t actual_length, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async ssize_t control_transfer_async (GUsb.DeviceDirection direction, GUsb.DeviceRequestType request_type, GUsb.DeviceRecipient recipient, uint8 request, uint16 value, uint16 idx, [CCode (array_length_cname = "length", array_length_pos = 7.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		public uint8 get_address ();
@@ -35,7 +35,7 @@ namespace GUsb {
 		public uint8 get_serial_number_index ();
 		public string get_string_descriptor (uint8 desc_index) throws GLib.Error;
 		public uint16 get_vid ();
-		public bool interrupt_transfer (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, size_t actual_length, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool interrupt_transfer (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, size_t actual_length, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async ssize_t interrupt_transfer_async (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool open () throws GLib.Error;
 		public bool release_interface (int @interface, GUsb.DeviceClaimInterfaceFlags flags) throws GLib.Error;

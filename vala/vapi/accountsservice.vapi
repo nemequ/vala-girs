@@ -69,6 +69,7 @@ namespace Act {
 		[CCode (has_construct_function = false)]
 		protected UserManager ();
 		public bool activate_user_session (Act.User user);
+		public Act.User cache_user (string username) throws GLib.Error;
 		public bool can_switch ();
 		public Act.User create_user (string username, string fullname, Act.UserAccountType accounttype) throws GLib.Error;
 		public bool delete_user (Act.User user, bool remove_files) throws GLib.Error;
@@ -76,6 +77,7 @@ namespace Act {
 		public unowned Act.User get_user (string username);
 		public bool goto_login_session ();
 		public GLib.SList<Act.User> list_users ();
+		public bool uncache_user (string username) throws GLib.Error;
 		[NoAccessorMethod]
 		public void* exclude_usernames_list { get; set; }
 		[NoAccessorMethod]

@@ -115,6 +115,8 @@ namespace E {
 		public BookClient (E.Source source) throws GLib.Error;
 		public async bool add_contact (E.Contact contact, GLib.Cancellable? cancellable, out string added_uid) throws GLib.Error;
 		public bool add_contact_sync (E.Contact contact, out string added_uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool add_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable, out GLib.SList<string> added_uids) throws GLib.Error;
+		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> added_uids, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Error error_create (E.BookClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.BookClientError code);
@@ -130,7 +132,8 @@ namespace E {
 		public static bool is_self (E.Contact contact);
 		public async bool modify_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool modify_contact_sync (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool modify_contacts_finish (GLib.AsyncResult result) throws GLib.Error;
+		public async bool modify_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool remove_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool remove_contact_by_uid (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool remove_contact_by_uid_sync (string uid, GLib.Cancellable? cancellable) throws GLib.Error;

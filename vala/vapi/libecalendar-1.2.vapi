@@ -79,20 +79,27 @@ namespace E {
 		public bool check_recurrences_no_master ();
 		public bool check_save_schedules ();
 		public bool create_object_finish (GLib.AsyncResult result, out string uid) throws GLib.Error;
+		public bool create_objects_finish (GLib.AsyncResult result, out GLib.SList<string> uids) throws GLib.Error;
 		public async bool discard_alarm (string uid, string rid, string auid, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool discard_alarm_sync (string uid, string rid, string auid, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Error error_create (E.CalClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.CalClientError code);
+		public static void free_ecalcomp_slist (GLib.SList<E.CalComponent> ecalcomps);
 		public void generate_instances (long start, long end, GLib.Cancellable? cancellable, owned E.CalRecurInstanceFn cb);
-		public async void get_attachment_uris (string uid, string rid, GLib.Cancellable? cancellable);
+		public void generate_instances_sync (long start, long end, E.CalRecurInstanceFn cb);
+		public async bool get_attachment_uris (string uid, string rid, GLib.Cancellable? cancellable, out GLib.SList<string> attachment_uris) throws GLib.Error;
+		public bool get_attachment_uris_sync (string uid, string rid, out GLib.SList<string> attachment_uris, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async void get_default_object (GLib.Cancellable? cancellable);
-		public bool get_free_busy_finish (GLib.AsyncResult result) throws GLib.Error;
+		public async bool get_free_busy (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_free_busy_sync (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned string get_local_attachment_store ();
 		public async void get_object (string uid, string rid, GLib.Cancellable? cancellable);
 		public async void get_object_list (string sexp, GLib.Cancellable? cancellable);
-		public async void get_object_list_as_comps (string sexp, GLib.Cancellable? cancellable);
-		public async void get_objects_for_uid (string uid, GLib.Cancellable? cancellable);
+		public async bool get_object_list_as_comps (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.CalComponent> ecalcomps) throws GLib.Error;
+		public bool get_object_list_as_comps_sync (string sexp, out GLib.SList<E.CalComponent> ecalcomps, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool get_objects_for_uid (string uid, GLib.Cancellable? cancellable, out GLib.SList<E.CalComponent> ecalcomps) throws GLib.Error;
+		public bool get_objects_for_uid_sync (string uid, out GLib.SList<E.CalComponent> ecalcomps, GLib.Cancellable? cancellable) throws GLib.Error;
 		public E.CalClientSourceType get_source_type ();
 		public async void get_timezone (string tzid, GLib.Cancellable? cancellable);
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.CalClientView view) throws GLib.Error;
@@ -108,12 +115,13 @@ namespace E {
 	public class CalClientView : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected CalClientView ();
+		public void* get_client ();
 		public bool is_running ();
+		public void set_fields_of_interest (GLib.SList<string>? fields_of_interest) throws GLib.Error;
 		public void set_flags (E.CalClientViewFlags flags) throws GLib.Error;
 		public void start () throws GLib.Error;
 		public void stop () throws GLib.Error;
-		[NoAccessorMethod]
-		public E.CalClient client { owned get; construct; }
+		public E.CalClient client { get; construct; }
 		[NoAccessorMethod]
 		public void* view { get; construct; }
 		public virtual signal void complete (GLib.Error error);
@@ -128,28 +136,42 @@ namespace E {
 		public CalComponent ();
 		public void abort_sequence ();
 		public void add_alarm (E.CalComponentAlarm alarm);
+		public E.CalComponent clone ();
 		public void commit_sequence ();
 		public bool event_dates_match (E.CalComponent comp2);
+		public static void free_attendee_list (GLib.SList<E.CalComponentAttendee> attendee_list);
+		public static void free_categories_list (GLib.SList<string> categ_list);
 		public static void free_datetime (E.CalComponentDateTime dt);
+		public static void free_exdate_list (GLib.SList<E.CalComponentDateTime> exdate_list);
 		public static void free_geo (void* geo);
 		public static void free_icaltimetype (void* t);
 		public static void free_id (E.CalComponentId id);
 		public static void free_percent (int percent);
+		public static void free_period_list (GLib.SList<E.CalComponentPeriod> period_list);
 		public static void free_priority (int priority);
 		public static void free_range (E.CalComponentRange range);
 		public static void free_sequence (int sequence);
+		public static void free_text_list (GLib.SList<E.CalComponentText> text_list);
 		[CCode (has_construct_function = false)]
 		public CalComponent.from_string (string calobj);
 		public static string gen_uid ();
+		public GLib.List<string> get_alarm_uids ();
 		public string get_as_string ();
+		public void get_attachment_list (out GLib.SList<string> attachment_list);
+		public void get_attendee_list (out GLib.SList<E.CalComponentAttendee> attendee_list);
 		public void get_categories (string categories);
+		public void get_categories_list (out GLib.SList<string> categ_list);
 		public void get_classification (E.CalComponentClassification classif);
+		public void get_comment_list (out GLib.SList<E.CalComponentText> text_list);
 		public void get_completed (void* t);
+		public void get_contact_list (out GLib.SList<E.CalComponentText> text_list);
 		public void get_created (void* t);
+		public void get_description_list (out GLib.SList<E.CalComponentText> text_list);
 		public void get_dtend (E.CalComponentDateTime dt);
 		public void get_dtstamp (void* t);
 		public void get_dtstart (E.CalComponentDateTime dt);
 		public void get_due (E.CalComponentDateTime dt);
+		public void get_exdate_list (out GLib.SList<E.CalComponentDateTime> exdate_list);
 		public void get_geo (void* geo);
 		public void get_last_modified (void* t);
 		public void get_location (string location);
@@ -158,6 +180,7 @@ namespace E {
 		public void get_percent (int percent);
 		public int get_percent_as_int ();
 		public void get_priority (int priority);
+		public void get_rdate_list (out GLib.SList<E.CalComponentPeriod> period_list);
 		public void get_recurid (E.CalComponentRange recur_id);
 		public string get_recurid_as_string ();
 		public void get_sequence (int sequence);
@@ -181,14 +204,20 @@ namespace E {
 		public void remove_alarm (string auid);
 		public void remove_all_alarms ();
 		public void rescan ();
+		public void set_attachment_list (GLib.SList<string> attachment_list);
+		public void set_attendee_list (GLib.SList<E.CalComponentAttendee> attendee_list);
 		public void set_categories (string categories);
+		public void set_categories_list (GLib.SList<string> categ_list);
 		public void set_classification (E.CalComponentClassification classif);
+		public void set_comment_list (GLib.SList<E.CalComponentText> text_list);
 		public void set_completed (void* t);
+		public void set_contact_list (GLib.SList<E.CalComponentText> text_list);
 		public void set_created (void* t);
 		public void set_dtend (E.CalComponentDateTime dt);
 		public void set_dtstamp (void* t);
 		public void set_dtstart (E.CalComponentDateTime dt);
 		public void set_due (E.CalComponentDateTime dt);
+		public void set_exdate_list (GLib.SList<E.CalComponentDateTime> exdate_list);
 		public void set_geo (void* geo);
 		public bool set_icalcomponent (long icalcomp);
 		public void set_last_modified (void* t);
@@ -198,6 +227,7 @@ namespace E {
 		public void set_percent (int percent);
 		public void set_percent_as_int (int percent);
 		public void set_priority (int priority);
+		public void set_rdate_list (GLib.SList<E.CalComponentPeriod> period_list);
 		public void set_recurid (E.CalComponentRange recur_id);
 		public void set_sequence (int sequence);
 		public void set_summary (E.CalComponentText summary);
@@ -211,12 +241,14 @@ namespace E {
 	public class CalComponentAlarm {
 		public void free ();
 		public void get_action (E.CalComponentAlarmAction action);
+		public void get_attendee_list (out GLib.SList<E.CalComponentAttendee> attendee_list);
 		public void get_description (E.CalComponentText description);
 		public void get_repeat (E.CalComponentAlarmRepeat repeat);
 		public void get_trigger (E.CalComponentAlarmTrigger trigger);
 		public unowned string get_uid ();
 		public bool has_attendees ();
 		public void set_action (E.CalComponentAlarmAction action);
+		public void set_attendee_list (GLib.SList<E.CalComponentAttendee> attendee_list);
 		public void set_description (E.CalComponentText description);
 		public void set_repeat (E.CalComponentAlarmRepeat repeat);
 		public void set_trigger (E.CalComponentAlarmTrigger trigger);

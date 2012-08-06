@@ -2,6 +2,42 @@
 
 [CCode (cprefix = "Vnc", gir_namespace = "GVnc", gir_version = "1.0", lower_case_cprefix = "vnc_")]
 namespace Vnc {
+	[CCode (cheader_filename = "gvnc.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "vnc_audio_format_get_type ()")]
+	[Compact]
+	public class AudioFormat {
+		public uint8 format;
+		public uint32 frequency;
+		public uint8 nchannels;
+		[CCode (has_construct_function = false)]
+		public AudioFormat ();
+		public Vnc.AudioFormat copy ();
+		public void free ();
+	}
+	[CCode (cheader_filename = "gvnc.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "vnc_audio_sample_get_type ()")]
+	[Compact]
+	public class AudioSample {
+		public uint32 capacity;
+		public uint8 data;
+		public uint32 length;
+		[CCode (has_construct_function = false)]
+		public AudioSample (uint32 capacity);
+		public Vnc.AudioSample copy ();
+		public void free ();
+	}
+	[CCode (cheader_filename = "gvnc.h", type_id = "vnc_base_audio_get_type ()")]
+	public class BaseAudio : GLib.Object, Vnc.Audio {
+		[CCode (has_construct_function = false)]
+		public BaseAudio ();
+		[NoWrapper]
+		public virtual bool playback_data (Vnc.AudioSample sample);
+		[NoWrapper]
+		public virtual bool playback_start (Vnc.AudioFormat format);
+		[NoWrapper]
+		public virtual bool playback_stop ();
+		public signal void vnc_audio_playback_data (Vnc.AudioSample object);
+		public signal void vnc_audio_playback_start (Vnc.AudioFormat object);
+		public signal void vnc_audio_playback_stop ();
+	}
 	[CCode (cheader_filename = "gvnc.h", type_id = "vnc_base_framebuffer_get_type ()")]
 	public class BaseFramebuffer : GLib.Object, Vnc.Framebuffer {
 		[CCode (has_construct_function = false)]
@@ -38,9 +74,12 @@ namespace Vnc {
 	public class Connection : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Connection ();
+		public bool audio_disable ();
+		public bool audio_enable ();
 		public bool client_cut_text (void* data, ulong length);
 		public bool framebuffer_update_request (bool incremental, uint16 x, uint16 y, uint16 width, uint16 height);
 		public bool get_abs_pointer ();
+		public unowned Vnc.AudioFormat get_audio_format ();
 		public bool get_ext_key_event ();
 		public int get_height ();
 		public unowned string get_name ();
@@ -54,6 +93,8 @@ namespace Vnc {
 		public bool open_fd (int fd);
 		public bool open_host (string host, string port);
 		public bool pointer_event (uint8 button_mask, uint16 x, uint16 y);
+		public bool set_audio (Vnc.Audio audio);
+		public bool set_audio_format (Vnc.AudioFormat fmt);
 		public bool set_auth_subtype (uint type);
 		public bool set_auth_type (uint type);
 		public bool set_credential (int type, string data);
@@ -118,6 +159,15 @@ namespace Vnc {
 		public Vnc.PixelFormat copy ();
 		public void free ();
 	}
+	[CCode (cheader_filename = "gvnc.h", type_cname = "VncAudioInterface", type_id = "vnc_audio_get_type ()")]
+	public interface Audio : GLib.Object {
+		[NoWrapper]
+		public abstract bool playback_data (Vnc.AudioSample sample);
+		[NoWrapper]
+		public abstract bool playback_start (Vnc.AudioFormat format);
+		[NoWrapper]
+		public abstract bool playback_stop ();
+	}
 	[CCode (cheader_filename = "gvnc.h", type_cname = "VncFramebufferInterface", type_id = "vnc_framebuffer_get_type ()")]
 	public interface Framebuffer : GLib.Object {
 		public abstract void blt (uint8 src, int rowstride, uint16 x, uint16 y, uint16 width, uint16 height);
@@ -140,113 +190,76 @@ namespace Vnc {
 		public uint16 green;
 		public uint16 blue;
 	}
-	[CCode (cheader_filename = "gvnc.h")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_AUDIO_FORMAT_RAW_")]
+	public enum AudioFormatType {
+		U8,
+		S8,
+		U16,
+		S16,
+		U32,
+		S32
+	}
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_")]
 	public enum ConnectionAuth {
-		[CCode (cname = "VNC_CONNECTION_AUTH_INVALID")]
 		INVALID,
-		[CCode (cname = "VNC_CONNECTION_AUTH_NONE")]
 		NONE,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VNC")]
 		VNC,
-		[CCode (cname = "VNC_CONNECTION_AUTH_RA2")]
 		RA2,
-		[CCode (cname = "VNC_CONNECTION_AUTH_RA2NE")]
 		RA2NE,
-		[CCode (cname = "VNC_CONNECTION_AUTH_TIGHT")]
 		TIGHT,
-		[CCode (cname = "VNC_CONNECTION_AUTH_ULTRA")]
 		ULTRA,
-		[CCode (cname = "VNC_CONNECTION_AUTH_TLS")]
 		TLS,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT")]
 		VENCRYPT,
-		[CCode (cname = "VNC_CONNECTION_AUTH_SASL")]
 		SASL,
-		[CCode (cname = "VNC_CONNECTION_AUTH_ARD")]
 		ARD,
-		[CCode (cname = "VNC_CONNECTION_AUTH_MSLOGON")]
 		MSLOGON
 	}
-	[CCode (cheader_filename = "gvnc.h")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_VENCRYPT_")]
 	public enum ConnectionAuthVencrypt {
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_PLAIN")]
 		PLAIN,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_TLSNONE")]
 		TLSNONE,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_TLSVNC")]
 		TLSVNC,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_TLSPLAIN")]
 		TLSPLAIN,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_X509NONE")]
 		X509NONE,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_X509VNC")]
 		X509VNC,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_X509PLAIN")]
 		X509PLAIN,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_X509SASL")]
 		X509SASL,
-		[CCode (cname = "VNC_CONNECTION_AUTH_VENCRYPT_TLSSASL")]
 		TLSSASL
 	}
-	[CCode (cheader_filename = "gvnc.h")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_CREDENTIAL_")]
 	public enum ConnectionCredential {
-		[CCode (cname = "VNC_CONNECTION_CREDENTIAL_PASSWORD")]
 		PASSWORD,
-		[CCode (cname = "VNC_CONNECTION_CREDENTIAL_USERNAME")]
 		USERNAME,
-		[CCode (cname = "VNC_CONNECTION_CREDENTIAL_CLIENTNAME")]
 		CLIENTNAME
 	}
-	[CCode (cheader_filename = "gvnc.h")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_ENCODING_")]
 	public enum ConnectionEncoding {
-		[CCode (cname = "VNC_CONNECTION_ENCODING_RAW")]
 		RAW,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_COPY_RECT")]
 		COPY_RECT,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_RRE")]
 		RRE,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_CORRE")]
 		CORRE,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_HEXTILE")]
 		HEXTILE,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT")]
 		TIGHT,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_ZRLE")]
 		ZRLE,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG0")]
 		TIGHT_JPEG0,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG1")]
 		TIGHT_JPEG1,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG2")]
 		TIGHT_JPEG2,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG3")]
 		TIGHT_JPEG3,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG4")]
 		TIGHT_JPEG4,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG5")]
 		TIGHT_JPEG5,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG6")]
 		TIGHT_JPEG6,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG7")]
 		TIGHT_JPEG7,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG8")]
 		TIGHT_JPEG8,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_TIGHT_JPEG9")]
 		TIGHT_JPEG9,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_DESKTOP_RESIZE")]
 		DESKTOP_RESIZE,
 		[CCode (cname = "VNC_CONNECTION_ENCODING_WMVi")]
 		WMVI,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_CURSOR_POS")]
 		CURSOR_POS,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_RICH_CURSOR")]
 		RICH_CURSOR,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_XCURSOR")]
 		XCURSOR,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_POINTER_CHANGE")]
 		POINTER_CHANGE,
-		[CCode (cname = "VNC_CONNECTION_ENCODING_EXT_KEY_EVENT")]
-		EXT_KEY_EVENT
+		EXT_KEY_EVENT,
+		AUDIO
 	}
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_PADDING")]
 	public const int PADDING;

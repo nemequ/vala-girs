@@ -8,6 +8,74 @@ namespace GVirConfig {
 		public Capabilities ();
 		[CCode (has_construct_function = false)]
 		public Capabilities.from_xml (string xml) throws GLib.Error;
+		public GLib.List<GVirConfig.CapabilitiesGuest> get_guests ();
+		public GVirConfig.CapabilitiesHost get_host ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_cpu_get_type ()")]
+	public class CapabilitiesCpu : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesCpu ();
+		public void add_feature (GVirConfig.CapabilitiesCpuFeature feature);
+		public unowned string get_arch ();
+		public virtual GLib.List<GVirConfig.CapabilitiesCpuFeature> get_features ();
+		public GVirConfig.CapabilitiesCpuTopology get_topology ();
+		public void set_topology (GVirConfig.CapabilitiesCpuTopology topology);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_cpu_feature_get_type ()")]
+	public class CapabilitiesCpuFeature : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesCpuFeature ();
+		public unowned string get_name ();
+		public void set_name (string name);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_cpu_topology_get_type ()")]
+	public class CapabilitiesCpuTopology : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		public CapabilitiesCpuTopology ();
+		[CCode (has_construct_function = false)]
+		public CapabilitiesCpuTopology.from_xml (string xml) throws GLib.Error;
+		public uint64 get_cores ();
+		public uint64 get_sockets ();
+		public uint64 get_threads ();
+		public void set_cores (uint64 cores);
+		public void set_sockets (uint64 sockets);
+		public void set_threads (uint64 threads);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_guest_get_type ()")]
+	public class CapabilitiesGuest : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesGuest ();
+		public GVirConfig.CapabilitiesGuestArch get_arch ();
+		public GLib.List<GVirConfig.CapabilitiesGuestFeature> get_features ();
+		public GVirConfig.DomainOsType get_os_type ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_guest_arch_get_type ()")]
+	public class CapabilitiesGuestArch : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesGuestArch ();
+		public GLib.List<GVirConfig.CapabilitiesGuestDomain> get_domains ();
+		public unowned string get_emulator ();
+		public unowned string get_name ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_guest_domain_get_type ()")]
+	public class CapabilitiesGuestDomain : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesGuestDomain ();
+		public unowned string get_emulator ();
+		public GVirConfig.DomainVirtType get_virt_type ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_guest_feature_get_type ()")]
+	public class CapabilitiesGuestFeature : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesGuestFeature ();
+		public unowned string get_name ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_capabilities_host_get_type ()")]
+	public class CapabilitiesHost : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected CapabilitiesHost ();
+		public GVirConfig.CapabilitiesCpu get_cpu ();
+		public unowned string get_uuid ();
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_get_type ()")]
 	public class Domain : GVirConfig.Object {
@@ -16,32 +84,67 @@ namespace GVirConfig {
 		public void add_device (GVirConfig.DomainDevice device);
 		[CCode (has_construct_function = false)]
 		public Domain.from_xml (string xml) throws GLib.Error;
-		public string get_description ();
+		public GVirConfig.DomainCpu get_cpu ();
+		public string get_custom_xml (string ns_uri);
+		public unowned string get_description ();
 		public GLib.List<GVirConfig.DomainDevice> get_devices ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_features ();
 		public uint64 get_memory ();
-		public string get_name ();
+		public unowned string get_name ();
+		public GVirConfig.DomainOs get_os ();
+		public unowned string get_title ();
 		public uint64 get_vcpus ();
-		public void set_clock (GVirConfig.DomainClock klock);
-		public void set_description (string description);
+		public GVirConfig.DomainVirtType get_virt_type ();
+		public void set_clock (GVirConfig.DomainClock? klock);
+		public void set_cpu (GVirConfig.DomainCpu? cpu);
+		public bool set_custom_xml (string xml, string ns, string ns_uri) throws GLib.Error;
+		public void set_description (string? description);
 		public void set_devices (GLib.List<GVirConfig.DomainDevice> devices);
 		public void set_features ([CCode (array_length = false, array_null_terminated = true)] string[] features);
 		public void set_lifecycle (GVirConfig.DomainLifecycleEvent event, GVirConfig.DomainLifecycleAction action);
 		public void set_memory (uint64 memory);
-		public void set_name (string name);
-		public void set_os (GVirConfig.DomainOs os);
-		public void set_seclabel (GVirConfig.DomainSeclabel seclabel);
+		public void set_name (string? name);
+		public void set_os (GVirConfig.DomainOs? os);
+		public void set_seclabel (GVirConfig.DomainSeclabel? seclabel);
+		public void set_title (string? title);
 		public void set_vcpus (uint64 vcpu_count);
 		public void set_virt_type (GVirConfig.DomainVirtType type);
 		public static void source_pty_set_path (GVirConfig.DomainChardevSourcePty pty, string path);
-		public string description { owned get; set; }
+		public string description { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] features { owned get; set; }
 		public uint64 memory { get; set; }
-		public string name { owned get; set; }
+		public string name { get; set; }
+		public string title { get; set; }
 		[NoAccessorMethod]
 		public uint64 vcpu { get; set; }
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_address_get_type ()")]
+	public abstract class DomainAddress : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected DomainAddress ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_address_pci_get_type ()")]
+	public class DomainAddressPci : GVirConfig.DomainAddress {
+		[CCode (has_construct_function = false)]
+		public DomainAddressPci ();
+		[CCode (has_construct_function = false)]
+		public DomainAddressPci.from_xml (string xml) throws GLib.Error;
+		public void set_bus (uint8 bus);
+		public void set_domain (uint16 pci_domain);
+		public void set_function (uint8 function);
+		public void set_multifunction (bool multifunction);
+		public void set_slot (uint8 slot);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_address_usb_get_type ()")]
+	public class DomainAddressUsb : GVirConfig.DomainAddress {
+		[CCode (has_construct_function = false)]
+		public DomainAddressUsb ();
+		[CCode (has_construct_function = false)]
+		public DomainAddressUsb.from_xml (string xml) throws GLib.Error;
+		public void set_bus (uint16 bus);
+		public void set_port (string port);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_channel_get_type ()")]
 	public class DomainChannel : GVirConfig.DomainChardev {
@@ -70,10 +173,18 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public DomainChardevSourcePty.from_xml (string xml) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", lower_case_csuffix = "domain_chardev_source_spicevmc", type_id = "gvir_config_domain_chardev_source_spicevmc_get_type ()")]
+	public class DomainChardevSourceSpiceVmc : GVirConfig.DomainChardevSource {
+		[CCode (has_construct_function = false)]
+		public DomainChardevSourceSpiceVmc ();
+		[CCode (has_construct_function = false)]
+		public DomainChardevSourceSpiceVmc.from_xml (string xml) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_clock_get_type ()")]
 	public class DomainClock : GVirConfig.Object {
 		[CCode (has_construct_function = false)]
 		public DomainClock ();
+		public void add_timer (GVirConfig.DomainTimer timer);
 		[CCode (has_construct_function = false)]
 		public DomainClock.from_xml (string xml) throws GLib.Error;
 		public void set_offset (GVirConfig.DomainClockOffset offset);
@@ -88,6 +199,43 @@ namespace GVirConfig {
 		public DomainConsole.from_xml (string xml) throws GLib.Error;
 		public void set_target_type (GVirConfig.DomainConsoleTargetType type);
 	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_controller_get_type ()")]
+	public abstract class DomainController : GVirConfig.DomainDevice {
+		[CCode (has_construct_function = false)]
+		protected DomainController ();
+		public uint get_index ();
+		public void set_address (GVirConfig.DomainAddress? address);
+		public void set_index (uint index);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_controller_usb_get_type ()")]
+	public class DomainControllerUsb : GVirConfig.DomainController {
+		[CCode (has_construct_function = false)]
+		public DomainControllerUsb ();
+		[CCode (has_construct_function = false)]
+		public DomainControllerUsb.from_xml (string xml) throws GLib.Error;
+		public void set_master (GVirConfig.DomainControllerUsb master, uint startport);
+		public void set_model (GVirConfig.DomainControllerUsbModel model);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_cpu_get_type ()")]
+	public class DomainCpu : GVirConfig.CapabilitiesCpu {
+		[CCode (has_construct_function = false)]
+		public DomainCpu ();
+		[CCode (has_construct_function = false)]
+		public DomainCpu.from_xml (string xml) throws GLib.Error;
+		public GVirConfig.DomainCpuMatchPolicy get_match_policy ();
+		public GVirConfig.DomainCpuMode get_mode ();
+		public void set_match_policy (GVirConfig.DomainCpuMatchPolicy policy);
+		public void set_mode (GVirConfig.DomainCpuMode mode);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_cpu_feature_get_type ()")]
+	public class DomainCpuFeature : GVirConfig.CapabilitiesCpuFeature {
+		[CCode (has_construct_function = false)]
+		public DomainCpuFeature ();
+		[CCode (has_construct_function = false)]
+		public DomainCpuFeature.from_xml (string xml) throws GLib.Error;
+		public GVirConfig.DomainCpuFeaturePolicy get_policy ();
+		public void set_policy (GVirConfig.DomainCpuFeaturePolicy policy);
+	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_device_get_type ()")]
 	public abstract class DomainDevice : GVirConfig.Object {
 		[CCode (has_construct_function = false)]
@@ -100,19 +248,23 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public DomainDisk.from_xml (string xml) throws GLib.Error;
 		public GVirConfig.DomainDiskType get_disk_type ();
-		public string get_driver_name ();
-		public string get_driver_type ();
+		public GVirConfig.DomainDiskCacheType get_driver_cache ();
+		public unowned string get_driver_name ();
+		public unowned string get_driver_type ();
 		public GVirConfig.DomainDiskGuestDeviceType get_guest_device_type ();
 		public GVirConfig.DomainDiskSnapshotType get_snapshot_type ();
-		public string get_source ();
+		public unowned string get_source ();
+		public GVirConfig.DomainDiskStartupPolicy get_startup_policy ();
 		public GVirConfig.DomainDiskBus get_target_bus ();
-		public string get_target_dev ();
+		public unowned string get_target_dev ();
+		public void set_driver_cache (GVirConfig.DomainDiskCacheType cache_type);
 		public void set_driver_name (string driver_name);
 		public void set_driver_type (string driver_type);
 		public void set_guest_device_type (GVirConfig.DomainDiskGuestDeviceType type);
 		public void set_readonly (bool readonly);
 		public void set_snapshot_type (GVirConfig.DomainDiskSnapshotType type);
 		public void set_source (string source);
+		public void set_startup_policy (GVirConfig.DomainDiskStartupPolicy policy);
 		public void set_target_bus (GVirConfig.DomainDiskBus bus);
 		public void set_target_dev (string dev);
 		public void set_type (GVirConfig.DomainDiskType type);
@@ -125,6 +277,7 @@ namespace GVirConfig {
 		public DomainFilesys.from_xml (string xml) throws GLib.Error;
 		public void set_access_type (GVirConfig.DomainFilesysAccessType type);
 		public void set_driver_type (GVirConfig.DomainFilesysDriverType type);
+		public void set_ram_usage (uint64 bytes);
 		public void set_readonly (bool readonly);
 		public void set_source (string source);
 		public void set_target (string target);
@@ -178,6 +331,10 @@ namespace GVirConfig {
 	public abstract class DomainInterface : GVirConfig.DomainDevice {
 		[CCode (has_construct_function = false)]
 		protected DomainInterface ();
+		public unowned string get_ifname ();
+		public GVirConfig.DomainInterfaceLinkState get_link_state ();
+		public unowned string get_mac ();
+		public unowned string get_model ();
 		public void set_ifname (string ifname);
 		public void set_link_state (GVirConfig.DomainInterfaceLinkState state);
 		public void set_mac (string mac_address);
@@ -222,15 +379,18 @@ namespace GVirConfig {
 		public void enable_boot_menu (bool enable);
 		[CCode (has_construct_function = false)]
 		public DomainOs.from_xml (string xml) throws GLib.Error;
+		public unowned string get_arch ();
+		public GLib.List<GVirConfig.DomainOsBootDevice> get_boot_devices ();
+		public GVirConfig.DomainOsType get_os_type ();
 		public void set_arch (string arch);
 		public void set_boot_devices (GLib.List<GVirConfig.DomainOsBootDevice> boot_devices);
-		public void set_cmdline (string cmdline);
-		public void set_init (string init);
-		public void set_kernel (string kernel);
-		public void set_loader (string loader);
+		public void set_cmdline (string? cmdline);
+		public void set_init (string? init);
+		public void set_kernel (string? kernel);
+		public void set_loader (string? loader);
 		public void set_machine (string machine);
 		public void set_os_type (GVirConfig.DomainOsType type);
-		public void set_ramdisk (string ramdisk);
+		public void set_ramdisk (string? ramdisk);
 		public void set_smbios_mode (GVirConfig.DomainOsSmBiosMode mode);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_parallel_get_type ()")]
@@ -240,14 +400,23 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public DomainParallel.from_xml (string xml) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_redirdev_get_type ()")]
+	public class DomainRedirdev : GVirConfig.DomainChardev {
+		[CCode (has_construct_function = false)]
+		public DomainRedirdev ();
+		[CCode (has_construct_function = false)]
+		public DomainRedirdev.from_xml (string xml) throws GLib.Error;
+		public void set_address (GVirConfig.DomainAddress? address);
+		public void set_bus (GVirConfig.DomainRedirdevBus bus);
+	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_seclabel_get_type ()")]
 	public class DomainSeclabel : GVirConfig.Object {
 		[CCode (has_construct_function = false)]
 		public DomainSeclabel ();
 		[CCode (has_construct_function = false)]
 		public DomainSeclabel.from_xml (string xml) throws GLib.Error;
-		public void set_baselabel (string label);
-		public void set_label (string label);
+		public void set_baselabel (string? label);
+		public void set_label (string? label);
 		public void set_model (string model);
 		public void set_type (GVirConfig.DomainSeclabelType type);
 	}
@@ -274,11 +443,25 @@ namespace GVirConfig {
 		public void set_model (GVirConfig.DomainSoundModel model);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_timer_get_type ()")]
-	public class DomainTimer : GVirConfig.Object {
+	public abstract class DomainTimer : GVirConfig.Object {
 		[CCode (has_construct_function = false)]
-		public DomainTimer ();
+		protected DomainTimer ();
+		public GVirConfig.DomainTimerTickPolicy get_tick_policy ();
+		public void set_tick_policy (GVirConfig.DomainTimerTickPolicy policy);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_timer_pit_get_type ()")]
+	public class DomainTimerPit : GVirConfig.DomainTimer {
 		[CCode (has_construct_function = false)]
-		public DomainTimer.from_xml (string xml) throws GLib.Error;
+		public DomainTimerPit ();
+		[CCode (has_construct_function = false)]
+		public DomainTimerPit.from_xml (string xml) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_timer_rtc_get_type ()")]
+	public class DomainTimerRtc : GVirConfig.DomainTimer {
+		[CCode (has_construct_function = false)]
+		public DomainTimerRtc ();
+		[CCode (has_construct_function = false)]
+		public DomainTimerRtc.from_xml (string xml) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_video_get_type ()")]
 	public class DomainVideo : GVirConfig.DomainDevice {
@@ -346,7 +529,7 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public StoragePermissions.from_xml (string xml) throws GLib.Error;
 		public void set_group (uint group);
-		public void set_label (string label);
+		public void set_label (string? label);
 		public void set_mode (uint mode);
 		public void set_owner (uint owner);
 	}
@@ -359,11 +542,11 @@ namespace GVirConfig {
 		public void set_allocation (uint64 allocation);
 		public void set_available (uint64 available);
 		public void set_capacity (uint64 capacity);
-		public void set_name (string name);
+		public void set_name (string? name);
 		public void set_pool_type (GVirConfig.StoragePoolType type);
-		public void set_source (GVirConfig.StoragePoolSource source);
-		public void set_target (GVirConfig.StoragePoolTarget target);
-		public void set_uuid (string uuid);
+		public void set_source (GVirConfig.StoragePoolSource? source);
+		public void set_target (GVirConfig.StoragePoolTarget? target);
+		public void set_uuid (string? uuid);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_storage_pool_source_get_type ()")]
 	public class StoragePoolSource : GVirConfig.Object {
@@ -376,7 +559,7 @@ namespace GVirConfig {
 		public void set_directory (string directory);
 		public void set_format (string format);
 		public void set_host (string host);
-		public void set_name (string name);
+		public void set_name (string? name);
 		public void set_product (string product);
 		public void set_vendor (string vendor);
 	}
@@ -386,7 +569,7 @@ namespace GVirConfig {
 		public StoragePoolTarget ();
 		[CCode (has_construct_function = false)]
 		public StoragePoolTarget.from_xml (string xml) throws GLib.Error;
-		public void set_path (string path);
+		public void set_path (string? path);
 		public void set_permissions (GVirConfig.StoragePermissions perms);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_storage_vol_get_type ()")]
@@ -396,10 +579,10 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public StorageVol.from_xml (string xml) throws GLib.Error;
 		public void set_allocation (uint64 allocation);
-		public void set_backing_store (GVirConfig.StorageVolBackingStore backing_store);
+		public void set_backing_store (GVirConfig.StorageVolBackingStore? backing_store);
 		public void set_capacity (uint64 capacity);
-		public void set_name (string name);
-		public void set_target (GVirConfig.StorageVolTarget target);
+		public void set_name (string? name);
+		public void set_target (GVirConfig.StorageVolTarget? target);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_storage_vol_backing_store_get_type ()")]
 	public class StorageVolBackingStore : GVirConfig.Object {
@@ -408,7 +591,7 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public StorageVolBackingStore.from_xml (string xml) throws GLib.Error;
 		public void set_format (string format);
-		public void set_path (string path);
+		public void set_path (string? path);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_storage_vol_target_get_type ()")]
 	public class StorageVolTarget : GVirConfig.Object {
@@ -417,159 +600,154 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public StorageVolTarget.from_xml (string xml) throws GLib.Error;
 		public void set_format (string format);
-		public void set_permissions (GVirConfig.StoragePermissions perms);
+		public void set_permissions (GVirConfig.StoragePermissions? perms);
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CHANNEL_TARGET_")]
 	public enum DomainChannelTargetType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_GUESTFWD")]
-		CONSOLE_TARGET_GUESTFWD,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CHANNEL_TARGET_VIRTIO")]
-		CHANNEL_TARGET_VIRTIO
+		GUESTFWD,
+		VIRTIO
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CLOCK_")]
 	public enum DomainClockOffset {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CLOCK_UTC")]
 		UTC,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CLOCK_LOCALTIME")]
 		LOCALTIME,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CLOCK_TIMEZONE")]
 		TIMEZONE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CLOCK_VARIABLE")]
 		VARIABLE
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_")]
 	public enum DomainConsoleTargetType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_XEN")]
 		XEN,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_SERIAL")]
 		SERIAL,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_UML")]
 		UML,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_VIRTIO")]
 		VIRTIO,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_LXC")]
 		LXC,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_OPENVZ")]
 		OPENVZ
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_")]
+	public enum DomainControllerUsbModel {
+		PIIX3_UHCI,
+		PIIX4_UHCI,
+		EHCI,
+		ICH9_EHCI1,
+		ICH9_UHCI1,
+		ICH9_UHCI2,
+		ICH9_UHCI3,
+		VT82C686B_UHCI,
+		PCI_OHCI
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_FEATURE_POLICY_")]
+	public enum DomainCpuFeaturePolicy {
+		FORCE,
+		REQUIRE,
+		OPTIONAL,
+		DISABLE,
+		FORBID
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_MATCH_POLICY_")]
+	public enum DomainCpuMatchPolicy {
+		MINIMUM,
+		EXACT,
+		STRICT
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_MODE_")]
+	public enum DomainCpuMode {
+		CUSTOM,
+		HOST_MODEL,
+		HOST_PASSTHROUGH
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_BUS_")]
 	public enum DomainDiskBus {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_IDE")]
 		IDE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_FDC")]
 		FDC,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_SCSI")]
 		SCSI,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_VIRTIO")]
 		VIRTIO,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_XEN")]
 		XEN,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_USB")]
 		USB,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_UML")]
 		UML,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BUS_SATA")]
 		SATA
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_CACHE_")]
+	public enum DomainDiskCacheType {
+		DEFAULT,
+		NONE,
+		WRITETHROUGH,
+		WRITEBACK,
+		DIRECTSYNC,
+		UNSAFE
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_GUEST_DEVICE_")]
 	public enum DomainDiskGuestDeviceType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_GUEST_DEVICE_DISK")]
 		DISK,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_GUEST_DEVICE_FLOPPY")]
 		FLOPPY,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_GUEST_DEVICE_CDROM")]
 		CDROM
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_SNAPSHOT_")]
 	public enum DomainDiskSnapshotType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_SNAPSHOT_NO")]
 		NO,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_SNAPSHOT_INTERNAL")]
 		INTERNAL,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_SNAPSHOT_EXTERNAL")]
 		EXTERNAL
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_STARTUP_POLICY_")]
+	public enum DomainDiskStartupPolicy {
+		MANDATORY,
+		REQUISITE,
+		OPTIONAL
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_")]
 	public enum DomainDiskType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_FILE")]
 		FILE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_BLOCK")]
 		BLOCK,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_DIR")]
 		DIR,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_DISK_NETWORK")]
 		NETWORK
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_ACCESS_")]
 	public enum DomainFilesysAccessType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_ACCESS_PASSTHROUGH")]
 		PASSTHROUGH,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_ACCESS_MAPPED")]
 		MAPPED,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_ACCESS_SQUASHED")]
-		SQUASHED
+		SQUASH
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_DRIVER_")]
 	public enum DomainFilesysDriverType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_DRIVER_DEFAULT")]
 		DEFAULT,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_DRIVER_PATH")]
 		PATH,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_DRIVER_HANDLE")]
 		HANDLE
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_")]
 	public enum DomainFilesysType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_MOUNT")]
 		MOUNT,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_BLOCK")]
 		BLOCK,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_FILE")]
 		FILE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_FILESYS_TEMPLATE")]
-		TEMPLATE
+		TEMPLATE,
+		RAM,
+		BIND
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_BUS_")]
 	public enum DomainInputBus {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INPUT_BUS_PS2")]
 		PS2,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INPUT_BUS_USB")]
 		USB,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INPUT_BUS_XEN")]
 		XEN
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_DEVICE_")]
 	public enum DomainInputDeviceType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INPUT_DEVICE_MOUSE")]
 		MOUSE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INPUT_DEVICE_TABLET")]
 		TABLET
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_")]
 	public enum DomainInterfaceLinkState {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_DEFAULT")]
 		DEFAULT,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_UP")]
 		UP,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_DOWN")]
 		DOWN
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_LIFECYCLE_")]
 	public enum DomainLifecycleAction {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_DESTROY")]
 		DESTROY,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_RESTART")]
 		RESTART,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_PRESERVE")]
 		PRESERVE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_RENAME_RESTART")]
 		RENAME_RESTART,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_COREDUMP_DESTROY")]
 		COREDUMP_DESTROY,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_COREDUMP_RESTART")]
 		COREDUMP_RESTART
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_")]
 	public enum DomainLifecycleEvent {
 		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_POWEROFF")]
 		ON_POWEROFF,
@@ -578,127 +756,92 @@ namespace GVirConfig {
 		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_CRASH")]
 		ON_CRASH
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_MEMBALLOON_MODEL_")]
 	public enum DomainMemballoonModel {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_MEMBALLOON_MODEL_NONE")]
 		NONE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_MEMBALLOON_MODEL_VIRTIO")]
 		VIRTIO
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_")]
 	public enum DomainOsBootDevice {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_FD")]
 		FD,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_HD")]
 		HD,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_CDROM")]
 		CDROM,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_NETWORK")]
 		NETWORK
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_")]
 	public enum DomainOsSmBiosMode {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_EMULATE")]
 		EMULATE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_HOST")]
 		HOST,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_SYSINFO")]
 		SYSINFO
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_TYPE_")]
 	public enum DomainOsType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_TYPE_HVM")]
 		HVM,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_TYPE_LINUX")]
 		LINUX,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_OS_TYPE_EXE")]
-		EXE
+		EXE,
+		XEN,
+		UML
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_REDIRDEV_BUS_")]
+	public enum DomainRedirdevBus {
+		USB
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_SECLABEL_")]
 	public enum DomainSeclabelType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SECLABEL_DYNAMIC")]
 		DYNAMIC,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SECLABEL_STATIC")]
 		STATIC
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_")]
 	public enum DomainSoundModel {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_SB16")]
 		SB16,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_ES1370")]
 		ES1370,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_PCSPK")]
 		PCSPK,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_AC97")]
 		AC97,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_ICH6")]
 		ICH6
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_TIMER_TICK_POLICY_")]
+	public enum DomainTimerTickPolicy {
+		DELAY,
+		CATCHUP,
+		MERGE,
+		DISCARD
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_")]
 	public enum DomainVideoModel {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_VGA")]
 		VGA,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_CIRRUS")]
 		CIRRUS,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_VMVGA")]
 		VMVGA,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_XEN")]
 		XEN,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_VBOX")]
 		VBOX,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_QXL")]
 		QXL
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIRT_")]
 	public enum DomainVirtType {
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_QEMU")]
 		QEMU,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_KQEMU")]
 		KQEMU,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_KVM")]
 		KVM,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_XEN")]
 		XEN,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_LXC")]
 		LXC,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_UML")]
 		UML,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_OPENVZ")]
 		OPENVZ,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_VSERVER")]
 		VSERVER,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_LDOM")]
 		LDOM,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_TEST")]
 		TEST,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_VMWARE")]
 		VMWARE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_HYPERV")]
 		HYPERV,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_VBOX")]
 		VBOX,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_ONE")]
 		ONE,
-		[CCode (cname = "GVIR_CONFIG_DOMAIN_VIRT_PHYP")]
 		PHYP
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_STORAGE_POOL_TYPE_")]
 	public enum StoragePoolType {
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_DIR")]
 		DIR,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_FS")]
 		FS,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_NETFS")]
 		NETFS,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_LOGICAL")]
 		LOGICAL,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_DISK")]
 		DISK,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_ISCSI")]
 		ISCSI,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_SCSI")]
 		SCSI,
-		[CCode (cname = "GVIR_CONFIG_STORAGE_POOL_TYPE_MPATH")]
 		MPATH
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]

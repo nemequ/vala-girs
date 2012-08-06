@@ -8,6 +8,7 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="GLib" version="2.0"/>
   <include name="GObject" version="2.0"/>
+  <c:include name="gnome-keyring.h"/>
   <namespace name="GnomeKeyring"
              version="1.0"
              shared-library="libgnome-keyring.so.0"
@@ -32,7 +33,8 @@ rights allowed.</doc>
         <parameters>
           <parameter name="application" transfer-ownership="none">
             <doc xml:whitespace="preserve">A #GnomeKeyringApplicationRef pointer</doc>
-            <type name="ApplicationRef" c:type="GnomeKeyringApplicationRef*"/>
+            <type name="ApplicationRef"
+                  c:type="const GnomeKeyringApplicationRef*"/>
           </parameter>
           <parameter name="types_allowed" transfer-ownership="none">
             <doc xml:whitespace="preserve">Access types allowed.</doc>
@@ -129,7 +131,7 @@ mostly useful for language bindings which do not provide union access. In C
 you should just use attribute-&gt;value.string.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">The value.string pointer of @attribute. This is not a copy, do not free.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
       </method>
       <method name="get_uint32"
@@ -156,11 +158,11 @@ you should just use attribute-&gt;value.integer.</doc>
           </parameter>
           <parameter name="name" transfer-ownership="none">
             <doc xml:whitespace="preserve">The name of the new attribute</doc>
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:whitespace="preserve">The value to store in @attributes</doc>
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </function>
@@ -177,7 +179,7 @@ you should just use attribute-&gt;value.integer.</doc>
           </parameter>
           <parameter name="name" transfer-ownership="none">
             <doc xml:whitespace="preserve">The name of the new attribute</doc>
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:whitespace="preserve">The value to store in @attributes</doc>
@@ -482,7 +484,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameters>
           <parameter name="value" transfer-ownership="none">
             <doc xml:whitespace="preserve">The new display name.</doc>
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -495,7 +497,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameters>
           <parameter name="value" transfer-ownership="none">
             <doc xml:whitespace="preserve">The new item secret</doc>
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -585,7 +587,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameter name="result" transfer-ownership="none">
           <type name="Result" c:type="GnomeKeyringResult"/>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="1">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -602,7 +604,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameter name="attributes" transfer-ownership="none">
           <type name="AttributeList" c:type="GnomeKeyringAttributeList*"/>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="2">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -619,7 +621,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameter name="val" transfer-ownership="none">
           <type name="guint32" c:type="guint32"/>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="2">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -636,7 +638,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameter name="info" transfer-ownership="none">
           <type name="ItemInfo" c:type="GnomeKeyringItemInfo*"/>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="2">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -653,7 +655,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
         <parameter name="info" transfer-ownership="none">
           <type name="Info" c:type="GnomeKeyringInfo*"/>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="2">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -673,7 +675,7 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="2">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -685,12 +687,15 @@ A %NULL pointer may be passed, in which case it will be ignored.</doc>
       </return-value>
       <parameters>
         <parameter name="result" transfer-ownership="none">
+          <doc xml:whitespace="preserve">result of the operation</doc>
           <type name="Result" c:type="GnomeKeyringResult"/>
         </parameter>
-        <parameter name="string" transfer-ownership="none">
-          <type name="utf8" c:type="char*"/>
+        <parameter name="string" transfer-ownership="none" allow-none="1">
+          <doc xml:whitespace="preserve">the string, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="data" transfer-ownership="none">
+        <parameter name="user_data" transfer-ownership="none" closure="2">
+          <doc xml:whitespace="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -735,7 +740,7 @@ The last attribute name in a schema must be %NULL.
             c:type="GnomeKeyringPasswordSchemaAttribute">
       <doc xml:whitespace="preserve">One attribute of a #GnomeKeyringPasswordSchema.</doc>
       <field name="name" writable="1">
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="type" writable="1">
         <type name="AttributeType" c:type="GnomeKeyringAttributeType"/>
@@ -820,11 +825,11 @@ The last attribute name in a schema must be %NULL.
         </parameter>
         <parameter name="name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the new attribute</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="value" transfer-ownership="none">
           <doc xml:whitespace="preserve">The value to store in @attributes</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -842,7 +847,7 @@ The last attribute name in a schema must be %NULL.
         </parameter>
         <parameter name="name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the new attribute</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="value" transfer-ownership="none">
           <doc xml:whitespace="preserve">The value to store in @attributes</doc>
@@ -946,15 +951,15 @@ For a synchronous version of this function see gnome_keyring_change_password_syn
       <parameters>
         <parameter name="keyring" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the keyring to change the password for. Cannot be %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="original" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The old keyring password, or %NULL to prompt the user for it.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The new keyring password, or %NULL to prompt the user for it.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -989,15 +994,15 @@ For an asynchronous version of this function see gnome_keyring_change_password()
       <parameters>
         <parameter name="keyring" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the keyring to change the password for. Cannot be %NULL</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="original" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The old keyring password, or %NULL to prompt the user for it.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The new keyring password, or %NULL to prompt the user for it.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -1016,11 +1021,11 @@ For a synchronous version of this function see gnome_keyring_create_sync().</doc
       <parameters>
         <parameter name="keyring_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The new keyring name. Must not be %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The password for the new keyring. If %NULL user will be prompted.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -1054,11 +1059,11 @@ For an asynchronous version of this function see gnome_keyring_create().</doc>
       <parameters>
         <parameter name="keyring_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The new keyring name. Must not be %NULL</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The password for the new keyring. If %NULL user will be prompted.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -1080,7 +1085,7 @@ For an asynchronous version of this function see gnome_keyring_create().</doc>
       <parameters>
         <parameter name="display" transfer-ownership="none">
           <doc xml:whitespace="preserve">Deprecated</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -1098,7 +1103,7 @@ For a synchronous version of this function see gnome_keyring_delete_sync().</doc
       <parameters>
         <parameter name="keyring" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the keyring to delete. Cannot be %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -1137,7 +1142,8 @@ gnome_keyring_item_delete().</doc>
       <parameters>
         <parameter name="schema" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password schema.</doc>
-          <type name="PasswordSchema" c:type="GnomeKeyringPasswordSchema*"/>
+          <type name="PasswordSchema"
+                c:type="const GnomeKeyringPasswordSchema*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -1183,7 +1189,8 @@ gnome_keyring_item_delete_sync().</doc>
       <parameters>
         <parameter name="schema" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password schema.</doc>
-          <type name="PasswordSchema" c:type="GnomeKeyringPasswordSchema*"/>
+          <type name="PasswordSchema"
+                c:type="const GnomeKeyringPasswordSchema*"/>
         </parameter>
         <parameter transfer-ownership="none">
           <varargs>
@@ -1203,7 +1210,7 @@ For an asynchronous version of this function see gnome_keyring_delete().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the keyring to delete. Cannot be %NULL</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -1403,27 +1410,27 @@ Network passwords are items with the item type %GNOME_KEYRING_ITEM_NETWORK_PASSW
       <parameters>
         <parameter name="user" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The user name or %NULL for any user.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="domain" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The domain name or %NULL for any domain.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="server" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The server or %NULL for any server.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="object" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The remote object or %NULL for any object.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="protocol" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The network protocol or %NULL for any protocol.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="authtype" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The authentication type or %NULL for any type.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="port" transfer-ownership="none">
           <doc xml:whitespace="preserve">The network port or zero for any port.</doc>
@@ -1466,27 +1473,27 @@ Network passwords are items with the item type %GNOME_KEYRING_ITEM_NETWORK_PASSW
       <parameters>
         <parameter name="user" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The user name or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="domain" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The domain name or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="server" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The server or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="object" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The remote object or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="protocol" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The network protocol or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="authtype" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The authentication type or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="port" transfer-ownership="none">
           <doc xml:whitespace="preserve">The network port or zero.</doc>
@@ -1524,7 +1531,8 @@ gnome_keyring_find_items().</doc>
       <parameters>
         <parameter name="schema" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password schema.</doc>
-          <type name="PasswordSchema" c:type="GnomeKeyringPasswordSchema*"/>
+          <type name="PasswordSchema"
+                c:type="const GnomeKeyringPasswordSchema*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -1570,7 +1578,8 @@ gnome_keyring_find_items_sync().</doc>
       <parameters>
         <parameter name="schema" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password schema.</doc>
-          <type name="PasswordSchema" c:type="GnomeKeyringPasswordSchema*"/>
+          <type name="PasswordSchema"
+                c:type="const GnomeKeyringPasswordSchema*"/>
         </parameter>
         <parameter name="password"
                    direction="out"
@@ -1682,7 +1691,7 @@ For a synchronous version of this function see gnome_keyring_get_info_sync().</d
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -1717,7 +1726,7 @@ For an asynchronous version of this function see gnome_keyring_get_info().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="info"
                    direction="out"
@@ -1790,7 +1799,7 @@ For an asynchronous version of this function see gnome_keyring_get_info().</doc>
         </parameter>
         <parameter name="value" transfer-ownership="none">
           <doc xml:whitespace="preserve">The new access rights.</doc>
-          <type name="AccessType" c:type="GnomeKeyringAccessType"/>
+          <type name="AccessType" c:type="const GnomeKeyringAccessType"/>
         </parameter>
       </parameters>
     </function>
@@ -1807,7 +1816,7 @@ For an asynchronous version of this function see gnome_keyring_get_info().</doc>
         </parameter>
         <parameter name="value" transfer-ownership="none">
           <doc xml:whitespace="preserve">The new application display name.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -1824,7 +1833,7 @@ For an asynchronous version of this function see gnome_keyring_get_info().</doc>
         </parameter>
         <parameter name="value" transfer-ownership="none">
           <doc xml:whitespace="preserve">The new application full path.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -1854,7 +1863,7 @@ For a synchronous version of this function see gnome_keyring_item_create_sync().
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which to create the item, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="type" transfer-ownership="none">
           <doc xml:whitespace="preserve">The item type.</doc>
@@ -1862,7 +1871,7 @@ For a synchronous version of this function see gnome_keyring_item_create_sync().
         </parameter>
         <parameter name="display_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the item. This will be displayed to the user where necessary.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="attributes" transfer-ownership="none">
           <doc xml:whitespace="preserve">A (possibly empty) list of attributes to store with the item.</doc>
@@ -1870,7 +1879,7 @@ For a synchronous version of this function see gnome_keyring_item_create_sync().
         </parameter>
         <parameter name="secret" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password or secret of the item.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="update_if_exists" transfer-ownership="none">
           <doc xml:whitespace="preserve">If true, then another item matching the type, and attributes will be updated instead of creating a new item.</doc>
@@ -1917,7 +1926,7 @@ For an asynchronous version of this function see gnome_keyring_item_create().</d
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which to create the item, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="type" transfer-ownership="none">
           <doc xml:whitespace="preserve">The item type.</doc>
@@ -1925,7 +1934,7 @@ For an asynchronous version of this function see gnome_keyring_item_create().</d
         </parameter>
         <parameter name="display_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The name of the item. This will be displayed to the user where necessary.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="attributes" transfer-ownership="none">
           <doc xml:whitespace="preserve">A (possibly empty) list of attributes to store with the item.</doc>
@@ -1933,7 +1942,7 @@ For an asynchronous version of this function see gnome_keyring_item_create().</d
         </parameter>
         <parameter name="secret" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password or secret of the item.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="update_if_exists" transfer-ownership="none">
           <doc xml:whitespace="preserve">If true, then another item matching the type, and attributes will be updated instead of creating a new item.</doc>
@@ -1964,7 +1973,7 @@ For an asynchronous version of this function see gnome_keyring_delete().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring from which to delete the item, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2004,7 +2013,7 @@ For an asynchronous version of this function see gnome_keyring_item_delete().</d
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring from which to delete the item, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2023,7 +2032,7 @@ For an asynchronous version of this function see gnome_keyring_item_delete().</d
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2058,7 +2067,7 @@ For an asynchronous version of this function see gnome_keyring_item_delete().</d
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2091,7 +2100,7 @@ For a synchronous version of this function see gnome_keyring_item_get_attributes
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2131,7 +2140,7 @@ For an asynchronous version of this function see gnome_keyring_item_get_attribut
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2162,7 +2171,7 @@ For a synchronous version of this function see gnome_keyring_item_get_info_sync(
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2208,7 +2217,7 @@ For a synchronous version of this function see gnome_keyring_item_get_info_full_
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2257,7 +2266,7 @@ For an asynchronous version of this function see gnome_keyring_item_get_info_ful
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2294,7 +2303,7 @@ For an asynchronous version of this function see gnome_keyring_item_get_info().<
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2321,23 +2330,23 @@ For an asynchronous version of this function see gnome_keyring_item_get_info().<
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The keyring name, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="display_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The display name for the application, as returned by g_get_application_name().</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="full_path" transfer-ownership="none">
           <doc xml:whitespace="preserve">The full filepath to the application.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item to grant access to.</doc>
-          <type name="guint32" c:type="guint32"/>
+          <type name="guint32" c:type="const guint32"/>
         </parameter>
         <parameter name="rights" transfer-ownership="none">
           <doc xml:whitespace="preserve">The type of rights to grant.</doc>
-          <type name="AccessType" c:type="GnomeKeyringAccessType"/>
+          <type name="AccessType" c:type="const GnomeKeyringAccessType"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -2370,23 +2379,23 @@ callee has write access to said item.</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The keyring name, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="display_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">The display name for the application, as returned by g_get_application_name().</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="full_path" transfer-ownership="none">
           <doc xml:whitespace="preserve">The full filepath to the application.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item to grant access to.</doc>
-          <type name="guint32" c:type="guint32"/>
+          <type name="guint32" c:type="const guint32"/>
         </parameter>
         <parameter name="rights" transfer-ownership="none">
           <doc xml:whitespace="preserve">The type of rights to grant.</doc>
-          <type name="AccessType" c:type="GnomeKeyringAccessType"/>
+          <type name="AccessType" c:type="const GnomeKeyringAccessType"/>
         </parameter>
       </parameters>
     </function>
@@ -2401,7 +2410,7 @@ callee has write access to said item.</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2442,7 +2451,7 @@ callee has write access to said item.</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2470,7 +2479,7 @@ For a synchronous version of this function see gnome_keyring_item_set_attributes
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2512,7 +2521,7 @@ For an asynchronous version of this function see gnome_keyring_item_set_attribut
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2540,7 +2549,7 @@ For a synchronous version of this function see gnome_keyring_item_set_info_sync(
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2584,7 +2593,7 @@ For an asynchronous version of this function see gnome_keyring_item_set_info().<
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring in which the item exists, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="id" transfer-ownership="none">
           <doc xml:whitespace="preserve">The id of the item</doc>
@@ -2615,7 +2624,7 @@ For a synchronous version of this function see gnome_keyring_list_item_ids_sync(
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -2651,7 +2660,7 @@ For an asynchronous version of this function see gnome_keyring_list_item_ids().<
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="ids"
                    direction="out"
@@ -2737,7 +2746,7 @@ For a synchronous version of this function see gnome_keyring_lock_sync().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring to lock, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -2814,7 +2823,7 @@ For an asynchronous version of this function see gnome_keyring_lock().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring to lock, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -2906,7 +2915,7 @@ returned.</doc>
       <parameters>
         <parameter name="str" transfer-ownership="none">
           <doc xml:whitespace="preserve">The null terminated string to copy</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
@@ -2993,7 +3002,7 @@ take appropriate action rather than just display an error message to
 the user.</doc>
       <return-value transfer-ownership="none">
         <doc xml:whitespace="preserve">a string suitable for display to the user for a given #GnomeKeyringResult, or an empty string if the message wouldn't make sense to a user.</doc>
-        <type name="utf8" c:type="gchar*"/>
+        <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
         <parameter name="res" transfer-ownership="none">
@@ -3015,7 +3024,7 @@ For a synchronous version of this function see gnome_keyring_set_default_keyring
       <parameters>
         <parameter name="keyring" transfer-ownership="none">
           <doc xml:whitespace="preserve">The keyring to make default</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -3048,7 +3057,7 @@ For an asynchronous version of this function see gnome_keyring_set_default_keyri
       <parameters>
         <parameter name="keyring" transfer-ownership="none">
           <doc xml:whitespace="preserve">The keyring to make default</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -3066,7 +3075,7 @@ For a synchronous version of this function see gnome_keyring_set_info_sync().</d
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="info" transfer-ownership="none">
           <doc xml:whitespace="preserve">A structure containing flags and info for the keyring.</doc>
@@ -3103,7 +3112,7 @@ For an asynchronous version of this function see gnome_keyring_set_info().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="info" transfer-ownership="none">
           <doc xml:whitespace="preserve">A structure containing flags and info for the keyring.</doc>
@@ -3130,31 +3139,31 @@ Network passwords are items with the item type %GNOME_KEYRING_ITEM_NETWORK_PASSW
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The keyring to store the password in, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="user" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The user name or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="domain" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The domain name or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="server" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The server or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="object" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The remote object or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="protocol" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The network protocol or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="authtype" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The authentication type or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="port" transfer-ownership="none">
           <doc xml:whitespace="preserve">The network port or zero.</doc>
@@ -3162,7 +3171,7 @@ Network passwords are items with the item type %GNOME_KEYRING_ITEM_NETWORK_PASSW
         </parameter>
         <parameter name="password" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password to store, must not be %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -3200,31 +3209,31 @@ Network passwords are items with the item type %GNOME_KEYRING_ITEM_NETWORK_PASSW
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The keyring to store the password in, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="user" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The user name or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="domain" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The domain name or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="server" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The server or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="object" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The remote object or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="protocol" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The network protocol or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="authtype" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The authentication type or %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="port" transfer-ownership="none">
           <doc xml:whitespace="preserve">The network port or zero.</doc>
@@ -3232,7 +3241,7 @@ Network passwords are items with the item type %GNOME_KEYRING_ITEM_NETWORK_PASSW
         </parameter>
         <parameter name="password" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password to store, must not be %NULL.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="item_id"
                    direction="out"
@@ -3263,19 +3272,20 @@ Another more complex way to create a keyring item is using gnome_keyring_item_cr
       <parameters>
         <parameter name="schema" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password schema.</doc>
-          <type name="PasswordSchema" c:type="GnomeKeyringPasswordSchema*"/>
+          <type name="PasswordSchema"
+                c:type="const GnomeKeyringPasswordSchema*"/>
         </parameter>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The keyring to store the password in. Specify %NULL for the default keyring. Use %GNOME_KEYRING_SESSION to store the password in memory only.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="display_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">A human readable description of what the password is for.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password to store.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -3324,19 +3334,20 @@ gnome_keyring_item_create_sync().</doc>
       <parameters>
         <parameter name="schema" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password schema.</doc>
-          <type name="PasswordSchema" c:type="GnomeKeyringPasswordSchema*"/>
+          <type name="PasswordSchema"
+                c:type="const GnomeKeyringPasswordSchema*"/>
         </parameter>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The keyring to store the password in. Specify %NULL for the default keyring. Use %GNOME_KEYRING_SESSION to store the password in memory only.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="display_name" transfer-ownership="none">
           <doc xml:whitespace="preserve">A human readable description of what the password is for.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none">
           <doc xml:whitespace="preserve">The password to store.</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter transfer-ownership="none">
           <varargs>
@@ -3377,11 +3388,11 @@ For a synchronous version of this function see gnome_keyring_unlock_sync().</doc
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring to unlock, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The password to unlock the keyring with, or %NULL to prompt the user.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
@@ -3418,11 +3429,11 @@ For an asynchronous version of this function see gnome_keyring_unlock().</doc>
       <parameters>
         <parameter name="keyring" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The name of the keyring to unlock, or %NULL for the default keyring.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="password" transfer-ownership="none" allow-none="1">
           <doc xml:whitespace="preserve">The password to unlock the keyring with, or %NULL to prompt the user.</doc>
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>

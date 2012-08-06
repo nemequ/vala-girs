@@ -153,7 +153,7 @@ namespace Osinfo {
 	public class Media : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		public Media (string id, string architecture);
-		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		public unowned string get_application_id ();
@@ -316,7 +316,7 @@ namespace Osinfo {
 	public class Tree : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		public Tree (string id, string architecture);
-		public static Osinfo.Tree create_from_location (string location, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static Osinfo.Tree create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Osinfo.Tree create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		public unowned string get_architecture ();

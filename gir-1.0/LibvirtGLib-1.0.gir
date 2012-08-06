@@ -34,7 +34,7 @@ and a message formatted with @format.</doc>
         </parameter>
         <parameter name="format" transfer-ownership="none">
           <doc xml:whitespace="preserve">printf()-style format for error message</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter transfer-ownership="none">
           <varargs>
@@ -42,9 +42,7 @@ and a message formatted with @format.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="error_new_literal"
-              c:identifier="gvir_error_new_literal"
-              introspectable="0">
+    <function name="error_new_literal" c:identifier="gvir_error_new_literal">
       <doc xml:whitespace="preserve">Creates a new #GError; unlike gvir_error_new(), @message is
 not a printf()-style format string. Use this function if
 @message contains text you don't have control over,
@@ -64,7 +62,7 @@ that could include printf() escape sequences.</doc>
         </parameter>
         <parameter name="message" transfer-ownership="none">
           <doc xml:whitespace="preserve">error message</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
@@ -88,7 +86,7 @@ and a message formatted with @format.</doc>
         </parameter>
         <parameter name="format" transfer-ownership="none">
           <doc xml:whitespace="preserve">printf()-style format for error message</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="args" transfer-ownership="none">
           <doc xml:whitespace="preserve">#va_list of parameters for the message format</doc>
@@ -97,33 +95,92 @@ and a message formatted with @format.</doc>
       </parameters>
     </function>
     <function name="event_register" c:identifier="gvir_event_register">
+      <doc xml:whitespace="preserve">Registers a libvirt event loop implementation that is backed
+by the default &lt;code&gt;GMain&lt;/code&gt; context. If invoked more
+than once this method will be a no-op. Applications should,
+however, take care not to register any another non-GLib
+event loop with libvirt.
+
+After invoking this method, it is mandatory to run the
+default GMain event loop. Typically this can be satisfied
+by invoking &lt;code&gt;gtk_main&lt;/code&gt; or &lt;code&gt;g_application_run&lt;/code&gt;
+in the application's main thread. Failure to run the event
+loop will mean no libvirt events get dispatched, and the
+libvirt keepalive timer will kill off libvirt connections
+frequently.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
     </function>
     <function name="init" c:identifier="gvir_init">
+      <doc xml:whitespace="preserve">Call this function before using any other Libvirt GLib functions in your applications.
+It will initialize everything needed to operate the toolkit and parses some standard
+command line options.
+
+Although you are expected to pass the @argc, @argv parameters from main() to this
+function, it is possible to pass NULL if @argv is not available or commandline
+handling is not required.
+
+@argc and @argv are adjusted accordingly so your own code will never see those
+standard arguments.
+
+This method will also turn on debug logging of the library if the
+&lt;literal&gt;LIBVIRT_GLIB_DEBUG&lt;/literal&gt; environment variable is set.
+
+This function will terminate your program if it was unable to initialize
+for some reason. If you want the program to fall back to an alternate
+mode of operation call &lt;code&gt;gvir_init_check&lt;/code&gt; instead.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="argc" transfer-ownership="none">
+        <parameter name="argc"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:whitespace="preserve">Address of the argc parameter of your main() function (or 0 if argv is NULL). This will be changed if any arguments were handled.</doc>
           <type name="gint" c:type="int*"/>
         </parameter>
-        <parameter name="argv" transfer-ownership="none">
-          <type name="utf8" c:type="char***"/>
+        <parameter name="argv"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   allow-none="1">
+          <doc xml:whitespace="preserve">Address of the &lt;parameter&gt;argv&lt;/parameter&gt; parameter of main(), or %NULL. Any options understood by GTK+ are stripped before return.</doc>
+          <array length="0" zero-terminated="0" c:type="char***">
+            <type name="utf8" c:type="char**"/>
+          </array>
         </parameter>
       </parameters>
     </function>
     <function name="init_check" c:identifier="gvir_init_check" throws="1">
+      <doc xml:whitespace="preserve">This function does the same work as gvir_init() with only a single
+change: It does not terminate the program if the Libvirt GLib library
+can't be initialized. Instead it returns %FALSE on failure.
+
+This way the application can fall back to some other mode of
+operation.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">%TRUE if the library was successfully initialized, %FALSE otherwise</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
-        <parameter name="argc" transfer-ownership="none">
+        <parameter name="argc"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:whitespace="preserve">Address of the argc parameter of your main() function (or 0 if argv is NULL). This will be changed if any arguments were handled.</doc>
           <type name="gint" c:type="int*"/>
         </parameter>
-        <parameter name="argv" transfer-ownership="none">
-          <type name="utf8" c:type="char***"/>
+        <parameter name="argv"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   allow-none="1">
+          <doc xml:whitespace="preserve">Address of the &lt;parameter&gt;argv&lt;/parameter&gt; parameter of main(), or %NULL. Any options understood by GTK+ are stripped before return.</doc>
+          <array length="0" zero-terminated="0" c:type="char***">
+            <type name="utf8" c:type="char**"/>
+          </array>
         </parameter>
       </parameters>
     </function>
@@ -152,7 +209,7 @@ in @error.</doc>
         </parameter>
         <parameter name="format" transfer-ownership="none">
           <doc xml:whitespace="preserve">printf()-style format for error message</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter transfer-ownership="none">
           <varargs>
@@ -160,9 +217,7 @@ in @error.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="set_error_literal"
-              c:identifier="gvir_set_error_literal"
-              introspectable="0">
+    <function name="set_error_literal" c:identifier="gvir_set_error_literal">
       <doc xml:whitespace="preserve">If @error is NULL this does nothing. Otherwise it
 creates a new #GError and stores it in @error; unlike
 gvir_set_error(), @message is not a printf()-style
@@ -187,7 +242,7 @@ printf() escape sequences.</doc>
         </parameter>
         <parameter name="message" transfer-ownership="none">
           <doc xml:whitespace="preserve">error message</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
@@ -216,7 +271,7 @@ in @error.</doc>
         </parameter>
         <parameter name="format" transfer-ownership="none">
           <doc xml:whitespace="preserve">printf()-style format for error message</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="args" transfer-ownership="none">
           <doc xml:whitespace="preserve">#va_list of parameters for the message format</doc>

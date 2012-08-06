@@ -18,7 +18,7 @@ namespace Vnc {
 		public void force_grab (bool enable);
 		public Vnc.DisplayDepthColor get_depth ();
 		public bool get_force_size ();
-		public Vnc.GrabSequence get_grab_keys ();
+		public unowned Vnc.GrabSequence get_grab_keys ();
 		public int get_height ();
 		public bool get_keyboard_grab ();
 		public bool get_lossy_encoding ();
@@ -49,11 +49,13 @@ namespace Vnc {
 		public void set_read_only (bool enable);
 		public bool set_scaling (bool enable);
 		public void set_shared_flag (bool shared);
+		[NoAccessorMethod]
+		public Vnc.Connection connection { owned get; }
 		public Vnc.DisplayDepthColor depth { get; set construct; }
 		public bool force_size { get; set construct; }
 		[NoAccessorMethod]
 		public bool grab_keyboard { get; set construct; }
-		public Vnc.GrabSequence grab_keys { owned get; set construct; }
+		public Vnc.GrabSequence grab_keys { get; set construct; }
 		[NoAccessorMethod]
 		public bool grab_pointer { get; set construct; }
 		public int height { get; }
@@ -86,42 +88,31 @@ namespace Vnc {
 		public uint keysyms;
 		public uint nkeysyms;
 		[CCode (has_construct_function = false)]
-		public GrabSequence (uint nkeysyms, uint keysyms);
+		public GrabSequence ([CCode (array_length_cname = "nkeysyms", array_length_pos = 0.5, array_length_type = "guint")] uint[] keysyms);
 		public string as_string ();
 		public Vnc.GrabSequence copy ();
 		public void free ();
 		[CCode (has_construct_function = false)]
 		public GrabSequence.from_string (string str);
 	}
-	[CCode (cheader_filename = "gtk-vnc.h")]
+	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_CREDENTIAL_")]
 	public enum DisplayCredential {
-		[CCode (cname = "VNC_DISPLAY_CREDENTIAL_PASSWORD")]
 		PASSWORD,
-		[CCode (cname = "VNC_DISPLAY_CREDENTIAL_USERNAME")]
 		USERNAME,
-		[CCode (cname = "VNC_DISPLAY_CREDENTIAL_CLIENTNAME")]
 		CLIENTNAME
 	}
-	[CCode (cheader_filename = "gtk-vnc.h")]
+	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_DEPTH_COLOR_")]
 	public enum DisplayDepthColor {
-		[CCode (cname = "VNC_DISPLAY_DEPTH_COLOR_DEFAULT")]
 		DEFAULT,
-		[CCode (cname = "VNC_DISPLAY_DEPTH_COLOR_FULL")]
 		FULL,
-		[CCode (cname = "VNC_DISPLAY_DEPTH_COLOR_MEDIUM")]
 		MEDIUM,
-		[CCode (cname = "VNC_DISPLAY_DEPTH_COLOR_LOW")]
 		LOW,
-		[CCode (cname = "VNC_DISPLAY_DEPTH_COLOR_ULTRA_LOW")]
 		ULTRA_LOW
 	}
-	[CCode (cheader_filename = "gtk-vnc.h")]
+	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_KEY_EVENT_")]
 	public enum DisplayKeyEvent {
-		[CCode (cname = "VNC_DISPLAY_KEY_EVENT_PRESS")]
 		PRESS,
-		[CCode (cname = "VNC_DISPLAY_KEY_EVENT_RELEASE")]
 		RELEASE,
-		[CCode (cname = "VNC_DISPLAY_KEY_EVENT_CLICK")]
 		CLICK
 	}
 }

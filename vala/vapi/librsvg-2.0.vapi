@@ -26,9 +26,9 @@ namespace Rsvg {
 		[CCode (has_construct_function = false)]
 		public Handle.from_file (string file_name) throws GLib.Error;
 		[CCode (has_construct_function = false)]
-		public Handle.from_gfile_sync (GLib.File file, Rsvg.HandleFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Handle.from_gfile_sync (GLib.File file, Rsvg.HandleFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
-		public Handle.from_stream_sync (GLib.InputStream input_stream, GLib.File? base_file, Rsvg.HandleFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Handle.from_stream_sync (GLib.InputStream input_stream, GLib.File? base_file, Rsvg.HandleFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned string get_base_uri ();
 		[Deprecated (since = "2.36")]
 		public unowned string get_desc ();
@@ -42,7 +42,7 @@ namespace Rsvg {
 		[Deprecated (since = "2.36")]
 		public unowned string get_title ();
 		public bool has_sub (string id);
-		public bool read_stream_sync (GLib.InputStream stream, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool read_stream_sync (GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool render_cairo (Cairo.Context cr);
 		public bool render_cairo_sub (Cairo.Context cr, string id);
 		public void set_base_gfile (GLib.File base_file);

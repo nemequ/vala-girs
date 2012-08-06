@@ -16,6 +16,7 @@ namespace TelepathyGLib {
 		public TelepathyGLib.ConnectionPresenceType get_automatic_presence (out unowned string status, out string status_message);
 		public async unowned GLib.Array<uint8> get_avatar_async () throws GLib.Error;
 		public bool get_changing_presence ();
+		public unowned string get_cm_name ();
 		public bool get_connect_automatically ();
 		public unowned TelepathyGLib.Connection get_connection ();
 		public unowned string get_connection_manager ();
@@ -33,6 +34,7 @@ namespace TelepathyGLib {
 		public unowned GLib.HashTable<string,GLib.Value?> get_parameters ();
 		public unowned string get_path_suffix ();
 		public unowned string get_protocol ();
+		public unowned string get_protocol_name ();
 		public TelepathyGLib.ConnectionPresenceType get_requested_presence (out unowned string status, out string status_message);
 		public unowned string get_service ();
 		public GLib.Value get_storage_identifier ();
@@ -68,6 +70,7 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public string automatic_status_message { owned get; }
 		public bool changing_presence { get; }
+		public string cm_name { get; }
 		public bool connect_automatically { get; }
 		public TelepathyGLib.Connection connection { get; }
 		[NoAccessorMethod]
@@ -93,6 +96,7 @@ namespace TelepathyGLib {
 		public string nickname { get; }
 		public string normalized_name { get; }
 		public string protocol { get; }
+		public string protocol_name { get; }
 		[NoAccessorMethod]
 		public uint requested_presence_type { get; }
 		[NoAccessorMethod]
@@ -190,6 +194,7 @@ namespace TelepathyGLib {
 		public void set_parameter (string key, GLib.Variant value);
 		public void set_requested_presence (TelepathyGLib.ConnectionPresenceType presence, string status, string message);
 		public void set_service (string service);
+		public void set_storage_provider (string provider);
 		public void unset_parameter (string key);
 		[NoAccessorMethod]
 		public TelepathyGLib.AccountManager account_manager { owned get; construct; }
@@ -229,6 +234,8 @@ namespace TelepathyGLib {
 		public string requested_status_message { owned get; }
 		[NoAccessorMethod]
 		public string service { owned get; }
+		[NoAccessorMethod]
+		public string storage_provider { owned get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] supersedes { owned get; }
@@ -617,6 +624,7 @@ namespace TelepathyGLib {
 		public unowned GLib.GenericArray<TelepathyGLib.Contact> get_blocked_contacts ();
 		public bool get_can_change_contact_list ();
 		public unowned TelepathyGLib.Capabilities get_capabilities ();
+		public unowned string get_cm_name ();
 		public unowned string get_connection_manager_name ();
 		public void get_contact_attributes (int timeout_ms, [CCode (array_length_cname = "n_handles", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.Handle[] handles, string interfaces, bool hold, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned GLib.Callback callback, GLib.Object weak_object);
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -679,6 +687,7 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public bool can_report_abusive { get; }
 		public TelepathyGLib.Capabilities capabilities { get; }
+		public string cm_name { get; }
 		public string connection_manager_name { get; }
 		[Deprecated (since = "0.17.6")]
 		[NoAccessorMethod]
@@ -723,6 +732,8 @@ namespace TelepathyGLib {
 		public bool is_running ();
 		[NoAccessorMethod]
 		public bool always_introspect { get; set; }
+		[NoAccessorMethod]
+		public string cm_name { owned get; }
 		[NoAccessorMethod]
 		public string connection_manager { owned get; }
 		public uint info_source { get; }
@@ -851,10 +862,8 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_contact_search_get_type ()")]
 	public class ContactSearch : GLib.Object, GLib.AsyncInitable {
-		[CCode (cname = "tp_contact_search_new_async")]
-		public async ContactSearch (TelepathyGLib.Account account, string server, uint limit);
-		[CCode (has_construct_function = false)]
-		public ContactSearch.finish (GLib.AsyncResult result) throws GLib.Error;
+		[CCode (cname = "tp_contact_search_new_async", has_construct_function = false)]
+		public async ContactSearch (TelepathyGLib.Account account, string server, uint limit) throws GLib.Error;
 		public unowned TelepathyGLib.Account get_account ();
 		public uint get_limit ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -1171,10 +1180,8 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_room_list_get_type ()")]
 	public class RoomList : GLib.Object, GLib.AsyncInitable {
-		[CCode (cname = "tp_room_list_new_async")]
-		public async RoomList (TelepathyGLib.Account account, string server);
-		[CCode (has_construct_function = false)]
-		public RoomList.finish (GLib.AsyncResult result) throws GLib.Error;
+		[CCode (cname = "tp_room_list_new_async", has_construct_function = false)]
+		public async RoomList (TelepathyGLib.Account account, string server) throws GLib.Error;
 		public unowned TelepathyGLib.Account get_account ();
 		public unowned string get_server ();
 		public bool is_listing ();
@@ -2205,6 +2212,8 @@ namespace TelepathyGLib {
 	public delegate GLib.GenericArray<void*> BaseConnectionCreateChannelFactoriesImpl (TelepathyGLib.BaseConnection self);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate GLib.GenericArray<void*> BaseConnectionCreateChannelManagersImpl (TelepathyGLib.BaseConnection self);
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
+	public delegate GLib.GenericArray<weak void*> BaseConnectionGetInterfacesImpl (TelepathyGLib.BaseConnection self);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate string BaseConnectionGetUniqueConnectionNameImpl (TelepathyGLib.BaseConnection self);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
