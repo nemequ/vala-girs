@@ -104,6 +104,16 @@ All the information is returned in a #GstDiscovererInfo structure.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </virtual-method>
+      <virtual-method name="source_setup">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="source" transfer-ownership="none">
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="starting">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -184,7 +194,11 @@ set on the result flags.</doc>
         </array>
       </field>
       <glib:signal name="discovered" when="last">
-        <doc xml:whitespace="preserve">Will be emitted when all information on a URI could be discovered.</doc>
+        <doc xml:whitespace="preserve">Will be emitted when all information on a URI could be discovered, or
+an error ocurred.
+
+When an error occurs, @info might still contain some partial information,
+depending on the circumstances of the error.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
@@ -194,7 +208,7 @@ set on the result flags.</doc>
             <type name="DiscovererInfo"/>
           </parameter>
           <parameter name="error" transfer-ownership="none">
-            <doc xml:whitespace="preserve">#GError, which will be non-NULL if an error occurred during discovery</doc>
+            <doc xml:whitespace="preserve">#GError, which will be non-NULL if an error occurred during discovery. You must not free this #GError, it will be freed by the discoverer.</doc>
             <type name="GLib.Error"/>
           </parameter>
         </parameters>
@@ -204,6 +218,24 @@ set on the result flags.</doc>
         <return-value transfer-ownership="none">
           <type name="none"/>
         </return-value>
+      </glib:signal>
+      <glib:signal name="source-setup" when="last">
+        <doc xml:whitespace="preserve">This signal is emitted after the source element has been created for, so
+the URI being discovered, so it can be configured by setting additional
+properties (e.g. set a proxy server for an http source, or set the device
+and read speed for an audio cd source).
+
+This signal is usually emitted from the context of a GStreamer streaming
+thread.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none"/>
+        </return-value>
+        <parameters>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:whitespace="preserve">source element</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+        </parameters>
       </glib:signal>
       <glib:signal name="starting" when="last">
         <doc xml:whitespace="preserve">Will be emitted when the discover starts analyzing the pending URIs</doc>
@@ -306,6 +338,21 @@ set on the result flags.</doc>
             </parameter>
             <parameter name="err" transfer-ownership="none">
               <type name="GLib.Error" c:type="const GError*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="source_setup">
+        <callback name="source_setup">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="discoverer" transfer-ownership="none">
+              <type name="Discoverer" c:type="GstDiscoverer*"/>
+            </parameter>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Gst.Element" c:type="GstElement*"/>
             </parameter>
           </parameters>
         </callback>
@@ -1448,7 +1495,7 @@ in debugging.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="PLUGINS_BASE_VERSION_MICRO"
-              value="92"
+              value="93"
               c:type="GST_PLUGINS_BASE_VERSION_MICRO">
       <type name="gint" c:type="gint"/>
     </constant>

@@ -161,30 +161,30 @@ namespace Secret {
 		public Secret.Value @ref ();
 		public void unref ();
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_CREATE_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_CREATE_", has_type_id = false)]
 	public enum CollectionCreateFlags {
 		[CCode (cname = "SECRET_COLLECTION_CREATE_NONE")]
 		COLLECTION_CREATE_NONE
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_", has_type_id = false)]
 	[Flags]
 	public enum CollectionFlags {
 		NONE,
 		LOAD_ITEMS
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_CREATE_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_CREATE_", has_type_id = false)]
 	[Flags]
 	public enum ItemCreateFlags {
 		NONE,
 		REPLACE
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_", has_type_id = false)]
 	[Flags]
 	public enum ItemFlags {
 		NONE,
 		LOAD_SECRET
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SEARCH_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SEARCH_", has_type_id = false)]
 	[Flags]
 	public enum SearchFlags {
 		NONE,
@@ -192,7 +192,7 @@ namespace Secret {
 		UNLOCK,
 		LOAD_SECRETS
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SERVICE_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SERVICE_", has_type_id = false)]
 	[Flags]
 	public enum ServiceFlags {
 		NONE,

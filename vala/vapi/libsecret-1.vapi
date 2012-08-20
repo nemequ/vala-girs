@@ -22,7 +22,7 @@ namespace Secret {
 		public weak string name;
 		public Secret.SchemaAttributeType type;
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ERROR_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ERROR_", has_type_id = false)]
 	public enum Error {
 		PROTOCOL,
 		IS_LOCKED,
@@ -30,13 +30,13 @@ namespace Secret {
 		ALREADY_EXISTS;
 		public static GLib.Quark get_quark ();
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_ATTRIBUTE_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_ATTRIBUTE_", has_type_id = false)]
 	public enum SchemaAttributeType {
 		STRING,
 		INTEGER,
 		BOOLEAN
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_")]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_", has_type_id = false)]
 	[Flags]
 	public enum SchemaFlags {
 		NONE,

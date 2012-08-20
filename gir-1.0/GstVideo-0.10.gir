@@ -305,13 +305,13 @@ encoded form.</doc>
         <type name="guint32" c:type="guint32"/>
       </field>
       <field name="system_frame_number" writable="1">
-        <type name="gint" c:type="gint"/>
+        <type name="guint32" c:type="guint32"/>
       </field>
       <field name="decode_frame_number" writable="1">
-        <type name="gint" c:type="gint"/>
+        <type name="guint32" c:type="guint32"/>
       </field>
       <field name="presentation_frame_number" writable="1">
-        <type name="gint" c:type="gint"/>
+        <type name="guint32" c:type="guint32"/>
       </field>
       <field name="dts" writable="1">
         <type name="Gst.ClockTime" c:type="GstClockTime"/>
@@ -629,20 +629,23 @@ string @color.</doc>
       <doc xml:whitespace="preserve">This base class is for video decoders turning encoded data into raw video
 frames.
 
-GstVideoDecoder and subclass should cooperate as follows.
+The GstVideoDecoder base class and derived subclasses should cooperate as follows:
 &lt;orderedlist&gt;
 &lt;listitem&gt;
   &lt;itemizedlist&gt;&lt;title&gt;Configuration&lt;/title&gt;
   &lt;listitem&gt;&lt;para&gt;
     Initially, GstVideoDecoder calls @start when the decoder element
-    is activated, which allows subclass to perform any global setup.
+    is activated, which allows the subclass to perform any global setup.
   &lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;
-    GstVideoDecoder calls @set_format to inform subclass of caps
+    GstVideoDecoder calls @set_format to inform the subclass of caps
     describing input video data that it is about to receive, including
     possibly configuration data.
     While unlikely, it might be called more than once, if changing input
     parameters require reconfiguration.
+  &lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;
+    Incoming data buffers are processed as needed, described in Data Processing below.
   &lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;
     GstVideoDecoder calls @stop at end of all processing.
@@ -653,27 +656,53 @@ GstVideoDecoder and subclass should cooperate as follows.
   &lt;itemizedlist&gt;
   &lt;title&gt;Data processing&lt;/title&gt;
     &lt;listitem&gt;&lt;para&gt;
-      Base class gathers input data, and optionally allows subclass
+      The base class gathers input data, and optionally allows subclass
       to parse this into subsequently manageable chunks, typically
       corresponding to and referred to as 'frames'.
     &lt;/para&gt;&lt;/listitem&gt;
     &lt;listitem&gt;&lt;para&gt;
-      Input frame is provided to subclass' @handle_frame. The ownership of
-      the frame is given to @handle_frame.
+      Each input frame is provided in turn to the subclass' @handle_frame callback.
+      The ownership of the frame is given to the @handle_frame callback.
     &lt;/para&gt;&lt;/listitem&gt;
     &lt;listitem&gt;&lt;para&gt;
-      If codec processing results in decoded data, subclass should call
+      If codec processing results in decoded data, the subclass should call
       @gst_video_decoder_finish_frame to have decoded data pushed.
-      downstream.
+      downstream. Otherwise, the subclass must call @gst_video_decoder_drop_frame, to
+      allow the base class to do timestamp and offset tracking, and possibly to
+      requeue the frame for a later attempt in the case of reverse playback.
     &lt;/para&gt;&lt;/listitem&gt;
   &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;listitem&gt;
   &lt;itemizedlist&gt;&lt;title&gt;Shutdown phase&lt;/title&gt;
   &lt;listitem&gt;&lt;para&gt;
-    GstVideoDecoder class calls @stop to inform the subclass that data
+    The GstVideoDecoder class calls @stop to inform the subclass that data
     parsing will be stopped.
   &lt;/para&gt;&lt;/listitem&gt;
+  &lt;/itemizedlist&gt;
+&lt;/listitem&gt;
+&lt;listitem&gt;
+  &lt;itemizedlist&gt;&lt;title&gt;Additional Notes&lt;/title&gt;
+  &lt;listitem&gt;
+    &lt;itemizedlist&gt;&lt;title&gt;Seeking/Flushing&lt;/title&gt;
+    &lt;listitem&gt;&lt;para&gt;
+  When the pipeline is seeked or otherwise flushed, the subclass is informed via a call
+  to its @reset callback, with the hard parameter set to true. This indicates the
+  subclass should drop any internal data queues and timestamps and prepare for a fresh
+  set of buffers to arrive for parsing and decoding.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;/itemizedlist&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;itemizedlist&gt;&lt;title&gt;End Of Stream&lt;/title&gt;
+    &lt;listitem&gt;&lt;para&gt;
+  At end-of-stream, the subclass @parse function may be called some final times with the 
+  at_eos parameter set to true, indicating that the element should not expect any more data
+  to be arriving, and it should parse and remaining frames and call
+  gst_video_decoder_have_frame() if possible.
+    &lt;/para&gt;&lt;/listitem&gt;
+    &lt;/itemizedlist&gt;
+  &lt;/listitem&gt;
   &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
 &lt;/orderedlist&gt;
@@ -684,41 +713,39 @@ needs to set the fixed caps on srcpad, when the format is ensured.  This
 is typically when base class calls subclass' @set_format function, though
 it might be delayed until calling @gst_video_decoder_finish_frame.
 
-Subclass is also responsible for providing (presentation) timestamps
+The subclass is also responsible for providing (presentation) timestamps
 (likely based on corresponding input ones).  If that is not applicable
-or possible, baseclass provides limited framerate based interpolation.
+or possible, the base class provides limited framerate based interpolation.
 
-Similarly, the baseclass provides some limited (legacy) seeking support
-(upon explicit subclass request), as full-fledged support
+Similarly, the base class provides some limited (legacy) seeking support
+if specifically requested by the subclass, as full-fledged support
 should rather be left to upstream demuxer, parser or alike.  This simple
 approach caters for seeking and duration reporting using estimated input
-bitrates.
+bitrates. To enable it, a subclass should call
+@gst_video_decoder_set_estimate_rate to enable handling of incoming byte-streams.
 
-Baseclass provides some support for reverse playback, in particular
+The base class provides some support for reverse playback, in particular
 in case incoming data is not packetized or upstream does not provide
-fragments on keyframe boundaries.  However, subclass should then be prepared
-for the parsing and frame processing stage to occur separately (rather
-than otherwise the latter immediately following the former),
-and should ensure the parsing stage properly marks keyframes or rely on
-upstream to do so properly for incoming data.
+fragments on keyframe boundaries.  However, the subclass should then be prepared
+for the parsing and frame processing stage to occur separately (in normal
+forward processing, the latter immediately follows the former),
+The subclass also needs to ensure the parsing stage properly marks keyframes,
+unless it knows the upstream elements will do so properly for incoming data.
 
-Things that subclass need to take care of:
+The bare minimum that a functional subclass needs to implement is:
 &lt;itemizedlist&gt;
   &lt;listitem&gt;&lt;para&gt;Provide pad templates&lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;
      Set source pad caps when appropriate
   &lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;
-     Configure some baseclass behaviour parameters.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Optionally parse input data, if it is not considered packetized.
+     Parse input data, if it is not considered packetized from upstream
      Data will be provided to @parse which should invoke @gst_video_decoder_add_to_frame and
-     @gst_video_decoder_have_frame as appropriate.
+     @gst_video_decoder_have_frame to separate the data belonging to each video frame.
   &lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;
      Accept data in @handle_frame and provide decoded results to
-     @gst_video_decoder_finish_frame.
+     @gst_video_decoder_finish_frame, or call @gst_video_decoder_drop_frame.
   &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;</doc>
       <virtual-method name="close">
@@ -821,7 +848,7 @@ Things that subclass need to take care of:
         </return-value>
         <parameters>
           <parameter name="n_bytes" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an encoded #GstVideoCodecFrame</doc>
+            <doc xml:whitespace="preserve">the number of bytes to add</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -913,10 +940,20 @@ In any case, the frame is considered finished and released.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_frames" c:identifier="gst_video_decoder_get_frames">
+        <doc xml:whitespace="preserve">Get all pending unfinished #GstVideoCodecFrame</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">pending unfinished #GstVideoCodecFrame.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="VideoCodecFrame"/>
+          </type>
+        </return-value>
+      </method>
       <method name="get_latency"
               c:identifier="gst_video_decoder_get_latency"
               version="0.10.37">
-        <doc xml:whitespace="preserve">Returns the configured encoding latency.</doc>
+        <doc xml:whitespace="preserve">Query the configured decoder latency. Results will be returned via
+@min_latency and @max_latency.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -926,7 +963,7 @@ In any case, the frame is considered finished and released.</doc>
                      caller-allocates="0"
                      transfer-ownership="full"
                      allow-none="1">
-            <doc xml:whitespace="preserve">the configured minimum latency</doc>
+            <doc xml:whitespace="preserve">address of variable in which to store the configured minimum latency, or %NULL</doc>
             <type name="Gst.ClockTime" c:type="GstClockTime*"/>
           </parameter>
           <parameter name="max_latency"
@@ -934,7 +971,7 @@ In any case, the frame is considered finished and released.</doc>
                      caller-allocates="0"
                      transfer-ownership="full"
                      allow-none="1">
-            <doc xml:whitespace="preserve">the configured maximum latency</doc>
+            <doc xml:whitespace="preserve">address of variable in which to store the configured mximum latency, or %NULL</doc>
             <type name="Gst.ClockTime" c:type="GstClockTime*"/>
           </parameter>
         </parameters>
@@ -1020,7 +1057,9 @@ metadata and passes it along for further processing, i.e. @handle_frame.</doc>
       <method name="set_latency"
               c:identifier="gst_video_decoder_set_latency"
               version="0.10.37">
-        <doc xml:whitespace="preserve">Informs baseclass of encoding latency.</doc>
+        <doc xml:whitespace="preserve">Lets #GstVideoDecoder sub-classes tell the baseclass what the decoder
+latency is. Will also post a LATENCY message on the bus so the pipeline
+can reconfigure its global latency.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1521,6 +1560,15 @@ In any case, the frame is considered finished and released.</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
+      </method>
+      <method name="get_frames" c:identifier="gst_video_encoder_get_frames">
+        <doc xml:whitespace="preserve">Get all pending unfinished #GstVideoCodecFrame</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">pending unfinished #GstVideoCodecFrame.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="VideoCodecFrame"/>
+          </type>
+        </return-value>
       </method>
       <method name="get_latency"
               c:identifier="gst_video_encoder_get_latency"
