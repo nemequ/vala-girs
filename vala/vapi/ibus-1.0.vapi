@@ -130,7 +130,7 @@ namespace IBus {
 	[CCode (cheader_filename = "ibus.h", type_id = "ibus_config_get_type ()")]
 	public class Config : IBus.Proxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable {
 		[CCode (has_construct_function = false)]
-		public Config (GLib.DBusConnection connection, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Config (GLib.DBusConnection connection, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Config.async_finish (GLib.AsyncResult res) throws GLib.Error;
 		public GLib.Variant get_value (string section, string name);
@@ -271,7 +271,7 @@ namespace IBus {
 	[CCode (cheader_filename = "ibus.h", type_id = "ibus_input_context_get_type ()")]
 	public class InputContext : IBus.Proxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable {
 		[CCode (has_construct_function = false)]
-		public InputContext (string path, GLib.DBusConnection connection, GLib.Cancellable? cancellable) throws GLib.Error;
+		public InputContext (string path, GLib.DBusConnection connection, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public InputContext.async_finish (GLib.AsyncResult res) throws GLib.Error;
 		public void cancel_hand_writing (uint n_strokes);
@@ -567,11 +567,6 @@ namespace IBus {
 		PROPERTY,
 		SURROUNDING_TEXT
 	}
-	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ERROR_NO_")]
-	public enum Error {
-		ENGINE;
-		public static GLib.Quark quark ();
-	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_")]
 	[Flags]
 	public enum ModifierType {
@@ -629,6 +624,13 @@ namespace IBus {
 		RADIO,
 		MENU,
 		SEPARATOR
+	}
+	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ERROR_")]
+	public errordomain Error {
+		NO_ENGINE,
+		NO_CONFIG,
+		FAILED;
+		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "ibus.h", has_target = false)]
 	public delegate void FreeFunc (void* object);

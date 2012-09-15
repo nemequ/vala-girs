@@ -708,6 +708,27 @@ The returned domain will initially be running.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </virtual-method>
+      <method name="create_snapshot"
+              c:identifier="gvir_domain_create_snapshot"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">snapshot of domain. The returned object should be unreffed when no longer needed</doc>
+          <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+        </return-value>
+        <parameters>
+          <parameter name="custom_conf"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">configuration of snapshot or NULL</doc>
+            <type name="LibvirtGConfig.DomainSnapshot"
+                  c:type="GVirConfigDomainSnapshot*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:whitespace="preserve">bitwise-OR of #GVirDomainSnapshotCreateFlags</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="delete" c:identifier="gvir_domain_delete" throws="1">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -886,6 +907,44 @@ socket pair file descriptor passed in as @fd.</doc>
           <doc xml:whitespace="preserve">TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+      </method>
+      <method name="resume_async" c:identifier="gvir_domain_resume_async">
+        <doc xml:whitespace="preserve">Asynchronous variant of #gvir_domain_resume.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">cancellation object</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:whitespace="preserve">completion callback</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">opaque data for callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="resume_finish"
+              c:identifier="gvir_domain_resume_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
       </method>
       <method name="save" c:identifier="gvir_domain_save" throws="1">
         <doc xml:whitespace="preserve">Saves the state of the domain on disk and stops it. Use #gvir_domain_start
@@ -1603,6 +1662,47 @@ that the hypervisor does not support that particular statistic.</doc>
         </array>
       </field>
     </record>
+    <enumeration name="DomainSnapshotCreateFlags"
+                 glib:type-name="GVirDomainSnapshotCreateFlags"
+                 glib:get-type="gvir_domain_snapshot_create_flags_get_type"
+                 c:type="GVirDomainSnapshotCreateFlags">
+      <member name="none"
+              value="0"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_NONE"
+              glib:nick="none"/>
+      <member name="redefine"
+              value="1"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_REDEFINE"
+              glib:nick="redefine"/>
+      <member name="current"
+              value="2"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_CURRENT"
+              glib:nick="current"/>
+      <member name="no_metadata"
+              value="4"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_NO_METADATA"
+              glib:nick="no-metadata"/>
+      <member name="halt"
+              value="8"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_HALT"
+              glib:nick="halt"/>
+      <member name="disk_only"
+              value="16"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_DISK_ONLY"
+              glib:nick="disk-only"/>
+      <member name="reuse_ext"
+              value="32"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_REUSE_EXT"
+              glib:nick="reuse-ext"/>
+      <member name="quiesce"
+              value="64"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_QUIESCE"
+              glib:nick="quiesce"/>
+      <member name="atomic"
+              value="128"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_ATOMIC"
+              glib:nick="atomic"/>
+    </enumeration>
     <glib:boxed glib:name="DomainSnapshotHandle"
                 c:symbol-prefix="domain_snapshot_handle"
                 glib:type-name="GVirDomainSnapshotHandle"

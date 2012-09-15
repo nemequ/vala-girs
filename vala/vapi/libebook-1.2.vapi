@@ -114,32 +114,32 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		public BookClient (E.Source source) throws GLib.Error;
 		public async bool add_contact (E.Contact contact, GLib.Cancellable? cancellable, out string added_uid) throws GLib.Error;
-		public bool add_contact_sync (E.Contact contact, out string added_uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool add_contact_sync (E.Contact contact, out string added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool add_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable, out GLib.SList<string> added_uids) throws GLib.Error;
-		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> added_uids, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Error error_create (E.BookClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.BookClientError code);
 		public async bool get_contact (string uid, GLib.Cancellable? cancellable, out E.Contact contact) throws GLib.Error;
-		public bool get_contact_sync (string uid, out E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_contact_sync (string uid, out E.Contact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contacts (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.Contact> contacts) throws GLib.Error;
-		public bool get_contacts_sync (string sexp, out GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_contacts_sync (string sexp, out GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contacts_uids (string sexp, GLib.Cancellable? cancellable, out GLib.SList<string> contacts_uids) throws GLib.Error;
-		public bool get_contacts_uids_sync (string sexp, out GLib.SList<string> contacts_uids, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_contacts_uids_sync (string sexp, out GLib.SList<string> contacts_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static bool get_self (E.SourceRegistry registry, out E.Contact contact, out E.BookClient client) throws GLib.Error;
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.BookClientView view) throws GLib.Error;
-		public bool get_view_sync (string sexp, out E.BookClientView view, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_view_sync (string sexp, out E.BookClientView view, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static bool is_self (E.Contact contact);
 		public async bool modify_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool modify_contact_sync (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool modify_contact_sync (E.Contact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool modify_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool remove_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool remove_contact_by_uid (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contact_by_uid_sync (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contact_sync (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_contact_by_uid_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_contact_sync (E.Contact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool remove_contacts (GLib.SList<string> uids, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contacts_sync (GLib.SList<string> uids, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_contacts_sync (GLib.SList<string> uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_self (E.Contact contact) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_client_view_get_type ()")]
@@ -201,12 +201,15 @@ namespace E {
 		public Contact.from_vcard (string vcard);
 		[CCode (has_construct_function = false)]
 		public Contact.from_vcard_with_uid (string vcard, string uid);
-		public void* @get (E.ContactField field_id);
+		[CCode (simple_generics = true)]
+		public T @get<T> (E.ContactField field_id);
 		public GLib.List<E.VCardAttribute> get_attributes (E.ContactField field_id);
-		public void* get_const (E.ContactField field_id);
+		[CCode (simple_generics = true)]
+		public unowned T get_const<T> (E.ContactField field_id);
 		public bool inline_local_photos () throws GLib.Error;
 		public static unowned string pretty_name (E.ContactField field_id);
-		public void @set (E.ContactField field_id, void* value);
+		[CCode (simple_generics = true)]
+		public void @set<T> (E.ContactField field_id, T value);
 		public void set_attributes (E.ContactField field_id, GLib.List<E.VCardAttribute> attributes);
 		public static unowned string vcard_attribute (E.ContactField field_id);
 		[NoAccessorMethod]
@@ -236,7 +239,7 @@ namespace E {
 		[NoAccessorMethod]
 		public string blog_url { owned get; set; }
 		[NoAccessorMethod]
-		public string book_uri { owned get; set; }
+		public string book_uid { owned get; set; }
 		[NoAccessorMethod]
 		public string business_fax { owned get; set; }
 		[NoAccessorMethod]
@@ -689,13 +692,13 @@ namespace E {
 		public weak string full;
 		public void free ();
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CHANGE_CARD_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CHANGE_CARD_", type_id = "e_book_change_type_get_type ()")]
 	public enum BookChangeType {
 		ADDED,
 		DELETED,
 		MODIFIED
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CLIENT_ERROR_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CLIENT_ERROR_", has_type_id = false)]
 	public enum BookClientError {
 		NO_SUCH_BOOK,
 		CONTACT_NOT_FOUND,
@@ -703,20 +706,20 @@ namespace E {
 		NO_SUCH_SOURCE,
 		NO_SPACE
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CLIENT_VIEW_FLAGS_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_CLIENT_VIEW_FLAGS_", has_type_id = false)]
 	[Flags]
 	public enum BookClientViewFlags {
 		NONE,
 		NOTIFY_INITIAL
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_QUERY_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_QUERY_", has_type_id = false)]
 	public enum BookQueryTest {
 		IS,
 		CONTAINS,
 		BEGINS_WITH,
 		ENDS_WITH
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_ERROR_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_ERROR_", type_id = "e_book_status_get_type ()")]
 	public enum BookStatus {
 		OK,
 		INVALID_ARG,
@@ -744,7 +747,7 @@ namespace E {
 		NO_SPACE,
 		NOT_SUPPORTED
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_VIEW_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_VIEW_", type_id = "e_book_view_status_get_type ()")]
 	public enum BookViewStatus {
 		STATUS_OK,
 		STATUS_TIME_LIMIT_EXCEEDED,
@@ -753,11 +756,11 @@ namespace E {
 		ERROR_QUERY_REFUSED,
 		ERROR_OTHER_ERROR
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_CONTACT_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_CONTACT_", has_type_id = false)]
 	public enum ContactField {
 		UID,
 		FILE_AS,
-		BOOK_URI,
+		BOOK_UID,
 		FULL_NAME,
 		GIVEN_NAME,
 		FAMILY_NAME,
@@ -901,12 +904,12 @@ namespace E {
 		FIRST_LABEL_ID,
 		LAST_LABEL_ID
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_CONTACT_PHOTO_TYPE_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_CONTACT_PHOTO_TYPE_", has_type_id = false)]
 	public enum ContactPhotoType {
 		INLINED,
 		URI
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_DATA_BOOK_STATUS_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_DATA_BOOK_STATUS_", type_id = "e_data_book_status_get_type ()")]
 	public enum DataBookStatus {
 		SUCCESS,
 		BUSY,
@@ -934,7 +937,7 @@ namespace E {
 		NOT_SUPPORTED,
 		NOT_OPENED
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "EVC_FORMAT_VCARD_")]
+	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "EVC_FORMAT_VCARD_", has_type_id = false)]
 	public enum VCardFormat {
 		@21,
 		@30

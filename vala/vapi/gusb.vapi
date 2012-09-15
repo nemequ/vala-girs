@@ -64,23 +64,23 @@ namespace GUsb {
 	public class Source {
 		public void set_callback (owned GLib.SourceFunc func);
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_CONTEXT_ERROR_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_CONTEXT_ERROR_", has_type_id = false)]
 	public enum ContextError {
 		[CCode (cname = "G_USB_CONTEXT_ERROR_INTERNAL")]
 		CONTEXT_ERROR_INTERNAL
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLAIM_INTERFACE_BIND_KERNEL_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLAIM_INTERFACE_BIND_KERNEL_", has_type_id = false)]
 	[Flags]
 	public enum DeviceClaimInterfaceFlags {
 		[CCode (cname = "G_USB_DEVICE_CLAIM_INTERFACE_BIND_KERNEL_DRIVER")]
 		DEVICE_CLAIM_INTERFACE_BIND_KERNEL_DRIVER
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_DIRECTION_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_DIRECTION_", has_type_id = false)]
 	public enum DeviceDirection {
 		DEVICE_TO_HOST,
 		HOST_TO_DEVICE
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_ERROR_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_ERROR_", has_type_id = false)]
 	public enum DeviceError {
 		INTERNAL,
 		IO,
@@ -93,14 +93,14 @@ namespace GUsb {
 		FAILED,
 		LAST
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_RECIPIENT_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_RECIPIENT_", has_type_id = false)]
 	public enum DeviceRecipient {
 		DEVICE,
 		INTERFACE,
 		ENDPOINT,
 		OTHER
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_REQUEST_TYPE_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_REQUEST_TYPE_", has_type_id = false)]
 	public enum DeviceRequestType {
 		STANDARD,
 		CLASS,

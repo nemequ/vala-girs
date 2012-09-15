@@ -106,31 +106,31 @@ namespace GnomeKeyring {
 		public weak string name;
 		public GnomeKeyring.AttributeType type;
 	}
-	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ACCESS_")]
+	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ACCESS_", has_type_id = false)]
 	public enum AccessRestriction {
 		ASK,
 		DENY,
 		ALLOW
 	}
-	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ACCESS_")]
+	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ACCESS_", has_type_id = false)]
 	[Flags]
 	public enum AccessType {
 		READ,
 		WRITE,
 		REMOVE
 	}
-	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ATTRIBUTE_TYPE_")]
+	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ATTRIBUTE_TYPE_", has_type_id = false)]
 	public enum AttributeType {
 		STRING,
 		UINT32
 	}
-	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ITEM_INFO_")]
+	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ITEM_INFO_", has_type_id = false)]
 	[Flags]
 	public enum ItemInfoFlags {
 		BASICS,
 		SECRET
 	}
-	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ITEM_")]
+	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_ITEM_", has_type_id = false)]
 	public enum ItemType {
 		GENERIC_SECRET,
 		NETWORK_PASSWORD,
@@ -140,7 +140,7 @@ namespace GnomeKeyring {
 		PK_STORAGE,
 		LAST_TYPE
 	}
-	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_RESULT_")]
+	[CCode (cheader_filename = "gnome-keyring.h", cprefix = "GNOME_KEYRING_RESULT_", has_type_id = false)]
 	public enum Result {
 		OK,
 		DENIED,

@@ -18,7 +18,7 @@ namespace Cd {
 		public string Profile { owned get; }
 		public signal void changed (Cd.Profile object);
 	}
-	[CCode (cheader_filename = "colord-gtk.h", cprefix = "CD_WINDOW_ERROR_")]
+	[CCode (cheader_filename = "colord-gtk.h", cprefix = "CD_WINDOW_ERROR_", has_type_id = false)]
 	public enum WindowError {
 		FAILED,
 		LAST

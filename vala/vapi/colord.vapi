@@ -109,6 +109,7 @@ namespace Cd {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_profiling_inhibitors ();
 		public Cd.ObjectScope get_scope ();
+		public unowned string get_seat ();
 		public unowned string get_serial ();
 		public unowned string get_vendor ();
 		public static Cd.DeviceKind kind_from_string (string kind);
@@ -152,6 +153,7 @@ namespace Cd {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] profiling_inhibitors { get; }
 		public uint scope { get; }
+		public string seat { get; }
 		public string serial { get; }
 		public string vendor { get; }
 		public virtual signal void changed ();
@@ -341,14 +343,14 @@ namespace Cd {
 		public void subtract (Cd.Vec3 src2, Cd.Vec3 dest);
 		public string to_string ();
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_CLIENT_ERROR_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {
 		FAILED,
 		ALREADY_EXISTS,
 		FILE_INVALID,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_COLORSPACE_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_COLORSPACE_", has_type_id = false)]
 	public enum Colorspace {
 		UNKNOWN,
 		XYZ,
@@ -365,12 +367,12 @@ namespace Cd {
 		public static Cd.Colorspace from_string (string colorspace);
 		public static unowned string to_string (Cd.Colorspace colorspace);
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_ERROR_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_ERROR_", has_type_id = false)]
 	public enum DeviceError {
 		FAILED,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_KIND_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_KIND_", has_type_id = false)]
 	public enum DeviceKind {
 		UNKNOWN,
 		DISPLAY,
@@ -380,26 +382,26 @@ namespace Cd {
 		WEBCAM,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_MODE_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_MODE_", has_type_id = false)]
 	public enum DeviceMode {
 		UNKNOWN,
 		PHYSICAL,
 		VIRTUAL,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_RELATION_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_RELATION_", has_type_id = false)]
 	public enum DeviceRelation {
 		UNKNOWN,
 		SOFT,
 		HARD,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_IT8_ERROR_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_IT8_ERROR_", has_type_id = false)]
 	public enum It8Error {
 		FAILED,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_IT8_KIND_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_IT8_KIND_", has_type_id = false)]
 	public enum It8Kind {
 		UNKNOWN,
 		TI1,
@@ -407,7 +409,7 @@ namespace Cd {
 		CCMX,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_OBJECT_SCOPE_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_OBJECT_SCOPE_", has_type_id = false)]
 	public enum ObjectScope {
 		UNKNOWN,
 		NORMAL,
@@ -417,12 +419,12 @@ namespace Cd {
 		public static Cd.ObjectScope from_string (string object_scope);
 		public static unowned string to_string (Cd.ObjectScope object_scope);
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_PROFILE_ERROR_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_PROFILE_ERROR_", has_type_id = false)]
 	public enum ProfileError {
 		FAILED,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_PROFILE_KIND_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_PROFILE_KIND_", has_type_id = false)]
 	public enum ProfileKind {
 		UNKNOWN,
 		INPUT_DEVICE,
@@ -434,7 +436,7 @@ namespace Cd {
 		NAMED_COLOR,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_RENDERING_INTENT_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_RENDERING_INTENT_", has_type_id = false)]
 	public enum RenderingIntent {
 		UNKNOWN,
 		PERCEPTUAL,
@@ -445,7 +447,7 @@ namespace Cd {
 		public static Cd.RenderingIntent from_string (string rendering_intent);
 		public static unowned string to_string (Cd.RenderingIntent rendering_intent);
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_CAP_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_CAP_", has_type_id = false)]
 	public enum SensorCap {
 		UNKNOWN,
 		LCD,
@@ -458,12 +460,12 @@ namespace Cd {
 		LED,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_ERROR_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_ERROR_", has_type_id = false)]
 	public enum SensorError {
 		FAILED,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_KIND_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_KIND_", has_type_id = false)]
 	public enum SensorKind {
 		UNKNOWN,
 		DUMMY,
@@ -482,9 +484,10 @@ namespace Cd {
 		COLORHUG,
 		SPYDER2,
 		SPYDER3,
+		COLORHUG_SPECTRO,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_STATE_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_STATE_", has_type_id = false)]
 	public enum SensorState {
 		UNKNOWN,
 		STARTING,
@@ -493,7 +496,7 @@ namespace Cd {
 		BUSY,
 		LAST
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_STANDARD_SPACE_")]
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_STANDARD_SPACE_", has_type_id = false)]
 	public enum StandardSpace {
 		UNKNOWN,
 		SRGB,
@@ -533,6 +536,8 @@ namespace Cd {
 	public const string DEVICE_PROPERTY_PROFILING_INHIBITORS;
 	[CCode (cheader_filename = "colord.h", cname = "CD_DEVICE_PROPERTY_SCOPE")]
 	public const string DEVICE_PROPERTY_SCOPE;
+	[CCode (cheader_filename = "colord.h", cname = "CD_DEVICE_PROPERTY_SEAT")]
+	public const string DEVICE_PROPERTY_SEAT;
 	[CCode (cheader_filename = "colord.h", cname = "CD_DEVICE_PROPERTY_SERIAL")]
 	public const string DEVICE_PROPERTY_SERIAL;
 	[CCode (cheader_filename = "colord.h", cname = "CD_DEVICE_PROPERTY_VENDOR")]

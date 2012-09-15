@@ -47,6 +47,7 @@ namespace GVir {
 	public class Domain : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Domain ();
+		public GVir.DomainSnapshot create_snapshot (GVirConfig.DomainSnapshot? custom_conf, uint flags) throws GLib.Error;
 		public bool @delete (uint flags) throws GLib.Error;
 		public GVirConfig.Domain get_config (uint flags) throws GLib.Error;
 		public GLib.List<GVir.DomainDevice> get_devices () throws GLib.Error;
@@ -61,6 +62,7 @@ namespace GVir {
 		public bool open_graphics (uint idx, int fd, uint flags) throws GLib.Error;
 		public bool reboot (uint flags) throws GLib.Error;
 		public bool resume () throws GLib.Error;
+		public async bool resume_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool save (uint flags) throws GLib.Error;
 		public async bool save_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool save_to_file (string filename, GVirConfig.Domain? custom_conf, uint flags) throws GLib.Error;
@@ -322,19 +324,31 @@ namespace GVir {
 	[Compact]
 	public class StreamHandle {
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_DELETE_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_DELETE_", type_id = "gvir_domain_delete_flags_get_type ()")]
 	public enum DomainDeleteFlags {
 		NONE,
 		SAVED_STATE,
 		SNAPSHOTS_METADATA
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SHUTDOWN_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SHUTDOWN_", type_id = "gvir_domain_shutdown_flags_get_type ()")]
 	public enum DomainShutdownFlags {
 		NONE,
 		ACPI_POWER_BTN,
 		GUEST_AGENT
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_START_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SNAPSHOT_", type_id = "gvir_domain_snapshot_create_flags_get_type ()")]
+	public enum DomainSnapshotCreateFlags {
+		NONE,
+		REDEFINE,
+		CURRENT,
+		NO_METADATA,
+		HALT,
+		DISK_ONLY,
+		REUSE_EXT,
+		QUIESCE,
+		ATOMIC
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_START_", type_id = "gvir_domain_start_flags_get_type ()")]
 	[Flags]
 	public enum DomainStartFlags {
 		NONE,
@@ -343,7 +357,7 @@ namespace GVir {
 		BYPASS_CACHE,
 		FORCE_BOOT
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_STATE_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_STATE_", type_id = "gvir_domain_state_get_type ()")]
 	public enum DomainState {
 		NONE,
 		RUNNING,
@@ -353,14 +367,14 @@ namespace GVir {
 		SHUTOFF,
 		CRASHED
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_XML_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_XML_", type_id = "gvir_domain_xml_flags_get_type ()")]
 	public enum DomainXMLFlags {
 		NONE,
 		SECURE,
 		INACTIVE,
 		UPDATE_CPU
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_POOL_STATE_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_POOL_STATE_", has_type_id = false)]
 	public enum StoragePoolState {
 		INACTIVE,
 		BUILDING,
@@ -368,20 +382,20 @@ namespace GVir {
 		DEGRADED,
 		INACCESSIBLE
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_RESIZE_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_RESIZE_", has_type_id = false)]
 	public enum StorageVolResizeFlags {
 		NONE,
 		ALLOCATE,
 		DELTA,
 		SHRINK
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_STATE_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_STATE_", has_type_id = false)]
 	public enum StorageVolType {
 		FILE,
 		BLOCK,
 		DIR
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STREAM_IO_CONDITION_")]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STREAM_IO_CONDITION_", has_type_id = false)]
 	[Flags]
 	public enum StreamIOCondition {
 		READABLE,

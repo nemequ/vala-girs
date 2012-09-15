@@ -14,7 +14,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libedataserver/libedataserver.h"/>
   <namespace name="EDataServer"
              version="1.2"
-             shared-library="libedataserver-1.2.so.17,libcamel-1.2.so.39"
+             shared-library="libedataserver-1.2.so.17,libcamel-1.2.so.40"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <record name="AsyncClosure"
@@ -633,7 +633,11 @@ whether the backend supports this method.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="remove" invoker="remove" version="3.2">
+      <virtual-method name="remove"
+                      invoker="remove"
+                      version="3.2"
+                      deprecated="Use e_source_remove() instead."
+                      deprecated-version="3.6">
         <doc xml:whitespace="preserve">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!
 The call is finished by e_client_remove_finish() from the @callback.</doc>
@@ -664,6 +668,8 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
       <virtual-method name="remove_finish"
                       invoker="remove_finish"
                       version="3.2"
+                      deprecated="Use e_source_remove_finish() instead."
+                      deprecated-version="3.6"
                       throws="1">
         <doc xml:whitespace="preserve">Finishes previous call of e_client_remove().</doc>
         <return-value transfer-ownership="none">
@@ -680,6 +686,8 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
       <virtual-method name="remove_sync"
                       invoker="remove_sync"
                       version="3.2"
+                      deprecated="Use e_source_remove_sync() instead."
+                      deprecated-version="3.6"
                       throws="1">
         <doc xml:whitespace="preserve">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!</doc>
@@ -1187,7 +1195,11 @@ whether the backend supports this method.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="remove" c:identifier="e_client_remove" version="3.2">
+      <method name="remove"
+              c:identifier="e_client_remove"
+              version="3.2"
+              deprecated="Use e_source_remove() instead."
+              deprecated-version="3.6">
         <doc xml:whitespace="preserve">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!
 The call is finished by e_client_remove_finish() from the @callback.</doc>
@@ -1218,6 +1230,8 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
       <method name="remove_finish"
               c:identifier="e_client_remove_finish"
               version="3.2"
+              deprecated="Use e_source_remove_finish() instead."
+              deprecated-version="3.6"
               throws="1">
         <doc xml:whitespace="preserve">Finishes previous call of e_client_remove().</doc>
         <return-value transfer-ownership="none">
@@ -1234,6 +1248,8 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
       <method name="remove_sync"
               c:identifier="e_client_remove_sync"
               version="3.2"
+              deprecated="Use e_source_remove_sync() instead."
+              deprecated-version="3.6"
               throws="1">
         <doc xml:whitespace="preserve">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!</doc>
@@ -3673,6 +3689,32 @@ FIXME: Elaborate on scratch sources.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_with_uid"
+                   c:identifier="e_source_new_with_uid"
+                   version="3.6"
+                   throws="1">
+        <doc xml:whitespace="preserve">Creates a new "scratch" #ESource with a predetermined unique identifier.
+
+The #ESource::changed signal will be emitted from @main_context if given,
+or else from the thread-default #GMainContext at the time this function is
+called.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new scratch #ESource, or %NULL on error</doc>
+          <type name="Source" c:type="ESource*"/>
+        </return-value>
+        <parameters>
+          <parameter name="uid" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a new unique identifier string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="main_context"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GMainContext or %NULL</doc>
+            <type name="GLib.MainContext" c:type="GMainContext*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <function name="parameter_to_key"
                 c:identifier="e_source_parameter_to_key"
                 version="3.6">
@@ -3701,9 +3743,174 @@ when emitting a #GObject::notify signal on one of its properties.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </virtual-method>
+      <virtual-method name="remote_create"
+                      invoker="remote_create"
+                      version="3.6">
+        <doc xml:whitespace="preserve">Asynchronously creates a new remote resource by picking out relevant
+details from @scratch_source.  The @scratch_source must be an #ESource
+with no #GDBusObject.  The @source must be #ESource:remote-creatable.
+
+The details required to create the resource vary by #ECollectionBackend,
+but in most cases the @scratch_source need only define the resource type
+(address book, calendar, etc.), a display name for the resource, and
+possibly a server-side path or ID for the resource.
+
+When the operation is finished, @callback will be called.  You can then
+call 3_source_remote_create_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="scratch_source" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ESource describing the resource to create</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" closure="3">
+            <doc xml:whitespace="preserve">data to pass to the callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="remote_create_finish"
+                      invoker="remote_create_finish"
+                      version="3.6"
+                      throws="1">
+        <doc xml:whitespace="preserve">Finishes the operation started with e_source_remote_create().  If
+an error occurred, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="remote_create_sync"
+                      invoker="remote_create_sync"
+                      version="3.6"
+                      throws="1">
+        <doc xml:whitespace="preserve">Creates a new remote resource by picking out relevant details from
+@scratch_source.  The @scratch_source must be an #ESource with no
+#GDBusObject.  The @source must be #ESource:remote-creatable.
+
+The details required to create the resource vary by #ECollectionBackend,
+but in most cases the @scratch_source need only define the resource type
+(address book, calendar, etc.), a display name for the resource, and
+possibly a server-side path or ID for the resource.
+
+If an error occurs, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="scratch_source" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ESource describing the resource to create</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="remote_delete"
+                      invoker="remote_delete"
+                      version="3.6">
+        <doc xml:whitespace="preserve">Asynchronously deletes the resource represented by @source from a remote
+server.  The @source must be #ESource:remote-deletable.  This will also
+delete the key file for @source and broadcast its removal to all clients,
+similar to e_source_remove().
+
+When the operation is finished, @callback will be called.  You can then
+call e_source_remote_delete_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" closure="2">
+            <doc xml:whitespace="preserve">data to pass to the callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="remote_delete_finish"
+                      invoker="remote_delete_finish"
+                      version="3.6"
+                      throws="1">
+        <doc xml:whitespace="preserve">Finishes the operation started with e_source_remote_delete().  If
+an error occurred, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="remote_delete_sync"
+                      invoker="remote_delete_sync"
+                      version="3.6"
+                      throws="1">
+        <doc xml:whitespace="preserve">Deletes the resource represented by @source from a remote server.
+The @source must be #ESource:remote-deletable.  This will also delete
+the key file for @source and broadcast its removal to all clients,
+similar to e_source_remove_sync().
+
+If an error occurs, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="remove" invoker="remove" version="3.6">
         <doc xml:whitespace="preserve">Asynchronously requests the D-Bus service to delete the key files for
-@source all of its descendants and broadcast their removal to all clients.
+@source and all of its descendants and broadcast their removal to all
+clients.  The @source must be #ESource:removable.
 
 When the operation is finished, @callback will be called.  You can then
 call e_source_remove_finish() to get the result of the operation.</doc>
@@ -3753,8 +3960,10 @@ error occurred, the function will set @error and return %FALSE.</doc>
                       version="3.6"
                       throws="1">
         <doc xml:whitespace="preserve">Requests the D-Bus service to delete the key files for @source and all of
-its descendants and broadcast their removal to all clients.  If an error
-occurs, the functon will set @error and return %FALSE.</doc>
+its descendants and broadcast their removal to all clients.  The @source
+must be #ESource:removable.
+
+If an error occurs, the functon will set @error and return %FALSE.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -3770,8 +3979,8 @@ occurs, the functon will set @error and return %FALSE.</doc>
       </virtual-method>
       <virtual-method name="write" invoker="write" version="3.6">
         <doc xml:whitespace="preserve">Asynchronously submits the current contents of @source to the D-Bus
-service to be written to disk and broadcast to other clients.  This
-can only be called on #ESource:writable data sources.
+service to be written to disk and broadcast to other clients.  The
+@source must be #ESource:writable.
 
 When the operation is finished, @callback will be called.  You can then
 call e_source_write_finish() to get the result of the operation.</doc>
@@ -3821,8 +4030,10 @@ error occurred, the function will set @error and return %FALSE.</doc>
                       version="3.6"
                       throws="1">
         <doc xml:whitespace="preserve">Submits the current contents of @source to the D-Bus service to be
-written to disk and broadcast to other clients.  This can only be
-called on #ESource:writable data sources.</doc>
+written to disk and broadcast to other clients.  The @source must
+be #ESource:writable.
+
+If an error occurs, the functon will set @error and return %FALSE.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -3985,6 +4196,37 @@ use this function to fetch the extension instance as needed.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the UID of the parent #ESource</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_remote_creatable"
+              c:identifier="e_source_get_remote_creatable"
+              version="3.6">
+        <doc xml:whitespace="preserve">Returns whether new resources can be created on a remote server by
+calling e_source_remote_create() on @source.
+
+Generally this is only %TRUE if @source has an #ESourceCollection
+extension, which means there is an #ECollectionBackend in the D-Bus
+service that can handle create requests.  If @source does not have
+this capability, calls to e_source_remote_create() will fail.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">whether @source can create remote resources</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="get_remote_deletable"
+              c:identifier="e_source_get_remote_deletable"
+              version="3.6">
+        <doc xml:whitespace="preserve">Returns whether the resource represented by @source can be deleted
+from a remote server by calling e_source_remote_delete().
+
+Generally this is only %TRUE if @source is a child of an #ESource
+which has an #ESourceCollection extension, which means there is an
+#ECollectionBackend in the D-Bus service that can handle delete
+requests.  If @source does not have this capability, calls to
+e_source_remote_delete() will fail.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">whether @source can delete remote resources</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </method>
       <method name="get_removable"
@@ -4429,9 +4671,174 @@ whose callback data pointer matches @user_data.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="remote_create"
+              c:identifier="e_source_remote_create"
+              version="3.6">
+        <doc xml:whitespace="preserve">Asynchronously creates a new remote resource by picking out relevant
+details from @scratch_source.  The @scratch_source must be an #ESource
+with no #GDBusObject.  The @source must be #ESource:remote-creatable.
+
+The details required to create the resource vary by #ECollectionBackend,
+but in most cases the @scratch_source need only define the resource type
+(address book, calendar, etc.), a display name for the resource, and
+possibly a server-side path or ID for the resource.
+
+When the operation is finished, @callback will be called.  You can then
+call 3_source_remote_create_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="scratch_source" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ESource describing the resource to create</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">data to pass to the callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remote_create_finish"
+              c:identifier="e_source_remote_create_finish"
+              version="3.6"
+              throws="1">
+        <doc xml:whitespace="preserve">Finishes the operation started with e_source_remote_create().  If
+an error occurred, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remote_create_sync"
+              c:identifier="e_source_remote_create_sync"
+              version="3.6"
+              throws="1">
+        <doc xml:whitespace="preserve">Creates a new remote resource by picking out relevant details from
+@scratch_source.  The @scratch_source must be an #ESource with no
+#GDBusObject.  The @source must be #ESource:remote-creatable.
+
+The details required to create the resource vary by #ECollectionBackend,
+but in most cases the @scratch_source need only define the resource type
+(address book, calendar, etc.), a display name for the resource, and
+possibly a server-side path or ID for the resource.
+
+If an error occurs, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="scratch_source" transfer-ownership="none">
+            <doc xml:whitespace="preserve">an #ESource describing the resource to create</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remote_delete"
+              c:identifier="e_source_remote_delete"
+              version="3.6">
+        <doc xml:whitespace="preserve">Asynchronously deletes the resource represented by @source from a remote
+server.  The @source must be #ESource:remote-deletable.  This will also
+delete the key file for @source and broadcast its removal to all clients,
+similar to e_source_remove().
+
+When the operation is finished, @callback will be called.  You can then
+call e_source_remote_delete_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">data to pass to the callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remote_delete_finish"
+              c:identifier="e_source_remote_delete_finish"
+              version="3.6"
+              throws="1">
+        <doc xml:whitespace="preserve">Finishes the operation started with e_source_remote_delete().  If
+an error occurred, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remote_delete_sync"
+              c:identifier="e_source_remote_delete_sync"
+              version="3.6"
+              throws="1">
+        <doc xml:whitespace="preserve">Deletes the resource represented by @source from a remote server.
+The @source must be #ESource:remote-deletable.  This will also delete
+the key file for @source and broadcast its removal to all clients,
+similar to e_source_remove_sync().
+
+If an error occurs, the function will set @error and return %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="remove" c:identifier="e_source_remove" version="3.6">
         <doc xml:whitespace="preserve">Asynchronously requests the D-Bus service to delete the key files for
-@source all of its descendants and broadcast their removal to all clients.
+@source and all of its descendants and broadcast their removal to all
+clients.  The @source must be #ESource:removable.
 
 When the operation is finished, @callback will be called.  You can then
 call e_source_remove_finish() to get the result of the operation.</doc>
@@ -4481,8 +4888,10 @@ error occurred, the function will set @error and return %FALSE.</doc>
               version="3.6"
               throws="1">
         <doc xml:whitespace="preserve">Requests the D-Bus service to delete the key files for @source and all of
-its descendants and broadcast their removal to all clients.  If an error
-occurs, the functon will set @error and return %FALSE.</doc>
+its descendants and broadcast their removal to all clients.  The @source
+must be #ESource:removable.
+
+If an error occurs, the functon will set @error and return %FALSE.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -4568,8 +4977,8 @@ Free the returned string with g_free().</doc>
       </method>
       <method name="write" c:identifier="e_source_write" version="3.6">
         <doc xml:whitespace="preserve">Asynchronously submits the current contents of @source to the D-Bus
-service to be written to disk and broadcast to other clients.  This
-can only be called on #ESource:writable data sources.
+service to be written to disk and broadcast to other clients.  The
+@source must be #ESource:writable.
 
 When the operation is finished, @callback will be called.  You can then
 call e_source_write_finish() to get the result of the operation.</doc>
@@ -4619,8 +5028,10 @@ error occurred, the function will set @error and return %FALSE.</doc>
               version="3.6"
               throws="1">
         <doc xml:whitespace="preserve">Submits the current contents of @source to the D-Bus service to be
-written to disk and broadcast to other clients.  This can only be
-called on #ESource:writable data sources.</doc>
+written to disk and broadcast to other clients.  The @source must
+be #ESource:writable.
+
+If an error occurs, the functon will set @error and return %FALSE.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -4662,10 +5073,19 @@ called on #ESource:writable data sources.</doc>
       <property name="parent" writable="1" transfer-ownership="none">
         <type name="utf8"/>
       </property>
+      <property name="remote-creatable" transfer-ownership="none">
+        <type name="gboolean"/>
+      </property>
+      <property name="remote-deletable" transfer-ownership="none">
+        <type name="gboolean"/>
+      </property>
       <property name="removable" transfer-ownership="none">
         <type name="gboolean"/>
       </property>
-      <property name="uid" transfer-ownership="none">
+      <property name="uid"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
         <type name="utf8"/>
       </property>
       <property name="writable" transfer-ownership="none">
@@ -5342,7 +5762,8 @@ If an error occurs, the function sets @error and returns
     </interface>
     <record name="SourceAuthenticatorInterface"
             c:type="ESourceAuthenticatorInterface"
-            glib:is-gtype-struct-for="SourceAuthenticator">
+            glib:is-gtype-struct-for="SourceAuthenticator"
+            version="3.6">
       <field name="parent_interface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
@@ -5909,8 +6330,150 @@ See e_source_camel_configure_service().</doc>
           </parameters>
         </callback>
       </field>
+      <field name="remote_create_sync">
+        <callback name="remote_create_sync" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="scratch_source" transfer-ownership="none">
+              <doc xml:whitespace="preserve">an #ESource describing the resource to create</doc>
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       allow-none="1">
+              <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remote_create">
+        <callback name="remote_create">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="scratch_source" transfer-ownership="none">
+              <doc xml:whitespace="preserve">an #ESource describing the resource to create</doc>
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       allow-none="1">
+              <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data" transfer-ownership="none" closure="4">
+              <doc xml:whitespace="preserve">data to pass to the callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remote_create_finish">
+        <callback name="remote_create_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remote_delete_sync">
+        <callback name="remote_delete_sync" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       allow-none="1">
+              <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remote_delete">
+        <callback name="remote_delete">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       allow-none="1">
+              <doc xml:whitespace="preserve">optional #GCancellable object, or %NULL</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       allow-none="1"
+                       scope="async"
+                       closure="3">
+              <doc xml:whitespace="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data" transfer-ownership="none" closure="3">
+              <doc xml:whitespace="preserve">data to pass to the callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remote_delete_finish">
+        <callback name="remote_delete_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE on success, %FALSE on failure</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="source" transfer-ownership="none">
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:whitespace="preserve">a #GAsyncResult</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="reserved">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="16">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -6127,7 +6690,9 @@ but there should rarely be any need for clients to call this.</doc>
            glib:type-struct="SourceExtensionClass">
       <doc xml:whitespace="preserve">Contains only private data that should be read and manipulated using the
 functions below.</doc>
-      <method name="get_source" c:identifier="e_source_extension_get_source">
+      <method name="get_source"
+              c:identifier="e_source_extension_get_source"
+              version="3.6">
         <doc xml:whitespace="preserve">Returns the #ESource instance to which @extension belongs.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the #ESource instance</doc>
@@ -7544,7 +8109,9 @@ property is %TRUE.</doc>
         <type name="SourceExtensionClass" c:type="ESourceExtensionClass"/>
       </field>
     </record>
-    <callback name="SourceRefreshFunc" c:type="ESourceRefreshFunc">
+    <callback name="SourceRefreshFunc"
+              c:type="ESourceRefreshFunc"
+              version="3.6">
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -7907,7 +8474,9 @@ service through e_source_write_sync().
 
 If @source does NOT have a #GDBusObject (implying it's a scratch
 #ESource), its contents are submitted to the D-Bus service through
-e_source_registry_create_sources_sync().
+either e_source_remote_create_sync() if @source is to be a collection
+member, or e_source_registry_create_sources_sync() if @source to be an
+independent data source.
 
 If an error occurs, the function will set @error and return %FALSE.</doc>
         <return-value transfer-ownership="none">
@@ -9292,6 +9861,18 @@ The returned string should be freed with g_free() when no longer needed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
       </method>
+      <method name="dup_resource_query"
+              c:identifier="e_source_webdav_dup_resource_query"
+              version="3.6">
+        <doc xml:whitespace="preserve">Thread-safe variation of e_source_webdav_get_resource_query().
+Use this function when accessing @extension from multiple threads.
+
+The returned string should be freed with g_free() when no longer needed.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the newly-allocated copy of #ESourceWebdav:resource-query</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+      </method>
       <method name="dup_soup_uri"
               c:identifier="e_source_webdav_dup_soup_uri"
               version="3.6"
@@ -9371,6 +9952,20 @@ signed by an unrecognized Certificate Authority.</doc>
         <doc xml:whitespace="preserve">Returns the absolute path to a resource on a WebDAV server.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the absolute path to a WebDAV resource</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_resource_query"
+              c:identifier="e_source_webdav_get_resource_query"
+              version="3.6">
+        <doc xml:whitespace="preserve">Returns the URI query required to access a resource on a WebDAV server.
+
+This is typically used when the #ESourceWebdav:resource-path points not
+to the resource itself but to a web program that generates the resource
+content on-the-fly.  The #ESourceWebdav:resource-query holds the input
+values for the program.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the query to access a WebDAV resource</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
       </method>
@@ -9492,19 +10087,44 @@ instead.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_resource_query"
+              c:identifier="e_source_webdav_set_resource_query"
+              version="3.6">
+        <doc xml:whitespace="preserve">Sets the URI query required to access a resource on a WebDAV server.
+
+This is typically used when the #ESourceWebdav:resource-path points not
+to the resource itself but to a web program that generates the resource
+content on-the-fly.  The #ESourceWebdav:resource-query holds the input
+values for the program.
+
+The internal copy of @resource_query is automatically stripped of leading
+and trailing whitespace.  If the resulting string is empty, %NULL is set
+instead.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="resource_query"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">the query to access a WebDAV resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_soup_uri"
               c:identifier="e_source_webdav_set_soup_uri"
               version="3.6"
               introspectable="0">
         <doc xml:whitespace="preserve">This is a convenience function which propagates the components of
 @uri to the #ESourceAuthentication extension, the #ESourceSecurity
-extension, and @extension itself.  (The "query" and "fragment"
-components of @uri are ignored.)</doc>
+extension, and @extension itself.  (The "fragment" component of
+@uri is ignored.)</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="uri" transfer-ownership="none">
+          <parameter name="soup_uri" transfer-ownership="none">
             <doc xml:whitespace="preserve">a #SoupURI</doc>
             <type c:type="SoupURI*"/>
           </parameter>
@@ -9541,6 +10161,12 @@ components of @uri are ignored.)</doc>
         <type name="gboolean"/>
       </property>
       <property name="resource-path"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="resource-query"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
@@ -12955,6 +13581,26 @@ bytes that are ASCII characters.</doc>
         <parameter name="out" transfer-ownership="none">
           <doc xml:whitespace="preserve">The location to store the UTF-8 character in.</doc>
           <type name="gunichar" c:type="gunichar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="util_utf8_data_make_valid"
+              c:identifier="e_util_utf8_data_make_valid"
+              version="3.6">
+      <doc xml:whitespace="preserve">Returns a newly-allocated NULL-terminated string with invalid characters
+replaced by Unicode replacement characters (U+FFFD).</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">a newly-allocated string</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="data" transfer-ownership="none">
+          <doc xml:whitespace="preserve">UTF-8 binary data</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="data_bytes" transfer-ownership="none">
+          <doc xml:whitespace="preserve">length of the binary data</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
       </parameters>
     </function>

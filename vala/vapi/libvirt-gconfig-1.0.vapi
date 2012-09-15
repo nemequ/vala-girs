@@ -602,19 +602,19 @@ namespace GVirConfig {
 		public void set_format (string format);
 		public void set_permissions (GVirConfig.StoragePermissions? perms);
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CHANNEL_TARGET_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CHANNEL_TARGET_", type_id = "gvir_config_domain_channel_target_type_get_type ()")]
 	public enum DomainChannelTargetType {
 		GUESTFWD,
 		VIRTIO
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CLOCK_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CLOCK_", type_id = "gvir_config_domain_clock_offset_get_type ()")]
 	public enum DomainClockOffset {
 		UTC,
 		LOCALTIME,
 		TIMEZONE,
 		VARIABLE
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CONSOLE_TARGET_", type_id = "gvir_config_domain_console_target_type_get_type ()")]
 	public enum DomainConsoleTargetType {
 		XEN,
 		SERIAL,
@@ -623,7 +623,7 @@ namespace GVirConfig {
 		LXC,
 		OPENVZ
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_", type_id = "gvir_config_domain_controller_usb_model_get_type ()")]
 	public enum DomainControllerUsbModel {
 		PIIX3_UHCI,
 		PIIX4_UHCI,
@@ -635,7 +635,7 @@ namespace GVirConfig {
 		VT82C686B_UHCI,
 		PCI_OHCI
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_FEATURE_POLICY_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_FEATURE_POLICY_", type_id = "gvir_config_domain_cpu_feature_policy_get_type ()")]
 	public enum DomainCpuFeaturePolicy {
 		FORCE,
 		REQUIRE,
@@ -643,19 +643,19 @@ namespace GVirConfig {
 		DISABLE,
 		FORBID
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_MATCH_POLICY_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_MATCH_POLICY_", type_id = "gvir_config_domain_cpu_match_policy_get_type ()")]
 	public enum DomainCpuMatchPolicy {
 		MINIMUM,
 		EXACT,
 		STRICT
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_MODE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_MODE_", type_id = "gvir_config_domain_cpu_mode_get_type ()")]
 	public enum DomainCpuMode {
 		CUSTOM,
 		HOST_MODEL,
 		HOST_PASSTHROUGH
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_BUS_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_BUS_", type_id = "gvir_config_domain_disk_bus_get_type ()")]
 	public enum DomainDiskBus {
 		IDE,
 		FDC,
@@ -666,7 +666,7 @@ namespace GVirConfig {
 		UML,
 		SATA
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_CACHE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_CACHE_", type_id = "gvir_config_domain_disk_cache_type_get_type ()")]
 	public enum DomainDiskCacheType {
 		DEFAULT,
 		NONE,
@@ -675,44 +675,44 @@ namespace GVirConfig {
 		DIRECTSYNC,
 		UNSAFE
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_GUEST_DEVICE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_GUEST_DEVICE_", type_id = "gvir_config_domain_disk_guest_device_type_get_type ()")]
 	public enum DomainDiskGuestDeviceType {
 		DISK,
 		FLOPPY,
 		CDROM
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_SNAPSHOT_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_SNAPSHOT_", type_id = "gvir_config_domain_disk_snapshot_type_get_type ()")]
 	public enum DomainDiskSnapshotType {
 		NO,
 		INTERNAL,
 		EXTERNAL
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_STARTUP_POLICY_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_STARTUP_POLICY_", type_id = "gvir_config_domain_disk_startup_policy_get_type ()")]
 	public enum DomainDiskStartupPolicy {
 		MANDATORY,
 		REQUISITE,
 		OPTIONAL
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_DISK_", type_id = "gvir_config_domain_disk_type_get_type ()")]
 	public enum DomainDiskType {
 		FILE,
 		BLOCK,
 		DIR,
 		NETWORK
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_ACCESS_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_ACCESS_", type_id = "gvir_config_domain_filesys_access_type_get_type ()")]
 	public enum DomainFilesysAccessType {
 		PASSTHROUGH,
 		MAPPED,
 		SQUASH
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_DRIVER_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_DRIVER_", type_id = "gvir_config_domain_filesys_driver_type_get_type ()")]
 	public enum DomainFilesysDriverType {
 		DEFAULT,
 		PATH,
 		HANDLE
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_", type_id = "gvir_config_domain_filesys_type_get_type ()")]
 	public enum DomainFilesysType {
 		MOUNT,
 		BLOCK,
@@ -721,24 +721,24 @@ namespace GVirConfig {
 		RAM,
 		BIND
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_BUS_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_BUS_", type_id = "gvir_config_domain_input_bus_get_type ()")]
 	public enum DomainInputBus {
 		PS2,
 		USB,
 		XEN
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_DEVICE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_DEVICE_", type_id = "gvir_config_domain_input_device_type_get_type ()")]
 	public enum DomainInputDeviceType {
 		MOUSE,
 		TABLET
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_", type_id = "gvir_config_domain_interface_link_state_get_type ()")]
 	public enum DomainInterfaceLinkState {
 		DEFAULT,
 		UP,
 		DOWN
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_LIFECYCLE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_LIFECYCLE_", type_id = "gvir_config_domain_lifecycle_action_get_type ()")]
 	public enum DomainLifecycleAction {
 		DESTROY,
 		RESTART,
@@ -747,7 +747,7 @@ namespace GVirConfig {
 		COREDUMP_DESTROY,
 		COREDUMP_RESTART
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_", type_id = "gvir_config_domain_lifecycle_event_get_type ()")]
 	public enum DomainLifecycleEvent {
 		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_POWEROFF")]
 		ON_POWEROFF,
@@ -756,25 +756,25 @@ namespace GVirConfig {
 		[CCode (cname = "GVIR_CONFIG_DOMAIN_LIFECYCLE_ON_CRASH")]
 		ON_CRASH
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_MEMBALLOON_MODEL_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_MEMBALLOON_MODEL_", type_id = "gvir_config_domain_memballoon_model_get_type ()")]
 	public enum DomainMemballoonModel {
 		NONE,
 		VIRTIO
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_BOOT_DEVICE_", type_id = "gvir_config_domain_os_boot_device_get_type ()")]
 	public enum DomainOsBootDevice {
 		FD,
 		HD,
 		CDROM,
 		NETWORK
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_", type_id = "gvir_config_domain_os_sm_bios_mode_get_type ()")]
 	public enum DomainOsSmBiosMode {
 		EMULATE,
 		HOST,
 		SYSINFO
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_TYPE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_TYPE_", type_id = "gvir_config_domain_os_type_get_type ()")]
 	public enum DomainOsType {
 		HVM,
 		LINUX,
@@ -782,16 +782,16 @@ namespace GVirConfig {
 		XEN,
 		UML
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_REDIRDEV_BUS_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_REDIRDEV_BUS_", type_id = "gvir_config_domain_redirdev_bus_get_type ()")]
 	public enum DomainRedirdevBus {
 		USB
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_SECLABEL_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_SECLABEL_", type_id = "gvir_config_domain_seclabel_type_get_type ()")]
 	public enum DomainSeclabelType {
 		DYNAMIC,
 		STATIC
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_SOUND_MODEL_", type_id = "gvir_config_domain_sound_model_get_type ()")]
 	public enum DomainSoundModel {
 		SB16,
 		ES1370,
@@ -799,14 +799,14 @@ namespace GVirConfig {
 		AC97,
 		ICH6
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_TIMER_TICK_POLICY_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_TIMER_TICK_POLICY_", type_id = "gvir_config_domain_timer_tick_policy_get_type ()")]
 	public enum DomainTimerTickPolicy {
 		DELAY,
 		CATCHUP,
 		MERGE,
 		DISCARD
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIDEO_MODEL_", type_id = "gvir_config_domain_video_model_get_type ()")]
 	public enum DomainVideoModel {
 		VGA,
 		CIRRUS,
@@ -815,7 +815,7 @@ namespace GVirConfig {
 		VBOX,
 		QXL
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIRT_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIRT_", type_id = "gvir_config_domain_virt_type_get_type ()")]
 	public enum DomainVirtType {
 		QEMU,
 		KQEMU,
@@ -833,7 +833,7 @@ namespace GVirConfig {
 		ONE,
 		PHYP
 	}
-	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_STORAGE_POOL_TYPE_")]
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_STORAGE_POOL_TYPE_", type_id = "gvir_config_storage_pool_type_get_type ()")]
 	public enum StoragePoolType {
 		DIR,
 		FS,

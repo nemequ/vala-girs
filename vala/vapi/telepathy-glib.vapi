@@ -158,6 +158,7 @@ namespace TelepathyGLib {
 	public class AccountManager : TelepathyGLib.Proxy {
 		[CCode (has_construct_function = false)]
 		public AccountManager (TelepathyGLib.DBusDaemon bus_daemon);
+		public static bool can_set_default ();
 		public async unowned TelepathyGLib.Account create_account_async (string connection_manager, string protocol, string display_name, GLib.HashTable<string,GLib.Value?> parameters, GLib.HashTable<string,GLib.Value?> properties) throws GLib.Error;
 		public static TelepathyGLib.AccountManager dup ();
 		public void enable_restart ();
@@ -1470,7 +1471,7 @@ namespace TelepathyGLib {
 	public struct _DBusPropertiesMixinClass {
 		public TelepathyGLib.DBusPropertiesMixinIfaceImpl interfaces;
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ACCESS_CONTROL_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ACCESS_CONTROL_TYPE_", has_type_id = false)]
 	public enum AccessControlType {
 		WHITELIST,
 		PUBLISH_LIST,
@@ -1480,31 +1481,31 @@ namespace TelepathyGLib {
 		CLOSED,
 		NOT_UNDERSTOOD
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ANONYMITY_MODE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ANONYMITY_MODE_", has_type_id = false)]
 	[Flags]
 	public enum AnonymityModeFlags {
 		CLIENT_INFO,
 		SHOW_CLIENT_INFO,
 		NETWORK_INFO
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CM_INFO_SOURCE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CM_INFO_SOURCE_", has_type_id = false)]
 	public enum CMInfoSource {
 		NONE,
 		FILE,
 		LIVE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_CONTENT_DISPOSITION_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_CONTENT_DISPOSITION_", has_type_id = false)]
 	public enum CallContentDisposition {
 		NONE,
 		INITIAL
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_CONTENT_PACKETIZATION_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_CONTENT_PACKETIZATION_TYPE_", has_type_id = false)]
 	public enum CallContentPacketizationType {
 		RTP,
 		RAW,
 		MSN_WEBCAM
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum CallFlags {
 		LOCALLY_HELD,
@@ -1513,14 +1514,14 @@ namespace TelepathyGLib {
 		FORWARDED,
 		CLEARING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_MEMBER_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_MEMBER_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum CallMemberFlags {
 		RINGING,
 		HELD,
 		CONFERENCE_HOST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STATE_", has_type_id = false)]
 	public enum CallState {
 		UNKNOWN,
 		PENDING_INITIATOR,
@@ -1530,7 +1531,7 @@ namespace TelepathyGLib {
 		ACTIVE,
 		ENDED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STATE_CHANGE_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STATE_CHANGE_REASON_", has_type_id = false)]
 	public enum CallStateChangeReason {
 		UNKNOWN,
 		PROGRESS_MADE,
@@ -1547,7 +1548,7 @@ namespace TelepathyGLib {
 		MEDIA_ERROR,
 		CONNECTIVITY_ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STREAM_CANDIDATE_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CALL_STREAM_CANDIDATE_TYPE_", has_type_id = false)]
 	public enum CallStreamCandidateType {
 		NONE,
 		HOST,
@@ -1556,19 +1557,19 @@ namespace TelepathyGLib {
 		RELAY,
 		MULTICAST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_CANCEL_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_CANCEL_REASON_", has_type_id = false)]
 	public enum CaptchaCancelReason {
 		USER_CANCELLED,
 		NOT_SUPPORTED,
 		SERVICE_CONFUSED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_FLAGS_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_FLAGS_", has_type_id = false)]
 	[Flags]
 	public enum CaptchaFlags {
 		[CCode (cname = "TP_CAPTCHA_FLAGS_REQUIRED")]
 		CAPTCHA_FLAGS_REQUIRED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_STATUS_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CAPTCHA_STATUS_", has_type_id = false)]
 	public enum CaptchaStatus {
 		LOCAL_PENDING,
 		REMOTE_PENDING,
@@ -1576,7 +1577,7 @@ namespace TelepathyGLib {
 		TRY_AGAIN,
 		FAILED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CALL_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CALL_STATE_", has_type_id = false)]
 	[Flags]
 	public enum ChannelCallStateFlags {
 		RINGING,
@@ -1586,7 +1587,7 @@ namespace TelepathyGLib {
 		IN_PROGRESS,
 		CONFERENCE_HOST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CHAT_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CHAT_STATE_", has_type_id = false)]
 	public enum ChannelChatState {
 		GONE,
 		INACTIVE,
@@ -1594,7 +1595,7 @@ namespace TelepathyGLib {
 		PAUSED,
 		COMPOSING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CONTACT_SEARCH_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_CONTACT_SEARCH_STATE_", has_type_id = false)]
 	public enum ChannelContactSearchState {
 		NOT_STARTED,
 		IN_PROGRESS,
@@ -1602,7 +1603,7 @@ namespace TelepathyGLib {
 		COMPLETED,
 		FAILED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_GROUP_CHANGE_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_GROUP_CHANGE_REASON_", has_type_id = false)]
 	public enum ChannelGroupChangeReason {
 		NONE,
 		OFFLINE,
@@ -1617,7 +1618,7 @@ namespace TelepathyGLib {
 		PERMISSION_DENIED,
 		SEPARATED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_GROUP_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_GROUP_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ChannelGroupFlags {
 		CAN_ADD,
@@ -1635,7 +1636,7 @@ namespace TelepathyGLib {
 		MEMBERS_CHANGED_DETAILED,
 		MESSAGE_DEPART
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_MEDIA_CAPABILITY_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_MEDIA_CAPABILITY_", has_type_id = false)]
 	[Flags]
 	public enum ChannelMediaCapabilities {
 		AUDIO,
@@ -1645,13 +1646,13 @@ namespace TelepathyGLib {
 		NAT_TRAVERSAL_ICE_UDP,
 		IMMUTABLE_STREAMS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_PASSWORD_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_PASSWORD_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ChannelPasswordFlags {
 		PROVIDE,
 		HINT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_MESSAGE_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_MESSAGE_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ChannelTextMessageFlags {
 		TRUNCATED,
@@ -1659,7 +1660,7 @@ namespace TelepathyGLib {
 		SCROLLBACK,
 		RESCUED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_MESSAGE_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_MESSAGE_TYPE_", has_type_id = false)]
 	public enum ChannelTextMessageType {
 		NORMAL,
 		ACTION,
@@ -1667,7 +1668,7 @@ namespace TelepathyGLib {
 		AUTO_REPLY,
 		DELIVERY_REPORT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_SEND_ERROR_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CHANNEL_TEXT_SEND_ERROR_", has_type_id = false)]
 	public enum ChannelTextSendError {
 		UNKNOWN,
 		OFFLINE,
@@ -1676,7 +1677,7 @@ namespace TelepathyGLib {
 		TOO_LONG,
 		NOT_IMPLEMENTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONN_MGR_PARAM_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONN_MGR_PARAM_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ConnMgrParamFlags {
 		REQUIRED,
@@ -1685,19 +1686,19 @@ namespace TelepathyGLib {
 		SECRET,
 		DBUS_PROPERTY
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_ALIAS_FLAG_USER_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_ALIAS_FLAG_USER_", has_type_id = false)]
 	[Flags]
 	public enum ConnectionAliasFlags {
 		[CCode (cname = "TP_CONNECTION_ALIAS_FLAG_USER_SET")]
 		CONNECTION_ALIAS_FLAG_USER_SET
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_CAPABILITY_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_CAPABILITY_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ConnectionCapabilityFlags {
 		CREATE,
 		INVITE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_PRESENCE_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_PRESENCE_TYPE_", has_type_id = false)]
 	public enum ConnectionPresenceType {
 		UNSET,
 		OFFLINE,
@@ -1709,13 +1710,13 @@ namespace TelepathyGLib {
 		UNKNOWN,
 		ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_STATUS_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_STATUS_", has_type_id = false)]
 	public enum ConnectionStatus {
 		CONNECTED,
 		CONNECTING,
 		DISCONNECTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_STATUS_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONNECTION_STATUS_REASON_", has_type_id = false)]
 	public enum ConnectionStatusReason {
 		NONE_SPECIFIED,
 		REQUESTED,
@@ -1735,13 +1736,13 @@ namespace TelepathyGLib {
 		CERT_INSECURE,
 		CERT_LIMIT_EXCEEDED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_", has_type_id = false)]
 	[Flags]
 	public enum ContactBlockingCapabilities {
 		[CCode (cname = "TP_CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_ABUSIVE")]
 		CONTACT_BLOCKING_CAPABILITY_CAN_REPORT_ABUSIVE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_FEATURE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_FEATURE_", has_type_id = false)]
 	public enum ContactFeature {
 		ALIAS,
 		AVATAR_TOKEN,
@@ -1755,33 +1756,33 @@ namespace TelepathyGLib {
 		CONTACT_GROUPS,
 		CONTACT_BLOCKING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_INFO_FIELD_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_INFO_FIELD_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ContactInfoFieldFlags {
 		PARAMETERS_EXACT,
 		OVERWRITTEN_BY_NICKNAME
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_INFO_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_INFO_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum ContactInfoFlags {
 		CAN_SET,
 		PUSH
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_LIST_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_LIST_STATE_", has_type_id = false)]
 	public enum ContactListState {
 		NONE,
 		WAITING,
 		FAILURE,
 		SUCCESS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_METADATA_STORAGE_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_CONTACT_METADATA_STORAGE_TYPE_", has_type_id = false)]
 	public enum ContactMetadataStorageType {
 		NONE,
 		SUBSCRIBED_OR_PENDING,
 		SUBSCRIBED,
 		ANYONE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_ERROR_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_ERROR_", has_type_id = false)]
 	public enum DBusError {
 		UNKNOWN_REMOTE_ERROR,
 		PROXY_UNREFERENCED,
@@ -1795,7 +1796,7 @@ namespace TelepathyGLib {
 		CANCELLED,
 		INCONSISTENT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_NAME_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_NAME_TYPE_", has_type_id = false)]
 	[Flags]
 	public enum DBusNameType {
 		UNIQUE,
@@ -1804,7 +1805,7 @@ namespace TelepathyGLib {
 		NOT_BUS_DAEMON,
 		ANY
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_PROPERTIES_MIXIN_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DBUS_PROPERTIES_MIXIN_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum DBusPropertiesMixinFlags {
 		READ,
@@ -1812,7 +1813,7 @@ namespace TelepathyGLib {
 		EMITS_CHANGED,
 		EMITS_INVALIDATED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DTMF_EVENT_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DTMF_EVENT_", has_type_id = false)]
 	public enum DTMFEvent {
 		DIGIT_0,
 		DIGIT_1,
@@ -1831,7 +1832,7 @@ namespace TelepathyGLib {
 		LETTER_C,
 		LETTER_D
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DEBUG_LEVEL_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DEBUG_LEVEL_", has_type_id = false)]
 	public enum DebugLevel {
 		ERROR,
 		CRITICAL,
@@ -1840,7 +1841,7 @@ namespace TelepathyGLib {
 		INFO,
 		DEBUG
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DELIVERY_REPORTING_SUPPORT_FLAG_RECEIVE_", has_type_id = false)]
 	[Flags]
 	public enum DeliveryReportingSupportFlags {
 		FAILURES,
@@ -1848,7 +1849,7 @@ namespace TelepathyGLib {
 		READ,
 		DELETED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DELIVERY_STATUS_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_DELIVERY_STATUS_", has_type_id = false)]
 	public enum DeliveryStatus {
 		UNKNOWN,
 		DELIVERED,
@@ -1858,14 +1859,14 @@ namespace TelepathyGLib {
 		READ,
 		DELETED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_HASH_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_HASH_TYPE_", has_type_id = false)]
 	public enum FileHashType {
 		NONE,
 		MD5,
 		SHA1,
 		SHA256
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_TRANSFER_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_TRANSFER_STATE_", has_type_id = false)]
 	public enum FileTransferState {
 		NONE,
 		PENDING,
@@ -1874,7 +1875,7 @@ namespace TelepathyGLib {
 		COMPLETED,
 		CANCELLED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_FILE_TRANSFER_STATE_CHANGE_REASON_", has_type_id = false)]
 	public enum FileTransferStateChangeReason {
 		NONE,
 		REQUESTED,
@@ -1883,12 +1884,12 @@ namespace TelepathyGLib {
 		LOCAL_ERROR,
 		REMOTE_ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_HTTP_METHOD_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_HTTP_METHOD_", has_type_id = false)]
 	public enum HTTPMethod {
 		GET,
 		POST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_HANDLE_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_HANDLE_TYPE_", has_type_id = false)]
 	public enum HandleType {
 		NONE,
 		CONTACT,
@@ -1898,26 +1899,26 @@ namespace TelepathyGLib {
 		public static bool is_valid (TelepathyGLib.HandleType type) throws GLib.Error;
 		public static unowned string to_string (TelepathyGLib.HandleType type);
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_", has_type_id = false)]
 	public enum LocalHoldState {
 		UNHELD,
 		HELD,
 		PENDING_HOLD,
 		PENDING_UNHOLD
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_REASON_", has_type_id = false)]
 	public enum LocalHoldStateReason {
 		NONE,
 		REQUESTED,
 		RESOURCE_NOT_AVAILABLE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCATION_FEATURE_CAN_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCATION_FEATURE_CAN_", has_type_id = false)]
 	[Flags]
 	public enum LocationFeatures {
 		[CCode (cname = "TP_LOCATION_FEATURE_CAN_SET")]
 		LOCATION_FEATURE_CAN_SET
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MAIL_NOTIFICATION_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MAIL_NOTIFICATION_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum MailNotificationFlags {
 		SUPPORTS_UNREAD_MAIL_COUNT,
@@ -1927,19 +1928,19 @@ namespace TelepathyGLib {
 		SUPPORTS_REQUEST_MAIL_URL,
 		THREAD_BASED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_BASE_PROTO_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_BASE_PROTO_", has_type_id = false)]
 	public enum MediaStreamBaseProto {
 		UDP,
 		TCP
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_DIRECTION_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_DIRECTION_", has_type_id = false)]
 	public enum MediaStreamDirection {
 		NONE,
 		SEND,
 		RECEIVE,
 		BIDIRECTIONAL
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_ERROR_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_ERROR_", has_type_id = false)]
 	public enum MediaStreamError {
 		UNKNOWN,
 		EOS,
@@ -1950,54 +1951,54 @@ namespace TelepathyGLib {
 		INVALID_CM_BEHAVIOR,
 		MEDIA_ERROR
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_PENDING_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_PENDING_", has_type_id = false)]
 	[Flags]
 	public enum MediaStreamPendingSend {
 		LOCAL_SEND,
 		REMOTE_SEND
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_STATE_", has_type_id = false)]
 	public enum MediaStreamState {
 		DISCONNECTED,
 		CONNECTING,
 		CONNECTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_TRANSPORT_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_TRANSPORT_TYPE_", has_type_id = false)]
 	public enum MediaStreamTransportType {
 		LOCAL,
 		DERIVED,
 		RELAY
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MEDIA_STREAM_TYPE_", has_type_id = false)]
 	public enum MediaStreamType {
 		AUDIO,
 		VIDEO
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MESSAGE_PART_SUPPORT_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MESSAGE_PART_SUPPORT_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum MessagePartSupportFlags {
 		ONE_ATTACHMENT,
 		MULTIPLE_ATTACHMENTS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MESSAGE_SENDING_FLAG_REPORT_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_MESSAGE_SENDING_FLAG_REPORT_", has_type_id = false)]
 	[Flags]
 	public enum MessageSendingFlags {
 		DELIVERY,
 		READ,
 		DELETED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_PROPERTY_FLAG_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_PROPERTY_FLAG_", has_type_id = false)]
 	[Flags]
 	public enum PropertyFlags {
 		READ,
 		WRITE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RCPT_XR_RTT_MODE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RCPT_XR_RTT_MODE_", has_type_id = false)]
 	public enum RCPTXRRTTMode {
 		ALL,
 		SENDER
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RTCP_XR_STATISTICS_FLAGS_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RTCP_XR_STATISTICS_FLAGS_", has_type_id = false)]
 	[Flags]
 	public enum RTCPXRStatisticsFlags {
 		LOSS,
@@ -2006,19 +2007,19 @@ namespace TelepathyGLib {
 		TTL,
 		HL
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_RICH_PRESENCE_ACCESS_CONTROL_TYPE_", has_type_id = false)]
 	public enum RichPresenceAccessControlType {
 		WHITELIST,
 		PUBLISH_LIST,
 		GROUP,
 		OPEN
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SASL_ABORT_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SASL_ABORT_REASON_", has_type_id = false)]
 	public enum SASLAbortReason {
 		INVALID_CHALLENGE,
 		USER_ABORT
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SASL_STATUS_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SASL_STATUS_", has_type_id = false)]
 	public enum SASLStatus {
 		NOT_STARTED,
 		IN_PROGRESS,
@@ -2028,34 +2029,34 @@ namespace TelepathyGLib {
 		SERVER_FAILED,
 		CLIENT_FAILED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SENDING_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SENDING_STATE_", has_type_id = false)]
 	public enum SendingState {
 		NONE,
 		PENDING_SEND,
 		SENDING,
 		PENDING_STOP_SENDING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SERVICE_POINT_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SERVICE_POINT_TYPE_", has_type_id = false)]
 	public enum ServicePointType {
 		NONE,
 		EMERGENCY,
 		COUNSELING
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SOCKET_ACCESS_CONTROL_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SOCKET_ACCESS_CONTROL_", has_type_id = false)]
 	public enum SocketAccessControl {
 		LOCALHOST,
 		PORT,
 		NETMASK,
 		CREDENTIALS
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SOCKET_ADDRESS_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SOCKET_ADDRESS_TYPE_", has_type_id = false)]
 	public enum SocketAddressType {
 		UNIX,
 		ABSTRACT_UNIX,
 		IPV4,
 		IPV6
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_", has_type_id = false)]
 	[Flags]
 	public enum StorageRestrictionFlags {
 		PARAMETERS,
@@ -2063,13 +2064,13 @@ namespace TelepathyGLib {
 		PRESENCE,
 		SERVICE
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_COMPONENT_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_COMPONENT_", has_type_id = false)]
 	public enum StreamComponent {
 		UNKNOWN,
 		DATA,
 		CONTROL
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_ENDPOINT_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_ENDPOINT_STATE_", has_type_id = false)]
 	public enum StreamEndpointState {
 		CONNECTING,
 		PROVISIONALLY_CONNECTED,
@@ -2077,14 +2078,14 @@ namespace TelepathyGLib {
 		EXHAUSTED_CANDIDATES,
 		FAILED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_FLOW_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_FLOW_STATE_", has_type_id = false)]
 	public enum StreamFlowState {
 		STOPPED,
 		PENDING_START,
 		PENDING_STOP,
 		STARTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_TRANSPORT_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_STREAM_TRANSPORT_TYPE_", has_type_id = false)]
 	public enum StreamTransportType {
 		UNKNOWN,
 		RAW_UDP,
@@ -2094,7 +2095,7 @@ namespace TelepathyGLib {
 		SHM,
 		MULTICAST
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SUBSCRIPTION_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_SUBSCRIPTION_STATE_", has_type_id = false)]
 	public enum SubscriptionState {
 		UNKNOWN,
 		NO,
@@ -2102,7 +2103,7 @@ namespace TelepathyGLib {
 		ASK,
 		YES
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TLS_CERTIFICATE_REJECT_REASON_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TLS_CERTIFICATE_REJECT_REASON_", has_type_id = false)]
 	public enum TLSCertificateRejectReason {
 		UNKNOWN,
 		UNTRUSTED,
@@ -2115,26 +2116,26 @@ namespace TelepathyGLib {
 		INSECURE,
 		LIMIT_EXCEEDED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TLS_CERTIFICATE_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TLS_CERTIFICATE_STATE_", has_type_id = false)]
 	public enum TLSCertificateState {
 		PENDING,
 		ACCEPTED,
 		REJECTED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_CHANNEL_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_CHANNEL_STATE_", has_type_id = false)]
 	public enum TubeChannelState {
 		LOCAL_PENDING,
 		REMOTE_PENDING,
 		OPEN,
 		NOT_OFFERED
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_STATE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_STATE_", has_type_id = false)]
 	public enum TubeState {
 		LOCAL_PENDING,
 		REMOTE_PENDING,
 		OPEN
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_TYPE_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_TUBE_TYPE_", has_type_id = false)]
 	public enum TubeType {
 		DBUS,
 		STREAM
@@ -3281,9 +3282,11 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_TOKEN_CONNECTION_INTERFACE_SIMPLE_PRESENCE_PRESENCE")]
 	public const string TOKEN_CONNECTION_INTERFACE_SIMPLE_PRESENCE_PRESENCE;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_UNKNOWN_CONNECTION_STATUS")]
-	public const int UNKNOWN_CONNECTION_STATUS;
+	public const TelepathyGLib.ConnectionStatus UNKNOWN_CONNECTION_STATUS;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_UNKNOWN_HANDLE_TYPE")]
-	public const int UNKNOWN_HANDLE_TYPE;
+	public const TelepathyGLib.HandleType UNKNOWN_HANDLE_TYPE;
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cname = "TP_USER_ACTION_TIME_NOT_USER_ACTION")]
+	public const int64 USER_ACTION_TIME_NOT_USER_ACTION;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static bool asv_get_boolean (GLib.HashTable<string,GLib.Value?> asv, string key, out bool valid);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]

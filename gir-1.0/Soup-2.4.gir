@@ -2109,8 +2109,7 @@ any data, but will instead simply reference the same data as
         </parameters>
       </virtual-method>
       <method name="clear" c:identifier="soup_cache_clear" version="2.34">
-        <doc xml:whitespace="preserve">Will remove all entries in the @cache plus all the cache files
-associated with them.</doc>
+        <doc xml:whitespace="preserve">Will remove all entries in the @cache plus all the cache files.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3103,7 +3102,7 @@ that the cookie's expire date is not in the past).
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="cookie" transfer-ownership="none">
+          <parameter name="cookie" transfer-ownership="full">
             <doc xml:whitespace="preserve">a #SoupCookie</doc>
             <type name="Cookie" c:type="SoupCookie*"/>
           </parameter>
@@ -3128,7 +3127,7 @@ resources in case such a security policy is set in the @jar.
             <doc xml:whitespace="preserve">the URI for the main document</doc>
             <type name="URI" c:type="SoupURI*"/>
           </parameter>
-          <parameter name="cookie" transfer-ownership="none">
+          <parameter name="cookie" transfer-ownership="full">
             <doc xml:whitespace="preserve">a #SoupCookie</doc>
             <type name="Cookie" c:type="SoupCookie*"/>
           </parameter>
@@ -4493,6 +4492,11 @@ printf ("%c %s\n", direction, data);
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MULTIPART_H" value="1" c:type="SOUP_MULTIPART_H">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="MULTIPART_INPUT_STREAM_H"
+              value="1"
+              c:type="SOUP_MULTIPART_INPUT_STREAM_H">
       <type name="gint" c:type="gint"/>
     </constant>
     <enumeration name="MemoryUse"
@@ -5910,6 +5914,10 @@ behavior.</doc>
               value="64"
               c:identifier="SOUP_MESSAGE_NEW_CONNECTION"
               glib:nick="new-connection"/>
+      <member name="idempotent"
+              value="128"
+              c:identifier="SOUP_MESSAGE_IDEMPOTENT"
+              glib:nick="idempotent"/>
     </bitfield>
     <record name="MessageHeaders"
             c:type="SoupMessageHeaders"
@@ -6491,18 +6499,6 @@ You may not modify the headers while iterating over them.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
-      <method name="init" c:identifier="soup_message_headers_iter_init">
-        <doc xml:whitespace="preserve">Initializes @iter for iterating @hdrs.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="hdrs" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a %SoupMessageHeaders</doc>
-            <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="next" c:identifier="soup_message_headers_iter_next">
         <doc xml:whitespace="preserve">Yields the next name/value pair in the %SoupMessageHeaders being
 iterated by @iter. If @iter has already yielded the last header,
@@ -6529,6 +6525,25 @@ and @value will be unchanged.</doc>
           </parameter>
         </parameters>
       </method>
+      <function name="init" c:identifier="soup_message_headers_iter_init">
+        <doc xml:whitespace="preserve">Initializes @iter for iterating @hdrs.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="iter"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:whitespace="preserve">a pointer to a %SoupMessageHeadersIter structure</doc>
+            <type name="MessageHeadersIter" c:type="SoupMessageHeadersIter*"/>
+          </parameter>
+          <parameter name="hdrs" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a %SoupMessageHeaders</doc>
+            <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
+          </parameter>
+        </parameters>
+      </function>
     </record>
     <enumeration name="MessageHeadersType"
                  glib:type-name="SoupMessageHeadersType"
@@ -6739,6 +6754,158 @@ else.)</doc>
           </parameter>
         </parameters>
       </method>
+    </record>
+    <class name="MultipartInputStream"
+           c:symbol-prefix="multipart_input_stream"
+           c:type="SoupMultipartInputStream"
+           parent="Gio.FilterInputStream"
+           glib:type-name="SoupMultipartInputStream"
+           glib:get-type="soup_multipart_input_stream_get_type"
+           glib:type-struct="MultipartInputStreamClass">
+      <implements name="Gio.PollableInputStream"/>
+      <constructor name="new"
+                   c:identifier="soup_multipart_input_stream_new"
+                   version="2.40">
+        <doc xml:whitespace="preserve">Creates a new #SoupMultipartInputStream that wraps the
+#GInputStream obtained by sending the #SoupRequest. Reads should
+not be done directly through this object, use the input streams
+returned by soup_multipart_input_stream_next_part() or its async
+counterpart instead.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #SoupMultipartInputStream</doc>
+          <type name="MultipartInputStream"
+                c:type="SoupMultipartInputStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="msg" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #SoupMessage the response is related to.</doc>
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+          <parameter name="base_stream" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #GInputStream returned by sending the request.</doc>
+            <type name="Gio.InputStream" c:type="GInputStream*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_headers"
+              c:identifier="soup_multipart_input_stream_get_headers"
+              version="2.40">
+        <doc xml:whitespace="preserve">Obtains the headers for the part currently being processed. Note
+that the #SoupMessageHeaders that are returned are owned by the
+#SoupMultipartInputStream and will be replaced when a call is made
+to soup_multipart_input_stream_next_part() or its async
+counterpart, so if keeping the headers is required, a copy must be
+made.
+
+Note that if a part had no headers at all an empty #SoupMessageHeaders
+will be returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">a #SoupMessageHeaders containing the headers for the part currently being processed or %NULL if the headers failed to parse.</doc>
+          <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
+        </return-value>
+      </method>
+      <method name="next_part"
+              c:identifier="soup_multipart_input_stream_next_part"
+              version="2.40"
+              throws="1">
+        <doc xml:whitespace="preserve">Obtains an input stream for the next part. When dealing with a
+multipart response the input stream needs to be wrapped in a
+#SoupMultipartInputStream and this function or its async
+counterpart need to be called to obtain the first part for
+reading.
+
+After calling this function,
+soup_multipart_input_stream_get_headers() can be used to obtain the
+headers for the first part. A read of 0 bytes indicates the end of
+the part; a new call to this function should be done at that point,
+to obtain the next part.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #GInputStream, or %NULL if there are no more parts</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next_part_async"
+              c:identifier="soup_multipart_input_stream_next_part_async"
+              version="2.40">
+        <doc xml:whitespace="preserve">Obtains a #GInputStream for the next request. See
+soup_multipart_input_stream_next_part() for details on the
+workflow.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">a new #GInputStream, or %NULL if there are no more parts</doc>
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the I/O priority for the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a #GCancellable.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:whitespace="preserve">callback to call when request is satisfied.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next_part_finish"
+              c:identifier="soup_multipart_input_stream_next_part_finish"
+              version="2.40"
+              throws="1">
+        <doc xml:whitespace="preserve">Finishes an asynchronous request for the next part.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a newly created #GInputStream for reading the next part or %NULL if there are no more parts.</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="message"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Message"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Gio.FilterInputStream" c:type="GFilterInputStream"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="MultipartInputStreamPrivate"
+              c:type="SoupMultipartInputStreamPrivate*"/>
+      </field>
+    </class>
+    <record name="MultipartInputStreamClass"
+            c:type="SoupMultipartInputStreamClass"
+            glib:is-gtype-struct-for="MultipartInputStream">
+      <field name="parent_class">
+        <type name="Gio.FilterInputStreamClass"
+              c:type="GFilterInputStreamClass"/>
+      </field>
+    </record>
+    <record name="MultipartInputStreamPrivate"
+            c:type="SoupMultipartInputStreamPrivate"
+            disguised="1">
     </record>
     <constant name="PASSWORD_MANAGER_H"
               value="1"
@@ -8655,7 +8822,8 @@ error.
         </parameters>
       </virtual-method>
       <method name="abort" c:identifier="soup_session_abort">
-        <doc xml:whitespace="preserve">Cancels all pending requests in @session.</doc>
+        <doc xml:whitespace="preserve">Cancels all pending requests in @session and closes all idle
+persistent connections.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9130,7 +9298,14 @@ are considered aliases for "https".</doc>
                 version="2.4.1"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:whitespace="preserve">Connection lifetime when idle</doc>
+        <doc xml:whitespace="preserve">Connection lifetime (in seconds) when idle. Any connection
+left idle longer than this will be closed.
+
+Although you can change this property at any time, it will
+only affect newly-created connections, not currently-open
+ones. You can call soup_session_abort() after setting this
+if you want to ensure that all future connections will have
+this timeout value.</doc>
         <type name="guint"/>
       </property>
       <property name="max-conns" writable="1" transfer-ownership="none">
@@ -9202,6 +9377,15 @@ https certificate validation is handled.</doc>
         <type name="gboolean"/>
       </property>
       <property name="timeout" writable="1" transfer-ownership="none">
+        <doc xml:whitespace="preserve">The timeout (in seconds) for socket I/O operations
+(including connecting to a server, and waiting for a reply
+to an HTTP request).
+
+Although you can change this property at any time, it will
+only affect newly-created connections, not currently-open
+ones. You can call soup_session_abort() after setting this
+if you want to ensure that all future connections will have
+this timeout value.</doc>
         <type name="guint"/>
       </property>
       <property name="tls-database"
@@ -12208,6 +12392,27 @@ either "\0" or "\r\n".</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <function name="message_headers_iter_init"
+              c:identifier="soup_message_headers_iter_init"
+              moved-to="MessageHeadersIter.init">
+      <doc xml:whitespace="preserve">Initializes @iter for iterating @hdrs.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="iter"
+                   direction="out"
+                   caller-allocates="1"
+                   transfer-ownership="none">
+          <doc xml:whitespace="preserve">a pointer to a %SoupMessageHeadersIter structure</doc>
+          <type name="MessageHeadersIter" c:type="SoupMessageHeadersIter*"/>
+        </parameter>
+        <parameter name="hdrs" transfer-ownership="none">
+          <doc xml:whitespace="preserve">a %SoupMessageHeaders</doc>
+          <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="requester_error_quark"
               c:identifier="soup_requester_error_quark"
               moved-to="RequesterError.quark">
@@ -12323,6 +12528,10 @@ get the canonical representation if that is not the case.</doc>
 composed by the top level domain (such as .org, .com, .co.uk, etc)
 plus the second level domain, for example for myhost.mydomain.com
 it will return mydomain.com.
+
+Note that %NULL will be returned for private URLs (those not ending
+with any well known TLD) because choosing a base domain for them
+would be totally arbitrary.
 
 This method only works for valid UTF-8 hostnames in their canonical
 representation form, so you should use g_hostname_to_unicode() to

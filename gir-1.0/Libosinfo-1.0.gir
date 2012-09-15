@@ -97,6 +97,18 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_install_script"
+              c:identifier="osinfo_db_add_install_script">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="script" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a install script</doc>
+            <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_os" c:identifier="osinfo_db_add_os">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -171,6 +183,26 @@ and/or use gtk-doc annotations.  -->
         <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">the list of devices</doc>
           <type name="DeviceList" c:type="OsinfoDeviceList*"/>
+        </return-value>
+      </method>
+      <method name="get_install_script"
+              c:identifier="osinfo_db_get_install_script">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the install script, or NULL if none is found</doc>
+          <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the unique operating system identifier</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_install_script_list"
+              c:identifier="osinfo_db_get_install_script_list">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the list of install scripts</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
         </return-value>
       </method>
       <method name="get_os" c:identifier="osinfo_db_get_os">
@@ -1044,6 +1076,17 @@ value is returned. If no value is associated, NULL is returned</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_param_value_boolean"
+              c:identifier="osinfo_entity_get_param_value_boolean">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_param_value_list"
               c:identifier="osinfo_entity_get_param_value_list">
         <doc xml:whitespace="preserve">Retrieve all the parameter values associated with a named
@@ -1076,6 +1119,20 @@ cleared.</doc>
           <parameter name="value" transfer-ownership="none">
             <doc xml:whitespace="preserve">the data to associated with that key</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_param_boolean"
+              c:identifier="osinfo_entity_set_param_boolean">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -1249,6 +1306,887 @@ name.</doc>
     <constant name="GIBIBYTES" value="1073741824" c:type="OSINFO_GIBIBYTES">
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="INSTALL_CONFIG_PROP_ADMIN_PASSWORD"
+              value="admin-password"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_ADMIN_PASSWORD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_HARDWARE_ARCH"
+              value="hardware-arch"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_HARDWARE_ARCH">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_HOSTNAME"
+              value="hostname"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_HOSTNAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_L10N_KEYBOARD"
+              value="l10n-keyboard"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_L10N_KEYBOARD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_L10N_LANGUAGE"
+              value="l10n-language"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_L10N_LANGUAGE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_L10N_TIMEZONE"
+              value="l10n-timezone"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_L10N_TIMEZONE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_REG_LOGIN"
+              value="reg-login"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_REG_LOGIN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_REG_PASSWORD"
+              value="reg-password"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_REG_PASSWORD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_REG_PRODUCTKEY"
+              value="reg-product-key"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_REG_PRODUCTKEY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_USER_ADMIN"
+              value="user-admin"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_USER_ADMIN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_USER_AUTOLOGIN"
+              value="user-autologin"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_USER_AUTOLOGIN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_USER_LOGIN"
+              value="user-login"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_USER_LOGIN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_USER_PASSWORD"
+              value="user-password"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_USER_PASSWORD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_CONFIG_PROP_USER_REALNAME"
+              value="user-realname"
+              c:type="OSINFO_INSTALL_CONFIG_PROP_USER_REALNAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROFILE_DESKTOP"
+              value="desktop"
+              c:type="OSINFO_INSTALL_SCRIPT_PROFILE_DESKTOP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROFILE_JEOS"
+              value="jeos"
+              c:type="OSINFO_INSTALL_SCRIPT_PROFILE_JEOS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_CONFIG_OPTIONAL"
+              value="optional"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_CONFIG_OPTIONAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_CONFIG_REQUIRED"
+              value="required"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_CONFIG_REQUIRED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_OUTPUT_FILENAME"
+              value="output-filename"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_OUTPUT_FILENAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_PRODUCT_KEY_FORMAT"
+              value="product-key-format"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_PRODUCT_KEY_FORMAT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_PROFILE"
+              value="profile"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_PROFILE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_TEMPLATE_DATA"
+              value="template-data"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_TEMPLATE_DATA">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="INSTALL_SCRIPT_PROP_TEMPLATE_URI"
+              value="template-uri"
+              c:type="OSINFO_INSTALL_SCRIPT_PROP_TEMPLATE_URI">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <class name="InstallConfig"
+           c:symbol-prefix="install_config"
+           c:type="OsinfoInstallConfig"
+           parent="Entity"
+           glib:type-name="OsinfoInstallConfig"
+           glib:get-type="osinfo_install_config_get_type"
+           glib:type-struct="InstallConfigClass">
+      <constructor name="new" c:identifier="osinfo_install_config_new">
+        <doc xml:whitespace="preserve">Construct a new install configuration that is initially empty.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an empty install configuration</doc>
+          <type name="InstallConfig" c:type="OsinfoInstallConfig*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_admin_password"
+              c:identifier="osinfo_install_config_get_admin_password">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_hardware_arch"
+              c:identifier="osinfo_install_config_get_hardware_arch">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_hostname"
+              c:identifier="osinfo_install_config_get_hostname">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_l10n_keyboard"
+              c:identifier="osinfo_install_config_get_l10n_keyboard">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_l10n_language"
+              c:identifier="osinfo_install_config_get_l10n_language">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_l10n_timezone"
+              c:identifier="osinfo_install_config_get_l10n_timezone">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_reg_login"
+              c:identifier="osinfo_install_config_get_reg_login">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_reg_password"
+              c:identifier="osinfo_install_config_get_reg_password">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_reg_product_key"
+              c:identifier="osinfo_install_config_get_reg_product_key">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_user_administrator"
+              c:identifier="osinfo_install_config_get_user_administrator">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="get_user_autologin"
+              c:identifier="osinfo_install_config_get_user_autologin">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </method>
+      <method name="get_user_login"
+              c:identifier="osinfo_install_config_get_user_login">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_user_password"
+              c:identifier="osinfo_install_config_get_user_password">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_user_realname"
+              c:identifier="osinfo_install_config_get_user_realname">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="set_admin_password"
+              c:identifier="osinfo_install_config_set_admin_password">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="password" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_hardware_arch"
+              c:identifier="osinfo_install_config_set_hardware_arch">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="arch" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_hostname"
+              c:identifier="osinfo_install_config_set_hostname">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="hostname" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_l10n_keyboard"
+              c:identifier="osinfo_install_config_set_l10n_keyboard">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="keyboard" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_l10n_language"
+              c:identifier="osinfo_install_config_set_l10n_language">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="language" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_l10n_timezone"
+              c:identifier="osinfo_install_config_set_l10n_timezone">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="timezone" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_reg_login"
+              c:identifier="osinfo_install_config_set_reg_login">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_reg_password"
+              c:identifier="osinfo_install_config_set_reg_password">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="password" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_reg_product_key"
+              c:identifier="osinfo_install_config_set_reg_product_key">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_user_administrator"
+              c:identifier="osinfo_install_config_set_user_administrator">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="admin" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_user_autologin"
+              c:identifier="osinfo_install_config_set_user_autologin">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="autologin" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_user_login"
+              c:identifier="osinfo_install_config_set_user_login">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="username" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_user_password"
+              c:identifier="osinfo_install_config_set_user_password">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="password" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_user_realname"
+              c:identifier="osinfo_install_config_set_user_realname">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="Entity" c:type="OsinfoEntity"/>
+      </field>
+      <field name="priv">
+        <type name="InstallConfigPrivate"
+              c:type="OsinfoInstallConfigPrivate*"/>
+      </field>
+    </class>
+    <record name="InstallConfigClass"
+            c:type="OsinfoInstallConfigClass"
+            glib:is-gtype-struct-for="InstallConfig">
+      <field name="parent_class">
+        <type name="EntityClass" c:type="OsinfoEntityClass"/>
+      </field>
+    </record>
+    <class name="InstallConfigParam"
+           c:symbol-prefix="install_config_param"
+           c:type="OsinfoInstallConfigParam"
+           parent="Entity"
+           glib:type-name="OsinfoInstallConfigParam"
+           glib:get-type="osinfo_install_config_param_get_type"
+           glib:type-struct="InstallConfigParamClass">
+      <constructor name="new" c:identifier="osinfo_install_config_param_new">
+        <doc xml:whitespace="preserve">Construct a new configuration parameter to a #OsinfoInstallScript.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the new configuration parameter</doc>
+          <type name="InstallConfigParam" c:type="OsinfoInstallConfigParam*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the configuration parameter name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="policy" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the configuration parameter policy</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_name"
+              c:identifier="osinfo_install_config_param_get_name">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the name of the configuration parameter</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_policy"
+              c:identifier="osinfo_install_config_param_get_policy">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the policy of the configuration parameter</doc>
+          <type name="InstallConfigParamPolicy"
+                c:type="OsinfoInstallConfigParamPolicy"/>
+        </return-value>
+      </method>
+      <property name="name"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">The name of the configuration parameter.</doc>
+        <type name="utf8"/>
+      </property>
+      <property name="policy"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:whitespace="preserve">The policy of the configuration parameter.</doc>
+        <type name="utf8"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Entity" c:type="OsinfoEntity"/>
+      </field>
+      <field name="priv">
+        <type name="InstallConfigParamPrivate"
+              c:type="OsinfoInstallConfigParamPrivate*"/>
+      </field>
+    </class>
+    <record name="InstallConfigParamClass"
+            c:type="OsinfoInstallConfigParamClass"
+            glib:is-gtype-struct-for="InstallConfigParam">
+      <field name="parent_class">
+        <type name="EntityClass" c:type="OsinfoEntityClass"/>
+      </field>
+    </record>
+    <enumeration name="InstallConfigParamPolicy"
+                 c:type="OsinfoInstallConfigParamPolicy">
+      <member name="none"
+              value="0"
+              c:identifier="OSINFO_INSTALL_CONFIG_PARAM_POLICY_NONE"/>
+      <member name="required"
+              value="1"
+              c:identifier="OSINFO_INSTALL_CONFIG_PARAM_POLICY_REQUIRED"/>
+      <member name="optional"
+              value="2"
+              c:identifier="OSINFO_INSTALL_CONFIG_PARAM_POLICY_OPTIONAL"/>
+    </enumeration>
+    <record name="InstallConfigParamPrivate"
+            c:type="OsinfoInstallConfigParamPrivate"
+            disguised="1">
+    </record>
+    <record name="InstallConfigPrivate"
+            c:type="OsinfoInstallConfigPrivate"
+            disguised="1">
+    </record>
+    <class name="InstallScript"
+           c:symbol-prefix="install_script"
+           c:type="OsinfoInstallScript"
+           parent="Entity"
+           glib:type-name="OsinfoInstallScript"
+           glib:get-type="osinfo_install_script_get_type"
+           glib:type-struct="InstallScriptClass">
+      <constructor name="new" c:identifier="osinfo_install_script_new">
+        <return-value transfer-ownership="full">
+          <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_data"
+                   c:identifier="osinfo_install_script_new_data">
+        <doc xml:whitespace="preserve">Construct a new install script from stylesheet data</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an new install script</doc>
+          <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="profile" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="templateData" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_uri" c:identifier="osinfo_install_script_new_uri">
+        <doc xml:whitespace="preserve">Construct a new install script from a stylesheet URI</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an new install script</doc>
+          <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="profile" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="templateUri" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_config_param"
+              c:identifier="osinfo_install_script_add_config_param">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="param" transfer-ownership="none">
+            <type name="InstallConfigParam"
+                  c:type="OsinfoInstallConfigParam*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="generate"
+              c:identifier="osinfo_install_script_generate"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="os" transfer-ownership="none">
+            <type name="Os" c:type="OsinfoOs*"/>
+          </parameter>
+          <parameter name="config" transfer-ownership="none">
+            <type name="InstallConfig" c:type="OsinfoInstallConfig*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="generate_async"
+              c:identifier="osinfo_install_script_generate_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="os" transfer-ownership="none">
+            <type name="Os" c:type="OsinfoOs*"/>
+          </parameter>
+          <parameter name="config" transfer-ownership="none">
+            <type name="InstallConfig" c:type="OsinfoInstallConfig*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="generate_finish"
+              c:identifier="osinfo_install_script_generate_finish"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="generate_output"
+              c:identifier="osinfo_install_script_generate_output"
+              throws="1">
+        <doc xml:whitespace="preserve">Creates a install script written in a file</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a file containing the script</doc>
+          <type name="Gio.File" c:type="GFile*"/>
+        </return-value>
+        <parameters>
+          <parameter name="os" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the os entity</doc>
+            <type name="Os" c:type="OsinfoOs*"/>
+          </parameter>
+          <parameter name="config" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the install script config</doc>
+            <type name="InstallConfig" c:type="OsinfoInstallConfig*"/>
+          </parameter>
+          <parameter name="output_dir" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the directory where file containing the output script will be written</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="generate_output_async"
+              c:identifier="osinfo_install_script_generate_output_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="os" transfer-ownership="none">
+            <type name="Os" c:type="OsinfoOs*"/>
+          </parameter>
+          <parameter name="config" transfer-ownership="none">
+            <type name="InstallConfig" c:type="OsinfoInstallConfig*"/>
+          </parameter>
+          <parameter name="output_dir" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="generate_output_finish"
+              c:identifier="osinfo_install_script_generate_output_finish"
+              introspectable="0"
+              throws="1">
+        <return-value>
+          <type name="Gio.File" c:type="GFile*"/>
+        </return-value>
+        <parameters>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_config_param_list"
+              c:identifier="osinfo_install_script_get_config_param_list"
+              introspectable="0">
+        <return-value>
+          <type name="GLib.List" c:type="GList*">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+      </method>
+      <method name="get_output_filename"
+              c:identifier="osinfo_install_script_get_output_filename">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_output_prefix"
+              c:identifier="osinfo_install_script_get_output_prefix">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_product_key_format"
+              c:identifier="osinfo_install_script_get_product_key_format">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_profile"
+              c:identifier="osinfo_install_script_get_profile">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_template_data"
+              c:identifier="osinfo_install_script_get_template_data">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_template_uri"
+              c:identifier="osinfo_install_script_get_template_uri">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="has_config_param"
+              c:identifier="osinfo_install_script_has_config_param">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="config_param" transfer-ownership="none">
+            <type name="InstallConfigParam"
+                  c:type="const OsinfoInstallConfigParam*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="has_config_param_name"
+              c:identifier="osinfo_install_script_has_config_param_name">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_output_prefix"
+              c:identifier="osinfo_install_script_set_output_prefix">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="prefix" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="product-key-format" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="profile"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="template-data"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="template-uri"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Entity" c:type="OsinfoEntity"/>
+      </field>
+      <field name="priv">
+        <type name="InstallScriptPrivate"
+              c:type="OsinfoInstallScriptPrivate*"/>
+      </field>
+    </class>
+    <record name="InstallScriptClass"
+            c:type="OsinfoInstallScriptClass"
+            glib:is-gtype-struct-for="InstallScript">
+      <field name="parent_class">
+        <type name="EntityClass" c:type="OsinfoEntityClass"/>
+      </field>
+    </record>
+    <class name="InstallScriptList"
+           c:symbol-prefix="install_scriptlist"
+           c:type="OsinfoInstallScriptList"
+           parent="List"
+           glib:type-name="OsinfoInstallScriptList"
+           glib:get-type="osinfo_install_scriptlist_get_type"
+           glib:type-struct="InstallScriptListClass">
+      <constructor name="new" c:identifier="osinfo_install_scriptlist_new">
+        <doc xml:whitespace="preserve">Construct a new install_script list that is initially empty.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an empty install_script list</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+        </return-value>
+      </constructor>
+      <method name="new_copy"
+              c:identifier="osinfo_install_scriptlist_new_copy">
+        <doc xml:whitespace="preserve">Construct a new install_script list that is filled with install_scripts
+from @source</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a copy of the install_script list</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+        </return-value>
+      </method>
+      <method name="new_filtered"
+              c:identifier="osinfo_install_scriptlist_new_filtered">
+        <doc xml:whitespace="preserve">Construct a new install_script list that is filled with install_scripts
+from @source that match @filter</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a filtered copy of the install_script list</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filter" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the filter to apply</doc>
+            <type name="Filter" c:type="OsinfoFilter*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_intersection"
+              c:identifier="osinfo_install_scriptlist_new_intersection">
+        <doc xml:whitespace="preserve">Construct a new install_script list that is filled with only the
+install_scripts that are present in both @sourceOne and @sourceTwo.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">an intersection of the two install_script lists</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="sourceTwo" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the second install_script list to copy</doc>
+            <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_union"
+              c:identifier="osinfo_install_scriptlist_new_union">
+        <doc xml:whitespace="preserve">Construct a new install_script list that is filled with all the
+install_scripts that are present in either @sourceOne and @sourceTwo.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a union of the two install_script lists</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="sourceTwo" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the second install_script list to copy</doc>
+            <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="List" c:type="OsinfoList"/>
+      </field>
+      <field name="priv">
+        <type name="InstallScriptListPrivate"
+              c:type="OsinfoInstallScriptListPrivate*"/>
+      </field>
+    </class>
+    <record name="InstallScriptListClass"
+            c:type="OsinfoInstallScriptListClass"
+            glib:is-gtype-struct-for="InstallScriptList">
+      <field name="parent_class">
+        <type name="ListClass" c:type="OsinfoListClass"/>
+      </field>
+    </record>
+    <record name="InstallScriptListPrivate"
+            c:type="OsinfoInstallScriptListPrivate"
+            disguised="1">
+    </record>
+    <record name="InstallScriptPrivate"
+            c:type="OsinfoInstallScriptPrivate"
+            disguised="1">
+    </record>
     <constant name="KIBIBYTES" value="1024" c:type="OSINFO_KIBIBYTES">
       <type name="gint" c:type="gint"/>
     </constant>
@@ -1975,6 +2913,17 @@ extra metadata against the link</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="add_install_script"
+              c:identifier="osinfo_os_add_install_script">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="script" transfer-ownership="none">
+            <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_media" c:identifier="osinfo_os_add_media">
         <doc xml:whitespace="preserve">Adds installation media @media to operating system @os.</doc>
         <return-value transfer-ownership="none">
@@ -2022,6 +2971,18 @@ extra metadata against the link</doc>
           <parameter name="tree" transfer-ownership="none">
             <doc xml:whitespace="preserve">the tree to add</doc>
             <type name="Tree" c:type="OsinfoTree*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_install_script"
+              c:identifier="osinfo_os_find_install_script"
+              introspectable="0">
+        <return-value>
+          <type name="InstallScript" c:type="OsinfoInstallScript*"/>
+        </return-value>
+        <parameters>
+          <parameter name="profile" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -2105,6 +3066,13 @@ for example linux, winnt, solaris, freebsd etc.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the family of this os</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
+      <method name="get_install_script_list"
+              c:identifier="osinfo_os_get_install_script_list">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a list of the install scripts for the specified os</doc>
+          <type name="InstallScriptList" c:type="OsinfoInstallScriptList*"/>
         </return-value>
       </method>
       <method name="get_media_list" c:identifier="osinfo_os_get_media_list">
@@ -2252,6 +3220,11 @@ oss that are present in either @sourceOne and @sourceTwo.</doc>
     <constant name="PRODUCT_PROP_EOL_DATE"
               value="eol-date"
               c:type="OSINFO_PRODUCT_PROP_EOL_DATE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="PRODUCT_PROP_LOGO"
+              value="logo"
+              c:type="OSINFO_PRODUCT_PROP_LOGO">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="PRODUCT_PROP_NAME"
@@ -2485,6 +3458,11 @@ platforms that are present in either @sourceOne and @sourceTwo.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
       </method>
+      <method name="get_logo" c:identifier="osinfo_product_get_logo">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+      </method>
       <method name="get_name" c:identifier="osinfo_product_get_name">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -2533,6 +3511,9 @@ relationship</doc>
         </return-value>
       </method>
       <property name="codename" transfer-ownership="none">
+        <type name="utf8"/>
+      </property>
+      <property name="logo" transfer-ownership="none">
         <type name="utf8"/>
       </property>
       <property name="name" transfer-ownership="none">

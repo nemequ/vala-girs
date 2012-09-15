@@ -5057,6 +5057,25 @@ as appropriate for a given platform. IEEE floats and doubles are supported
         </field>
       </record>
     </union>
+    <callback name="DuplicateFunc" c:type="GDuplicateFunc" introspectable="0">
+      <doc xml:whitespace="preserve">The type of functions that are used to 'duplicate' an object.
+What this means depends on the context, it could just be
+incrementing the reference count, if @data is a ref-counted
+object.</doc>
+      <return-value>
+        <doc xml:whitespace="preserve">a duplicate of data</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="data" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the data to duplicate</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <constant name="E" value="2.718282" c:type="G_E">
       <type name="gdouble" c:type="gdouble"/>
     </constant>
@@ -8625,9 +8644,7 @@ If the object cannot be created then %error is set to a #GKeyFileError.</doc>
         <parameters>
           <parameter name="data" transfer-ownership="none">
             <doc xml:whitespace="preserve">key file loaded in memory</doc>
-            <array length="1" zero-terminated="0" c:type="gchar*">
-              <type name="utf8" c:type="gchar"/>
-            </array>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="length" transfer-ownership="none">
             <doc xml:whitespace="preserve">the length of @data in bytes (or -1 if data is nul-terminated)</doc>
@@ -10150,7 +10167,7 @@ levels using g_log_set_handler() and g_log_set_fatal_mask().</doc>
     <constant name="MAXUINT8" value="255" c:type="G_MAXUINT8">
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="9" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="13" c:type="GLIB_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MININT16" value="32768" c:type="G_MININT16">
@@ -10410,7 +10427,7 @@ events sources will be dispatched (if any), that are ready at this
 given moment without further waiting.
 
 Note that even when @may_block is %TRUE, it is still possible for
-g_main_context_iteration() to return %FALSE, since the the wait may
+g_main_context_iteration() to return %FALSE, since the wait may
 be interrupted for other reasons than an event source becoming ready.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if events were dispatched.</doc>
@@ -10739,8 +10756,14 @@ exactly the same as g_mapped_file_unref().</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </method>
-      <method name="get_bytes" c:identifier="g_mapped_file_get_bytes">
+      <method name="get_bytes"
+              c:identifier="g_mapped_file_get_bytes"
+              version="2.34">
+        <doc xml:whitespace="preserve">Creates a new #GBytes which references the data mapped from @file.
+The mapped contents of the file must not be modified after creating this
+bytes object, because a #GBytes should be immutable.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">A newly allocated #GBytes referencing data from @file</doc>
           <type name="Bytes" c:type="GBytes*"/>
         </return-value>
       </method>
@@ -11835,7 +11858,7 @@ Sine: 2.32</doc>
 This function is useful to initialize a mutex that has been
 allocated on the stack, or as part of a larger structure.
 It is not necessary to initialize a mutex that has been
-created that has been statically allocated.
+statically allocated.
 
 |[
   typedef struct {
@@ -18252,7 +18275,13 @@ see g_source_set_can_recurse().</doc>
       </method>
       <method name="get_context" c:identifier="g_source_get_context">
         <doc xml:whitespace="preserve">Gets the #GMainContext with which the source is associated.
-Calling this function on a destroyed source is an error.</doc>
+
+You can call this on a source that has been destroyed, provided
+that the #GMainContext it was attached to still exists (in which
+case it will return that #GMainContext). In particular, you can
+always call this function on the source returned from
+g_main_current_source(). But calling this function on a source
+whose #GMainContext has been destroyed is an error.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the #GMainContext with which the source is associated, or %NULL if the context has not yet been added to a source.</doc>
           <type name="MainContext" c:type="GMainContext*"/>
@@ -20215,8 +20244,7 @@ except this is done on a per thread basis.
 
 By setting @interval to 0, idle threads will not be stopped.
 
-This function makes use of g_async_queue_timed_pop () using
-@interval.</doc>
+The default value is 15000 (15 seconds).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -20231,7 +20259,9 @@ This function makes use of g_async_queue_timed_pop () using
                 c:identifier="g_thread_pool_set_max_unused_threads">
         <doc xml:whitespace="preserve">Sets the maximal number of unused threads to @max_threads.
 If @max_threads is -1, no limit is imposed on the number
-of unused threads.</doc>
+of unused threads.
+
+The default value is 2.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -20349,9 +20379,93 @@ timestamp is assumed to be in local time.)</doc>
         </parameters>
       </function>
     </record>
-    <record name="TimeZone" c:type="GTimeZone" disguised="1" version="2.26">
+    <record name="TimeZone"
+            c:type="GTimeZone"
+            version="2.26"
+            glib:type-name="GTimeZone"
+            glib:get-type="g_time_zone_get_type"
+            c:symbol-prefix="time_zone">
       <doc xml:whitespace="preserve">#GDateTime is an opaque structure whose members cannot be accessed
 directly.</doc>
+      <constructor name="new" c:identifier="g_time_zone_new" version="2.26">
+        <doc xml:whitespace="preserve">Creates a #GTimeZone corresponding to @identifier.
+
+@identifier can either be an RFC3339/ISO 8601 time offset or
+something that would pass as a valid value for the
+&lt;varname&gt;TZ&lt;/varname&gt; environment variable (including %NULL).
+
+Valid RFC3339 time offsets are &lt;literal&gt;"Z"&lt;/literal&gt; (for UTC) or
+&lt;literal&gt;"±hh:mm"&lt;/literal&gt;.  ISO 8601 additionally specifies
+&lt;literal&gt;"±hhmm"&lt;/literal&gt; and &lt;literal&gt;"±hh"&lt;/literal&gt;.
+
+The &lt;varname&gt;TZ&lt;/varname&gt; environment variable typically corresponds
+to the name of a file in the zoneinfo database, but there are many
+other possibilities.  Note that those other possibilities are not
+currently implemented, but are planned.
+
+g_time_zone_new_local() calls this function with the value of the
+&lt;varname&gt;TZ&lt;/varname&gt; environment variable.  This function itself is
+independent of the value of &lt;varname&gt;TZ&lt;/varname&gt;, but if @identifier
+is %NULL then &lt;filename&gt;/etc/localtime&lt;/filename&gt; will be consulted
+to discover the correct timezone.
+
+See &lt;ulink
+url='http://tools.ietf.org/html/rfc3339#section-5.6'&gt;RFC3339
+§5.6&lt;/ulink&gt; for a precise definition of valid RFC3339 time offsets
+(the &lt;varname&gt;time-offset&lt;/varname&gt; expansion) and ISO 8601 for the
+full list of valid time offsets.  See &lt;ulink
+url='http://www.gnu.org/s/libc/manual/html_node/TZ-Variable.html'&gt;The
+GNU C Library manual&lt;/ulink&gt; for an explanation of the possible
+values of the &lt;varname&gt;TZ&lt;/varname&gt; environment variable.
+
+You should release the return value by calling g_time_zone_unref()
+when you are done with it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the requested timezone</doc>
+          <type name="TimeZone" c:type="GTimeZone*"/>
+        </return-value>
+        <parameters>
+          <parameter name="identifier"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a timezone identifier</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_local"
+                   c:identifier="g_time_zone_new_local"
+                   version="2.26">
+        <doc xml:whitespace="preserve">Creates a #GTimeZone corresponding to local time.  The local time
+zone may change between invocations to this function; for example,
+if the system administrator changes it.
+
+This is equivalent to calling g_time_zone_new() with the value of the
+&lt;varname&gt;TZ&lt;/varname&gt; environment variable (including the possibility
+of %NULL).
+
+You should release the return value by calling g_time_zone_unref()
+when you are done with it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the local timezone</doc>
+          <type name="TimeZone" c:type="GTimeZone*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_utc"
+                   c:identifier="g_time_zone_new_utc"
+                   version="2.26">
+        <doc xml:whitespace="preserve">Creates a #GTimeZone corresponding to UTC.
+
+This is equivalent to calling g_time_zone_new() with a value like
+"Z", "UTC", "+00", etc.
+
+You should release the return value by calling g_time_zone_unref()
+when you are done with it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the universal timezone</doc>
+          <type name="TimeZone" c:type="GTimeZone*"/>
+        </return-value>
+      </constructor>
       <method name="adjust_time"
               c:identifier="g_time_zone_adjust_time"
               version="2.26">
@@ -20476,12 +20590,9 @@ west of GMT, positive numbers for east).</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="ref"
-              c:identifier="g_time_zone_ref"
-              version="2.26"
-              introspectable="0">
+      <method name="ref" c:identifier="g_time_zone_ref" version="2.26">
         <doc xml:whitespace="preserve">Increases the reference count on @tz.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:whitespace="preserve">a new reference to @tz.</doc>
           <type name="TimeZone" c:type="GTimeZone*"/>
         </return-value>
@@ -20492,90 +20603,6 @@ west of GMT, positive numbers for east).</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </method>
-      <function name="new"
-                c:identifier="g_time_zone_new"
-                version="2.26"
-                introspectable="0">
-        <doc xml:whitespace="preserve">Creates a #GTimeZone corresponding to @identifier.
-
-@identifier can either be an RFC3339/ISO 8601 time offset or
-something that would pass as a valid value for the
-&lt;varname&gt;TZ&lt;/varname&gt; environment variable (including %NULL).
-
-Valid RFC3339 time offsets are &lt;literal&gt;"Z"&lt;/literal&gt; (for UTC) or
-&lt;literal&gt;"±hh:mm"&lt;/literal&gt;.  ISO 8601 additionally specifies
-&lt;literal&gt;"±hhmm"&lt;/literal&gt; and &lt;literal&gt;"±hh"&lt;/literal&gt;.
-
-The &lt;varname&gt;TZ&lt;/varname&gt; environment variable typically corresponds
-to the name of a file in the zoneinfo database, but there are many
-other possibilities.  Note that those other possibilities are not
-currently implemented, but are planned.
-
-g_time_zone_new_local() calls this function with the value of the
-&lt;varname&gt;TZ&lt;/varname&gt; environment variable.  This function itself is
-independent of the value of &lt;varname&gt;TZ&lt;/varname&gt;, but if @identifier
-is %NULL then &lt;filename&gt;/etc/localtime&lt;/filename&gt; will be consulted
-to discover the correct timezone.
-
-See &lt;ulink
-url='http://tools.ietf.org/html/rfc3339#section-5.6'&gt;RFC3339
-§5.6&lt;/ulink&gt; for a precise definition of valid RFC3339 time offsets
-(the &lt;varname&gt;time-offset&lt;/varname&gt; expansion) and ISO 8601 for the
-full list of valid time offsets.  See &lt;ulink
-url='http://www.gnu.org/s/libc/manual/html_node/TZ-Variable.html'&gt;The
-GNU C Library manual&lt;/ulink&gt; for an explanation of the possible
-values of the &lt;varname&gt;TZ&lt;/varname&gt; environment variable.
-
-You should release the return value by calling g_time_zone_unref()
-when you are done with it.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">the requested timezone</doc>
-          <type name="TimeZone" c:type="GTimeZone*"/>
-        </return-value>
-        <parameters>
-          <parameter name="identifier"
-                     transfer-ownership="none"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">a timezone identifier</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="new_local"
-                c:identifier="g_time_zone_new_local"
-                version="2.26"
-                introspectable="0">
-        <doc xml:whitespace="preserve">Creates a #GTimeZone corresponding to local time.  The local time
-zone may change between invocations to this function; for example,
-if the system administrator changes it.
-
-This is equivalent to calling g_time_zone_new() with the value of the
-&lt;varname&gt;TZ&lt;/varname&gt; environment variable (including the possibility
-of %NULL).
-
-You should release the return value by calling g_time_zone_unref()
-when you are done with it.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">the local timezone</doc>
-          <type name="TimeZone" c:type="GTimeZone*"/>
-        </return-value>
-      </function>
-      <function name="new_utc"
-                c:identifier="g_time_zone_new_utc"
-                version="2.26"
-                introspectable="0">
-        <doc xml:whitespace="preserve">Creates a #GTimeZone corresponding to UTC.
-
-This is equivalent to calling g_time_zone_new() with a value like
-"Z", "UTC", "+00", etc.
-
-You should release the return value by calling g_time_zone_unref()
-when you are done with it.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">the universal timezone</doc>
-          <type name="TimeZone" c:type="GTimeZone*"/>
-        </return-value>
-      </function>
     </record>
     <record name="Timer" c:type="GTimer" disguised="1">
       <doc xml:whitespace="preserve">Opaque datatype that records a start time.</doc>
@@ -22662,6 +22689,38 @@ The returned value is always in normal form and is marked as trusted.</doc>
           <doc xml:whitespace="preserve">the byteswapped form of @value</doc>
           <type name="Variant" c:type="GVariant*"/>
         </return-value>
+      </method>
+      <method name="check_format_string"
+              c:identifier="g_variant_check_format_string"
+              version="2.34">
+        <doc xml:whitespace="preserve">Checks if calling g_variant_get() with @format_string on @value would
+be valid from a type-compatibility standpoint.  @format_string is
+assumed to be a valid format string (from a syntactic standpoint).
+
+If @copy_only is %TRUE then this function additionally checks that it
+would be safe to call g_variant_unref() on @value immediately after
+the call to g_variant_get() without invalidating the result.  This is
+only possible if deep copies are made (ie: there are no pointers to
+the data inside of the soon-to-be-freed #GVariant instance).  If this
+check fails then a g_critical() is printed and %FALSE is returned.
+
+This function is meant to be used by functions that wish to provide
+varargs accessors to #GVariant values of uncertain values (eg:
+g_variant_lookup() or g_menu_model_get_item_attribute()).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if @format_string is safe to use</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="format_string" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a valid #GVariant format string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="copy_only" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE to ensure the format string makes deep copies</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
       </method>
       <method name="classify" c:identifier="g_variant_classify" version="2.24">
         <doc xml:whitespace="preserve">Classifies @value according to its top-level type.</doc>
@@ -24955,6 +25014,59 @@ string.  Use g_variant_type_string_is_valid() if you are unsure.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_array" c:identifier="g_variant_type_new_array">
+        <doc xml:whitespace="preserve">Constructs the type corresponding to an array of elements of the
+type @type.
+
+It is appropriate to call g_variant_type_free() on the return value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new array #GVariantType  Since 2.24</doc>
+          <type name="VariantType" c:type="GVariantType*"/>
+        </return-value>
+        <parameters>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GVariantType</doc>
+            <type name="VariantType" c:type="const GVariantType*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_dict_entry"
+                   c:identifier="g_variant_type_new_dict_entry">
+        <doc xml:whitespace="preserve">Constructs the type corresponding to a dictionary entry with a key
+of type @key and a value of type @value.
+
+It is appropriate to call g_variant_type_free() on the return value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new dictionary entry #GVariantType  Since 2.24</doc>
+          <type name="VariantType" c:type="GVariantType*"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a basic #GVariantType</doc>
+            <type name="VariantType" c:type="const GVariantType*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GVariantType</doc>
+            <type name="VariantType" c:type="const GVariantType*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_maybe" c:identifier="g_variant_type_new_maybe">
+        <doc xml:whitespace="preserve">Constructs the type corresponding to a maybe instance containing
+type @type or Nothing.
+
+It is appropriate to call g_variant_type_free() on the return value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new maybe #GVariantType  Since 2.24</doc>
+          <type name="VariantType" c:type="GVariantType*"/>
+        </return-value>
+        <parameters>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GVariantType</doc>
+            <type name="VariantType" c:type="const GVariantType*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_tuple" c:identifier="g_variant_type_new_tuple">
         <doc xml:whitespace="preserve">Constructs a new tuple type, from @items.
 
@@ -25222,43 +25334,6 @@ return 2.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the number of items in @type  Since 2.24</doc>
           <type name="gsize" c:type="gsize"/>
-        </return-value>
-      </method>
-      <method name="new_array" c:identifier="g_variant_type_new_array">
-        <doc xml:whitespace="preserve">Constructs the type corresponding to an array of elements of the
-type @type.
-
-It is appropriate to call g_variant_type_free() on the return value.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new array #GVariantType  Since 2.24</doc>
-          <type name="VariantType" c:type="GVariantType*"/>
-        </return-value>
-      </method>
-      <method name="new_dict_entry"
-              c:identifier="g_variant_type_new_dict_entry">
-        <doc xml:whitespace="preserve">Constructs the type corresponding to a dictionary entry with a key
-of type @key and a value of type @value.
-
-It is appropriate to call g_variant_type_free() on the return value.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new dictionary entry #GVariantType  Since 2.24</doc>
-          <type name="VariantType" c:type="GVariantType*"/>
-        </return-value>
-        <parameters>
-          <parameter name="value" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #GVariantType</doc>
-            <type name="VariantType" c:type="const GVariantType*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="new_maybe" c:identifier="g_variant_type_new_maybe">
-        <doc xml:whitespace="preserve">Constructs the type corresponding to a maybe instance containing
-type @type or Nothing.
-
-It is appropriate to call g_variant_type_free() on the return value.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new maybe #GVariantType  Since 2.24</doc>
-          <type name="VariantType" c:type="GVariantType*"/>
         </return-value>
       </method>
       <method name="next" c:identifier="g_variant_type_next">
@@ -27310,15 +27385,24 @@ pointer casts.</doc>
       </parameters>
     </function>
     <function name="compute_checksum_for_bytes"
-              c:identifier="g_compute_checksum_for_bytes">
+              c:identifier="g_compute_checksum_for_bytes"
+              version="2.34">
+      <doc xml:whitespace="preserve">Computes the checksum for a binary @data. This is a
+convenience wrapper for g_checksum_new(), g_checksum_get_string()
+and g_checksum_free().
+
+The hexadecimal string returned will be in lower case.</doc>
       <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">the digest of the binary data as a string in hexadecimal. The returned string should be freed with g_free() when done using it.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
         <parameter name="checksum_type" transfer-ownership="none">
+          <doc xml:whitespace="preserve">a #GChecksumType</doc>
           <type name="ChecksumType" c:type="GChecksumType"/>
         </parameter>
         <parameter name="data" transfer-ownership="none">
+          <doc xml:whitespace="preserve">binary blob to compute the digest of</doc>
           <type name="Bytes" c:type="GBytes*"/>
         </parameter>
       </parameters>
@@ -27665,6 +27749,48 @@ See g_datalist_set_flags().</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="datalist_id_dup_data"
+              c:identifier="g_datalist_id_dup_data"
+              version="2.34"
+              introspectable="0">
+      <doc xml:whitespace="preserve">This is a variant of g_datalist_id_get_data() which
+returns a 'duplicate' of the value. @dup_func defines the
+meaning of 'duplicate' in this context, it could e.g.
+take a reference on a ref-counted object.
+
+If the @key_id is not set in the datalist then @dup_func
+will be called with a %NULL argument.
+
+Note that @dup_func is called while the datalist is locked, so it
+is not allowed to read or modify the datalist.
+
+This function can be useful to avoid races when multiple
+threads are using the same datalist and the same key.</doc>
+      <return-value>
+        <doc xml:whitespace="preserve">the result of calling @dup_func on the value associated with @key_id in @datalist, or %NULL if not set. If @dup_func is %NULL, the value is returned unmodified.</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="data" transfer-ownership="none">
+          <type name="Data" c:type="GData**"/>
+        </parameter>
+        <parameter name="key_id" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the #GQuark identifying a data element</doc>
+          <type name="Quark" c:type="GQuark"/>
+        </parameter>
+        <parameter name="dup_func"
+                   transfer-ownership="none"
+                   allow-none="1"
+                   closure="3">
+          <doc xml:whitespace="preserve">function to duplicate the old value</doc>
+          <type name="DuplicateFunc" c:type="GDuplicateFunc"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" allow-none="1">
+          <doc xml:whitespace="preserve">passed as user_data to @dup_func</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="datalist_id_get_data"
               c:identifier="g_datalist_id_get_data"
               introspectable="0">
@@ -27701,6 +27827,60 @@ function.</doc>
         <parameter name="key_id" transfer-ownership="none">
           <doc xml:whitespace="preserve">the #GQuark identifying a data element.</doc>
           <type name="Quark" c:type="GQuark"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="datalist_id_replace_data"
+              c:identifier="g_datalist_id_replace_data"
+              version="2.34">
+      <doc xml:whitespace="preserve">Compares the member that is associated with @key_id in
+@datalist to @oldval, and if they are the same, replace
+@oldval with @newval.
+
+This is like a typical atomic compare-and-exchange
+operation, for a member of @datalist.
+
+If the previous value was replaced then ownership of the
+old value (@oldval) is passed to the caller, including
+the registred destroy notify for it (passed out in @old_destroy).
+Its up to the caller to free this as he wishes, which may
+or may not include using @old_destroy as sometimes replacement
+should not destroy the object in the normal way.
+
+Return: %TRUE if the existing value for @key_id was replaced
+ by @newval, %FALSE otherwise.</doc>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="data" transfer-ownership="none">
+          <type name="Data" c:type="GData**"/>
+        </parameter>
+        <parameter name="key_id" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the #GQuark identifying a data element</doc>
+          <type name="Quark" c:type="GQuark"/>
+        </parameter>
+        <parameter name="oldval" transfer-ownership="none" allow-none="1">
+          <doc xml:whitespace="preserve">the old value to compare against</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="newval" transfer-ownership="none" allow-none="1">
+          <doc xml:whitespace="preserve">the new value to replace it with</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="destroy"
+                   transfer-ownership="none"
+                   allow-none="1"
+                   scope="async">
+          <doc xml:whitespace="preserve">destroy notify for the new value</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+        <parameter name="old_destroy"
+                   transfer-ownership="none"
+                   allow-none="1"
+                   scope="async">
+          <doc xml:whitespace="preserve">destroy notify for the existing value</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify*"/>
         </parameter>
       </parameters>
     </function>
@@ -30262,10 +30442,10 @@ if your hash table's keys are of the form
     <function name="intern_static_string"
               c:identifier="g_intern_static_string"
               version="2.10">
-      <doc xml:whitespace="preserve">Returns a canonical representation for @string. Interned strings can
-be compared for equality by comparing the pointers, instead of using strcmp().
-g_intern_static_string() does not copy the string, therefore @string must
-not be freed or modified.</doc>
+      <doc xml:whitespace="preserve">Returns a canonical representation for @string. Interned strings
+can be compared for equality by comparing the pointers, instead of
+using strcmp(). g_intern_static_string() does not copy the string,
+therefore @string must not be freed or modified.</doc>
       <return-value transfer-ownership="none">
         <doc xml:whitespace="preserve">a canonical representation for the string</doc>
         <type name="utf8" c:type="const gchar*"/>
@@ -30280,8 +30460,9 @@ not be freed or modified.</doc>
     <function name="intern_string"
               c:identifier="g_intern_string"
               version="2.10">
-      <doc xml:whitespace="preserve">Returns a canonical representation for @string. Interned strings can
-be compared for equality by comparing the pointers, instead of using strcmp().</doc>
+      <doc xml:whitespace="preserve">Returns a canonical representation for @string. Interned strings
+can be compared for equality by comparing the pointers, instead of
+using strcmp().</doc>
       <return-value transfer-ownership="none">
         <doc xml:whitespace="preserve">a canonical representation for the string</doc>
         <type name="utf8" c:type="const gchar*"/>
@@ -31046,37 +31227,6 @@ will be returned and @error will be set as appropriate.</doc>
         </parameter>
         <parameter name="first_attr" transfer-ownership="none">
           <doc xml:whitespace="preserve">the name of the first attribute</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-        <parameter transfer-ownership="none">
-          <varargs>
-          </varargs>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="markup_collect_known_attributes"
-              c:identifier="g_markup_collect_known_attributes"
-              introspectable="0">
-      <return-value transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
-      <parameters>
-        <parameter name="element_name" transfer-ownership="none">
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-        <parameter name="attribute_names" transfer-ownership="none">
-          <type name="utf8" c:type="const gchar**"/>
-        </parameter>
-        <parameter name="attribute_values" transfer-ownership="none">
-          <type name="utf8" c:type="const gchar**"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="Error" c:type="GError**"/>
-        </parameter>
-        <parameter name="first_type" transfer-ownership="none">
-          <type name="MarkupCollectType" c:type="GMarkupCollectType"/>
-        </parameter>
-        <parameter name="first_attr" transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter transfer-ownership="none">
@@ -32237,7 +32387,7 @@ using a copy of the string.</doc>
     <function name="quark_to_string" c:identifier="g_quark_to_string">
       <doc xml:whitespace="preserve">Gets the string associated with the given #GQuark.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">the string associated with the #GQuark.</doc>
+        <doc xml:whitespace="preserve">the string associated with the #GQuark</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
@@ -34852,6 +35002,38 @@ will be passed as first argument to @test_func.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="test_add_data_func_full"
+              c:identifier="g_test_add_data_func_full"
+              version="2.34">
+      <doc xml:whitespace="preserve">Create a new test case, as with g_test_add_data_func(), but freeing
+@test_data after the test run is complete.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="testpath" transfer-ownership="none">
+          <doc xml:whitespace="preserve">/-separated test case path name for the test.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="test_data" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Test data argument for the test function.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="test_func"
+                   transfer-ownership="none"
+                   scope="notified"
+                   destroy="3">
+          <doc xml:whitespace="preserve">The test function to invoke for this test.</doc>
+          <type name="TestDataFunc" c:type="GTestDataFunc"/>
+        </parameter>
+        <parameter name="data_free_func"
+                   transfer-ownership="none"
+                   scope="async">
+          <doc xml:whitespace="preserve">#GDestroyNotify for @test_data.</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="test_add_func"
               c:identifier="g_test_add_func"
               version="2.16"
@@ -34898,6 +35080,26 @@ slash-separated portions of @testpath.</doc>
         </parameter>
         <parameter name="data_teardown" transfer-ownership="none">
           <type name="TestFixtureFunc" c:type="GTestFixtureFunc"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="test_assert_expected_messages_internal"
+              c:identifier="g_test_assert_expected_messages_internal">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="domain" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="file" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="line" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="func" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -35005,6 +35207,55 @@ called with the same fixture, but varying @test_name and
         </parameter>
       </parameters>
     </function>
+    <function name="test_expect_message"
+              c:identifier="g_test_expect_message"
+              version="2.34">
+      <doc xml:whitespace="preserve">Indicates that a message with the given @log_domain and @log_level,
+with text matching @pattern, is expected to be logged. When this
+message is logged, it will not be printed, and the test case will
+not abort.
+
+Use g_test_assert_expected_messages() to assert that all
+previously-expected messages have been seen and suppressed.
+
+You can call this multiple times in a row, if multiple messages are
+expected as a result of a single call. (The messages must appear in
+the same order as the calls to g_test_expect_message().)
+
+For example:
+
+|[
+  /&amp;ast; g_main_context_push_thread_default() should fail if the
+   &amp;ast; context is already owned by another thread.
+   &amp;ast;/
+  g_test_expect_message (G_LOG_DOMAIN,
+                         G_LOG_LEVEL_CRITICIAL,
+                         "assertion.*acquired_context.*failed");
+  g_main_context_push_thread_default (bad_context);
+  g_test_assert_expected_messages ();
+]|
+
+Note that you cannot use this to test g_error() messages, since
+g_error() intentionally never returns even if the program doesn't
+abort; use g_test_trap_fork() in this case.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_domain" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the log domain of the message</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the log level of the message</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="pattern" transfer-ownership="none">
+          <doc xml:whitespace="preserve">a glob-style &lt;link linkend="glib-Glob-style-pattern-matching"&gt;pattern&lt;/link&gt;</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="test_fail" c:identifier="g_test_fail" version="2.30">
       <doc xml:whitespace="preserve">Indicates that a test failed. This function can be called
 multiple times from the same test. You can use this function
@@ -35045,57 +35296,57 @@ So far, the following arguments are understood:
   &lt;varlistentry&gt;
     &lt;term&gt;&lt;option&gt;-l&lt;/option&gt;&lt;/term&gt;
     &lt;listitem&gt;&lt;para&gt;
-      list test cases available in a test executable.
+      List test cases available in a test executable.
     &lt;/para&gt;&lt;/listitem&gt;
   &lt;/varlistentry&gt;
   &lt;varlistentry&gt;
     &lt;term&gt;&lt;option&gt;--seed=&lt;replaceable&gt;RANDOMSEED&lt;/replaceable&gt;&lt;/option&gt;&lt;/term&gt;
     &lt;listitem&gt;&lt;para&gt;
-      provide a random seed to reproduce test runs using random numbers.
+      Provide a random seed to reproduce test runs using random numbers.
     &lt;/para&gt;&lt;/listitem&gt;
     &lt;/varlistentry&gt;
     &lt;varlistentry&gt;
       &lt;term&gt;&lt;option&gt;--verbose&lt;/option&gt;&lt;/term&gt;
-      &lt;listitem&gt;&lt;para&gt;run tests verbosely.&lt;/para&gt;&lt;/listitem&gt;
+      &lt;listitem&gt;&lt;para&gt;Run tests verbosely.&lt;/para&gt;&lt;/listitem&gt;
     &lt;/varlistentry&gt;
     &lt;varlistentry&gt;
       &lt;term&gt;&lt;option&gt;-q&lt;/option&gt;, &lt;option&gt;--quiet&lt;/option&gt;&lt;/term&gt;
-      &lt;listitem&gt;&lt;para&gt;run tests quietly.&lt;/para&gt;&lt;/listitem&gt;
+      &lt;listitem&gt;&lt;para&gt;Run tests quietly.&lt;/para&gt;&lt;/listitem&gt;
     &lt;/varlistentry&gt;
     &lt;varlistentry&gt;
       &lt;term&gt;&lt;option&gt;-p &lt;replaceable&gt;TESTPATH&lt;/replaceable&gt;&lt;/option&gt;&lt;/term&gt;
       &lt;listitem&gt;&lt;para&gt;
-        execute all tests matching &lt;replaceable&gt;TESTPATH&lt;/replaceable&gt;.
+        Execute all tests matching &lt;replaceable&gt;TESTPATH&lt;/replaceable&gt;.
       &lt;/para&gt;&lt;/listitem&gt;
     &lt;/varlistentry&gt;
     &lt;varlistentry&gt;
       &lt;term&gt;&lt;option&gt;-m {perf|slow|thorough|quick|undefined|no-undefined}&lt;/option&gt;&lt;/term&gt;
       &lt;listitem&gt;&lt;para&gt;
-        execute tests according to these test modes:
+        Execute tests according to these test modes:
         &lt;variablelist&gt;
           &lt;varlistentry&gt;
             &lt;term&gt;perf&lt;/term&gt;
             &lt;listitem&gt;&lt;para&gt;
-              performance tests, may take long and report results.
+              Performance tests, may take long and report results.
             &lt;/para&gt;&lt;/listitem&gt;
           &lt;/varlistentry&gt;
           &lt;varlistentry&gt;
             &lt;term&gt;slow, thorough&lt;/term&gt;
             &lt;listitem&gt;&lt;para&gt;
-              slow and thorough tests, may take quite long and
+              Slow and thorough tests, may take quite long and
               maximize coverage.
             &lt;/para&gt;&lt;/listitem&gt;
           &lt;/varlistentry&gt;
           &lt;varlistentry&gt;
             &lt;term&gt;quick&lt;/term&gt;
             &lt;listitem&gt;&lt;para&gt;
-              quick tests, should run really quickly and give good coverage.
+              Quick tests, should run really quickly and give good coverage.
             &lt;/para&gt;&lt;/listitem&gt;
           &lt;/varlistentry&gt;
           &lt;varlistentry&gt;
             &lt;term&gt;undefined&lt;/term&gt;
             &lt;listitem&gt;&lt;para&gt;
-              tests for undefined behaviour, may provoke programming errors
+              Tests for undefined behaviour, may provoke programming errors
               under g_test_trap_fork() to check that appropriate assertions
               or warnings are given
             &lt;/para&gt;&lt;/listitem&gt;
@@ -35103,7 +35354,7 @@ So far, the following arguments are understood:
           &lt;varlistentry&gt;
             &lt;term&gt;no-undefined&lt;/term&gt;
             &lt;listitem&gt;&lt;para&gt;
-              avoid tests for undefined behaviour
+              Avoid tests for undefined behaviour
             &lt;/para&gt;&lt;/listitem&gt;
           &lt;/varlistentry&gt;
         &lt;/variablelist&gt;
@@ -35111,19 +35362,7 @@ So far, the following arguments are understood:
     &lt;/varlistentry&gt;
     &lt;varlistentry&gt;
       &lt;term&gt;&lt;option&gt;--debug-log&lt;/option&gt;&lt;/term&gt;
-      &lt;listitem&gt;&lt;para&gt;debug test logging output.&lt;/para&gt;&lt;/listitem&gt;
-    &lt;/varlistentry&gt;
-    &lt;varlistentry&gt;
-      &lt;term&gt;&lt;option&gt;-k&lt;/option&gt;, &lt;option&gt;--keep-going&lt;/option&gt;&lt;/term&gt;
-      &lt;listitem&gt;&lt;para&gt;gtester-specific argument.&lt;/para&gt;&lt;/listitem&gt;
-    &lt;/varlistentry&gt;
-    &lt;varlistentry&gt;
-      &lt;term&gt;&lt;option&gt;--GTestLogFD &lt;replaceable&gt;N&lt;/replaceable&gt;&lt;/option&gt;&lt;/term&gt;
-      &lt;listitem&gt;&lt;para&gt;gtester-specific argument.&lt;/para&gt;&lt;/listitem&gt;
-    &lt;/varlistentry&gt;
-    &lt;varlistentry&gt;
-      &lt;term&gt;&lt;option&gt;--GTestSkipCount &lt;replaceable&gt;N&lt;/replaceable&gt;&lt;/option&gt;&lt;/term&gt;
-      &lt;listitem&gt;&lt;para&gt;gtester-specific argument.&lt;/para&gt;&lt;/listitem&gt;
+      &lt;listitem&gt;&lt;para&gt;Debug test logging output.&lt;/para&gt;&lt;/listitem&gt;
     &lt;/varlistentry&gt;
  &lt;/variablelist&gt;</doc>
       <return-value transfer-ownership="none">
@@ -35596,8 +35835,7 @@ except this is done on a per thread basis.
 
 By setting @interval to 0, idle threads will not be stopped.
 
-This function makes use of g_async_queue_timed_pop () using
-@interval.</doc>
+The default value is 15000 (15 seconds).</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -35613,7 +35851,9 @@ This function makes use of g_async_queue_timed_pop () using
               moved-to="ThreadPool.set_max_unused_threads">
       <doc xml:whitespace="preserve">Sets the maximal number of unused threads to @max_threads.
 If @max_threads is -1, no limit is imposed on the number
-of unused threads.</doc>
+of unused threads.
+
+The default value is 2.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -36827,6 +37067,160 @@ representation of names of scripts&lt;/ulink&gt; for details.</doc>
         <parameter name="script" transfer-ownership="none">
           <doc xml:whitespace="preserve">a Unicode script</doc>
           <type name="UnicodeScript" c:type="GUnicodeScript"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="unix_error_quark" c:identifier="g_unix_error_quark">
+      <return-value transfer-ownership="none">
+        <type name="Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
+    <function name="unix_open_pipe"
+              c:identifier="g_unix_open_pipe"
+              version="2.30"
+              throws="1">
+      <doc xml:whitespace="preserve">Similar to the UNIX pipe() call, but on modern systems like Linux
+uses the pipe2() system call, which atomically creates a pipe with
+the configured flags.  The only supported flag currently is
+&lt;literal&gt;FD_CLOEXEC&lt;/literal&gt;.  If for example you want to configure
+&lt;literal&gt;O_NONBLOCK&lt;/literal&gt;, that must still be done separately with
+fcntl().
+
+&lt;note&gt;This function does *not* take &lt;literal&gt;O_CLOEXEC&lt;/literal&gt;, it takes
+&lt;literal&gt;FD_CLOEXEC&lt;/literal&gt; as if for fcntl(); these are
+different on Linux/glibc.&lt;/note&gt;</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">%TRUE on success, %FALSE if not (and errno will be set).</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="fds" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Array of two integers</doc>
+          <type name="gint" c:type="gint*"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Bitfield of file descriptor flags, see "man 2 fcntl"</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="unix_set_fd_nonblocking"
+              c:identifier="g_unix_set_fd_nonblocking"
+              version="2.30"
+              throws="1">
+      <doc xml:whitespace="preserve">Control the non-blocking state of the given file descriptor,
+according to @nonblock.  On most systems this uses &lt;literal&gt;O_NONBLOCK&lt;/literal&gt;, but
+on some older ones may use &lt;literal&gt;O_NDELAY&lt;/literal&gt;.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">%TRUE if successful</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="fd" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A file descriptor</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="nonblock" transfer-ownership="none">
+          <doc xml:whitespace="preserve">If %TRUE, set the descriptor to be non-blocking</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="unix_signal_add"
+              c:identifier="g_unix_signal_add"
+              version="2.30"
+              introspectable="0">
+      <doc xml:whitespace="preserve">A convenience function for g_unix_signal_source_new(), which
+attaches to the default #GMainContext.  You can remove the watch
+using g_source_remove().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">An ID (greater than 0) for the event source</doc>
+        <type name="guint" c:type="guint"/>
+      </return-value>
+      <parameters>
+        <parameter name="signum" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Signal number</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="handler" transfer-ownership="none" closure="2">
+          <doc xml:whitespace="preserve">Callback</doc>
+          <type name="SourceFunc" c:type="GSourceFunc"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Data for @handler</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="unix_signal_add_full"
+              c:identifier="g_unix_signal_add_full"
+              version="2.30">
+      <doc xml:whitespace="preserve">A convenience function for g_unix_signal_source_new(), which
+attaches to the default #GMainContext.  You can remove the watch
+using g_source_remove().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:whitespace="preserve">An ID (greater than 0) for the event source</doc>
+        <type name="guint" c:type="guint"/>
+      </return-value>
+      <parameters>
+        <parameter name="priority" transfer-ownership="none">
+          <doc xml:whitespace="preserve">the priority of the signal source. Typically this will be in the range between #G_PRIORITY_DEFAULT and #G_PRIORITY_HIGH.</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="signum" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Signal number</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="handler"
+                   transfer-ownership="none"
+                   scope="notified"
+                   closure="3"
+                   destroy="4">
+          <doc xml:whitespace="preserve">Callback</doc>
+          <type name="SourceFunc" c:type="GSourceFunc"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:whitespace="preserve">Data for @handler</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="notify" transfer-ownership="none" scope="async">
+          <doc xml:whitespace="preserve">#GDestroyNotify for @handler</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="unix_signal_source_new"
+              c:identifier="g_unix_signal_source_new"
+              version="2.30">
+      <doc xml:whitespace="preserve">Create a #GSource that will be dispatched upon delivery of the UNIX
+signal @signum.  Currently only &lt;literal&gt;SIGHUP&lt;/literal&gt;,
+&lt;literal&gt;SIGINT&lt;/literal&gt;, and &lt;literal&gt;SIGTERM&lt;/literal&gt; can
+be monitored.  Note that unlike the UNIX default, all sources which
+have created a watch will be dispatched, regardless of which
+underlying thread invoked g_unix_signal_source_new().
+
+For example, an effective use of this function is to handle &lt;literal&gt;SIGTERM&lt;/literal&gt;
+cleanly; flushing any outstanding files, and then calling
+g_main_loop_quit ().  It is not safe to do any of this a regular
+UNIX signal handler; your handler may be invoked while malloc() or
+another library function is running, causing reentrancy if you
+attempt to use it from the handler.  None of the GLib/GObject API
+is safe against this kind of reentrancy.
+
+The interaction of this source when combined with native UNIX
+functions like sigprocmask() is not defined.
+
+The source will not initially be associated with any #GMainContext
+and must be added to one with g_source_attach() before it will be
+executed.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:whitespace="preserve">A newly created #GSource</doc>
+        <type name="Source" c:type="GSource*"/>
+      </return-value>
+      <parameters>
+        <parameter name="signum" transfer-ownership="none">
+          <doc xml:whitespace="preserve">A signal number</doc>
+          <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>
     </function>

@@ -81,7 +81,7 @@ namespace E {
 		public bool create_object_finish (GLib.AsyncResult result, out string uid) throws GLib.Error;
 		public bool create_objects_finish (GLib.AsyncResult result, out GLib.SList<string> uids) throws GLib.Error;
 		public async bool discard_alarm (string uid, string rid, string auid, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool discard_alarm_sync (string uid, string rid, string auid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool discard_alarm_sync (string uid, string rid, string auid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Error error_create (E.CalClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.CalClientError code);
@@ -89,21 +89,21 @@ namespace E {
 		public void generate_instances (long start, long end, GLib.Cancellable? cancellable, owned E.CalRecurInstanceFn cb);
 		public void generate_instances_sync (long start, long end, E.CalRecurInstanceFn cb);
 		public async bool get_attachment_uris (string uid, string rid, GLib.Cancellable? cancellable, out GLib.SList<string> attachment_uris) throws GLib.Error;
-		public bool get_attachment_uris_sync (string uid, string rid, out GLib.SList<string> attachment_uris, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_attachment_uris_sync (string uid, string rid, out GLib.SList<string> attachment_uris, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async void get_default_object (GLib.Cancellable? cancellable);
 		public async bool get_free_busy (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool get_free_busy_sync (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_free_busy_sync (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned string get_local_attachment_store ();
 		public async void get_object (string uid, string rid, GLib.Cancellable? cancellable);
 		public async void get_object_list (string sexp, GLib.Cancellable? cancellable);
 		public async bool get_object_list_as_comps (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.CalComponent> ecalcomps) throws GLib.Error;
-		public bool get_object_list_as_comps_sync (string sexp, out GLib.SList<E.CalComponent> ecalcomps, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_object_list_as_comps_sync (string sexp, out GLib.SList<E.CalComponent> ecalcomps, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_objects_for_uid (string uid, GLib.Cancellable? cancellable, out GLib.SList<E.CalComponent> ecalcomps) throws GLib.Error;
-		public bool get_objects_for_uid_sync (string uid, out GLib.SList<E.CalComponent> ecalcomps, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_objects_for_uid_sync (string uid, out GLib.SList<E.CalComponent> ecalcomps, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public E.CalClientSourceType get_source_type ();
 		public async void get_timezone (string tzid, GLib.Cancellable? cancellable);
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.CalClientView view) throws GLib.Error;
-		public bool get_view_sync (string sexp, out E.CalClientView view, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_view_sync (string sexp, out E.CalClientView view, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool modify_object_finish (GLib.AsyncResult result) throws GLib.Error;
 		public bool modify_objects_finish (GLib.AsyncResult result) throws GLib.Error;
 		public bool receive_objects_finish (GLib.AsyncResult result) throws GLib.Error;
@@ -350,14 +350,14 @@ namespace E {
 		public weak string value;
 		public weak string altrep;
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_CHANGE_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_CHANGE_", type_id = "e_cal_change_type_get_type ()")]
 	[Flags]
 	public enum CalChangeType {
 		ADDED,
 		MODIFIED,
 		DELETED
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_CLIENT_ERROR_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_CLIENT_ERROR_", has_type_id = false)]
 	public enum CalClientError {
 		NO_SUCH_CALENDAR,
 		OBJECT_NOT_FOUND,
@@ -366,7 +366,7 @@ namespace E {
 		OBJECT_ID_ALREADY_EXISTS,
 		INVALID_RANGE
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cname = "ECalClientSourceTypeEnum", cprefix = "")]
+	[CCode (cheader_filename = "libecal/libecal.h", cname = "ECalClientSourceTypeEnum", cprefix = "", type_id = "e_cal_client_source_type_enum_get_type ()")]
 	[GIR (name = "CalClientSourceTypeEnum")]
 	public enum CalClientSourceType {
 		[CCode (cname = "Events")]
@@ -378,13 +378,13 @@ namespace E {
 		[CCode (cname = "Invalid")]
 		INVALID
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_CLIENT_VIEW_FLAGS_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_CLIENT_VIEW_FLAGS_", has_type_id = false)]
 	[Flags]
 	public enum CalClientViewFlags {
 		NONE,
 		NOTIFY_INITIAL
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_ALARM_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_ALARM_", has_type_id = false)]
 	public enum CalComponentAlarmAction {
 		NONE,
 		AUDIO,
@@ -393,14 +393,14 @@ namespace E {
 		PROCEDURE,
 		UNKNOWN
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_ALARM_TRIGGER_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_ALARM_TRIGGER_", has_type_id = false)]
 	public enum CalComponentAlarmTriggerType {
 		NONE,
 		RELATIVE_START,
 		RELATIVE_END,
 		ABSOLUTE
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_CLASS_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_CLASS_", has_type_id = false)]
 	public enum CalComponentClassification {
 		NONE,
 		PUBLIC,
@@ -408,7 +408,7 @@ namespace E {
 		CONFIDENTIAL,
 		UNKNOWN
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_FIELD_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_FIELD_", has_type_id = false)]
 	public enum CalComponentField {
 		CATEGORIES,
 		CLASSIFICATION,
@@ -433,25 +433,25 @@ namespace E {
 		LOCATION,
 		NUM_FIELDS
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_PERIOD_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_PERIOD_", has_type_id = false)]
 	public enum CalComponentPeriodType {
 		DATETIME,
 		DURATION
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_RANGE_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_RANGE_", has_type_id = false)]
 	public enum CalComponentRangeType {
 		SINGLE,
 		THISPRIOR,
 		THISFUTURE
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_TRANSP_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_TRANSP_", has_type_id = false)]
 	public enum CalComponentTransparency {
 		NONE,
 		TRANSPARENT,
 		OPAQUE,
 		UNKNOWN
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_COMPONENT_", has_type_id = false)]
 	public enum CalComponentVType {
 		NO_TYPE,
 		EVENT,
@@ -460,13 +460,13 @@ namespace E {
 		FREEBUSY,
 		TIMEZONE
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_LOAD_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_LOAD_", has_type_id = false)]
 	public enum CalLoadState {
 		NOT_LOADED,
 		LOADING,
 		LOADED
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cname = "ECalSetModeStatusEnum", cprefix = "")]
+	[CCode (cheader_filename = "libecal/libecal.h", cname = "ECalSetModeStatusEnum", cprefix = "", type_id = "e_cal_set_mode_status_enum_get_type ()")]
 	[GIR (name = "CalSetModeStatusEnum")]
 	public enum CalSetModeStatus {
 		[CCode (cname = "ECalSetModeSuccess")]
@@ -476,14 +476,14 @@ namespace E {
 		[CCode (cname = "ECalSetModeNotSupported")]
 		UNSUPPORTED
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_SOURCE_TYPE_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CAL_SOURCE_TYPE_", has_type_id = false)]
 	public enum CalSourceType {
 		EVENT,
 		TODO,
 		JOURNAL,
 		LAST
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CALENDAR_STATUS_")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "E_CALENDAR_STATUS_", type_id = "e_calendar_status_get_type ()")]
 	public enum CalendarStatus {
 		OK,
 		INVALID_ARG,
@@ -507,7 +507,7 @@ namespace E {
 		INVALID_SERVER_VERSION,
 		NOT_SUPPORTED
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "", type_id = "e_data_cal_call_status_get_type ()")]
 	public enum DataCalCallStatus {
 		[CCode (cname = "Success")]
 		SUCCESS,
@@ -564,7 +564,7 @@ namespace E {
 		[CCode (cname = "NotOpened")]
 		NOTOPENED
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "", has_type_id = false)]
 	[Flags]
 	public enum DataCalMode {
 		[CCode (cname = "Local")]
@@ -574,7 +574,7 @@ namespace E {
 		[CCode (cname = "AnyMode")]
 		NYMODE
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "", type_id = "e_data_cal_obj_mod_type_get_type ()")]
 	[Flags]
 	public enum DataCalObjModType {
 		[CCode (cname = "This")]
@@ -586,7 +586,7 @@ namespace E {
 		[CCode (cname = "All")]
 		ALL
 	}
-	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "")]
+	[CCode (cheader_filename = "libecal/libecal.h", cprefix = "", type_id = "e_data_cal_obj_type_get_type ()")]
 	[Flags]
 	public enum DataCalObjType {
 		[CCode (cname = "Event")]

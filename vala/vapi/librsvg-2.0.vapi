@@ -88,7 +88,7 @@ namespace Rsvg {
 		public int x;
 		public int y;
 	}
-	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_HANDLE_FLAGS_")]
+	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_HANDLE_FLAGS_", type_id = "rsvg_handle_flags_get_type ()")]
 	[Flags]
 	public enum HandleFlags {
 		NONE

@@ -8,6 +8,7 @@ namespace Osinfo {
 		public Db ();
 		public void add_deployment (Osinfo.Deployment deployment);
 		public void add_device (Osinfo.Device device);
+		public void add_install_script (Osinfo.InstallScript script);
 		public void add_os (Osinfo.Os os);
 		public void add_platform (Osinfo.Platform platform);
 		public unowned Osinfo.Deployment find_deployment (Osinfo.Os os, Osinfo.Platform platform);
@@ -15,6 +16,8 @@ namespace Osinfo {
 		public Osinfo.DeploymentList get_deployment_list ();
 		public unowned Osinfo.Device get_device (string id);
 		public Osinfo.DeviceList get_device_list ();
+		public unowned Osinfo.InstallScript get_install_script (string id);
+		public Osinfo.InstallScriptList get_install_script_list ();
 		public unowned Osinfo.Os get_os (string id);
 		public Osinfo.OsList get_os_list ();
 		public unowned Osinfo.Platform get_platform (string id);
@@ -106,8 +109,10 @@ namespace Osinfo {
 		public unowned string get_id ();
 		public GLib.List<weak string> get_param_keys ();
 		public unowned string get_param_value (string key);
+		public bool get_param_value_boolean (string key);
 		public GLib.List<weak string> get_param_value_list (string key);
 		public void set_param (string key, string value);
+		public void set_param_boolean (string key, bool value);
 		public string id { get; construct; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_filter_get_type ()")]
@@ -120,6 +125,84 @@ namespace Osinfo {
 		public GLib.List<weak string> get_constraint_keys ();
 		public GLib.List<weak string> get_constraint_values (string propName);
 		public virtual bool matches (Osinfo.Entity entity);
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_config_get_type ()")]
+	public class InstallConfig : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public InstallConfig (string id);
+		public unowned string get_admin_password ();
+		public unowned string get_hardware_arch ();
+		public unowned string get_hostname ();
+		public unowned string get_l10n_keyboard ();
+		public unowned string get_l10n_language ();
+		public unowned string get_l10n_timezone ();
+		public unowned string get_reg_login ();
+		public unowned string get_reg_password ();
+		public unowned string get_reg_product_key ();
+		public bool get_user_administrator ();
+		public bool get_user_autologin ();
+		public unowned string get_user_login ();
+		public unowned string get_user_password ();
+		public unowned string get_user_realname ();
+		public void set_admin_password (string password);
+		public void set_hardware_arch (string arch);
+		public void set_hostname (string hostname);
+		public void set_l10n_keyboard (string keyboard);
+		public void set_l10n_language (string language);
+		public void set_l10n_timezone (string timezone);
+		public void set_reg_login (string name);
+		public void set_reg_password (string password);
+		public void set_reg_product_key (string key);
+		public void set_user_administrator (bool admin);
+		public void set_user_autologin (bool autologin);
+		public void set_user_login (string username);
+		public void set_user_password (string password);
+		public void set_user_realname (string name);
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_config_param_get_type ()")]
+	public class InstallConfigParam : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public InstallConfigParam (string name, string policy);
+		public unowned string get_name ();
+		public Osinfo.InstallConfigParamPolicy get_policy ();
+		public string name { get; construct; }
+		public string policy { get; construct; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_script_get_type ()")]
+	public class InstallScript : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public InstallScript (string id);
+		public void add_config_param (Osinfo.InstallConfigParam param);
+		[CCode (has_construct_function = false)]
+		public InstallScript.data (string id, string profile, string templateData);
+		public string generate (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async string generate_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
+		public GLib.File generate_output (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async void generate_output_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable);
+		public unowned string get_output_filename ();
+		public unowned string get_output_prefix ();
+		public unowned string get_product_key_format ();
+		public unowned string get_profile ();
+		public unowned string get_template_data ();
+		public unowned string get_template_uri ();
+		public bool has_config_param (Osinfo.InstallConfigParam config_param);
+		public bool has_config_param_name (string name);
+		public void set_output_prefix (string prefix);
+		[CCode (has_construct_function = false)]
+		public InstallScript.uri (string id, string profile, string templateUri);
+		public string product_key_format { get; }
+		public string profile { get; construct; }
+		public string template_data { get; construct; }
+		public string template_uri { get; construct; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "install_scriptlist", type_id = "osinfo_install_scriptlist_get_type ()")]
+	public class InstallScriptList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public InstallScriptList ();
+		public Osinfo.InstallScriptList new_copy ();
+		public Osinfo.InstallScriptList new_filtered (Osinfo.Filter filter);
+		public Osinfo.InstallScriptList new_intersection (Osinfo.InstallScriptList sourceTwo);
+		public Osinfo.InstallScriptList new_union (Osinfo.InstallScriptList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_list_get_type ()")]
 	public abstract class List : GLib.Object {
@@ -201,6 +284,7 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public Os (string id);
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
+		public void add_install_script (Osinfo.InstallScript script);
 		public void add_media (Osinfo.Media media);
 		public void add_minimum_resources (Osinfo.Resources resources);
 		public void add_recommended_resources (Osinfo.Resources resources);
@@ -211,6 +295,7 @@ namespace Osinfo {
 		public Osinfo.DeviceList get_devices_by_property (string property, string value, bool inherited);
 		public unowned string get_distro ();
 		public unowned string get_family ();
+		public Osinfo.InstallScriptList get_install_script_list ();
 		public Osinfo.MediaList get_media_list ();
 		public Osinfo.ResourcesList get_minimum_resources ();
 		public Osinfo.ResourcesList get_recommended_resources ();
@@ -252,6 +337,7 @@ namespace Osinfo {
 		public unowned string get_codename ();
 		public GLib.Date get_eol_date ();
 		public unowned string get_eol_date_string ();
+		public unowned string get_logo ();
 		public unowned string get_name ();
 		public Osinfo.ProductList get_related (Osinfo.ProductRelationship relshp);
 		public GLib.Date get_release_date ();
@@ -260,6 +346,7 @@ namespace Osinfo {
 		public unowned string get_vendor ();
 		public unowned string get_version ();
 		public string codename { get; }
+		public string logo { get; }
 		public string name { get; }
 		public string short_id { get; }
 		public string vendor { get; }
@@ -356,7 +443,13 @@ namespace Osinfo {
 		public Osinfo.TreeList new_intersection (Osinfo.TreeList sourceTwo);
 		public Osinfo.TreeList new_union (Osinfo.TreeList sourceTwo);
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", has_type_id = false)]
+	public enum InstallConfigParamPolicy {
+		NONE,
+		REQUIRED,
+		OPTIONAL
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_", has_type_id = false)]
 	public enum MediaError {
 		NO_DESCRIPTORS,
 		NO_PVD,
@@ -364,7 +457,7 @@ namespace Osinfo {
 		INSUFFICIENT_METADATA,
 		NOT_BOOTABLE
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", has_type_id = false)]
 	public enum ProductRelationship {
 		DERIVES_FROM,
 		UPGRADES,
@@ -392,6 +485,52 @@ namespace Osinfo {
 	public const string ENTITY_PROP_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_GIBIBYTES")]
 	public const int GIBIBYTES;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_ADMIN_PASSWORD")]
+	public const string INSTALL_CONFIG_PROP_ADMIN_PASSWORD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_HARDWARE_ARCH")]
+	public const string INSTALL_CONFIG_PROP_HARDWARE_ARCH;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_HOSTNAME")]
+	public const string INSTALL_CONFIG_PROP_HOSTNAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_L10N_KEYBOARD")]
+	public const string INSTALL_CONFIG_PROP_L10N_KEYBOARD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_L10N_LANGUAGE")]
+	public const string INSTALL_CONFIG_PROP_L10N_LANGUAGE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_L10N_TIMEZONE")]
+	public const string INSTALL_CONFIG_PROP_L10N_TIMEZONE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_REG_LOGIN")]
+	public const string INSTALL_CONFIG_PROP_REG_LOGIN;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_REG_PASSWORD")]
+	public const string INSTALL_CONFIG_PROP_REG_PASSWORD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_REG_PRODUCTKEY")]
+	public const string INSTALL_CONFIG_PROP_REG_PRODUCTKEY;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_ADMIN")]
+	public const string INSTALL_CONFIG_PROP_USER_ADMIN;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_AUTOLOGIN")]
+	public const string INSTALL_CONFIG_PROP_USER_AUTOLOGIN;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_LOGIN")]
+	public const string INSTALL_CONFIG_PROP_USER_LOGIN;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_PASSWORD")]
+	public const string INSTALL_CONFIG_PROP_USER_PASSWORD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_REALNAME")]
+	public const string INSTALL_CONFIG_PROP_USER_REALNAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROFILE_DESKTOP")]
+	public const string INSTALL_SCRIPT_PROFILE_DESKTOP;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROFILE_JEOS")]
+	public const string INSTALL_SCRIPT_PROFILE_JEOS;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_CONFIG_OPTIONAL")]
+	public const string INSTALL_SCRIPT_PROP_CONFIG_OPTIONAL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_CONFIG_REQUIRED")]
+	public const string INSTALL_SCRIPT_PROP_CONFIG_REQUIRED;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_OUTPUT_FILENAME")]
+	public const string INSTALL_SCRIPT_PROP_OUTPUT_FILENAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PRODUCT_KEY_FORMAT")]
+	public const string INSTALL_SCRIPT_PROP_PRODUCT_KEY_FORMAT;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PROFILE")]
+	public const string INSTALL_SCRIPT_PROP_PROFILE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_TEMPLATE_DATA")]
+	public const string INSTALL_SCRIPT_PROP_TEMPLATE_DATA;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_TEMPLATE_URI")]
+	public const string INSTALL_SCRIPT_PROP_TEMPLATE_URI;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_KIBIBYTES")]
 	public const int KIBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEBIBYTES")]
@@ -426,6 +565,8 @@ namespace Osinfo {
 	public const string PRODUCT_PROP_CODENAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_EOL_DATE")]
 	public const string PRODUCT_PROP_EOL_DATE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_LOGO")]
+	public const string PRODUCT_PROP_LOGO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_NAME")]
 	public const string PRODUCT_PROP_NAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_RELEASE_DATE")]

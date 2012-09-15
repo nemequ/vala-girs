@@ -3552,6 +3552,86 @@ function pointers.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="dup_data"
+              c:identifier="g_object_dup_data"
+              version="2.34"
+              introspectable="0">
+        <doc xml:whitespace="preserve">This is a variant of g_object_get_data() which returns
+a 'duplicate' of the value. @dup_func defines the
+meaning of 'duplicate' in this context, it could e.g.
+take a reference on a ref-counted object.
+
+If the @key is not set on the object then @dup_func
+will be called with a %NULL argument.
+
+Note that @dup_func is called while user data of @object
+is locked.
+
+This function can be useful to avoid races when multiple
+threads are using object data on the same key on the same
+object.</doc>
+        <return-value>
+          <doc xml:whitespace="preserve">the result of calling @dup_func on the value associated with @key on @object, or %NULL if not set. If @dup_func is %NULL, the value is returned unmodified.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a string, naming the user data pointer</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="dup_func"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     closure="2">
+            <doc xml:whitespace="preserve">function to dup the value</doc>
+            <type name="GLib.DuplicateFunc" c:type="GDuplicateFunc"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">passed as user_data to @dup_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="dup_qdata"
+              c:identifier="g_object_dup_qdata"
+              version="2.34"
+              introspectable="0">
+        <doc xml:whitespace="preserve">This is a variant of g_object_get_qdata() which returns
+a 'duplicate' of the value. @dup_func defines the
+meaning of 'duplicate' in this context, it could e.g.
+take a reference on a ref-counted object.
+
+If the @quark is not set on the object then @dup_func
+will be called with a %NULL argument.
+
+Note that @dup_func is called while user data of @object
+is locked.
+
+This function can be useful to avoid races when multiple
+threads are using object data on the same key on the same
+object.</doc>
+        <return-value>
+          <doc xml:whitespace="preserve">the result of calling @dup_func on the value associated with @quark on @object, or %NULL if not set. If @dup_func is %NULL, the value is returned unmodified.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <parameter name="quark" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GQuark, naming the user data pointer</doc>
+            <type name="GLib.Quark" c:type="GQuark"/>
+          </parameter>
+          <parameter name="dup_func"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     closure="2">
+            <doc xml:whitespace="preserve">function to dup the value</doc>
+            <type name="GLib.DuplicateFunc" c:type="GDuplicateFunc"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">passed as user_data to @dup_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="force_floating"
               c:identifier="g_object_force_floating"
               version="2.10">
@@ -3788,6 +3868,108 @@ to match the one used with g_object_add_weak_pointer().</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">The memory address of a pointer.</doc>
             <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="replace_data"
+              c:identifier="g_object_replace_data"
+              version="2.34">
+        <doc xml:whitespace="preserve">Compares the user data for the key @key on @object with
+@oldval, and if they are the same, replaces @oldval with
+@newval.
+
+This is like a typical atomic compare-and-exchange
+operation, for user data on an object.
+
+If the previous value was replaced then ownership of the
+old value (@oldval) is passed to the caller, including
+the registred destroy notify for it (passed out in @old_destroy).
+Its up to the caller to free this as he wishes, which may
+or may not include using @old_destroy as sometimes replacement
+should not destroy the object in the normal way.
+
+Return: %TRUE if the existing value for @key was replaced
+ by @newval, %FALSE otherwise.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a string, naming the user data pointer</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="oldval" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the old value to compare against</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="newval" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the new value</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:whitespace="preserve">a destroy notify for the new value</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="old_destroy"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:whitespace="preserve">destroy notify for the existing value</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="replace_qdata"
+              c:identifier="g_object_replace_qdata"
+              version="2.34">
+        <doc xml:whitespace="preserve">Compares the user data for the key @quark on @object with
+@oldval, and if they are the same, replaces @oldval with
+@newval.
+
+This is like a typical atomic compare-and-exchange
+operation, for user data on an object.
+
+If the previous value was replaced then ownership of the
+old value (@oldval) is passed to the caller, including
+the registred destroy notify for it (passed out in @old_destroy).
+Its up to the caller to free this as he wishes, which may
+or may not include using @old_destroy as sometimes replacement
+should not destroy the object in the normal way.
+
+Return: %TRUE if the existing value for @quark was replaced
+ by @newval, %FALSE otherwise.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="quark" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GQuark, naming the user data pointer</doc>
+            <type name="GLib.Quark" c:type="GQuark"/>
+          </parameter>
+          <parameter name="oldval" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the old value to compare against</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="newval" transfer-ownership="none" allow-none="1">
+            <doc xml:whitespace="preserve">the new value</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:whitespace="preserve">a destroy notify for the new value</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="old_destroy"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:whitespace="preserve">destroy notify for the existing value</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify*"/>
           </parameter>
         </parameters>
       </method>

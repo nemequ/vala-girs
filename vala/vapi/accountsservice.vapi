@@ -26,6 +26,7 @@ namespace Act {
 		public uint get_uid ();
 		public unowned string get_user_name ();
 		public unowned string get_x_session ();
+		public bool is_local_account ();
 		public bool is_logged_in ();
 		public bool is_system_account ();
 		public void set_account_type (Act.UserAccountType account_type);
@@ -49,6 +50,8 @@ namespace Act {
 		[NoAccessorMethod]
 		public bool is_loaded { get; }
 		public string language { get; }
+		[NoAccessorMethod]
+		public bool local_account { get; }
 		public string location { get; }
 		public bool locked { get; }
 		public int login_frequency { get; }
@@ -91,12 +94,12 @@ namespace Act {
 		public virtual signal void user_is_logged_in_changed (Act.User user);
 		public virtual signal void user_removed (Act.User user);
 	}
-	[CCode (cheader_filename = "act/act.h", cprefix = "ACT_USER_ACCOUNT_TYPE_")]
+	[CCode (cheader_filename = "act/act.h", cprefix = "ACT_USER_ACCOUNT_TYPE_", type_id = "act_user_account_type_get_type ()")]
 	public enum UserAccountType {
 		STANDARD,
 		ADMINISTRATOR
 	}
-	[CCode (cheader_filename = "act/act.h", cprefix = "ACT_USER_PASSWORD_MODE_")]
+	[CCode (cheader_filename = "act/act.h", cprefix = "ACT_USER_PASSWORD_MODE_", type_id = "act_user_password_mode_get_type ()")]
 	public enum UserPasswordMode {
 		REGULAR,
 		SET_AT_LOGIN,

@@ -975,6 +975,21 @@ passthrough semantics in @pre_push_frame.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_pts_interpolation"
+              c:identifier="gst_base_parse_set_pts_interpolation">
+        <doc xml:whitespace="preserve">By default, the base class will guess PTS timestamps using a simple
+interpolation (previous timestamp + duration), which is incorrect for
+data streams with reordering, where PTS can go backward. Sub-classes
+implementing such formats should disable PTS interpolation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="pts_interpolate" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_syncable" c:identifier="gst_base_parse_set_syncable">
         <doc xml:whitespace="preserve">Set if frame starts can be identified. This is set by default and
 determines whether seeking based on bitrate averages
@@ -1454,7 +1469,7 @@ allocated on the stack.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </virtual-method>
-      <virtual-method name="wait_eos">
+      <virtual-method name="wait_event">
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
@@ -2153,8 +2168,8 @@ output/present buffers.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="wait_eos">
-        <callback name="wait_eos">
+      <field name="wait_event">
+        <callback name="wait_event">
           <return-value transfer-ownership="none">
             <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
           </return-value>
@@ -2574,11 +2589,45 @@ Last reviewed on 2007-12-19 (0.10.16)
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
       </virtual-method>
+      <method name="get_allocator" c:identifier="gst_base_src_get_allocator">
+        <doc xml:whitespace="preserve">Lets #GstBaseSrc sub-classes to know the memory @allocator
+used by the base class and its @params.
+
+Unref the @allocator after use it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="allocator"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">the #GstAllocator used</doc>
+            <type name="Gst.Allocator" c:type="GstAllocator**"/>
+          </parameter>
+          <parameter name="params"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">the #GstAllocatorParams of @allocator</doc>
+            <type name="Gst.AllocationParams" c:type="GstAllocationParams*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_blocksize" c:identifier="gst_base_src_get_blocksize">
         <doc xml:whitespace="preserve">Get the number of bytes that @src will push out with each buffer.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the number of bytes pushed with each buffer.</doc>
           <type name="guint" c:type="guint"/>
+        </return-value>
+      </method>
+      <method name="get_buffer_pool"
+              c:identifier="gst_base_src_get_buffer_pool">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the instance of the #GstBufferPool used by the src; free it after use it</doc>
+          <type name="Gst.BufferPool" c:type="GstBufferPool*"/>
         </return-value>
       </method>
       <method name="get_do_timestamp"
@@ -3261,7 +3310,7 @@ It provides for:
   &lt;itemizedlist&gt;
   &lt;title&gt;Example elements&lt;/title&gt;
     &lt;listitem&gt;Level&lt;/listitem&gt;
-    &lt;listitem&gt;Videoscale, audioconvert, ffmpegcolorspace, audioresample in
+    &lt;listitem&gt;Videoscale, audioconvert, videoconvert, audioresample in
     certain modes.&lt;/listitem&gt;
   &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
@@ -3293,7 +3342,7 @@ It provides for:
     &lt;listitem&gt;Volume&lt;/listitem&gt;
     &lt;listitem&gt;Audioconvert in certain modes (signed/unsigned
     conversion)&lt;/listitem&gt;
-    &lt;listitem&gt;ffmpegcolorspace in certain modes (endianness
+    &lt;listitem&gt;videoconvert in certain modes (endianness
     swapping)&lt;/listitem&gt;
   &lt;/itemizedlist&gt;
  &lt;/listitem&gt;
@@ -3332,7 +3381,7 @@ It provides for:
   &lt;/itemizedlist&gt;
   &lt;itemizedlist&gt;
   &lt;title&gt;Example elements&lt;/title&gt;
-    &lt;listitem&gt;Videoscale, ffmpegcolorspace, audioconvert when doing
+    &lt;listitem&gt;Videoscale, videoconvert, audioconvert when doing
     scaling/conversions&lt;/listitem&gt;
   &lt;/itemizedlist&gt;
 &lt;/listitem&gt;
@@ -3637,6 +3686,41 @@ It provides for:
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="get_allocator"
+              c:identifier="gst_base_transform_get_allocator">
+        <doc xml:whitespace="preserve">Lets #GstBaseTransform sub-classes to know the memory @allocator
+used by the base class and its @params.
+
+Unref the @allocator after use it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="allocator"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">the #GstAllocator used</doc>
+            <type name="Gst.Allocator" c:type="GstAllocator**"/>
+          </parameter>
+          <parameter name="params"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">the #GstAllocatorParams of @allocator</doc>
+            <type name="Gst.AllocationParams" c:type="GstAllocationParams*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_buffer_pool"
+              c:identifier="gst_base_transform_get_buffer_pool">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the instance of the #GstBufferPool used by @trans; free it after use it</doc>
+          <type name="Gst.BufferPool" c:type="GstBufferPool*"/>
+        </return-value>
+      </method>
       <method name="is_in_place" c:identifier="gst_base_transform_is_in_place">
         <doc xml:whitespace="preserve">See if @trans is configured as a in_place transform.</doc>
         <return-value transfer-ownership="none">
@@ -6408,39 +6492,6 @@ MT safe.</doc>
       </constructor>
       <method name="add_pad"
               c:identifier="gst_collect_pads_add_pad"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Add a pad to the collection of collect pads. The pad has to be
-a sinkpad. The refcount of the pad is incremented. Use
-gst_collect_pads_remove_pad() to remove the pad from the collection
-again.
-
-You specify a size for the returned #GstCollectData structure
-so that you can use it to store additional information.
-
-The pad will be automatically activated in push mode when @pads is
-started.
-
-This function calls gst_collect_pads_add_pad_full() passing a value of NULL
-for destroy_notify and TRUE for locked.
-
-MT safe.</doc>
-        <return-value>
-          <doc xml:whitespace="preserve">a new #GstCollectData to identify the new pad. Or NULL if wrong parameters are supplied.</doc>
-          <type name="CollectData" c:type="GstCollectData*"/>
-        </return-value>
-        <parameters>
-          <parameter name="pad" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the pad to add</doc>
-            <type name="Gst.Pad" c:type="GstPad*"/>
-          </parameter>
-          <parameter name="size" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the size of the returned #GstCollectData structure</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="add_pad_full"
-              c:identifier="gst_collect_pads_add_pad_full"
               introspectable="0">
         <doc xml:whitespace="preserve">Add a pad to the collection of collect pads. The pad has to be
 a sinkpad. The refcount of the pad is incremented. Use

@@ -453,7 +453,7 @@ implements the following default behaviour for each of them:
     a SEGMENT_START have posted a SEGMENT_DONE.&lt;/para&gt;&lt;/listitem&gt;
   &lt;/varlistentry&gt;
   &lt;varlistentry&gt;
-    &lt;term&gt;GST_MESSAGE_DURATION&lt;/term&gt;
+    &lt;term&gt;GST_MESSAGE_DURATION_CHANGED&lt;/term&gt;
     &lt;listitem&gt;&lt;para&gt; Is posted by an element that detected a change
     in the stream duration. The default bin behaviour is to clear any
     cached duration values so that the next duration query will perform
@@ -4277,41 +4277,6 @@ parent element by using gst_child_proxy_get() and gst_child_proxy_set().
 Property names are written as "child-name::property-name". The whole naming
 scheme is recursive. Thus "child1::child2::property" is valid too, if
 "child1" and "child2" implement the #GstChildProxy interface.</doc>
-      <function name="lookup" c:identifier="gst_child_proxy_lookup">
-        <doc xml:whitespace="preserve">Looks up which object and #GParamSpec would be effected by the given @name.
-
-MT safe.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if @target and @pspec could be found. FALSE otherwise. In that case the values for @pspec and @target are not modified. Unref @target after usage. For plain GObjects @target is the same as @object.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="object" transfer-ownership="none">
-            <doc xml:whitespace="preserve">object to lookup the property in</doc>
-            <type name="GObject.Object" c:type="GObject*"/>
-          </parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">name of the property to look up</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="target"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">pointer to a #GObject that takes the real object to set property on</doc>
-            <type name="GObject.Object" c:type="GObject**"/>
-          </parameter>
-          <parameter name="pspec"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">pointer to take the #GParamSpec describing the property</doc>
-            <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
-          </parameter>
-        </parameters>
-      </function>
       <virtual-method name="child_added" invoker="child_added">
         <doc xml:whitespace="preserve">Emits the "child-added" signal.</doc>
         <return-value transfer-ownership="none">
@@ -4505,6 +4470,37 @@ You are responsible for freeing it by calling g_value_unset()</doc>
           <parameter name="var_args" transfer-ownership="none">
             <doc xml:whitespace="preserve">return location for the first property, followed optionally by more name/return location pairs, followed by NULL</doc>
             <type name="va_list" c:type="va_list"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="lookup" c:identifier="gst_child_proxy_lookup">
+        <doc xml:whitespace="preserve">Looks up which object and #GParamSpec would be effected by the given @name.
+
+MT safe.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">TRUE if @target and @pspec could be found. FALSE otherwise. In that case the values for @pspec and @target are not modified. Unref @target after usage. For plain GObjects @target is the same as @object.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">name of the property to look up</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="target"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">pointer to a #GObject that takes the real object to set property on</doc>
+            <type name="GObject.Object" c:type="GObject**"/>
+          </parameter>
+          <parameter name="pspec"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">pointer to take the #GParamSpec describing the property</doc>
+            <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
           </parameter>
         </parameters>
       </method>
@@ -9725,24 +9721,6 @@ part of a larger step operation.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="new_stream_config"
-                   c:identifier="gst_event_new_stream_config">
-        <doc xml:whitespace="preserve">Create a new STREAM CONFIG event. The stream config event travels
-downstream synchronized with the buffer flow and contains stream
-configuration information for the stream, such as stream-headers
-or setup-data. It is optional and should be sent after the CAPS
-event.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the new STREAM CONFIG event.</doc>
-          <type name="Event" c:type="GstEvent*"/>
-        </return-value>
-        <parameters>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the stream config flags</doc>
-            <type name="StreamConfigFlags" c:type="GstStreamConfigFlags"/>
-          </parameter>
-        </parameters>
-      </constructor>
       <constructor name="new_stream_start"
                    c:identifier="gst_event_new_stream_start">
         <doc xml:whitespace="preserve">Create a new STREAM_START event. The stream start event can only
@@ -9827,28 +9805,6 @@ given @uid.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="add_stream_config_header"
-              c:identifier="gst_event_add_stream_config_header">
-        <doc xml:whitespace="preserve">Adds a stream header to the stream info event to signal stream headers to
-to downstream elements such as multifilesink, tcpserversink etc. Stream
-headers can be and should usually be prepended to the data stream at any
-point in the stream (which requires a streamable format), e.g. to a new
-client connecting, or when starting a new file segment. stream header
-buffers will all be used together in the order they were added to the
-stream config event. Stream headers are sent as buffers at the beginning
-of the data flow in addition to the stream config event. Elements that
-care about stream headers need to make sure that they don't insert or
-interpret these header buffers twice if they interpret them.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="buf" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #GstBuffer with stream header data</doc>
-            <type name="Buffer" c:type="GstBuffer*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="copy_segment" c:identifier="gst_event_copy_segment">
         <doc xml:whitespace="preserve">Parses a segment @event and copies the #GstSegment into the location
 given by @segment.</doc>
@@ -9861,14 +9817,6 @@ given by @segment.</doc>
             <type name="Segment" c:type="GstSegment*"/>
           </parameter>
         </parameters>
-      </method>
-      <method name="get_n_stream_config_headers"
-              c:identifier="gst_event_get_n_stream_config_headers">
-        <doc xml:whitespace="preserve">Extract the number of stream header buffers.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the number of stream header buffers attached to the stream info @event.</doc>
-          <type name="guint" c:type="guint"/>
-        </return-value>
       </method>
       <method name="get_seqnum" c:identifier="gst_event_get_seqnum">
         <doc xml:whitespace="preserve">Retrieve the sequence number of a event.
@@ -10014,29 +9962,6 @@ valid.</doc>
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">A pointer to store the latency in.</doc>
             <type name="ClockTime" c:type="GstClockTime*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="parse_nth_stream_config_header"
-              c:identifier="gst_event_parse_nth_stream_config_header">
-        <doc xml:whitespace="preserve">Retrieves the n-th stream header buffer attached to the stream config
-event and stores it in @buf. Will store %NULL in @buf if there is no such
-stream header.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if @event contained a stream header at @index and @buf has been set, otherwise FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="index" transfer-ownership="none">
-            <doc xml:whitespace="preserve">number of the stream header to retrieve</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="buf"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none">
-            <doc xml:whitespace="preserve">location where to store the n-th stream header #GstBuffer</doc>
-            <type name="Buffer" c:type="GstBuffer**"/>
           </parameter>
         </parameters>
       </method>
@@ -10238,42 +10163,6 @@ and make a copy if you want to modify it or store it for later use.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="parse_stream_config"
-              c:identifier="gst_event_parse_stream_config">
-        <doc xml:whitespace="preserve">Get the stream config flags from @event.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="flags"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:whitespace="preserve">a pointer to a variable to store the stream config flags</doc>
-            <type name="StreamConfigFlags" c:type="GstStreamConfigFlags*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="parse_stream_config_setup_data"
-              c:identifier="gst_event_parse_stream_config_setup_data">
-        <doc xml:whitespace="preserve">Extracts the setup data buffer from the stream info event. Will store
-%NULL in @buf if the event contains no setup data. The buffer returned
-will remain valid as long as @event remains valid. The caller should
-acquire a reference to to @buf if needed.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">TRUE if @event contained setup data and @buf has been set, otherwise FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="buf"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none">
-            <doc xml:whitespace="preserve">location where to store the #GstBuffer with setup data</doc>
-            <type name="Buffer" c:type="GstBuffer**"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="parse_stream_start"
               c:identifier="gst_event_parse_stream_start">
         <doc xml:whitespace="preserve">Parse a stream-id @event and store the result in the given @stream_id
@@ -10367,23 +10256,6 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_stream_config_setup_data"
-              c:identifier="gst_event_set_stream_config_setup_data">
-        <doc xml:whitespace="preserve">Set setup data on the stream info event to signal out of bound setup data
-to downstream elements. Unlike stream headers, setup data contains data
-that is required to interpret the data stream, but is not valid as-is
-inside the data stream and thus can't just be prepended to or inserted
-into the data stream.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="buf" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #GstBuffer with setup data</doc>
-            <type name="Buffer" c:type="GstBuffer*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="writable_structure"
               c:identifier="gst_event_writable_structure">
         <doc xml:whitespace="preserve">Get a writable version of the structure.</doc>
@@ -10451,9 +10323,6 @@ Specific custom events are distinguished by the name of the structure.</doc>
               value="10254"
               c:identifier="GST_EVENT_STREAM_START"/>
       <member name="caps" value="12814" c:identifier="GST_EVENT_CAPS"/>
-      <member name="stream_config"
-              value="15374"
-              c:identifier="GST_EVENT_STREAM_CONFIG"/>
       <member name="segment" value="17934" c:identifier="GST_EVENT_SEGMENT"/>
       <member name="tag" value="20510" c:identifier="GST_EVENT_TAG"/>
       <member name="buffersize"
@@ -11506,6 +11375,11 @@ gst_memory_map(). It contains the data and size.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <record name="Memory"
             c:type="GstMemory"
@@ -12141,30 +12015,23 @@ app. The structure field can be NULL.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="new_duration" c:identifier="gst_message_new_duration">
-        <doc xml:whitespace="preserve">Create a new duration message. This message is posted by elements that
-know the duration of a stream in a specific format. This message
+      <constructor name="new_duration_changed"
+                   c:identifier="gst_message_new_duration_changed">
+        <doc xml:whitespace="preserve">Create a new duration changed message. This message is posted by elements
+that know the duration of a stream when the duration changes. This message
 is received by bins and is used to calculate the total duration of a
 pipeline. Elements may post a duration message with a duration of
 GST_CLOCK_TIME_NONE to indicate that the duration has changed and the 
 cached duration should be discarded. The new duration can then be 
 retrieved via a query.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">The new duration message.  MT safe.</doc>
+          <doc xml:whitespace="preserve">The new duration-changed message.  MT safe.</doc>
           <type name="Message" c:type="GstMessage*"/>
         </return-value>
         <parameters>
           <parameter name="src" transfer-ownership="none">
             <doc xml:whitespace="preserve">The object originating the message.</doc>
             <type name="Object" c:type="GstObject*"/>
-          </parameter>
-          <parameter name="format" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The format of the duration</doc>
-            <type name="Format" c:type="GstFormat"/>
-          </parameter>
-          <parameter name="duration" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The new duration</doc>
-            <type name="gint64" c:type="gint64"/>
           </parameter>
         </parameters>
       </constructor>
@@ -12885,33 +12752,6 @@ MT safe.</doc>
                      allow-none="1">
             <doc xml:whitespace="preserve">a pointer to hold the ready flag, or NULL</doc>
             <type name="gboolean" c:type="gboolean*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="parse_duration" c:identifier="gst_message_parse_duration">
-        <doc xml:whitespace="preserve">Extracts the duration and format from the duration message. The duration
-might be GST_CLOCK_TIME_NONE, which indicates that the duration has
-changed. Applications should always use a query to retrieve the duration
-of a pipeline.
-
-MT safe.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="format"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:whitespace="preserve">Result location for the format, or NULL</doc>
-            <type name="Format" c:type="GstFormat*"/>
-          </parameter>
-          <parameter name="duration"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:whitespace="preserve">Result location for the duration, or NULL</doc>
-            <type name="gint64" c:type="gint64*"/>
           </parameter>
         </parameters>
       </method>
@@ -13763,9 +13603,9 @@ GstTask object but other objects might be added in the future.</doc>
       <member name="segment_done"
               value="131072"
               c:identifier="GST_MESSAGE_SEGMENT_DONE"/>
-      <member name="duration"
+      <member name="duration_changed"
               value="262144"
-              c:identifier="GST_MESSAGE_DURATION"/>
+              c:identifier="GST_MESSAGE_DURATION_CHANGED"/>
       <member name="latency"
               value="524288"
               c:identifier="GST_MESSAGE_LATENCY"/>
@@ -15317,6 +15157,19 @@ This function makes a copy of the name so you can safely free the name.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <function name="mode_get_name" c:identifier="gst_pad_mode_get_name">
+        <doc xml:whitespace="preserve">Return the name of a pad mode, for use in debug messages mostly.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">short mnemonic for pad mode @mode</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the pad mode</doc>
+            <type name="PadMode" c:type="GstPadMode"/>
+          </parameter>
+        </parameters>
+      </function>
       <virtual-method name="linked">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -20136,7 +19989,17 @@ scheduling mode array of the query's structure.</doc>
       </method>
       <method name="has_scheduling_mode"
               c:identifier="gst_query_has_scheduling_mode">
-        <doc xml:whitespace="preserve">Check if @query has scheduling mode set.</doc>
+        <doc xml:whitespace="preserve">Check if @query has scheduling mode set.
+
+&lt;note&gt;
+  &lt;para&gt;
+    When checking if upstream supports pull mode, it is usually not
+    enough to just check for GST_PAD_MODE_PULL with this function, you
+    also want to check whether the scheduling flags returned by
+    gst_query_parse_scheduling() have the seeking flag set (meaning
+    random access is supported, not only sequential pulls).
+  &lt;/para&gt;
+&lt;/note&gt;</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">TRUE when @mode is in the list of scheduling modes.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -20145,6 +20008,25 @@ scheduling mode array of the query's structure.</doc>
           <parameter name="mode" transfer-ownership="none">
             <doc xml:whitespace="preserve">the scheduling mode</doc>
             <type name="PadMode" c:type="GstPadMode"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="has_scheduling_mode_with_flags"
+              c:identifier="gst_query_has_scheduling_mode_with_flags">
+        <doc xml:whitespace="preserve">Check if @query has scheduling mode set and @flags is set in
+query scheduling flags.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">TRUE when @mode is in the list of scheduling modes and @flags are compatible with query flags.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the scheduling mode</doc>
+            <type name="PadMode" c:type="GstPadMode"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:whitespace="preserve">#GstSchedulingFlags</doc>
+            <type name="SchedulingFlags" c:type="GstSchedulingFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -21405,20 +21287,6 @@ This function sinks @feature.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="add_path" c:identifier="gst_registry_add_path">
-        <doc xml:whitespace="preserve">Add the given path to the registry. The syntax of the
-path is specific to the registry. If the path has already been
-added, do nothing.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="path" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the path to add to the registry</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="add_plugin" c:identifier="gst_registry_add_plugin">
         <doc xml:whitespace="preserve">Add the plugin to the registry. The plugin-added signal will be emitted.
 This function will sink @plugin.</doc>
@@ -21560,15 +21428,6 @@ every time a feature is added or removed from the registry.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the feature list cookie.</doc>
           <type name="guint32" c:type="guint32"/>
-        </return-value>
-      </method>
-      <method name="get_path_list" c:identifier="gst_registry_get_path_list">
-        <doc xml:whitespace="preserve">Get the list of paths for the given registry.</doc>
-        <return-value transfer-ownership="container">
-          <doc xml:whitespace="preserve">A #GList of paths as strings. g_list_free after use.  MT safe.</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="utf8"/>
-          </type>
         </return-value>
       </method>
       <method name="get_plugin_list"
@@ -22151,7 +22010,7 @@ has been changed but not the playback position.</doc>
         </return-value>
       </method>
       <method name="init" c:identifier="gst_segment_init">
-        <doc xml:whitespace="preserve">The start/last_stop positions are set to 0 and the stop/duration
+        <doc xml:whitespace="preserve">The start/position fields are set to 0 and the stop/duration
 fields are set to -1 (unknown). The default rate of 1.0 and no
 flags are set.
 
@@ -22372,13 +22231,6 @@ instantiate a #GstCaps.</doc>
         </return-value>
       </method>
     </record>
-    <enumeration name="StreamConfigFlags" c:type="GstStreamConfigFlags">
-      <doc xml:whitespace="preserve">GstStreamConfigFlags are flags passed with the stream config event, see
-gst_event_new_stream_config().</doc>
-      <member name="stream_config_flag_none"
-              value="0"
-              c:identifier="GST_STREAM_CONFIG_FLAG_NONE"/>
-    </enumeration>
     <enumeration name="StreamError"
                  c:type="GstStreamError"
                  glib:error-domain="gst-stream-error-quark">
@@ -27232,43 +27084,6 @@ Free-function: g_free</doc>
         <parameter name="string" transfer-ownership="none">
           <doc xml:whitespace="preserve">a string to convert to #GstCaps</doc>
           <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="child_proxy_lookup"
-              c:identifier="gst_child_proxy_lookup"
-              moved-to="ChildProxy.lookup">
-      <doc xml:whitespace="preserve">Looks up which object and #GParamSpec would be effected by the given @name.
-
-MT safe.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">TRUE if @target and @pspec could be found. FALSE otherwise. In that case the values for @pspec and @target are not modified. Unref @target after usage. For plain GObjects @target is the same as @object.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
-      <parameters>
-        <parameter name="object" transfer-ownership="none">
-          <doc xml:whitespace="preserve">object to lookup the property in</doc>
-          <type name="GObject.Object" c:type="GObject*"/>
-        </parameter>
-        <parameter name="name" transfer-ownership="none">
-          <doc xml:whitespace="preserve">name of the property to look up</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-        <parameter name="target"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full"
-                   allow-none="1">
-          <doc xml:whitespace="preserve">pointer to a #GObject that takes the real object to set property on</doc>
-          <type name="GObject.Object" c:type="GObject**"/>
-        </parameter>
-        <parameter name="pspec"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="none"
-                   allow-none="1">
-          <doc xml:whitespace="preserve">pointer to take the #GParamSpec describing the property</doc>
-          <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
         </parameter>
       </parameters>
     </function>
