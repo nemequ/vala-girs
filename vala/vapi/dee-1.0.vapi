@@ -208,6 +208,7 @@ namespace Dee {
 		public abstract unowned Dee.ModelIter append_row ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members);
 		public abstract void clear ();
 		public abstract unowned Dee.ModelIter find_row_sorted ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_spec, [CCode (delegate_target_pos = 2.5)] Dee.CompareRowFunc cmp_func, out bool out_was_found);
+		public unowned Dee.ModelIter find_row_sorted_with_sizes ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_spec, [CCode (delegate_target_pos = 2.5)] Dee.CompareRowSizedFunc cmp_func, out bool out_was_found);
 		public unowned Dee.ModelIter find_sorted ([CCode (delegate_target_pos = 1.5)] Dee.CompareRowFunc cmp_func, out bool out_was_found, ...);
 		public void @get (Dee.ModelIter iter, ...);
 		public abstract bool get_bool (Dee.ModelIter iter, uint column);
@@ -235,6 +236,7 @@ namespace Dee {
 		public abstract unowned Dee.ModelIter insert_row (uint pos, [CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members);
 		public abstract unowned Dee.ModelIter insert_row_before (Dee.ModelIter iter, [CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members);
 		public abstract unowned Dee.ModelIter insert_row_sorted ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members, Dee.CompareRowFunc cmp_func);
+		public unowned Dee.ModelIter insert_row_sorted_with_sizes ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members, Dee.CompareRowSizedFunc cmp_func);
 		public unowned Dee.ModelIter insert_sorted ([CCode (delegate_target_pos = 1.5)] Dee.CompareRowFunc cmp_func, ...);
 		public abstract bool is_first (Dee.ModelIter iter);
 		public abstract bool is_last (Dee.ModelIter iter);
@@ -342,6 +344,8 @@ namespace Dee {
 	public delegate string CollatorFunc (string input);
 	[CCode (cheader_filename = "dee.h", instance_pos = 2.9)]
 	public delegate int CompareRowFunc ([CCode (array_length = false)] GLib.Variant[] row1, [CCode (array_length = false)] GLib.Variant[] row2);
+	[CCode (cheader_filename = "dee.h", instance_pos = 2.9)]
+	public delegate int CompareRowSizedFunc ([CCode (array_length_cname = "row1_length", array_length_pos = 1.5, array_length_type = "guint")] GLib.Variant[] row1, [CCode (array_length_cname = "row2_length", array_length_pos = 2.1, array_length_type = "guint")] GLib.Variant[] row2);
 	[CCode (cheader_filename = "dee.h", instance_pos = 2.9)]
 	public delegate void FilterMapFunc (Dee.Model orig_model, Dee.FilterModel filter_model);
 	[CCode (cheader_filename = "dee.h", instance_pos = 3.9)]
