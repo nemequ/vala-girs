@@ -57,18 +57,19 @@ For example, a sink pad's chain function that needs to pass data to a library
 in 512-byte chunks could be implemented like this:
 |[
 static GstFlowReturn
-sink_pad_chain (GstPad *pad, GstBuffer *buffer)
+sink_pad_chain (GstPad *pad, GstObject *parent, GstBuffer *buffer)
 {
   MyElement *this;
   GstAdapter *adapter;
   GstFlowReturn ret = GST_FLOW_OK;
 
-  // will give the element an extra ref; remember to drop it
-  this = MY_ELEMENT (gst_pad_get_parent (pad));
+  this = MY_ELEMENT (parent);
+
   adapter = this-&gt;adapter;
 
   // put buffer into adapter
   gst_adapter_push (adapter, buffer);
+
   // while we can read out 512 bytes, process them
   while (gst_adapter_available (adapter) &gt;= 512 &amp;&amp; ret == GST_FLOW_OK) {
     const guint8 *data = gst_adapter_map (adapter, 512);
@@ -77,8 +78,6 @@ sink_pad_chain (GstPad *pad, GstBuffer *buffer)
     gst_adapter_unmap (adapter);
     gst_adapter_flush (adapter, 512);
   }
-
-  gst_object_unref (this);
   return ret;
 }
 ]|
@@ -211,7 +210,7 @@ element stores the buffer so that it has access to it outside of the bounds
 of its chain function, the buffer will have an invalid data pointer after
 your element flushes the bytes. In that case you should use
 gst_adapter_take(), which returns a freshly-allocated buffer that you can set
-as #GstBuffer malloc_data or the potentially more performant
+as #GstBuffer memory or the potentially more performant
 gst_adapter_take_buffer().
 
 Returns #NULL if @size bytes are not available.</doc>
@@ -482,7 +481,7 @@ It provides for:
   &lt;listitem&gt;&lt;para&gt;handles state changes&lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;can operate in pull mode or push mode&lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;handles seeking in both modes&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;handles events (NEWSEGMENT/EOS/FLUSH)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;handles events (SEGMENT/EOS/FLUSH)&lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;
        handles queries (POSITION/DURATION/SEEKING/FORMAT/CONVERT)
   &lt;/para&gt;&lt;/listitem&gt;
@@ -986,6 +985,7 @@ implementing such formats should disable PTS interpolation.</doc>
         </return-value>
         <parameters>
           <parameter name="pts_interpolate" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE if parser should interpolate PTS timestamps</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -1285,22 +1285,34 @@ allocated on the stack.</doc>
       <doc xml:whitespace="preserve">Flags to be used in a #GstBaseParseFrame.</doc>
       <member name="none"
               value="0"
-              c:identifier="GST_BASE_PARSE_FRAME_FLAG_NONE"/>
+              c:identifier="GST_BASE_PARSE_FRAME_FLAG_NONE">
+        <doc xml:whitespace="preserve">no flag</doc>
+      </member>
       <member name="new_frame"
               value="1"
-              c:identifier="GST_BASE_PARSE_FRAME_FLAG_NEW_FRAME"/>
+              c:identifier="GST_BASE_PARSE_FRAME_FLAG_NEW_FRAME">
+        <doc xml:whitespace="preserve">set by baseclass if current frame is passed for processing to the subclass for the first time (and not set on subsequent calls with same data).</doc>
+      </member>
       <member name="no_frame"
               value="2"
-              c:identifier="GST_BASE_PARSE_FRAME_FLAG_NO_FRAME"/>
+              c:identifier="GST_BASE_PARSE_FRAME_FLAG_NO_FRAME">
+        <doc xml:whitespace="preserve">set to indicate this buffer should not be counted as frame, e.g. if this frame is dependent on a previous one. As it is not counted as a frame, bitrate increases but frame to time conversions are maintained.</doc>
+      </member>
       <member name="clip"
               value="4"
-              c:identifier="GST_BASE_PARSE_FRAME_FLAG_CLIP"/>
+              c:identifier="GST_BASE_PARSE_FRAME_FLAG_CLIP">
+        <doc xml:whitespace="preserve">@pre_push_frame can set this to indicate that regular segment clipping can still be performed (as opposed to any custom one having been done).</doc>
+      </member>
       <member name="drop"
               value="8"
-              c:identifier="GST_BASE_PARSE_FRAME_FLAG_DROP"/>
+              c:identifier="GST_BASE_PARSE_FRAME_FLAG_DROP">
+        <doc xml:whitespace="preserve">indicates to @finish_frame that the the frame should be dropped (and might be handled internall by subclass)</doc>
+      </member>
       <member name="queue"
               value="16"
-              c:identifier="GST_BASE_PARSE_FRAME_FLAG_QUEUE"/>
+              c:identifier="GST_BASE_PARSE_FRAME_FLAG_QUEUE">
+        <doc xml:whitespace="preserve">indicates to @finish_frame that the the frame should be queued for now and processed fully later when the first non-queued frame is finished</doc>
+      </member>
     </bitfield>
     <record name="BaseParsePrivate" c:type="GstBaseParsePrivate" disguised="1">
     </record>
@@ -1372,7 +1384,7 @@ for the clock to reach the time indicated by the stop time of the last
 element receives EOS in PAUSED, preroll completes, the event is queued and an
 EOS message is posted when going to PLAYING.
 
-#GstBaseSink will internally use the #GST_EVENT_NEWSEGMENT events to schedule
+#GstBaseSink will internally use the #GST_EVENT_SEGMENT events to schedule
 synchronisation and clipping of buffers. Buffers that fall completely outside
 of the current segment are dropped. Buffers that fall partially in the
 segment are rendered (and prerolled). Subclasses should do any subbuffer
@@ -2399,7 +2411,7 @@ types of sources are supported:
 
 The source can be configured to operate in any #GstFormat with the
 gst_base_src_set_format() method. The currently set format determines
-the format of the internal #GstSegment and any #GST_EVENT_NEWSEGMENT
+the format of the internal #GstSegment and any #GST_EVENT_SEGMENT
 events. The default format for #GstBaseSrc is #GST_FORMAT_BYTES.
 
 #GstBaseSrc always supports push mode scheduling. If the following
@@ -2792,7 +2804,8 @@ configured with gst_base_src_set_format()</doc>
             <doc xml:whitespace="preserve">Stop value for the new segment</doc>
             <type name="gint64" c:type="gint64"/>
           </parameter>
-          <parameter name="position" transfer-ownership="none">
+          <parameter name="time" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The new time value for the start of the new segent</doc>
             <type name="gint64" c:type="gint64"/>
           </parameter>
         </parameters>
@@ -2908,7 +2921,7 @@ read.</doc>
       </method>
       <method name="set_format" c:identifier="gst_base_src_set_format">
         <doc xml:whitespace="preserve">Sets the default format of the source. This will be the format used
-for sending NEW_SEGMENT events and for performing seeks.
+for sending SEGMENT events and for performing seeks.
 
 If a format of GST_FORMAT_BYTES is set, the element will be able to
 operate in pull mode if the #GstBaseSrcClass.is_seekable() returns TRUE.
@@ -3366,13 +3379,19 @@ buffers.</doc>
       <doc xml:whitespace="preserve">The #GstElement flags that a basesrc element may have.</doc>
       <member name="starting"
               value="16384"
-              c:identifier="GST_BASE_SRC_FLAG_STARTING"/>
+              c:identifier="GST_BASE_SRC_FLAG_STARTING">
+        <doc xml:whitespace="preserve">has source is starting</doc>
+      </member>
       <member name="started"
               value="32768"
-              c:identifier="GST_BASE_SRC_FLAG_STARTED"/>
+              c:identifier="GST_BASE_SRC_FLAG_STARTED">
+        <doc xml:whitespace="preserve">has source been started</doc>
+      </member>
       <member name="last"
               value="1048576"
-              c:identifier="GST_BASE_SRC_FLAG_LAST"/>
+              c:identifier="GST_BASE_SRC_FLAG_LAST">
+        <doc xml:whitespace="preserve">offset to define more flags</doc>
+      </member>
     </bitfield>
     <record name="BaseSrcPrivate" c:type="GstBaseSrcPrivate" disguised="1">
     </record>
@@ -6871,7 +6890,9 @@ MT safe.</doc>
               c:identifier="gst_collect_pads_set_buffer_function"
               introspectable="0">
         <doc xml:whitespace="preserve">Set the callback function and user data that will be called with
-the oldest buffer when all pads have been collected.
+the oldest buffer when all pads have been collected, or NULL on EOS.
+If a buffer is passed, the callback owns a reference and must unref
+it.
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -6893,7 +6914,7 @@ MT safe.</doc>
               c:identifier="gst_collect_pads_set_clip_function"
               introspectable="0">
         <doc xml:whitespace="preserve">Install a clipping function that is called right after a buffer is received
-on a pad managed by @pads. See #GstCollectPad2ClipFunction for more info.</doc>
+on a pad managed by @pads. See #GstCollectPadsClipFunction for more info.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7129,7 +7150,7 @@ and NULL @data.</doc>
           <doc xml:whitespace="preserve">the #GstCollectData of pad that has received the buffer</doc>
           <type name="CollectData" c:type="GstCollectData*"/>
         </parameter>
-        <parameter name="buffer" transfer-ownership="none">
+        <parameter name="buffer" transfer-ownership="full">
           <doc xml:whitespace="preserve">the #GstBuffer</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </parameter>
@@ -7174,7 +7195,7 @@ This function takes ownership of @inbuffer and should output a buffer in
           <doc xml:whitespace="preserve">a #GstCollectData</doc>
           <type name="CollectData" c:type="GstCollectData*"/>
         </parameter>
-        <parameter name="inbuffer" transfer-ownership="none">
+        <parameter name="inbuffer" transfer-ownership="full">
           <doc xml:whitespace="preserve">the input #GstBuffer</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </parameter>
@@ -7301,19 +7322,29 @@ events downstream (with gst_pad_event_default()).</doc>
       </parameters>
     </callback>
     <bitfield name="CollectPadsStateFlags" c:type="GstCollectPadsStateFlags">
-      <member name="eos" value="1" c:identifier="GST_COLLECT_PADS_STATE_EOS"/>
+      <member name="eos" value="1" c:identifier="GST_COLLECT_PADS_STATE_EOS">
+        <doc xml:whitespace="preserve">Set if collectdata's pad is EOS.</doc>
+      </member>
       <member name="flushing"
               value="2"
-              c:identifier="GST_COLLECT_PADS_STATE_FLUSHING"/>
+              c:identifier="GST_COLLECT_PADS_STATE_FLUSHING">
+        <doc xml:whitespace="preserve">Set if collectdata's pad is flushing.</doc>
+      </member>
       <member name="new_segment"
               value="4"
-              c:identifier="GST_COLLECT_PADS_STATE_NEW_SEGMENT"/>
+              c:identifier="GST_COLLECT_PADS_STATE_NEW_SEGMENT">
+        <doc xml:whitespace="preserve">Set if collectdata's pad received a new_segment event.</doc>
+      </member>
       <member name="waiting"
               value="8"
-              c:identifier="GST_COLLECT_PADS_STATE_WAITING"/>
+              c:identifier="GST_COLLECT_PADS_STATE_WAITING">
+        <doc xml:whitespace="preserve">Set if collectdata's pad must be waited for when collecting.</doc>
+      </member>
       <member name="locked"
               value="16"
-              c:identifier="GST_COLLECT_PADS_STATE_LOCKED"/>
+              c:identifier="GST_COLLECT_PADS_STATE_LOCKED">
+        <doc xml:whitespace="preserve">Set collectdata's pad WAITING state must not be changed. #GstCollectPadsStateFlags indicate private state of a collectdata('s pad).</doc>
+      </member>
     </bitfield>
     <class name="PushSrc"
            c:symbol-prefix="push_src"

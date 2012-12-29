@@ -356,15 +356,21 @@ clock is not selected as the pipeline master clock.</doc>
       <member name="resample"
               value="0"
               c:identifier="GST_AUDIO_BASE_SINK_SLAVE_RESAMPLE"
-              glib:nick="resample"/>
+              glib:nick="resample">
+        <doc xml:whitespace="preserve">Resample to match the master clock</doc>
+      </member>
       <member name="skew"
               value="1"
               c:identifier="GST_AUDIO_BASE_SINK_SLAVE_SKEW"
-              glib:nick="skew"/>
+              glib:nick="skew">
+        <doc xml:whitespace="preserve">Adjust playout pointer when master clock drifts too much.</doc>
+      </member>
       <member name="none"
               value="2"
               c:identifier="GST_AUDIO_BASE_SINK_SLAVE_NONE"
-              glib:nick="none"/>
+              glib:nick="none">
+        <doc xml:whitespace="preserve">No adjustment is done.</doc>
+      </member>
     </enumeration>
     <class name="AudioBaseSrc"
            c:symbol-prefix="audio_base_src"
@@ -531,19 +537,27 @@ not selected as the pipeline clock.</doc>
       <member name="resample"
               value="0"
               c:identifier="GST_AUDIO_BASE_SRC_SLAVE_RESAMPLE"
-              glib:nick="resample"/>
+              glib:nick="resample">
+        <doc xml:whitespace="preserve">Resample to match the master clock.</doc>
+      </member>
       <member name="re_timestamp"
               value="1"
               c:identifier="GST_AUDIO_BASE_SRC_SLAVE_RETIMESTAMP"
-              glib:nick="re-timestamp"/>
+              glib:nick="re-timestamp">
+        <doc xml:whitespace="preserve">Retimestamp output buffers with master clock time.</doc>
+      </member>
       <member name="skew"
               value="2"
               c:identifier="GST_AUDIO_BASE_SRC_SLAVE_SKEW"
-              glib:nick="skew"/>
+              glib:nick="skew">
+        <doc xml:whitespace="preserve">Adjust capture pointer when master clock drifts too much.</doc>
+      </member>
       <member name="none"
               value="3"
               c:identifier="GST_AUDIO_BASE_SRC_SLAVE_NONE"
-              glib:nick="none"/>
+              glib:nick="none">
+        <doc xml:whitespace="preserve">No adjustment is done.</doc>
+      </member>
     </enumeration>
     <class name="AudioCdSrc"
            c:symbol-prefix="audio_cd_src"
@@ -552,12 +566,12 @@ not selected as the pipeline clock.</doc>
            glib:type-name="GstAudioCdSrc"
            glib:get-type="gst_audio_cd_src_get_type"
            glib:type-struct="AudioCdSrcClass">
-      <doc xml:whitespace="preserve">&lt;refsect2&gt;
-&lt;para&gt;
+      <doc xml:whitespace="preserve">&lt;para&gt;
 Provides a base class for CD digital audio (CDDA) sources, which handles
 things like seeking, querying, discid calculation, tags, and buffer
 timestamping.
 &lt;/para&gt;
+&lt;refsect2&gt;
 &lt;title&gt;Using GstAudioCdSrc-based elements in applications&lt;/title&gt;
 &lt;para&gt;
 GstAudioCdSrc registers two #GstFormat&lt;!-- --&gt;s of its own, namely
@@ -584,6 +598,8 @@ issue a seek command in track format to change between tracks, rather than
 setting a new cdda://n+1 URI on playbin (as setting a new URI on playbin
 involves closing and re-opening the CD device, which is much much slower).
 &lt;/para&gt;
+&lt;refsect2&gt;
+&lt;/refsect2&gt;
 &lt;title&gt;Tags and meta-information&lt;/title&gt;
 &lt;para&gt;
 CDDA sources will automatically emit a number of tags, details about which
@@ -591,6 +607,17 @@ can be found in the libgsttag documentation. Those tags are:
 #GST_TAG_CDDA_CDDB_DISCID, #GST_TAG_CDDA_CDDB_DISCID_FULL,
 #GST_TAG_CDDA_MUSICBRAINZ_DISCID, #GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL,
 among others.
+&lt;/para&gt;
+&lt;/refsect2&gt;
+&lt;refsect2&gt;
+&lt;title&gt;Tracks and Table of Contents (TOC)&lt;/title&gt;
+&lt;para&gt;
+Applications will be informed of the available tracks via a TOC message
+on the pipeline's #GstBus. The #GstToc will contain a #GstTocEntry for
+each track, with information about each track. The duration for each
+track can be retrieved via the #GST_TAG_DURATION tag from each entry's
+tag list, or calculated via gst_toc_entry_get_start_stop_times().
+The track entries in the TOC will be sorted by track number.
 &lt;/para&gt;
 &lt;/refsect2&gt;</doc>
       <implements name="Gst.URIHandler"/>
@@ -728,18 +755,26 @@ EOS handling and seeking.</doc>
       <member name="normal"
               value="0"
               c:identifier="Stream consists of a single track"
-              glib:nick="normal"/>
+              glib:nick="normal">
+      </member>
       <member name="continuous"
               value="1"
               c:identifier="Stream consists of the whole disc"
-              glib:nick="continuous"/>
+              glib:nick="continuous">
+      </member>
     </enumeration>
     <record name="AudioCdSrcPrivate"
             c:type="GstAudioCdSrcPrivate"
             disguised="1">
     </record>
     <record name="AudioCdSrcTrack" c:type="GstAudioCdSrcTrack">
-      <doc xml:whitespace="preserve">CD track abstraction to communicate TOC entries to the base class.</doc>
+      <doc xml:whitespace="preserve">CD track abstraction to communicate TOC entries to the base class.
+
+This structure is only for use by sub-classed in connection with
+gst_audio_cd_src_add_track().
+
+Applications will be informed of the available tracks via a TOC message
+on the pipeline's #GstBus instead.</doc>
       <field name="is_audio" writable="1">
         <type name="gboolean" c:type="gboolean"/>
       </field>
@@ -797,127 +832,189 @@ channel.</doc>
       <member name="none"
               value="-3"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_NONE"
-              glib:nick="none"/>
+              glib:nick="none">
+        <doc xml:whitespace="preserve">used for position-less channels, e.g. from a sound card that records 1024 channels; mutually exclusive with any other channel position</doc>
+      </member>
       <member name="mono"
               value="-2"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_MONO"
-              glib:nick="mono"/>
+              glib:nick="mono">
+        <doc xml:whitespace="preserve">Mono without direction; can only be used with 1 channel</doc>
+      </member>
       <member name="invalid"
               value="-1"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_INVALID"
-              glib:nick="invalid"/>
+              glib:nick="invalid">
+        <doc xml:whitespace="preserve">invalid position</doc>
+      </member>
       <member name="front_left"
               value="0"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_FRONT_LEFT"
-              glib:nick="front-left"/>
+              glib:nick="front-left">
+        <doc xml:whitespace="preserve">Front left</doc>
+      </member>
       <member name="front_right"
               value="1"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_FRONT_RIGHT"
-              glib:nick="front-right"/>
+              glib:nick="front-right">
+        <doc xml:whitespace="preserve">Front right</doc>
+      </member>
       <member name="front_center"
               value="2"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_FRONT_CENTER"
-              glib:nick="front-center"/>
+              glib:nick="front-center">
+        <doc xml:whitespace="preserve">Front center</doc>
+      </member>
       <member name="lfe1"
               value="3"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_LFE1"
-              glib:nick="lfe1"/>
+              glib:nick="lfe1">
+        <doc xml:whitespace="preserve">Low-frequency effects 1 (subwoofer)</doc>
+      </member>
       <member name="rear_left"
               value="4"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_REAR_LEFT"
-              glib:nick="rear-left"/>
+              glib:nick="rear-left">
+        <doc xml:whitespace="preserve">Rear left</doc>
+      </member>
       <member name="rear_right"
               value="5"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_REAR_RIGHT"
-              glib:nick="rear-right"/>
+              glib:nick="rear-right">
+        <doc xml:whitespace="preserve">Rear right</doc>
+      </member>
       <member name="front_left_of_center"
               value="6"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER"
-              glib:nick="front-left-of-center"/>
+              glib:nick="front-left-of-center">
+        <doc xml:whitespace="preserve">Front left of center</doc>
+      </member>
       <member name="front_right_of_center"
               value="7"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER"
-              glib:nick="front-right-of-center"/>
+              glib:nick="front-right-of-center">
+        <doc xml:whitespace="preserve">Front right of center</doc>
+      </member>
       <member name="rear_center"
               value="8"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_REAR_CENTER"
-              glib:nick="rear-center"/>
+              glib:nick="rear-center">
+        <doc xml:whitespace="preserve">Rear center</doc>
+      </member>
       <member name="lfe2"
               value="9"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_LFE2"
-              glib:nick="lfe2"/>
+              glib:nick="lfe2">
+        <doc xml:whitespace="preserve">Low-frequency effects 2 (subwoofer)</doc>
+      </member>
       <member name="side_left"
               value="10"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_SIDE_LEFT"
-              glib:nick="side-left"/>
+              glib:nick="side-left">
+        <doc xml:whitespace="preserve">Side left</doc>
+      </member>
       <member name="side_right"
               value="11"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_SIDE_RIGHT"
-              glib:nick="side-right"/>
+              glib:nick="side-right">
+        <doc xml:whitespace="preserve">Side right</doc>
+      </member>
       <member name="top_front_left"
               value="12"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_FRONT_LEFT"
-              glib:nick="top-front-left"/>
+              glib:nick="top-front-left">
+        <doc xml:whitespace="preserve">Top front left</doc>
+      </member>
       <member name="top_front_right"
               value="13"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_FRONT_RIGHT"
-              glib:nick="top-front-right"/>
+              glib:nick="top-front-right">
+        <doc xml:whitespace="preserve">Top front right</doc>
+      </member>
       <member name="top_front_center"
               value="14"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_FRONT_CENTER"
-              glib:nick="top-front-center"/>
+              glib:nick="top-front-center">
+        <doc xml:whitespace="preserve">Top front center</doc>
+      </member>
       <member name="top_center"
               value="15"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_CENTER"
-              glib:nick="top-center"/>
+              glib:nick="top-center">
+        <doc xml:whitespace="preserve">Top center</doc>
+      </member>
       <member name="top_rear_left"
               value="16"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_REAR_LEFT"
-              glib:nick="top-rear-left"/>
+              glib:nick="top-rear-left">
+        <doc xml:whitespace="preserve">Top rear left</doc>
+      </member>
       <member name="top_rear_right"
               value="17"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_REAR_RIGHT"
-              glib:nick="top-rear-right"/>
+              glib:nick="top-rear-right">
+        <doc xml:whitespace="preserve">Top rear right</doc>
+      </member>
       <member name="top_side_left"
               value="18"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_SIDE_LEFT"
-              glib:nick="top-side-left"/>
+              glib:nick="top-side-left">
+        <doc xml:whitespace="preserve">Top side right</doc>
+      </member>
       <member name="top_side_right"
               value="19"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_SIDE_RIGHT"
-              glib:nick="top-side-right"/>
+              glib:nick="top-side-right">
+        <doc xml:whitespace="preserve">Top rear right</doc>
+      </member>
       <member name="top_rear_center"
               value="20"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_TOP_REAR_CENTER"
-              glib:nick="top-rear-center"/>
+              glib:nick="top-rear-center">
+        <doc xml:whitespace="preserve">Top rear center</doc>
+      </member>
       <member name="bottom_front_center"
               value="21"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_BOTTOM_FRONT_CENTER"
-              glib:nick="bottom-front-center"/>
+              glib:nick="bottom-front-center">
+        <doc xml:whitespace="preserve">Bottom front center</doc>
+      </member>
       <member name="bottom_front_left"
               value="22"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_BOTTOM_FRONT_LEFT"
-              glib:nick="bottom-front-left"/>
+              glib:nick="bottom-front-left">
+        <doc xml:whitespace="preserve">Bottom front left</doc>
+      </member>
       <member name="bottom_front_right"
               value="23"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_BOTTOM_FRONT_RIGHT"
-              glib:nick="bottom-front-right"/>
+              glib:nick="bottom-front-right">
+        <doc xml:whitespace="preserve">Bottom front right</doc>
+      </member>
       <member name="wide_left"
               value="24"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_WIDE_LEFT"
-              glib:nick="wide-left"/>
+              glib:nick="wide-left">
+        <doc xml:whitespace="preserve">Wide left (between front left and side left)</doc>
+      </member>
       <member name="wide_right"
               value="25"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_WIDE_RIGHT"
-              glib:nick="wide-right"/>
+              glib:nick="wide-right">
+        <doc xml:whitespace="preserve">Wide right (between front right and side right)</doc>
+      </member>
       <member name="surround_left"
               value="26"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_SURROUND_LEFT"
-              glib:nick="surround-left"/>
+              glib:nick="surround-left">
+        <doc xml:whitespace="preserve">Surround left (between rear left and side left)</doc>
+      </member>
       <member name="surround_right"
               value="27"
               c:identifier="GST_AUDIO_CHANNEL_POSITION_SURROUND_RIGHT"
-              glib:nick="surround-right"/>
+              glib:nick="surround-right">
+        <doc xml:whitespace="preserve">Surround right (between rear right and side right)</doc>
+      </member>
     </enumeration>
     <class name="AudioClock"
            c:symbol-prefix="audio_clock"
@@ -3004,11 +3101,15 @@ This function is usually used from within a GObject class_init function.</doc>
       <member name="none"
               value="0"
               c:identifier="GST_AUDIO_FLAG_NONE"
-              glib:nick="none"/>
+              glib:nick="none">
+        <doc xml:whitespace="preserve">no valid flag</doc>
+      </member>
       <member name="unpositioned"
               value="1"
               c:identifier="GST_AUDIO_FLAG_UNPOSITIONED"
-              glib:nick="unpositioned"/>
+              glib:nick="unpositioned">
+        <doc xml:whitespace="preserve">the position array explicitly contains unpositioned channels.</doc>
+      </member>
     </bitfield>
     <enumeration name="AudioFormat"
                  glib:type-name="GstAudioFormat"
@@ -3018,187 +3119,279 @@ This function is usually used from within a GObject class_init function.</doc>
       <member name="unknown"
               value="0"
               c:identifier="GST_AUDIO_FORMAT_UNKNOWN"
-              glib:nick="unknown"/>
+              glib:nick="unknown">
+        <doc xml:whitespace="preserve">unknown or unset audio format</doc>
+      </member>
       <member name="encoded"
               value="1"
               c:identifier="GST_AUDIO_FORMAT_ENCODED"
-              glib:nick="encoded"/>
+              glib:nick="encoded">
+        <doc xml:whitespace="preserve">encoded audio format</doc>
+      </member>
       <member name="s8"
               value="2"
               c:identifier="GST_AUDIO_FORMAT_S8"
-              glib:nick="s8"/>
+              glib:nick="s8">
+        <doc xml:whitespace="preserve">8 bits in 8 bits, signed</doc>
+      </member>
       <member name="u8"
               value="3"
               c:identifier="GST_AUDIO_FORMAT_U8"
-              glib:nick="u8"/>
+              glib:nick="u8">
+        <doc xml:whitespace="preserve">8 bits in 8 bits, unsigned</doc>
+      </member>
       <member name="s16le"
               value="4"
               c:identifier="GST_AUDIO_FORMAT_S16LE"
-              glib:nick="s16le"/>
+              glib:nick="s16le">
+        <doc xml:whitespace="preserve">16 bits in 16 bits, signed, little endian</doc>
+      </member>
       <member name="s16be"
               value="5"
               c:identifier="GST_AUDIO_FORMAT_S16BE"
-              glib:nick="s16be"/>
+              glib:nick="s16be">
+        <doc xml:whitespace="preserve">16 bits in 16 bits, signed, big endian</doc>
+      </member>
       <member name="u16le"
               value="6"
               c:identifier="GST_AUDIO_FORMAT_U16LE"
-              glib:nick="u16le"/>
+              glib:nick="u16le">
+        <doc xml:whitespace="preserve">16 bits in 16 bits, unsigned, little endian</doc>
+      </member>
       <member name="u16be"
               value="7"
               c:identifier="GST_AUDIO_FORMAT_U16BE"
-              glib:nick="u16be"/>
+              glib:nick="u16be">
+        <doc xml:whitespace="preserve">16 bits in 16 bits, unsigned, big endian</doc>
+      </member>
       <member name="s24_32le"
               value="8"
               c:identifier="GST_AUDIO_FORMAT_S24_32LE"
-              glib:nick="s24-32le"/>
+              glib:nick="s24-32le">
+        <doc xml:whitespace="preserve">24 bits in 32 bits, signed, little endian</doc>
+      </member>
       <member name="s24_32be"
               value="9"
               c:identifier="GST_AUDIO_FORMAT_S24_32BE"
-              glib:nick="s24-32be"/>
+              glib:nick="s24-32be">
+        <doc xml:whitespace="preserve">24 bits in 32 bits, signed, big endian</doc>
+      </member>
       <member name="u24_32le"
               value="10"
               c:identifier="GST_AUDIO_FORMAT_U24_32LE"
-              glib:nick="u24-32le"/>
+              glib:nick="u24-32le">
+        <doc xml:whitespace="preserve">24 bits in 32 bits, unsigned, little endian</doc>
+      </member>
       <member name="u24_32be"
               value="11"
               c:identifier="GST_AUDIO_FORMAT_U24_32BE"
-              glib:nick="u24-32be"/>
+              glib:nick="u24-32be">
+        <doc xml:whitespace="preserve">24 bits in 32 bits, unsigned, big endian</doc>
+      </member>
       <member name="s32le"
               value="12"
               c:identifier="GST_AUDIO_FORMAT_S32LE"
-              glib:nick="s32le"/>
+              glib:nick="s32le">
+        <doc xml:whitespace="preserve">32 bits in 32 bits, signed, little endian</doc>
+      </member>
       <member name="s32be"
               value="13"
               c:identifier="GST_AUDIO_FORMAT_S32BE"
-              glib:nick="s32be"/>
+              glib:nick="s32be">
+        <doc xml:whitespace="preserve">32 bits in 32 bits, signed, big endian</doc>
+      </member>
       <member name="u32le"
               value="14"
               c:identifier="GST_AUDIO_FORMAT_U32LE"
-              glib:nick="u32le"/>
+              glib:nick="u32le">
+        <doc xml:whitespace="preserve">32 bits in 32 bits, unsigned, little endian</doc>
+      </member>
       <member name="u32be"
               value="15"
               c:identifier="GST_AUDIO_FORMAT_U32BE"
-              glib:nick="u32be"/>
+              glib:nick="u32be">
+        <doc xml:whitespace="preserve">32 bits in 32 bits, unsigned, big endian</doc>
+      </member>
       <member name="s24le"
               value="16"
               c:identifier="GST_AUDIO_FORMAT_S24LE"
-              glib:nick="s24le"/>
+              glib:nick="s24le">
+        <doc xml:whitespace="preserve">24 bits in 24 bits, signed, little endian</doc>
+      </member>
       <member name="s24be"
               value="17"
               c:identifier="GST_AUDIO_FORMAT_S24BE"
-              glib:nick="s24be"/>
+              glib:nick="s24be">
+        <doc xml:whitespace="preserve">24 bits in 24 bits, signed, big endian</doc>
+      </member>
       <member name="u24le"
               value="18"
               c:identifier="GST_AUDIO_FORMAT_U24LE"
-              glib:nick="u24le"/>
+              glib:nick="u24le">
+        <doc xml:whitespace="preserve">24 bits in 24 bits, unsigned, little endian</doc>
+      </member>
       <member name="u24be"
               value="19"
               c:identifier="GST_AUDIO_FORMAT_U24BE"
-              glib:nick="u24be"/>
+              glib:nick="u24be">
+        <doc xml:whitespace="preserve">24 bits in 24 bits, unsigned, big endian</doc>
+      </member>
       <member name="s20le"
               value="20"
               c:identifier="GST_AUDIO_FORMAT_S20LE"
-              glib:nick="s20le"/>
+              glib:nick="s20le">
+        <doc xml:whitespace="preserve">20 bits in 24 bits, signed, little endian</doc>
+      </member>
       <member name="s20be"
               value="21"
               c:identifier="GST_AUDIO_FORMAT_S20BE"
-              glib:nick="s20be"/>
+              glib:nick="s20be">
+        <doc xml:whitespace="preserve">20 bits in 24 bits, signed, big endian</doc>
+      </member>
       <member name="u20le"
               value="22"
               c:identifier="GST_AUDIO_FORMAT_U20LE"
-              glib:nick="u20le"/>
+              glib:nick="u20le">
+        <doc xml:whitespace="preserve">20 bits in 24 bits, unsigned, little endian</doc>
+      </member>
       <member name="u20be"
               value="23"
               c:identifier="GST_AUDIO_FORMAT_U20BE"
-              glib:nick="u20be"/>
+              glib:nick="u20be">
+        <doc xml:whitespace="preserve">20 bits in 24 bits, unsigned, big endian</doc>
+      </member>
       <member name="s18le"
               value="24"
               c:identifier="GST_AUDIO_FORMAT_S18LE"
-              glib:nick="s18le"/>
+              glib:nick="s18le">
+        <doc xml:whitespace="preserve">18 bits in 24 bits, signed, little endian</doc>
+      </member>
       <member name="s18be"
               value="25"
               c:identifier="GST_AUDIO_FORMAT_S18BE"
-              glib:nick="s18be"/>
+              glib:nick="s18be">
+        <doc xml:whitespace="preserve">18 bits in 24 bits, signed, big endian</doc>
+      </member>
       <member name="u18le"
               value="26"
               c:identifier="GST_AUDIO_FORMAT_U18LE"
-              glib:nick="u18le"/>
+              glib:nick="u18le">
+        <doc xml:whitespace="preserve">18 bits in 24 bits, unsigned, little endian</doc>
+      </member>
       <member name="u18be"
               value="27"
               c:identifier="GST_AUDIO_FORMAT_U18BE"
-              glib:nick="u18be"/>
+              glib:nick="u18be">
+        <doc xml:whitespace="preserve">18 bits in 24 bits, unsigned, big endian</doc>
+      </member>
       <member name="f32le"
               value="28"
               c:identifier="GST_AUDIO_FORMAT_F32LE"
-              glib:nick="f32le"/>
+              glib:nick="f32le">
+        <doc xml:whitespace="preserve">32-bit floating point samples, little endian</doc>
+      </member>
       <member name="f32be"
               value="29"
               c:identifier="GST_AUDIO_FORMAT_F32BE"
-              glib:nick="f32be"/>
+              glib:nick="f32be">
+        <doc xml:whitespace="preserve">32-bit floating point samples, big endian</doc>
+      </member>
       <member name="f64le"
               value="30"
               c:identifier="GST_AUDIO_FORMAT_F64LE"
-              glib:nick="f64le"/>
+              glib:nick="f64le">
+        <doc xml:whitespace="preserve">64-bit floating point samples, little endian</doc>
+      </member>
       <member name="f64be"
               value="31"
               c:identifier="GST_AUDIO_FORMAT_F64BE"
-              glib:nick="f64be"/>
+              glib:nick="f64be">
+        <doc xml:whitespace="preserve">64-bit floating point samples, big endian</doc>
+      </member>
       <member name="s16"
               value="4"
               c:identifier="GST_AUDIO_FORMAT_S16"
-              glib:nick="s16"/>
+              glib:nick="s16">
+        <doc xml:whitespace="preserve">16 bits in 16 bits, signed, native endianness</doc>
+      </member>
       <member name="u16"
               value="6"
               c:identifier="GST_AUDIO_FORMAT_U16"
-              glib:nick="u16"/>
+              glib:nick="u16">
+        <doc xml:whitespace="preserve">16 bits in 16 bits, unsigned, native endianness</doc>
+      </member>
       <member name="s24_32"
               value="8"
               c:identifier="GST_AUDIO_FORMAT_S24_32"
-              glib:nick="s24-32"/>
+              glib:nick="s24-32">
+        <doc xml:whitespace="preserve">24 bits in 32 bits, signed, native endianness</doc>
+      </member>
       <member name="u24_32"
               value="10"
               c:identifier="GST_AUDIO_FORMAT_U24_32"
-              glib:nick="u24-32"/>
+              glib:nick="u24-32">
+        <doc xml:whitespace="preserve">24 bits in 32 bits, unsigned, native endianness</doc>
+      </member>
       <member name="s32"
               value="12"
               c:identifier="GST_AUDIO_FORMAT_S32"
-              glib:nick="s32"/>
+              glib:nick="s32">
+        <doc xml:whitespace="preserve">32 bits in 32 bits, signed, native endianness</doc>
+      </member>
       <member name="u32"
               value="14"
               c:identifier="GST_AUDIO_FORMAT_U32"
-              glib:nick="u32"/>
+              glib:nick="u32">
+        <doc xml:whitespace="preserve">32 bits in 32 bits, unsigned, native endianness</doc>
+      </member>
       <member name="s24"
               value="16"
               c:identifier="GST_AUDIO_FORMAT_S24"
-              glib:nick="s24"/>
+              glib:nick="s24">
+        <doc xml:whitespace="preserve">24 bits in 24 bits, signed, native endianness</doc>
+      </member>
       <member name="u24"
               value="18"
               c:identifier="GST_AUDIO_FORMAT_U24"
-              glib:nick="u24"/>
+              glib:nick="u24">
+        <doc xml:whitespace="preserve">24 bits in 24 bits, unsigned, native endianness</doc>
+      </member>
       <member name="s20"
               value="20"
               c:identifier="GST_AUDIO_FORMAT_S20"
-              glib:nick="s20"/>
+              glib:nick="s20">
+        <doc xml:whitespace="preserve">20 bits in 24 bits, signed, native endianness</doc>
+      </member>
       <member name="u20"
               value="22"
               c:identifier="GST_AUDIO_FORMAT_U20"
-              glib:nick="u20"/>
+              glib:nick="u20">
+        <doc xml:whitespace="preserve">20 bits in 24 bits, unsigned, native endianness</doc>
+      </member>
       <member name="s18"
               value="24"
               c:identifier="GST_AUDIO_FORMAT_S18"
-              glib:nick="s18"/>
+              glib:nick="s18">
+        <doc xml:whitespace="preserve">18 bits in 24 bits, signed, native endianness</doc>
+      </member>
       <member name="u18"
               value="26"
               c:identifier="GST_AUDIO_FORMAT_U18"
-              glib:nick="u18"/>
+              glib:nick="u18">
+        <doc xml:whitespace="preserve">18 bits in 24 bits, unsigned, native endianness</doc>
+      </member>
       <member name="f32"
               value="28"
               c:identifier="GST_AUDIO_FORMAT_F32"
-              glib:nick="f32"/>
+              glib:nick="f32">
+        <doc xml:whitespace="preserve">32-bit floating point samples, native endianness</doc>
+      </member>
       <member name="f64"
               value="30"
               c:identifier="GST_AUDIO_FORMAT_F64"
-              glib:nick="f64"/>
+              glib:nick="f64">
+        <doc xml:whitespace="preserve">64-bit floating point samples, native endianness</doc>
+      </member>
       <function name="build_integer"
                 c:identifier="gst_audio_format_build_integer">
         <doc xml:whitespace="preserve">Construct a #GstAudioFormat with given parameters.</doc>
@@ -3293,23 +3486,33 @@ This function is usually used from within a GObject class_init function.</doc>
       <member name="integer"
               value="1"
               c:identifier="GST_AUDIO_FORMAT_FLAG_INTEGER"
-              glib:nick="integer"/>
+              glib:nick="integer">
+        <doc xml:whitespace="preserve">integer samples</doc>
+      </member>
       <member name="float"
               value="2"
               c:identifier="GST_AUDIO_FORMAT_FLAG_FLOAT"
-              glib:nick="float"/>
+              glib:nick="float">
+        <doc xml:whitespace="preserve">float samples</doc>
+      </member>
       <member name="signed"
               value="4"
               c:identifier="GST_AUDIO_FORMAT_FLAG_SIGNED"
-              glib:nick="signed"/>
+              glib:nick="signed">
+        <doc xml:whitespace="preserve">signed samples</doc>
+      </member>
       <member name="complex"
               value="16"
               c:identifier="GST_AUDIO_FORMAT_FLAG_COMPLEX"
-              glib:nick="complex"/>
+              glib:nick="complex">
+        <doc xml:whitespace="preserve">complex layout</doc>
+      </member>
       <member name="unpack"
               value="32"
               c:identifier="GST_AUDIO_FORMAT_FLAG_UNPACK"
-              glib:nick="unpack"/>
+              glib:nick="unpack">
+        <doc xml:whitespace="preserve">the format can be used in #GstAudioFormatUnpack and #GstAudioFormatPack functions</doc>
+      </member>
     </bitfield>
     <record name="AudioFormatInfo" c:type="GstAudioFormatInfo">
       <doc xml:whitespace="preserve">Information for an audio format.</doc>
@@ -3570,11 +3773,15 @@ or gst_audio_info_copy().</doc>
       <member name="interleaved"
               value="0"
               c:identifier="GST_AUDIO_LAYOUT_INTERLEAVED"
-              glib:nick="interleaved"/>
+              glib:nick="interleaved">
+        <doc xml:whitespace="preserve">interleaved audio</doc>
+      </member>
       <member name="non_interleaved"
               value="1"
               c:identifier="GST_AUDIO_LAYOUT_NON_INTERLEAVED"
-              glib:nick="non-interleaved"/>
+              glib:nick="non-interleaved">
+        <doc xml:whitespace="preserve">non-interleaved audio</doc>
+      </member>
     </enumeration>
     <enumeration name="AudioPackFlags"
                  glib:type-name="GstAudioPackFlags"
@@ -3584,7 +3791,9 @@ or gst_audio_info_copy().</doc>
       <member name="none"
               value="0"
               c:identifier="GST_AUDIO_PACK_FLAG_NONE"
-              glib:nick="none"/>
+              glib:nick="none">
+        <doc xml:whitespace="preserve">No flag</doc>
+      </member>
     </enumeration>
     <class name="AudioRingBuffer"
            c:symbol-prefix="audio_ring_buffer"
@@ -4516,51 +4725,75 @@ called to fill the memory at @data with @len bytes of samples.</doc>
       <member name="raw"
               value="0"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_RAW"
-              glib:nick="raw"/>
+              glib:nick="raw">
+        <doc xml:whitespace="preserve">samples in linear or float</doc>
+      </member>
       <member name="mu_law"
               value="1"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_MU_LAW"
-              glib:nick="mu-law"/>
+              glib:nick="mu-law">
+        <doc xml:whitespace="preserve">samples in mulaw</doc>
+      </member>
       <member name="a_law"
               value="2"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_A_LAW"
-              glib:nick="a-law"/>
+              glib:nick="a-law">
+        <doc xml:whitespace="preserve">samples in alaw</doc>
+      </member>
       <member name="ima_adpcm"
               value="3"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_IMA_ADPCM"
-              glib:nick="ima-adpcm"/>
+              glib:nick="ima-adpcm">
+        <doc xml:whitespace="preserve">samples in ima adpcm</doc>
+      </member>
       <member name="mpeg"
               value="4"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_MPEG"
-              glib:nick="mpeg"/>
+              glib:nick="mpeg">
+        <doc xml:whitespace="preserve">samples in mpeg audio (but not AAC) format</doc>
+      </member>
       <member name="gsm"
               value="5"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_GSM"
-              glib:nick="gsm"/>
+              glib:nick="gsm">
+        <doc xml:whitespace="preserve">samples in gsm format</doc>
+      </member>
       <member name="iec958"
               value="6"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_IEC958"
-              glib:nick="iec958"/>
+              glib:nick="iec958">
+        <doc xml:whitespace="preserve">samples in IEC958 frames (e.g. AC3)</doc>
+      </member>
       <member name="ac3"
               value="7"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_AC3"
-              glib:nick="ac3"/>
+              glib:nick="ac3">
+        <doc xml:whitespace="preserve">samples in AC3 format</doc>
+      </member>
       <member name="eac3"
               value="8"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_EAC3"
-              glib:nick="eac3"/>
+              glib:nick="eac3">
+        <doc xml:whitespace="preserve">samples in EAC3 format</doc>
+      </member>
       <member name="dts"
               value="9"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_DTS"
-              glib:nick="dts"/>
+              glib:nick="dts">
+        <doc xml:whitespace="preserve">samples in DTS format</doc>
+      </member>
       <member name="mpeg2_aac"
               value="10"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_MPEG2_AAC"
-              glib:nick="mpeg2-aac"/>
+              glib:nick="mpeg2-aac">
+        <doc xml:whitespace="preserve">samples in MPEG-2 AAC format</doc>
+      </member>
       <member name="mpeg4_aac"
               value="11"
               c:identifier="GST_AUDIO_RING_BUFFER_FORMAT_TYPE_MPEG4_AAC"
-              glib:nick="mpeg4-aac"/>
+              glib:nick="mpeg4-aac">
+        <doc xml:whitespace="preserve">samples in MPEG-4 AAC format</doc>
+      </member>
     </enumeration>
     <record name="AudioRingBufferSpec" c:type="GstAudioRingBufferSpec">
       <doc xml:whitespace="preserve">The structure containing the format specification of the ringbuffer.</doc>
@@ -4603,15 +4836,21 @@ called to fill the memory at @data with @len bytes of samples.</doc>
       <member name="stopped"
               value="0"
               c:identifier="GST_AUDIO_RING_BUFFER_STATE_STOPPED"
-              glib:nick="stopped"/>
+              glib:nick="stopped">
+        <doc xml:whitespace="preserve">The ringbuffer is stopped</doc>
+      </member>
       <member name="paused"
               value="1"
               c:identifier="GST_AUDIO_RING_BUFFER_STATE_PAUSED"
-              glib:nick="paused"/>
+              glib:nick="paused">
+        <doc xml:whitespace="preserve">The ringbuffer is paused</doc>
+      </member>
       <member name="started"
               value="2"
               c:identifier="GST_AUDIO_RING_BUFFER_STATE_STARTED"
-              glib:nick="started"/>
+              glib:nick="started">
+        <doc xml:whitespace="preserve">The ringbuffer is started</doc>
+      </member>
     </enumeration>
     <class name="AudioSink"
            c:symbol-prefix="audio_sink"
@@ -5057,7 +5296,7 @@ functionality.</doc>
       <doc xml:whitespace="preserve">&lt;refsect2&gt;
 &lt;para&gt;
 This interface is implemented by elements that provide a stream volume. Examples for
-such elements are #volume and #playbin2.
+such elements are #volume and #playbin.
 &lt;/para&gt;
 &lt;para&gt;
 Applications can use this interface to get or set the current stream volume. For this
@@ -5156,11 +5395,17 @@ Formulas to convert from a linear to a cubic or dB volume are
 cbrt(val) and 20 * log10 (val).</doc>
       <member name="linear"
               value="0"
-              c:identifier="GST_STREAM_VOLUME_FORMAT_LINEAR"/>
+              c:identifier="GST_STREAM_VOLUME_FORMAT_LINEAR">
+        <doc xml:whitespace="preserve">Linear scale factor, 1.0 = 100%</doc>
+      </member>
       <member name="cubic"
               value="1"
-              c:identifier="GST_STREAM_VOLUME_FORMAT_CUBIC"/>
-      <member name="db" value="2" c:identifier="GST_STREAM_VOLUME_FORMAT_DB"/>
+              c:identifier="GST_STREAM_VOLUME_FORMAT_CUBIC">
+        <doc xml:whitespace="preserve">Cubic volume scale</doc>
+      </member>
+      <member name="db" value="2" c:identifier="GST_STREAM_VOLUME_FORMAT_DB">
+        <doc xml:whitespace="preserve">Logarithmic volume scale (dB, amplitude not power)</doc>
+      </member>
     </enumeration>
     <record name="StreamVolumeInterface"
             c:type="GstStreamVolumeInterface"
@@ -5169,11 +5414,6 @@ cbrt(val) and 20 * log10 (val).</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
     </record>
-    <constant name="TAG_CDDA_TRACK_TAGS"
-              value="track-tags"
-              c:type="GST_TAG_CDDA_TRACK_TAGS">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <function name="audio_buffer_clip" c:identifier="gst_audio_buffer_clip">
       <doc xml:whitespace="preserve">Clip the buffer to the given %GstSegment.
 
