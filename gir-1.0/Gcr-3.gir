@@ -4501,6 +4501,11 @@ if an error occurred.</doc>
                glib:get-type="gcr_prompt_get_type"
                glib:type-struct="PromptIface">
       <doc xml:whitespace="preserve">Represents a #GcrPrompt displayed to the user.</doc>
+      <virtual-method name="prompt_close">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </virtual-method>
       <virtual-method name="prompt_confirm_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -4565,6 +4570,17 @@ if an error occurred.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="close" c:identifier="gcr_prompt_close">
+        <doc xml:whitespace="preserve">Closes the prompt so that in can no longer be used to prompt. The various
+prompt methods will return results as if the user dismissed the prompt.
+
+The prompt may also be closed by the implementor of the #GcrPrompt object.
+
+This emits the GcrPrompt::prompt-close signal on the prompt object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </method>
       <method name="confirm" c:identifier="gcr_prompt_confirm" throws="1">
         <doc xml:whitespace="preserve">Prompts for confirmation asking a cancel/continue style question.
 Set the various properties on the prompt before calling this function to
@@ -5162,6 +5178,16 @@ This is a warning like "The password is incorrect." usually displayed to the
 user about a previous 'unsuccessful' prompt.</doc>
         <type name="utf8"/>
       </property>
+      <glib:signal name="prompt-close" when="first">
+        <doc xml:whitespace="preserve">Action signal fired when the prompt is to be closed. After the default
+handler has run, the prompt is closed. The various prompting methods
+will return results as if the user dismissed the prompt.
+
+You can use the gcr_prompt_close() method to emit this signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none"/>
+        </return-value>
+      </glib:signal>
     </interface>
     <class name="PromptDialog"
            c:symbol-prefix="prompt_dialog"
@@ -5298,6 +5324,18 @@ user about a previous 'unsuccessful' prompt.</doc>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prompt_close">
+        <callback name="prompt_close">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="prompt" transfer-ownership="none">
+              <type name="Prompt" c:type="GcrPrompt*"/>
             </parameter>
           </parameters>
         </callback>
@@ -6330,8 +6368,8 @@ error.</doc>
         </parameters>
       </function>
       <method name="close" c:identifier="gcr_system_prompt_close" throws="1">
-        <doc xml:whitespace="preserve">Close this prompt. After calling this function, no further methods may be
-called on this object. The prompt object is not unreferenced by this
+        <doc xml:whitespace="preserve">Close this prompt. After calling this function, no further prompts will
+succeed on this object. The prompt object is not unreferenced by this
 function, and you must unreference it once done.
 
 This call may block, use the gcr_system_prompt_close_async() to perform
@@ -7881,6 +7919,21 @@ will not be queued on that importer.</doc>
               c:identifier="gcr_importer_register_well_known"
               moved-to="Importer.register_well_known">
       <doc xml:whitespace="preserve">Register built-in PKCS\#11 and GnuPG importers.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="mock_prompter_disconnect"
+              c:identifier="gcr_mock_prompter_disconnect">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="mock_prompter_expect_close"
+              c:identifier="gcr_mock_prompter_expect_close">
+      <doc xml:whitespace="preserve">Queue an expected response on the mock prompter.
+
+Expects any prompt, and closes the prompt when it gets it.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
