@@ -21,11 +21,11 @@ and/or use gtk-doc annotations.  -->
   <include name="cairo" version="1.0"/>
   <include name="fontconfig" version="2.0"/>
   <include name="freetype2" version="2.0"/>
-  <package name="mx-1.0"/>
+  <package name="mx-2.0"/>
   <c:include name="mx/mx.h"/>
   <namespace name="Mx"
-             version="1.0"
-             shared-library="libmx-1.0.so.2"
+             version="2.0"
+             shared-library="libmx-2.0.so.0"
              c:identifier-prefixes="Mx"
              c:symbol-prefixes="mx">
     <class name="Action"
@@ -429,7 +429,7 @@ This is a convenience function that allows for easy association of one
             <type name="gulong" c:type="gulong"/>
           </parameter>
           <parameter name="container" transfer-ownership="none">
-            <type name="Clutter.Container" c:type="ClutterContainer*"/>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
           <parameter name="actor" transfer-ownership="none">
             <type name="Clutter.Actor" c:type="ClutterActor*"/>
@@ -477,7 +477,7 @@ This is a convenience function that allows for easy association of one
             <type name="gulong" c:type="gulong"/>
           </parameter>
           <parameter name="container" transfer-ownership="none">
-            <type name="Clutter.Container" c:type="ClutterContainer*"/>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
           <parameter name="actor" transfer-ownership="none">
             <type name="Clutter.Actor" c:type="ClutterActor*"/>
@@ -544,8 +544,8 @@ be fired.</doc>
             <type name="ActorManager" c:type="MxActorManager*"/>
           </instance-parameter>
           <parameter name="container" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ClutterContainer</doc>
-            <type name="Clutter.Container" c:type="ClutterContainer*"/>
+            <doc xml:whitespace="preserve">A #ClutterActor</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
           <parameter name="actor" transfer-ownership="none">
             <doc xml:whitespace="preserve">A #ClutterActor</doc>
@@ -697,8 +697,8 @@ the actor's opacity to 0 before calling this function.
             <type name="ActorManager" c:type="MxActorManager*"/>
           </instance-parameter>
           <parameter name="container" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ClutterContainer</doc>
-            <type name="Clutter.Container" c:type="ClutterContainer*"/>
+            <doc xml:whitespace="preserve">A #ClutterActor</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
           <parameter name="actor" transfer-ownership="none">
             <doc xml:whitespace="preserve">A #ClutterActor</doc>
@@ -727,8 +727,8 @@ the container's opacity to 0 before calling this function.
             <type name="ActorManager" c:type="MxActorManager*"/>
           </instance-parameter>
           <parameter name="container" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ClutterContainer</doc>
-            <type name="Clutter.Container" c:type="ClutterContainer*"/>
+            <doc xml:whitespace="preserve">A #ClutterActor</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
         </parameters>
       </method>
@@ -783,7 +783,7 @@ of time it takes for operations to complete.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
           <parameter name="container" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ClutterContainer the actor was added to</doc>
+            <doc xml:whitespace="preserve">The #ClutterActor the actor was added to</doc>
             <type name="Clutter.Actor"/>
           </parameter>
           <parameter name="actor" transfer-ownership="none">
@@ -831,7 +831,7 @@ of time it takes for operations to complete.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
           <parameter name="container" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ClutterContainer the actor was removed from</doc>
+            <doc xml:whitespace="preserve">The #ClutterActor the actor was removed from</doc>
             <type name="Clutter.Actor"/>
           </parameter>
           <parameter name="actor" transfer-ownership="none">
@@ -918,7 +918,7 @@ of time it takes for operations to complete.</doc>
               <type name="gulong" c:type="gulong"/>
             </parameter>
             <parameter name="container" transfer-ownership="none">
-              <type name="Clutter.Container" c:type="ClutterContainer*"/>
+              <type name="Clutter.Actor" c:type="ClutterActor*"/>
             </parameter>
             <parameter name="actor" transfer-ownership="none">
               <type name="Clutter.Actor" c:type="ClutterActor*"/>
@@ -939,7 +939,7 @@ of time it takes for operations to complete.</doc>
               <type name="gulong" c:type="gulong"/>
             </parameter>
             <parameter name="container" transfer-ownership="none">
-              <type name="Clutter.Container" c:type="ClutterContainer*"/>
+              <type name="Clutter.Actor" c:type="ClutterActor*"/>
             </parameter>
             <parameter name="actor" transfer-ownership="none">
               <type name="Clutter.Actor" c:type="ClutterActor*"/>
@@ -1151,6 +1151,16 @@ public API.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="changed_immediate">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="adjustment" transfer-ownership="none">
+            <type name="Adjustment" c:type="MxAdjustment*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="interpolation_completed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1279,27 +1289,51 @@ public API.</doc>
             <doc xml:whitespace="preserve">A #MxAdjustment</doc>
             <type name="Adjustment" c:type="MxAdjustment*"/>
           </instance-parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gdouble</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
-          <parameter name="lower" transfer-ownership="none">
+          <parameter name="lower"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gdouble</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
-          <parameter name="upper" transfer-ownership="none">
+          <parameter name="upper"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gdouble</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
-          <parameter name="step_increment" transfer-ownership="none">
+          <parameter name="step_increment"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gdouble</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
-          <parameter name="page_increment" transfer-ownership="none">
+          <parameter name="page_increment"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gdouble</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
-          <parameter name="page_size" transfer-ownership="none">
+          <parameter name="page_size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gdouble</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
@@ -1573,6 +1607,13 @@ the mode and duration given.</doc>
         <type name="AdjustmentPrivate" c:type="MxAdjustmentPrivate*"/>
       </field>
       <glib:signal name="changed" when="last">
+        <doc xml:whitespace="preserve">Emitted when any of the adjustment values have changed at the
+next iteration of the GLib mainloop.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="changed-immediate" when="last">
         <doc xml:whitespace="preserve">Emitted when any of the adjustment values have changed</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1606,6 +1647,18 @@ the mode and duration given.</doc>
       </field>
       <field name="interpolation_completed">
         <callback name="interpolation_completed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="adjustment" transfer-ownership="none">
+              <type name="Adjustment" c:type="MxAdjustment*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="changed_immediate">
+        <callback name="changed_immediate">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -1673,12 +1726,14 @@ the mode and duration given.</doc>
     <class name="Application"
            c:symbol-prefix="application"
            c:type="MxApplication"
-           parent="GObject.Object"
+           parent="Gio.Application"
            glib:type-name="MxApplication"
            glib:get-type="mx_application_get_type"
            glib:type-struct="ApplicationClass">
       <doc xml:whitespace="preserve">The contents of this structure are private and should only be accessed
 through the public API.</doc>
+      <implements name="Gio.ActionGroup"/>
+      <implements name="Gio.ActionMap"/>
       <constructor name="new" c:identifier="mx_application_new">
         <doc xml:whitespace="preserve">Intialises everything needed to operate Clutter and use #MxApplication.
 See clutter_init().</doc>
@@ -1687,81 +1742,16 @@ See clutter_init().</doc>
           <type name="Application" c:type="MxApplication*"/>
         </return-value>
         <parameters>
-          <parameter name="argc"
-                     direction="inout"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:whitespace="preserve">The number of arguments in argv.</doc>
-            <type name="gint" c:type="gint*"/>
-          </parameter>
-          <parameter name="argv"
-                     direction="inout"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">A pointer to an array of arguments</doc>
-            <array length="0" zero-terminated="0" c:type="gchar***">
-              <type name="utf8" c:type="gchar**"/>
-            </array>
-          </parameter>
-          <parameter name="name" transfer-ownership="none">
+          <parameter name="application_id" transfer-ownership="none">
             <doc xml:whitespace="preserve">Unique application name.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:whitespace="preserve">Application flags.</doc>
-            <type name="ApplicationFlags" c:type="MxApplicationFlags"/>
+            <type name="Gio.ApplicationFlags" c:type="GApplicationFlags"/>
           </parameter>
         </parameters>
       </constructor>
-      <virtual-method name="actions_changed">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="app" transfer-ownership="none">
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="create_window" invoker="create_window">
-        <doc xml:whitespace="preserve">Creates a window and associates it with the application.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">An #MxWindow.</doc>
-          <type name="Window" c:type="MxWindow*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="raise">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <method name="add_action" c:identifier="mx_application_add_action">
-        <doc xml:whitespace="preserve">Add an action to the application.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-          <parameter name="action" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxAction</doc>
-            <type name="Action" c:type="MxAction*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="add_window" c:identifier="mx_application_add_window">
         <doc xml:whitespace="preserve">Adds a window to the list of windows associated with @application. If this
 is the first window, it will be treated as the primary window and used for
@@ -1783,44 +1773,21 @@ This function does not take a reference on @window.</doc>
         </parameters>
       </method>
       <method name="create_window" c:identifier="mx_application_create_window">
-        <doc xml:whitespace="preserve">Creates a window and associates it with the application.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">An #MxWindow.</doc>
+        <doc xml:whitespace="preserve">Creates a new #MxWindow and adds it to MxApplication. The application must be
+registered before this function is run.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">The newly created MxWindow</doc>
           <type name="Window" c:type="MxWindow*"/>
         </return-value>
         <parameters>
           <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #MxApplication</doc>
+            <doc xml:whitespace="preserve">An #MxApplication</doc>
             <type name="Application" c:type="MxApplication*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_actions" c:identifier="mx_application_get_actions">
-        <doc xml:whitespace="preserve">Retrieves all actions registered on @application.</doc>
-        <return-value transfer-ownership="container">
-          <doc xml:whitespace="preserve">a list of #MxAction&lt;!-- --&gt;s. Use g_list_free() on the returned list when done.</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="Action"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_flags" c:identifier="mx_application_get_flags">
-        <doc xml:whitespace="preserve">Get the application flags that where set on @application when created.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the application flags</doc>
-          <type name="ApplicationFlags" c:type="MxApplicationFlags"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
+          <parameter name="window_title" transfer-ownership="none">
+            <doc xml:whitespace="preserve">Title for the new window</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_windows" c:identifier="mx_application_get_windows">
@@ -1836,89 +1803,6 @@ This function does not take a reference on @window.</doc>
             <doc xml:whitespace="preserve">an #MxApplication</doc>
             <type name="Application" c:type="MxApplication*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="invoke_action" c:identifier="mx_application_invoke_action">
-        <doc xml:whitespace="preserve">Run the named action for the application.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">name of the action to invoke</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="invoke_action_with_parameter"
-              c:identifier="mx_application_invoke_action_with_parameter"
-              version="1.4">
-        <doc xml:whitespace="preserve">Run the named action for the application, passing @variant as the parameter
-for the action.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">name of the action to invoke</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="variant" transfer-ownership="none">
-            <doc xml:whitespace="preserve">parameter for the action</doc>
-            <type name="GLib.Variant" c:type="GVariant*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="is_running" c:identifier="mx_application_is_running">
-        <doc xml:whitespace="preserve">Query whether #MxApplication is running. This will also return #TRUE if the
-given #MxApplication is single instance and there is an instance already
-running.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#TRUE if the application is running</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="quit" c:identifier="mx_application_quit">
-        <doc xml:whitespace="preserve">Stop the application from running and quit the main loop. This will cause
-the call to mx_application_run() to complete.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="remove_action" c:identifier="mx_application_remove_action">
-        <doc xml:whitespace="preserve">Remove the action with the specified name from the application.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">name of the action to remove</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
         </parameters>
       </method>
       <method name="remove_window" c:identifier="mx_application_remove_window">
@@ -1938,89 +1822,18 @@ to be unreferenced and destroyed unless another reference is held on it.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="run" c:identifier="mx_application_run">
-        <doc xml:whitespace="preserve">Run the main loop of the application and start processing events. This
-function will not return until the application is quit. If the application
-is single instance and an existing instance is already running, this will
-cause the existing instance to be raised and the function will complete
-immediately.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="application" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an MxApplication</doc>
-            <type name="Application" c:type="MxApplication*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <property name="application-name"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="flags"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="guint" c:type="guint"/>
-      </property>
       <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
+        <type name="Gio.Application" c:type="GApplication"/>
       </field>
       <field name="priv">
         <type name="ApplicationPrivate" c:type="MxApplicationPrivate*"/>
       </field>
-      <glib:signal name="actions-changed" when="last">
-        <doc xml:whitespace="preserve">Emitted when an action has been added or removed from the MxApplication.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
     </class>
     <record name="ApplicationClass"
             c:type="MxApplicationClass"
             glib:is-gtype-struct-for="Application">
       <field name="parent_class">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
-      </field>
-      <field name="create_window">
-        <callback name="create_window">
-          <return-value transfer-ownership="none">
-            <doc xml:whitespace="preserve">An #MxWindow.</doc>
-            <type name="Window" c:type="MxWindow*"/>
-          </return-value>
-          <parameters>
-            <parameter name="application" transfer-ownership="none">
-              <type name="Application" c:type="MxApplication*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="raise">
-        <callback name="raise">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="application" transfer-ownership="none">
-              <type name="Application" c:type="MxApplication*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="actions_changed">
-        <callback name="actions_changed">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="app" transfer-ownership="none">
-              <type name="Application" c:type="MxApplication*"/>
-            </parameter>
-          </parameters>
-        </callback>
+        <type name="Gio.ApplicationClass" c:type="GApplicationClass"/>
       </field>
       <field name="_padding_0" introspectable="0">
         <callback name="_padding_0">
@@ -2058,21 +1871,6 @@ immediately.</doc>
         </callback>
       </field>
     </record>
-    <bitfield name="ApplicationFlags"
-              glib:type-name="MxApplicationFlags"
-              glib:get-type="mx_application_flags_get_type"
-              c:type="MxApplicationFlags">
-      <member name="single_instance"
-              value="1"
-              c:identifier="MX_APPLICATION_SINGLE_INSTANCE"
-              glib:nick="single-instance">
-      </member>
-      <member name="keep_alive"
-              value="4"
-              c:identifier="MX_APPLICATION_KEEP_ALIVE"
-              glib:nick="keep-alive">
-      </member>
-    </bitfield>
     <record name="ApplicationPrivate"
             c:type="MxApplicationPrivate"
             disguised="1">
@@ -2340,6 +2138,19 @@ and/or vertical allocation of the parent</doc>
       <field name="left" writable="1">
         <type name="gint" c:type="gint"/>
       </field>
+      <method name="equal" c:identifier="mx_border_image_equal">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="b1" transfer-ownership="none">
+            <type name="BorderImage" c:type="MxBorderImage*"/>
+          </instance-parameter>
+          <parameter name="b2" transfer-ownership="none">
+            <type name="BorderImage" c:type="MxBorderImage*"/>
+          </parameter>
+        </parameters>
+      </method>
       <function name="set_from_string"
                 c:identifier="mx_border_image_set_from_string">
         <return-value transfer-ownership="none">
@@ -2381,60 +2192,17 @@ through the public API.</doc>
           <type name="Clutter.Actor" c:type="ClutterActor*"/>
         </return-value>
       </constructor>
-      <method name="add_actor" c:identifier="mx_box_layout_add_actor">
-        <doc xml:whitespace="preserve">Inserts @actor at @position in @box.</doc>
+      <constructor name="new_with_orientation"
+                   c:identifier="mx_box_layout_new_with_orientation">
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <type name="Clutter.Actor" c:type="ClutterActor*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="box" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxBoxLayout</doc>
-            <type name="BoxLayout" c:type="MxBoxLayout*"/>
-          </instance-parameter>
-          <parameter name="actor" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the #ClutterActor actor to add to the box layout</doc>
-            <type name="Clutter.Actor" c:type="ClutterActor*"/>
-          </parameter>
-          <parameter name="position" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the position where to insert the actor</doc>
-            <type name="gint" c:type="gint"/>
+          <parameter name="orientation" transfer-ownership="none">
+            <type name="Orientation" c:type="MxOrientation"/>
           </parameter>
         </parameters>
-      </method>
-      <method name="add_actor_with_properties"
-              c:identifier="mx_box_layout_add_actor_with_properties"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Inserts @actor at @position in the layout @box. You can set some layout
-properties on the child at the same time.
-
-If @position is negative, or is larger than the number of actors in the
-layout, the new actor is added on to the end of the list.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="box" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxBoxLayout</doc>
-            <type name="BoxLayout" c:type="MxBoxLayout*"/>
-          </instance-parameter>
-          <parameter name="actor" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the #ClutterActor actor to add to the box layout</doc>
-            <type name="Clutter.Actor" c:type="ClutterActor*"/>
-          </parameter>
-          <parameter name="position" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the position where to insert the actor</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="first_property" transfer-ownership="none">
-            <doc xml:whitespace="preserve">name of the first property to set</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter transfer-ownership="none">
-            <varargs>
-            </varargs>
-          </parameter>
-        </parameters>
-      </method>
+      </constructor>
       <method name="child_get_expand"
               c:identifier="mx_box_layout_child_get_expand">
         <doc xml:whitespace="preserve">Get the value of the #MxBoxLayoutChild:expand property</doc>
@@ -2686,6 +2454,60 @@ layout, the new actor is added on to the end of the list.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="insert_actor" c:identifier="mx_box_layout_insert_actor">
+        <doc xml:whitespace="preserve">Inserts @actor at @position in @box.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="box" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxBoxLayout</doc>
+            <type name="BoxLayout" c:type="MxBoxLayout*"/>
+          </instance-parameter>
+          <parameter name="actor" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #ClutterActor actor to add to the box layout</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the position where to insert the actor</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="insert_actor_with_properties"
+              c:identifier="mx_box_layout_insert_actor_with_properties"
+              introspectable="0">
+        <doc xml:whitespace="preserve">Inserts @actor at @position in the layout @box. You can set some layout
+properties on the child at the same time.
+
+If @position is negative, or is larger than the number of actors in the
+layout, the new actor is added on to the end of the list.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="box" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxBoxLayout</doc>
+            <type name="BoxLayout" c:type="MxBoxLayout*"/>
+          </instance-parameter>
+          <parameter name="actor" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the #ClutterActor actor to add to the box layout</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the position where to insert the actor</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="first_property" transfer-ownership="none">
+            <doc xml:whitespace="preserve">name of the first property to set</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter transfer-ownership="none">
+            <varargs>
+            </varargs>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_enable_animations"
               c:identifier="mx_box_layout_set_enable_animations">
         <doc xml:whitespace="preserve">Enable animations when certain properties change.</doc>
@@ -2913,7 +2735,7 @@ through the public API.</doc>
     <class name="Button"
            c:symbol-prefix="button"
            c:type="MxButton"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxButton"
            glib:get-type="mx_button_get_type"
            glib:type-struct="ButtonClass">
@@ -3275,7 +3097,7 @@ button has #toggle-mode mode set to #TRUE.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent_instance" readable="0" private="1">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="ButtonPrivate" c:type="MxButtonPrivate*"/>
@@ -3292,7 +3114,7 @@ release or with the keyboard.</doc>
             c:type="MxButtonClass"
             glib:is-gtype-struct-for="Button">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
       <field name="clicked">
         <callback name="clicked">
@@ -3961,699 +3783,10 @@ through the public API.</doc>
     </record>
     <record name="ComboBoxPrivate" c:type="MxComboBoxPrivate" disguised="1">
     </record>
-    <class name="DeformBowTie"
-           c:symbol-prefix="deform_bow_tie"
-           c:type="MxDeformBowTie"
-           parent="DeformTexture"
-           glib:type-name="MxDeformBowTie"
-           glib:get-type="mx_deform_bow_tie_get_type"
-           glib:type-struct="DeformBowTieClass">
-      <doc xml:whitespace="preserve">The contents of this structure is private and should only be accessed using
-the provided API.</doc>
-      <implements name="Atk.ImplementorIface"/>
-      <implements name="Clutter.Animatable"/>
-      <implements name="Clutter.Container"/>
-      <implements name="Clutter.Scriptable"/>
-      <implements name="Stylable"/>
-      <constructor name="new" c:identifier="mx_deform_bow_tie_new">
-        <return-value transfer-ownership="none">
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
-        </return-value>
-      </constructor>
-      <method name="get_flip_back"
-              c:identifier="mx_deform_bow_tie_get_flip_back">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="bow_tie" transfer-ownership="none">
-            <type name="DeformBowTie" c:type="MxDeformBowTie*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_period" c:identifier="mx_deform_bow_tie_get_period">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="bow_tie" transfer-ownership="none">
-            <type name="DeformBowTie" c:type="MxDeformBowTie*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_flip_back"
-              c:identifier="mx_deform_bow_tie_set_flip_back">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="bow_tie" transfer-ownership="none">
-            <type name="DeformBowTie" c:type="MxDeformBowTie*"/>
-          </instance-parameter>
-          <parameter name="flip_back" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_period" c:identifier="mx_deform_bow_tie_set_period">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="bow_tie" transfer-ownership="none">
-            <type name="DeformBowTie" c:type="MxDeformBowTie*"/>
-          </instance-parameter>
-          <parameter name="period" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="flip-back" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <property name="period" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <field name="parent">
-        <type name="DeformTexture" c:type="MxDeformTexture"/>
-      </field>
-      <field name="priv">
-        <type name="DeformBowTiePrivate" c:type="MxDeformBowTiePrivate*"/>
-      </field>
-    </class>
-    <record name="DeformBowTieClass"
-            c:type="MxDeformBowTieClass"
-            glib:is-gtype-struct-for="DeformBowTie">
-      <field name="parent_class">
-        <type name="DeformTextureClass" c:type="MxDeformTextureClass"/>
-      </field>
-      <field name="_padding_0" introspectable="0">
-        <callback name="_padding_0">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_1" introspectable="0">
-        <callback name="_padding_1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_2" introspectable="0">
-        <callback name="_padding_2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_3" introspectable="0">
-        <callback name="_padding_3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_4" introspectable="0">
-        <callback name="_padding_4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-    </record>
-    <record name="DeformBowTiePrivate"
-            c:type="MxDeformBowTiePrivate"
-            disguised="1">
-    </record>
-    <class name="DeformPageTurn"
-           c:symbol-prefix="deform_page_turn"
-           c:type="MxDeformPageTurn"
-           parent="DeformTexture"
-           glib:type-name="MxDeformPageTurn"
-           glib:get-type="mx_deform_page_turn_get_type"
-           glib:type-struct="DeformPageTurnClass">
-      <doc xml:whitespace="preserve">The contents of this structure is private and should only be accessed using
-the provided API.</doc>
-      <implements name="Atk.ImplementorIface"/>
-      <implements name="Clutter.Animatable"/>
-      <implements name="Clutter.Container"/>
-      <implements name="Clutter.Scriptable"/>
-      <implements name="Stylable"/>
-      <constructor name="new" c:identifier="mx_deform_page_turn_new">
-        <return-value transfer-ownership="none">
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
-        </return-value>
-      </constructor>
-      <method name="get_angle" c:identifier="mx_deform_page_turn_get_angle">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="page_turn" transfer-ownership="none">
-            <type name="DeformPageTurn" c:type="MxDeformPageTurn*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_period" c:identifier="mx_deform_page_turn_get_period">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="page_turn" transfer-ownership="none">
-            <type name="DeformPageTurn" c:type="MxDeformPageTurn*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_radius" c:identifier="mx_deform_page_turn_get_radius">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="page_turn" transfer-ownership="none">
-            <type name="DeformPageTurn" c:type="MxDeformPageTurn*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_angle" c:identifier="mx_deform_page_turn_set_angle">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="page_turn" transfer-ownership="none">
-            <type name="DeformPageTurn" c:type="MxDeformPageTurn*"/>
-          </instance-parameter>
-          <parameter name="angle" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_period" c:identifier="mx_deform_page_turn_set_period">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="page_turn" transfer-ownership="none">
-            <type name="DeformPageTurn" c:type="MxDeformPageTurn*"/>
-          </instance-parameter>
-          <parameter name="period" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_radius" c:identifier="mx_deform_page_turn_set_radius">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="page_turn" transfer-ownership="none">
-            <type name="DeformPageTurn" c:type="MxDeformPageTurn*"/>
-          </instance-parameter>
-          <parameter name="radius" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="angle" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <property name="period" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <property name="radius" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <field name="parent">
-        <type name="DeformTexture" c:type="MxDeformTexture"/>
-      </field>
-      <field name="priv">
-        <type name="DeformPageTurnPrivate" c:type="MxDeformPageTurnPrivate*"/>
-      </field>
-    </class>
-    <record name="DeformPageTurnClass"
-            c:type="MxDeformPageTurnClass"
-            glib:is-gtype-struct-for="DeformPageTurn">
-      <field name="parent_class">
-        <type name="DeformTextureClass" c:type="MxDeformTextureClass"/>
-      </field>
-      <field name="_padding_0" introspectable="0">
-        <callback name="_padding_0">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_1" introspectable="0">
-        <callback name="_padding_1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_2" introspectable="0">
-        <callback name="_padding_2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_3" introspectable="0">
-        <callback name="_padding_3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_4" introspectable="0">
-        <callback name="_padding_4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-    </record>
-    <record name="DeformPageTurnPrivate"
-            c:type="MxDeformPageTurnPrivate"
-            disguised="1">
-    </record>
-    <class name="DeformTexture"
-           c:symbol-prefix="deform_texture"
-           c:type="MxDeformTexture"
-           parent="Widget"
-           abstract="1"
-           glib:type-name="MxDeformTexture"
-           glib:get-type="mx_deform_texture_get_type"
-           glib:type-struct="DeformTextureClass">
-      <doc xml:whitespace="preserve">The contents of this structure is private and should only be accessed using
-the provided API.</doc>
-      <implements name="Atk.ImplementorIface"/>
-      <implements name="Clutter.Animatable"/>
-      <implements name="Clutter.Container"/>
-      <implements name="Clutter.Scriptable"/>
-      <implements name="Stylable"/>
-      <virtual-method name="deform">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <type name="DeformTexture" c:type="MxDeformTexture*"/>
-          </instance-parameter>
-          <parameter name="vertex" transfer-ownership="none">
-            <type name="Cogl.TextureVertex" c:type="CoglTextureVertex*"/>
-          </parameter>
-          <parameter name="width" transfer-ownership="none">
-            <type name="gfloat" c:type="gfloat"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <type name="gfloat" c:type="gfloat"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <method name="get_resolution"
-              c:identifier="mx_deform_texture_get_resolution">
-        <doc xml:whitespace="preserve">Retrieve the mesh resolution of the texture.
-See mx_deform_texture_set_resolution().</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxDeformTexture</doc>
-            <type name="DeformTexture" c:type="MxDeformTexture*"/>
-          </instance-parameter>
-          <parameter name="tiles_x"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">The horizontal resolution</doc>
-            <type name="gint" c:type="gint*"/>
-          </parameter>
-          <parameter name="tiles_y"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">The vertical resolution</doc>
-            <type name="gint" c:type="gint*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_textures"
-              c:identifier="mx_deform_texture_get_textures">
-        <doc xml:whitespace="preserve">Retrieves the textures used by @texture.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxDeformTexture</doc>
-            <type name="DeformTexture" c:type="MxDeformTexture*"/>
-          </instance-parameter>
-          <parameter name="front"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">The front-facing texture</doc>
-            <type name="Clutter.Texture" c:type="ClutterTexture**"/>
-          </parameter>
-          <parameter name="back"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none"
-                     allow-none="1">
-            <doc xml:whitespace="preserve">The back-facing texture</doc>
-            <type name="Clutter.Texture" c:type="ClutterTexture**"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="invalidate" c:identifier="mx_deform_texture_invalidate">
-        <doc xml:whitespace="preserve">Make @texture re-calculate its vertices and redraw itself.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxDeformTexture</doc>
-            <type name="DeformTexture" c:type="MxDeformTexture*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_resolution"
-              c:identifier="mx_deform_texture_set_resolution">
-        <doc xml:whitespace="preserve">Sets the amount of sub-divisions used on each axis when generating
-the mesh, where a value of 1 for each axis will produce a single quad.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxDeformTexture</doc>
-            <type name="DeformTexture" c:type="MxDeformTexture*"/>
-          </instance-parameter>
-          <parameter name="tiles_x" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The horizontal resolution</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="tiles_y" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The vertical resolution</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_textures"
-              c:identifier="mx_deform_texture_set_textures">
-        <doc xml:whitespace="preserve">Set textures to use as the sources of a deformation effect. Textures
-must not be parented.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:whitespace="preserve">an #MxDeformTexture</doc>
-            <type name="DeformTexture" c:type="MxDeformTexture*"/>
-          </instance-parameter>
-          <parameter name="front" transfer-ownership="none" allow-none="1">
-            <doc xml:whitespace="preserve">#ClutterTexture to use for the front-face.</doc>
-            <type name="Clutter.Texture" c:type="ClutterTexture*"/>
-          </parameter>
-          <parameter name="back" transfer-ownership="none" allow-none="1">
-            <doc xml:whitespace="preserve">#ClutterTexture to use for the back-face.</doc>
-            <type name="Clutter.Texture" c:type="ClutterTexture*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="back" writable="1" transfer-ownership="none">
-        <type name="Clutter.Texture"/>
-      </property>
-      <property name="front" writable="1" transfer-ownership="none">
-        <type name="Clutter.Texture"/>
-      </property>
-      <property name="tiles-x" writable="1" transfer-ownership="none">
-        <type name="gint" c:type="gint"/>
-      </property>
-      <property name="tiles-y" writable="1" transfer-ownership="none">
-        <type name="gint" c:type="gint"/>
-      </property>
-      <field name="parent">
-        <type name="Widget" c:type="MxWidget"/>
-      </field>
-      <field name="priv">
-        <type name="DeformTexturePrivate" c:type="MxDeformTexturePrivate*"/>
-      </field>
-    </class>
-    <record name="DeformTextureClass"
-            c:type="MxDeformTextureClass"
-            glib:is-gtype-struct-for="DeformTexture">
-      <field name="parent_class">
-        <type name="WidgetClass" c:type="MxWidgetClass"/>
-      </field>
-      <field name="deform">
-        <callback name="deform">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="texture" transfer-ownership="none">
-              <type name="DeformTexture" c:type="MxDeformTexture*"/>
-            </parameter>
-            <parameter name="vertex" transfer-ownership="none">
-              <type name="Cogl.TextureVertex" c:type="CoglTextureVertex*"/>
-            </parameter>
-            <parameter name="width" transfer-ownership="none">
-              <type name="gfloat" c:type="gfloat"/>
-            </parameter>
-            <parameter name="height" transfer-ownership="none">
-              <type name="gfloat" c:type="gfloat"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="_padding_0" introspectable="0">
-        <callback name="_padding_0">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_1" introspectable="0">
-        <callback name="_padding_1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_2" introspectable="0">
-        <callback name="_padding_2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_3" introspectable="0">
-        <callback name="_padding_3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_4" introspectable="0">
-        <callback name="_padding_4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-    </record>
-    <record name="DeformTexturePrivate"
-            c:type="MxDeformTexturePrivate"
-            disguised="1">
-    </record>
-    <class name="DeformWaves"
-           c:symbol-prefix="deform_waves"
-           c:type="MxDeformWaves"
-           parent="DeformTexture"
-           glib:type-name="MxDeformWaves"
-           glib:get-type="mx_deform_waves_get_type"
-           glib:type-struct="DeformWavesClass">
-      <doc xml:whitespace="preserve">The contents of this structure is private and should only be accessed using
-the provided API.</doc>
-      <implements name="Atk.ImplementorIface"/>
-      <implements name="Clutter.Animatable"/>
-      <implements name="Clutter.Container"/>
-      <implements name="Clutter.Scriptable"/>
-      <implements name="Stylable"/>
-      <constructor name="new" c:identifier="mx_deform_waves_new">
-        <return-value transfer-ownership="none">
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
-        </return-value>
-      </constructor>
-      <method name="get_amplitude"
-              c:identifier="mx_deform_waves_get_amplitude">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_angle" c:identifier="mx_deform_waves_get_angle">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_period" c:identifier="mx_deform_waves_get_period">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_radius" c:identifier="mx_deform_waves_get_radius">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_amplitude"
-              c:identifier="mx_deform_waves_set_amplitude">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-          <parameter name="amplitude" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_angle" c:identifier="mx_deform_waves_set_angle">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-          <parameter name="angle" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_period" c:identifier="mx_deform_waves_set_period">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-          <parameter name="period" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_radius" c:identifier="mx_deform_waves_set_radius">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="waves" transfer-ownership="none">
-            <type name="DeformWaves" c:type="MxDeformWaves*"/>
-          </instance-parameter>
-          <parameter name="radius" transfer-ownership="none">
-            <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="amplitude" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <property name="angle" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <property name="period" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <property name="radius" writable="1" transfer-ownership="none">
-        <type name="gdouble" c:type="gdouble"/>
-      </property>
-      <field name="parent">
-        <type name="DeformTexture" c:type="MxDeformTexture"/>
-      </field>
-      <field name="priv">
-        <type name="DeformWavesPrivate" c:type="MxDeformWavesPrivate*"/>
-      </field>
-    </class>
-    <record name="DeformWavesClass"
-            c:type="MxDeformWavesClass"
-            glib:is-gtype-struct-for="DeformWaves">
-      <field name="parent_class">
-        <type name="DeformTextureClass" c:type="MxDeformTextureClass"/>
-      </field>
-      <field name="_padding_0" introspectable="0">
-        <callback name="_padding_0">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_1" introspectable="0">
-        <callback name="_padding_1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_2" introspectable="0">
-        <callback name="_padding_2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_3" introspectable="0">
-        <callback name="_padding_3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_padding_4" introspectable="0">
-        <callback name="_padding_4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-    </record>
-    <record name="DeformWavesPrivate"
-            c:type="MxDeformWavesPrivate"
-            disguised="1">
-    </record>
     <class name="Dialog"
            c:symbol-prefix="dialog"
            c:type="MxDialog"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxDialog"
            glib:get-type="mx_dialog_get_type"
            glib:type-struct="DialogClass">
@@ -4745,7 +3878,7 @@ modal frame will appear when clutter_actor_show() is called.</doc>
         </parameters>
       </method>
       <field name="parent" readable="0" private="1">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="DialogPrivate" c:type="MxDialogPrivate*"/>
@@ -4755,11 +3888,27 @@ modal frame will appear when clutter_actor_show() is called.</doc>
             c:type="MxDialogClass"
             glib:is-gtype-struct-for="Dialog">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
     </record>
     <record name="DialogPrivate" c:type="MxDialogPrivate" disguised="1">
     </record>
+    <enumeration name="DisplayStyle"
+                 glib:type-name="MxDisplayStyle"
+                 glib:get-type="mx_display_style_get_type"
+                 c:type="MxDisplayStyle">
+      <doc xml:whitespace="preserve">Values for the "display" style property.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="MX_DISPLAY_STYLE_NONE"
+              glib:nick="none">
+      </member>
+      <member name="inline"
+              value="1"
+              c:identifier="MX_DISPLAY_STYLE_INLINE"
+              glib:nick="inline">
+      </member>
+    </enumeration>
     <enumeration name="DragAxis"
                  glib:type-name="MxDragAxis"
                  glib:get-type="mx_drag_axis_get_type"
@@ -5462,19 +4611,6 @@ the provided API.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_hint_text" c:identifier="mx_entry_get_hint_text">
-        <doc xml:whitespace="preserve">Gets the text that is displayed when the entry is empty and unfocused</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the current value of the hint property. This string is owned by the #MxEntry and should not be freed or modified.</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="entry" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxEntry</doc>
-            <type name="Entry" c:type="MxEntry*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_icon_highlight_suffix"
               c:identifier="mx_entry_get_icon_highlight_suffix">
         <doc xml:whitespace="preserve">Get the suffix appended to the filename to use for the highlighted version
@@ -5504,6 +4640,19 @@ of the icon.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_placeholder" c:identifier="mx_entry_get_placeholder">
+        <doc xml:whitespace="preserve">Gets the text that is displayed when the entry is empty and unfocused</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the current value of the placeholder property. This string is owned by the #MxEntry and should not be freed or modified.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxEntry</doc>
+            <type name="Entry" c:type="MxEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_text" c:identifier="mx_entry_get_text">
         <doc xml:whitespace="preserve">Get the text displayed on the entry</doc>
         <return-value transfer-ownership="none">
@@ -5517,28 +4666,10 @@ of the icon.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_hint_text" c:identifier="mx_entry_set_hint_text">
-        <doc xml:whitespace="preserve">Sets the text to display when the entry is empty and unfocused. When the
-entry is displaying the hint, it has a pseudo class of "indeterminate".
-A value of NULL unsets the hint.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="entry" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxEntry</doc>
-            <type name="Entry" c:type="MxEntry*"/>
-          </instance-parameter>
-          <parameter name="text" transfer-ownership="none">
-            <doc xml:whitespace="preserve">text to set as the entry hint</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_icon_highlight_suffix"
               c:identifier="mx_entry_set_icon_highlight_suffix">
         <doc xml:whitespace="preserve">Sets the suffix appended to the filename to use for the highlighted version
-of the icon. e.g. if you have set your primay icon to "primary-icon.png" 
+of the icon. e.g. if you have set your primay icon to "primary-icon.png"
 and the suffix to "-highlight" #MxEntry will look for
 "primary-icon-highlight.png"</doc>
         <return-value transfer-ownership="none">
@@ -5568,8 +4699,26 @@ the actual text.</doc>
             <type name="Entry" c:type="MxEntry*"/>
           </instance-parameter>
           <parameter name="password_char" transfer-ownership="none">
-            <doc xml:whitespace="preserve">text to set as the entry hint</doc>
+            <doc xml:whitespace="preserve">character to display instead of text</doc>
             <type name="gunichar" c:type="gunichar"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_placeholder" c:identifier="mx_entry_set_placeholder">
+        <doc xml:whitespace="preserve">Sets the text to display when the entry is empty and unfocused. When the
+entry is displaying the hint, it has a pseudo class of "indeterminate".
+A value of NULL unsets the hint.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxEntry</doc>
+            <type name="Entry" c:type="MxEntry*"/>
+          </instance-parameter>
+          <parameter name="text" transfer-ownership="none">
+            <doc xml:whitespace="preserve">text to set as the entry hint</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -5654,9 +4803,6 @@ the actual text.</doc>
       <property name="clutter-text" transfer-ownership="none">
         <type name="Clutter.Text"/>
       </property>
-      <property name="hint-text" writable="1" transfer-ownership="none">
-        <type name="utf8" c:type="gchar*"/>
-      </property>
       <property name="icon-highlight-suffix"
                 writable="1"
                 transfer-ownership="none">
@@ -5664,6 +4810,9 @@ the actual text.</doc>
       </property>
       <property name="password-char" writable="1" transfer-ownership="none">
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="placeholder" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="primary-icon-tooltip-text"
                 writable="1"
@@ -5768,7 +4917,7 @@ the actual text.</doc>
     <class name="Expander"
            c:symbol-prefix="expander"
            c:type="MxExpander"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxExpander"
            glib:get-type="mx_expander_get_type"
            glib:type-struct="ExpanderClass">
@@ -5778,7 +4927,6 @@ through the public API.</doc>
       <implements name="Clutter.Animatable"/>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
-      <implements name="Focusable"/>
       <implements name="Stylable"/>
       <constructor name="new" c:identifier="mx_expander_new">
         <doc xml:whitespace="preserve">Creates a new #MxExpander</doc>
@@ -5811,7 +4959,7 @@ through the public API.</doc>
         </parameters>
       </method>
       <method name="set_expanded" c:identifier="mx_expander_set_expanded">
-        <doc xml:whitespace="preserve">Set the state (the #MxExpander:expanded property) of the expander. 
+        <doc xml:whitespace="preserve">Set the state (the #MxExpander:expanded property) of the expander.
 This will cause the expander to open or close.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -5850,7 +4998,7 @@ This will cause the expander to open or close.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent" readable="0" private="1">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="ExpanderPrivate" c:type="MxExpanderPrivate*"/>
@@ -5867,7 +5015,7 @@ of the #MxExpander to determine if the expander is expanded or not.</doc>
             c:type="MxExpanderClass"
             glib:is-gtype-struct-for="Expander">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
       <field name="expand_complete">
         <callback name="expand_complete">
@@ -5948,28 +5096,32 @@ of the #MxExpander to determine if the expander is expanded or not.</doc>
           <parameter name="top"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The upper border, in pixels</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
           <parameter name="right"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The right border, in pixels</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
           <parameter name="bottom"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The lower border, in pixels</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
           <parameter name="left"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The left border, in pixels</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
@@ -5990,28 +5142,32 @@ of the #MxExpander to determine if the expander is expanded or not.</doc>
           <parameter name="x"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The x value of the effect bounds, in pixels</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>
           <parameter name="y"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The y value of the effect bounds, in pixels</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>
           <parameter name="width"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The width of the effect bounds, in pixels, or %0</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
           <parameter name="height"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">The height of the effect bounds, in pixels, or %0</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
@@ -6720,7 +5876,7 @@ Note: the final focused object may not be the same as @focusable if
     <class name="Frame"
            c:symbol-prefix="frame"
            c:type="MxFrame"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxFrame"
            glib:get-type="mx_frame_get_type"
            glib:type-struct="FrameClass">
@@ -6730,7 +5886,6 @@ through the public API.</doc>
       <implements name="Clutter.Animatable"/>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
-      <implements name="Focusable"/>
       <implements name="Stylable"/>
       <constructor name="new" c:identifier="mx_frame_new">
         <doc xml:whitespace="preserve">Create a new #MxFrame</doc>
@@ -6740,7 +5895,7 @@ through the public API.</doc>
         </return-value>
       </constructor>
       <field name="parent">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv">
         <type name="FramePrivate" c:type="MxFramePrivate*"/>
@@ -6750,7 +5905,7 @@ through the public API.</doc>
             c:type="MxFrameClass"
             glib:is-gtype-struct-for="Frame">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
       <field name="_padding_0" introspectable="0">
         <callback name="_padding_0">
@@ -6869,7 +6024,7 @@ through the public API.</doc>
       <method name="get_line_alignment"
               c:identifier="mx_grid_get_line_alignment">
         <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
+          <type name="Align" c:type="MxAlign"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -7996,6 +7151,12 @@ only slightly to the desired size.</doc>
       <property name="allow-upscale" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="filename"
+                readable="0"
+                writable="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="image-rotation" writable="1" transfer-ownership="none">
         <type name="gfloat" c:type="gfloat"/>
       </property>
@@ -8446,7 +7607,7 @@ model.</doc>
     <class name="KineticScrollView"
            c:symbol-prefix="kinetic_scroll_view"
            c:type="MxKineticScrollView"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxKineticScrollView"
            glib:get-type="mx_kinetic_scroll_view_get_type"
            glib:type-struct="KineticScrollViewClass">
@@ -8468,6 +7629,25 @@ the provided API.</doc>
           <type name="Clutter.Actor" c:type="ClutterActor*"/>
         </return-value>
       </constructor>
+      <method name="ensure_visible"
+              c:identifier="mx_kinetic_scroll_view_ensure_visible"
+              version="2.0">
+        <doc xml:whitespace="preserve">Ensures that a given region is visible in the ScrollView, with the top-left
+taking precedence.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxKineticScrollView</doc>
+            <type name="KineticScrollView" c:type="MxKineticScrollView*"/>
+          </instance-parameter>
+          <parameter name="geometry" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The region to make visible</doc>
+            <type name="Clutter.Geometry" c:type="const ClutterGeometry*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_acceleration_factor"
               c:identifier="mx_kinetic_scroll_view_get_acceleration_factor"
               version="1.4">
@@ -8543,6 +7723,38 @@ the provided API.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_input"
+              c:identifier="mx_kinetic_scroll_view_get_input"
+              version="2.0">
+        <doc xml:whitespace="preserve">Retrieves informations about the current input device driving the
+scrolling.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxKineticScrollView</doc>
+            <type name="KineticScrollView" c:type="MxKineticScrollView*"/>
+          </instance-parameter>
+          <parameter name="device"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a pointer to a #ClutterInputDevice pointer</doc>
+            <type name="Clutter.InputDevice" c:type="ClutterInputDevice**"/>
+          </parameter>
+          <parameter name="sequence"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">a pointer to a #ClutterEventSequence pointer</doc>
+            <type name="Clutter.EventSequence"
+                  c:type="ClutterEventSequence**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_mouse_button"
               c:identifier="mx_kinetic_scroll_view_get_mouse_button"
               version="1.2">
@@ -8587,12 +7799,42 @@ scrolling beyond its boundaries.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_snap_on_page"
+              c:identifier="mx_kinetic_scroll_view_get_snap_on_page"
+              version="2.0">
+        <doc xml:whitespace="preserve">Retrieves whether animations end on step increments.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">#true if animations end on step increments, #false otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxKineticScrollView</doc>
+            <type name="KineticScrollView" c:type="MxKineticScrollView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_use_captured"
               c:identifier="mx_kinetic_scroll_view_get_use_captured"
               version="1.2">
         <doc xml:whitespace="preserve">Gets the #MxKineticScrollView:use-captured property.</doc>
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">%TRUE if captured-events should be used to initiate scrolling</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxKineticScrollView</doc>
+            <type name="KineticScrollView" c:type="MxKineticScrollView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_use_grab"
+              c:identifier="mx_kinetic_scroll_view_get_use_grab"
+              version="2.0">
+        <doc xml:whitespace="preserve">Gets the #MxKineticScrollView:use-grab property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">%TRUE if grab-events should be used to initiate scrolling</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -8754,6 +7996,24 @@ possible axes of movement, and can affect the minimum size of the widget.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_snap_on_page"
+              c:identifier="mx_kinetic_scroll_view_set_snap_on_page"
+              version="2.0">
+        <doc xml:whitespace="preserve">Set whether to stop animations on step increments.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxKineticScrollView</doc>
+            <type name="KineticScrollView" c:type="MxKineticScrollView*"/>
+          </instance-parameter>
+          <parameter name="snap_on_page" transfer-ownership="none">
+            <doc xml:whitespace="preserve">#true to stop animations on step increments</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_use_captured"
               c:identifier="mx_kinetic_scroll_view_set_use_captured"
               version="1.2">
@@ -8770,6 +8030,26 @@ actor.</doc>
           </instance-parameter>
           <parameter name="use_captured" transfer-ownership="none">
             <doc xml:whitespace="preserve">%TRUE to use captured events</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_use_grab"
+              c:identifier="mx_kinetic_scroll_view_set_use_grab"
+              version="2.0">
+        <doc xml:whitespace="preserve">Sets whether to use grab events to initiate drag events. This can be
+used to block events that would initiate scrolling from reaching the child
+actor.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxKineticScrollView</doc>
+            <type name="KineticScrollView" c:type="MxKineticScrollView*"/>
+          </instance-parameter>
+          <parameter name="use_grab" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE to use grab events</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -8814,14 +8094,20 @@ actor.</doc>
       <property name="scroll-policy" writable="1" transfer-ownership="none">
         <type name="ScrollPolicy"/>
       </property>
+      <property name="snap-on-page" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="state" transfer-ownership="none">
         <type name="KineticScrollViewState"/>
       </property>
       <property name="use-captured" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="use-grab" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="parent_instance" readable="0" private="1">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="KineticScrollViewPrivate"
@@ -8832,7 +8118,7 @@ actor.</doc>
             c:type="MxKineticScrollViewClass"
             glib:is-gtype-struct-for="KineticScrollView">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
     </record>
     <record name="KineticScrollViewPrivate"
@@ -8898,6 +8184,36 @@ the provided API.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="get_alignment"
+              c:identifier="mx_label_get_alignment"
+              version="2.0">
+        <doc xml:whitespace="preserve">Returns the text alignment on x and y axis.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="label" transfer-ownership="none">
+            <doc xml:whitespace="preserve">An #MxLabel</doc>
+            <type name="Label" c:type="MxLabel*"/>
+          </instance-parameter>
+          <parameter name="x_align"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">return location for x alignment value</doc>
+            <type name="Align" c:type="MxAlign*"/>
+          </parameter>
+          <parameter name="y_align"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:whitespace="preserve">return location for y alignment value</doc>
+            <type name="Align" c:type="MxAlign*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_clutter_text" c:identifier="mx_label_get_clutter_text">
         <doc xml:whitespace="preserve">Retrieve the internal #ClutterText so that extra parameters can be set</doc>
         <return-value transfer-ownership="none">
@@ -9003,6 +8319,28 @@ enough space allocated to display the entire label.</doc>
           <instance-parameter name="label" transfer-ownership="none">
             <type name="Label" c:type="MxLabel*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_alignment"
+              c:identifier="mx_label_set_alignment"
+              version="2.0">
+        <doc xml:whitespace="preserve">Set the text alignment on x and y axis.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="label" transfer-ownership="none">
+            <doc xml:whitespace="preserve">An #MxLabel</doc>
+            <type name="Label" c:type="MxLabel*"/>
+          </instance-parameter>
+          <parameter name="x_align" transfer-ownership="none">
+            <doc xml:whitespace="preserve">x alignment value</doc>
+            <type name="Align" c:type="MxAlign"/>
+          </parameter>
+          <parameter name="y_align" transfer-ownership="none">
+            <doc xml:whitespace="preserve">y alignment value</doc>
+            <type name="Align" c:type="MxAlign"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_fade_out"
@@ -9447,11 +8785,11 @@ model.</doc>
       <doc xml:whitespace="preserve">The major version of the Mx clibrary (1 if version is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="7" c:type="MX_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="4" c:type="MX_MICRO_VERSION">
       <doc xml:whitespace="preserve">The micro version of the Mx library (3, if version is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="4" c:type="MX_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="99" c:type="MX_MINOR_VERSION">
       <doc xml:whitespace="preserve">The minor version of the Mx library (2, if version is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -9665,13 +9003,26 @@ the provided API.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_enable_gestures"
-              c:identifier="mx_notebook_get_enable_gestures">
+      <method name="next_page" c:identifier="mx_notebook_next_page">
+        <doc xml:whitespace="preserve">Change the current page to next one.</doc>
         <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="book" transfer-ownership="none">
+          <instance-parameter name="notebook" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxNotebook</doc>
+            <type name="Notebook" c:type="MxNotebook*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="previous_page" c:identifier="mx_notebook_previous_page">
+        <doc xml:whitespace="preserve">Change the current page to previous one.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="notebook" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #MxNotebook</doc>
             <type name="Notebook" c:type="MxNotebook*"/>
           </instance-parameter>
         </parameters>
@@ -9690,25 +9041,8 @@ the provided API.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_enable_gestures"
-              c:identifier="mx_notebook_set_enable_gestures">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="book" transfer-ownership="none">
-            <type name="Notebook" c:type="MxNotebook*"/>
-          </instance-parameter>
-          <parameter name="enabled" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
       <property name="current-page" writable="1" transfer-ownership="none">
         <type name="Clutter.Actor"/>
-      </property>
-      <property name="enable-gestures" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
         <type name="Widget" c:type="MxWidget"/>
@@ -9761,294 +9095,262 @@ the provided API.</doc>
     </record>
     <record name="NotebookPrivate" c:type="MxNotebookPrivate" disguised="1">
     </record>
-    <class name="Offscreen"
-           c:symbol-prefix="offscreen"
-           c:type="MxOffscreen"
-           parent="Clutter.Texture"
-           glib:type-name="MxOffscreen"
-           glib:get-type="mx_offscreen_get_type"
-           glib:type-struct="OffscreenClass">
-      <doc xml:whitespace="preserve">The contents of this structure is private and should only be accessed using
-the provided API.</doc>
+    <enumeration name="Orientation"
+                 glib:type-name="MxOrientation"
+                 glib:get-type="mx_orientation_get_type"
+                 c:type="MxOrientation">
+      <doc xml:whitespace="preserve">Defines the orientation of various layout widgets.</doc>
+      <member name="horizontal"
+              value="0"
+              c:identifier="MX_ORIENTATION_HORIZONTAL"
+              glib:nick="horizontal">
+        <doc xml:whitespace="preserve">horizontal orientation</doc>
+      </member>
+      <member name="vertical"
+              value="1"
+              c:identifier="MX_ORIENTATION_VERTICAL"
+              glib:nick="vertical">
+        <doc xml:whitespace="preserve">vertical orientation</doc>
+      </member>
+    </enumeration>
+    <constant name="PARAM_STYLE_INHERIT"
+              value="512"
+              c:type="MX_PARAM_STYLE_INHERIT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="PARAM_TRANSLATEABLE"
+              value="256"
+              c:type="MX_PARAM_TRANSLATEABLE">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <record name="Padding"
+            c:type="MxPadding"
+            glib:type-name="MxPadding"
+            glib:get-type="mx_padding_get_type"
+            c:symbol-prefix="padding">
+      <doc xml:whitespace="preserve">The padding from the internal border of the parent container.</doc>
+      <field name="top" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="right" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="bottom" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="left" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+    </record>
+    <class name="Pager"
+           c:symbol-prefix="pager"
+           c:type="MxPager"
+           parent="Stack"
+           glib:type-name="MxPager"
+           glib:get-type="mx_pager_get_type"
+           glib:type-struct="PagerClass">
       <implements name="Atk.ImplementorIface"/>
       <implements name="Clutter.Animatable"/>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
       <implements name="Focusable"/>
-      <constructor name="new" c:identifier="mx_offscreen_new">
-        <doc xml:whitespace="preserve">Creates a new #MxOffscreen.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a newly allocated #MxOffscreen</doc>
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
+      <implements name="Stylable"/>
+      <constructor name="new" c:identifier="mx_pager_new">
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">a new #MxPager</doc>
+          <type name="Pager" c:type="ClutterActor*"/>
         </return-value>
       </constructor>
-      <virtual-method name="paint_child">
+      <method name="get_actor_for_page"
+              c:identifier="mx_pager_get_actor_for_page">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the #ClutterActor for @page</doc>
+          <type name="Clutter.Actor" c:type="ClutterActor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+          <parameter name="page" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a page number</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_current_page" c:identifier="mx_pager_get_current_page">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the current page number</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_current_page_actor"
+              c:identifier="mx_pager_get_current_page_actor">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the #ClutterActor on the current page</doc>
+          <type name="Clutter.Actor" c:type="ClutterActor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_edge_previews"
+              c:identifier="mx_pager_get_edge_previews">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the value of the #MxPager:edge-previews property</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_n_pages" c:identifier="mx_pager_get_n_pages">
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the number of pages in this pager</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="insert_page" c:identifier="mx_pager_insert_page">
+        <doc xml:whitespace="preserve">Inserts a page into the #MxPager at the position specified by @position.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
-            <type name="Offscreen" c:type="MxOffscreen*"/>
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
           </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <method name="get_accumulation_enabled"
-              c:identifier="mx_offscreen_get_accumulation_enabled"
-              version="1.2">
-        <doc xml:whitespace="preserve">Gets the value of the #MxOffscreen:accumulation-enabled property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#TRUE if the accumulation buffer is enabled</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_accumulation_material"
-              c:identifier="mx_offscreen_get_accumulation_material"
-              version="1.2">
-        <doc xml:whitespace="preserve">Gets the #MxOffscreen:accumulation-material property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The #CoglHandle for the material used for the accumulation buffer</doc>
-          <type name="Cogl.Handle" c:type="CoglHandle"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_auto_update"
-              c:identifier="mx_offscreen_get_auto_update">
-        <doc xml:whitespace="preserve">Gets the value of the #MxOffscreen:auto-update property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#TRUE if automatic updating of the offscreen surface is enabled</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_buffer"
-              c:identifier="mx_offscreen_get_buffer"
-              version="1.2">
-        <doc xml:whitespace="preserve">Gets the value of the #MxOffscreen:buffer property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the #CoglHandle for the offscreen buffer object</doc>
-          <type name="Cogl.Handle" c:type="CoglHandle"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_child" c:identifier="mx_offscreen_get_child">
-        <doc xml:whitespace="preserve">Gets the value of the #MxOffscreen:child property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The child of the offscreen widget</doc>
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_pick_child" c:identifier="mx_offscreen_get_pick_child">
-        <doc xml:whitespace="preserve">Gets the value of the #MxOffscreen:pick-child property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#TRUE if picking of the child is enabled.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_redirect_enabled"
-              c:identifier="mx_offscreen_get_redirect_enabled"
-              version="1.2">
-        <doc xml:whitespace="preserve">Gets the value of the #MxOffscreen:redirect-enabled property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#TRUE if offscreen redirection is enabled</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_accumulation_enabled"
-              c:identifier="mx_offscreen_set_accumulation_enabled"
-              version="1.2">
-        <doc xml:whitespace="preserve">Sets whether the accumulation buffer is enabled. When enabled, an extra
-offscreen buffer is allocated, and the contents of the offscreen texture
-are blended with this accumulation buffer. By default, the blend function
-is set to blend the contents of the offscreen texture with the accumulation
-buffer at the opacity specified in the alpha component of the blend
-constant. This opacity is 50% by default.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-          <parameter name="enable" transfer-ownership="none">
-            <doc xml:whitespace="preserve">#TRUE to enable an accumulation buffer</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_auto_update"
-              c:identifier="mx_offscreen_set_auto_update">
-        <doc xml:whitespace="preserve">Enable automatic updating of the offscreen surface when the child is
-updated.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-          <parameter name="auto_update" transfer-ownership="none">
-            <doc xml:whitespace="preserve">#TRUE if the offscreen surface should be automatically updated</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_child" c:identifier="mx_offscreen_set_child">
-        <doc xml:whitespace="preserve">Redirects the painting of @actor to the offscreen surface owned by
-@offscreen. In the event that @actor is unparented, it will be parented
-to @offscreen. Note that when you redirect the painting of @actor, it
-will no longer be painted in its original position in the scenegraph.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
-          </instance-parameter>
-          <parameter name="actor" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ClutterActor</doc>
+          <parameter name="child" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the page to insert</doc>
             <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the position to insert the page. If this is negative, or is larger than the number of pages, it will the last page</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
         </parameters>
       </method>
-      <method name="set_pick_child" c:identifier="mx_offscreen_set_pick_child">
-        <doc xml:whitespace="preserve">Enable picking of the child actor.</doc>
+      <method name="next" c:identifier="mx_pager_next">
+        <doc xml:whitespace="preserve">Move to the next page.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
           </instance-parameter>
-          <parameter name="pick" transfer-ownership="none">
-            <doc xml:whitespace="preserve">#TRUE to enable picking of the child actor</doc>
+        </parameters>
+      </method>
+      <method name="previous" c:identifier="mx_pager_previous">
+        <doc xml:whitespace="preserve">Move to the previous page.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_current_page" c:identifier="mx_pager_set_current_page">
+        <doc xml:whitespace="preserve">Move to @page.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
+          </instance-parameter>
+          <parameter name="page" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the page to move to</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="animate" transfer-ownership="none">
+            <doc xml:whitespace="preserve">whether to animate the move between pages</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
-      <method name="set_redirect_enabled"
-              c:identifier="mx_offscreen_set_redirect_enabled"
-              version="1.2">
-        <doc xml:whitespace="preserve">Sets the value of the #MxOffscreen:redirect-enabled property. When
-redirection is enabled, the painting of the child of @offscreen will be
-redirected to the texture of @offscreen.</doc>
+      <method name="set_current_page_by_actor"
+              c:identifier="mx_pager_set_current_page_by_actor">
+        <doc xml:whitespace="preserve">Move to the page containing @actor.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
           </instance-parameter>
-          <parameter name="enabled" transfer-ownership="none">
-            <doc xml:whitespace="preserve">#TRUE if redirection to the offscreen surface should be enabled</doc>
+          <parameter name="actor" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the actor of the page to move to</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          </parameter>
+          <parameter name="animate" transfer-ownership="none">
+            <doc xml:whitespace="preserve">whether to animate the move between pages</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
-      <method name="update" c:identifier="mx_offscreen_update">
-        <doc xml:whitespace="preserve">Updates the offscreen surface. This causes the child of @offscreen to be
-drawn into the texture of @offscreen.</doc>
+      <method name="set_edge_previews"
+              c:identifier="mx_pager_set_edge_previews">
+        <doc xml:whitespace="preserve">Sets the #MxPager:edge-previews property.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="offscreen" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxOffscreen</doc>
-            <type name="Offscreen" c:type="MxOffscreen*"/>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxPager</doc>
+            <type name="Pager" c:type="MxPager*"/>
           </instance-parameter>
+          <parameter name="edge_previews" transfer-ownership="none">
+            <doc xml:whitespace="preserve">%TRUE to enable edge previews</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
-      <property name="accumulation-enabled"
-                writable="1"
-                transfer-ownership="none">
+      <property name="edge-previews" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="accumulation-material" transfer-ownership="none">
-        <type name="gpointer" c:type="gpointer"/>
-      </property>
-      <property name="auto-update" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <property name="buffer" transfer-ownership="none">
-        <doc xml:whitespace="preserve">The off-screen buffer used to draw the child.</doc>
-        <type name="gpointer" c:type="gpointer"/>
-      </property>
-      <property name="child" writable="1" transfer-ownership="none">
+      <property name="page-actor" writable="1" transfer-ownership="none">
         <type name="Clutter.Actor"/>
       </property>
-      <property name="pick-child" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
+      <property name="page-num" writable="1" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
       </property>
-      <property name="redirect-enabled" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <field name="parent">
-        <type name="Clutter.Texture" c:type="ClutterTexture"/>
+      <field name="parent" readable="0" private="1">
+        <type name="Stack" c:type="MxStack"/>
       </field>
-      <field name="priv">
-        <type name="OffscreenPrivate" c:type="MxOffscreenPrivate*"/>
+      <field name="priv" readable="0" private="1">
+        <type name="PagerPrivate" c:type="MxPagerPrivate*"/>
       </field>
     </class>
-    <record name="OffscreenClass"
-            c:type="MxOffscreenClass"
-            glib:is-gtype-struct-for="Offscreen">
-      <field name="parent_class">
-        <type name="Clutter.TextureClass" c:type="ClutterTextureClass"/>
-      </field>
-      <field name="paint_child">
-        <callback name="paint_child">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="Offscreen" c:type="MxOffscreen*"/>
-            </parameter>
-          </parameters>
-        </callback>
+    <record name="PagerClass"
+            c:type="MxPagerClass"
+            glib:is-gtype-struct-for="Pager">
+      <field name="parent_class" readable="0" private="1">
+        <type name="StackClass" c:type="MxStackClass"/>
       </field>
       <field name="_padding_0" introspectable="0">
         <callback name="_padding_0">
@@ -10086,49 +9388,7 @@ drawn into the texture of @offscreen.</doc>
         </callback>
       </field>
     </record>
-    <record name="OffscreenPrivate" c:type="MxOffscreenPrivate" disguised="1">
-    </record>
-    <enumeration name="Orientation"
-                 glib:type-name="MxOrientation"
-                 glib:get-type="mx_orientation_get_type"
-                 c:type="MxOrientation">
-      <doc xml:whitespace="preserve">Defines the orientation of various layout widgets.</doc>
-      <member name="horizontal"
-              value="0"
-              c:identifier="MX_ORIENTATION_HORIZONTAL"
-              glib:nick="horizontal">
-        <doc xml:whitespace="preserve">horizontal orientation</doc>
-      </member>
-      <member name="vertical"
-              value="1"
-              c:identifier="MX_ORIENTATION_VERTICAL"
-              glib:nick="vertical">
-        <doc xml:whitespace="preserve">vertical orientation</doc>
-      </member>
-    </enumeration>
-    <constant name="PARAM_TRANSLATEABLE"
-              value="256"
-              c:type="MX_PARAM_TRANSLATEABLE">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <record name="Padding"
-            c:type="MxPadding"
-            glib:type-name="MxPadding"
-            glib:get-type="mx_padding_get_type"
-            c:symbol-prefix="padding">
-      <doc xml:whitespace="preserve">The padding from the internal border of the parent container.</doc>
-      <field name="top" writable="1">
-        <type name="gfloat" c:type="gfloat"/>
-      </field>
-      <field name="right" writable="1">
-        <type name="gfloat" c:type="gfloat"/>
-      </field>
-      <field name="bottom" writable="1">
-        <type name="gfloat" c:type="gfloat"/>
-      </field>
-      <field name="left" writable="1">
-        <type name="gfloat" c:type="gfloat"/>
-      </field>
+    <record name="PagerPrivate" c:type="MxPagerPrivate" disguised="1">
     </record>
     <class name="PathBar"
            c:symbol-prefix="path_bar"
@@ -10530,7 +9790,7 @@ accessed through the public API.</doc>
     <class name="ScrollBar"
            c:symbol-prefix="scroll_bar"
            c:type="MxScrollBar"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxScrollBar"
            glib:get-type="mx_scroll_bar_get_type"
            glib:type-struct="ScrollBarClass">
@@ -10540,7 +9800,6 @@ through the public API.</doc>
       <implements name="Clutter.Animatable"/>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
-      <implements name="Focusable"/>
       <implements name="Stylable"/>
       <constructor name="new" c:identifier="mx_scroll_bar_new">
         <doc xml:whitespace="preserve">Create a new #MxScrollBar</doc>
@@ -10644,7 +9903,7 @@ of the scrollbar.</doc>
         <type name="Orientation"/>
       </property>
       <field name="parent_instance" readable="0" private="1">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="ScrollBarPrivate" c:type="MxScrollBarPrivate*"/>
@@ -10664,7 +9923,7 @@ of the scrollbar.</doc>
             c:type="MxScrollBarClass"
             glib:is-gtype-struct-for="ScrollBar">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
       <field name="scroll_start">
         <callback name="scroll_start">
@@ -10757,11 +10016,17 @@ of the scrollbar.</doc>
               glib:nick="both">
         <doc xml:whitespace="preserve">Allow scrolling both horizontally and vertically</doc>
       </member>
+      <member name="automatic"
+              value="4"
+              c:identifier="MX_SCROLL_POLICY_AUTOMATIC"
+              glib:nick="automatic">
+        <doc xml:whitespace="preserve">Automatically align scroll to horizontal or vertical direction or both depending on the drag angle.</doc>
+      </member>
     </enumeration>
     <class name="ScrollView"
            c:symbol-prefix="scroll_view"
            c:type="MxScrollView"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxScrollView"
            glib:get-type="mx_scroll_view_get_type"
            glib:type-struct="ScrollViewClass">
@@ -10771,7 +10036,6 @@ through the public API.</doc>
       <implements name="Clutter.Animatable"/>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
-      <implements name="Focusable"/>
       <implements name="Stylable"/>
       <constructor name="new" c:identifier="mx_scroll_view_new">
         <return-value transfer-ownership="none">
@@ -10796,17 +10060,6 @@ taking precedence.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_enable_gestures"
-              c:identifier="mx_scroll_view_get_enable_gestures">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="scroll" transfer-ownership="none">
-            <type name="ScrollView" c:type="MxScrollView*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_enable_mouse_scrolling"
               c:identifier="mx_scroll_view_get_enable_mouse_scrolling">
         <return-value transfer-ownership="none">
@@ -10829,18 +10082,15 @@ taking precedence.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_enable_gestures"
-              c:identifier="mx_scroll_view_set_enable_gestures">
+      <method name="get_scroll_visibility"
+              c:identifier="mx_scroll_view_get_scroll_visibility">
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <type name="ScrollPolicy" c:type="MxScrollPolicy"/>
         </return-value>
         <parameters>
           <instance-parameter name="scroll" transfer-ownership="none">
             <type name="ScrollView" c:type="MxScrollView*"/>
           </instance-parameter>
-          <parameter name="enabled" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
         </parameters>
       </method>
       <method name="set_enable_mouse_scrolling"
@@ -10871,9 +10121,20 @@ taking precedence.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="enable-gestures" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
+      <method name="set_scroll_visibility"
+              c:identifier="mx_scroll_view_set_scroll_visibility">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="scroll" transfer-ownership="none">
+            <type name="ScrollView" c:type="MxScrollView*"/>
+          </instance-parameter>
+          <parameter name="visibility" transfer-ownership="none">
+            <type name="ScrollPolicy" c:type="MxScrollPolicy"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="enable-mouse-scrolling"
                 writable="1"
                 transfer-ownership="none">
@@ -10882,8 +10143,13 @@ taking precedence.</doc>
       <property name="scroll-policy" writable="1" transfer-ownership="none">
         <type name="ScrollPolicy"/>
       </property>
+      <property name="scroll-visibility"
+                writable="1"
+                transfer-ownership="none">
+        <type name="ScrollPolicy"/>
+      </property>
       <field name="parent_instance" readable="0" private="1">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="ScrollViewPrivate" c:type="MxScrollViewPrivate*"/>
@@ -10893,7 +10159,7 @@ taking precedence.</doc>
             c:type="MxScrollViewClass"
             glib:is-gtype-struct-for="ScrollView">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
       <field name="_padding_0" introspectable="0">
         <callback name="_padding_0">
@@ -11127,6 +10393,9 @@ into its possible scrolling area.</doc>
       <property name="small-screen" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="touch-mode" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
@@ -11332,6 +10601,16 @@ through the public API.</doc>
       <field name="priv" readable="0" private="1">
         <type name="SliderPrivate" c:type="MxSliderPrivate*"/>
       </field>
+      <glib:signal name="slide-start" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="slide-stop" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
     </class>
     <record name="SliderClass"
             c:type="MxSliderClass"
@@ -12064,6 +11343,17 @@ properties of the parent.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="disconnect_change_notifiers"
+              c:identifier="mx_stylable_disconnect_change_notifiers">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stylable" transfer-ownership="none">
+            <type name="Stylable" c:type="MxStylable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="find_property" c:identifier="mx_stylable_find_property">
         <doc xml:whitespace="preserve">Finds the #GParamSpec installed by @stylable for the property
 with @property_name.</doc>
@@ -12152,30 +11442,6 @@ fill @value_out with the result.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_property" c:identifier="mx_stylable_get_property">
-        <doc xml:whitespace="preserve">Retrieves the value of @property_name for @stylable, and puts it
-into @value.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="stylable" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxStylable</doc>
-            <type name="Stylable" c:type="MxStylable*"/>
-          </instance-parameter>
-          <parameter name="property_name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the name of the property</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="value"
-                     direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none">
-            <doc xml:whitespace="preserve">return location for an empty #GValue</doc>
-            <type name="GObject.Value" c:type="GValue*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_style" c:identifier="mx_stylable_get_style">
         <doc xml:whitespace="preserve">Retrieves the #MxStyle used by @stylable. This function does not
 alter the reference count of the returned object.</doc>
@@ -12202,6 +11468,31 @@ alter the reference count of the returned object.</doc>
             <doc xml:whitespace="preserve">a #MxStylable</doc>
             <type name="Stylable" c:type="MxStylable*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_style_property"
+              c:identifier="mx_stylable_get_style_property">
+        <doc xml:whitespace="preserve">Retrieves the value of @property_name for @stylable, and puts it
+into @value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stylable" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxStylable</doc>
+            <type name="Stylable" c:type="MxStylable*"/>
+          </instance-parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the name of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:whitespace="preserve">return location for an empty #GValue</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_style_pseudo_class"
@@ -12681,6 +11972,31 @@ Please refer to mx_style_get() for further information.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="load_from_data"
+              c:identifier="mx_style_load_from_data"
+              throws="1">
+        <doc xml:whitespace="preserve">Load style information from @data, using @id to identify the stylesheet.
+@id is usually the file name of the style sheet, which is used in the search
+path when loading url resources.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">TRUE if the style information was loaded successfully. Returns FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="style" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxStyle</doc>
+            <type name="Style" c:type="MxStyle*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:whitespace="preserve">identifier of the style sheet to load</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:whitespace="preserve">CSS data to parse</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="load_from_file"
               c:identifier="mx_style_load_from_file"
               throws="1">
@@ -12696,6 +12012,21 @@ Please refer to mx_style_get() for further information.</doc>
           </instance-parameter>
           <parameter name="filename" transfer-ownership="none">
             <doc xml:whitespace="preserve">filename of the style sheet to load</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_from_resource"
+              c:identifier="mx_style_load_from_resource"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="style" transfer-ownership="none">
+            <type name="Style" c:type="MxStyle*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -12800,6 +12131,11 @@ stylesheet may have been loaded.</doc>
               c:identifier="MX_STYLE_ERROR_INVALID_FILE"
               glib:nick="invalid-file">
       </member>
+      <member name="parse_error"
+              value="1"
+              c:identifier="MX_STYLE_ERROR_PARSE_ERROR"
+              glib:nick="parse-error">
+      </member>
     </enumeration>
     <record name="StylePrivate" c:type="MxStylePrivate" disguised="1">
     </record>
@@ -12825,67 +12161,6 @@ the provided API.</doc>
           <type name="Clutter.Actor" c:type="ClutterActor*"/>
         </return-value>
       </constructor>
-      <method name="add_actor" c:identifier="mx_table_add_actor">
-        <doc xml:whitespace="preserve">Add an actor at the specified row and column
-
-Note, column and rows numbers start from zero</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="table" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxTable</doc>
-            <type name="Table" c:type="MxTable*"/>
-          </instance-parameter>
-          <parameter name="actor" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the child to insert</doc>
-            <type name="Clutter.Actor" c:type="ClutterActor*"/>
-          </parameter>
-          <parameter name="row" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the row to place the child into</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="column" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the column to place the child into</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="add_actor_with_properties"
-              c:identifier="mx_table_add_actor_with_properties"
-              introspectable="0">
-        <doc xml:whitespace="preserve">Add an actor into at the specified row and column, with additional child
-properties to set.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="table" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxTable</doc>
-            <type name="Table" c:type="MxTable*"/>
-          </instance-parameter>
-          <parameter name="actor" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the child #ClutterActor</doc>
-            <type name="Clutter.Actor" c:type="ClutterActor*"/>
-          </parameter>
-          <parameter name="row" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the row to place the child into</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="column" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the column to place the child into</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="first_property_name" transfer-ownership="none">
-            <doc xml:whitespace="preserve">name of the first property to set</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter transfer-ownership="none">
-            <varargs>
-            </varargs>
-          </parameter>
-        </parameters>
-      </method>
       <method name="child_get_column" c:identifier="mx_table_child_get_column">
         <doc xml:whitespace="preserve">Get the column of the child.</doc>
         <return-value transfer-ownership="none">
@@ -13276,6 +12551,27 @@ be allocated the maximum available space.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_actor_at" c:identifier="mx_table_get_actor_at">
+        <doc xml:whitespace="preserve">Get an actor at a given position in @table.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the #ClutterActor a the given position, or NULL.</doc>
+          <type name="Clutter.Actor" c:type="ClutterActor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="table" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxTable</doc>
+            <type name="Table" c:type="MxTable*"/>
+          </instance-parameter>
+          <parameter name="row" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the row to look into</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="column" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the column to look into</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_column_count" c:identifier="mx_table_get_column_count">
         <doc xml:whitespace="preserve">Retrieve the current number of columns in @table</doc>
         <return-value transfer-ownership="none">
@@ -13327,6 +12623,67 @@ be allocated the maximum available space.</doc>
             <doc xml:whitespace="preserve">a #MxTable</doc>
             <type name="Table" c:type="MxTable*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="insert_actor" c:identifier="mx_table_insert_actor">
+        <doc xml:whitespace="preserve">Insert an actor at the specified row and column
+
+Note, column and rows numbers start from zero</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="table" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxTable</doc>
+            <type name="Table" c:type="MxTable*"/>
+          </instance-parameter>
+          <parameter name="actor" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the child to insert</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          </parameter>
+          <parameter name="row" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the row to place the child into</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="column" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the column to place the child into</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="insert_actor_with_properties"
+              c:identifier="mx_table_insert_actor_with_properties"
+              introspectable="0">
+        <doc xml:whitespace="preserve">Add an actor into at the specified row and column, with additional child
+properties to set.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="table" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #MxTable</doc>
+            <type name="Table" c:type="MxTable*"/>
+          </instance-parameter>
+          <parameter name="actor" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the child #ClutterActor</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          </parameter>
+          <parameter name="row" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the row to place the child into</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="column" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the column to place the child into</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="first_property_name" transfer-ownership="none">
+            <doc xml:whitespace="preserve">name of the first property to set</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter transfer-ownership="none">
+            <varargs>
+            </varargs>
+          </parameter>
         </parameters>
       </method>
       <method name="set_column_spacing"
@@ -13506,6 +12863,51 @@ the provided API.</doc>
       </field>
     </record>
     <record name="TablePrivate" c:type="MxTablePrivate" disguised="1">
+    </record>
+    <enumeration name="TextAlign"
+                 glib:type-name="MxTextAlign"
+                 glib:get-type="mx_text_align_get_type"
+                 c:type="MxTextAlign">
+      <doc xml:whitespace="preserve">The horizontal alignment and layout of multiple lines of text.</doc>
+      <member name="left"
+              value="0"
+              c:identifier="MX_TEXT_ALIGN_LEFT"
+              glib:nick="left">
+      </member>
+      <member name="right"
+              value="1"
+              c:identifier="MX_TEXT_ALIGN_RIGHT"
+              glib:nick="right">
+      </member>
+      <member name="center"
+              value="2"
+              c:identifier="MX_TEXT_ALIGN_CENTER"
+              glib:nick="center">
+      </member>
+      <member name="justify"
+              value="3"
+              c:identifier="MX_TEXT_ALIGN_JUSTIFY"
+              glib:nick="justify">
+      </member>
+    </enumeration>
+    <record name="TextShadow"
+            c:type="MxTextShadow"
+            glib:type-name="MxTextShadow"
+            glib:get-type="mx_text_shadow_get_type"
+            c:symbol-prefix="text_shadow">
+      <doc xml:whitespace="preserve">Properties of a text shadow</doc>
+      <field name="h_offset" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="v_offset" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="blur" writable="1">
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="color" writable="1">
+        <type name="Clutter.Color" c:type="ClutterColor"/>
+      </field>
     </record>
     <class name="TextureCache"
            c:symbol-prefix="texture_cache"
@@ -13923,6 +13325,64 @@ given size without stretching its borders.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <function name="paint_background"
+                c:identifier="mx_texture_frame_paint_background">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="texture" transfer-ownership="none">
+            <type name="Cogl.Handle" c:type="CoglHandle"/>
+          </parameter>
+          <parameter name="opacity" transfer-ownership="none">
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="x" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="paint_texture"
+                c:identifier="mx_texture_frame_paint_texture">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="texture" transfer-ownership="none">
+            <type name="Cogl.Handle" c:type="CoglHandle"/>
+          </parameter>
+          <parameter name="opacity" transfer-ownership="none">
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="top" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="right" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="bottom" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="left" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+        </parameters>
+      </function>
       <method name="get_border_values"
               c:identifier="mx_texture_frame_get_border_values">
         <doc xml:whitespace="preserve">Retrieve the current slice lines from the specified frame.</doc>
@@ -14109,6 +13569,7 @@ the provided API.</doc>
       <implements name="Clutter.Animatable"/>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
+      <implements name="Focusable"/>
       <implements name="Stylable"/>
       <constructor name="new" c:identifier="mx_toggle_new">
         <return-value transfer-ownership="none">
@@ -14195,7 +13656,7 @@ the provided API.</doc>
     <class name="Toolbar"
            c:symbol-prefix="toolbar"
            c:type="MxToolbar"
-           parent="Bin"
+           parent="Widget"
            glib:type-name="MxToolbar"
            glib:get-type="mx_toolbar_get_type"
            glib:type-struct="ToolbarClass">
@@ -14260,7 +13721,7 @@ where #mx_window_get_toolbar should be used to retrieve the toolbar instead.</do
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
-        <type name="Bin" c:type="MxBin"/>
+        <type name="Widget" c:type="MxWidget"/>
       </field>
       <field name="priv">
         <type name="ToolbarPrivate" c:type="MxToolbarPrivate*"/>
@@ -14281,7 +13742,7 @@ destroyed.</doc>
             c:type="MxToolbarClass"
             glib:is-gtype-struct-for="Toolbar">
       <field name="parent_class">
-        <type name="BinClass" c:type="MxBinClass"/>
+        <type name="WidgetClass" c:type="MxWidgetClass"/>
       </field>
       <field name="close_button_clicked">
         <callback name="close_button_clicked">
@@ -14540,7 +14001,7 @@ See also mx_tooltip_set_tip_area</doc>
       <doc xml:whitespace="preserve">Numerically encoded version of the Mx library, like 0x010203</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_S" value="1.4.7" c:type="MX_VERSION_S">
+    <constant name="VERSION_S" value="1.99.4" c:type="MX_VERSION_S">
       <doc xml:whitespace="preserve">The full version of the Mx library, in string form (suited for
 string concatenation)</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -14692,6 +14153,22 @@ through the public API.</doc>
     </record>
     <record name="ViewportPrivate" c:type="MxViewportPrivate" disguised="1">
     </record>
+    <enumeration name="VisibilityStyle"
+                 glib:type-name="MxVisibilityStyle"
+                 glib:get-type="mx_visibility_style_get_type"
+                 c:type="MxVisibilityStyle">
+      <doc xml:whitespace="preserve">Values for the "visibility" style property.</doc>
+      <member name="visible"
+              value="0"
+              c:identifier="MX_VISIBILITY_STYLE_VISIBLE"
+              glib:nick="visible">
+      </member>
+      <member name="hidden"
+              value="1"
+              c:identifier="MX_VISIBILITY_STYLE_HIDDEN"
+              glib:nick="hidden">
+      </member>
+    </enumeration>
     <class name="Widget"
            c:symbol-prefix="widget"
            c:type="MxWidget"
@@ -14708,22 +14185,6 @@ public API.</doc>
       <implements name="Clutter.Container"/>
       <implements name="Clutter.Scriptable"/>
       <implements name="Stylable"/>
-      <virtual-method name="apply_style" invoker="apply_style" version="1.2">
-        <doc xml:whitespace="preserve">Used to implement how a new style instance should be applied in the widget.
-For instance, setting style instance on stylable internal children.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="widget" transfer-ownership="none">
-            <type name="Widget" c:type="MxWidget*"/>
-          </instance-parameter>
-          <parameter name="style" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #MxStyle</doc>
-            <type name="Style" c:type="MxStyle*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <virtual-method name="long_press">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -14740,22 +14201,6 @@ For instance, setting style instance on stylable internal children.</doc>
           </parameter>
           <parameter name="y" transfer-ownership="none">
             <type name="gfloat" c:type="gfloat"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="paint_background">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Widget" c:type="MxWidget*"/>
-          </instance-parameter>
-          <parameter name="background" transfer-ownership="none">
-            <type name="Clutter.Actor" c:type="ClutterActor*"/>
-          </parameter>
-          <parameter name="color" transfer-ownership="none">
-            <type name="Clutter.Color" c:type="const ClutterColor*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -14801,14 +14246,14 @@ to padding.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_background_image"
-              c:identifier="mx_widget_get_background_image">
-        <doc xml:whitespace="preserve">Get the texture used as the background image. This is set using the
-"background-image" CSS property. This function should normally only be used
-by subclasses.</doc>
+      <method name="get_background_color"
+              c:identifier="mx_widget_get_background_color">
+        <doc xml:whitespace="preserve">Get the color used as the background. This is set using the
+"background-color" CSS property. This function should normally only
+be used by subclasses.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #ClutterActor</doc>
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          <doc xml:whitespace="preserve">a #ClutterColor</doc>
+          <type name="Clutter.Color" c:type="ClutterColor*"/>
         </return-value>
         <parameters>
           <instance-parameter name="actor" transfer-ownership="none">
@@ -14817,14 +14262,14 @@ by subclasses.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_border_image"
-              c:identifier="mx_widget_get_border_image">
-        <doc xml:whitespace="preserve">Get the texture used as the border image. This is set using the
-"border-image" CSS property. This function should normally only be used
+      <method name="get_background_texture"
+              c:identifier="mx_widget_get_background_texture">
+        <doc xml:whitespace="preserve">Get the texture used as the background image. This is set using the
+"background-image" CSS property. This function should normally only be used
 by subclasses.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">#ClutterActor</doc>
-          <type name="Clutter.Actor" c:type="ClutterActor*"/>
+          <doc xml:whitespace="preserve">a #CoglHandle</doc>
+          <type name="Cogl.Handle" c:type="CoglHandle"/>
         </return-value>
         <parameters>
           <instance-parameter name="actor" transfer-ownership="none">
@@ -14945,25 +14390,8 @@ that the long-press has been cancelled.</doc>
           </instance-parameter>
           <parameter name="event" transfer-ownership="none">
             <doc xml:whitespace="preserve">the event used to determine whether to run a long-press</doc>
-            <type name="Clutter.ButtonEvent" c:type="ClutterButtonEvent*"/>
+            <type name="Clutter.Event" c:type="ClutterEvent*"/>
           </parameter>
-        </parameters>
-      </method>
-      <method name="paint_background"
-              c:identifier="mx_widget_paint_background">
-        <doc xml:whitespace="preserve">Invokes #MxWidget::paint_background() using the default background
-image and/or color from the @widget style
-
-This function should be used by subclasses of #MxWidget that override
-the paint() virtual function and cannot chain up</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="widget" transfer-ownership="none">
-            <doc xml:whitespace="preserve">a #MxWidget</doc>
-            <type name="Widget" c:type="MxWidget*"/>
-          </instance-parameter>
         </parameters>
       </method>
       <method name="set_disabled" c:identifier="mx_widget_set_disabled">
@@ -15096,24 +14524,6 @@ need the widget to be reactive, you must set ClutterActor::reactive to
       <field name="parent_class" readable="0" private="1">
         <type name="Clutter.ActorClass" c:type="ClutterActorClass"/>
       </field>
-      <field name="paint_background">
-        <callback name="paint_background">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="Widget" c:type="MxWidget*"/>
-            </parameter>
-            <parameter name="background" transfer-ownership="none">
-              <type name="Clutter.Actor" c:type="ClutterActor*"/>
-            </parameter>
-            <parameter name="color" transfer-ownership="none">
-              <type name="Clutter.Color" c:type="const ClutterColor*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
       <field name="long_press">
         <callback name="long_press">
           <return-value transfer-ownership="none">
@@ -15131,22 +14541,6 @@ need the widget to be reactive, you must set ClutterActor::reactive to
             </parameter>
             <parameter name="y" transfer-ownership="none">
               <type name="gfloat" c:type="gfloat"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="apply_style">
-        <callback name="apply_style">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="widget" transfer-ownership="none">
-              <type name="Widget" c:type="MxWidget*"/>
-            </parameter>
-            <parameter name="style" transfer-ownership="none">
-              <doc xml:whitespace="preserve">A #MxStyle</doc>
-              <type name="Style" c:type="MxStyle*"/>
             </parameter>
           </parameters>
         </callback>
@@ -15399,14 +14793,16 @@ See mx_window_set_small_screen().</doc>
           <parameter name="x"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A pointer for the x-coordinate</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>
           <parameter name="y"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A pointer for the y-coordinate</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>
@@ -15444,14 +14840,16 @@ window's toolbar, if it's enabled.</doc>
           <parameter name="width"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gint pointer for the window's width</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>
           <parameter name="height"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="full"
+                     allow-none="1">
             <doc xml:whitespace="preserve">A #gint pointer for the window's height</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>

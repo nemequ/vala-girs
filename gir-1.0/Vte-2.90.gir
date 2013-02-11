@@ -24,6 +24,26 @@ and/or use gtk-doc annotations.  -->
              shared-library="libvte2_90.so.9"
              c:identifier-prefixes="Vte"
              c:symbol-prefixes="vte">
+    <record name="CharAttributes" c:type="VteCharAttributes">
+      <field name="row" readable="0" private="1">
+        <type name="glong" c:type="long"/>
+      </field>
+      <field name="column" readable="0" private="1">
+        <type name="glong" c:type="long"/>
+      </field>
+      <field name="fore" readable="0" private="1">
+        <type name="Gdk.Color" c:type="GdkColor"/>
+      </field>
+      <field name="back" readable="0" private="1">
+        <type name="Gdk.Color" c:type="GdkColor"/>
+      </field>
+      <field name="underline" readable="0" bits="1" private="1">
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="strikethrough" readable="0" bits="1" private="1">
+        <type name="guint" c:type="guint"/>
+      </field>
+    </record>
     <class name="Pty"
            c:symbol-prefix="pty"
            c:type="VtePty"
@@ -103,6 +123,12 @@ and close it on finalize.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="close" c:identifier="vte_pty_close" version="0.26">
         <doc xml:whitespace="preserve">Cleans up the PTY, specifically any logging performed for the session.
@@ -110,12 +136,24 @@ The file descriptor to the PTY master remains open.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_fd" c:identifier="vte_pty_get_fd">
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the file descriptor of the PTY master in @pty. The file descriptor belongs to @pty and must not be closed</doc>
           <type name="gint" c:type="int"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_size"
               c:identifier="vte_pty_get_size"
@@ -129,6 +167,10 @@ If getting the window size failed, @error will be set to a #GIOError.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
           <parameter name="rows"
                      direction="out"
                      caller-allocates="0"
@@ -160,6 +202,10 @@ If setting the window size failed, @error will be set to a #GIOError.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
           <parameter name="rows" transfer-ownership="none">
             <doc xml:whitespace="preserve">the desired number of rows</doc>
             <type name="gint" c:type="int"/>
@@ -176,6 +222,10 @@ If setting the window size failed, @error will be set to a #GIOError.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
           <parameter name="emulation" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">the name of a terminal description, or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
@@ -194,6 +244,10 @@ discipline do multibyte backspace correctly.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
           <parameter name="utf8" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether or not the pty is in UTF-8 mode</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -206,7 +260,7 @@ discipline do multibyte backspace correctly.</doc>
                 construct-only="1"
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">The file descriptor of the PTY master.</doc>
-        <type name="gint"/>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="flags"
                 version="0.26"
@@ -223,7 +277,7 @@ and whether to use the GNOME PTY helper.</doc>
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">The value to set for the TERM environment variable just after
 forking.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
     </class>
     <record name="PtyClass"
@@ -240,11 +294,15 @@ forking.</doc>
       <member name="pty_helper_failed"
               value="0"
               c:identifier="VTE_PTY_ERROR_PTY_HELPER_FAILED"
-              glib:nick="pty-helper-failed"/>
+              glib:nick="pty-helper-failed">
+        <doc xml:whitespace="preserve">failure when using the GNOME PTY helper to allocate the PTY</doc>
+      </member>
       <member name="pty98_failed"
               value="1"
               c:identifier="VTE_PTY_ERROR_PTY98_FAILED"
-              glib:nick="pty98-failed"/>
+              glib:nick="pty98-failed">
+        <doc xml:whitespace="preserve">failure when using PTY98 to allocate the PTY</doc>
+      </member>
       <function name="quark" c:identifier="vte_pty_error_quark" version="0.26">
         <doc xml:whitespace="preserve">Error domain for VTE PTY errors. Errors in this domain will be from the #VtePtyError
 enumeration. See #GError for more information on error domains.</doc>
@@ -262,27 +320,39 @@ enumeration. See #GError for more information on error domains.</doc>
       <member name="no_lastlog"
               value="1"
               c:identifier="VTE_PTY_NO_LASTLOG"
-              glib:nick="no-lastlog"/>
+              glib:nick="no-lastlog">
+        <doc xml:whitespace="preserve">don't record the session in lastlog</doc>
+      </member>
       <member name="no_utmp"
               value="2"
               c:identifier="VTE_PTY_NO_UTMP"
-              glib:nick="no-utmp"/>
+              glib:nick="no-utmp">
+        <doc xml:whitespace="preserve">don't record the session in utmp</doc>
+      </member>
       <member name="no_wtmp"
               value="4"
               c:identifier="VTE_PTY_NO_WTMP"
-              glib:nick="no-wtmp"/>
+              glib:nick="no-wtmp">
+        <doc xml:whitespace="preserve">don't record the session in wtmp</doc>
+      </member>
       <member name="no_helper"
               value="8"
               c:identifier="VTE_PTY_NO_HELPER"
-              glib:nick="no-helper"/>
+              glib:nick="no-helper">
+        <doc xml:whitespace="preserve">don't use the GNOME PTY helper to allocate the PTY</doc>
+      </member>
       <member name="no_fallback"
               value="16"
               c:identifier="VTE_PTY_NO_FALLBACK"
-              glib:nick="no-fallback"/>
+              glib:nick="no-fallback">
+        <doc xml:whitespace="preserve">when allocating the PTY with the PTY helper fails, don't fall back to try using PTY98</doc>
+      </member>
       <member name="default"
               value="0"
               c:identifier="VTE_PTY_DEFAULT"
-              glib:nick="default"/>
+              glib:nick="default">
+        <doc xml:whitespace="preserve">the default flags</doc>
+      </member>
     </bitfield>
     <callback name="SelectionFunc" c:type="VteSelectionFunc">
       <doc xml:whitespace="preserve">Specifies the type of a selection function used to check whether
@@ -332,12 +402,20 @@ a cell has to be selected or not.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="char_size_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="char_width" transfer-ownership="none">
             <type name="guint" c:type="guint"/>
           </parameter>
@@ -350,12 +428,20 @@ a cell has to be selected or not.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="commit">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="text" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -368,6 +454,11 @@ a cell has to be selected or not.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="copy_clipboard" invoker="copy_clipboard">
         <doc xml:whitespace="preserve">Places the selected text in the terminal in the #GDK_SELECTION_CLIPBOARD
@@ -375,67 +466,130 @@ selection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="cursor_moved">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="decrease_font_size">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="deiconify_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="emulation_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="encoding_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="eof">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="icon_title_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="iconify_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="increase_font_size">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="lower_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="maximize_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="move_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="x" transfer-ownership="none">
             <type name="guint" c:type="guint"/>
           </parameter>
@@ -452,22 +606,40 @@ user presses Shift+Insert.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="raise_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="refresh_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="resize_window">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="width" transfer-ownership="none">
             <type name="guint" c:type="guint"/>
           </parameter>
@@ -480,37 +652,70 @@ user presses Shift+Insert.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="selection_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="status_line_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="text_deleted">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="text_inserted">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="text_modified">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="text_scrolled">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="delta" transfer-ownership="none">
             <type name="gint" c:type="gint"/>
           </parameter>
@@ -520,6 +725,11 @@ user presses Shift+Insert.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <method name="copy_clipboard" c:identifier="vte_terminal_copy_clipboard">
         <doc xml:whitespace="preserve">Places the selected text in the terminal in the #GDK_SELECTION_CLIPBOARD
@@ -527,6 +737,12 @@ selection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="copy_primary" c:identifier="vte_terminal_copy_primary">
         <doc xml:whitespace="preserve">Places the selected text in the terminal in the #GDK_SELECTION_PRIMARY
@@ -534,6 +750,12 @@ selection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="feed" c:identifier="vte_terminal_feed">
         <doc xml:whitespace="preserve">Interprets @data as if it were data received from a child process.  This
@@ -543,6 +765,10 @@ to mess with your users.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:whitespace="preserve">a string in the terminal's current encoding</doc>
             <array length="1" zero-terminated="0" c:type="char*">
@@ -562,6 +788,10 @@ at the keyboard.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="text" transfer-ownership="none">
             <doc xml:whitespace="preserve">data to send to the child</doc>
             <type name="utf8" c:type="const char*"/>
@@ -580,6 +810,10 @@ at the keyboard.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:whitespace="preserve">data to send to the child</doc>
             <type name="utf8" c:type="const char*"/>
@@ -612,6 +846,10 @@ See vte_pty_new(), g_spawn_async() and vte_terminal_watch_child() for more infor
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="pty_flags" transfer-ownership="none">
             <doc xml:whitespace="preserve">flags from #VtePtyFlags</doc>
             <type name="PtyFlags" c:type="VtePtyFlags"/>
@@ -668,6 +906,12 @@ repainting text with a one-pixel offset.</doc>
           <doc xml:whitespace="preserve">%TRUE if bolding is enabled, %FALSE if not</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_audible_bell"
               c:identifier="vte_terminal_get_audible_bell">
@@ -677,6 +921,12 @@ repainting text with a one-pixel offset.</doc>
           <doc xml:whitespace="preserve">%TRUE if audible bell is enabled, %FALSE if not</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_char_height"
               c:identifier="vte_terminal_get_char_height">
@@ -684,12 +934,24 @@ repainting text with a one-pixel offset.</doc>
           <doc xml:whitespace="preserve">the height of a character cell</doc>
           <type name="glong" c:type="glong"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_char_width" c:identifier="vte_terminal_get_char_width">
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the width of a character cell</doc>
           <type name="glong" c:type="glong"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_child_exit_status"
               c:identifier="vte_terminal_get_child_exit_status"
@@ -704,6 +966,12 @@ the #VteTerminal::child-exited signal.</doc>
           <doc xml:whitespace="preserve">the child's exit status</doc>
           <type name="gint" c:type="int"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_column_count"
               c:identifier="vte_terminal_get_column_count">
@@ -711,6 +979,12 @@ the #VteTerminal::child-exited signal.</doc>
           <doc xml:whitespace="preserve">the number of columns</doc>
           <type name="glong" c:type="glong"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_current_directory_uri"
               c:identifier="vte_terminal_get_current_directory_uri"
@@ -719,6 +993,12 @@ the #VteTerminal::child-exited signal.</doc>
           <doc xml:whitespace="preserve">the URI of the current directory of the process running in the terminal, or %NULL</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_current_file_uri"
               c:identifier="vte_terminal_get_current_file_uri"
@@ -727,6 +1007,12 @@ the #VteTerminal::child-exited signal.</doc>
           <doc xml:whitespace="preserve">the URI of the current file the process running in the terminal is operating on, or %NULL if not set</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_cursor_blink_mode"
               c:identifier="vte_terminal_get_cursor_blink_mode"
@@ -737,6 +1023,12 @@ the #VteTerminal::child-exited signal.</doc>
           <type name="TerminalCursorBlinkMode"
                 c:type="VteTerminalCursorBlinkMode"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_cursor_position"
               c:identifier="vte_terminal_get_cursor_position">
@@ -746,6 +1038,10 @@ coordinate is absolute.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="column"
                      direction="out"
                      caller-allocates="0"
@@ -772,6 +1068,12 @@ coordinate is absolute.</doc>
           <doc xml:whitespace="preserve">cursor shape.</doc>
           <type name="TerminalCursorShape" c:type="VteTerminalCursorShape"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_default_emulation"
               c:identifier="vte_terminal_get_default_emulation"
@@ -782,6 +1084,12 @@ terminal type passed to vte_terminal_set_emulation() is %NULL.</doc>
           <doc xml:whitespace="preserve">an interned string containing the name of the default terminal type the widget attempts to emulate</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_emulation" c:identifier="vte_terminal_get_emulation">
         <doc xml:whitespace="preserve">Queries the terminal for its current emulation, as last set by a call to
@@ -790,6 +1098,12 @@ vte_terminal_set_emulation().</doc>
           <doc xml:whitespace="preserve">an interned string containing the name of the terminal type the widget is attempting to emulate</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_encoding" c:identifier="vte_terminal_get_encoding">
         <doc xml:whitespace="preserve">Determines the name of the encoding in which the terminal expects data to be
@@ -798,6 +1112,12 @@ encoded.</doc>
           <doc xml:whitespace="preserve">the current encoding for the terminal</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_font" c:identifier="vte_terminal_get_font">
         <doc xml:whitespace="preserve">Queries the terminal for information about the fonts which will be
@@ -807,6 +1127,12 @@ used to draw text in the terminal.</doc>
           <type name="Pango.FontDescription"
                 c:type="const PangoFontDescription*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_has_selection"
               c:identifier="vte_terminal_get_has_selection">
@@ -817,12 +1143,24 @@ is different from determining if the terminal is the owner of any
           <doc xml:whitespace="preserve">%TRUE if part of the text in the terminal is selected.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_icon_title" c:identifier="vte_terminal_get_icon_title">
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the icon title</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_mouse_autohide"
               c:identifier="vte_terminal_get_mouse_autohide">
@@ -834,6 +1172,12 @@ using vte_terminal_set_mouse_autohide().</doc>
           <doc xml:whitespace="preserve">%TRUE if autohiding is enabled, %FALSE if not</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_pty_object"
               c:identifier="vte_terminal_get_pty_object"
@@ -843,12 +1187,24 @@ using vte_terminal_set_mouse_autohide().</doc>
           <doc xml:whitespace="preserve">a #VtePty, or %NULL</doc>
           <type name="Pty" c:type="VtePty*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_row_count" c:identifier="vte_terminal_get_row_count">
         <return-value transfer-ownership="none">
           <doc xml:whitespace="preserve">the number of rows</doc>
           <type name="glong" c:type="glong"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_status_line"
               c:identifier="vte_terminal_get_status_line">
@@ -859,10 +1215,14 @@ to the status line and back.</doc>
           <doc xml:whitespace="preserve">the current contents of the terminal's status line. For terminals like "xterm", this will usually be the empty string.  The string must not be modified or freed by the caller.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
-      <method name="get_text"
-              c:identifier="vte_terminal_get_text"
-              introspectable="0">
+      <method name="get_text" c:identifier="vte_terminal_get_text">
         <doc xml:whitespace="preserve">Extracts a view of the visible part of the terminal.  If @is_selected is not
 %NULL, characters will only be read if @is_selected returns %TRUE after being
 passed the column and row, respectively.  A #VteCharAttributes structure
@@ -873,8 +1233,13 @@ the character's position, colors, and other characteristics.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="is_selected"
                      transfer-ownership="none"
+                     allow-none="1"
                      scope="call"
                      closure="1">
             <doc xml:whitespace="preserve">a #VteSelectionFunc callback</doc>
@@ -886,7 +1251,7 @@ the character's position, colors, and other characteristics.</doc>
           </parameter>
           <parameter name="attributes"
                      direction="out"
-                     caller-allocates="0"
+                     caller-allocates="1"
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">location for storing text attributes</doc>
             <array zero-terminated="0" name="GLib.Array" c:type="GArray*">
@@ -897,8 +1262,7 @@ the character's position, colors, and other characteristics.</doc>
       </method>
       <method name="get_text_include_trailing_spaces"
               c:identifier="vte_terminal_get_text_include_trailing_spaces"
-              version="0.11.11"
-              introspectable="0">
+              version="0.11.11">
         <doc xml:whitespace="preserve">Extracts a view of the visible part of the terminal.  If @is_selected is not
 %NULL, characters will only be read if @is_selected returns %TRUE after being
 passed the column and row, respectively.  A #VteCharAttributes structure
@@ -911,8 +1275,13 @@ lines are included.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="is_selected"
                      transfer-ownership="none"
+                     allow-none="1"
                      scope="call"
                      closure="1">
             <doc xml:whitespace="preserve">a #VteSelectionFunc callback</doc>
@@ -924,7 +1293,7 @@ lines are included.</doc>
           </parameter>
           <parameter name="attributes"
                      direction="out"
-                     caller-allocates="0"
+                     caller-allocates="1"
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">location for storing text attributes</doc>
             <array zero-terminated="0" name="GLib.Array" c:type="GArray*">
@@ -933,9 +1302,7 @@ lines are included.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_text_range"
-              c:identifier="vte_terminal_get_text_range"
-              introspectable="0">
+      <method name="get_text_range" c:identifier="vte_terminal_get_text_range">
         <doc xml:whitespace="preserve">Extracts a view of the visible part of the terminal.  If @is_selected is not
 %NULL, characters will only be read if @is_selected returns %TRUE after being
 passed the column and row, respectively.  A #VteCharAttributes structure
@@ -948,6 +1315,10 @@ contents of the buffer using this function.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="start_row" transfer-ownership="none">
             <doc xml:whitespace="preserve">first row to search for data</doc>
             <type name="glong" c:type="glong"/>
@@ -966,6 +1337,7 @@ contents of the buffer using this function.</doc>
           </parameter>
           <parameter name="is_selected"
                      transfer-ownership="none"
+                     allow-none="1"
                      scope="call"
                      closure="5">
             <doc xml:whitespace="preserve">a #VteSelectionFunc callback</doc>
@@ -977,7 +1349,7 @@ contents of the buffer using this function.</doc>
           </parameter>
           <parameter name="attributes"
                      direction="out"
-                     caller-allocates="0"
+                     caller-allocates="1"
                      transfer-ownership="full">
             <doc xml:whitespace="preserve">location for storing text attributes</doc>
             <array zero-terminated="0" name="GLib.Array" c:type="GArray*">
@@ -995,6 +1367,12 @@ will clear itself to the default foreground color and then repaint itself.</doc>
           <doc xml:whitespace="preserve">%TRUE if visible bell is enabled, %FALSE if not</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_window_title"
               c:identifier="vte_terminal_get_window_title">
@@ -1002,6 +1380,12 @@ will clear itself to the default foreground color and then repaint itself.</doc>
           <doc xml:whitespace="preserve">the window title</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="im_append_menuitems"
               c:identifier="vte_terminal_im_append_menuitems">
@@ -1012,6 +1396,10 @@ the terminal.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="menushell" transfer-ownership="none">
             <doc xml:whitespace="preserve">a GtkMenuShell</doc>
             <type name="Gtk.MenuShell" c:type="GtkMenuShell*"/>
@@ -1026,6 +1414,10 @@ based on the values last passed to vte_terminal_set_word_chars().</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="c" transfer-ownership="none">
             <doc xml:whitespace="preserve">a candidate Unicode code point</doc>
             <type name="gunichar" c:type="gunichar"/>
@@ -1043,6 +1435,10 @@ this expression, the text will be highlighted.</doc>
           <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="regex" transfer-ownership="none">
             <doc xml:whitespace="preserve">a #GRegex</doc>
             <type name="GLib.Regex" c:type="GRegex*"/>
@@ -1067,6 +1463,10 @@ which they were added.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="column" transfer-ownership="none">
             <doc xml:whitespace="preserve">the text column</doc>
             <type name="glong" c:type="glong"/>
@@ -1092,6 +1492,12 @@ when the user moves the mouse cursor.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="match_remove" c:identifier="vte_terminal_match_remove">
         <doc xml:whitespace="preserve">Removes the regular expression which is associated with the given @tag from
@@ -1101,6 +1507,10 @@ moves the mouse cursor over matching text.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="tag" transfer-ownership="none">
             <doc xml:whitespace="preserve">the tag of the regex to remove</doc>
             <type name="gint" c:type="int"/>
@@ -1116,6 +1526,10 @@ specified by @tag.  The terminal keeps a reference to @cursor.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="tag" transfer-ownership="none">
             <doc xml:whitespace="preserve">the tag of the regex which should use the specified cursor</doc>
             <type name="gint" c:type="int"/>
@@ -1135,6 +1549,10 @@ specified by @tag.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="tag" transfer-ownership="none">
             <doc xml:whitespace="preserve">the tag of the regex which should use the specified cursor</doc>
             <type name="gint" c:type="int"/>
@@ -1154,6 +1572,10 @@ specified by @tag.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="tag" transfer-ownership="none">
             <doc xml:whitespace="preserve">the tag of the regex which should use the specified cursor</doc>
             <type name="gint" c:type="int"/>
@@ -1173,6 +1595,12 @@ user presses Shift+Insert.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="paste_primary" c:identifier="vte_terminal_paste_primary">
         <doc xml:whitespace="preserve">Sends the contents of the #GDK_SELECTION_PRIMARY selection to the terminal's
@@ -1183,6 +1611,12 @@ mouse button.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="pty_new"
               c:identifier="vte_terminal_pty_new"
@@ -1197,6 +1631,10 @@ See vte_pty_new() for more information.</doc>
           <type name="Pty" c:type="VtePty*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:whitespace="preserve">flags from #VtePtyFlags</doc>
             <type name="PtyFlags" c:type="VtePtyFlags"/>
@@ -1212,6 +1650,10 @@ selection state, and encoding.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="clear_tabstops" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether to reset tabstops</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1231,6 +1673,12 @@ vte_terminal_search_set_gregex().</doc>
           <doc xml:whitespace="preserve">%TRUE if a match was found</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="search_find_previous"
               c:identifier="vte_terminal_search_find_previous"
@@ -1241,6 +1689,12 @@ vte_terminal_search_set_gregex().</doc>
           <doc xml:whitespace="preserve">%TRUE if a match was found</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="search_get_gregex"
               c:identifier="vte_terminal_search_get_gregex"
@@ -1249,6 +1703,12 @@ vte_terminal_search_set_gregex().</doc>
           <doc xml:whitespace="preserve">the search #GRegex regex set in @terminal, or %NULL</doc>
           <type name="GLib.Regex" c:type="GRegex*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="search_get_wrap_around"
               c:identifier="vte_terminal_search_get_wrap_around"
@@ -1257,6 +1717,12 @@ vte_terminal_search_set_gregex().</doc>
           <doc xml:whitespace="preserve">whether searching will wrap around</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="search_set_gregex"
               c:identifier="vte_terminal_search_set_gregex"
@@ -1266,6 +1732,10 @@ vte_terminal_search_set_gregex().</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="regex" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #GRegex, or %NULL</doc>
             <type name="GLib.Regex" c:type="GRegex*"/>
@@ -1281,6 +1751,10 @@ terminal content when reaching its end.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="wrap_around" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether search should wrap</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1294,6 +1768,12 @@ terminal content when reaching its end.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="select_none"
               c:identifier="vte_terminal_select_none"
@@ -1302,6 +1782,12 @@ terminal content when reaching its end.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="set_allow_bold" c:identifier="vte_terminal_set_allow_bold">
         <doc xml:whitespace="preserve">Controls whether or not the terminal will attempt to draw bold text,
@@ -1311,6 +1797,10 @@ offset.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="allow_bold" transfer-ownership="none">
             <doc xml:whitespace="preserve">%TRUE if the terminal should attempt to draw bold text</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1325,6 +1815,10 @@ offset.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="is_audible" transfer-ownership="none">
             <doc xml:whitespace="preserve">%TRUE if the terminal should beep</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1343,6 +1837,10 @@ in-memory copy of the image before applying it to the terminal.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="image" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #GdkPixbuf to use, or %NULL to unset the background</doc>
             <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
@@ -1358,6 +1856,10 @@ in-memory copy of the image before applying it to the terminal.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:whitespace="preserve">path to an image file</doc>
             <type name="filename" c:type="char*"/>
@@ -1377,6 +1879,10 @@ image (or snapshot of the root window) and modify its pixel values.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="saturation" transfer-ownership="none">
             <doc xml:whitespace="preserve">a floating point value between 0.0 and 1.0.</doc>
             <type name="gdouble" c:type="double"/>
@@ -1399,6 +1905,10 @@ is black.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="color" transfer-ownership="none">
             <doc xml:whitespace="preserve">a color which the terminal background should be tinted to if its saturation is not 1.0.</doc>
             <type name="Gdk.Color" c:type="const GdkColor*"/>
@@ -1414,6 +1924,10 @@ the widget will appear to be transparent.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="transparent" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether the terminal should fake transparency</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1429,6 +1943,10 @@ presses the backspace key.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="binding" transfer-ownership="none">
             <doc xml:whitespace="preserve">a #VteTerminalEraseBinding for the backspace key</doc>
             <type name="TerminalEraseBinding"
@@ -1445,6 +1963,10 @@ the terminal is not transparent.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="background" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new background color</doc>
             <type name="Gdk.Color" c:type="const GdkColor*"/>
@@ -1461,6 +1983,10 @@ the terminal is not transparent.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="background" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new background color</doc>
             <type name="Gdk.RGBA" c:type="const GdkRGBA*"/>
@@ -1473,6 +1999,10 @@ the terminal is not transparent.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="bold" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new bold color</doc>
             <type name="Gdk.Color" c:type="const GdkColor*"/>
@@ -1487,6 +2017,10 @@ If @bold is %NULL then the default color is used.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="bold" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">the new bold color or %NULL</doc>
             <type name="Gdk.RGBA" c:type="const GdkRGBA*"/>
@@ -1503,6 +2037,10 @@ reversed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="cursor_background"
                      transfer-ownership="none"
                      allow-none="1">
@@ -1521,6 +2059,10 @@ reversed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="cursor_background"
                      transfer-ownership="none"
                      allow-none="1">
@@ -1535,6 +2077,10 @@ reversed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="dim" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new dim color</doc>
             <type name="Gdk.Color" c:type="const GdkColor*"/>
@@ -1550,6 +2096,10 @@ If @dim is %NULL then the default color is used.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="dim" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">the new dim color or %NULL</doc>
             <type name="Gdk.RGBA" c:type="const GdkRGBA*"/>
@@ -1563,6 +2113,10 @@ If @dim is %NULL then the default color is used.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="foreground" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new foreground color</doc>
             <type name="Gdk.Color" c:type="const GdkColor*"/>
@@ -1577,6 +2131,10 @@ If @dim is %NULL then the default color is used.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="foreground" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new foreground color</doc>
             <type name="Gdk.RGBA" c:type="const GdkRGBA*"/>
@@ -1593,6 +2151,10 @@ be drawn with foreground and background colors reversed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="highlight_background"
                      transfer-ownership="none"
                      allow-none="1">
@@ -1611,6 +2173,10 @@ be drawn with foreground and background colors reversed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="highlight_background"
                      transfer-ownership="none"
                      allow-none="1">
@@ -1637,6 +2203,10 @@ in @palette.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="foreground"
                      transfer-ownership="none"
                      allow-none="1">
@@ -1681,6 +2251,10 @@ in @palette.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="foreground"
                      transfer-ownership="none"
                      allow-none="1">
@@ -1714,6 +2288,10 @@ will use the #GtkSettings::gtk-cursor-blink setting.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="mode" transfer-ownership="none">
             <doc xml:whitespace="preserve">the #VteTerminalCursorBlinkMode to use</doc>
             <type name="TerminalCursorBlinkMode"
@@ -1729,6 +2307,10 @@ will use the #GtkSettings::gtk-cursor-blink setting.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="shape" transfer-ownership="none">
             <doc xml:whitespace="preserve">the #VteTerminalCursorShape to use</doc>
             <type name="TerminalCursorShape" c:type="VteTerminalCursorShape"/>
@@ -1741,6 +2323,12 @@ will use the #GtkSettings::gtk-cursor-blink setting.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="set_delete_binding"
               c:identifier="vte_terminal_set_delete_binding">
@@ -1751,6 +2339,10 @@ presses the delete key.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="binding" transfer-ownership="none">
             <doc xml:whitespace="preserve">a #VteTerminalEraseBinding for the delete key</doc>
             <type name="TerminalEraseBinding"
@@ -1766,6 +2358,10 @@ are interested in this feature, always use "xterm".</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="emulation" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">the name of a terminal description, or %NULL to use the default</doc>
             <type name="utf8" c:type="const char*"/>
@@ -1781,6 +2377,10 @@ application's locale settings.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="codeset" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a valid #GIConv target, or %NULL to use the default encoding</doc>
             <type name="utf8" c:type="const char*"/>
@@ -1797,6 +2397,10 @@ and columns.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="font_desc" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #PangoFontDescription for the desired font, or %NULL</doc>
             <type name="Pango.FontDescription"
@@ -1812,6 +2416,10 @@ passes it to vte_terminal_set_font().</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="name" transfer-ownership="none">
             <doc xml:whitespace="preserve">a pango font description in string form</doc>
             <type name="utf8" c:type="char*"/>
@@ -1828,6 +2436,10 @@ vte_terminal_get_mouse_autohide().</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="setting" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether the mouse pointer should autohide</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1841,6 +2453,10 @@ transparent and 65535 means completely opaque.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="opacity" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new opacity</doc>
             <type name="guint16" c:type="guint16"/>
@@ -1856,6 +2472,10 @@ Use %NULL to unset the PTY.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="pty" transfer-ownership="none" allow-none="1">
             <doc xml:whitespace="preserve">a #VtePty, or %NULL</doc>
             <type name="Pty" c:type="VtePty*"/>
@@ -1871,6 +2491,10 @@ one is set) when the text in the window must be scrolled.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="scroll" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether the terminal should scroll the background image along with the text</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1886,6 +2510,10 @@ trigger this behavior.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="scroll" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether the terminal should scroll on keystrokes</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1900,6 +2528,10 @@ the viewable history when the new data is received from the child.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="scroll" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether the terminal should scroll on output</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1922,6 +2554,10 @@ allowed on the alternate screen buffer.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="lines" transfer-ownership="none">
             <doc xml:whitespace="preserve">the length of the history buffer</doc>
             <type name="glong" c:type="glong"/>
@@ -1935,6 +2571,10 @@ the attempt succeeds, the widget will resize itself to the proper size.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="columns" transfer-ownership="none">
             <doc xml:whitespace="preserve">the desired number of columns</doc>
             <type name="glong" c:type="glong"/>
@@ -1954,6 +2594,10 @@ will clear itself to the default foreground color and then repaint itself.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="is_visible" transfer-ownership="none">
             <doc xml:whitespace="preserve">whether the terminal should flash on bell</doc>
             <type name="gboolean" c:type="gboolean"/>
@@ -1972,6 +2616,10 @@ treat all graphic non-punctuation non-space characters as word characters.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="spec" transfer-ownership="none">
             <doc xml:whitespace="preserve">a specification</doc>
             <type name="utf8" c:type="const char*"/>
@@ -1999,6 +2647,10 @@ the %G_SPAWN_DO_NOT_REAP_CHILD flag MUST have been passed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="child_pid" transfer-ownership="none">
             <doc xml:whitespace="preserve">a #GPid</doc>
             <type name="GLib.Pid" c:type="GPid"/>
@@ -2024,6 +2676,10 @@ depending on scrollback history and @stream availability for writing.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
           <parameter name="stream" transfer-ownership="none">
             <doc xml:whitespace="preserve">a #GOutputStream to write to</doc>
             <type name="Gio.OutputStream" c:type="GOutputStream*"/>
@@ -2047,7 +2703,7 @@ depending on scrollback history and @stream availability for writing.</doc>
         <doc xml:whitespace="preserve">Controls whether or not the terminal will attempt to draw bold text.
 This may happen either by using a bold font variant, or by
 repainting text with a different offset.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="audible-bell"
                 version="0.20"
@@ -2055,12 +2711,12 @@ repainting text with a different offset.</doc>
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">Controls whether or not the terminal will beep when the child outputs the
 "bl" sequence.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="background-image-file"
                 writable="1"
                 transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="background-image-pixbuf"
                 version="0.20"
@@ -2080,7 +2736,7 @@ in-memory copy of the image before applying it to the terminal.</doc>
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">Sets the opacity of the terminal background, were 0.0 means completely
 transparent and 1.0 means completely opaque.</doc>
-        <type name="gdouble"/>
+        <type name="gdouble" c:type="gdouble"/>
       </property>
       <property name="background-saturation"
                 version="0.20"
@@ -2092,7 +2748,7 @@ and the saturation value is less
 than 1.0, the terminal will adjust the colors of the image before drawing
 the image.  To do so, the terminal will create a copy of the background
 image (or snapshot of the root window) and modify its pixel values.</doc>
-        <type name="gdouble"/>
+        <type name="gdouble" c:type="gdouble"/>
       </property>
       <property name="background-tint-color"
                 version="0.20"
@@ -2118,7 +2774,7 @@ below your application, the widget will appear to be transparent.
 
 Note: When using a compositing window manager, you should instead
 set a RGBA colourmap on the toplevel window, so you get real transparency.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="backspace-binding"
                 version="0.20"
@@ -2132,13 +2788,13 @@ when the user presses the backspace key.</doc>
                 version="0.34"
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">The current directory URI, or %NULL if unset.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="current-file-uri"
                 version="0.34"
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">The current file URI, or %NULL if unset.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="cursor-blink-mode"
                 version="0.20"
@@ -2170,7 +2826,7 @@ when the user presses the delete key.</doc>
         <doc xml:whitespace="preserve">Sets what type of terminal the widget attempts to emulate by scanning for
 control sequences defined in the system's termcap file.  Unless you
 are interested in this feature, always use the default which is "xterm".</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="encoding"
                 version="0.20"
@@ -2180,7 +2836,7 @@ are interested in this feature, always use the default which is "xterm".</doc>
 be encoded with.  For certain terminal types, applications executing in the
 terminal can change the encoding.  The default is defined by the
 application's locale settings.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="font-desc"
                 version="0.20"
@@ -2195,7 +2851,7 @@ and columns.</doc>
       </property>
       <property name="icon-title" version="0.20" transfer-ownership="none">
         <doc xml:whitespace="preserve">The terminal's so-called icon title, or %NULL if no icon title has been set.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pointer-autohide"
                 version="0.20"
@@ -2204,7 +2860,7 @@ and columns.</doc>
         <doc xml:whitespace="preserve">Controls the value of the terminal's mouse autohide setting.  When autohiding
 is enabled, the mouse cursor will be hidden when the user presses a key and
 shown when the user moves the mouse.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="pty"
                 version="0.20"
@@ -2213,7 +2869,7 @@ shown when the user moves the mouse.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">The file descriptor of the master end of the terminal's PTY.</doc>
-        <type name="gint"/>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="pty-object"
                 version="0.26"
@@ -2228,7 +2884,7 @@ shown when the user moves the mouse.</doc>
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">Controls whether or not the terminal will scroll the background image (if
 one is set) when the text in the window must be scrolled.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="scroll-on-keystroke"
                 version="0.20"
@@ -2237,7 +2893,7 @@ one is set) when the text in the window must be scrolled.</doc>
         <doc xml:whitespace="preserve">Controls whether or not the terminal will forcibly scroll to the bottom of
 the viewable history when the user presses a key.  Modifier keys do not
 trigger this behavior.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="scroll-on-output"
                 version="0.20"
@@ -2245,7 +2901,7 @@ trigger this behavior.</doc>
                 transfer-ownership="none">
         <doc xml:whitespace="preserve">Controls whether or not the terminal will forcibly scroll to the bottom of
 the viewable history when the new data is received from the child.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="scrollback-lines"
                 version="0.20"
@@ -2257,7 +2913,7 @@ of visible rows the widget can display, so 0 can safely be used to disable
 scrollback.  Note that this setting only affects the normal screen buffer.
 For terminal types which have an alternate screen buffer, no scrollback is
 allowed on the alternate screen buffer.</doc>
-        <type name="guint"/>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="visible-bell"
                 version="0.20"
@@ -2266,11 +2922,11 @@ allowed on the alternate screen buffer.</doc>
         <doc xml:whitespace="preserve">Controls whether the terminal will present a visible bell to the
 user when the child outputs the "bl" sequence.  The terminal
 will clear itself to the default foreground color and then repaint itself.</doc>
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="window-title" version="0.20" transfer-ownership="none">
         <doc xml:whitespace="preserve">The terminal's title.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="word-chars"
                 version="0.20"
@@ -2283,7 +2939,7 @@ Ranges of characters can be specified by separating them with a hyphen.
 
 As a special case, when setting this to %NULL or the empty string, the terminal will
 treat all graphic non-punctuation non-space characters as word characters.</doc>
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="widget">
         <type name="Gtk.Widget" c:type="GtkWidget"/>
@@ -2322,23 +2978,23 @@ treat all graphic non-punctuation non-space characters as word characters.</doc>
         <doc xml:whitespace="preserve">This signal is emitted when the a child sends a beep request to the
 terminal.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="char-size-changed" when="last">
         <doc xml:whitespace="preserve">Emitted whenever selection of a new font causes the values of the
 %char_width or %char_height fields to change.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="width" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new character cell width</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="height" transfer-ownership="none">
             <doc xml:whitespace="preserve">the new character cell height</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -2346,7 +3002,7 @@ terminal.</doc>
         <doc xml:whitespace="preserve">This signal is emitted when the terminal detects that a child started
 using vte_terminal_fork_command() has exited.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="commit" when="last">
@@ -2354,16 +3010,16 @@ using vte_terminal_fork_command() has exited.</doc>
 prepares to send it to the child process.  The signal is emitted even
 when there is no child process.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="text" transfer-ownership="none">
             <doc xml:whitespace="preserve">a string of text</doc>
-            <type name="utf8"/>
+            <type name="utf8" c:type="gchar*"/>
           </parameter>
           <parameter name="size" transfer-ownership="none">
             <doc xml:whitespace="preserve">the length of that string of text</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -2371,13 +3027,13 @@ when there is no child process.</doc>
         <doc xml:whitespace="preserve">Emitted whenever the visible appearance of the terminal has changed.
 Used primarily by #VteTerminalAccessible.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="copy-clipboard" when="last" action="1">
         <doc xml:whitespace="preserve">Emitted whenever vte_terminal_copy_clipboard() is called.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="current-directory-uri-changed"
@@ -2385,39 +3041,39 @@ Used primarily by #VteTerminalAccessible.</doc>
                    version="0.34">
         <doc xml:whitespace="preserve">Emitted when the current directory URI is modified.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="current-file-uri-changed" when="last" version="0.34">
         <doc xml:whitespace="preserve">Emitted when the current file URI is modified.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="cursor-moved" when="last">
         <doc xml:whitespace="preserve">Emitted whenever the cursor moves to a new character cell.  Used
 primarily by #VteTerminalAccessible.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="decrease-font-size" when="last">
         <doc xml:whitespace="preserve">Emitted when the user hits the '-' key while holding the Control key.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="deiconify-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="emulation-changed" when="last">
         <doc xml:whitespace="preserve">Emitted whenever the terminal's emulation changes, only possible at
 the parent application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="encoding-changed" when="last">
@@ -2425,7 +3081,7 @@ the parent application's request.</doc>
 as a result of receiving a control sequence which toggled between the
 local and UTF-8 encodings, or at the parent application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="eof" when="last">
@@ -2433,106 +3089,106 @@ local and UTF-8 encodings, or at the parent application's request.</doc>
 is running in the terminal.  This signal is frequently (but not
 always) emitted with a #VteTerminal::child-exited signal.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="icon-title-changed" when="last">
         <doc xml:whitespace="preserve">Emitted when the terminal's %icon_title field is modified.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="iconify-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="increase-font-size" when="last">
         <doc xml:whitespace="preserve">Emitted when the user hits the '+' key while holding the Control key.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="lower-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="maximize-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="move-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="x" transfer-ownership="none">
             <doc xml:whitespace="preserve">the terminal's desired location, X coordinate</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="y" transfer-ownership="none">
             <doc xml:whitespace="preserve">the terminal's desired location, Y coordinate</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="paste-clipboard" when="last" action="1">
         <doc xml:whitespace="preserve">Emitted whenever vte_terminal_paste_clipboard() is called.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="raise-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="refresh-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="resize-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="width" transfer-ownership="none">
             <doc xml:whitespace="preserve">the desired width in pixels, including padding</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="height" transfer-ownership="none">
             <doc xml:whitespace="preserve">the desired height in pixels, including padding</doc>
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="restore-window" when="last">
         <doc xml:whitespace="preserve">Emitted at the child application's request.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="selection-changed" when="last">
         <doc xml:whitespace="preserve">Emitted whenever the contents of terminal's selection changes.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="status-line-changed" when="last">
         <doc xml:whitespace="preserve">Emitted whenever the contents of the status line are modified or
 cleared.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="text-deleted" when="last">
@@ -2540,7 +3196,7 @@ cleared.</doc>
 its accessibility peer. May not be emitted under certain
 circumstances.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="text-inserted" when="last">
@@ -2548,7 +3204,7 @@ circumstances.</doc>
 its accessibility peer. May not be emitted under certain
 circumstances.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="text-modified" when="last">
@@ -2556,7 +3212,7 @@ circumstances.</doc>
 its accessibility peer. May not be emitted under certain
 circumstances.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="text-scrolled" when="last">
@@ -2564,19 +3220,19 @@ circumstances.</doc>
 its accessibility peer. May not be emitted under certain
 circumstances.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="delta" transfer-ownership="none">
             <doc xml:whitespace="preserve">the number of lines scrolled</doc>
-            <type name="gint"/>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="window-title-changed" when="last">
         <doc xml:whitespace="preserve">Emitted when the terminal's %window_title field is modified.</doc>
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
     </class>
@@ -2587,15 +3243,18 @@ circumstances.</doc>
       <member name="use_default"
               value="0"
               c:identifier="VTE_ANTI_ALIAS_USE_DEFAULT"
-              glib:nick="use-default"/>
+              glib:nick="use-default">
+      </member>
       <member name="force_enable"
               value="1"
               c:identifier="VTE_ANTI_ALIAS_FORCE_ENABLE"
-              glib:nick="force-enable"/>
+              glib:nick="force-enable">
+      </member>
       <member name="force_disable"
               value="2"
               c:identifier="VTE_ANTI_ALIAS_FORCE_DISABLE"
-              glib:nick="force-disable"/>
+              glib:nick="force-disable">
+      </member>
     </enumeration>
     <record name="TerminalClass"
             c:type="VteTerminalClass"
@@ -3013,15 +3672,21 @@ for the terminal.</doc>
       <member name="system"
               value="0"
               c:identifier="VTE_CURSOR_BLINK_SYSTEM"
-              glib:nick="system"/>
+              glib:nick="system">
+        <doc xml:whitespace="preserve">Follow GTK+ settings for cursor blinking.</doc>
+      </member>
       <member name="on"
               value="1"
               c:identifier="VTE_CURSOR_BLINK_ON"
-              glib:nick="on"/>
+              glib:nick="on">
+        <doc xml:whitespace="preserve">Cursor blinks.</doc>
+      </member>
       <member name="off"
               value="2"
               c:identifier="VTE_CURSOR_BLINK_OFF"
-              glib:nick="off"/>
+              glib:nick="off">
+        <doc xml:whitespace="preserve">Cursor does not blink.</doc>
+      </member>
     </enumeration>
     <enumeration name="TerminalCursorShape"
                  glib:type-name="VteTerminalCursorShape"
@@ -3032,15 +3697,21 @@ draw at the cursor position.</doc>
       <member name="block"
               value="0"
               c:identifier="VTE_CURSOR_SHAPE_BLOCK"
-              glib:nick="block"/>
+              glib:nick="block">
+        <doc xml:whitespace="preserve">Draw a block cursor.  This is the default.</doc>
+      </member>
       <member name="ibeam"
               value="1"
               c:identifier="VTE_CURSOR_SHAPE_IBEAM"
-              glib:nick="ibeam"/>
+              glib:nick="ibeam">
+        <doc xml:whitespace="preserve">Draw a vertical bar on the left side of character. This is similar to the default cursor for other GTK+ widgets.</doc>
+      </member>
       <member name="underline"
               value="2"
               c:identifier="VTE_CURSOR_SHAPE_UNDERLINE"
-              glib:nick="underline"/>
+              glib:nick="underline">
+        <doc xml:whitespace="preserve">Draw a horizontal bar below the character.</doc>
+      </member>
     </enumeration>
     <enumeration name="TerminalEraseBinding"
                  glib:type-name="VteTerminalEraseBinding"
@@ -3052,23 +3723,33 @@ keys.</doc>
       <member name="auto"
               value="0"
               c:identifier="VTE_ERASE_AUTO"
-              glib:nick="auto"/>
+              glib:nick="auto">
+        <doc xml:whitespace="preserve">For backspace, attempt to determine the right value from the terminal's IO settings.  For delete, use the control sequence.</doc>
+      </member>
       <member name="ascii_backspace"
               value="1"
               c:identifier="VTE_ERASE_ASCII_BACKSPACE"
-              glib:nick="ascii-backspace"/>
+              glib:nick="ascii-backspace">
+        <doc xml:whitespace="preserve">Send an ASCII backspace character (0x08).</doc>
+      </member>
       <member name="ascii_delete"
               value="2"
               c:identifier="VTE_ERASE_ASCII_DELETE"
-              glib:nick="ascii-delete"/>
+              glib:nick="ascii-delete">
+        <doc xml:whitespace="preserve">Send an ASCII delete character (0x7F).</doc>
+      </member>
       <member name="delete_sequence"
               value="3"
               c:identifier="VTE_ERASE_DELETE_SEQUENCE"
-              glib:nick="delete-sequence"/>
+              glib:nick="delete-sequence">
+        <doc xml:whitespace="preserve">Send the "@@7" control sequence.</doc>
+      </member>
       <member name="tty"
               value="4"
               c:identifier="VTE_ERASE_TTY"
-              glib:nick="tty"/>
+              glib:nick="tty">
+        <doc xml:whitespace="preserve">Send terminal's "erase" setting.</doc>
+      </member>
     </enumeration>
     <record name="TerminalPrivate" c:type="VteTerminalPrivate" disguised="1">
     </record>
@@ -3081,28 +3762,10 @@ to an output stream.</doc>
       <member name="default"
               value="0"
               c:identifier="VTE_TERMINAL_WRITE_DEFAULT"
-              glib:nick="default"/>
+              glib:nick="default">
+        <doc xml:whitespace="preserve">Write contents as UTF-8 text.  This is the default.</doc>
+      </member>
     </enumeration>
-    <record name="_CharAttributes" c:type="_VteCharAttributes">
-      <field name="row" readable="0" private="1">
-        <type name="glong" c:type="long"/>
-      </field>
-      <field name="column" readable="0" private="1">
-        <type name="glong" c:type="long"/>
-      </field>
-      <field name="fore" readable="0" private="1">
-        <type name="Gdk.Color" c:type="GdkColor"/>
-      </field>
-      <field name="back" readable="0" private="1">
-        <type name="Gdk.Color" c:type="GdkColor"/>
-      </field>
-      <field name="underline" readable="0" bits="1" private="1">
-        <type name="guint" c:type="guint"/>
-      </field>
-      <field name="strikethrough" readable="0" bits="1" private="1">
-        <type name="guint" c:type="guint"/>
-      </field>
-    </record>
     <function name="get_user_shell"
               c:identifier="vte_get_user_shell"
               version="0.28">
