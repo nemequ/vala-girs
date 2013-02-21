@@ -5351,6 +5351,456 @@ continue, it should return %GDK_FILTER_TRANSLATE.</doc>
         <doc xml:whitespace="preserve">event handled, terminate processing.</doc>
       </member>
     </enumeration>
+    <class name="FrameClock"
+           c:symbol-prefix="frame_clock"
+           c:type="GdkFrameClock"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="GdkFrameClock"
+           glib:get-type="gdk_frame_clock_get_type"
+           glib:type-struct="FrameClockClass">
+      <method name="begin_updating"
+              c:identifier="gdk_frame_clock_begin_updating"
+              version="3.8">
+        <doc xml:whitespace="preserve">Starts updates for an animation. Until a matching call to
+gdk_frame_clock_end_updating() is made, the frame clock will continually
+request a new frame with the %GDK_FRAME_CLOCK_PHASE_UPDATE phase.
+This function may be called multiple times and frames will be
+requested until gdk_frame_clock_end_updating() is called the same
+number of times.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="end_updating"
+              c:identifier="gdk_frame_clock_end_updating"
+              version="3.8">
+        <doc xml:whitespace="preserve">Stops updates for an animation. See the documentation for
+gdk_frame_clock_begin_updating().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_current_timings"
+              c:identifier="gdk_frame_clock_get_current_timings"
+              version="3.8">
+        <doc xml:whitespace="preserve">Gets the frame timings for the current frame.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the #GdkFrameTimings for the frame currently being processed, or even no frame is being processed, for the previous frame. Before any frames have been procesed, returns %NULL.</doc>
+          <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_frame_counter"
+              c:identifier="gdk_frame_clock_get_frame_counter"
+              version="3.8">
+        <doc xml:whitespace="preserve">A #GdkFrameClock maintains a 64-bit counter that increments for
+each frame drawn.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">inside frame processing, the value of the frame counter for the current frame. Outside of frame processing, the frame counter for the last frame.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_frame_time"
+              c:identifier="gdk_frame_clock_get_frame_time"
+              version="3.8">
+        <doc xml:whitespace="preserve">Gets the time that should currently be used for animations.  Inside
+the processing of a frame, it's the time used to compute the
+animation position of everything in a frame. Outside of a frame, it's
+the time of the conceptual "previous frame," which may be either
+the actual previous frame time, or if that's too old, an updated
+time.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">a timestamp in microseconds, in the timescale of of g_get_monotonic_time().</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_history_start"
+              c:identifier="gdk_frame_clock_get_history_start"
+              version="3.8">
+        <doc xml:whitespace="preserve">#GdkFrameClock internally keeps a history of #GdkFrameTiming
+objects for recent frames that can be retrieved with
+gdk_frame_clock_get_timings(). The set of stored frames
+is the set from the counter values given by
+gdk_frame_clock_get_history_start() and
+gdk_frame_clock_get_frame_counter(), inclusive.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the frame counter value for the oldest frame that is available in the internal frame history of the #GdkFrameClock.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_refresh_info"
+              c:identifier="gdk_frame_clock_get_refresh_info"
+              version="3.8">
+        <doc xml:whitespace="preserve">Using the frame history stored in the frame clock, finds the last
+known presentation time and refresh interval, and assuming that
+presentation times are separated by the refresh interval,
+predicts a presentation time that is a multiple of the refresh
+interval after the last presentation time, and later than @base_time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+          <parameter name="base_time" transfer-ownership="none">
+            <doc xml:whitespace="preserve">base time for determining a presentaton time</doc>
+            <type name="gint64" c:type="gint64"/>
+          </parameter>
+          <parameter name="refresh_interval_return" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a location to store the determined refresh interval, or %NULL. A default refresh interval of 1/60th of a second will be stored if no history is present.</doc>
+            <type name="gint64" c:type="gint64*"/>
+          </parameter>
+          <parameter name="presentation_time_return" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a location to store the next candidate presentation time after the given base time. 0 will be will be stored if no history is present.</doc>
+            <type name="gint64" c:type="gint64*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_timings"
+              c:identifier="gdk_frame_clock_get_timings"
+              version="3.8">
+        <doc xml:whitespace="preserve">Retrieves a #GdkFrameTimings object holding timing information
+for the current frame or a recent frame. The #GdkFrameTimings
+object may not yet be complete: see gdk_frame_timings_get_complete().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">the #GdkFrameTimings object for the specified frame, or %NULL if it is not available. See gdk_frame_clock_get_history_start().</doc>
+          <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+          <parameter name="frame_counter" transfer-ownership="none">
+            <doc xml:whitespace="preserve">the frame counter value identifying the frame to be received.</doc>
+            <type name="gint64" c:type="gint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_phase"
+              c:identifier="gdk_frame_clock_request_phase"
+              version="3.8">
+        <doc xml:whitespace="preserve">Asks the frame clock to run a particular phase. The signal
+corresponding the requested phase will be emitted the next
+time the frame clock processes. Multiple calls to
+gdk_frame_clock_request_phase() will be combined togethe
+and only one frame processed. If you are displaying animated
+content and want to continually request the
+%GDK_FRAME_CLOCK_PHASE_UPDATE phase for a period of time,
+you should use gdk_frame_clock_begin_updating() instead, since
+this allows GTK+ to adjust system parameters to get maximally
+smooth animations.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="frame_clock" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameClock</doc>
+            <type name="FrameClock" c:type="GdkFrameClock*"/>
+          </instance-parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <type name="FrameClockPhase" c:type="GdkFrameClockPhase"/>
+          </parameter>
+        </parameters>
+      </method>
+      <glib:signal name="after-paint" when="last">
+        <doc xml:whitespace="preserve">This signal ends processing of the frame. Applications
+should generally not handle this signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="before-paint" when="last">
+        <doc xml:whitespace="preserve">This signal begins processing of the frame. Applications
+should generally not handle this signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="flush-events" when="last">
+        <doc xml:whitespace="preserve">This signal is used to flush pending motion events that
+are being batched up and compressed together. Applications
+should not handle this signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="layout" when="last">
+        <doc xml:whitespace="preserve">This signal is emitted as the second step of toolkit and
+application processing of the frame. Any work to update
+sizes and positions of application elements should be
+performed. GTK normally handles this internally.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="paint" when="last">
+        <doc xml:whitespace="preserve">This signal is emitted as the third step of toolkit and
+application processing of the frame. The frame is
+repainted. GDK normally handles this internally and
+produce expose events, which are turned into GTK
+GtkWidget::draw signals.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="resume-events" when="last">
+        <doc xml:whitespace="preserve">This signal is emitted after processing of the frame is
+finished, and is handled internally by GTK+ to resume normal
+event processing. Applications should not handle this signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="update" when="last">
+        <doc xml:whitespace="preserve">This signal is emitted as the first step of toolkit and
+application processing of the frame. Animations should
+be updated using gdk_frame_clock_get_frame_time().
+Applications can connect directly to this signal, or
+use gtk_widget_add_tick_callback() as a more convenient
+interface.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="FrameClockClass"
+            c:type="GdkFrameClockClass"
+            disguised="1"
+            glib:is-gtype-struct-for="FrameClock">
+    </record>
+    <bitfield name="FrameClockPhase"
+              version="3.8"
+              glib:type-name="GdkFrameClockPhase"
+              glib:get-type="gdk_frame_clock_phase_get_type"
+              c:type="GdkFrameClockPhase">
+      <doc xml:whitespace="preserve">#GdkFrameClockPhase is used to represent the different paint clock
+phases that can be requested. The element of the enumeration
+correspond to the signals of #GdkPaintClock.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_NONE"
+              glib:nick="none">
+        <doc xml:whitespace="preserve">no phase</doc>
+      </member>
+      <member name="flush_events"
+              value="1"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_FLUSH_EVENTS"
+              glib:nick="flush-events">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::flush-events. Should not be handled by applications.</doc>
+      </member>
+      <member name="before_paint"
+              value="2"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_BEFORE_PAINT"
+              glib:nick="before-paint">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::before-paint. Should not be handled by applications.</doc>
+      </member>
+      <member name="update"
+              value="4"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_UPDATE"
+              glib:nick="update">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::update.</doc>
+      </member>
+      <member name="layout"
+              value="8"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_LAYOUT"
+              glib:nick="layout">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::layout.</doc>
+      </member>
+      <member name="paint"
+              value="16"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_PAINT"
+              glib:nick="paint">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::paint.</doc>
+      </member>
+      <member name="resume_events"
+              value="32"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_RESUME_EVENTS"
+              glib:nick="resume-events">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::resume-events. Should not be handled by applications.</doc>
+      </member>
+      <member name="after_paint"
+              value="64"
+              c:identifier="GDK_FRAME_CLOCK_PHASE_AFTER_PAINT"
+              glib:nick="after-paint">
+        <doc xml:whitespace="preserve">corresponds to GdkFrameClock::after-paint. Should not be handled by applications.</doc>
+      </member>
+    </bitfield>
+    <record name="FrameClockPrivate"
+            c:type="GdkFrameClockPrivate"
+            disguised="1">
+    </record>
+    <record name="FrameTimings"
+            c:type="GdkFrameTimings"
+            glib:type-name="GdkFrameTimings"
+            glib:get-type="gdk_frame_timings_get_type"
+            c:symbol-prefix="frame_timings">
+      <method name="get_complete"
+              c:identifier="gdk_frame_timings_get_complete">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_frame_counter"
+              c:identifier="gdk_frame_timings_get_frame_counter"
+              version="3.8">
+        <doc xml:whitespace="preserve">Gets the frame counter value of the #GdkFrameClock when this
+this frame was drawn.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the frame counter value for this frame</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_frame_time"
+              c:identifier="gdk_frame_timings_get_frame_time">
+        <doc xml:whitespace="preserve">Returns the frame time for the frame. This is the time value
+that is typically used to time animations for the frame. See
+gdk_frame_clock_get_frame_time().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the frame time for the frame, in the timescale of g_get_monotonic_time()</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">A #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_predicted_presentation_time"
+              c:identifier="gdk_frame_timings_get_predicted_presentation_time"
+              version="3.8">
+        <doc xml:whitespace="preserve">Gets the predicted time at which this frame will be displayed. Although
+no predicted time may be available, if one is available, it will
+be available while the frame is being generated, in contrast to
+gdk_frame_timings_get_presentation_time(), which is only available
+after the frame has been presented. In general, if you are simply
+animating, you should use gdk_frame_clock_get_frame_time() rather
+than this function, but this function is useful for applications
+that want exact control over latency. For example, a movie player
+may want this information for Audio/Video synchronization.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">The predicted time at which the frame will be presented, in the timescale of g_get_monotonic_time(), or 0 if no predicted presentation time is available.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_presentation_time"
+              c:identifier="gdk_frame_timings_get_presentation_time"
+              version="3.8">
+        <doc xml:whitespace="preserve">Reurns the presentation time. This is the time at which the frame
+became visible to the user.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the time the frame was displayed to the user, in the timescale of g_get_monotonic_time(), or 0 if no presentation time is available. See gdk_frame_timings_get_complete()</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_refresh_interval"
+              c:identifier="gdk_frame_timings_get_refresh_interval"
+              version="3.8">
+        <doc xml:whitespace="preserve">Gets the natural interval between presentation times for
+the display that this frame was displayed on. Frame presentation
+usually happens during the "vertical blanking interval".</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the refresh interval of the display, in microseconds, or 0 if the refresh interval is not available. See gdk_frame_timings_get_complete().</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="gdk_frame_timings_ref" version="3.8">
+        <doc xml:whitespace="preserve">Increases the reference count of @timings.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:whitespace="preserve">@timings</doc>
+          <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref"
+              c:identifier="gdk_frame_timings_unref"
+              version="3.8">
+        <doc xml:whitespace="preserve">Decreases the reference count of @timings. If @timings
+is no longer referenced, it will be freed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timings" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #GdkFrameTimings</doc>
+            <type name="FrameTimings" c:type="GdkFrameTimings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <enumeration name="FullscreenMode"
                  version="3.8"
                  glib:type-name="GdkFullscreenMode"
@@ -17365,15 +17815,10 @@ fallback implementation for other window managers.</doc>
       </method>
       <method name="configure_finished"
               c:identifier="gdk_window_configure_finished"
-              version="2.6">
-        <doc xml:whitespace="preserve">Signal to the window system that the application has finished
-handling Configure events it has received. Window Managers can
-use this to better synchronize the frame repaint with the
-application. GTK+ applications will automatically call this
-function when appropriate.
-
-This function can only be called if gdk_window_enable_synchronized_configure()
-was called previously.</doc>
+              version="2.6"
+              deprecated="this function is no longer needed"
+              deprecated-version="3.8">
+        <doc xml:whitespace="preserve">Does nothing, present only for compatiblity.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -17570,17 +18015,10 @@ reaches zero. You must call this function yourself before that happens.</doc>
       </method>
       <method name="enable_synchronized_configure"
               c:identifier="gdk_window_enable_synchronized_configure"
-              version="2.6">
-        <doc xml:whitespace="preserve">Indicates that the application will cooperate with the window
-system in synchronizing the window repaint with the window
-manager during resizing operations. After an application calls
-this function, it must call gdk_window_configure_finished() every
-time it has finished all processing associated with a set of
-Configure events. Toplevel GTK+ windows automatically use this
-protocol.
-
-On X, calling this function makes @window participate in the
-_NET_WM_SYNC_REQUEST window manager protocol.</doc>
+              version="2.6"
+              deprecated="this function is no longer needed"
+              deprecated-version="3.8">
+        <doc xml:whitespace="preserve">Does nothing, present only for compatiblity.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -18068,6 +18506,23 @@ window does not want to receive input focus when it is mapped.</doc>
         <parameters>
           <instance-parameter name="window" transfer-ownership="none">
             <doc xml:whitespace="preserve">a toplevel #GdkWindow.</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_frame_clock"
+              c:identifier="gdk_window_get_frame_clock"
+              version="3.8">
+        <doc xml:whitespace="preserve">Gets the frame clock for the window. The frame clock for a window
+never changes unless the window is reparented to a new toplevel
+window.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:whitespace="preserve">the frame clock</doc>
+          <type name="FrameClock" c:type="GdkFrameClock*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="window" transfer-ownership="none">
+            <doc xml:whitespace="preserve">window to get frame clock for</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
         </parameters>
