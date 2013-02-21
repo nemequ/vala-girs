@@ -62,7 +62,7 @@ namespace TelepathyGLib {
 		public async bool set_service_async (string service) throws GLib.Error;
 		public async bool set_uri_scheme_association_async (string scheme, bool associate) throws GLib.Error;
 		public async bool update_parameters_async (GLib.HashTable<string,GLib.Value?> parameters, string unset_parameters, [CCode (array_length = false, array_null_terminated = true)] out string[] reconnect_required) throws GLib.Error;
-		public async void update_parameters_vardict_async (GLib.Variant parameters, string unset_parameters);
+		public async bool update_parameters_vardict_async (GLib.Variant parameters, string unset_parameters, out string reconnect_required) throws GLib.Error;
 		[NoAccessorMethod]
 		public uint automatic_presence_type { get; }
 		[NoAccessorMethod]
@@ -111,6 +111,8 @@ namespace TelepathyGLib {
 		public uint storage_restrictions { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] supersedes { get; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] uri_schemes { get; }
 		[NoAccessorMethod]
 		public bool valid { get; }
 		public signal void presence_changed (uint presence, string status, string status_message);
@@ -127,6 +129,7 @@ namespace TelepathyGLib {
 		public async TelepathyGLib.Channel create_and_handle_channel_async (GLib.Cancellable? cancellable, out TelepathyGLib.HandleChannelsContext context) throws GLib.Error;
 		public async TelepathyGLib.Channel create_and_observe_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool create_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
+		public GLib.Variant dup_request ();
 		public async TelepathyGLib.Channel ensure_and_handle_channel_async (GLib.Cancellable? cancellable, out TelepathyGLib.HandleChannelsContext context) throws GLib.Error;
 		public async TelepathyGLib.Channel ensure_and_observe_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool ensure_channel_async (string preferred_handler, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -143,14 +146,19 @@ namespace TelepathyGLib {
 		public void set_file_transfer_initial_offset (uint64 offset);
 		public void set_file_transfer_timestamp (uint64 timestamp);
 		public void set_file_transfer_uri (string uri);
+		public void set_hint (string key, GLib.Variant value);
 		public void set_hints (GLib.HashTable<void*,void*> hints);
 		public void set_request_property (string name, GLib.Variant value);
 		public void set_target_contact (TelepathyGLib.Contact contact);
 		public void set_target_id (TelepathyGLib.HandleType handle_type, string identifier);
 		[CCode (has_construct_function = false)]
 		public AccountChannelRequest.text (TelepathyGLib.Account account, int64 user_action_time);
+		[CCode (has_construct_function = false)]
+		public AccountChannelRequest.vardict (TelepathyGLib.Account account, GLib.Variant request, int64 user_action_time);
 		public TelepathyGLib.Account account { get; construct; }
 		public TelepathyGLib.ChannelRequest channel_request { get; }
+		[NoAccessorMethod]
+		public GLib.Variant request_vardict { owned get; construct; }
 		public int64 user_action_time { get; construct; }
 		public signal void re_handled (TelepathyGLib.Channel channel, int64 user_action_time, TelepathyGLib.HandleChannelsContext context);
 	}
@@ -161,6 +169,7 @@ namespace TelepathyGLib {
 		public static bool can_set_default ();
 		public async unowned TelepathyGLib.Account create_account_async (string connection_manager, string protocol, string display_name, GLib.HashTable<string,GLib.Value?> parameters, GLib.HashTable<string,GLib.Value?> properties) throws GLib.Error;
 		public static TelepathyGLib.AccountManager dup ();
+		public GLib.List<TelepathyGLib.Account> dup_valid_accounts ();
 		public void enable_restart ();
 		public unowned TelepathyGLib.Account ensure_account (string path);
 		public static GLib.Quark get_feature_quark_core ();
@@ -289,14 +298,19 @@ namespace TelepathyGLib {
 		protected BaseClient ();
 		public void add_account_features ([CCode (array_length_cname = "n", array_length_pos = 1.1, array_length_type = "gssize")] GLib.Quark[] features);
 		public void add_approver_filter (GLib.HashTable<string,GLib.Value?> filter);
+		public void add_approver_filter_vardict (GLib.Variant filter);
 		public void add_channel_features ([CCode (array_length_cname = "n", array_length_pos = 1.1, array_length_type = "gssize")] GLib.Quark[] features);
 		public void add_connection_features ([CCode (array_length_cname = "n", array_length_pos = 1.1, array_length_type = "gssize")] GLib.Quark[] features);
 		public void add_handler_capabilities ([CCode (array_length = false, array_null_terminated = true)] string[] tokens);
 		public void add_handler_capability (string token);
 		public void add_handler_filter (GLib.HashTable<string,GLib.Value?> filter);
+		public void add_handler_filter_vardict (GLib.Variant filter);
 		public void add_observer_filter (GLib.HashTable<string,GLib.Value?> filter);
+		public void add_observer_filter_vardict (GLib.Variant filter);
 		public void be_a_handler ();
 		public async bool delegate_channels_async (GLib.List<TelepathyGLib.Channel> channels, int64 user_action_time, string preferred_handler, out GLib.GenericArray<weak TelepathyGLib.Channel> delegated, out GLib.HashTable<weak TelepathyGLib.Channel,weak GLib.Error> not_delegated) throws GLib.Error;
+		public GLib.List<TelepathyGLib.Channel> dup_handled_channels ();
+		public GLib.List<TelepathyGLib.ChannelRequest> dup_pending_requests ();
 		public unowned string get_bus_name ();
 		public unowned TelepathyGLib.DBusDaemon get_dbus_daemon ();
 		public GLib.List<weak TelepathyGLib.Channel> get_handled_channels ();
@@ -459,7 +473,7 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false)]
 		protected Capabilities ();
 		public GLib.Variant dup_channel_classes_variant ();
-		public unowned GLib.GenericArray<void*> get_channel_classes ();
+		public unowned GLib.GenericArray<GLib.HashTable<void*,void*>> get_channel_classes ();
 		public bool is_specific_to_contact ();
 		public bool supports_audio_call (TelepathyGLib.HandleType handle_type);
 		public bool supports_audio_video_call (TelepathyGLib.HandleType handle_type);
@@ -488,11 +502,13 @@ namespace TelepathyGLib {
 		public unowned GLib.HashTable<string,GLib.Value?> borrow_immutable_properties ();
 		public async bool close_async () throws GLib.Error;
 		public async bool destroy_async () throws GLib.Error;
+		public GLib.Variant dup_immutable_properties ();
 		[CCode (has_construct_function = false)]
 		public Channel.from_properties (TelepathyGLib.Connection conn, string object_path, GLib.HashTable<string,GLib.Value?> immutable_properties) throws GLib.Error;
 		public unowned string get_channel_type ();
 		public GLib.Quark get_channel_type_id ();
 		public TelepathyGLib.ChannelChatState get_chat_state (TelepathyGLib.Handle contact);
+		public unowned TelepathyGLib.Connection get_connection ();
 		public static GLib.Quark get_feature_quark_chat_states ();
 		public static GLib.Quark get_feature_quark_contacts ();
 		public static GLib.Quark get_feature_quark_core ();
@@ -523,8 +539,7 @@ namespace TelepathyGLib {
 		[Deprecated (since = "0.17.6")]
 		[NoAccessorMethod]
 		public bool channel_ready { get; }
-		[NoAccessorMethod]
-		public TelepathyGLib.Connection connection { owned get; construct; }
+		public TelepathyGLib.Connection connection { get; construct; }
 		[NoAccessorMethod]
 		public uint group_flags { get; }
 		[NoAccessorMethod]
@@ -554,6 +569,7 @@ namespace TelepathyGLib {
 		public async bool claim_with_async (TelepathyGLib.BaseClient client) throws GLib.Error;
 		public async bool close_channels_async () throws GLib.Error;
 		public async bool destroy_channels_async () throws GLib.Error;
+		public unowned GLib.GenericArray<TelepathyGLib.Channel> get_channels ();
 		public static GLib.Quark get_feature_quark_core ();
 		public async bool handle_with_async (string? handler) throws GLib.Error;
 		public async bool handle_with_time_async (string? handler, int64 user_action_time) throws GLib.Error;
@@ -561,8 +577,7 @@ namespace TelepathyGLib {
 		public async bool leave_channels_async (TelepathyGLib.ChannelGroupChangeReason reason, string message) throws GLib.Error;
 		[NoAccessorMethod]
 		public TelepathyGLib.Account account { owned get; construct; }
-		[NoAccessorMethod]
-		public GLib.GenericArray<weak void*> channels { owned get; construct; }
+		public GLib.GenericArray<weak void*> channels { get; construct; }
 		[NoAccessorMethod]
 		public TelepathyGLib.Connection connection { owned get; construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -581,6 +596,8 @@ namespace TelepathyGLib {
 	public class ChannelRequest : TelepathyGLib.Proxy {
 		[CCode (has_construct_function = false)]
 		public ChannelRequest (TelepathyGLib.DBusDaemon bus_daemon, string object_path, GLib.HashTable<void*,void*> immutable_properties) throws GLib.Error;
+		public GLib.Variant dup_hints ();
+		public GLib.Variant dup_immutable_properties ();
 		public unowned TelepathyGLib.Account get_account ();
 		public unowned GLib.HashTable<void*,void*> get_hints ();
 		public unowned GLib.HashTable<void*,void*> get_immutable_properties ();
@@ -591,6 +608,10 @@ namespace TelepathyGLib {
 		public TelepathyGLib.Account account { get; }
 		[NoAccessorMethod]
 		public GLib.Object channel_factory { owned get; set construct; }
+		[NoAccessorMethod]
+		public GLib.Variant hints_vardict { owned get; }
+		[NoAccessorMethod]
+		public GLib.Variant immutable_properties_vardict { owned get; }
 		public string preferred_handler { get; }
 		public int64 user_action_time { get; }
 		public signal void succeeded ();
@@ -616,6 +637,7 @@ namespace TelepathyGLib {
 		public async bool disconnect_async () throws GLib.Error;
 		public async TelepathyGLib.Contact dup_contact_by_id_async (string id, [CCode (array_length_cname = "n_features", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.ContactFeature[]? features) throws GLib.Error;
 		public TelepathyGLib.Contact dup_contact_if_possible (TelepathyGLib.Handle handle, string identifier);
+		public GLib.List<TelepathyGLib.ContactInfoFieldSpec> dup_contact_info_supported_fields ();
 		public GLib.GenericArray<weak TelepathyGLib.Contact> dup_contact_list ();
 		public string dup_detailed_error_vardict (out GLib.Variant details);
 		public unowned TelepathyGLib.Account get_account ();
@@ -778,6 +800,8 @@ namespace TelepathyGLib {
 		public async bool add_to_group_async (string group) throws GLib.Error;
 		public async bool authorize_publication_async () throws GLib.Error;
 		public async bool block_async (bool report_abusive) throws GLib.Error;
+		public GLib.List<TelepathyGLib.ContactInfoField> dup_contact_info ();
+		public GLib.Variant dup_location ();
 		public unowned TelepathyGLib.Account get_account ();
 		public unowned string get_alias ();
 		public unowned GLib.File get_avatar_file ();
@@ -823,6 +847,8 @@ namespace TelepathyGLib {
 		public string identifier { get; }
 		[NoAccessorMethod]
 		public bool is_blocked { get; }
+		[NoAccessorMethod]
+		public GLib.Variant location_vardict { owned get; }
 		public string presence_message { get; }
 		public string presence_status { get; }
 		public uint presence_type { get; }
@@ -885,6 +911,7 @@ namespace TelepathyGLib {
 	public class ContactSearchResult : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ContactSearchResult ();
+		public GLib.List<TelepathyGLib.ContactInfoField> dup_fields ();
 		public unowned TelepathyGLib.ContactInfoField get_field (string field);
 		public GLib.List<weak TelepathyGLib.ContactInfoField> get_fields ();
 		public unowned string get_identifier ();
@@ -910,9 +937,12 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false)]
 		protected DBusTubeChannel ();
 		public async GLib.DBusConnection accept_async () throws GLib.Error;
+		public GLib.Variant dup_parameters_vardict ();
 		public static GLib.Quark feature_quark_core ();
 		public unowned string get_service_name ();
 		public async GLib.DBusConnection offer_async (GLib.HashTable<void*,void*>? @params) throws GLib.Error;
+		[NoAccessorMethod]
+		public GLib.Variant parameters_vardict { owned get; }
 		public string service_name { get; }
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_debug_client_get_type ()")]
@@ -956,6 +986,7 @@ namespace TelepathyGLib {
 		public unowned string get_description ();
 		public static GLib.Quark get_feature_quark_core ();
 		public unowned string get_filename ();
+		public unowned GLib.HashTable<void*,void*> get_metadata ();
 		public unowned string get_mime_type ();
 		public unowned string get_service_name ();
 		public uint64 get_size ();
@@ -1029,7 +1060,7 @@ namespace TelepathyGLib {
 		public bool is_member (uint element);
 		public bool remove (uint element);
 		public uint size ();
-		[CCode (has_construct_function = false)]
+		[CCode (cname = "tp_intset_sized_new", has_construct_function = false)]
 		public Intset.sized_new (uint size);
 		public TelepathyGLib.Intset symmetric_difference (TelepathyGLib.Intset right);
 		public GLib.Array<uint> to_array ();
@@ -1045,6 +1076,7 @@ namespace TelepathyGLib {
 		public bool delete_key (uint part, string key);
 		public void delete_part (uint part);
 		public void destroy ();
+		public GLib.Variant dup_part (uint part);
 		public TelepathyGLib.ChannelTextMessageType get_message_type ();
 		public uint32 get_pending_message_id (out bool valid);
 		public int64 get_received_timestamp ();
@@ -1067,6 +1099,7 @@ namespace TelepathyGLib {
 		public void set_string (uint part, string key, string s);
 		public void set_uint32 (uint part, string key, uint32 u);
 		public void set_uint64 (uint part, string key, uint64 u);
+		public void set_variant (uint part, string key, GLib.Variant value);
 		public void take_message (uint part, string key, TelepathyGLib.Message message);
 		public string to_text (out TelepathyGLib.ChannelTextMessageFlags out_flags);
 	}
@@ -1267,8 +1300,11 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false)]
 		public StreamTubeChannel (TelepathyGLib.Connection conn, string object_path, GLib.HashTable<string,GLib.Value?> immutable_properties) throws GLib.Error;
 		public async TelepathyGLib.StreamTubeConnection accept_async () throws GLib.Error;
+		public GLib.Variant dup_parameters_vardict ();
 		public unowned string get_service ();
 		public async bool offer_async (GLib.HashTable<void*,void*>? @params) throws GLib.Error;
+		[NoAccessorMethod]
+		public GLib.Variant parameters_vardict { owned get; }
 		public string service { get; }
 		public signal void incoming (TelepathyGLib.StreamTubeConnection tube_connection);
 	}
@@ -1329,6 +1365,7 @@ namespace TelepathyGLib {
 		public async bool ack_all_pending_messages_async () throws GLib.Error;
 		public async bool ack_message_async (TelepathyGLib.Message message) throws GLib.Error;
 		public async bool ack_messages_async (GLib.List<TelepathyGLib.SignalledMessage> messages) throws GLib.Error;
+		public GLib.List<TelepathyGLib.SignalledMessage> dup_pending_messages ();
 		public TelepathyGLib.ChannelChatState get_chat_state (TelepathyGLib.Contact contact);
 		public TelepathyGLib.DeliveryReportingSupportFlags get_delivery_reporting_support ();
 		public static GLib.Quark get_feature_quark_chat_states ();
@@ -1356,10 +1393,14 @@ namespace TelepathyGLib {
 		public signal void message_sent (TelepathyGLib.SignalledMessage message, uint flags, string token);
 		public signal void pending_message_removed (TelepathyGLib.SignalledMessage message);
 	}
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[Compact]
+	public class WeakRef {
+	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_cname = "TpClientChannelFactoryInterface", type_id = "tp_client_channel_factory_get_type ()")]
 	public interface ClientChannelFactory : GLib.Object {
 		public TelepathyGLib.Channel create_channel (TelepathyGLib.Connection conn, string path, GLib.HashTable<string,GLib.Value?> properties) throws GLib.Error;
-		public GLib.Array<void*> dup_channel_features (TelepathyGLib.Channel channel);
+		public GLib.Array<GLib.Quark?> dup_channel_features (TelepathyGLib.Channel channel);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_handle_repo_iface_get_type ()")]
 	public interface HandleRepoIface : GLib.Object {
@@ -1435,7 +1476,6 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	public struct PresenceMixinClass {
 		public weak TelepathyGLib.PresenceMixinStatusAvailableFunc status_available;
-		public weak TelepathyGLib.PresenceMixinGetContactStatusesFunc get_contact_statuses;
 		public weak TelepathyGLib.PresenceMixinSetOwnStatusFunc set_own_status;
 		public TelepathyGLib.PresenceStatusSpec statuses;
 		public weak TelepathyGLib.PresenceMixinGetMaximumStatusMessageLengthFunc get_maximum_status_message_length;
@@ -2210,12 +2250,6 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", instance_pos = 2.9)]
 	public delegate void BaseClientDelegatedChannelsCb (TelepathyGLib.BaseClient client, GLib.GenericArray<TelepathyGLib.Channel> channels);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
-	public delegate GLib.GenericArray<void*> BaseConnectionCreateChannelFactoriesImpl (TelepathyGLib.BaseConnection self);
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
-	public delegate GLib.GenericArray<void*> BaseConnectionCreateChannelManagersImpl (TelepathyGLib.BaseConnection self);
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
-	public delegate GLib.GenericArray<weak void*> BaseConnectionGetInterfacesImpl (TelepathyGLib.BaseConnection self);
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate string BaseConnectionGetUniqueConnectionNameImpl (TelepathyGLib.BaseConnection self);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate void BaseConnectionProc (TelepathyGLib.BaseConnection self);
@@ -2241,8 +2275,6 @@ namespace TelepathyGLib {
 	public delegate void ConnectionUpgradeContactsCb (TelepathyGLib.Connection connection, [CCode (array_length_cname = "n_contacts", array_length_pos = 1.5, array_length_type = "guint")] TelepathyGLib.Contact[] contacts, GLib.Error error, GLib.Object weak_object);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", instance_pos = 2.9)]
 	public delegate void ConnectionWhenReadyCb (TelepathyGLib.Connection connection, GLib.Error error);
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
-	public delegate void ContactsMixinFillContactAttributesFunc (GLib.Object obj, GLib.Array<void*> contacts, GLib.HashTable<void*,void*> attributes_hash);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", instance_pos = 3.9)]
 	public delegate void DBusDaemonListNamesCb (TelepathyGLib.DBusDaemon bus_daemon, string names, GLib.Error error, GLib.Object weak_object);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", instance_pos = 3.9)]
@@ -2259,8 +2291,6 @@ namespace TelepathyGLib {
 	public delegate bool GroupMixinRemMemberWithReasonFunc (GLib.Object obj, TelepathyGLib.Handle handle, string message, uint reason) throws GLib.Error;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate void IntFunc (uint i, void* userdata);
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
-	public delegate GLib.HashTable<void*,void*> PresenceMixinGetContactStatusesFunc (GLib.Object obj, GLib.Array<void*> contacts) throws GLib.Error;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate uint PresenceMixinGetMaximumStatusMessageLengthFunc (GLib.Object obj);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
@@ -3292,7 +3322,7 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static void* asv_get_boxed (GLib.HashTable<string,GLib.Value?> asv, string key, GLib.Type type);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
-	public static unowned GLib.Array<void*> asv_get_bytes (GLib.HashTable<string,GLib.Value?> asv, string key);
+	public static unowned GLib.Array<uint8> asv_get_bytes (GLib.HashTable<string,GLib.Value?> asv, string key);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static double asv_get_double (GLib.HashTable<string,GLib.Value?> asv, string key, out bool valid);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
@@ -3345,6 +3375,8 @@ namespace TelepathyGLib {
 	public static GLib.Quark errors_disconnected_quark ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark errors_removed_from_group_quark ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static string escape_as_identifier (string name);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_account ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
@@ -3544,5 +3576,13 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static void list_connection_names (TelepathyGLib.DBusDaemon bus_daemon, [CCode (delegate_target_pos = 2.33333, destroy_notify_pos = 2.66667)] owned TelepathyGLib.ConnectionNameListCb callback, GLib.Object? weak_object);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static async void simple_async_report_success_in_idle (GLib.Object? source, void* source_tag);
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static void svc_interface_set_dbus_properties_info (GLib.Type g_interface, TelepathyGLib.DBusPropertiesMixinIfaceInfo info);
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static int64 user_action_time_from_x11 (uint32 x11_time);
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static bool user_action_time_should_present (int64 user_action_time, out uint32 x11_time);
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	public static string utf8_make_valid (string name);
 }

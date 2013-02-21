@@ -17,7 +17,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="pango/pangocairo.h"/>
   <namespace name="PangoCairo"
              version="1.0"
-             shared-library="libpangocairo-1.0.so.0"
+             shared-library="libpango-1.0.so.0,libpangocairo-1.0.so.0"
              c:identifier-prefixes="PangoCairo"
              c:symbol-prefixes="pango_cairo">
     <class name="FcFontMap"
@@ -29,6 +29,9 @@ and/or use gtk-doc annotations.  -->
       <implements name="FontMap"/>
       <field name="parent_instance" introspectable="0">
         <type c:type="PangoFcFontMap"/>
+      </field>
+      <field name="serial">
+        <type name="guint" c:type="guint"/>
       </field>
       <field name="dpi">
         <type name="gdouble" c:type="double"/>
@@ -57,6 +60,12 @@ cairo_scaled_font_reference().</doc>
           <doc xml:whitespace="preserve">the #cairo_scaled_font_t used by @font, or %NULL if @font is %NULL.</doc>
           <type name="cairo.ScaledFont" c:type="cairo_scaled_font_t*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="font" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #PangoFont from a #PangoCairoFontMap</doc>
+            <type name="Font" c:type="PangoCairoFont*"/>
+          </instance-parameter>
+        </parameters>
       </method>
     </interface>
     <interface name="FontMap"
@@ -82,9 +91,13 @@ You generally should only use the #PangoFontMap and
 The default Cairo fontmap can be changed by using
 pango_cairo_font_map_set_default().  This can be used to
 change the Cairo font backend that the default fontmap
-uses for example.</doc>
+uses for example.
+
+Note that since Pango 1.32.6, the default fontmap is per-thread.
+Each thread gets its own default fontmap.  In this way,
+PangoCairo can be used safely from multiple threads.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the default Cairo fontmap for Pango. This object is owned by Pango and must not be freed.</doc>
+          <doc xml:whitespace="preserve">the default PangoCairo fontmap for the current thread. This object is owned by Pango and must not be freed.</doc>
           <type name="Pango.FontMap" c:type="PangoFontMap*"/>
         </return-value>
       </function>
@@ -137,6 +150,12 @@ or in fact in most of those cases, just use
           <doc xml:whitespace="preserve">the newly created context; free with g_object_unref().</doc>
           <type name="Pango.Context" c:type="PangoContext*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="fontmap" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #PangoCairoFontMap</doc>
+            <type name="FontMap" c:type="PangoCairoFontMap*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_font_type"
               c:identifier="pango_cairo_font_map_get_font_type"
@@ -146,6 +165,12 @@ or in fact in most of those cases, just use
           <doc xml:whitespace="preserve">the #cairo_font_type_t cairo font backend type</doc>
           <type name="cairo.FontType" c:type="cairo_font_type_t"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="fontmap" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #PangoCairoFontMap</doc>
+            <type name="FontMap" c:type="PangoCairoFontMap*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_resolution"
               c:identifier="pango_cairo_font_map_get_resolution"
@@ -155,6 +180,12 @@ or in fact in most of those cases, just use
           <doc xml:whitespace="preserve">the resolution in "dots per inch"</doc>
           <type name="gdouble" c:type="double"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="fontmap" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #PangoCairoFontMap</doc>
+            <type name="FontMap" c:type="PangoCairoFontMap*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="set_default"
               c:identifier="pango_cairo_font_map_set_default"
@@ -165,12 +196,24 @@ This can be used to change the Cairo font backend that the
 default fontmap uses for example.  The old default font map
 is unreffed and the new font map referenced.
 
+Note that since Pango 1.32.6, the default fontmap is per-thread.
+This function only changes the default fontmap for
+the current thread.   Default fontmaps of exisiting threads
+are not changed.  Default fontmaps of any new threads will
+still be created using pango_cairo_font_map_new().
+
 A value of %NULL for @fontmap will cause the current default
 font map to be released and a new default font
 map to be created on demand, using pango_cairo_font_map_new().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="fontmap" transfer-ownership="none">
+            <doc xml:whitespace="preserve">The new default font map, or %NULL</doc>
+            <type name="FontMap" c:type="PangoCairoFontMap*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="set_resolution"
               c:identifier="pango_cairo_font_map_set_resolution"
@@ -183,6 +226,10 @@ units high. (10 * 96. / 72. = 13.3).</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="fontmap" transfer-ownership="none">
+            <doc xml:whitespace="preserve">a #PangoCairoFontMap</doc>
+            <type name="FontMap" c:type="PangoCairoFontMap*"/>
+          </instance-parameter>
           <parameter name="dpi" transfer-ownership="none">
             <doc xml:whitespace="preserve">the resolution in "dots per inch". (Physical inches aren't actually involved; the terminology is conventional.)</doc>
             <type name="gdouble" c:type="double"/>
@@ -435,9 +482,13 @@ You generally should only use the #PangoFontMap and
 The default Cairo fontmap can be changed by using
 pango_cairo_font_map_set_default().  This can be used to
 change the Cairo font backend that the default fontmap
-uses for example.</doc>
+uses for example.
+
+Note that since Pango 1.32.6, the default fontmap is per-thread.
+Each thread gets its own default fontmap.  In this way,
+PangoCairo can be used safely from multiple threads.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:whitespace="preserve">the default Cairo fontmap for Pango. This object is owned by Pango and must not be freed.</doc>
+        <doc xml:whitespace="preserve">the default PangoCairo fontmap for the current thread. This object is owned by Pango and must not be freed.</doc>
         <type name="Pango.FontMap" c:type="PangoFontMap*"/>
       </return-value>
     </function>

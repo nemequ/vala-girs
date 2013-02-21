@@ -13,6 +13,7 @@ namespace E {
 	public abstract class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Client ();
+		[Deprecated (since = "3.8")]
 		public void cancel_all ();
 		public bool check_capability (string capability);
 		public bool check_refresh_supported ();
@@ -24,9 +25,12 @@ namespace E {
 		public unowned GLib.SList<string> get_capabilities ();
 		public unowned E.Source get_source ();
 		public bool is_online ();
+		[Deprecated (since = "3.8")]
 		public bool is_opened ();
 		public bool is_readonly ();
+		[Deprecated (since = "3.8")]
 		public virtual async bool open (bool only_if_exists, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public virtual bool open_sync (bool only_if_exists, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool refresh (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool refresh_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -34,18 +38,28 @@ namespace E {
 		public virtual async bool remove (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Deprecated (since = "3.6")]
 		public virtual bool remove_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public virtual async bool retrieve_capabilities (GLib.Cancellable? cancellable, out string capabilities) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public virtual bool retrieve_capabilities_sync (out string capabilities, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public virtual async bool set_backend_property (string prop_name, string prop_value, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public virtual bool set_backend_property_sync (string prop_name, string prop_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual void unwrap_dbus_error (GLib.Error dbus_error) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
+		[Deprecated (since = "3.8")]
 		public static GLib.SList<string> util_copy_string_slist (GLib.SList<string>? copy_to, GLib.SList<string> strings);
+		[Deprecated (since = "3.8")]
 		public static void util_free_object_slist (GLib.SList<GLib.Object> objects);
+		[Deprecated (since = "3.8")]
 		public static void util_free_string_slist (GLib.SList<string> strings);
 		public static GLib.SList<string> util_parse_comma_strings (string strings);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Deprecated (since = "3.8")]
 		public static string[] util_slist_to_strv (GLib.SList<string> strings);
+		[Deprecated (since = "3.8")]
 		public static GLib.SList<string> util_strv_to_slist (string strv);
 		public static bool util_unwrap_dbus_error (GLib.Error dbus_error, out GLib.Error client_error, E.ClientErrorsList known_errors, uint known_errors_count, GLib.Quark known_errors_domain, bool fail_when_none_matched);
 		public void* capabilities { get; }
@@ -67,53 +81,30 @@ namespace E {
 		public void free ();
 		public bool is_set ();
 		public void @set ();
+		[Deprecated (since = "3.8")]
 		public bool timed_wait (GLib.TimeVal abs_time);
 		public void wait ();
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_iterator_get_type ()")]
-	public class Iterator : GLib.Object {
-		[CCode (has_construct_function = false)]
-		protected Iterator ();
-		public void @delete ();
-		public virtual void* @get ();
-		public virtual void insert (void* object, bool before);
-		public virtual bool is_valid ();
-		public virtual void last ();
-		public virtual bool next ();
-		public virtual bool prev ();
-		[NoWrapper]
-		public virtual void remove ();
-		public virtual void reset ();
-		public virtual void @set (void* object);
-		[HasEmitter]
-		public virtual signal void invalidate ();
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_list_get_type ()")]
-	public class List : GLib.Object {
-		public void* closure;
-		public weak E.ListFreeFunc free;
-		public weak GLib.List<void*> iterators;
-		public weak GLib.List<void*> list;
-		[CCode (has_construct_function = false)]
-		protected List ();
-		public void append (void* data);
-		public E.List duplicate ();
-		public unowned E.Iterator get_iterator ();
-		public void invalidate_iterators (E.Iterator skip);
-		public int length ();
-		public void remove (void* data);
-		public void remove_iterator (E.Iterator iterator);
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_list_iterator_get_type ()")]
-	public class ListIterator : E.Iterator {
-		public weak GLib.List<void*> iterator;
-		public weak E.List list;
-		[CCode (has_construct_function = false, type = "EIterator*")]
-		public ListIterator (E.List list);
+		public bool wait_until (int64 end_time);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
 	public class MemChunk {
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_named_parameters_get_type ()")]
+	[Compact]
+	public class NamedParameters {
+		[CCode (has_construct_function = false)]
+		public NamedParameters ();
+		public void assign (E.NamedParameters? from);
+		public void clear ();
+		public void free ();
+		public unowned string @get (string name);
+		public void @set (string name, string? value);
+		[CCode (has_construct_function = false)]
+		public NamedParameters.strv (string strv);
+		public bool test (string name, string value, bool case_sensitively);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] to_strv ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
@@ -143,6 +134,8 @@ namespace E {
 		public unowned string get_display_name ();
 		public bool get_enabled ();
 		public unowned E.SourceExtension get_extension (string extension_name);
+		public virtual async bool get_oauth2_access_token (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual bool get_oauth2_access_token_sync (GLib.Cancellable? cancellable, string? out_access_token, int? out_expires_in) throws GLib.Error;
 		public unowned string get_parent ();
 		public bool get_remote_creatable ();
 		public bool get_remote_deletable ();
@@ -282,6 +275,7 @@ namespace E {
 	public abstract class SourceExtension : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected SourceExtension ();
+		[Deprecated (since = "3.8")]
 		public unowned E.Source get_source ();
 		public E.Source source { get; construct; }
 	}
@@ -290,9 +284,17 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceGoa ();
 		public string dup_account_id ();
+		public string dup_calendar_url ();
+		public string dup_contacts_url ();
 		public unowned string get_account_id ();
+		public unowned string get_calendar_url ();
+		public unowned string get_contacts_url ();
 		public void set_account_id (string? account_id);
+		public void set_calendar_url (string? calendar_url);
+		public void set_contacts_url (string? contacts_url);
 		public string account_id { get; set construct; }
+		public string calendar_url { get; set construct; }
+		public string contacts_url { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mdn_get_type ()")]
 	public class SourceMDN : E.SourceExtension {
@@ -383,10 +385,13 @@ namespace E {
 		protected SourceMailSubmission ();
 		public string dup_sent_folder ();
 		public string dup_transport_uid ();
+		public bool get_replies_to_origin_folder ();
 		public unowned string get_sent_folder ();
 		public unowned string get_transport_uid ();
+		public void set_replies_to_origin_folder (bool replies_to_origin_folder);
 		public void set_sent_folder (string? sent_folder);
 		public void set_transport_uid (string? transport_uid);
+		public bool replies_to_origin_folder { get; set construct; }
 		public string sent_folder { get; set construct; }
 		public string transport_uid { get; set construct; }
 	}
@@ -447,6 +452,7 @@ namespace E {
 		public async SourceRegistry (GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool authenticate (E.Source source, E.SourceAuthenticator auth, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool authenticate_sync (E.Source source, E.SourceAuthenticator auth, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool check_enabled (E.Source source);
 		public async bool commit_source (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool commit_source_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool create_sources (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -504,6 +510,14 @@ namespace E {
 		public void set_identity (string? identity);
 		public string identity { get; set construct; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_revision_guards_get_type ()")]
+	public class SourceRevisionGuards : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceRevisionGuards ();
+		public bool get_enabled ();
+		public void set_enabled (bool enabled);
+		public bool enabled { get; set construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_smime_get_type ()")]
 	public class SourceSMIME : E.SourceExtension {
 		[CCode (has_construct_function = false)]
@@ -559,6 +573,14 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceTaskList ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_uoa_get_type ()")]
+	public class SourceUoa : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceUoa ();
+		public uint get_account_id ();
+		public void set_account_id (uint account_id);
+		public uint account_id { get; set construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_webdav_get_type ()")]
 	public class SourceWebdav : E.SourceExtension {
 		[CCode (has_construct_function = false)]
@@ -567,20 +589,26 @@ namespace E {
 		public string dup_email_address ();
 		public string dup_resource_path ();
 		public string dup_resource_query ();
+		public string dup_ssl_trust ();
 		public bool get_avoid_ifmatch ();
 		public bool get_calendar_auto_schedule ();
 		public unowned string get_display_name ();
 		public unowned string get_email_address ();
+		[Deprecated (since = "3.8")]
 		public bool get_ignore_invalid_cert ();
 		public unowned string get_resource_path ();
 		public unowned string get_resource_query ();
+		public unowned string get_ssl_trust ();
 		public void set_avoid_ifmatch (bool avoid_ifmatch);
 		public void set_calendar_auto_schedule (bool calendar_auto_schedule);
 		public void set_display_name (string? display_name);
 		public void set_email_address (string? email_address);
+		[Deprecated (since = "3.8")]
 		public void set_ignore_invalid_cert (bool ignore_invalid_cert);
 		public void set_resource_path (string? resource_path);
 		public void set_resource_query (string? resource_query);
+		public void set_ssl_trust (string? ssl_trust);
+		public void unset_temporary_ssl_trust ();
 		public bool avoid_ifmatch { get; set construct; }
 		public bool calendar_auto_schedule { get; set construct; }
 		public string display_name { get; set construct; }
@@ -588,16 +616,11 @@ namespace E {
 		public bool ignore_invalid_cert { get; set construct; }
 		public string resource_path { get; set construct; }
 		public string resource_query { get; set construct; }
+		public string ssl_trust { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
 	public class XmlHash {
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EGdbusAsyncOpKeeperInterface", type_id = "e_gdbus_async_op_keeper_get_type ()")]
-	public interface GdbusAsyncOpKeeper : GLib.Object {
-		public abstract bool cancel_op_sync (uint in_opid, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public GLib.HashTable<void*,void*> create_pending_ops ();
-		public abstract unowned GLib.HashTable<void*,void*> get_pending_ops ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "ESourceAuthenticatorInterface", type_id = "e_source_authenticator_get_type ()")]
 	public interface SourceAuthenticator : GLib.Object {
@@ -606,43 +629,32 @@ namespace E {
 		public abstract E.SourceAuthenticationResult try_password_sync (GLib.StringBuilder password, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
+	public struct CancellableMutex {
+		public void* @base;
+		public weak GLib.Mutex mutex;
+		public void clear ();
+		public void init ();
+		public bool @lock (GLib.Cancellable? cancellable = null);
+		public void unlock ();
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
+	public struct CancellableRecMutex {
+		public void* @base;
+		public GLib.RecMutex rec_mutex;
+		public void clear ();
+		public void init ();
+		public bool @lock (GLib.Cancellable? cancellable = null);
+		public void unlock ();
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	public struct ClientErrorsList {
 		public weak string name;
 		public int err_code;
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
-	public struct Credentials {
-		public void clear ();
-		public void clear_peek ();
-		public bool equal (E.Credentials credentials2);
-		public void free ();
-		public string @get (string key);
-		public bool has_key (string key);
-		public uint keys_size ();
-		public GLib.SList<weak string> list_keys ();
-		public unowned string peek (string key);
-		public void @set (string key, string value);
-		[CCode (array_length = false, array_null_terminated = true)]
-		public string[] to_strv ();
-		public static string util_prompt_flags_to_string (uint prompt_flags);
-		public static void util_safe_free_string (string str);
-		public static uint util_string_to_prompt_flags (string prompt_flags_string);
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
-	public struct Uri {
-		public weak string protocol;
-		public weak string user;
-		public weak string authmech;
-		public weak string passwd;
-		public weak string host;
-		public int port;
-		public weak string path;
-		public GLib.Datalist @params;
-		public weak string query;
-		public weak string fragment;
-		public void free ();
-		public unowned string get_param (string name);
-		public string to_string (bool show_password);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "_ECancellableLocksBase", has_type_id = false)]
+	public struct _CancellableLocksBase {
+		public weak GLib.Mutex cond_mutex;
+		public weak GLib.Cond cond;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {
@@ -666,20 +678,8 @@ namespace E {
 		QUERY_REFUSED,
 		DBUS_ERROR,
 		OTHER_ERROR,
-		NOT_OPENED
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CREDENTIALS_PROMPT_FLAG_", has_type_id = false)]
-	[Flags]
-	public enum CredentialsPromptFlags {
-		REMEMBER_NEVER,
-		REMEMBER_SESSION,
-		REMEMBER_FOREVER,
-		REMEMBER_MASK,
-		SECRET,
-		REPROMPT,
-		ONLINE,
-		DISABLE_REMEMBER,
-		PASSPHRASE
+		NOT_OPENED,
+		OUT_OF_SYNC
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_MDN_RESPONSE_POLICY_", type_id = "e_mdn_response_policy_get_type ()")]
 	public enum MdnResponsePolicy {
@@ -699,6 +699,14 @@ namespace E {
 		NONE,
 		INVALID
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TRUST_PROMPT_RESPONSE_", type_id = "e_trust_prompt_response_get_type ()")]
+	public enum TrustPromptResponse {
+		UNKNOWN,
+		REJECT,
+		ACCEPT,
+		ACCEPT_TEMPORARILY,
+		REJECT_TEMPORARILY
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_XMLHASH_STATUS_", has_type_id = false)]
 	public enum XmlHashStatus {
 		SAME,
@@ -710,28 +718,6 @@ namespace E {
 		OBJECT_UID,
 		PROPERTY
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
-	public delegate bool GdbusCallFinishBoolean (GLib.DBusProxy proxy, GLib.AsyncResult result, bool out_boolean) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
-	public delegate bool GdbusCallFinishString (GLib.DBusProxy proxy, GLib.AsyncResult result, string out_string) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
-	public delegate bool GdbusCallFinishStrv (GLib.DBusProxy proxy, GLib.AsyncResult result, string out_strv) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
-	public delegate bool GdbusCallFinishUint (GLib.DBusProxy proxy, GLib.AsyncResult result, uint out_uint) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
-	public delegate bool GdbusCallFinishVoid (GLib.DBusProxy proxy, GLib.AsyncResult result) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 4.9)]
-	public delegate void GdbusCallStartBoolean (GLib.DBusProxy proxy, bool in_boolean, GLib.Cancellable? cancellable, [CCode (delegate_target_pos = 0)] GLib.AsyncReadyCallback? callback);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 4.9)]
-	public delegate void GdbusCallStartString (GLib.DBusProxy proxy, string in_string, GLib.Cancellable? cancellable, [CCode (delegate_target_pos = 0)] GLib.AsyncReadyCallback? callback);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 4.9)]
-	public delegate void GdbusCallStartStrv (GLib.DBusProxy proxy, string in_strv, GLib.Cancellable? cancellable, [CCode (delegate_target_pos = 0)] GLib.AsyncReadyCallback? callback);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 4.9)]
-	public delegate void GdbusCallStartUint (GLib.DBusProxy proxy, uint in_uint, GLib.Cancellable? cancellable, [CCode (delegate_target_pos = 0)] GLib.AsyncReadyCallback? callback);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 3.9)]
-	public delegate void GdbusCallStartVoid (GLib.DBusProxy proxy, GLib.Cancellable? cancellable, [CCode (delegate_target_pos = 0)] GLib.AsyncReadyCallback? callback);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
-	public delegate void ListFreeFunc (void* data, void* closure);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
 	public delegate void SourceRefreshFunc (E.Source source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
@@ -800,12 +786,16 @@ namespace E {
 	public const string SOURCE_EXTENSION_REFRESH;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_RESOURCE")]
 	public const string SOURCE_EXTENSION_RESOURCE;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_REVISION_GUARDS")]
+	public const string SOURCE_EXTENSION_REVISION_GUARDS;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_SECURITY")]
 	public const string SOURCE_EXTENSION_SECURITY;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_SMIME")]
 	public const string SOURCE_EXTENSION_SMIME;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_TASK_LIST")]
 	public const string SOURCE_EXTENSION_TASK_LIST;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_UOA")]
+	public const string SOURCE_EXTENSION_UOA;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEBDAV_BACKEND")]
 	public const string SOURCE_EXTENSION_WEBDAV_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_PARAM_SETTING")]
@@ -833,8 +823,10 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_unregister_change_listener (GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.8")]
 	public static int data_server_util_get_dbus_call_timeout ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.8")]
 	public static void data_server_util_set_dbus_call_timeout (int timeout_msec);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void debug_log_clear ();
@@ -855,6 +847,10 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void debug_log_set_max_lines (int num_lines);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static bool enum_from_string (GLib.Type enum_type, string string, int enum_value);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static unowned string enum_to_string (GLib.Type enum_type, int enum_value);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static async bool file_recursive_delete (GLib.File file, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool file_recursive_delete_sync (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -862,18 +858,6 @@ namespace E {
 	public static void filename_make_safe (string string);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string filename_mkdir_encoded (string basepath, string fileprefix, string filename, int fileindex);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_complete_async_method (void* object, GLib.DBusMethodInvocation invocation, uint opid);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_complete_sync_method_boolean (void* object, GLib.DBusMethodInvocation invocation, bool out_boolean, GLib.Error error);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_complete_sync_method_string (void* object, GLib.DBusMethodInvocation invocation, string out_string, GLib.Error error);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_complete_sync_method_strv (void* object, GLib.DBusMethodInvocation invocation, string out_strv, GLib.Error error);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_complete_sync_method_uint (void* object, GLib.DBusMethodInvocation invocation, uint out_uint, GLib.Error error);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_complete_sync_method_void (void* object, GLib.DBusMethodInvocation invocation, GLib.Error error);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void gdbus_marshallers_BOOLEAN__OBJECT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -897,132 +881,6 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void gdbus_marshallers_VOID__UINT_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_proxy_async_method_done_boolean (E.GdbusAsyncOpKeeper proxy, uint arg_opid, GLib.Error error, bool out_boolean);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_proxy_async_method_done_string (E.GdbusAsyncOpKeeper proxy, uint arg_opid, GLib.Error error, string out_string);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_proxy_async_method_done_strv (E.GdbusAsyncOpKeeper proxy, uint arg_opid, GLib.Error error, string out_strv);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_proxy_async_method_done_uint (E.GdbusAsyncOpKeeper proxy, uint arg_opid, GLib.Error error, uint out_uint);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_proxy_async_method_done_void (E.GdbusAsyncOpKeeper proxy, uint arg_opid, GLib.Error error);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_call_boolean (string method_name, void* source_tag, E.GdbusAsyncOpKeeper proxy, bool in_boolean, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_call_string (string method_name, void* source_tag, E.GdbusAsyncOpKeeper proxy, string in_string, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_call_strv (string method_name, void* source_tag, E.GdbusAsyncOpKeeper proxy, string in_strv, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_boolean__void (GLib.DBusProxy proxy, bool in_boolean, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartBoolean start_func, E.GdbusCallFinishVoid finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_string__string (GLib.DBusProxy proxy, string in_string, string out_string, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartString start_func, E.GdbusCallFinishString finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_string__strv (GLib.DBusProxy proxy, string in_string, string out_strv, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartString start_func, E.GdbusCallFinishStrv finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_string__void (GLib.DBusProxy proxy, string in_string, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartString start_func, E.GdbusCallFinishVoid finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_strv__string (GLib.DBusProxy proxy, string in_strv, string out_string, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartStrv start_func, E.GdbusCallFinishString finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_strv__strv (GLib.DBusProxy proxy, string in_strv, string out_strv, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartStrv start_func, E.GdbusCallFinishStrv finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_strv__void (GLib.DBusProxy proxy, string in_strv, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartStrv start_func, E.GdbusCallFinishVoid finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_uint__void (GLib.DBusProxy proxy, uint in_uint, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartUint start_func, E.GdbusCallFinishVoid finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_void__boolean (GLib.DBusProxy proxy, bool out_boolean, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartVoid start_func, E.GdbusCallFinishBoolean finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_void__string (GLib.DBusProxy proxy, string out_string, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartVoid start_func, E.GdbusCallFinishString finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_void__strv (GLib.DBusProxy proxy, string out_strv, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartVoid start_func, E.GdbusCallFinishStrv finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_void__uint (GLib.DBusProxy proxy, uint out_uint, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartVoid start_func, E.GdbusCallFinishUint finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_call_sync_void__void (GLib.DBusProxy proxy, GLib.Cancellable? cancellable, GLib.Error error, E.GdbusCallStartVoid start_func, E.GdbusCallFinishVoid finish_func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_call_uint (string method_name, void* source_tag, E.GdbusAsyncOpKeeper proxy, uint in_uint, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_call_void (string method_name, void* source_tag, E.GdbusAsyncOpKeeper proxy, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_proxy_emit_signal (GLib.DBusProxy proxy, GLib.Variant parameters, uint signal_id, uint signal_type);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_finish_call_boolean (E.GdbusAsyncOpKeeper proxy, GLib.AsyncResult result, bool out_boolean, GLib.Error error, void* source_tag);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_finish_call_string (E.GdbusAsyncOpKeeper proxy, GLib.AsyncResult result, string out_string, GLib.Error error, void* source_tag);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_finish_call_strv (E.GdbusAsyncOpKeeper proxy, GLib.AsyncResult result, string out_strv, GLib.Error error, void* source_tag);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_finish_call_uint (E.GdbusAsyncOpKeeper proxy, GLib.AsyncResult result, uint out_uint, GLib.Error error, void* source_tag);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_finish_call_void (E.GdbusAsyncOpKeeper proxy, GLib.AsyncResult result, GLib.Error error, void* source_tag);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_method_call_boolean (string method_name, GLib.DBusProxy proxy, bool in_boolean, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_finish_boolean (GLib.DBusProxy proxy, GLib.AsyncResult result, bool out_boolean) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_finish_string (GLib.DBusProxy proxy, GLib.AsyncResult result, string out_string) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_finish_strv (GLib.DBusProxy proxy, GLib.AsyncResult result, string out_strv) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_finish_uint (GLib.DBusProxy proxy, GLib.AsyncResult result, uint out_uint) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_finish_void (GLib.DBusProxy proxy, GLib.AsyncResult result) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_method_call_string (string method_name, GLib.DBusProxy proxy, string in_string, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_method_call_strv (string method_name, GLib.DBusProxy proxy, string in_strv, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_boolean__void (string method_name, GLib.DBusProxy proxy, bool in_boolean, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_string__string (string method_name, GLib.DBusProxy proxy, string in_string, string out_string, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_string__void (string method_name, GLib.DBusProxy proxy, string in_string, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_strv__string (string method_name, GLib.DBusProxy proxy, string in_strv, string out_string, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_strv__void (string method_name, GLib.DBusProxy proxy, string in_strv, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_uint__void (string method_name, GLib.DBusProxy proxy, uint in_uint, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_proxy_method_call_sync_void__void (string method_name, GLib.DBusProxy proxy, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_method_call_uint (string method_name, GLib.DBusProxy proxy, uint in_uint, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void gdbus_proxy_method_call_void (string method_name, GLib.DBusProxy proxy, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_async_boolean (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_async_string (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_async_strv (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_async_uint (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_async_void (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_boolean (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_string (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_strv (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_uint (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_uint_string (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_signal_emission_hook_void (GLib.SignalInvocationHint ihint, uint n_param_values, GLib.Value param_values, string signal_name, string iface_name);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_stub_handle_method_call (GLib.Object stub_object, GLib.DBusMethodInvocation invocation, GLib.Variant parameters, string method_name, uint method_id, uint method_type);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_templates_decode_error (string in_strv) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool gdbus_templates_decode_two_strings (string in_strv, string out_str1, string out_str2);
-	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
-	public static string[] gdbus_templates_encode_error (GLib.Error? in_error);
-	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
-	public static string[] gdbus_templates_encode_two_strings (string? in_str1, string? in_str2);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_templates_init_main_thread ();
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string get_user_cache_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string get_user_config_dir ();
@@ -1030,6 +888,8 @@ namespace E {
 	public static unowned string get_user_data_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void localtime_with_offset (long tt, void* tm, int offset);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static void marshal_VOID__INT_STRING_STRING_STRING_STRING_BOOLEAN_POINTER (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void marshal_VOID__OBJECT_BOXED (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1046,6 +906,8 @@ namespace E {
 	public static void memchunk_free (E.MemChunk memchunk, void* mem);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static long mktime_utc (void* tm);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static void queue_transfer (GLib.Queue src_queue, GLib.Queue dst_queue);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t strftime (string string, size_t max, string fmt, void* tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1067,22 +929,22 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string uid_new ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool url_equal (string url1, string url2);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static string url_shroud (string url);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t utf8_strftime (string string, size_t max, string fmt, void* tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.8")]
 	public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.8")]
 	public static GLib.SList<string> util_copy_string_slist (GLib.SList<string>? copy_to, GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string util_ensure_gdbus_string (string str, string gdbus_str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void util_free_nullable_object_slist (GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.8")]
 	public static void util_free_object_slist (GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.8")]
 	public static void util_free_string_slist (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
@@ -1101,6 +963,8 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_utf8_make_valid (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static string util_utf8_normalize (string str);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_utf8_remove_accents (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int util_utf8_strcasecmp (string s1, string s2);
@@ -1111,7 +975,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<void*,void*> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static int xml_save_file (string filename, Xml.Doc doc);
+	public static int xml_save_file (string filename, [CCode (type = "xmlDocPtr")] Xml.Doc* doc);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static GLib.HashTable<void*,void*> xml_to_hash (Xml.Doc doc, E.XmlHashType type);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
