@@ -1666,6 +1666,45 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="extract_dup"
+              c:identifier="gst_buffer_extract_dup"
+              version="1.0.10">
+        <doc xml:space="preserve">Extracts a copy of at most @size bytes the data at @offset into a #GBytes.
+@dest must be freed using g_free() when done.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstBuffer</doc>
+            <type name="Buffer" c:type="GstBuffer*"/>
+          </instance-parameter>
+          <parameter name="offset" transfer-ownership="none">
+            <doc xml:space="preserve">the offset to extract</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <doc xml:space="preserve">the size to extract</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="dest"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A pointer where the destination array will be written.</doc>
+            <array length="3" zero-terminated="0" c:type="gpointer*">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="dest_size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A location where the size of @dest can be written</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="fill" c:identifier="gst_buffer_fill">
         <doc xml:space="preserve">Copy @size bytes from @src to @buffer at @offset.</doc>
         <return-value transfer-ownership="none">
@@ -9730,7 +9769,14 @@ Please note that some queries might need a running pipeline to work.</doc>
         </parameters>
       </method>
       <method name="query_duration" c:identifier="gst_element_query_duration">
-        <doc xml:space="preserve">Queries an element for the total stream duration.</doc>
+        <doc xml:space="preserve">Queries an element (usually top-level pipeline or playbin element) for the
+total stream duration in nanoseconds. This query will only work once the
+pipeline is prerolled (i.e. reached PAUSED or PLAYING state). The application
+will receive an ASYNC_DONE message on the pipeline bus when that is the case.
+
+If the duration changes for some reason, you will get a DURATION_CHANGED
+message on the pipeline bus, in which case you should re-query the duration
+using this function.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">TRUE if the query could be performed.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -9755,8 +9801,15 @@ Please note that some queries might need a running pipeline to work.</doc>
         </parameters>
       </method>
       <method name="query_position" c:identifier="gst_element_query_position">
-        <doc xml:space="preserve">Queries an element for the stream position. If one repeatedly calls this
-function one can also create and reuse it in gst_element_query().</doc>
+        <doc xml:space="preserve">Queries an element (usually top-level pipeline or playbin element) for the
+stream position in nanoseconds. This will be a value between 0 and the
+stream duration (if the stream duration is known). This query will usually
+only work once the pipeline is prerolled (i.e. reached PAUSED or PLAYING
+state). The application will receive an ASYNC_DONE message on the pipeline
+bus when that is the case.
+
+If one repeatedly calls this function one can also create a query and reuse
+it in gst_element_query().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">TRUE if the query could be performed.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -21712,7 +21765,7 @@ MT safe.</doc>
             <doc xml:space="preserve">a #GstPipeline</doc>
             <type name="Pipeline" c:type="GstPipeline*"/>
           </instance-parameter>
-          <parameter name="clock" transfer-ownership="none">
+          <parameter name="clock" transfer-ownership="none" allow-none="1">
             <doc xml:space="preserve">the clock to use</doc>
             <type name="Clock" c:type="GstClock*"/>
           </parameter>
@@ -24170,7 +24223,7 @@ found.</doc>
           <parameter name="index"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full"
+                     transfer-ownership="none"
                      allow-none="1">
             <doc xml:space="preserve">the index</doc>
             <type name="guint" c:type="guint*"/>
@@ -24334,7 +24387,7 @@ valid.</doc>
           <parameter name="caps"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="none">
             <doc xml:space="preserve">A pointer to the caps</doc>
             <type name="Caps" c:type="GstCaps**"/>
           </parameter>
@@ -24524,7 +24577,7 @@ are non-NULL</doc>
           <parameter name="filter"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="none">
             <doc xml:space="preserve">A pointer to the caps filter</doc>
             <type name="Caps" c:type="GstCaps**"/>
           </parameter>
@@ -24545,7 +24598,7 @@ are non-NULL</doc>
           <parameter name="caps"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
+                     transfer-ownership="none">
             <doc xml:space="preserve">A pointer to the caps</doc>
             <type name="Caps" c:type="GstCaps**"/>
           </parameter>
@@ -24701,7 +24754,7 @@ at @index of the metadata API array.</doc>
           <parameter name="params"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full"
+                     transfer-ownership="none"
                      allow-none="1">
             <doc xml:space="preserve">API specific flags</doc>
             <type name="Structure" c:type="const GstStructure**"/>
@@ -26376,7 +26429,7 @@ Free-function: gst_sample_unref</doc>
       <method name="get_buffer" c:identifier="gst_sample_get_buffer">
         <doc xml:space="preserve">Get the buffer associated with @sample</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the buffer of @sample or NULL when there is no buffer. The buffer remains valid as long as @sample is valid.</doc>
+          <doc xml:space="preserve">the buffer of @sample or NULL when there is no buffer. The buffer remains valid as long as @sample is valid. If you need to hold on to it for longer than that, take a ref to the buffer with gst_buffer_ref().</doc>
           <type name="Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -26389,7 +26442,7 @@ Free-function: gst_sample_unref</doc>
       <method name="get_caps" c:identifier="gst_sample_get_caps">
         <doc xml:space="preserve">Get the caps associated with @sample</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the caps of @sample or NULL when there is no caps. The caps remain valid as long as @sample is valid.</doc>
+          <doc xml:space="preserve">the caps of @sample or NULL when there is no caps. The caps remain valid as long as @sample is valid. If you need to hold on to the caps for longer than that, take a ref to the caps with gst_caps_ref().</doc>
           <type name="Caps" c:type="GstCaps*"/>
         </return-value>
         <parameters>
