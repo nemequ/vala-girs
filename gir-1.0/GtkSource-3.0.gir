@@ -2538,9 +2538,13 @@ before lower priorities. The default priority is 0.</doc>
       </virtual-method>
       <virtual-method name="get_start_iter" invoker="get_start_iter">
         <doc xml:space="preserve">Get the #GtkTextIter at which the completion for @proposal starts. When
-implemented, the completion can use this information to position the
-completion window accordingly when a proposal is selected in the completion
-window.
+implemented, this information is used to position the completion window
+accordingly when a proposal is selected in the completion window. The
+@proposal text inside the completion window is aligned on @iter.
+
+If this function is not implemented, the word boundary is taken to position
+the completion window. See gtk_source_completion_provider_activate_proposal()
+for an explanation on the word boundaries.
 
 When the @proposal is activated, the default handler uses @iter as the start
 of the word to replace. See
@@ -2787,9 +2791,13 @@ before lower priorities. The default priority is 0.</doc>
       <method name="get_start_iter"
               c:identifier="gtk_source_completion_provider_get_start_iter">
         <doc xml:space="preserve">Get the #GtkTextIter at which the completion for @proposal starts. When
-implemented, the completion can use this information to position the
-completion window accordingly when a proposal is selected in the completion
-window.
+implemented, this information is used to position the completion window
+accordingly when a proposal is selected in the completion window. The
+@proposal text inside the completion window is aligned on @iter.
+
+If this function is not implemented, the word boundary is taken to position
+the completion window. See gtk_source_completion_provider_activate_proposal()
+for an explanation on the word boundaries.
 
 When the @proposal is activated, the default handler uses @iter as the start
 of the word to replace. See
@@ -5612,7 +5620,9 @@ pixbuf can be %NULL if it wasn't set earlier.</doc>
         </parameters>
       </method>
       <method name="get_stock_id"
-              c:identifier="gtk_source_mark_attributes_get_stock_id">
+              c:identifier="gtk_source_mark_attributes_get_stock_id"
+              deprecated="Don&apos;t use this function."
+              deprecated-version="3.10">
         <doc xml:space="preserve">Gets a stock id of an icon used by this attributes. Note that the stock id can
 be %NULL if it wasn't set earlier.</doc>
         <return-value transfer-ownership="none">
@@ -5761,7 +5771,9 @@ gtk_source_mark_attributes_set_stock_id(). @size cannot be lower than 1.</doc>
         </parameters>
       </method>
       <method name="set_stock_id"
-              c:identifier="gtk_source_mark_attributes_set_stock_id">
+              c:identifier="gtk_source_mark_attributes_set_stock_id"
+              deprecated="Don&apos;t use this function."
+              deprecated-version="3.10">
         <doc xml:space="preserve">Sets stock id to be used as a base for rendered icon.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -5793,7 +5805,11 @@ gtk_source_mark_attributes_set_stock_id(). @size cannot be lower than 1.</doc>
         <doc xml:space="preserve">A #GdkPixbuf that may be a base of a rendered icon.</doc>
         <type name="GdkPixbuf.Pixbuf"/>
       </property>
-      <property name="stock-id" writable="1" transfer-ownership="none">
+      <property name="stock-id"
+                deprecated="Don&apos;t use this property."
+                deprecated-version="3.10"
+                writable="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">A stock id that may be a base of a rendered icon.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -6929,37 +6945,6 @@ call to the gtk_source_print_compositor_paginate() function.</doc>
             c:type="GtkSourcePrintCompositorPrivate"
             disguised="1">
     </record>
-    <enumeration name="RegexSearchState"
-                 version="3.10"
-                 glib:type-name="GtkSourceRegexSearchState"
-                 glib:get-type="gtk_source_regex_search_state_get_type"
-                 c:type="GtkSourceRegexSearchState">
-      <doc xml:space="preserve">Regular expression search state.</doc>
-      <member name="no_error"
-              value="0"
-              c:identifier="GTK_SOURCE_REGEX_SEARCH_NO_ERROR"
-              glib:nick="no-error">
-        <doc xml:space="preserve">everything is fine, or the regex search is disabled.</doc>
-      </member>
-      <member name="compilation_error"
-              value="1"
-              c:identifier="GTK_SOURCE_REGEX_SEARCH_COMPILATION_ERROR"
-              glib:nick="compilation-error">
-        <doc xml:space="preserve">pattern compilation error.</doc>
-      </member>
-      <member name="matching_error"
-              value="2"
-              c:identifier="GTK_SOURCE_REGEX_SEARCH_MATCHING_ERROR"
-              glib:nick="matching-error">
-        <doc xml:space="preserve">error while matching the buffer.</doc>
-      </member>
-      <member name="replace_error"
-              value="3"
-              c:identifier="GTK_SOURCE_REGEX_SEARCH_REPLACE_ERROR"
-              glib:nick="replace-error">
-        <doc xml:space="preserve"> replace error.</doc>
-      </member>
-    </enumeration>
     <class name="SearchContext"
            c:symbol-prefix="search_context"
            c:type="GtkSourceSearchContext"
@@ -7251,10 +7236,11 @@ gtk_source_search_context_forward_async().</doc>
               c:identifier="gtk_source_search_context_get_occurrence_position"
               version="3.10">
         <doc xml:space="preserve">Gets the position of a search occurrence. If the buffer is not already fully
-scanned, the position may be unknown, and -1 is returned. Therefore you
-should call this function when you know that the buffer is fully scanned.</doc>
+scanned, the position may be unknown, and -1 is returned. If 0 is returned,
+it means that this part of the buffer has already been scanned, and that
+@match_start and @match_end don't delimit an occurrence.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the position of the search occurrence. The first occurrence has the position 1 (not 0). Returns 0 if @match_start and @match_end doesn't delimit an occurrence. Returns -1 if the position is not yet known.</doc>
+          <doc xml:space="preserve">the position of the search occurrence. The first occurrence has the position 1 (not 0). Returns 0 if @match_start and @match_end don't delimit an occurrence. Returns -1 if the position is not yet known.</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
@@ -7308,20 +7294,6 @@ Free the return value with g_error_free().</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_regex_state"
-              c:identifier="gtk_source_search_context_get_regex_state"
-              version="3.10">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the regex search state.</doc>
-          <type name="RegexSearchState" c:type="GtkSourceRegexSearchState"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="search" transfer-ownership="none">
-            <doc xml:space="preserve">a #GtkSourceSearchContext.</doc>
-            <type name="SearchContext" c:type="GtkSourceSearchContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_settings"
               c:identifier="gtk_source_search_context_get_settings"
               version="3.10">
@@ -7338,7 +7310,8 @@ Free the return value with g_error_free().</doc>
       </method>
       <method name="replace"
               c:identifier="gtk_source_search_context_replace"
-              version="3.10">
+              version="3.10"
+              throws="1">
         <doc xml:space="preserve">Replaces a search match by another text. If @match_start and @match_end
 doesn't correspond to a search match, %FALSE is returned.
 
@@ -7374,7 +7347,8 @@ backreferences; read the g_regex_replace() documentation for more details.</doc>
       </method>
       <method name="replace_all"
               c:identifier="gtk_source_search_context_replace_all"
-              version="3.10">
+              version="3.10"
+              throws="1">
         <doc xml:space="preserve">Replaces all search matches by another text. It is a synchronous function, so
 it can block the user interface.
 
@@ -7469,10 +7443,6 @@ property will be set. If the pattern is valid, the value is %NULL.
 
 Free with g_error_free().</doc>
         <type name="gpointer" c:type="gpointer"/>
-      </property>
-      <property name="regex-state" version="3.10" transfer-ownership="none">
-        <doc xml:space="preserve">The regex search state.</doc>
-        <type name="RegexSearchState"/>
       </property>
       <property name="settings"
                 version="3.10"
