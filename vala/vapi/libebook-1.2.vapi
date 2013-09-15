@@ -11,10 +11,12 @@ namespace E {
 		public bool add_contact_sync (E.Contact contact, out string out_added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool add_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
 		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static async void connect (E.Source source, GLib.Cancellable? cancellable);
+		public static async E.BookClient connect (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static E.BookClient connect_direct_sync (E.SourceRegistry registry, E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static E.BookClient connect_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contact (string uid, GLib.Cancellable? cancellable, out E.Contact out_contact) throws GLib.Error;
 		public bool get_contact_sync (string uid, out E.Contact out_contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async void get_contacts (string sexp, GLib.Cancellable? cancellable);
+		public async bool get_contacts (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.Contact> out_contacts) throws GLib.Error;
 		public bool get_contacts_sync (string sexp, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contacts_uids (string sexp, GLib.Cancellable? cancellable, out GLib.SList<string> out_contact_uids) throws GLib.Error;
 		public bool get_contacts_uids_sync (string sexp, out GLib.SList<string> out_contact_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -38,6 +40,7 @@ namespace E {
 	public class BookClientView : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected BookClientView ();
+		[Deprecated (since = "3.10")]
 		public void* get_client ();
 		public unowned GLib.DBusConnection get_connection ();
 		public unowned string get_object_path ();
@@ -125,6 +128,4 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libebook/libebook.h")]
 	public static GLib.Quark book_error_quark ();
-	[CCode (cheader_filename = "libebook/libebook.h")]
-	public static void book_marshal_VOID__UINT_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 }

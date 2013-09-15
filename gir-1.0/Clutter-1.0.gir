@@ -23987,7 +23987,9 @@ return the same device as clutter_event_get_device().</doc>
       <method name="get_state"
               c:identifier="clutter_event_get_state"
               version="0.4">
-        <doc xml:space="preserve">Retrieves the modifier state of the event.</doc>
+        <doc xml:space="preserve">Retrieves the modifier state of the event. In case the window system
+supports reporting latched and locked modifiers, this function returns
+the effective state.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the modifier state parameter, or 0</doc>
           <type name="ModifierType" c:type="ClutterModifierType"/>
@@ -23997,6 +23999,62 @@ return the same device as clutter_event_get_device().</doc>
             <doc xml:space="preserve">a #ClutterEvent</doc>
             <type name="Event" c:type="const ClutterEvent*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_state_full"
+              c:identifier="clutter_event_get_state_full"
+              version="1.16">
+        <doc xml:space="preserve">Retrieves the decomposition of the keyboard state into button, base,
+latched, locked and effective. This can be used to transmit to other
+applications, for example when implementing a wayland compositor.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a #ClutterEvent</doc>
+            <type name="Event" c:type="const ClutterEvent*"/>
+          </instance-parameter>
+          <parameter name="button_state"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:space="preserve">the pressed buttons as a mask</doc>
+            <type name="ModifierType" c:type="ClutterModifierType*"/>
+          </parameter>
+          <parameter name="base_state"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:space="preserve">the regular pressed modifier keys</doc>
+            <type name="ModifierType" c:type="ClutterModifierType*"/>
+          </parameter>
+          <parameter name="latched_state"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:space="preserve">the latched modifier keys (currently released but still valid for one key press/release)</doc>
+            <type name="ModifierType" c:type="ClutterModifierType*"/>
+          </parameter>
+          <parameter name="locked_state"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:space="preserve">the locked modifier keys (valid until the lock key is pressed and released again)</doc>
+            <type name="ModifierType" c:type="ClutterModifierType*"/>
+          </parameter>
+          <parameter name="effective_state"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     allow-none="1">
+            <doc xml:space="preserve">the logical OR of all the state bits above</doc>
+            <type name="ModifierType" c:type="ClutterModifierType*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_time"
@@ -28399,6 +28457,22 @@ device motion.</doc>
             <doc xml:space="preserve">return location for the modifiers at @index_</doc>
             <type name="ModifierType" c:type="ClutterModifierType*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_modifier_state"
+              c:identifier="clutter_input_device_get_modifier_state"
+              version="1.16">
+        <doc xml:space="preserve">Retrieves the current modifiers state of the device, as seen
+by the last event Clutter processed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the last known modifier state</doc>
+          <type name="ModifierType" c:type="ClutterModifierType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #ClutterInputDevice</doc>
+            <type name="InputDevice" c:type="ClutterInputDevice*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_n_axes"
@@ -41251,7 +41325,7 @@ useful for language bindings.</doc>
       <doc xml:space="preserve">The major version of the Clutter library (1, if %CLUTTER_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="90" c:type="CLUTTER_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="93" c:type="CLUTTER_MICRO_VERSION">
       <doc xml:space="preserve">The micro version of the Clutter library (3, if %CLUTTER_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -61313,7 +61387,7 @@ While these are not:
       <doc xml:space="preserve">Numerically encoded version of the Clutter library, like 0x010203</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_S" value="1.15.90" c:type="CLUTTER_VERSION_S">
+    <constant name="VERSION_S" value="1.15.93" c:type="CLUTTER_VERSION_S">
       <doc xml:space="preserve">The full version of the Clutter library, in string form (suited for
 string concatenation)</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -61454,6 +61528,11 @@ clutter_vertex_copy().</doc>
     </constant>
     <constant name="W" value="87" c:type="CLUTTER_W">
       <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="WINDOWING_EGL"
+              value="eglnative"
+              c:type="CLUTTER_WINDOWING_EGL">
+      <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="WINDOWING_GDK" value="gdk" c:type="CLUTTER_WINDOWING_GDK">
       <type name="utf8" c:type="gchar*"/>
@@ -66306,6 +66385,21 @@ If @enable is %FALSE the following events will not work:
         <parameter name="enable" transfer-ownership="none">
           <doc xml:space="preserve">%TRUE to enable per-actor motion events</doc>
           <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="set_windowing_backend"
+              c:identifier="clutter_set_windowing_backend"
+              version="1.16">
+      <doc xml:space="preserve">Restricts clutter to only use the specified backend.
+This must be called before the first API call to clutter, including
+clutter_get_option_context()</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="backend_type" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>

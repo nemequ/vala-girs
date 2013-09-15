@@ -17,6 +17,7 @@ namespace E {
 		public void cancel_all ();
 		public bool check_capability (string capability);
 		public bool check_refresh_supported ();
+		[Deprecated (since = "3.8")]
 		public static GLib.Error error_create (E.ClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.ClientError code);
@@ -32,6 +33,7 @@ namespace E {
 		public virtual async bool open (bool only_if_exists, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Deprecated (since = "3.8")]
 		public virtual bool open_sync (bool only_if_exists, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public GLib.MainContext ref_main_context ();
 		public virtual async bool refresh (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool refresh_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Deprecated (since = "3.6")]
@@ -46,6 +48,7 @@ namespace E {
 		public virtual async bool set_backend_property (string prop_name, string prop_value, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Deprecated (since = "3.8")]
 		public virtual bool set_backend_property_sync (string prop_name, string prop_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Deprecated (since = "3.8")]
 		public virtual void unwrap_dbus_error (GLib.Error dbus_error) throws GLib.Error;
 		[Deprecated (since = "3.8")]
 		public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
@@ -61,8 +64,11 @@ namespace E {
 		public static string[] util_slist_to_strv (GLib.SList<string> strings);
 		[Deprecated (since = "3.8")]
 		public static GLib.SList<string> util_strv_to_slist (string strv);
+		[Deprecated (since = "3.8")]
 		public static bool util_unwrap_dbus_error (GLib.Error dbus_error, out GLib.Error client_error, E.ClientErrorsList known_errors, uint known_errors_count, GLib.Quark known_errors_domain, bool fail_when_none_matched);
 		public void* capabilities { get; }
+		[NoAccessorMethod]
+		public GLib.MainContext main_context { owned get; }
 		[NoAccessorMethod]
 		public bool online { get; set; }
 		[NoAccessorMethod]
@@ -211,15 +217,21 @@ namespace E {
 		public unowned string get_host ();
 		public unowned string get_method ();
 		public uint16 get_port ();
+		public bool get_remember_password ();
 		public unowned string get_user ();
+		public GLib.SocketConnectable ref_connectable ();
 		public bool required ();
 		public void set_host (string? host);
 		public void set_method (string? method);
 		public void set_port (uint16 port);
+		public void set_remember_password (bool remember_password);
 		public void set_user (string? user);
+		[NoAccessorMethod]
+		public GLib.SocketConnectable connectable { owned get; }
 		public string host { get; set construct; }
 		public string method { get; set construct; }
 		public uint port { get; set construct; }
+		public bool remember_password { get; set construct; }
 		public string user { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_autocomplete_get_type ()")]
@@ -458,8 +470,10 @@ namespace E {
 		public async bool create_sources (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool create_sources_sync (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void debug_dump (string? extension_name);
+		public string dup_unique_display_name (E.Source source, string? extension_name);
 		public E.Source find_extension (E.Source source, string extension_name);
 		public static void free_display_tree (GLib.Node display_tree);
+		public GLib.List<E.Source> list_enabled (string? extension_name);
 		public GLib.List<E.Source> list_sources (string? extension_name);
 		public E.Source ref_builtin_address_book ();
 		public E.Source ref_builtin_calendar ();
@@ -625,6 +639,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "ESourceAuthenticatorInterface", type_id = "e_source_authenticator_get_type ()")]
 	public interface SourceAuthenticator : GLib.Object {
 		public abstract void get_prompt_strings (E.Source source, out string prompt_title, out string prompt_message, out string prompt_description);
+		public abstract bool get_without_password ();
 		public abstract async E.SourceAuthenticationResult try_password (GLib.StringBuilder password, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract E.SourceAuthenticationResult try_password_sync (GLib.StringBuilder password, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
@@ -647,6 +662,7 @@ namespace E {
 		public void unlock ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
+	[Deprecated (since = "3.8")]
 	public struct ClientErrorsList {
 		public weak string name;
 		public int err_code;
@@ -815,13 +831,13 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_is_searchable (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void categories_register_change_listener (GLib.Callback listener);
+	public static void categories_register_change_listener ([CCode (scope = "async")] owned GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_remove (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_set_icon_file_for (string category, string icon_file);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void categories_unregister_change_listener (GLib.Callback listener);
+	public static void categories_unregister_change_listener ([CCode (scope = "async")] owned GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Deprecated (since = "3.8")]
 	public static int data_server_util_get_dbus_call_timeout ();
@@ -859,28 +875,6 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string filename_mkdir_encoded (string basepath, string fileprefix, string filename, int fileindex);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_BOOLEAN__OBJECT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_BOOLEAN__OBJECT_BOOLEAN (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_BOOLEAN__OBJECT_BOXED (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_BOOLEAN__OBJECT_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_BOOLEAN__OBJECT_UINT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_BOOLEAN__POINTER (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_VOID__STRING_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_VOID__UINT_BOXED (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_VOID__UINT_BOXED_BOXED (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_VOID__UINT_BOXED_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void gdbus_marshallers_VOID__UINT_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string get_user_cache_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string get_user_config_dir ();
@@ -888,10 +882,6 @@ namespace E {
 	public static unowned string get_user_data_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void localtime_with_offset (long tt, void* tm, int offset);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void marshal_VOID__INT_STRING_STRING_STRING_STRING_BOOLEAN_POINTER (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void marshal_VOID__OBJECT_BOXED (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void* memchunk_alloc (E.MemChunk memchunk);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -973,6 +963,8 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static void weak_ref_free (GLib.WeakRef weak_ref);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<void*,void*> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int xml_save_file (string filename, [CCode (type = "xmlDocPtr")] Xml.Doc* doc);
@@ -985,9 +977,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xmlhash_destroy (E.XmlHash hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_foreach_key (E.XmlHash hash, E.XmlHashFunc func);
+	public static void xmlhash_foreach_key (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashFunc func);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_foreach_key_remove (E.XmlHash hash, E.XmlHashRemoveFunc func);
+	public static void xmlhash_foreach_key_remove (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashRemoveFunc func);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xmlhash_remove (E.XmlHash hash, string key);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

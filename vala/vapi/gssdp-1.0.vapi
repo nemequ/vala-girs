@@ -20,6 +20,8 @@ namespace GSSDP {
 		public string @interface { get; construct; }
 		public string network { get; set construct; }
 		public string server_id { get; set; }
+		[NoAccessorMethod]
+		public uint socket_ttl { get; construct; }
 	}
 	[CCode (cheader_filename = "libgssdp/gssdp.h", type_id = "gssdp_resource_browser_get_type ()")]
 	public class ResourceBrowser : GLib.Object {
@@ -29,6 +31,7 @@ namespace GSSDP {
 		public unowned GSSDP.Client get_client ();
 		public ushort get_mx ();
 		public unowned string get_target ();
+		public bool rescan ();
 		public void set_active (bool active);
 		public void set_mx (ushort mx);
 		public void set_target (string target);

@@ -2,10 +2,19 @@
 
 [CCode (cprefix = "Cd", gir_namespace = "ColordGtk", gir_version = "1.0", lower_case_cprefix = "cd_")]
 namespace Cd {
+	[CCode (cheader_filename = "colord-gtk.h", type_id = "cd_sample_widget_get_type ()")]
+	public class SampleWidget : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SampleWidget ();
+		public void set_color (Cd.ColorRGB color);
+		[NoAccessorMethod]
+		public Cd.ColorRGB color { owned get; set; }
+	}
 	[CCode (cheader_filename = "colord-gtk.h", type_id = "cd_sample_window_get_type ()")]
 	public class SampleWindow : Gtk.Window, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWindow*")]
 		public SampleWindow ();
+		public void set_color (Cd.ColorRGB color);
 		public void set_fraction (double fraction);
 	}
 	[CCode (cheader_filename = "colord-gtk.h", type_id = "cd_window_get_type ()")]
@@ -13,10 +22,12 @@ namespace Cd {
 		[CCode (has_construct_function = false)]
 		public Window ();
 		public static GLib.Quark error_quark ();
-		public async void get_profile (Gtk.Widget widget, GLib.Cancellable? cancellable);
+		public unowned Cd.Profile get_last_profile ();
+		public async Cd.Profile get_profile (Gtk.Widget widget, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Cd.Profile get_profile_sync (Gtk.Widget widget, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
 		public string Profile { owned get; }
-		public signal void changed (Cd.Profile object);
+		public virtual signal void changed (Cd.Profile profile);
 	}
 	[CCode (cheader_filename = "colord-gtk.h", cprefix = "CD_WINDOW_ERROR_", has_type_id = false)]
 	public enum WindowError {

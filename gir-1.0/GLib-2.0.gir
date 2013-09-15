@@ -70,6 +70,11 @@ gtime = (GTime)ttime;
     <alias name="Type" c:type="GType">
       <type name="gsize" c:type="gsize"/>
     </alias>
+    <constant name="ANALYZER_ANALYZING"
+              value="1"
+              c:type="G_ANALYZER_ANALYZING">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="ASCII_DTOSTR_BUF_SIZE"
               value="39"
               c:type="G_ASCII_DTOSTR_BUF_SIZE">
@@ -5206,7 +5211,23 @@ The following format specifiers are supported:
  &lt;varlistentry&gt;&lt;term&gt;
    &lt;literal&gt;\%z&lt;/literal&gt;:
   &lt;/term&gt;&lt;listitem&gt;&lt;simpara&gt;
-   the time-zone as hour offset from UTC
+   the time zone as an offset from UTC (+hhmm)
+ &lt;/simpara&gt;&lt;/listitem&gt;&lt;/varlistentry&gt;
+ &lt;varlistentry&gt;&lt;term&gt;
+   &lt;literal&gt;\%:z&lt;/literal&gt;:
+  &lt;/term&gt;&lt;listitem&gt;&lt;simpara&gt;
+   the time zone as an offset from UTC (+hh:mm). This is a gnulib strftime extension. Since: 2.38
+ &lt;/simpara&gt;&lt;/listitem&gt;&lt;/varlistentry&gt;
+ &lt;varlistentry&gt;&lt;term&gt;
+   &lt;literal&gt;\%::z&lt;/literal&gt;:
+  &lt;/term&gt;&lt;listitem&gt;&lt;simpara&gt;
+   the time zone as an offset from UTC (+hh:mm:ss). This is a gnulib strftime extension. Since: 2.38
+ &lt;/simpara&gt;&lt;/listitem&gt;&lt;/varlistentry&gt;
+ &lt;varlistentry&gt;&lt;term&gt;
+   &lt;literal&gt;\%:::z&lt;/literal&gt;:
+  &lt;/term&gt;&lt;listitem&gt;&lt;simpara&gt;
+   the time zone as an offset from UTC, with : to necessary precision
+   (e.g., -04, +05:30). This is a gnulib strftime extension. Since: 2.38
  &lt;/simpara&gt;&lt;/listitem&gt;&lt;/varlistentry&gt;
  &lt;varlistentry&gt;&lt;term&gt;
    &lt;literal&gt;\%Z&lt;/literal&gt;:
@@ -9494,22 +9515,12 @@ giving the command line to execute. It is only valid for desktop
 entries with the &lt;literal&gt;Application&lt;/literal&gt; type.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="KEY_FILE_DESKTOP_KEY_FULLNAME"
-              value="X-GNOME-FullName"
-              c:type="G_KEY_FILE_DESKTOP_KEY_FULLNAME">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="KEY_FILE_DESKTOP_KEY_GENERIC_NAME"
               value="GenericName"
               c:type="G_KEY_FILE_DESKTOP_KEY_GENERIC_NAME"
               version="2.14">
       <doc xml:space="preserve">A key under #G_KEY_FILE_DESKTOP_GROUP, whose value is a localized
 string giving the generic name of the desktop entry.</doc>
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="KEY_FILE_DESKTOP_KEY_GETTEXT_DOMAIN"
-              value="X-GNOME-Gettext-Domain"
-              c:type="G_KEY_FILE_DESKTOP_KEY_GETTEXT_DOMAIN">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="KEY_FILE_DESKTOP_KEY_HIDDEN"
@@ -9527,11 +9538,6 @@ stating whether the desktop entry has been deleted by the user.</doc>
       <doc xml:space="preserve">A key under #G_KEY_FILE_DESKTOP_GROUP, whose value is a localized
 string giving the name of the icon to be displayed for the desktop
 entry.</doc>
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="KEY_FILE_DESKTOP_KEY_KEYWORDS"
-              value="Keywords"
-              c:type="G_KEY_FILE_DESKTOP_KEY_KEYWORDS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="KEY_FILE_DESKTOP_KEY_MIME_TYPE"
@@ -12027,7 +12033,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="5" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="8" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -22715,6 +22721,9 @@ list to the &lt;literal&gt;g_spawn...&lt;/literal&gt; function.</doc>
     </enumeration>
     <bitfield name="SpawnFlags" c:type="GSpawnFlags">
       <doc xml:space="preserve">Flags passed to g_spawn_sync(), g_spawn_async() and g_spawn_async_with_pipes().</doc>
+      <member name="default" value="0" c:identifier="G_SPAWN_DEFAULT">
+        <doc xml:space="preserve">no flags, default behaviour</doc>
+      </member>
       <member name="leave_descriptors_open"
               value="1"
               c:identifier="G_SPAWN_LEAVE_DESCRIPTORS_OPEN">
@@ -23000,7 +23009,7 @@ have to worry about having enough space to copy the string.</doc>
         <doc xml:space="preserve">Compares two strings for equality, returning %TRUE if they are equal.
 For use with #GHashTable.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if they strings are the same length and contain the same bytes</doc>
+          <doc xml:space="preserve">%TRUE if the strings are the same length and contain the same bytes</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -23820,6 +23829,14 @@ zero then @fixture will be equal to @user_data.</doc>
       <member name="max_result" value="8" c:identifier="G_TEST_LOG_MAX_RESULT">
       </member>
       <member name="message" value="9" c:identifier="G_TEST_LOG_MESSAGE">
+      </member>
+      <member name="start_suite"
+              value="10"
+              c:identifier="G_TEST_LOG_START_SUITE">
+      </member>
+      <member name="stop_suite"
+              value="11"
+              c:identifier="G_TEST_LOG_STOP_SUITE">
       </member>
     </enumeration>
     <bitfield name="TestSubprocessFlags" c:type="GTestSubprocessFlags">
@@ -32751,7 +32768,7 @@ pointer casts.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="close" c:identifier="g_close" throws="1">
+    <function name="close" c:identifier="g_close" version="2.36" throws="1">
       <doc xml:space="preserve">This wraps the close() call; in case of error, %errno will be
 preserved, but the error will also be stored as a #GError in @error.
 
@@ -40545,7 +40562,7 @@ abort; use g_test_trap_subprocess() in this case.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="log_domain" transfer-ownership="none">
+        <parameter name="log_domain" transfer-ownership="none" allow-none="1">
           <doc xml:space="preserve">the log domain of the message</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
@@ -40575,6 +40592,22 @@ the test.
 If not called from inside a test, this function does nothing.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="test_failed" c:identifier="g_test_failed" version="2.38">
+      <doc xml:space="preserve">Returns whether a test has already failed. This will
+be the case when g_test_fail(), g_test_incomplete()
+or g_test_skip() have been called, but also if an
+assertion has failed.
+
+This can be useful to return early from a test if
+continuing after a failed assertion might be harmful.
+
+The return value of this function is only meaningful
+if it is called from inside a test function.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the test has failed</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </return-value>
     </function>
     <function name="test_get_dir" c:identifier="g_test_get_dir" version="2.38">
@@ -40638,6 +40671,29 @@ joined).</doc>
         <doc xml:space="preserve">the toplevel #GTestSuite</doc>
         <type name="TestSuite" c:type="GTestSuite*"/>
       </return-value>
+    </function>
+    <function name="test_incomplete"
+              c:identifier="g_test_incomplete"
+              version="2.38">
+      <doc xml:space="preserve">Indicates that a test failed because of some incomplete
+functionality. This function can be called multiple times
+from the same test.
+
+Calling this function will not stop the test from running, you
+need to return from the test function yourself. So you can
+produce additional diagnostic messages or even continue running
+the test.
+
+If not called from inside a test, this function does nothing.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none" allow-none="1">
+          <doc xml:space="preserve">explanation</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="test_init"
               c:identifier="g_test_init"
@@ -40992,6 +41048,43 @@ in a program.</doc>
         <parameter name="suite" transfer-ownership="none">
           <doc xml:space="preserve">a #GTestSuite</doc>
           <type name="TestSuite" c:type="GTestSuite*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="test_set_nonfatal_assertions"
+              c:identifier="g_test_set_nonfatal_assertions"
+              version="2.38">
+      <doc xml:space="preserve">Changes the behaviour of g_assert_cmpstr(), g_assert_cmpint(),
+g_assert_cmpuint(), g_assert_cmphex(), g_assert_cmpfloat(),
+g_assert_true(), g_assert_false(), g_assert_null(), g_assert_no_error(),
+g_assert_error(), g_test_assert_expected_messages() and the various
+g_test_trap_assert_*() macros to not abort to program, but instead
+call g_test_fail() and continue.
+
+Note that the g_assert_not_reached() and g_assert() are not
+affected by this.
+
+This function can only be called after g_test_init().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="test_skip" c:identifier="g_test_skip" version="2.38">
+      <doc xml:space="preserve">Indicates that a test was skipped.
+
+Calling this function will not stop the test from running, you
+need to return from the test function yourself. So you can
+produce additional diagnostic messages or even continue running
+the test.
+
+If not called from inside a test, this function does nothing.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none" allow-none="1">
+          <doc xml:space="preserve">explanation</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>

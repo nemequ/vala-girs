@@ -2,7 +2,7 @@
 
 [CCode (cprefix = "E", gir_namespace = "EBookContacts", gir_version = "1.2", lower_case_cprefix = "e_")]
 namespace E {
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_book_query_get_type ()")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", ref_function = "e_book_query_ref", type_id = "e_book_query_get_type ()", unref_function = "e_book_query_unref")]
 	[Compact]
 	public class BookQuery {
 		public static E.BookQuery and (int nqs, E.BookQuery qs, bool unref);
@@ -391,6 +391,7 @@ namespace E {
 		public E.ContactPhotoType type;
 		[CCode (has_construct_function = false)]
 		public ContactPhoto ();
+		public E.ContactPhoto copy ();
 		public void free ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public unowned uint8[]? get_inlined ();
@@ -405,12 +406,13 @@ namespace E {
 	public class PhoneNumber {
 		public E.PhoneNumberMatch compare (E.PhoneNumber second_number);
 		public static E.PhoneNumberMatch compare_strings (string first_number, string second_number) throws GLib.Error;
+		public static E.PhoneNumberMatch compare_strings_with_region (string first_number, string second_number, string? region_code) throws GLib.Error;
 		public E.PhoneNumber copy ();
 		public void free ();
 		public static E.PhoneNumber from_string (string phone_number, string? region_code) throws GLib.Error;
 		public int get_country_code (E.PhoneNumberCountrySource source);
-		public static int get_country_code_for_region (string? region_code);
-		public static string get_default_region ();
+		public static int get_country_code_for_region (string? region_code) throws GLib.Error;
+		public static string get_default_region () throws GLib.Error;
 		public string get_national_number ();
 		public static bool is_supported ();
 		public string to_string (E.PhoneNumberFormat format);
@@ -543,7 +545,9 @@ namespace E {
 		ENDS_WITH,
 		EQUALS_PHONE_NUMBER,
 		EQUALS_NATIONAL_PHONE_NUMBER,
-		EQUALS_SHORT_PHONE_NUMBER
+		EQUALS_SHORT_PHONE_NUMBER,
+		REGEX_NORMAL,
+		REGEX_RAW
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_VIEW_", type_id = "e_book_view_status_get_type ()")]
 	public enum BookViewStatus {
@@ -790,6 +794,4 @@ namespace E {
 	public const string VCARD_21_VALID_PARAMETERS;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_VCARD_21_VALID_PROPERTIES")]
 	public const string VCARD_21_VALID_PROPERTIES;
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
-	public static void book_contacts_marshal_VOID__UINT_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 }
