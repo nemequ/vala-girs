@@ -2627,8 +2627,8 @@ thread.</doc>
             glib:type-name="GBytes"
             glib:get-type="g_bytes_get_type"
             c:symbol-prefix="bytes">
-      <doc xml:space="preserve">A simple refcounted data type representing an immutable byte sequence
-from an unspecified origin.
+      <doc xml:space="preserve">A simple refcounted data type representing an immutable sequence of zero or
+more bytes from an unspecified origin.
 
 The purpose of a #GBytes is to keep the memory region that it holds
 alive for as long as anyone holds a reference to the bytes.  When
@@ -2654,13 +2654,13 @@ a mutable #GByteArray, use the g_byte_array_free_to_bytes() function.</doc>
       <constructor name="new" c:identifier="g_bytes_new" version="2.32">
         <doc xml:space="preserve">Creates a new #GBytes from @data.
 
-@data is copied.</doc>
+@data is copied. If @size is 0, @data may be %NULL.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GBytes</doc>
           <type name="Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data" transfer-ownership="none" allow-none="1">
             <doc xml:space="preserve">
        the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gconstpointer">
@@ -2679,13 +2679,14 @@ a mutable #GByteArray, use the g_byte_array_free_to_bytes() function.</doc>
                    introspectable="0">
         <doc xml:space="preserve">Creates a new #GBytes from static data.
 
-@data must be static (ie: never modified or freed).</doc>
+@data must be static (ie: never modified or freed). It may be %NULL if @size
+is 0.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GBytes</doc>
           <type name="Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
-          <parameter name="data" transfer-ownership="full">
+          <parameter name="data" transfer-ownership="full" allow-none="1">
             <doc xml:space="preserve">
           the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gconstpointer">
@@ -2710,13 +2711,15 @@ a call to g_malloc(), g_malloc0() or g_realloc() or by one of the many
 functions that wrap these calls (such as g_new(), g_strdup(), etc).
 
 For creating #GBytes with memory from other allocators, see
-g_bytes_new_with_free_func().</doc>
+g_bytes_new_with_free_func().
+
+@data may be %NULL if @size is 0.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GBytes</doc>
           <type name="Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
-          <parameter name="data" transfer-ownership="full">
+          <parameter name="data" transfer-ownership="full" allow-none="1">
             <doc xml:space="preserve">
           the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gpointer">
@@ -2739,13 +2742,15 @@ When the last reference is dropped, @free_func will be called with the
 @user_data argument.
 
 @data must not be modified after this call is made until @free_func has
-been called to indicate that the bytes is no longer in use.</doc>
+been called to indicate that the bytes is no longer in use.
+
+@data may be %NULL if @size is 0.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GBytes</doc>
           <type name="Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data" transfer-ownership="none" allow-none="1">
             <doc xml:space="preserve">the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gconstpointer">
               <type name="gpointer" c:type="gconstpointer"/>
@@ -2809,10 +2814,14 @@ parameter, when using non-%NULL #GBytes pointers as keys in a #GHashTable.</doc>
       <method name="get_data" c:identifier="g_bytes_get_data" version="2.32">
         <doc xml:space="preserve">Get the byte data in the #GBytes. This data should not be modified.
 
-This function will always return the same pointer for a given #GBytes.</doc>
+This function will always return the same pointer for a given #GBytes.
+
+%NULL may be returned if @size is 0. This is not guaranteed, as the #GBytes
+may represent an empty string with @data non-%NULL and @size as 0. %NULL will
+not be returned if @size is non-zero.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a pointer to the
-         byte data</doc>
+         byte data, or %NULL</doc>
           <array length="0" zero-terminated="0" c:type="gconstpointer">
             <type name="guint8" c:type="gconstpointer"/>
           </array>
@@ -3205,20 +3214,20 @@ value comes before the second, 0 if they are equal, or a positive
 integer if the first value comes after the second.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">negative value if @a &amp;lt; @b; zero if @a = @b; positive
-         value if @a &gt; @b.</doc>
+         value if @a &gt; @b</doc>
         <type name="gint" c:type="gint"/>
       </return-value>
       <parameters>
         <parameter name="a" transfer-ownership="none">
-          <doc xml:space="preserve">a value.</doc>
+          <doc xml:space="preserve">a value</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
         <parameter name="b" transfer-ownership="none">
-          <doc xml:space="preserve">a value to compare with.</doc>
+          <doc xml:space="preserve">a value to compare with</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="2">
-          <doc xml:space="preserve">user data to pass to comparison function.</doc>
+          <doc xml:space="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -3230,16 +3239,16 @@ value comes before the second, 0 if they are equal, or a positive
 integer if the first value comes after the second.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">negative value if @a &amp;lt; @b; zero if @a = @b; positive
-         value if @a &gt; @b.</doc>
+         value if @a &gt; @b</doc>
         <type name="gint" c:type="gint"/>
       </return-value>
       <parameters>
         <parameter name="a" transfer-ownership="none">
-          <doc xml:space="preserve">a value.</doc>
+          <doc xml:space="preserve">a value</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
         <parameter name="b" transfer-ownership="none">
-          <doc xml:space="preserve">a value to compare with.</doc>
+          <doc xml:space="preserve">a value to compare with</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
       </parameters>
@@ -3523,6 +3532,11 @@ time of more than 5 seconds).</doc>
               value="5"
               c:identifier="G_CONVERT_ERROR_NOT_ABSOLUTE_PATH">
         <doc xml:space="preserve">Pathname is not an absolute path.</doc>
+      </member>
+      <member name="no_memory"
+              value="6"
+              c:identifier="G_CONVERT_ERROR_NO_MEMORY">
+        <doc xml:space="preserve">No memory available. Since: 2.40</doc>
       </member>
     </enumeration>
     <callback name="CopyFunc"
@@ -4878,7 +4892,7 @@ zone returned by g_time_zone_new_utc().</doc>
               c:identifier="g_date_time_add_days"
               version="2.26">
         <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of days to the
-copy.</doc>
+copy. Add negative values to subtract days.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -4899,7 +4913,7 @@ copy.</doc>
               c:identifier="g_date_time_add_full"
               version="2.26">
         <doc xml:space="preserve">Creates a new #GDateTime adding the specified values to the current date and
-time in @datetime.</doc>
+time in @datetime. Add negative values to subtract.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime that should be freed with
   g_date_time_unref().</doc>
@@ -4939,7 +4953,8 @@ time in @datetime.</doc>
       <method name="add_hours"
               c:identifier="g_date_time_add_hours"
               version="2.26">
-        <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of hours</doc>
+        <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of hours.
+Add negative values to subtract hours.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -4959,7 +4974,8 @@ time in @datetime.</doc>
       <method name="add_minutes"
               c:identifier="g_date_time_add_minutes"
               version="2.26">
-        <doc xml:space="preserve">Creates a copy of @datetime adding the specified number of minutes.</doc>
+        <doc xml:space="preserve">Creates a copy of @datetime adding the specified number of minutes.
+Add negative values to subtract minutes.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -4980,7 +4996,7 @@ time in @datetime.</doc>
               c:identifier="g_date_time_add_months"
               version="2.26">
         <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of months to the
-copy.</doc>
+copy. Add negative values to subtract months.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -5000,7 +5016,8 @@ copy.</doc>
       <method name="add_seconds"
               c:identifier="g_date_time_add_seconds"
               version="2.26">
-        <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of seconds.</doc>
+        <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of seconds.
+Add negative values to subtract seconds.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -5021,7 +5038,7 @@ copy.</doc>
               c:identifier="g_date_time_add_weeks"
               version="2.26">
         <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of weeks to the
-copy.</doc>
+copy. Add negative values to subtract weeks.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -5042,7 +5059,7 @@ copy.</doc>
               c:identifier="g_date_time_add_years"
               version="2.26">
         <doc xml:space="preserve">Creates a copy of @datetime and adds the specified number of years to the
-copy.</doc>
+copy. Add negative values to subtract years.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GDateTime which should be freed with
   g_date_time_unref().</doc>
@@ -6533,12 +6550,11 @@ g_slist_foreach().</doc>
       </return-value>
       <parameters>
         <parameter name="data" transfer-ownership="none">
-          <doc xml:space="preserve">the element's data.</doc>
+          <doc xml:space="preserve">the element's data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="1">
-          <doc xml:space="preserve">user data passed to g_list_foreach() or
-            g_slist_foreach().</doc>
+          <doc xml:space="preserve">user data passed to g_list_foreach() or g_slist_foreach()</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -6729,7 +6745,7 @@ for scanning and printing values of type #guintptr.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="HAVE_GROWING_STACK"
-              value="1"
+              value="0"
               c:type="G_HAVE_GROWING_STACK">
       <type name="gint" c:type="gint"/>
     </constant>
@@ -6860,7 +6876,8 @@ When a hash table only ever contains keys that have themselves as the
 corresponding value it is able to be stored more efficiently.  See
 the discussion in the section description.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE if the key did not exist yet</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="hash_table" transfer-ownership="none">
@@ -7157,7 +7174,8 @@ value is freed using that function. If you supplied a
 @key_destroy_func when creating the #GHashTable, the passed
 key is freed using that function.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE if the key did not exist yet</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="hash_table" transfer-ownership="none">
@@ -7396,7 +7414,8 @@ the #GHashTable, the old value is freed using that function.
 If you supplied a @key_destroy_func when creating the
 #GHashTable, the old key is freed using that function.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE of the key did not exist yet</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="hash_table" transfer-ownership="none">
@@ -10690,7 +10709,7 @@ If the object cannot be created then %error is set to a #GKeyFileError.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="length" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @data in bytes (or -1 if data is nul-terminated)</doc>
+            <doc xml:space="preserve">the length of @data in bytes (or (gsize)-1 if data is nul-terminated)</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
@@ -11526,13 +11545,13 @@ INCLUDES = -DG_LOG_DOMAIN=\"Gtk\"
         <type name="gpointer" c:type="gpointer"/>
       </field>
       <field name="next" writable="1">
-        <doc xml:space="preserve">contains the link to the next element in the list.</doc>
+        <doc xml:space="preserve">contains the link to the next element in the list</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="gpointer" c:type="gpointer"/>
         </type>
       </field>
       <field name="prev" writable="1">
-        <doc xml:space="preserve">contains the link to the previous element in the list.</doc>
+        <doc xml:space="preserve">contains the link to the previous element in the list</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="gpointer" c:type="gpointer"/>
         </type>
@@ -11542,7 +11561,7 @@ INCLUDES = -DG_LOG_DOMAIN=\"Gtk\"
 g_list_append(), g_list_prepend(), g_list_insert() and
 g_list_insert_sorted() and so is rarely used on its own.</doc>
         <return-value>
-          <doc xml:space="preserve">a pointer to the newly-allocated #GList element.</doc>
+          <doc xml:space="preserve">a pointer to the newly-allocated #GList element</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -11551,32 +11570,28 @@ g_list_insert_sorted() and so is rarely used on its own.</doc>
       <function name="append" c:identifier="g_list_append" introspectable="0">
         <doc xml:space="preserve">Adds a new element on to the end of the list.
 
-&lt;note&gt;&lt;para&gt;
-The return value is the new start of the list, which
-may have changed, so make sure you store the new value.
-&lt;/para&gt;&lt;/note&gt;
+Note that the return value is the new start of the list,
+if @list was empty; make sure you store the new value.
 
-&lt;note&gt;&lt;para&gt;
-Note that g_list_append() has to traverse the entire list
-to find the end, which is inefficient when adding multiple
-elements. A common idiom to avoid the inefficiency is to prepend
-the elements and reverse the list when all elements have been added.
-&lt;/para&gt;&lt;/note&gt;
+g_list_append() has to traverse the entire list to find the end,
+which is inefficient when adding multiple elements. A common idiom
+to avoid the inefficiency is to use g_list_prepend() and reverse
+the list with g_list_reverse() when all elements have been added.
 
 |[
 /&amp;ast; Notice that these are initialized to the empty list. &amp;ast;/
-GList *list = NULL, *number_list = NULL;
+GList *string_list = NULL, *number_list = NULL;
 
 /&amp;ast; This is a list of strings. &amp;ast;/
-list = g_list_append (list, "first");
-list = g_list_append (list, "second");
+string_list = g_list_append (string_list, "first");
+string_list = g_list_append (string_list, "second");
 
 /&amp;ast; This is a list of integers. &amp;ast;/
 number_list = g_list_append (number_list, GINT_TO_POINTER (27));
 number_list = g_list_append (number_list, GINT_TO_POINTER (14));
 ]|</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">either @list or the new start of the #GList if @list was %NULL</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -11597,22 +11612,30 @@ number_list = g_list_append (number_list, GINT_TO_POINTER (14));
       <function name="concat" c:identifier="g_list_concat" introspectable="0">
         <doc xml:space="preserve">Adds the second #GList onto the end of the first #GList.
 Note that the elements of the second #GList are not copied.
-They are used directly.</doc>
+They are used directly.
+
+This function is for example used to move an element in the list.
+The following example moves an element to the top of the list:
+|[
+list = g_list_remove_link (list, llink);
+list = g_list_concat (llink, list);
+]|</doc>
         <return-value>
-          <doc xml:space="preserve">the start of the new #GList</doc>
+          <doc xml:space="preserve">the start of the new #GList, which equals @list1 if not %NULL</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list1" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
           </parameter>
           <parameter name="list2" transfer-ownership="none">
-            <doc xml:space="preserve">the #GList to add to the end of the first #GList</doc>
+            <doc xml:space="preserve">the #GList to add to the end of the first #GList,
+    this must point  to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11629,14 +11652,14 @@ the actual data is not. See g_list_copy_deep() if you need
 to copy the data as well.
 &lt;/para&gt;&lt;/note&gt;</doc>
         <return-value>
-          <doc xml:space="preserve">a copy of @list</doc>
+          <doc xml:space="preserve">the start of the new list that holds the same data as @list</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11649,12 +11672,13 @@ to copy the data as well.
                 introspectable="0">
         <doc xml:space="preserve">Makes a full (deep) copy of a #GList.
 
-In contrast with g_list_copy(), this function uses @func to make a copy of
-each list element, in addition to copying the list container itself.
+In contrast with g_list_copy(), this function uses @func to make
+a copy of each list element, in addition to copying the list
+container itself.
 
-@func, as a #GCopyFunc, takes two arguments, the data to be copied and a user
-pointer. It's safe to pass #NULL as user_data, if the copy function takes only
-one argument.
+@func, as a #GCopyFunc, takes two arguments, the data to be copied
+and a @user_data pointer. It's safe to pass %NULL as user_data,
+if the copy function takes only one argument.
 
 For instance, if @list holds a list of GObjects, you can do:
 |[
@@ -11666,14 +11690,15 @@ And, to entirely free the new list, you could do:
 g_list_free_full (another_list, g_object_unref);
 ]|</doc>
         <return-value>
-          <doc xml:space="preserve">a full copy of @list, use #g_list_free_full to free it</doc>
+          <doc xml:space="preserve">the start of the new list that holds a full copy of @list,
+    use g_list_free_full() to free it</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11683,7 +11708,7 @@ g_list_free_full (another_list, g_object_unref);
             <type name="CopyFunc" c:type="GCopyFunc"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data passed to the copy function @func, or #NULL</doc>
+            <doc xml:space="preserve">user data passed to the copy function @func, or %NULL</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -11695,14 +11720,14 @@ g_list_free_full (another_list, g_object_unref);
 Compare this to g_list_remove_link() which removes the node
 without freeing it.</doc>
         <return-value>
-          <doc xml:space="preserve">the new head of @list</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11716,18 +11741,16 @@ without freeing it.</doc>
         </parameters>
       </function>
       <function name="find" c:identifier="g_list_find" introspectable="0">
-        <doc xml:space="preserve">Finds the element in a #GList which
-contains the given data.</doc>
+        <doc xml:space="preserve">Finds the element in a #GList which contains the given data.</doc>
         <return-value>
-          <doc xml:space="preserve">the found #GList element,
-    or %NULL if it is not found</doc>
+          <doc xml:space="preserve">the found #GList element, or %NULL if it is not found</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11755,7 +11778,7 @@ given user data.</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11782,7 +11805,7 @@ given user data.</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">any #GList element</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11798,7 +11821,7 @@ given user data.</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11815,7 +11838,7 @@ given user data.</doc>
       </function>
       <function name="free" c:identifier="g_list_free" introspectable="0">
         <doc xml:space="preserve">Frees all of the memory used by a #GList.
-The freed elements are returned to the slice allocator.
+The freed elements are returned to the slice allocator
 
 &lt;note&gt;&lt;para&gt;
 If list elements contain dynamically-allocated memory,
@@ -11853,8 +11876,8 @@ It is usually used after g_list_remove_link().</doc>
                 c:identifier="g_list_free_full"
                 version="2.28"
                 introspectable="0">
-        <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GList, and
-calls the specified destroy function on every element's data.</doc>
+        <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GList,
+and calls @free_func on every element's data.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11881,7 +11904,7 @@ the given data (starting from 0).</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11895,14 +11918,14 @@ the given data (starting from 0).</doc>
       <function name="insert" c:identifier="g_list_insert" introspectable="0">
         <doc xml:space="preserve">Inserts a new element into the list at the given position.</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a pointer to a #GList</doc>
+            <doc xml:space="preserve">a pointer to a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11924,14 +11947,14 @@ the given data (starting from 0).</doc>
                 introspectable="0">
         <doc xml:space="preserve">Inserts a new element into the list before the given position.</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a pointer to a #GList</doc>
+            <doc xml:space="preserve">a pointer to a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11953,16 +11976,24 @@ the given data (starting from 0).</doc>
                 c:identifier="g_list_insert_sorted"
                 introspectable="0">
         <doc xml:space="preserve">Inserts a new element into the list, using the given comparison
-function to determine its position.</doc>
+function to determine its position.
+
+&lt;note&gt;&lt;para&gt;
+If you are adding many new elements to a list, and the number of
+new elements is much larger than the length of the list, use
+g_list_prepend() to add the new items and sort the list afterwards
+with g_list_sort()
+&lt;/para&gt;&lt;/note&gt;</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a pointer to a #GList</doc>
+            <doc xml:space="preserve">a pointer to a #GList, this must point to the top of the
+    already sorted list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -11984,16 +12015,24 @@ function to determine its position.</doc>
                 version="2.10"
                 introspectable="0">
         <doc xml:space="preserve">Inserts a new element into the list, using the given comparison
-function to determine its position.</doc>
+function to determine its position.
+
+&lt;note&gt;&lt;para&gt;
+If you are adding many new elements to a list, and the number of
+new elements is much larger than the length of the list, use
+g_list_prepend() to add the new items and sort the list afterwards
+with g_list_sort()
+&lt;/para&gt;&lt;/note&gt;</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a pointer to a #GList</doc>
+            <doc xml:space="preserve">a pointer to a #GList, this must point to the top of the
+    already sorted list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12003,13 +12042,13 @@ function to determine its position.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="func" transfer-ownership="none" closure="3">
-            <doc xml:space="preserve">the function to compare elements in the list.
-    It should return a number &gt; 0 if the first parameter
-    comes after the second parameter in the sort order.</doc>
+            <doc xml:space="preserve">the function to compare elements in the list. It should
+    return a number &gt; 0 if the first parameter  comes after the
+    second parameter in the sort order.</doc>
             <type name="CompareDataFunc" c:type="GCompareDataFunc"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data to pass to comparison function.</doc>
+            <doc xml:space="preserve">user data to pass to comparison function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -12025,7 +12064,7 @@ function to determine its position.</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">any #GList element</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12036,8 +12075,9 @@ function to determine its position.</doc>
         <doc xml:space="preserve">Gets the number of elements in a #GList.
 
 &lt;note&gt;&lt;para&gt;
-This function iterates over the whole list to
-count its elements.
+This function iterates over the whole list to count its elements.
+Use a &lt;link linkend="glib-Double-ended-Queues"&gt;GQueue&lt;/link&gt; instead
+of a GList if you regularly need the number of items.
 &lt;/para&gt;&lt;/note&gt;</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of elements in the #GList</doc>
@@ -12045,7 +12085,7 @@ count its elements.
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12063,7 +12103,7 @@ count its elements.
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12085,7 +12125,7 @@ count its elements.
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12132,7 +12172,7 @@ in the #GList (starting from 0).</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12148,28 +12188,33 @@ in the #GList (starting from 0).</doc>
       <function name="prepend"
                 c:identifier="g_list_prepend"
                 introspectable="0">
-        <doc xml:space="preserve">Adds a new element on to the start of the list.
+        <doc xml:space="preserve">Prepends a new element on to the start of the list.
 
-&lt;note&gt;&lt;para&gt;
-The return value is the new start of the list, which
-may have changed, so make sure you store the new value.
-&lt;/para&gt;&lt;/note&gt;
+Note that the return value is the new start of the list,
+which will have changed, so make sure you store the new value.
 
 |[
 /&amp;ast; Notice that it is initialized to the empty list. &amp;ast;/
 GList *list = NULL;
+
 list = g_list_prepend (list, "last");
 list = g_list_prepend (list, "first");
-]|</doc>
+]|
+
+&lt;note&gt;&lt;para&gt;
+Do not use this function to prepend a new element to a different element
+than the start of the list. Use g_list_insert_before() instead.
+&lt;/para&gt;&lt;/note&gt;</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">a pointer to the newly prepended element, which is the new
+    start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a pointer to a #GList</doc>
+            <doc xml:space="preserve">a pointer to a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12185,14 +12230,14 @@ list = g_list_prepend (list, "first");
 If two elements contain the same data, only the first is removed.
 If none of the elements contain the data, the #GList is unchanged.</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12211,14 +12256,14 @@ Returns the new head of the list. Contrast with
 g_list_remove() which removes only the first node
 matching the given data.</doc>
         <return-value>
-          <doc xml:space="preserve">new head of @list</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12234,16 +12279,25 @@ matching the given data.</doc>
                 introspectable="0">
         <doc xml:space="preserve">Removes an element from a #GList, without freeing the element.
 The removed element's prev and next links are set to %NULL, so
-that it becomes a self-contained list with one element.</doc>
+that it becomes a self-contained list with one element.
+
+This function is for example used to move an element in the list
+(see the example for g_list_concat()) or to remove an element in
+the list before freeing its data:
+|[
+list = g_list_remove_link (list, llink);
+free_some_data_that_may_access_the_list_again (llink-&gt;data);
+g_list_free (llink);
+]|</doc>
         <return-value>
-          <doc xml:space="preserve">the new start of the #GList, without the element</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12269,7 +12323,7 @@ It simply switches the next and prev pointers of each element.</doc>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12280,14 +12334,14 @@ It simply switches the next and prev pointers of each element.</doc>
         <doc xml:space="preserve">Sorts a #GList using the given comparison function. The algorithm
 used is a stable sort.</doc>
         <return-value>
-          <doc xml:space="preserve">the start of the sorted #GList</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12308,14 +12362,14 @@ used is a stable sort.</doc>
         <doc xml:space="preserve">Like g_list_sort(), but the comparison function accepts
 a user data argument.</doc>
         <return-value>
-          <doc xml:space="preserve">the new head of @list</doc>
+          <doc xml:space="preserve">the (possibly changed) start of the #GList</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList</doc>
+            <doc xml:space="preserve">a #GList, this must point to the top of the list</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -12397,7 +12451,7 @@ levels using g_log_set_handler() and g_log_set_fatal_mask().</doc>
         <doc xml:space="preserve">log level for messages, see g_message()</doc>
       </member>
       <member name="level_info" value="64" c:identifier="G_LOG_LEVEL_INFO">
-        <doc xml:space="preserve">log level for informational messages</doc>
+        <doc xml:space="preserve">log level for informational messages, see g_info()</doc>
       </member>
       <member name="level_debug" value="128" c:identifier="G_LOG_LEVEL_DEBUG">
         <doc xml:space="preserve">log level for debug messages, see g_debug()</doc>
@@ -12457,7 +12511,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="1" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -13261,10 +13315,81 @@ the result is zero, free the loop and free all associated memory.</doc>
         </parameters>
       </method>
     </record>
-    <record name="MappedFile" c:type="GMappedFile" disguised="1">
+    <record name="MappedFile"
+            c:type="GMappedFile"
+            glib:type-name="GMappedFile"
+            glib:get-type="g_mapped_file_get_type"
+            c:symbol-prefix="mapped_file">
       <doc xml:space="preserve">The #GMappedFile represents a file mapping created with
 g_mapped_file_new(). It has only private members and should
 not be accessed directly.</doc>
+      <constructor name="new"
+                   c:identifier="g_mapped_file_new"
+                   version="2.8"
+                   throws="1">
+        <doc xml:space="preserve">Maps a file into memory. On UNIX, this is using the mmap() function.
+
+If @writable is %TRUE, the mapped buffer may be modified, otherwise
+it is an error to modify the mapped buffer. Modifications to the buffer
+are not visible to other processes mapping the same file, and are not
+written back to the file.
+
+Note that modifications of the underlying file might affect the contents
+of the #GMappedFile. Therefore, mapping should only be used if the file
+will not be modified, or if all modifications of the file are done
+atomically (e.g. using g_file_set_contents()).
+
+If @filename is the name of an empty, regular file, the function
+will successfully return an empty #GMappedFile. In other cases of
+size 0 (e.g. device files such as /dev/null), @error will be set
+to the #GFileError value #G_FILE_ERROR_INVAL.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GMappedFile which must be unref'd
+   with g_mapped_file_unref(), or %NULL if the mapping failed.</doc>
+          <type name="MappedFile" c:type="GMappedFile*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">The path of the file to load, in the GLib filename encoding</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="writable" transfer-ownership="none">
+            <doc xml:space="preserve">whether the mapping should be writable</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_fd"
+                   c:identifier="g_mapped_file_new_from_fd"
+                   version="2.32"
+                   throws="1">
+        <doc xml:space="preserve">Maps a file into memory. On UNIX, this is using the mmap() function.
+
+If @writable is %TRUE, the mapped buffer may be modified, otherwise
+it is an error to modify the mapped buffer. Modifications to the buffer
+are not visible to other processes mapping the same file, and are not
+written back to the file.
+
+Note that modifications of the underlying file might affect the contents
+of the #GMappedFile. Therefore, mapping should only be used if the file
+will not be modified, or if all modifications of the file are done
+atomically (e.g. using g_file_set_contents()).</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GMappedFile which must be unref'd
+   with g_mapped_file_unref(), or %NULL if the mapping failed.</doc>
+          <type name="MappedFile" c:type="GMappedFile*"/>
+        </return-value>
+        <parameters>
+          <parameter name="fd" transfer-ownership="none">
+            <doc xml:space="preserve">The file descriptor of the file to load</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="writable" transfer-ownership="none">
+            <doc xml:space="preserve">whether the mapping should be writable</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <method name="free"
               c:identifier="g_mapped_file_free"
               version="2.8"
@@ -13336,13 +13461,10 @@ If the file is empty then %NULL is returned.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="ref"
-              c:identifier="g_mapped_file_ref"
-              version="2.22"
-              introspectable="0">
+      <method name="ref" c:identifier="g_mapped_file_ref" version="2.22">
         <doc xml:space="preserve">Increments the reference count of @file by one.  It is safe to call
 this function from any thread.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the passed in #GMappedFile.</doc>
           <type name="MappedFile" c:type="GMappedFile*"/>
         </return-value>
@@ -13370,75 +13492,6 @@ Since 2.22</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <function name="new"
-                c:identifier="g_mapped_file_new"
-                version="2.8"
-                introspectable="0"
-                throws="1">
-        <doc xml:space="preserve">Maps a file into memory. On UNIX, this is using the mmap() function.
-
-If @writable is %TRUE, the mapped buffer may be modified, otherwise
-it is an error to modify the mapped buffer. Modifications to the buffer
-are not visible to other processes mapping the same file, and are not
-written back to the file.
-
-Note that modifications of the underlying file might affect the contents
-of the #GMappedFile. Therefore, mapping should only be used if the file
-will not be modified, or if all modifications of the file are done
-atomically (e.g. using g_file_set_contents()).
-
-If @filename is the name of an empty, regular file, the function
-will successfully return an empty #GMappedFile. In other cases of
-size 0 (e.g. device files such as /dev/null), @error will be set
-to the #GFileError value #G_FILE_ERROR_INVAL.</doc>
-        <return-value>
-          <doc xml:space="preserve">a newly allocated #GMappedFile which must be unref'd
-   with g_mapped_file_unref(), or %NULL if the mapping failed.</doc>
-          <type name="MappedFile" c:type="GMappedFile*"/>
-        </return-value>
-        <parameters>
-          <parameter name="filename" transfer-ownership="none">
-            <doc xml:space="preserve">The path of the file to load, in the GLib filename encoding</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="writable" transfer-ownership="none">
-            <doc xml:space="preserve">whether the mapping should be writable</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="new_from_fd"
-                c:identifier="g_mapped_file_new_from_fd"
-                version="2.32"
-                introspectable="0"
-                throws="1">
-        <doc xml:space="preserve">Maps a file into memory. On UNIX, this is using the mmap() function.
-
-If @writable is %TRUE, the mapped buffer may be modified, otherwise
-it is an error to modify the mapped buffer. Modifications to the buffer
-are not visible to other processes mapping the same file, and are not
-written back to the file.
-
-Note that modifications of the underlying file might affect the contents
-of the #GMappedFile. Therefore, mapping should only be used if the file
-will not be modified, or if all modifications of the file are done
-atomically (e.g. using g_file_set_contents()).</doc>
-        <return-value>
-          <doc xml:space="preserve">a newly allocated #GMappedFile which must be unref'd
-   with g_mapped_file_unref(), or %NULL if the mapping failed.</doc>
-          <type name="MappedFile" c:type="GMappedFile*"/>
-        </return-value>
-        <parameters>
-          <parameter name="fd" transfer-ownership="none">
-            <doc xml:space="preserve">The file descriptor of the file to load</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="writable" transfer-ownership="none">
-            <doc xml:space="preserve">whether the mapping should be writable</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </function>
     </record>
     <bitfield name="MarkupCollectType" c:type="GMarkupCollectType">
       <doc xml:space="preserve">A mixed enumerated type and flags field. You must specify one type
@@ -15776,6 +15829,48 @@ arguments.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_strv"
+              c:identifier="g_option_context_parse_strv"
+              version="2.40"
+              throws="1">
+        <doc xml:space="preserve">Parses the command line arguments.
+
+This function is similar to g_option_context_parse() except that it
+respects the normal memory rules when dealing with a strv instead of
+assuming that the passed-in array is the argv of the main function.
+
+In particular, strings that are removed from the arguments list will
+be freed using g_free().
+
+On Windows, the strings are expected to be in UTF-8.  This is in
+contrast to g_option_context_parse() which expects them to be in the
+system codepage, which is how they are passed as @argv to main().
+See g_win32_get_command_line() for a solution.
+
+This function is useful if you are trying to use #GOptionContext with
+#GApplication.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the parsing was successful,
+         %FALSE if an error occurred</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GOptionContext</doc>
+            <type name="OptionContext" c:type="GOptionContext*"/>
+          </instance-parameter>
+          <parameter name="arguments"
+                     direction="inout"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">a pointer to the
+   command line arguments (which must be in UTF-8 on Windows)</doc>
+            <array zero-terminated="0" c:type="gchar***">
+              <type name="utf8" c:type="gchar**"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_description"
               c:identifier="g_option_context_set_description"
               version="2.12">
@@ -16732,6 +16827,31 @@ memory, they should be freed separately if @free_seg is %TRUE and no
           </parameter>
         </parameters>
       </function>
+      <function name="insert"
+                c:identifier="g_ptr_array_insert"
+                version="2.40"
+                introspectable="0">
+        <doc xml:space="preserve">Inserts an element into the pointer array at the given index. The
+array will grow in size automatically if necessary.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="farray" transfer-ownership="none">
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="gpointer" c:type="gpointer"/>
+            </array>
+          </parameter>
+          <parameter name="index_" transfer-ownership="none">
+            <doc xml:space="preserve">the index to place the new element at, or -1 to append.</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">the pointer to add.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="new" c:identifier="g_ptr_array_new" introspectable="0">
         <doc xml:space="preserve">Creates a new #GPtrArray with a reference count of 1.</doc>
         <return-value>
@@ -16930,22 +17050,25 @@ than g_ptr_array_remove_index(). If @array has a non-%NULL
 from a #GPtrArray.  The following elements are moved to close the
 gap. If @array has a non-%NULL #GDestroyNotify function it is called
 for the removed elements.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+        <return-value>
+          <doc xml:space="preserve">the @array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
         </return-value>
         <parameters>
           <parameter name="array" transfer-ownership="none">
-            <doc xml:space="preserve">a @GPtrArray.</doc>
+            <doc xml:space="preserve">a @GPtrArray</doc>
             <array name="GLib.PtrArray" c:type="GPtrArray*">
               <type name="gpointer" c:type="gpointer"/>
             </array>
           </parameter>
           <parameter name="index_" transfer-ownership="none">
-            <doc xml:space="preserve">the index of the first pointer to remove.</doc>
+            <doc xml:space="preserve">the index of the first pointer to remove</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="length" transfer-ownership="none">
-            <doc xml:space="preserve">the number of pointers to remove.</doc>
+            <doc xml:space="preserve">the number of pointers to remove</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -17138,7 +17261,7 @@ dynamically-allocated memory, they should be freed first.</doc>
 queue consist of pointers to data, the pointers are copied, but the
 actual data is not.</doc>
         <return-value>
-          <doc xml:space="preserve">A copy of @queue</doc>
+          <doc xml:space="preserve">a copy of @queue</doc>
           <type name="Queue" c:type="GQueue*"/>
         </return-value>
         <parameters>
@@ -17177,7 +17300,7 @@ actual data is not.</doc>
               introspectable="0">
         <doc xml:space="preserve">Finds the first link in @queue which contains @data.</doc>
         <return-value>
-          <doc xml:space="preserve">The first link in @queue which contains @data.</doc>
+          <doc xml:space="preserve">the first link in @queue which contains @data</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -17203,7 +17326,7 @@ which should return 0 when the desired element is found. The function
 takes two gconstpointer arguments, the #GQueue element's data as the
 first argument and the given user data as the second argument.</doc>
         <return-value>
-          <doc xml:space="preserve">The found link, or %NULL if it wasn't found</doc>
+          <doc xml:space="preserve">the found link, or %NULL if it wasn't found</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -17219,7 +17342,7 @@ first argument and the given user data as the second argument.</doc>
           </parameter>
           <parameter name="func" transfer-ownership="none">
             <doc xml:space="preserve">a #GCompareFunc to call for each element. It should return 0
-when the desired element is found</doc>
+    when the desired element is found</doc>
             <type name="CompareFunc" c:type="GCompareFunc"/>
           </parameter>
         </parameters>
@@ -17249,8 +17372,8 @@ function.</doc>
         </parameters>
       </method>
       <method name="free" c:identifier="g_queue_free">
-        <doc xml:space="preserve">Frees the memory allocated for the #GQueue. Only call this function if
-@queue was created with g_queue_new(). If queue elements contain
+        <doc xml:space="preserve">Frees the memory allocated for the #GQueue. Only call this function
+if @queue was created with g_queue_new(). If queue elements contain
 dynamically-allocated memory, they should be freed first.
 
 &lt;note&gt;&lt;para&gt;
@@ -17263,14 +17386,14 @@ first.
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
       </method>
       <method name="free_full" c:identifier="g_queue_free_full" version="2.32">
-        <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GQueue, and
-calls the specified destroy function on every element's data.</doc>
+        <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GQueue,
+and calls the specified destroy function on every element's data.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -17290,7 +17413,7 @@ calls the specified destroy function on every element's data.</doc>
               version="2.4">
         <doc xml:space="preserve">Returns the number of items in @queue.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The number of items in @queue.</doc>
+          <doc xml:space="preserve">the number of items in @queue</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -17303,7 +17426,8 @@ calls the specified destroy function on every element's data.</doc>
       <method name="index" c:identifier="g_queue_index" version="2.4">
         <doc xml:space="preserve">Returns the position of the first element in @queue which contains @data.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The position of the first element in @queue which contains @data, or -1 if no element in @queue contains @data.</doc>
+          <doc xml:space="preserve">the position of the first element in @queue which
+    contains @data, or -1 if no element in @queue contains @data</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
@@ -17312,7 +17436,7 @@ calls the specified destroy function on every element's data.</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="data" transfer-ownership="none">
-            <doc xml:space="preserve">the data to find.</doc>
+            <doc xml:space="preserve">the data to find</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
@@ -17412,7 +17536,7 @@ g_queue_new().</doc>
             <type name="CompareDataFunc" c:type="GCompareDataFunc"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data passed to @func.</doc>
+            <doc xml:space="preserve">user data passed to @func</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -17420,7 +17544,7 @@ g_queue_new().</doc>
       <method name="is_empty" c:identifier="g_queue_is_empty">
         <doc xml:space="preserve">Returns %TRUE if the queue is empty.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the queue is empty.</doc>
+          <doc xml:space="preserve">%TRUE if the queue is empty</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -17436,8 +17560,8 @@ g_queue_new().</doc>
               introspectable="0">
         <doc xml:space="preserve">Returns the position of @link_ in @queue.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The position of @link_, or -1 if the link is
-not part of @queue</doc>
+          <doc xml:space="preserve">the position of @link_, or -1 if the link is
+    not part of @queue</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
@@ -17446,7 +17570,7 @@ not part of @queue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="link_" transfer-ownership="none">
-            <doc xml:space="preserve">A #GList link</doc>
+            <doc xml:space="preserve">a #GList link</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -17458,13 +17582,13 @@ not part of @queue</doc>
               introspectable="0">
         <doc xml:space="preserve">Returns the first element of the queue.</doc>
         <return-value>
-          <doc xml:space="preserve">the data of the first element in the queue, or %NULL if the queue
-  is empty.</doc>
+          <doc xml:space="preserve">the data of the first element in the queue, or %NULL
+    if the queue is empty</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
@@ -17473,7 +17597,7 @@ not part of @queue</doc>
               c:identifier="g_queue_peek_head_link"
               version="2.4"
               introspectable="0">
-        <doc xml:space="preserve">Returns the first link in @queue</doc>
+        <doc xml:space="preserve">Returns the first link in @queue.</doc>
         <return-value>
           <doc xml:space="preserve">the first link in @queue, or %NULL if @queue is empty</doc>
           <type name="GLib.List" c:type="GList*">
@@ -17493,8 +17617,8 @@ not part of @queue</doc>
               introspectable="0">
         <doc xml:space="preserve">Returns the @n'th element of @queue.</doc>
         <return-value>
-          <doc xml:space="preserve">The data for the @n'th element of @queue, or %NULL if @n is
-  off the end of @queue.</doc>
+          <doc xml:space="preserve">the data for the @n'th element of @queue,
+    or %NULL if @n is off the end of @queue</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
@@ -17503,7 +17627,7 @@ not part of @queue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="n" transfer-ownership="none">
-            <doc xml:space="preserve">the position of the element.</doc>
+            <doc xml:space="preserve">the position of the element</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -17514,8 +17638,8 @@ not part of @queue</doc>
               introspectable="0">
         <doc xml:space="preserve">Returns the link at the given position</doc>
         <return-value>
-          <doc xml:space="preserve">The link at the @n'th position, or %NULL if @n is off the
-end of the list</doc>
+          <doc xml:space="preserve">the link at the @n'th position, or %NULL
+    if @n is off the end of the list</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -17536,13 +17660,13 @@ end of the list</doc>
               introspectable="0">
         <doc xml:space="preserve">Returns the last element of the queue.</doc>
         <return-value>
-          <doc xml:space="preserve">the data of the last element in the queue, or %NULL if the queue
-  is empty.</doc>
+          <doc xml:space="preserve">the data of the last element in the queue, or %NULL
+    if the queue is empty</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
@@ -17551,7 +17675,7 @@ end of the list</doc>
               c:identifier="g_queue_peek_tail_link"
               version="2.4"
               introspectable="0">
-        <doc xml:space="preserve">Returns the last link @queue.</doc>
+        <doc xml:space="preserve">Returns the last link in @queue.</doc>
         <return-value>
           <doc xml:space="preserve">the last link in @queue, or %NULL if @queue is empty</doc>
           <type name="GLib.List" c:type="GList*">
@@ -17568,15 +17692,15 @@ end of the list</doc>
       <method name="pop_head"
               c:identifier="g_queue_pop_head"
               introspectable="0">
-        <doc xml:space="preserve">Removes the first element of the queue.</doc>
+        <doc xml:space="preserve">Removes the first element of the queue and returns its data.</doc>
         <return-value>
-          <doc xml:space="preserve">the data of the first element in the queue, or %NULL if the queue
-  is empty.</doc>
+          <doc xml:space="preserve">the data of the first element in the queue, or %NULL
+    if the queue is empty</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
@@ -17584,17 +17708,17 @@ end of the list</doc>
       <method name="pop_head_link"
               c:identifier="g_queue_pop_head_link"
               introspectable="0">
-        <doc xml:space="preserve">Removes the first element of the queue.</doc>
+        <doc xml:space="preserve">Removes and returns the first element of the queue.</doc>
         <return-value>
-          <doc xml:space="preserve">the #GList element at the head of the queue, or %NULL if the queue
-  is empty.</doc>
+          <doc xml:space="preserve">the #GList element at the head of the queue, or %NULL
+    if the queue is empty</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
@@ -17603,9 +17727,9 @@ end of the list</doc>
               c:identifier="g_queue_pop_nth"
               version="2.4"
               introspectable="0">
-        <doc xml:space="preserve">Removes the @n'th element of @queue.</doc>
+        <doc xml:space="preserve">Removes the @n'th element of @queue and returns its data.</doc>
         <return-value>
-          <doc xml:space="preserve">the element's data, or %NULL if @n is off the end of @queue.</doc>
+          <doc xml:space="preserve">the element's data, or %NULL if @n is off the end of @queue</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
@@ -17614,7 +17738,7 @@ end of the list</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="n" transfer-ownership="none">
-            <doc xml:space="preserve">the position of the element.</doc>
+            <doc xml:space="preserve">the position of the element</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -17625,7 +17749,7 @@ end of the list</doc>
               introspectable="0">
         <doc xml:space="preserve">Removes and returns the link at the given position.</doc>
         <return-value>
-          <doc xml:space="preserve">The @n'th link, or %NULL if @n is off the end of @queue.</doc>
+          <doc xml:space="preserve">the @n'th link, or %NULL if @n is off the end of @queue</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -17644,15 +17768,15 @@ end of the list</doc>
       <method name="pop_tail"
               c:identifier="g_queue_pop_tail"
               introspectable="0">
-        <doc xml:space="preserve">Removes the last element of the queue.</doc>
+        <doc xml:space="preserve">Removes the last element of the queue and returns its data.</doc>
         <return-value>
-          <doc xml:space="preserve">the data of the last element in the queue, or %NULL if the queue
-  is empty.</doc>
+          <doc xml:space="preserve">the data of the last element in the queue, or %NULL
+    if the queue is empty</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
@@ -17660,17 +17784,17 @@ end of the list</doc>
       <method name="pop_tail_link"
               c:identifier="g_queue_pop_tail_link"
               introspectable="0">
-        <doc xml:space="preserve">Removes the last element of the queue.</doc>
+        <doc xml:space="preserve">Removes and returns the last element of the queue.</doc>
         <return-value>
-          <doc xml:space="preserve">the #GList element at the tail of the queue, or %NULL if the queue
-  is empty.</doc>
+          <doc xml:space="preserve">the #GList element at the tail of the queue, or %NULL
+    if the queue is empty</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
         </parameters>
@@ -17700,12 +17824,12 @@ end of the list</doc>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="link_" transfer-ownership="none">
             <doc xml:space="preserve">a single #GList element, &lt;emphasis&gt;not&lt;/emphasis&gt; a list with
-    more than one element.</doc>
+    more than one element</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -17713,7 +17837,7 @@ end of the list</doc>
         </parameters>
       </method>
       <method name="push_nth" c:identifier="g_queue_push_nth" version="2.4">
-        <doc xml:space="preserve">Inserts a new element into @queue at the given position</doc>
+        <doc xml:space="preserve">Inserts a new element into @queue at the given position.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -17768,11 +17892,11 @@ end of the list</doc>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="data" transfer-ownership="none">
-            <doc xml:space="preserve">the data for the new element.</doc>
+            <doc xml:space="preserve">the data for the new element</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -17786,12 +17910,12 @@ end of the list</doc>
         </return-value>
         <parameters>
           <instance-parameter name="queue" transfer-ownership="none">
-            <doc xml:space="preserve">a #GQueue.</doc>
+            <doc xml:space="preserve">a #GQueue</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="link_" transfer-ownership="none">
             <doc xml:space="preserve">a single #GList element, &lt;emphasis&gt;not&lt;/emphasis&gt; a list with
-  more than one element.</doc>
+  more than one element</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="gpointer" c:type="gpointer"/>
             </type>
@@ -17810,7 +17934,7 @@ end of the list</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="data" transfer-ownership="none">
-            <doc xml:space="preserve">data to remove.</doc>
+            <doc xml:space="preserve">the data to remove</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
@@ -17829,7 +17953,7 @@ end of the list</doc>
             <type name="Queue" c:type="GQueue*"/>
           </instance-parameter>
           <parameter name="data" transfer-ownership="none">
-            <doc xml:space="preserve">data to remove</doc>
+            <doc xml:space="preserve">the data to remove</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
@@ -17879,7 +18003,7 @@ end of the list</doc>
         <doc xml:space="preserve">Unlinks @link_ so that it will no longer be part of @queue. The link is
 not freed.
 
-@link_ must be part of @queue,</doc>
+@link_ must be part of @queue.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -17899,7 +18023,7 @@ not freed.
       <function name="new" c:identifier="g_queue_new" introspectable="0">
         <doc xml:space="preserve">Creates a new #GQueue.</doc>
         <return-value>
-          <doc xml:space="preserve">a new #GQueue.</doc>
+          <doc xml:space="preserve">a newly allocated #GQueue</doc>
           <type name="Queue" c:type="GQueue*"/>
         </return-value>
       </function>
@@ -20890,6 +21014,22 @@ as the doubly-linked #GList.&lt;/note&gt;</doc>
         </parameters>
       </function>
     </record>
+    <constant name="SOURCE_CONTINUE"
+              value="true"
+              c:type="G_SOURCE_CONTINUE"
+              version="2.32">
+      <doc xml:space="preserve">Use this macro as the return value of a #GSourceFunc to leave
+the #GSource in the main loop.</doc>
+      <type name="gboolean" c:type="gboolean"/>
+    </constant>
+    <constant name="SOURCE_REMOVE"
+              value="false"
+              c:type="G_SOURCE_REMOVE"
+              version="2.32">
+      <doc xml:space="preserve">Use this macro as the return value of a #GSourceFunc to remove
+the #GSource from the main loop.</doc>
+      <type name="gboolean" c:type="gboolean"/>
+    </constant>
     <constant name="SQRT2" value="1.414214" c:type="G_SQRT2">
       <doc xml:space="preserve">The square root of two.</doc>
       <type name="gdouble" c:type="gdouble"/>
@@ -26268,20 +26408,20 @@ passed the key and value of each node, together with the @user_data
 parameter passed to g_tree_traverse(). If the function returns
 %TRUE, the traversal is stopped.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE to stop the traversal.</doc>
+        <doc xml:space="preserve">%TRUE to stop the traversal</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="key" transfer-ownership="none">
-          <doc xml:space="preserve">a key of a #GTree node.</doc>
+          <doc xml:space="preserve">a key of a #GTree node</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
         <parameter name="value" transfer-ownership="none">
-          <doc xml:space="preserve">the value corresponding to the key.</doc>
+          <doc xml:space="preserve">the value corresponding to the key</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
         <parameter name="data" transfer-ownership="none">
-          <doc xml:space="preserve">user data passed to g_tree_traverse().</doc>
+          <doc xml:space="preserve">user data passed to g_tree_traverse()</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -26293,13 +26433,37 @@ g_node_traverse() and g_node_find().</doc>
         <doc xml:space="preserve">vists a node's left child first, then the node itself,
              then its right child. This is the one to use if you
              want the output sorted according to the compare
-             function.</doc>
+             function.
+             &lt;informalfigure&gt;
+               &lt;mediaobject&gt;
+                 &lt;imageobject&gt;
+                   &lt;imagedata align="right" fileref="Sorted_binary_tree_inorder.svg" format="SVG"/&gt;
+                 &lt;/imageobject&gt;
+                 &lt;caption&gt;In order: A, B, C, D, E, F, G, H, I&lt;/caption&gt;
+               &lt;/mediaobject&gt;
+             &lt;/informalfigure&gt;</doc>
       </member>
       <member name="pre_order" value="1" c:identifier="G_PRE_ORDER">
-        <doc xml:space="preserve">visits a node, then its children.</doc>
+        <doc xml:space="preserve">visits a node, then its children.
+             &lt;informalfigure&gt;
+               &lt;mediaobject&gt;
+                 &lt;imageobject&gt;
+                   &lt;imagedata align="right" fileref="Sorted_binary_tree_preorder.svg" format="SVG"/&gt;
+                 &lt;/imageobject&gt;
+                 &lt;caption&gt;Pre order: F, B, A, D, C, E, G, I, H&lt;/caption&gt;
+               &lt;/mediaobject&gt;
+             &lt;/informalfigure&gt;</doc>
       </member>
       <member name="post_order" value="2" c:identifier="G_POST_ORDER">
-        <doc xml:space="preserve">visits the node's children, then the node itself.</doc>
+        <doc xml:space="preserve">visits the node's children, then the node itself.
+             &lt;informalfigure&gt;
+               &lt;mediaobject&gt;
+                 &lt;imageobject&gt;
+                   &lt;imagedata align="right" fileref="Sorted_binary_tree_postorder.svg" format="SVG"/&gt;
+                 &lt;/imageobject&gt;
+                 &lt;caption&gt;Post order: A, C, E, D, B, H, I, G, F&lt;/caption&gt;
+               &lt;/mediaobject&gt;
+             &lt;/informalfigure&gt;</doc>
       </member>
       <member name="level_order" value="3" c:identifier="G_LEVEL_ORDER">
         <doc xml:space="preserve">is not implemented for &lt;link
@@ -26308,7 +26472,15 @@ g_node_traverse() and g_node_find().</doc>
                 linkend="glib-N-ary-Trees"&gt;N-ary Trees&lt;/link&gt;, it
                 vists the root node first, then its children, then
                 its grandchildren, and so on. Note that this is less
-                efficient than the other orders.</doc>
+                efficient than the other orders.
+             &lt;informalfigure&gt;
+               &lt;mediaobject&gt;
+                 &lt;imageobject&gt;
+                   &lt;imagedata align="right" fileref="Sorted_binary_tree_breadth-first_traversal.svg" format="SVG"/&gt;
+                 &lt;/imageobject&gt;
+                 &lt;caption&gt;Level order: F, B, G, A, D, I, C, E, H&lt;/caption&gt;
+               &lt;/mediaobject&gt;
+             &lt;/informalfigure&gt;</doc>
       </member>
     </enumeration>
     <record name="Tree" c:type="GTree" disguised="1">
@@ -26320,7 +26492,7 @@ should be accessed only by using the following functions.</doc>
         <doc xml:space="preserve">Removes all keys and values from the #GTree and decreases its
 reference count by one. If keys and/or values are dynamically
 allocated, you should either free them first or create the #GTree
-using g_tree_new_full().  In the latter case the destroy functions
+using g_tree_new_full(). In the latter case the destroy functions
 you supplied will be called on all keys and values before destroying
 the #GTree.</doc>
         <return-value transfer-ownership="none">
@@ -26328,7 +26500,7 @@ the #GTree.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
         </parameters>
@@ -26347,7 +26519,7 @@ the tree, then walk the list and remove each item.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="func" transfer-ownership="none" closure="1">
@@ -26356,7 +26528,7 @@ the tree, then walk the list and remove each item.</doc>
             <type name="TraverseFunc" c:type="GTraverseFunc"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data to pass to the function.</doc>
+            <doc xml:space="preserve">user data to pass to the function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -26368,22 +26540,24 @@ If the #GTree contains no nodes, the height is 0.
 If the #GTree contains only one root node the height is 1.
 If the root node has children the height is 2, etc.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the height of the #GTree.</doc>
+          <doc xml:space="preserve">the height of @tree</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
         </parameters>
       </method>
       <method name="insert" c:identifier="g_tree_insert">
-        <doc xml:space="preserve">Inserts a key/value pair into a #GTree. If the given key already exists
-in the #GTree its corresponding value is set to the new value. If you
-supplied a value_destroy_func when creating the #GTree, the old value is
-freed using that function. If you supplied a @key_destroy_func when
-creating the #GTree, the passed key is freed using that function.
+        <doc xml:space="preserve">Inserts a key/value pair into a #GTree.
+
+If the given key already exists in the #GTree its corresponding value
+is set to the new value. If you supplied a @value_destroy_func when
+creating the #GTree, the old value is freed using that function. If
+you supplied a @key_destroy_func when creating the #GTree, the passed
+key is freed using that function.
 
 The tree is automatically 'balanced' as new key/value pairs are added,
 so that the distance from the root to every leaf is as small as possible.</doc>
@@ -26392,63 +26566,63 @@ so that the distance from the root to every leaf is as small as possible.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to insert.</doc>
+            <doc xml:space="preserve">the key to insert</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
-            <doc xml:space="preserve">the value corresponding to the key.</doc>
+            <doc xml:space="preserve">the value corresponding to the key</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
       <method name="lookup" c:identifier="g_tree_lookup" introspectable="0">
         <doc xml:space="preserve">Gets the value corresponding to the given key. Since a #GTree is
-automatically balanced as key/value pairs are added, key lookup is very
-fast.</doc>
+automatically balanced as key/value pairs are added, key lookup
+is O(log n) (where n is the number of key/value pairs in the tree).</doc>
         <return-value>
-          <doc xml:space="preserve">the value corresponding to the key, or %NULL if the key was
-not found.</doc>
+          <doc xml:space="preserve">the value corresponding to the key, or %NULL
+    if the key was not found.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to look up.</doc>
+            <doc xml:space="preserve">the key to look up</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
       </method>
       <method name="lookup_extended" c:identifier="g_tree_lookup_extended">
         <doc xml:space="preserve">Looks up a key in the #GTree, returning the original key and the
-associated value and a #gboolean which is %TRUE if the key was found. This
-is useful if you need to free the memory allocated for the original key,
-for example before calling g_tree_remove().</doc>
+associated value. This is useful if you need to free the memory
+allocated for the original key, for example before calling
+g_tree_remove().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the key was found in the #GTree.</doc>
+          <doc xml:space="preserve">%TRUE if the key was found in the #GTree</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="lookup_key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to look up.</doc>
+            <doc xml:space="preserve">the key to look up</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
           <parameter name="orig_key" transfer-ownership="none">
-            <doc xml:space="preserve">returns the original key.</doc>
+            <doc xml:space="preserve">returns the original key</doc>
             <type name="gpointer" c:type="gpointer*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
-            <doc xml:space="preserve">returns the value associated with the key.</doc>
+            <doc xml:space="preserve">returns the value associated with the key</doc>
             <type name="gpointer" c:type="gpointer*"/>
           </parameter>
         </parameters>
@@ -26456,12 +26630,12 @@ for example before calling g_tree_remove().</doc>
       <method name="nnodes" c:identifier="g_tree_nnodes">
         <doc xml:space="preserve">Gets the number of nodes in a #GTree.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the number of nodes in the #GTree.</doc>
+          <doc xml:space="preserve">the number of nodes in @tree</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
         </parameters>
@@ -26470,15 +26644,16 @@ for example before calling g_tree_remove().</doc>
               c:identifier="g_tree_ref"
               version="2.22"
               introspectable="0">
-        <doc xml:space="preserve">Increments the reference count of @tree by one.  It is safe to call
-this function from any thread.</doc>
+        <doc xml:space="preserve">Increments the reference count of @tree by one.
+
+It is safe to call this function from any thread.</doc>
         <return-value>
-          <doc xml:space="preserve">the passed in #GTree.</doc>
+          <doc xml:space="preserve">the passed in #GTree</doc>
           <type name="Tree" c:type="GTree*"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
         </parameters>
@@ -26491,17 +26666,17 @@ are freed using the supplied destroy functions, otherwise you have to
 make sure that any dynamically allocated values are freed yourself.
 If the key does not exist in the #GTree, the function does nothing.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the key was found (prior to 2.8, this function returned
-  nothing)</doc>
+          <doc xml:space="preserve">%TRUE if the key was found (prior to 2.8, this function
+    returned nothing)</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to remove.</doc>
+            <doc xml:space="preserve">the key to remove</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
@@ -26521,15 +26696,15 @@ so that the distance from the root to every leaf is as small as possible.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to insert.</doc>
+            <doc xml:space="preserve">the key to insert</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
-            <doc xml:space="preserve">the value corresponding to the key.</doc>
+            <doc xml:space="preserve">the value corresponding to the key</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -26545,8 +26720,8 @@ will proceed among the key/value pairs that have a smaller key; if
 @search_func returns 1, searching will proceed among the key/value
 pairs that have a larger key.</doc>
         <return-value>
-          <doc xml:space="preserve">the value corresponding to the found key, or %NULL if
-the key was not found.</doc>
+          <doc xml:space="preserve">the value corresponding to the found key, or %NULL
+    if the key was not found.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
@@ -26570,17 +26745,17 @@ the key and value destroy functions.
 
 If the key does not exist in the #GTree, the function does nothing.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the key was found (prior to 2.8, this function returned
-   nothing)</doc>
+          <doc xml:space="preserve">%TRUE if the key was found (prior to 2.8, this function
+    returned nothing)</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to remove.</doc>
+            <doc xml:space="preserve">the key to remove</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
@@ -26591,16 +26766,17 @@ If the key does not exist in the #GTree, the function does nothing.</doc>
               deprecated="1"
               deprecated-version="2.2">
         <doc xml:space="preserve">Calls the given function for each node in the #GTree.</doc>
-        <doc-deprecated xml:space="preserve">The order of a balanced tree is somewhat arbitrary. If you
-just want to visit all nodes in sorted order, use g_tree_foreach()
-instead. If you really need to visit nodes in a different order, consider
-using an &lt;link linkend="glib-N-ary-Trees"&gt;N-ary Tree&lt;/link&gt;.</doc-deprecated>
+        <doc-deprecated xml:space="preserve">The order of a balanced tree is somewhat arbitrary.
+    If you just want to visit all nodes in sorted order, use
+    g_tree_foreach() instead. If you really need to visit nodes in
+    a different order, consider using an
+    &lt;link linkend="glib-N-ary-Trees"&gt;N-ary Tree&lt;/link&gt;.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
           <parameter name="traverse_func"
@@ -26612,20 +26788,20 @@ using an &lt;link linkend="glib-N-ary-Trees"&gt;N-ary Tree&lt;/link&gt;.</doc-de
           </parameter>
           <parameter name="traverse_type" transfer-ownership="none">
             <doc xml:space="preserve">the order in which nodes are visited, one of %G_IN_ORDER,
-  %G_PRE_ORDER and %G_POST_ORDER.</doc>
+  %G_PRE_ORDER and %G_POST_ORDER</doc>
             <type name="TraverseType" c:type="GTraverseType"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data to pass to the function.</doc>
+            <doc xml:space="preserve">user data to pass to the function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
       <method name="unref" c:identifier="g_tree_unref" version="2.22">
-        <doc xml:space="preserve">Decrements the reference count of @tree by one.  If the reference count
-drops to 0, all keys and values will be destroyed (if destroy
-functions were specified) and all memory allocated by @tree will be
-released.
+        <doc xml:space="preserve">Decrements the reference count of @tree by one.
+If the reference count drops to 0, all keys and values will
+be destroyed (if destroy functions were specified) and all
+memory allocated by @tree will be released.
 
 It is safe to call this function from any thread.</doc>
         <return-value transfer-ownership="none">
@@ -26633,7 +26809,7 @@ It is safe to call this function from any thread.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tree" transfer-ownership="none">
-            <doc xml:space="preserve">a #GTree.</doc>
+            <doc xml:space="preserve">a #GTree</doc>
             <type name="Tree" c:type="GTree*"/>
           </instance-parameter>
         </parameters>
@@ -26641,7 +26817,7 @@ It is safe to call this function from any thread.</doc>
       <function name="new" c:identifier="g_tree_new" introspectable="0">
         <doc xml:space="preserve">Creates a new #GTree.</doc>
         <return-value>
-          <doc xml:space="preserve">a new #GTree.</doc>
+          <doc xml:space="preserve">a newly allocated #GTree</doc>
           <type name="Tree" c:type="GTree*"/>
         </return-value>
         <parameters>
@@ -26662,7 +26838,7 @@ It is safe to call this function from any thread.</doc>
 to free the memory allocated for the key and value that get called when
 removing the entry from the #GTree.</doc>
         <return-value>
-          <doc xml:space="preserve">a new #GTree.</doc>
+          <doc xml:space="preserve">a newly allocated #GTree</doc>
           <type name="Tree" c:type="GTree*"/>
         </return-value>
         <parameters>
@@ -26671,11 +26847,11 @@ removing the entry from the #GTree.</doc>
                      scope="notified"
                      closure="1"
                      destroy="3">
-            <doc xml:space="preserve">qsort()-style comparison function.</doc>
+            <doc xml:space="preserve">qsort()-style comparison function</doc>
             <type name="CompareDataFunc" c:type="GCompareDataFunc"/>
           </parameter>
           <parameter name="key_compare_data" transfer-ownership="none">
-            <doc xml:space="preserve">data to pass to comparison function.</doc>
+            <doc xml:space="preserve">data to pass to comparison function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="key_destroy_func"
@@ -26683,7 +26859,7 @@ removing the entry from the #GTree.</doc>
                      scope="async">
             <doc xml:space="preserve">a function to free the memory allocated for the key
   used when removing the entry from the #GTree or %NULL if you don't
-  want to supply such a function.</doc>
+  want to supply such a function</doc>
             <type name="DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
           <parameter name="value_destroy_func"
@@ -26691,7 +26867,7 @@ removing the entry from the #GTree.</doc>
                      scope="async">
             <doc xml:space="preserve">a function to free the memory allocated for the
   value used when removing the entry from the #GTree or %NULL if you
-  don't want to supply such a function.</doc>
+  don't want to supply such a function</doc>
             <type name="DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
@@ -26702,18 +26878,18 @@ removing the entry from the #GTree.</doc>
         <doc xml:space="preserve">Creates a new #GTree with a comparison function that accepts user data.
 See g_tree_new() for more details.</doc>
         <return-value>
-          <doc xml:space="preserve">a new #GTree.</doc>
+          <doc xml:space="preserve">a newly allocated #GTree</doc>
           <type name="Tree" c:type="GTree*"/>
         </return-value>
         <parameters>
           <parameter name="key_compare_func"
                      transfer-ownership="none"
                      closure="1">
-            <doc xml:space="preserve">qsort()-style comparison function.</doc>
+            <doc xml:space="preserve">qsort()-style comparison function</doc>
             <type name="CompareDataFunc" c:type="GCompareDataFunc"/>
           </parameter>
           <parameter name="key_compare_data" transfer-ownership="none">
-            <doc xml:space="preserve">data to pass to comparison function.</doc>
+            <doc xml:space="preserve">data to pass to comparison function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -30210,6 +30386,59 @@ produced by g_variant_print()".</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="parse_error_print_context"
+                c:identifier="g_variant_parse_error_print_context"
+                version="2.40">
+        <doc xml:space="preserve">Pretty-prints a message showing the context of a #GVariant parse
+error within the string for which parsing was attempted.
+
+The resulting string is suitable for output to the console or other
+monospace media where newlines are treated in the usual way.
+
+The message will typically look something like one of the following:
+
+|[
+unterminated string constant:
+  (1, 2, 3, 'abc
+            ^^^^
+]|
+
+or
+
+|[
+unable to find a common type:
+  [1, 2, 3, 'str']
+   ^        ^^^^^
+]|
+
+The format of the message may change in a future version.
+
+@error must have come from a failed attempt to g_variant_parse() and
+@source_str must be exactly the same string that caused the error.
+If @source_str was not nul-terminated when you passed it to
+g_variant_parse() then you must add nul termination before using this
+function.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the printed message</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">a #GError from the #GVariantParseError domain</doc>
+            <type name="Error" c:type="GError*"/>
+          </parameter>
+          <parameter name="source_str" transfer-ownership="none">
+            <doc xml:space="preserve">the string that was given to the parser</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="parse_error_quark"
+                c:identifier="g_variant_parse_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
       <function name="parser_get_error_quark"
                 c:identifier="g_variant_parser_get_error_quark">
         <return-value transfer-ownership="none">
@@ -30268,25 +30497,25 @@ calling g_variant_new() followed by g_variant_builder_add_value().
 
 This function might be used as follows:
 
-&lt;programlisting&gt;
+|[
 GVariant *
 make_pointless_dictionary (void)
 {
-  GVariantBuilder *builder;
+  GVariantBuilder builder;
   int i;
 
-  builder = g_variant_builder_new (G_VARIANT_TYPE_ARRAY);
+  g_variant_builder_init (&amp;builder, G_VARIANT_TYPE_ARRAY);
   for (i = 0; i &lt; 16; i++)
     {
       gchar buf[3];
 
       sprintf (buf, "%d", i);
-      g_variant_builder_add (builder, "{is}", i, buf);
+      g_variant_builder_add (&amp;builder, "{is}", i, buf);
     }
 
-  return g_variant_builder_end (builder);
+  return g_variant_builder_end (&amp;builder);
 }
-&lt;/programlisting&gt;</doc>
+]|</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -30317,20 +30546,20 @@ g_variant_builder_add_value().
 
 This function might be used as follows:
 
-&lt;programlisting&gt;
+|[
 GVariant *
 make_pointless_dictionary (void)
 {
-  GVariantBuilder *builder;
+  GVariantBuilder builder;
   int i;
 
-  builder = g_variant_builder_new (G_VARIANT_TYPE_ARRAY);
-  g_variant_builder_add_parsed (builder, "{'width', &lt;%i&gt;}", 600);
-  g_variant_builder_add_parsed (builder, "{'title', &lt;%s&gt;}", "foo");
-  g_variant_builder_add_parsed (builder, "{'transparency', &lt;0.5&gt;}");
-  return g_variant_builder_end (builder);
+  g_variant_builder_init (&amp;builder, G_VARIANT_TYPE_ARRAY);
+  g_variant_builder_add_parsed (&amp;builder, "{'width', &lt;%i&gt;}", 600);
+  g_variant_builder_add_parsed (&amp;builder, "{'title', &lt;%s&gt;}", "foo");
+  g_variant_builder_add_parsed (&amp;builder, "{'transparency', &lt;0.5&gt;}");
+  return g_variant_builder_end (&amp;builder);
 }
-&lt;/programlisting&gt;</doc>
+]|</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -30914,7 +31143,9 @@ you no longer need it.
         </parameters>
       </method>
     </record>
-    <enumeration name="VariantParseError" c:type="GVariantParseError">
+    <enumeration name="VariantParseError"
+                 c:type="GVariantParseError"
+                 glib:error-domain="g-variant-parse-error-quark">
       <doc xml:space="preserve">Error codes returned by parsing text-format GVariants.</doc>
       <member name="failed"
               value="0"
@@ -32147,7 +32378,7 @@ g_ascii_isdigit()), its numeric value. Otherwise, -1.</doc>
       <doc xml:space="preserve">Converts a #gdouble to a string, using the '.' as
 decimal point.
 
-This functions generates enough precision that converting
+This function generates enough precision that converting
 the string back using g_ascii_strtod() gives the same machine-number
 (on machines with IEEE compatible 64bit doubles). It is
 guaranteed that the size of the resulting string will never
@@ -32216,7 +32447,9 @@ represent themselves. This includes UTF-8 and the ISO-8859-*
 charsets, but not for instance double-byte encodings like the
 Windows Codepage 932, where the trailing bytes of double-byte
 characters include all ASCII letters. If you compare two CP932
-strings using this function, you will get false matches.</doc>
+strings using this function, you will get false matches.
+
+Both @s1 and @s2 must be non-%NULL.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">0 if the strings match, a negative value if @s1 &amp;lt; @s2,
   or a positive value if @s1 &amp;gt; @s2.</doc>
@@ -35995,7 +36228,7 @@ If @mem is %NULL it simply returns.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="mem" transfer-ownership="none">
+        <parameter name="mem" transfer-ownership="none" allow-none="1">
           <doc xml:space="preserve">the memory to free</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -36058,7 +36291,12 @@ freed.</doc>
 
 The returned string should be freed when no longer needed.
 The encoding of the returned string is system defined.
-On Windows, it is always UTF-8.</doc>
+On Windows, it is always UTF-8.
+
+Since GLib 2.40, this function will return the value of the "PWD"
+environment variable if it is set and it happens to be the same as
+the current directory.  This can make a difference in the case that
+the current directory is the target of a symbolic link.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">the current directory</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -36553,7 +36791,8 @@ When a hash table only ever contains keys that have themselves as the
 corresponding value it is able to be stored more efficiently.  See
 the discussion in the section description.</doc>
       <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+        <doc xml:space="preserve">%TRUE if the key did not exist yet</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="hash_table" transfer-ownership="none">
@@ -36625,7 +36864,8 @@ value is freed using that function. If you supplied a
 @key_destroy_func when creating the #GHashTable, the passed
 key is freed using that function.</doc>
       <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+        <doc xml:space="preserve">%TRUE if the key did not exist yet</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="hash_table" transfer-ownership="none">
@@ -36743,7 +36983,8 @@ the #GHashTable, the old value is freed using that function.
 If you supplied a @key_destroy_func when creating the
 #GHashTable, the old key is freed using that function.</doc>
       <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+        <doc xml:space="preserve">%TRUE of the key did not exist yet</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="hash_table" transfer-ownership="none">
@@ -39195,7 +39436,7 @@ and @mem will be freed unless it is %NULL.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
-        <parameter name="mem" transfer-ownership="none">
+        <parameter name="mem" transfer-ownership="none" allow-none="1">
           <doc xml:space="preserve">the memory to reallocate</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -39216,7 +39457,7 @@ but care is taken to detect possible overflow during multiplication.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
-        <parameter name="mem" transfer-ownership="none">
+        <parameter name="mem" transfer-ownership="none" allow-none="1">
           <doc xml:space="preserve">the memory to reallocate</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -40944,8 +41185,7 @@ Baz", but not "SFO" (because no word as "fo" as a prefix).</doc>
     </function>
     <function name="str_tokenize_and_fold"
               c:identifier="g_str_tokenize_and_fold"
-              version="2.40"
-              introspectable="0">
+              version="2.40">
       <doc xml:space="preserve">Tokenises @string and performs folding on each token.
 
 A token is a non-empty sequence of alphanumeric characters in the
@@ -40961,7 +41201,7 @@ The number of ASCII alternatives that are generated and the method
 for doing so is unspecified, but @translit_locale (if specified) may
 improve the transliteration if the language of the source string is
 known.</doc>
-      <return-value>
+      <return-value transfer-ownership="full">
         <doc xml:space="preserve">the folded tokens</doc>
         <array c:type="gchar**">
           <type name="utf8"/>
@@ -41046,12 +41286,14 @@ strcasecmp() function on platforms which support it.</doc>
       <doc xml:space="preserve">Removes trailing whitespace from a string.
 
 This function doesn't allocate or reallocate any memory;
-it modifies @string in place. The pointer to @string is
-returned to allow the nesting of functions.
+it modifies @string in place. Therefore, it cannot be used
+on statically allocated strings.
+
+The pointer to @string is returned to allow the nesting of functions.
 
 Also see g_strchug() and g_strstrip().</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">@string.</doc>
+        <doc xml:space="preserve">@string</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
@@ -41066,8 +41308,10 @@ Also see g_strchug() and g_strstrip().</doc>
 of the characters forward.
 
 This function doesn't allocate or reallocate any memory;
-it modifies @string in place. The pointer to @string is
-returned to allow the nesting of functions.
+it modifies @string in place. Therefore, it cannot be used on
+statically allocated strings.
+
+The pointer to @string is returned to allow the nesting of functions.
 
 Also see g_strchomp() and g_strstrip().</doc>
       <return-value transfer-ownership="full">
@@ -42049,7 +42293,7 @@ system of that module (%G_TEST_BUILT).
 
 In order for this function to work in srcdir != builddir situations,
 the G_TEST_SRCDIR and G_TEST_BUILDDIR environment variables need to
-have been defined.  As of 2.38, this is done by the Makefile.decl
+have been defined.  As of 2.38, this is done by the glib.mk
 included in GLib.  Please ensure that your copy is up to date before
 using this function.
 
@@ -42413,7 +42657,9 @@ So far, the following arguments are understood:
           <type name="utf8" c:type="char***"/>
         </parameter>
         <parameter name="..." transfer-ownership="none">
-          <doc xml:space="preserve">Reserved for future extension. Currently, you must pass %NULL.</doc>
+          <doc xml:space="preserve">%NULL-terminated list of special options. Currently the only
+      defined option is &lt;literal&gt;"no_g_set_prgname"&lt;/literal&gt;, which
+      will cause g_test_init() to not call g_set_prgname().</doc>
           <varargs/>
         </parameter>
       </parameters>
@@ -42647,9 +42893,32 @@ cases to be run are filtered according to
 test path arguments (-p &lt;replaceable&gt;testpath&lt;/replaceable&gt;) as
 parsed by g_test_init().
 g_test_run_suite() or g_test_run() may only be called once
-in a program.</doc>
+in a program.
+
+In general, the tests and sub-suites within each suite are run in
+the order in which they are defined. However, note that prior to
+GLib 2.36, there was a bug in the &lt;literal&gt;g_test_add_*&lt;/literal&gt;
+functions which caused them to create multiple suites with the same
+name, meaning that if you created tests "/foo/simple",
+"/bar/simple", and "/foo/using-bar" in that order, they would get
+run in that order (since g_test_run() would run the first "/foo"
+suite, then the "/bar" suite, then the second "/foo" suite). As of
+2.36, this bug is fixed, and adding the tests in that order would
+result in a running order of "/foo/simple", "/foo/using-bar",
+"/bar/simple". If this new ordering is sub-optimal (because it puts
+more-complicated tests before simpler ones, making it harder to
+figure out exactly what has failed), you can fix it by changing the
+test paths to group tests by suite in a way that will result in the
+desired running order. Eg, "/simple/foo", "/simple/bar",
+"/complex/foo-using-bar".
+
+However, you should never make the actual result of a test depend
+on the order that tests are run in. If you need to ensure that some
+particular code runs before or after a given test case, use
+g_test_add(), which lets you specify setup and teardown functions.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">0 on success</doc>
+        <doc xml:space="preserve">0 on success, 1 on failure (assuming it returns at all),
+  77 if all tests were skipped with g_test_skip().</doc>
         <type name="gint" c:type="int"/>
       </return-value>
     </function>
@@ -42659,7 +42928,9 @@ in a program.</doc>
       <doc xml:space="preserve">Execute the tests within @suite and all nested #GTestSuites.
 The test suites to be executed are filtered according to
 test path arguments (-p &lt;replaceable&gt;testpath&lt;/replaceable&gt;)
-as parsed by g_test_init().
+as parsed by g_test_init(). See the g_test_run() documentation
+for more information on the order that tests are run in.
+
 g_test_run_suite() or g_test_run() may only be called once
 in a program.</doc>
       <return-value transfer-ownership="none">
@@ -42681,7 +42952,9 @@ g_assert_cmpuint(), g_assert_cmphex(), g_assert_cmpfloat(),
 g_assert_true(), g_assert_false(), g_assert_null(), g_assert_no_error(),
 g_assert_error(), g_test_assert_expected_messages() and the various
 g_test_trap_assert_*() macros to not abort to program, but instead
-call g_test_fail() and continue.
+call g_test_fail() and continue. (This also changes the behavior of
+g_test_fail() so that it will not cause the test program to abort
+after completing the failed test.)
 
 Note that the g_assert_not_reached() and g_assert() are not
 affected by this.
@@ -42847,7 +43120,13 @@ fork-without-exec. Use g_test_trap_subprocess() instead.</doc-deprecated>
               version="2.38">
       <doc xml:space="preserve">Respawns the test program to run only @test_path in a subprocess.
 This can be used for a test case that might not return, or that
-might abort. @test_path will normally be the name of the parent
+might abort.
+
+If @test_path is %NULL then the same test is re-run in a subprocess.
+You can use g_test_subprocess() to determine whether the test is in
+a subprocess or not.
+
+@test_path can also be the name of the parent
 test, followed by "&lt;literal&gt;/subprocess/&lt;/literal&gt;" and then a name
 for the specific subtest (or just ending with
 "&lt;literal&gt;/subprocess&lt;/literal&gt;" if the test only has one child
@@ -42879,13 +43158,14 @@ message.
   static void
   test_create_large_object_subprocess (void)
   {
-    my_object_new (1000000);
-  }
+    if (g_test_subprocess ())
+      {
+        my_object_new (1000000);
+        return;
+      }
 
-  static void
-  test_create_large_object (void)
-  {
-    g_test_trap_subprocess ("/myobject/create_large_object/subprocess", 0, 0);
+    /&amp;ast; Reruns this same test in a subprocess &amp;ast;/
+    g_test_trap_subprocess (NULL, 0, 0);
     g_test_trap_assert_failed ();
     g_test_trap_assert_stderr ("*ERROR*too large*");
   }
@@ -42897,12 +43177,6 @@ message.
 
     g_test_add_func ("/myobject/create_large_object",
                      test_create_large_object);
-    /&amp;ast; Because of the '/subprocess' in the name, this test will
-     &amp;ast; not be run by the g_test_run () call below.
-     &amp;ast;/
-    g_test_add_func ("/myobject/create_large_object/subprocess",
-                     test_create_large_object_subprocess);
-
     return g_test_run ();
   }
 ]|</doc>
@@ -42910,7 +43184,7 @@ message.
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="test_path" transfer-ownership="none">
+        <parameter name="test_path" transfer-ownership="none" allow-none="1">
           <doc xml:space="preserve">Test to run in a subprocess</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
@@ -45629,6 +45903,61 @@ produced by g_variant_print()".</doc>
           <type name="utf8" c:type="const gchar**"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="variant_parse_error_print_context"
+              c:identifier="g_variant_parse_error_print_context"
+              moved-to="Variant.parse_error_print_context"
+              version="2.40">
+      <doc xml:space="preserve">Pretty-prints a message showing the context of a #GVariant parse
+error within the string for which parsing was attempted.
+
+The resulting string is suitable for output to the console or other
+monospace media where newlines are treated in the usual way.
+
+The message will typically look something like one of the following:
+
+|[
+unterminated string constant:
+  (1, 2, 3, 'abc
+            ^^^^
+]|
+
+or
+
+|[
+unable to find a common type:
+  [1, 2, 3, 'str']
+   ^        ^^^^^
+]|
+
+The format of the message may change in a future version.
+
+@error must have come from a failed attempt to g_variant_parse() and
+@source_str must be exactly the same string that caused the error.
+If @source_str was not nul-terminated when you passed it to
+g_variant_parse() then you must add nul termination before using this
+function.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the printed message</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="error" transfer-ownership="none">
+          <doc xml:space="preserve">a #GError from the #GVariantParseError domain</doc>
+          <type name="Error" c:type="GError*"/>
+        </parameter>
+        <parameter name="source_str" transfer-ownership="none">
+          <doc xml:space="preserve">the string that was given to the parser</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="variant_parse_error_quark"
+              c:identifier="g_variant_parse_error_quark"
+              moved-to="Variant.parse_error_quark">
+      <return-value transfer-ownership="none">
+        <type name="Quark" c:type="GQuark"/>
+      </return-value>
     </function>
     <function name="variant_parser_get_error_quark"
               c:identifier="g_variant_parser_get_error_quark"

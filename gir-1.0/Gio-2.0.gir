@@ -49,7 +49,7 @@ range.
 
 #GAction is merely the interface to the concept of an action, as
 described above.  Various implementations of actions exist, including
-#GSimpleAction and #GtkAction.
+#GSimpleAction.
 
 In all cases, the implementing class is responsible for storing the
 name of the action, the parameter type, the enabled state, the
@@ -3822,6 +3822,53 @@ no display name is available.</doc>
         </callback>
       </field>
     </record>
+    <class name="AppInfoMonitor"
+           c:symbol-prefix="app_info_monitor"
+           c:type="GAppInfoMonitor"
+           version="2.40"
+           parent="GObject.Object"
+           glib:type-name="GAppInfoMonitor"
+           glib:get-type="g_app_info_monitor_get_type">
+      <doc xml:space="preserve">#GAppInfoMonitor is a very simple object used for monitoring the app
+info database for changes (ie: newly installed or removed
+applications).
+
+Call g_app_info_monitor_get() to get a #GAppInfoMonitor and connect
+to the "changed" signal.
+
+In the usual case, applications should try to make note of the change
+(doing things like invalidating caches) but not act on it.  In
+particular, applications should avoid making calls to #GAppInfo APIs
+in response to the change signal, deferring these until the time that
+the data is actually required.  The exception to this case is when
+application information is actually being displayed on the screen
+(eg: during a search or when the list of all applications is shown).
+The reason for this is that changes to the list of installed
+applications often come in groups (like during system updates) and
+rescanning the list on every change is pointless and expensive.</doc>
+      <function name="get"
+                c:identifier="g_app_info_monitor_get"
+                version="2.40">
+        <doc xml:space="preserve">Gets the #GAppInfoMonitor for the current thread-default main
+context.
+
+The #GAppInfoMonitor will emit a "changed" signal in the
+thread-default main context whenever the list of installed
+applications (as reported by g_app_info_get_all()) may have changed.
+
+You must only call g_object_unref() on the return value from under
+the same main context as you created it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a reference to a #GAppInfoMonitor</doc>
+          <type name="AppInfoMonitor" c:type="GAppInfoMonitor*"/>
+        </return-value>
+      </function>
+      <glib:signal name="changed" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
     <class name="AppLaunchContext"
            c:symbol-prefix="app_launch_context"
            c:type="GAppLaunchContext"
@@ -4991,15 +5038,18 @@ This function is intended to be run from main() and its return value
 is intended to be returned by main(). Although you are expected to pass
 the @argc, @argv parameters from main() to this function, it is possible
 to pass %NULL if @argv is not available or commandline handling is not
-required.
+required.  Note that on Windows, @argc and @argv are ignored, and
+g_win32_get_command_line() is called internally (for proper support
+of Unicode commandline arguments).
 
 First, the local_command_line() virtual function is invoked.
 This function always runs on the local instance. It gets passed a pointer
-to a %NULL-terminated copy of @argv and is expected to remove the arguments
-that it handled (shifting up remaining arguments). See
-&lt;xref linkend="gapplication-example-cmdline2"/&gt; for an example of
-parsing @argv manually. Alternatively, you may use the #GOptionContext API,
-after setting &lt;literal&gt;argc = g_strv_length (argv);&lt;/literal&gt;.
+to a %NULL-terminated copy of the command line and is expected to
+remove the arguments that it handled (shifting up remaining
+arguments). See &lt;xref linkend="gapplication-example-cmdline2"/&gt; for
+an example of parsing @argv manually. Alternatively, you may use the
+#GOptionContext API, but you must use g_option_context_parse_strv()
+in order to avoid memory leaks and encoding mismatches.
 
 The last argument to local_command_line() is a pointer to the @status
 variable which can used to set the exit status that is returned from
@@ -5060,7 +5110,24 @@ to the basename of argv[0].  Since 2.38, if %G_APPLICATION_IS_SERVICE
 is specified, the prgname is set to the application ID.  The main
 impact of this is is that the wmclass of windows created by Gtk+ will
 be set accordingly, which helps the window manager determine which
-application is showing the window.</doc>
+application is showing the window.
+
+Since 2.40, applications that are not explicitly flagged as services
+or launchers (ie: neither %G_APPLICATION_IS_SERVICE or
+%G_APPLICATION_IS_LAUNCHER are given as flags) will check (from the
+default handler for local_command_line) if "--gapplication-service"
+was given in the command line.  If this flag is present then normal
+commandline processing is interrupted and the
+%G_APPLICATION_IS_SERVICE flag is set.  This provides a "compromise"
+solution whereby running an application directly from the commandline
+will invoke it in the normal way (which can be useful for debugging)
+while still allowing applications to be D-Bus activated in service
+mode.  The D-Bus service file should invoke the executable with
+"--gapplication-service" as the sole commandline argument.  This
+approach is suitable for use by most graphical applications but
+should not be used from applications like editors that need precise
+control over when processes invoked via the commandline will exit and
+what their exit status will be.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the exit status</doc>
           <type name="gint" c:type="int"/>
@@ -5794,7 +5861,12 @@ the invoking process rather than the local process.</doc>
               version="2.28">
         <doc xml:space="preserve">Gets the list of arguments that was passed on the command line.
 
-The strings in the array may contain non-utf8 data.
+The strings in the array may contain non-UTF-8 data on UNIX (such as
+filenames or arguments given in the system locale) but are always in
+UTF-8 on Windows.
+
+If you wish to use the return value with #GOptionContext, you must
+use g_option_context_parse_strv().
 
 The return value is %NULL-terminated and should be freed using
 g_strfreev().</doc>
@@ -8468,7 +8540,7 @@ like this.
 An example of how to us this:
 |[
     /&lt;!-- --&gt;* Make sure we don't do any unnecessary work if already cancelled *&lt;!-- --&gt;/
-    if (g_cancellable_set_error_if_cancelled (cancellable))
+    if (g_cancellable_set_error_if_cancelled (cancellable, error))
       return;
 
     /&lt;!-- --&gt;* Set up all the data needed to be able to
@@ -20728,6 +20800,32 @@ described in the &lt;ulink url="http://standards.freedesktop.org/menu-spec/lates
           </parameter>
         </parameters>
       </constructor>
+      <function name="search" c:identifier="g_desktop_app_info_search">
+        <doc xml:space="preserve">Searches desktop files for ones that match @search_string.
+
+The return value is an array of strvs.  Each strv contains a list of
+applications that matched @search_string with an equal score.  The
+outer list is sorted by score so that the first strv contains the
+best-matching applications, and so on.
+The algorithm for determining matches is undefined and may change at
+any time.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a
+  list of strvs.  Free each item with g_strfreev() and free the outer
+  list with g_free().</doc>
+          <array c:type="gchar***">
+            <array>
+              <type name="utf8"/>
+            </array>
+          </array>
+        </return-value>
+        <parameters>
+          <parameter name="search_string" transfer-ownership="none">
+            <doc xml:space="preserve">the search string to use</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="set_desktop_env"
                 c:identifier="g_desktop_app_info_set_desktop_env">
         <doc xml:space="preserve">Sets the name of the desktop that the application is running in.
@@ -20971,7 +21069,7 @@ The @key is looked up in the "Desktop Entry" group.</doc>
       </method>
       <method name="has_key"
               c:identifier="g_desktop_app_info_has_key"
-              version="2.26">
+              version="2.36">
         <doc xml:space="preserve">Returns whether @key exists in the "Desktop Entry" group
 of the keyfile backing @info.</doc>
         <return-value transfer-ownership="none">
@@ -21060,7 +21158,9 @@ activation) then @spawn_flags, @user_setup, @user_setup_data,
               <type name="utf8"/>
             </type>
           </parameter>
-          <parameter name="launch_context" transfer-ownership="none">
+          <parameter name="launch_context"
+                     transfer-ownership="none"
+                     allow-none="1">
             <doc xml:space="preserve">a #GAppLaunchContext</doc>
             <type name="AppLaunchContext" c:type="GAppLaunchContext*"/>
           </parameter>
@@ -21070,21 +21170,24 @@ activation) then @spawn_flags, @user_setup, @user_setup_data,
           </parameter>
           <parameter name="user_setup"
                      transfer-ownership="none"
+                     allow-none="1"
                      scope="call"
                      closure="4">
-            <doc xml:space="preserve">a #GSpawnChildSetupFunc, used once for
-    each process.</doc>
+            <doc xml:space="preserve">a #GSpawnChildSetupFunc, used once
+    for each process.</doc>
             <type name="GLib.SpawnChildSetupFunc"
                   c:type="GSpawnChildSetupFunc"/>
           </parameter>
           <parameter name="user_setup_data"
                      transfer-ownership="none"
+                     allow-none="1"
                      closure="3">
             <doc xml:space="preserve">User data for @user_setup</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="pid_callback"
                      transfer-ownership="none"
+                     allow-none="1"
                      scope="call"
                      closure="6">
             <doc xml:space="preserve">Callback for child processes</doc>
@@ -21093,6 +21196,7 @@ activation) then @spawn_flags, @user_setup, @user_setup_data,
           </parameter>
           <parameter name="pid_callback_data"
                      transfer-ownership="none"
+                     allow-none="1"
                      closure="5">
             <doc xml:space="preserve">User data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
@@ -24167,7 +24271,16 @@ for HTTP Etag headers, which are a very similar concept.
 The value of @arg can be either a URI, an absolute path or a
 relative path resolved relative to the current working directory.
 This operation never fails, but the returned object might not
-support any I/O operation if @arg points to a malformed path.</doc>
+support any I/O operation if @arg points to a malformed path.
+
+Note that on Windows, this function expects its argument to be in
+UTF-8 -- not the system code page.  This means that you
+should not use this function with string from argv as it is passed
+to main().  g_win32_get_command_line() will return a UTF-8 version of
+the commandline.  #GApplication also uses UTF-8 but
+g_application_command_line_create_file_for_arg() may be more useful
+for you there.  It is also always possible to use this function with
+#GOptionContext arguments of type %G_OPTION_ARG_FILENAME.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GFile.
    Free the returned object with g_object_unref().</doc>
@@ -30947,7 +31060,12 @@ triggering the cancellable object from another thread. If the operation
 was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 
 If @make_backup is %TRUE, this function will attempt to
-make a backup of @file.</doc>
+make a backup of @file.
+
+&lt;warning&gt;&lt;para&gt;No copy of @content will be made, so it must stay valid until
+@callback is called. See g_file_replace_contents_bytes_async() for a #GBytes
+version that will automatically hold a reference to the contents (without
+copying) for the duration of the call.&lt;/para&gt;&lt;/warning&gt;</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -30989,6 +31107,60 @@ make a backup of @file.</doc>
                      allow-none="1"
                      scope="async"
                      closure="7">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="replace_contents_bytes_async"
+              c:identifier="g_file_replace_contents_bytes_async"
+              version="2.40">
+        <doc xml:space="preserve">Same as g_file_replace_contents_async() but takes a #GBytes input instead.
+This function will keep a ref on @contents until the operation is done.
+Unlike g_file_replace_contents_async() this allows forgetting about the
+content without waiting for the callback.
+
+When this operation has completed, @callback will be called with
+@user_user data, and the operation can be finalized with
+g_file_replace_contents_finish().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">input #GFile</doc>
+            <type name="File" c:type="GFile*"/>
+          </instance-parameter>
+          <parameter name="bytes" transfer-ownership="none">
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+          <parameter name="etag" transfer-ownership="none" allow-none="1">
+            <doc xml:space="preserve">a new &lt;link linkend="gfile-etag"&gt;entity tag&lt;/link&gt; for the @file, or %NULL</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="make_backup" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if a backup should be created</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a set of #GFileCreateFlags</doc>
+            <type name="FileCreateFlags" c:type="GFileCreateFlags"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
             <type name="AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -40450,24 +40622,25 @@ implemented in this module.
 This method will not be called in normal use, however it may be
 called when probing existing modules and recording which extension
 points that this model is used for. This means we won't have to
-load and initialze this module unless its needed.
+load and initialize this module unless its needed.
 
 If this function is not implemented by the module the module will
-always be loaded, initialized and then unloaded on application startup
-so that it can register its extension points during init.
+always be loaded, initialized and then unloaded on application
+startup so that it can register its extension points during init.
 
-Note that a module need not actually implement all the extension points
-that g_io_module_query returns, since the exact list of extension may
-depend on runtime issues. However all extension points actually implemented
-must be returned by g_io_module_query() (if defined).
+Note that a module need not actually implement all the extension
+points that g_io_module_query() returns, since the exact list of
+extension may depend on runtime issues. However all extension
+points actually implemented must be returned by g_io_module_query()
+(if defined).
 
-When installing a module that implements g_io_module_query you must
+When installing a module that implements g_io_module_query() you must
 run gio-querymodules in order to build the cache files required for
 lazy loading.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A %NULL-terminated array of strings, listing the supported
-    extension points of the module. The array must be suitable for
-    freeing with g_strfreev().</doc>
+          <doc xml:space="preserve">A %NULL-terminated array of strings,
+    listing the supported extension points of the module. The array
+    must be suitable for freeing with g_strfreev().</doc>
           <array c:type="char**">
             <type name="utf8"/>
           </array>
@@ -40475,8 +40648,10 @@ lazy loading.</doc>
       </function>
       <method name="load" c:identifier="g_io_module_load">
         <doc xml:space="preserve">Required API for GIO modules to implement.
-This function is ran after the module has been loaded into GIO,
-to initialize the module.</doc>
+
+This function is run after the module has been loaded into GIO,
+to initialize the module. Typically, this function will call
+g_io_extension_point_implement().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -40489,7 +40664,8 @@ to initialize the module.</doc>
       </method>
       <method name="unload" c:identifier="g_io_module_unload">
         <doc xml:space="preserve">Required API for GIO modules to implement.
-This function is ran when the module is being unloaded from GIO,
+
+This function is run when the module is being unloaded from GIO,
 to finalize the module.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -51109,7 +51285,12 @@ to implement asynchronicity, so they are optional for inheriting
 classes. However, if you override one you must override all.
 
 For the synchronous, blocking version of this function, see
-g_output_stream_write().</doc>
+g_output_stream_write().
+
+&lt;warning&gt;&lt;para&gt;No copy of @buffer will be made, so it must stay valid until
+@callback is called. See g_output_stream_write_bytes_async() for a #GBytes
+version that will automatically hold a reference to the contents (without
+copying) for the duration of the call.&lt;/para&gt;&lt;/warning&gt;</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -51469,6 +51650,59 @@ the closing operation.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="printf"
+              c:identifier="g_output_stream_printf"
+              version="2.40"
+              introspectable="0">
+        <doc xml:space="preserve">This is a utility function around g_output_stream_write_all(). It
+uses g_strdup_vprintf() to turn @format and @... into a string that
+is then written to @stream.
+
+See the documentation of g_output_stream_write_all() about the
+behavior of the actual write operation.
+
+Note that partial writes cannot be properly checked with this
+function due to the variable length of the written string, if you
+need precise control over partial write failures, you need to
+create you own printf()-like wrapper around g_output_stream_write()
+or g_output_stream_write_all().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE if there was an error</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GOutputStream.</doc>
+            <type name="OutputStream" c:type="GOutputStream*"/>
+          </instance-parameter>
+          <parameter name="bytes_written"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">location to store the number of bytes that was
+    written to the stream</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">location to store the error occurring, or %NULL to ignore</doc>
+            <type name="GLib.Error" c:type="GError**"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format string. See the printf() documentation</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">the parameters to insert into the format string</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_pending"
               c:identifier="g_output_stream_set_pending"
               throws="1">
@@ -51586,6 +51820,59 @@ g_output_stream_splice().</doc>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve">a #GAsyncResult.</doc>
             <type name="AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="vprintf"
+              c:identifier="g_output_stream_vprintf"
+              version="2.40"
+              introspectable="0">
+        <doc xml:space="preserve">This is a utility function around g_output_stream_write_all(). It
+uses g_strdup_vprintf() to turn @format and @args into a string that
+is then written to @stream.
+
+See the documentation of g_output_stream_write_all() about the
+behavior of the actual write operation.
+
+Note that partial writes cannot be properly checked with this
+function due to the variable length of the written string, if you
+need precise control over partial write failures, you need to
+create you own printf()-like wrapper around g_output_stream_write()
+or g_output_stream_write_all().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE if there was an error</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GOutputStream.</doc>
+            <type name="OutputStream" c:type="GOutputStream*"/>
+          </instance-parameter>
+          <parameter name="bytes_written"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">location to store the number of bytes that was
+    written to the stream</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">location to store the error occurring, or %NULL to ignore</doc>
+            <type name="GLib.Error" c:type="GError**"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format string. See the printf() documentation</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="args" transfer-ownership="none">
+            <doc xml:space="preserve">the parameters to insert into the format string</doc>
+            <type name="va_list" c:type="va_list"/>
           </parameter>
         </parameters>
       </method>
@@ -51717,7 +52004,12 @@ to implement asynchronicity, so they are optional for inheriting
 classes. However, if you override one you must override all.
 
 For the synchronous, blocking version of this function, see
-g_output_stream_write().</doc>
+g_output_stream_write().
+
+&lt;warning&gt;&lt;para&gt;No copy of @buffer will be made, so it must stay valid until
+@callback is called. See g_output_stream_write_bytes_async() for a #GBytes
+version that will automatically hold a reference to the contents (without
+copying) for the duration of the call.&lt;/para&gt;&lt;/warning&gt;</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -57767,7 +58059,10 @@ characters.</doc>
                 version="2.26"
                 deprecated="1"
                 deprecated-version="2.40">
-        <doc-deprecated xml:space="preserve">Use g_settings_schema_source_list_schemas() instead</doc-deprecated>
+        <doc-deprecated xml:space="preserve">Use g_settings_schema_source_list_schemas() instead.
+If you used g_settings_list_schemas() to check for the presence of
+a particular schema, use g_settings_schema_source_lookup() instead
+of your whole loop.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a list of #GSettings
   schemas that are available.  The list must not be modified or
@@ -58203,7 +58498,7 @@ schema for @settings.</doc>
             <type name="Settings" c:type="GSettings*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to check for being set</doc>
+            <doc xml:space="preserve">the key to get the default value for</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -58512,7 +58807,7 @@ schema for @settings.</doc>
             <type name="Settings" c:type="GSettings*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">the key to check for being set</doc>
+            <doc xml:space="preserve">the key to get the user value for</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -60133,7 +60428,15 @@ action is stateless.</doc>
         <doc xml:space="preserve">Indicates that the action was just activated.
 
 @parameter will always be of the expected type.  In the event that
-an incorrect type was given, no signal will be emitted.</doc>
+an incorrect type was given, no signal will be emitted.
+
+Since GLib 2.40, if no handler is connected to this signal then the
+default behaviour for boolean-stated actions with a %NULL parameter
+type is to toggle them via the #GSimpleAction::change-state signal.
+For stateful actions where the state type is equal to the parameter
+type, the default is to forward them directly to
+#GSimpleAction::change-state.  This should allow almost all users
+of #GSimpleAction to connect only one handler or the other.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -61138,13 +61441,12 @@ with g_socket_client_set_proxy_resolver().</doc>
       <implements name="ProxyResolver"/>
       <function name="new"
                 c:identifier="g_simple_proxy_resolver_new"
-                version="2.36"
-                introspectable="0">
+                version="2.36">
         <doc xml:space="preserve">Creates a new #GSimpleProxyResolver. See
 #GSimpleProxyResolver:default-proxy and
 #GSimpleProxyResolver:ignore-hosts for more details on how the
 arguments are interpreted.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GSimpleProxyResolver</doc>
           <type name="ProxyResolver" c:type="GProxyResolver*"/>
         </return-value>
@@ -64725,7 +65027,8 @@ the different @event values are as follows:
       @client is about to make a connection to a remote host;
       either a proxy server or the destination server itself.
       @connection is the #GSocketConnection, which is not yet
-      connected.
+      connected.  Since GLib 2.40, you can access the remote
+      address via g_socket_connection_get_remote_address().
     &lt;/para&gt;&lt;/listitem&gt;
   &lt;/varlistentry&gt;
   &lt;varlistentry&gt;
@@ -65302,7 +65605,14 @@ Use g_socket_connection_connect_finish() to retrieve the result.</doc>
               c:identifier="g_socket_connection_get_remote_address"
               version="2.22"
               throws="1">
-        <doc xml:space="preserve">Try to get the remote address of a socket connection.</doc>
+        <doc xml:space="preserve">Try to get the remote address of a socket connection.
+
+Since GLib 2.40, when used with g_socket_client_connect() or
+g_socket_client_connect_async(), during emission of
+%G_SOCKET_CLIENT_CONNECTING, this function will return the remote
+address that will be used for the connection.  This allows
+applications to print e.g. "Connecting to example.com
+(10.42.77.3)...".</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GSocketAddress or %NULL on error.
     Free the returned object with g_object_unref().</doc>
@@ -66994,7 +67304,9 @@ The argument list is expected to be %NULL-terminated.</doc>
         <parameters>
           <parameter name="argv" transfer-ownership="none">
             <doc xml:space="preserve">commandline arguments for the subprocess</doc>
-            <type name="utf8" c:type="const gchar* const*"/>
+            <array c:type="gchar**">
+              <type name="utf8"/>
+            </array>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve">flags that define the behaviour of the subprocess</doc>
@@ -67009,7 +67321,7 @@ The argument list is expected to be %NULL-terminated.</doc>
         <doc xml:space="preserve">Communicate with the subprocess until it terminates, and all input
 and output has been completed.
 
-If @stdin is given, the subprocess must have been created with
+If @stdin_buf is given, the subprocess must have been created with
 %G_SUBPROCESS_FLAGS_STDIN_PIPE.  The given data is fed to the
 stdin of the subprocess and the pipe is closed (ie: EOF).
 
@@ -67056,7 +67368,7 @@ attempt to interact with the pipes while the operation is in progress
             <doc xml:space="preserve">a #GSubprocess</doc>
             <type name="Subprocess" c:type="GSubprocess*"/>
           </instance-parameter>
-          <parameter name="stdin_buf" transfer-ownership="none">
+          <parameter name="stdin_buf" transfer-ownership="none" allow-none="1">
             <doc xml:space="preserve">data to send to the stdin of the subprocess, or %NULL</doc>
             <type name="GLib.Bytes" c:type="GBytes*"/>
           </parameter>
@@ -67094,8 +67406,8 @@ invocation with g_subprocess_communicate_finish().</doc>
             <doc xml:space="preserve">Self</doc>
             <type name="Subprocess" c:type="GSubprocess*"/>
           </instance-parameter>
-          <parameter name="stdin_buf" transfer-ownership="none">
-            <doc xml:space="preserve">Input data</doc>
+          <parameter name="stdin_buf" transfer-ownership="none" allow-none="1">
+            <doc xml:space="preserve">Input data, or %NULL</doc>
             <type name="GLib.Bytes" c:type="GBytes*"/>
           </parameter>
           <parameter name="cancellable"
@@ -67163,7 +67475,7 @@ process as UTF-8, and returns it as a regular NUL terminated string.</doc>
             <doc xml:space="preserve">a #GSubprocess</doc>
             <type name="Subprocess" c:type="GSubprocess*"/>
           </instance-parameter>
-          <parameter name="stdin_buf" transfer-ownership="none">
+          <parameter name="stdin_buf" transfer-ownership="none" allow-none="1">
             <doc xml:space="preserve">data to send to the stdin of the subprocess, or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -67201,8 +67513,8 @@ invocation with g_subprocess_communicate_utf8_finish().</doc>
             <doc xml:space="preserve">Self</doc>
             <type name="Subprocess" c:type="GSubprocess*"/>
           </instance-parameter>
-          <parameter name="stdin_buf" transfer-ownership="none">
-            <doc xml:space="preserve">Input data</doc>
+          <parameter name="stdin_buf" transfer-ownership="none" allow-none="1">
+            <doc xml:space="preserve">Input data, or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="cancellable"
@@ -67300,11 +67612,14 @@ unless g_subprocess_get_if_exited() returned %TRUE.</doc>
         </parameters>
       </method>
       <method name="get_identifier" c:identifier="g_subprocess_get_identifier">
+        <doc xml:space="preserve">On UNIX, returns the process ID as a decimal string.  On Windows,
+returns the result of GetProcessId() also as a string.</doc>
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="subprocess" transfer-ownership="none">
+            <doc xml:space="preserve">a #GSubprocess</doc>
             <type name="Subprocess" c:type="GSubprocess*"/>
           </instance-parameter>
         </parameters>
@@ -67377,14 +67692,13 @@ returned.</doc>
       </method>
       <method name="get_stderr_pipe"
               c:identifier="g_subprocess_get_stderr_pipe"
-              version="2.40"
-              introspectable="0">
+              version="2.40">
         <doc xml:space="preserve">Gets the #GInputStream from which to read the stderr output of
 @subprocess.
 
 The process must have been created with
 %G_SUBPROCESS_FLAGS_STDERR_PIPE.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the stderr pipe</doc>
           <type name="InputStream" c:type="GInputStream*"/>
         </return-value>
@@ -67397,14 +67711,13 @@ The process must have been created with
       </method>
       <method name="get_stdin_pipe"
               c:identifier="g_subprocess_get_stdin_pipe"
-              version="2.40"
-              introspectable="0">
+              version="2.40">
         <doc xml:space="preserve">Gets the #GOutputStream that you can write to in order to give data
 to the stdin of @subprocess.
 
 The process must have been created with
 %G_SUBPROCESS_FLAGS_STDIN_PIPE.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the stdout pipe</doc>
           <type name="OutputStream" c:type="GOutputStream*"/>
         </return-value>
@@ -67417,14 +67730,13 @@ The process must have been created with
       </method>
       <method name="get_stdout_pipe"
               c:identifier="g_subprocess_get_stdout_pipe"
-              version="2.40"
-              introspectable="0">
+              version="2.40">
         <doc xml:space="preserve">Gets the #GInputStream from which to read the stdout output of
 @subprocess.
 
 The process must have been created with
 %G_SUBPROCESS_FLAGS_STDOUT_PIPE.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the stdout pipe</doc>
           <type name="InputStream" c:type="GInputStream*"/>
         </return-value>
@@ -67910,7 +68222,7 @@ strings.  On Windows, they should be in UTF-8.</doc>
             <doc xml:space="preserve">a #GSubprocess</doc>
             <type name="SubprocessLauncher" c:type="GSubprocessLauncher*"/>
           </instance-parameter>
-          <parameter name="environ" transfer-ownership="none">
+          <parameter name="env" transfer-ownership="none">
             <doc xml:space="preserve">the replacement environment</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
@@ -68108,7 +68420,9 @@ array of arguments.</doc>
           </instance-parameter>
           <parameter name="argv" transfer-ownership="none">
             <doc xml:space="preserve">Command line arguments</doc>
-            <type name="utf8" c:type="const gchar* const*"/>
+            <array c:type="gchar**">
+              <type name="utf8"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -68505,7 +68819,7 @@ is the most common purpose in use. Used by TLS clients.</doc>
       bd-&gt;cake = cake;
 
       /&amp;ast; Bail out now if the user has already cancelled &amp;ast;/
-      if (g_task_return_error_if_cancelled (g_task_get_cancellable (task)))
+      if (g_task_return_error_if_cancelled (task))
         {
           g_object_unref (task);
           return;
@@ -69805,6 +70119,12 @@ actually created is not directly a #GSocketConnection.</doc>
       <doc xml:space="preserve">A helper class for testing code which uses D-Bus without touching the user's
 session bus.
 
+Note that #GTestDBus modifies the user’s environment, calling setenv(). This
+is not thread-safe, so all #GTestDBus calls should be completed before
+threads are spawned, or should have appropriate locking to ensure no access
+conflicts to environment variables shared between #GTestDBus and other
+threads.
+
 &lt;refsect2 id="gio-D-Bus-Test-Scaffolding"&gt;
   &lt;title&gt;Creating unit tests using GTestDBus&lt;/title&gt;
   &lt;para&gt;
@@ -69817,13 +70137,15 @@ session bus.
   &lt;/para&gt;
   &lt;para&gt;
     The first thing you will need is a separate service description file for the
-    D-Bus daemon. Typically a 'services' subdirectory of your 'tests' directory
+    D-Bus daemon. Typically a &lt;filename&gt;services&lt;/filename&gt; subdirectory of
+    your &lt;filename&gt;tests&lt;/filename&gt; directory
     is a good place to put this file.
   &lt;/para&gt;
   &lt;para&gt;
     The service file should list your service along with an absolute path to the
     uninstalled service executable in your source tree. Using autotools we would
-    achieve this by adding a file such as 'my-server.service.in' in the services
+    achieve this by adding a file such as &lt;filename&gt;my-server.service.in&lt;/filename&gt;
+    in the services
     directory and have it processed by configure.
     &lt;informalexample&gt;&lt;programlisting&gt;
     [D-BUS Service]
@@ -69840,7 +70162,7 @@ session bus.
   &lt;/para&gt;
   &lt;para&gt;
     Once you have a service definition file which is local to your source tree,
-    you can proceed to setup a GTest fixture using the GTestDBus scaffolding.
+    you can proceed to set up a GTest fixture using the #GTestDBus scaffolding.
     &lt;example id="gdbus-test-fixture"&gt;
       &lt;title&gt;Test Fixture for D-Bus services&lt;/title&gt;
       &lt;programlisting&gt;
@@ -69861,10 +70183,10 @@ session bus.
   &lt;/para&gt;
   &lt;para&gt;
     Most of the time we can work around these obstacles using the environment. Since the
-    environment is inherited by the D-Bus daemon created by GTestDBus and then in turn
+    environment is inherited by the D-Bus daemon created by #GTestDBus and then in turn
     inherited by any services the D-Bus daemon activates, using the setup routine for your
     fixture is a practical place to help sandbox your runtime environment. For the rather
-    typical GSettings case we can work around this by setting GSETTINGS_SCHEMA_DIR to the
+    typical GSettings case we can work around this by setting &lt;envar&gt;GSETTINGS_SCHEMA_DIR&lt;/envar&gt; to the
     in tree directory holding your schemas in the above fixture_setup() routine.
   &lt;/para&gt;
   &lt;para&gt;
@@ -69905,7 +70227,7 @@ g_test_dbus_up() before acquiring the session bus.</doc>
       </function>
       <method name="add_service_dir"
               c:identifier="g_test_dbus_add_service_dir">
-        <doc xml:space="preserve">Add a path where dbus-daemon will lookup for .services files. This can't be
+        <doc xml:space="preserve">Add a path where dbus-daemon will look up .service files. This can't be
 called after g_test_dbus_up().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -69939,9 +70261,9 @@ leaked singleton from this test.</doc>
       </method>
       <method name="get_bus_address"
               c:identifier="g_test_dbus_get_bus_address">
-        <doc xml:space="preserve">Get the address on which dbus-daemon is running. if g_test_dbus_up() has not
+        <doc xml:space="preserve">Get the address on which dbus-daemon is running. If g_test_dbus_up() has not
 been called yet, %NULL is returned. This can be used with
-g_dbus_connection_new_for_address()</doc>
+g_dbus_connection_new_for_address().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the address of the bus, or %NULL.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -69954,7 +70276,7 @@ g_dbus_connection_new_for_address()</doc>
         </parameters>
       </method>
       <method name="get_flags" c:identifier="g_test_dbus_get_flags">
-        <doc xml:space="preserve">Gets the flags of the #GTestDBus object.</doc>
+        <doc xml:space="preserve">Get the flags of the #GTestDBus object.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the value of #GTestDBus:flags property</doc>
           <type name="TestDBusFlags" c:type="GTestDBusFlags"/>
@@ -70007,7 +70329,7 @@ must be called after g_test_run().</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">#GTestDBusFlags specifying the behaviour of the dbus session</doc>
+        <doc xml:space="preserve">#GTestDBusFlags specifying the behaviour of the D-Bus session.</doc>
         <type name="TestDBusFlags"/>
       </property>
     </class>
@@ -81715,7 +82037,16 @@ supported by this library, %FALSE if @error is set.</doc>
 The value of @arg can be either a URI, an absolute path or a
 relative path resolved relative to the current working directory.
 This operation never fails, but the returned object might not
-support any I/O operation if @arg points to a malformed path.</doc>
+support any I/O operation if @arg points to a malformed path.
+
+Note that on Windows, this function expects its argument to be in
+UTF-8 -- not the system code page.  This means that you
+should not use this function with string from argv as it is passed
+to main().  g_win32_get_command_line() will return a UTF-8 version of
+the commandline.  #GApplication also uses UTF-8 but
+g_application_command_line_create_file_for_arg() may be more useful
+for you there.  It is also always possible to use this function with
+#GOptionContext arguments of type %G_OPTION_ARG_FILENAME.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a new #GFile.
    Free the returned object with g_object_unref().</doc>
