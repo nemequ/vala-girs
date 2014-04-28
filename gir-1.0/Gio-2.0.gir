@@ -534,12 +534,13 @@ g_action_change_state() have no effect.</doc>
       </property>
       <property name="name" version="2.28" transfer-ownership="none">
         <doc xml:space="preserve">The name of the action.  This is mostly meaningful for identifying
-the action once it has been added to a #GActionGroup.</doc>
+the action once it has been added to a #GActionGroup. It is immutable.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="parameter-type" version="2.28" transfer-ownership="none">
         <doc xml:space="preserve">The type of the parameter that must be given when activating the
-action.</doc>
+action. This is immutable, and may be %NULL if no parameter is needed when
+activating the action.</doc>
         <type name="GLib.VariantType"/>
       </property>
       <property name="state" version="2.28" transfer-ownership="none">
@@ -548,7 +549,7 @@ action.</doc>
       </property>
       <property name="state-type" version="2.28" transfer-ownership="none">
         <doc xml:space="preserve">The #GVariantType of the state that the action has, or %NULL if the
-action is stateless.</doc>
+action is stateless. This is immutable.</doc>
         <type name="GLib.VariantType"/>
       </property>
     </interface>
@@ -2302,7 +2303,7 @@ As of GLib 2.20, URIs will always be converted to POSIX paths
 (using g_file_get_path()) when using g_app_info_launch() even if
 the application requested an URI and not a POSIX path. For example
 for an desktop-file based application with Exec key `totem
-\%U` and a single URI, `sftp://foo/file.avi`, then
+%U` and a single URI, `sftp://foo/file.avi`, then
 `/home/user/.gvfs/sftp on foo/file.avi` will be passed. This will
 only work if a set of suitable GIO extensions (such as gvfs 2.26
 compiled with FUSE support), is available and operational; if this
@@ -12573,6 +12574,30 @@ can't fix it for compatibility reasons so just be careful.</doc>
               glib:nick="object-path-in-use">
         <doc xml:space="preserve">There's already an object with the requested object path.</doc>
       </member>
+      <member name="unknown_object"
+              value="41"
+              c:identifier="G_DBUS_ERROR_UNKNOWN_OBJECT"
+              glib:nick="unknown-object">
+        <doc xml:space="preserve">Object you invoked a method on isn't known. Since 2.42</doc>
+      </member>
+      <member name="unknown_interface"
+              value="42"
+              c:identifier="G_DBUS_ERROR_UNKNOWN_INTERFACE"
+              glib:nick="unknown-interface">
+        <doc xml:space="preserve">Interface you invoked a method on isn't known by the object. Since 2.42</doc>
+      </member>
+      <member name="unknown_property"
+              value="43"
+              c:identifier="G_DBUS_ERROR_UNKNOWN_PROPERTY"
+              glib:nick="unknown-property">
+        <doc xml:space="preserve">Property you tried to access isn't known by the object. Since 2.42</doc>
+      </member>
+      <member name="property_read_only"
+              value="44"
+              c:identifier="G_DBUS_ERROR_PROPERTY_READ_ONLY"
+              glib:nick="property-read-only">
+        <doc xml:space="preserve">Property you tried to set is read-only. Since 2.42</doc>
+      </member>
       <function name="encode_gerror"
                 c:identifier="g_dbus_error_encode_gerror"
                 version="2.26">
@@ -19184,7 +19209,7 @@ use for an interface proxy (if @interface_name is not %NULL) or
 object proxy (if @interface_name is %NULL).
 
 This function is called in the
-&lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt;
+[thread-default main loop][g-main-context-push-thread-default]
 that @manager was constructed in.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">A #GType to use for the remote object. The returned type
@@ -19805,7 +19830,7 @@ case.</doc>
               value="gio-desktop-app-info-lookup"
               c:type="G_DESKTOP_APP_INFO_LOOKUP_EXTENSION_POINT_NAME">
       <doc xml:space="preserve">Extension point for default handler to URI association. See
-&lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+[Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="DataInputStream"
@@ -24840,8 +24865,9 @@ file), see g_file_dup().</doc>
 asynchronously. For details of the behaviour, see g_file_copy().
 
 If @progress_callback is not %NULL, then that function that will be called
-just like in g_file_copy(), however the callback will run in the main loop,
-not in the thread that is doing the I/O operation.
+just like in g_file_copy(). The callback will run in the default main context
+of the thread calling g_file_copy_async() — the same context as @callback is
+run in.
 
 When the operation is finished, @callback will be called. You can then call
 g_file_copy_finish() to get the result of the operation.</doc>
@@ -28272,8 +28298,9 @@ file), see g_file_dup().</doc>
 asynchronously. For details of the behaviour, see g_file_copy().
 
 If @progress_callback is not %NULL, then that function that will be called
-just like in g_file_copy(), however the callback will run in the main loop,
-not in the thread that is doing the I/O operation.
+just like in g_file_copy(). The callback will run in the default main context
+of the thread calling g_file_copy_async() — the same context as @callback is
+run in.
 
 When the operation is finished, @callback will be called. You can then call
 g_file_copy_finish() to get the result of the operation.</doc>
@@ -40283,12 +40310,27 @@ closed.</doc>
                  glib:get-type="g_io_error_enum_get_type"
                  c:type="GIOErrorEnum"
                  glib:error-domain="g-io-error-quark">
-      <doc xml:space="preserve">Error codes returned by GIO functions.</doc>
+      <doc xml:space="preserve">Error codes returned by GIO functions.
+
+Note that this domain may be extended in future GLib releases. In
+general, new error codes either only apply to new APIs, or else
+replace #G_IO_ERROR_FAILED in cases that were not explicitly
+distinguished before. You should therefore avoid writing code like
+|[&lt;!-- language="C" --&gt;
+if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED))
+  {
+    // Assume that this is EPRINTERONFIRE
+    ...
+  }
+]|
+but should instead treat all unrecognized error codes the same as
+#G_IO_ERROR_FAILED.</doc>
       <member name="failed"
               value="0"
               c:identifier="G_IO_ERROR_FAILED"
               glib:nick="failed">
-        <doc xml:space="preserve">Generic error condition for when any operation fails.</doc>
+        <doc xml:space="preserve">Generic error condition for when an operation fails
+    and no more specific #GIOErrorEnum value is defined.</doc>
       </member>
       <member name="not_found"
               value="1"
@@ -40378,7 +40420,7 @@ closed.</doc>
               value="15"
               c:identifier="G_IO_ERROR_NOT_SUPPORTED"
               glib:nick="not-supported">
-        <doc xml:space="preserve">Operation not supported for the current backend.</doc>
+        <doc xml:space="preserve">Operation (or one of its parameters) not supported</doc>
       </member>
       <member name="not_mounted"
               value="16"
@@ -41847,7 +41889,7 @@ in the following two cases
   (such as `/path/to/my icon.png`) without escaping
   if the #GFile for @icon is a native file.  If the file is not
   native, the returned string is the result of g_file_get_uri()
-  (such as `sftp://path/to/my\%20icon.png`).
+  (such as `sftp://path/to/my%20icon.png`).
 
 - If @icon is a #GThemedIcon with exactly one name, the encoding is
    simply the name (such as `network-server`).</doc>
@@ -41920,7 +41962,7 @@ in the following two cases
   (such as `/path/to/my icon.png`) without escaping
   if the #GFile for @icon is a native file.  If the file is not
   native, the returned string is the result of g_file_get_uri()
-  (such as `sftp://path/to/my\%20icon.png`).
+  (such as `sftp://path/to/my%20icon.png`).
 
 - If @icon is a #GThemedIcon with exactly one name, the encoding is
    simply the name (such as `network-server`).</doc>
@@ -50030,7 +50072,7 @@ information is send by the mounting operation.</doc>
               c:type="G_NETWORK_MONITOR_EXTENSION_POINT_NAME"
               version="2.30">
       <doc xml:space="preserve">Extension point for network status monitoring functionality.
-See &lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="NativeVolumeMonitor"
@@ -50895,8 +50937,8 @@ for @detailed_action.</doc>
 @action must be an application-wide action (it must start with "app.").
 
 If @target_format is given, it is used to collect remaining
-positional parameters into a GVariant instance, similar to
-g_variant_new(). @action will be activated with that GVariant as its
+positional parameters into a #GVariant instance, similar to
+g_variant_new(). @action will be activated with that #GVariant as its
 parameter.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -50917,11 +50959,11 @@ parameter.</doc>
           <parameter name="target_format"
                      transfer-ownership="none"
                      allow-none="1">
-            <doc xml:space="preserve">a GVariant format string, or %NULL</doc>
+            <doc xml:space="preserve">a #GVariant format string, or %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
-            <doc xml:space="preserve">positional parameters, as determined by @format_string</doc>
+            <doc xml:space="preserve">positional parameters, as determined by @target_format</doc>
             <varargs/>
           </parameter>
         </parameters>
@@ -50952,7 +50994,7 @@ its parameter.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">a GVariant to use as @action's parameter, or %NULL</doc>
+            <doc xml:space="preserve">a #GVariant to use as @action's parameter, or %NULL</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
@@ -51013,8 +51055,8 @@ activated when the notification is clicked on. It must be an
 application-wide action (it must start with "app.").
 
 If @target_format is given, it is used to collect remaining
-positional parameters into a GVariant instance, similar to
-g_variant_new(). @action will be activated with that GVariant as its
+positional parameters into a #GVariant instance, similar to
+g_variant_new(). @action will be activated with that #GVariant as its
 parameter.
 
 When no default action is set, the application that the notification
@@ -51034,11 +51076,11 @@ was sent on is activated.</doc>
           <parameter name="target_format"
                      transfer-ownership="none"
                      allow-none="1">
-            <doc xml:space="preserve">a GVariant format string, or %NULL</doc>
+            <doc xml:space="preserve">a #GVariant format string, or %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
-            <doc xml:space="preserve">positional parameters, as determined by @format_string</doc>
+            <doc xml:space="preserve">positional parameters, as determined by @target_format</doc>
             <varargs/>
           </parameter>
         </parameters>
@@ -51050,10 +51092,6 @@ was sent on is activated.</doc>
         <doc xml:space="preserve">Sets the default action of @notification to @action. This action is
 activated when the notification is clicked on. It must be an
 application-wide action (start with "app.").
-
-If @target_format is given, it is used to collect remaining
-positional parameters into a GVariant instance, similar to
-g_variant_new().
 
 If @target is non-%NULL, @action will be activated with @target as
 its parameter.
@@ -51073,7 +51111,7 @@ was sent on is activated.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">a GVariant to use as @action's parameter, or %NULL</doc>
+            <doc xml:space="preserve">a #GVariant to use as @action's parameter, or %NULL</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
@@ -52783,14 +52821,14 @@ one buffer.</doc>
               c:type="G_PROXY_EXTENSION_POINT_NAME"
               version="2.26">
       <doc xml:space="preserve">Extension point for proxy functionality.
-See &lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="PROXY_RESOLVER_EXTENSION_POINT_NAME"
               value="gio-proxy-resolver"
               c:type="G_PROXY_RESOLVER_EXTENSION_POINT_NAME">
       <doc xml:space="preserve">Extension point for proxy resolving functionality.
-See &lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <enumeration name="PasswordSave"
@@ -60308,16 +60346,21 @@ use by database editors, commandline tools, etc.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">the list of non-relocatable
-  schemas</doc>
-            <type name="utf8" c:type="gchar***"/>
+            <doc xml:space="preserve">the
+  list of non-relocatable schemas</doc>
+            <array c:type="gchar***">
+              <type name="utf8" c:type="gchar**"/>
+            </array>
           </parameter>
           <parameter name="relocatable"
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">the list of relocatable schemas</doc>
-            <type name="utf8" c:type="gchar***"/>
+            <doc xml:space="preserve">the list
+  of relocatable schemas</doc>
+            <array c:type="gchar***">
+              <type name="utf8" c:type="gchar**"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -61830,7 +61873,11 @@ Note that creating a #GSocket causes the signal %SIGPIPE to be
 ignored for the remainder of the program. If you are writing a
 command-line utility that uses #GSocket, you may need to take into
 account the fact that your program will not automatically be killed
-if it tries to write to %stdout after it has been closed.</doc>
+if it tries to write to %stdout after it has been closed.
+
+Like most other APIs in GLib, #GSocket is not inherently thread safe. To use
+a #GSocket concurrently from multiple threads, you must implement your own
+locking.</doc>
       <implements name="Initable"/>
       <constructor name="new"
                    c:identifier="g_socket_new"
@@ -68666,7 +68713,7 @@ should be in UTF-8.</doc>
               value="gio-tls-backend"
               c:type="G_TLS_BACKEND_EXTENSION_POINT_NAME">
       <doc xml:space="preserve">Extension point for TLS functionality via #GTlsBackend.
-See &lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="TLS_DATABASE_PURPOSE_AUTHENTICATE_CLIENT"
@@ -77169,7 +77216,7 @@ pass an appropriate smaller length to bind() or connect(). This is
               value="gio-vfs"
               c:type="G_VFS_EXTENSION_POINT_NAME">
       <doc xml:space="preserve">Extension point for #GVfs functionality.
-See &lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="VOLUME_IDENTIFIER_KIND_CLASS"
@@ -77220,7 +77267,7 @@ a "Network" heading and `device` volumes under a "Devices" heading.</doc>
               value="gio-volume-monitor"
               c:type="G_VOLUME_MONITOR_EXTENSION_POINT_NAME">
       <doc xml:space="preserve">Extension point for volume monitor functionality.
-See &lt;link linkend="extending-gio"&gt;Extending GIO&lt;/link&gt;.</doc>
+See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="Vfs"
@@ -82240,7 +82287,10 @@ and returns %NULL, setting an error on failure.</doc>
       </parameters>
     </function>
     <function name="io_error_from_errno" c:identifier="g_io_error_from_errno">
-      <doc xml:space="preserve">Converts errno.h error codes into GIO error codes.</doc>
+      <doc xml:space="preserve">Converts errno.h error codes into GIO error codes. The fallback
+value %G_IO_ERROR_FAILED is returned for error codes not currently
+handled (but note that future GLib releases may return a more
+specific value instead).</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">#GIOErrorEnum value for the given errno.h error number.</doc>
         <type name="IOErrorEnum" c:type="GIOErrorEnum"/>
