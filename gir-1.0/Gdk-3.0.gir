@@ -466,7 +466,7 @@ table that stores #GdkColors.</doc>
               c:identifier="gdk_color_to_string"
               version="2.12">
         <doc xml:space="preserve">Returns a textual specification of @color in the hexadecimal
-form `\#rrrrggggbbbb`, where `r`, `g` and `b` are hex digits
+form “\#rrrrggggbbbb” where “r”, “g” and “b” are hex digits
 representing the red, green and blue components respectively.
 
 The returned string can be parsed by gdk_color_parse().</doc>
@@ -1634,6 +1634,25 @@ and fill in @keyval and @modifiers with the keyval settings.</doc>
             <doc xml:space="preserve">return value for modifiers.</doc>
             <type name="ModifierType" c:type="GdkModifierType*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_last_event_window"
+              c:identifier="gdk_device_get_last_event_window"
+              version="3.12">
+        <doc xml:space="preserve">Gets information about which window the given pointer device is in, based on
+that have been received so far from the display server. If another application
+has a pointer grab, or this application has a grab with owner_events = %FALSE,
+%NULL may be returned even if the pointer is physically over one of this
+application's windows.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the last window the device</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDevice, with a source other than %GDK_SOURCE_KEYBOARD</doc>
+            <type name="Device" c:type="GdkDevice*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_mode"
@@ -3365,14 +3384,14 @@ macros like GDK_IS_X11_DISPLAY() to find out which backend is in use:
 #ifdef GDK_WINDOWING_X11
   if (GDK_IS_X11_DISPLAY (display))
     {
-      /&amp;ast; make X11-specific calls here &amp;ast;/
+      // make X11-specific calls here
     }
   else
 #endif
 #ifdef GDK_WINDOWING_QUARTZ
   if (GDK_IS_QUARTZ_DISPLAY (display))
     {
-      /&amp;ast; make Quartz-specific calls here &amp;ast;/
+      // make Quartz-specific calls here
     }
   else
 #endif
@@ -3872,6 +3891,7 @@ should be freed with gdk_event_free().</doc>
       </constructor>
       <method name="_get_angle"
               c:identifier="gdk_events_get_angle"
+              moved-to="events_get_angle"
               version="3.0">
         <doc xml:space="preserve">If both events contain X/Y information, this function will return %TRUE
 and return in @angle the relative angle from @event1 to @event2. The rotation
@@ -3901,6 +3921,7 @@ Y axis.</doc>
       </method>
       <method name="_get_center"
               c:identifier="gdk_events_get_center"
+              moved-to="events_get_center"
               version="3.0">
         <doc xml:space="preserve">If both events contain X/Y information, the center of both coordinates
 will be returned in @x and @y.</doc>
@@ -3935,6 +3956,7 @@ will be returned in @x and @y.</doc>
       </method>
       <method name="_get_distance"
               c:identifier="gdk_events_get_distance"
+              moved-to="events_get_distance"
               version="3.0">
         <doc xml:space="preserve">If both events have X/Y information, the distance between both coordinates
 (as in a straight line going from @event1 to @event2) will be returned.</doc>
@@ -4514,11 +4536,11 @@ motion events from a %GDK_MOTION_NOTIFY event usually works like this:
 
 |[&lt;!-- language="C" --&gt;
 {
-  /&amp;ast; motion_event handler &amp;ast;/
+  // motion_event handler
   x = motion_event-&gt;x;
   y = motion_event-&gt;y;
-  /&amp;ast; handle (x,y) motion &amp;ast;/
-  gdk_event_request_motions (motion_event); /&amp;ast; handles is_hint events &amp;ast;/
+  // handle (x,y) motion
+  gdk_event_request_motions (motion_event); // handles is_hint events
 }
 ]|</doc>
         <return-value transfer-ownership="none">
@@ -5767,8 +5789,15 @@ be used instead.</doc>
         <doc xml:space="preserve">marks the end of the GdkEventType enumeration. Added in 2.18</doc>
       </member>
     </enumeration>
-    <record name="EventVisibility" c:type="GdkEventVisibility">
+    <record name="EventVisibility"
+            c:type="GdkEventVisibility"
+            deprecated="1"
+            deprecated-version="3.12">
       <doc xml:space="preserve">Generated when the window visibility status has changed.</doc>
+      <doc-deprecated xml:space="preserve">Modern composited windowing systems with pervasive
+    transparency make it impossible to track the visibility of a window
+    reliably, so this event can not be guaranteed to provide useful
+    information.</doc-deprecated>
       <field name="type" writable="1">
         <doc xml:space="preserve">the type of the event (%GDK_VISIBILITY_NOTIFY).</doc>
         <type name="EventType" c:type="GdkEventType"/>
@@ -16042,14 +16071,14 @@ the `plus` symbol is shifted, so when comparing a key press to a
 `&lt;Control&gt;plus` accelerator `&lt;Shift&gt;` should be masked out.
 
 |[&lt;!-- language="C" --&gt;
-/&amp;ast; We want to ignore irrelevant modifiers like ScrollLock &amp;ast;/;
+// We want to ignore irrelevant modifiers like ScrollLock
 #define ALL_ACCELS_MASK (GDK_CONTROL_MASK | GDK_SHIFT_MASK | GDK_MOD1_MASK)
 gdk_keymap_translate_keyboard_state (keymap, event-&gt;hardware_keycode,
                                      event-&gt;state, event-&gt;group,
                                      &amp;keyval, NULL, NULL, &amp;consumed);
 if (keyval == GDK_PLUS &amp;&amp;
     (event-&gt;state &amp; ~consumed &amp; ALL_ACCELS_MASK) == GDK_CONTROL_MASK)
-  /&amp;ast; Control was pressed &amp;ast;/
+  // Control was pressed
 ]|
 
 An older interpretation @consumed_modifiers was that it contained
@@ -16057,10 +16086,10 @@ all modifiers that might affect the translation of the key;
 this allowed accelerators to be stored with irrelevant consumed
 modifiers, by doing:
 |[&lt;!-- language="C" --&gt;
-/&amp;ast; XXX Don’t do this XXX &amp;ast;/
+// XXX Don’t do this XXX
 if (keyval == accel_keyval &amp;&amp;
     (event-&gt;state &amp; ~consumed &amp; ALL_ACCELS_MASK) == (accel_mods &amp; ~consumed))
-  /&amp;ast; Accelerator was pressed &amp;ast;/
+  // Accelerator was pressed
 ]|
 
 However, this did not work if multi-modifier combinations were
@@ -16206,15 +16235,14 @@ it’s the Command key (which correspond to %GDK_CONTROL_MASK and
               glib:nick="context-menu">
         <doc xml:space="preserve">the modifier used to invoke context menus.
  Note that mouse button 3 always triggers context menus. When this modifier
- is not 0, it &lt;strong&gt;additionally&lt;/strong&gt; triggers context menus when used
- with mouse button 1.</doc>
+ is not 0, it additionally triggers context menus when used with mouse button 1.</doc>
       </member>
       <member name="extend_selection"
               value="2"
               c:identifier="GDK_MODIFIER_INTENT_EXTEND_SELECTION"
               glib:nick="extend-selection">
         <doc xml:space="preserve">the modifier used to extend selections
- using &amp;lt;modifier&amp;gt;-click or &amp;lt;modifier&amp;gt;-cursor-key</doc>
+ using `modifier`-click or `modifier`-cursor-key</doc>
       </member>
       <member name="modify_selection"
               value="3"
@@ -22902,8 +22930,8 @@ the pixbuf.</doc>
           <doc xml:space="preserve">the scale of the new surface, or 0 to use same as @window</doc>
           <type name="gint" c:type="int"/>
         </parameter>
-        <parameter name="for_window" transfer-ownership="none">
-          <doc xml:space="preserve">The window this will be drawn to, on %NULL.</doc>
+        <parameter name="for_window" transfer-ownership="none" allow-none="1">
+          <doc xml:space="preserve">The window this will be drawn to, or %NULL</doc>
           <type name="Window" c:type="GdkWindow*"/>
         </parameter>
       </parameters>
@@ -23365,11 +23393,11 @@ motion events from a %GDK_MOTION_NOTIFY event usually works like this:
 
 |[&lt;!-- language="C" --&gt;
 {
-  /&amp;ast; motion_event handler &amp;ast;/
+  // motion_event handler
   x = motion_event-&gt;x;
   y = motion_event-&gt;y;
-  /&amp;ast; handle (x,y) motion &amp;ast;/
-  gdk_event_request_motions (motion_event); /&amp;ast; handles is_hint events &amp;ast;/
+  // handle (x,y) motion
+  gdk_event_request_motions (motion_event); // handles is_hint events
 }
 ]|</doc>
       <return-value transfer-ownership="none">
@@ -23379,6 +23407,96 @@ motion events from a %GDK_MOTION_NOTIFY event usually works like this:
         <parameter name="event" transfer-ownership="none">
           <doc xml:space="preserve">a valid #GdkEvent</doc>
           <type name="EventMotion" c:type="const GdkEventMotion*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="events_get_angle"
+              c:identifier="gdk_events_get_angle"
+              version="3.0">
+      <doc xml:space="preserve">If both events contain X/Y information, this function will return %TRUE
+and return in @angle the relative angle from @event1 to @event2. The rotation
+direction for positive angles is from the positive X axis towards the positive
+Y axis.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the angle could be calculated.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="event1" transfer-ownership="none">
+          <doc xml:space="preserve">first #GdkEvent</doc>
+          <type name="Event" c:type="GdkEvent*"/>
+        </parameter>
+        <parameter name="event2" transfer-ownership="none">
+          <doc xml:space="preserve">second #GdkEvent</doc>
+          <type name="Event" c:type="GdkEvent*"/>
+        </parameter>
+        <parameter name="angle"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">return location for the relative angle between both events</doc>
+          <type name="gdouble" c:type="gdouble*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="events_get_center"
+              c:identifier="gdk_events_get_center"
+              version="3.0">
+      <doc xml:space="preserve">If both events contain X/Y information, the center of both coordinates
+will be returned in @x and @y.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the center could be calculated.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="event1" transfer-ownership="none">
+          <doc xml:space="preserve">first #GdkEvent</doc>
+          <type name="Event" c:type="GdkEvent*"/>
+        </parameter>
+        <parameter name="event2" transfer-ownership="none">
+          <doc xml:space="preserve">second #GdkEvent</doc>
+          <type name="Event" c:type="GdkEvent*"/>
+        </parameter>
+        <parameter name="x"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">return location for the X coordinate of the center</doc>
+          <type name="gdouble" c:type="gdouble*"/>
+        </parameter>
+        <parameter name="y"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">return location for the Y coordinate of the center</doc>
+          <type name="gdouble" c:type="gdouble*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="events_get_distance"
+              c:identifier="gdk_events_get_distance"
+              version="3.0">
+      <doc xml:space="preserve">If both events have X/Y information, the distance between both coordinates
+(as in a straight line going from @event1 to @event2) will be returned.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the distance could be calculated.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="event1" transfer-ownership="none">
+          <doc xml:space="preserve">first #GdkEvent</doc>
+          <type name="Event" c:type="GdkEvent*"/>
+        </parameter>
+        <parameter name="event2" transfer-ownership="none">
+          <doc xml:space="preserve">second #GdkEvent</doc>
+          <type name="Event" c:type="GdkEvent*"/>
+        </parameter>
+        <parameter name="distance"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">return location for the distance</doc>
+          <type name="gdouble" c:type="gdouble*"/>
         </parameter>
       </parameters>
     </function>
@@ -25027,14 +25145,14 @@ in thread B:
 static gboolean
 idle_callback (gpointer data)
 {
-   /&amp;ast; gdk_threads_enter(); would be needed for g_idle_add() &amp;ast;/
+   // gdk_threads_enter(); would be needed for g_idle_add()
 
    SomeWidget *self = data;
-   /&amp;ast; do stuff with self &amp;ast;/
+   // do stuff with self
 
    self-&gt;idle_id = 0;
 
-   /&amp;ast; gdk_threads_leave(); would be needed for g_idle_add() &amp;ast;/
+   // gdk_threads_leave(); would be needed for g_idle_add()
    return FALSE;
 }
 
@@ -25042,7 +25160,7 @@ static void
 some_widget_do_stuff_later (SomeWidget *self)
 {
    self-&gt;idle_id = gdk_threads_add_idle (idle_callback, self)
-   /&amp;ast; using g_idle_add() here would require thread protection in the callback &amp;ast;/
+   // using g_idle_add() here would require thread protection in the callback
 }
 
 static void
@@ -25139,7 +25257,7 @@ static gboolean timeout_callback (gpointer data)
 {
    SomeWidget *self = data;
    
-   /&amp;ast; do stuff with self &amp;ast;/
+   // do stuff with self
    
    self-&gt;timeout_id = 0;
    
