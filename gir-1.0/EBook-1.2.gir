@@ -16,7 +16,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libebook/libebook.h"/>
   <namespace name="EBook"
              version="1.2"
-             shared-library="libebook-contacts-1.2.so.0,libedata-book-1.2.so.20,libebook-1.2.so.14,libedataserver-1.2.so.18"
+             shared-library="libebook-contacts-1.2.so.0,libedata-book-1.2.so.22,libebook-1.2.so.14,libedataserver-1.2.so.18"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <class name="BookClient"
@@ -34,12 +34,16 @@ functions below.</doc>
       <constructor name="new"
                    c:identifier="e_book_client_new"
                    version="3.2"
-                   deprecated="It covertly makes synchronous D-Bus calls, with no way to cancel.  Use e_book_client_connect() instead, which combines e_book_client_new() and e_client_open() into one step."
+                   deprecated="1"
                    deprecated-version="3.8"
                    throws="1">
         <doc xml:space="preserve">Creates a new #EBookClient corresponding to the given source.  There are
 only two operations that are valid on this book at this point:
 e_client_open(), and e_client_remove().</doc>
+        <doc-deprecated xml:space="preserve">It covertly makes synchronous D-Bus calls, with no
+                 way to cancel.  Use e_book_client_connect() instead,
+                 which combines e_book_client_new() and e_client_open()
+                 into one step.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new but unopened #EBookClient.</doc>
           <type name="BookClient" c:type="EBookClient*"/>
@@ -71,21 +75,85 @@ call e_book_client_connect_finish() to get the result of the operation.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
-            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request
+           is satisfied</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">data to pass to the callback function</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="connect_direct"
+                c:identifier="e_book_client_connect_direct"
+                version="3.12">
+        <doc xml:space="preserve">Like e_book_client_connect(), except creates the book client for
+direct read access to the underlying addressbook.
+
+When the operation is finished, @callback will be called.  You can then
+call e_book_client_connect_direct_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="EDataServer.Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request
+           is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data to pass to the callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="connect_direct_finish"
+                c:identifier="e_book_client_connect_direct_finish"
+                version="3.12"
+                throws="1">
+        <doc xml:space="preserve">Finishes the operation started with e_book_client_connect_direct().
+If an error occurs in connecting to the D-Bus service, the function sets
+@error and returns %NULL.
+
+For error handling convenience, any error message returned by this
+function will have a descriptive prefix that includes the display
+name of the #ESource passed to e_book_client_connect_direct().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #EBookClient, or %NULL</doc>
+          <type name="BookClient" c:type="EClient*"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </function>
@@ -110,6 +178,7 @@ direct read access to the underlying addressbook.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -162,6 +231,7 @@ name of @source.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -234,12 +304,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -315,6 +387,7 @@ then use e_contact_set (contact, E_CONTACT_UID, new_uid).</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -343,12 +416,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -390,8 +465,10 @@ Note: This is not modifying original #EContact objects.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
-            <doc xml:space="preserve">UIDs of newly added contacts; can be %NULL</doc>
+            <doc xml:space="preserve">UIDs of
+                 newly added contacts; can be %NULL</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="utf8"/>
             </type>
@@ -430,14 +507,17 @@ then use e_contact_set (contact, E_CONTACT_UID, new_uid).</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
-            <doc xml:space="preserve">UIDs of newly added contacts; can be %NULL</doc>
+            <doc xml:space="preserve">UIDs of newly
+                 added contacts; can be %NULL</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -464,12 +544,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -540,6 +622,7 @@ If successful, then the @out_contact is set to newly allocated
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -569,12 +652,14 @@ to a string with e_book_query_to_string().</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -611,7 +696,8 @@ If successful, then the @out_contacts is set to newly allocated list of
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">a #GSList of matched #EContact-s</doc>
+            <doc xml:space="preserve">a #GSList
+               of matched #EContact-s</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="EBookContacts.Contact"/>
             </type>
@@ -645,13 +731,15 @@ to a string with e_book_query_to_string().</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">a #GSList of matched #EContact-s</doc>
+            <doc xml:space="preserve">a #GSList of matched
+               #EContact-s</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="EBookContacts.Contact"/>
             </type>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -681,12 +769,14 @@ to a string with e_book_query_to_string().</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -723,7 +813,8 @@ of UID strings, which should be freed with e_client_util_free_string_slist().</d
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">a #GSList of matched contact UIDs stored as strings</doc>
+            <doc xml:space="preserve">a #GSList of matched
+                   contact UIDs stored as strings</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="utf8"/>
             </type>
@@ -757,17 +848,181 @@ to a string with e_book_query_to_string().</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">a #GSList of matched contacts UIDs stored as strings</doc>
+            <doc xml:space="preserve">a #GSList of matched
+                   contacts UIDs stored as strings</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="utf8"/>
             </type>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_cursor"
+              c:identifier="e_book_client_get_cursor"
+              version="3.12">
+        <doc xml:space="preserve">Create an #EBookClientCursor.
+The call is finished by e_book_client_get_view_finish()
+from the @callback.
+
+Note: @sexp can be obtained through #EBookQuery, by converting it
+to a string with e_book_query_to_string().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClient</doc>
+            <type name="BookClient" c:type="EBookClient*"/>
+          </instance-parameter>
+          <parameter name="sexp" transfer-ownership="none">
+            <doc xml:space="preserve">an S-expression representing the query</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="sort_fields" transfer-ownership="none">
+            <doc xml:space="preserve">an array of #EContactFields to sort the cursor with</doc>
+            <type name="EBookContacts.ContactField"
+                  c:type="const EContactField*"/>
+          </parameter>
+          <parameter name="sort_types" transfer-ownership="none">
+            <doc xml:space="preserve">an array of #EBookCursorSortTypes to complement @sort_fields</doc>
+            <type name="EBookContacts.BookCursorSortType"
+                  c:type="const EBookCursorSortType*"/>
+          </parameter>
+          <parameter name="n_fields" transfer-ownership="none">
+            <doc xml:space="preserve">the length of the input @sort_fields and @sort_types arrays</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">callback to call when a result is ready</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for the @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_cursor_finish"
+              c:identifier="e_book_client_get_cursor_finish"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Finishes previous call of e_book_client_get_cursor().
+If successful, then the @out_cursor is set to newly create
+#EBookClientCursor, the cursor should be freed with g_object_unref()
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if successful, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClient</doc>
+            <type name="BookClient" c:type="EBookClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+          <parameter name="out_cursor"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_cursor_sync"
+              c:identifier="e_book_client_get_cursor_sync"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Create an #EBookClientCursor. If successful, then the @out_cursor is set
+to newly allocated #EBookClientCursor, the cursor should be freed with g_object_unref()
+when no longer needed.
+
+Note: @sexp can be obtained through #EBookQuery, by converting it
+to a string with e_book_query_to_string().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if successful, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClient</doc>
+            <type name="BookClient" c:type="EBookClient*"/>
+          </instance-parameter>
+          <parameter name="sexp" transfer-ownership="none">
+            <doc xml:space="preserve">an S-expression representing the query</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="sort_fields" transfer-ownership="none">
+            <doc xml:space="preserve">an array of #EContactFields to sort the cursor with</doc>
+            <type name="EBookContacts.ContactField"
+                  c:type="const EContactField*"/>
+          </parameter>
+          <parameter name="sort_types" transfer-ownership="none">
+            <doc xml:space="preserve">an array of #EBookCursorSortTypes to complement @sort_fields</doc>
+            <type name="EBookContacts.BookCursorSortType"
+                  c:type="const EBookCursorSortType*"/>
+          </parameter>
+          <parameter name="n_fields" transfer-ownership="none">
+            <doc xml:space="preserve">the length of the input @sort_fields and @sort_types arrays</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="out_cursor"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_locale"
+              c:identifier="e_book_client_get_locale"
+              version="3.12">
+        <doc xml:space="preserve">Reports the locale in use for @client. The addressbook might sort contacts
+in different orders, or store and compare phone numbers in different ways
+depending on the currently set locale.
+
+Locales can change dynamically if systemd decides to change the locale, so
+it's important to listen for notifications on the #EBookClient:locale property
+if you depend on sorted result lists. Ordered results should be reloaded
+after a locale change is detected.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The currently set locale for @client</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClient</doc>
+            <type name="BookClient" c:type="EBookClient*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_view"
@@ -793,12 +1048,14 @@ to a string with e_book_query_to_string().</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -872,6 +1129,7 @@ to a string with e_book_query_to_string().</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -898,12 +1156,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -956,6 +1216,7 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -984,12 +1245,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -1044,6 +1307,7 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1070,12 +1334,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -1108,12 +1374,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -1166,6 +1434,7 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1212,6 +1481,7 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1243,12 +1513,14 @@ from the @callback.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -1306,6 +1578,7 @@ as a batch request.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1333,19 +1606,755 @@ refers to the user of the address book.</doc>
           </parameter>
         </parameters>
       </method>
-      <field name="parent">
+      <property name="locale" version="3.12" transfer-ownership="none">
+        <doc xml:space="preserve">The currently active locale for this addressbook.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent" readable="0" private="1">
         <type name="EDataServer.Client" c:type="EClient"/>
       </field>
-      <field name="priv">
+      <field name="priv" readable="0" private="1">
         <type name="BookClientPrivate" c:type="EBookClientPrivate*"/>
       </field>
     </class>
     <record name="BookClientClass"
             c:type="EBookClientClass"
-            glib:is-gtype-struct-for="BookClient">
-      <field name="parent_class">
+            glib:is-gtype-struct-for="BookClient"
+            version="3.2">
+      <doc xml:space="preserve">Class structure for the #EBookClient class.</doc>
+      <field name="parent_class" readable="0" private="1">
         <type name="EDataServer.ClientClass" c:type="EClientClass"/>
       </field>
+    </record>
+    <class name="BookClientCursor"
+           c:symbol-prefix="book_client_cursor"
+           c:type="EBookClientCursor"
+           version="3.12"
+           parent="GObject.Object"
+           glib:type-name="EBookClientCursor"
+           glib:get-type="e_book_client_cursor_get_type"
+           glib:type-struct="BookClientCursorClass">
+      <doc xml:space="preserve">Contains only private data.</doc>
+      <implements name="Gio.Initable"/>
+      <virtual-method name="refresh">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_alphabet"
+              c:identifier="e_book_client_cursor_get_alphabet"
+              version="3.12">
+        <doc xml:space="preserve">Fetches the array of displayable labels for the &lt;link linkend="cursor-alphabet"&gt;active alphabet&lt;/link&gt;.
+
+The active alphabet is based on the current locale configuration of the
+addressbook, and can be a different alphabet for locales requiring non-Latin
+language scripts. These UTF-8 labels are appropriate to display in a user
+interface to represent the alphabetic position of the cursor in the user's
+native alphabet.
+
+The @underflow, @inflow and @overflow parameters allow one to observe which
+indexes Evolution Data Server is using to store words which sort outside
+of the alphabet, for instance words from foreign language scripts and
+words which start with numeric characters, or other types of character.
+
+While the @underflow and @overflow are for words which sort below or
+above the active alphabets, the @inflow index is for words which sort
+in between multiple concurrently active alphabets. The active alphabet
+array might contain more than one alphabet for locales where it is
+very common or expected to have names in Latin script as well as names
+in another script.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">
+  The array of displayable labels for each index in the active alphabet.</doc>
+          <array c:type="gchar**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="n_labels"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The number of labels in the active alphabet</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+          <parameter name="underflow"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The underflow index, for any words which sort below the active alphabet</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+          <parameter name="inflow"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The inflow index, for any words which sort between the active alphabets (if there is more than one)</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+          <parameter name="overflow"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The overflow index, for any words which sort above the active alphabet</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_contact_alphabetic_index"
+              c:identifier="e_book_client_cursor_get_contact_alphabetic_index"
+              version="3.12">
+        <doc xml:space="preserve">Checks which alphabetic index @contact would be sorted
+into according to @cursor.
+
+So long as the active #EBookClientCursor:alphabet does
+not change, the returned index will be a valid position
+in the array of labels returned by e_book_client_cursor_get_alphabet().
+
+If the index returned by this function is needed for
+any extended period of time, it should be recalculated
+whenever the #EBookClientCursor:alphabet changes.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The alphabetic index of @contact in @cursor.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="contact" transfer-ownership="none">
+            <doc xml:space="preserve">the #EContact to check</doc>
+            <type name="EBookContacts.Contact" c:type="EContact*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_position"
+              c:identifier="e_book_client_cursor_get_position"
+              version="3.12">
+        <doc xml:space="preserve">Fetches the number of contacts leading up to the current
+cursor position, inclusive of the current cursor position.
+
+The position value can be anywhere from 0 to the total
+number of contacts plus one. A value of 0 indicates
+that the cursor is positioned before the contact list in
+the symbolic %E_BOOK_CURSOR_ORIGIN_BEGIN state. If
+the position is greater than the total, as returned by
+e_book_client_cursor_get_total(), then the cursor is positioned
+after the last contact in the symbolic %E_BOOK_CURSOR_ORIGIN_END position.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The current cursor position</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_total"
+              c:identifier="e_book_client_cursor_get_total"
+              version="3.12">
+        <doc xml:space="preserve">Fetches the total number of contacts in the addressbook
+which match @cursor's query</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The total number of contacts matching @cursor's query</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref_client"
+              c:identifier="e_book_client_cursor_ref_client"
+              version="3.12">
+        <doc xml:space="preserve">Returns the #EBookClientCursor:client associated with @cursor.
+
+The returned #EBookClient is referenced because the cursor
+does not keep a strong reference to the client.
+
+Unreference the #EBookClient with g_object_unref() when finished with it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an #EBookClient</doc>
+          <type name="gpointer" c:type="_EBookClient*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_alphabetic_index"
+              c:identifier="e_book_client_cursor_set_alphabetic_index"
+              version="3.12">
+        <doc xml:space="preserve">Sets the current cursor position to point to an &lt;link linkend="cursor-alphabet"&gt;Alphabetic Index&lt;/link&gt;.
+
+See: e_book_client_cursor_set_alphabetic_index_sync().
+
+This asynchronous call is completed with a call to
+e_book_client_cursor_set_alphabetic_index_finish() from the specified @callback.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">the alphabetic index</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable to optionally cancel this operation while in progress</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to call when a result is ready</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for the @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_alphabetic_index_finish"
+              c:identifier="e_book_client_cursor_set_alphabetic_index_finish"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Completes an asynchronous call initiated by e_book_client_cursor_set_alphabetic_index().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE is returned and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_alphabetic_index_sync"
+              c:identifier="e_book_client_cursor_set_alphabetic_index_sync"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Sets the cursor to point to an &lt;link linkend="cursor-alphabet"&gt;Alphabetic Index&lt;/link&gt;.
+
+After setting the alphabetic index, for example the
+index for letter 'E', then further calls to e_book_client_cursor_step()
+will return results starting with the letter 'E' (or results starting
+with the last result in 'D' when navigating through cursor results
+in reverse).
+
+The passed index must be a valid index into the alphabet parameters
+returned by e_book_client_cursor_get_alphabet().
+
+If this method is called from the same thread context in which
+the cursor was created, then the updates to the #EBookClientCursor:position
+property are guaranteed to be delivered synchronously upon successful completion
+of moving the cursor. Otherwise, notifications will be delivered asynchronously
+in the cursor's original thread context.
+
+If this method completes with an %E_CLIENT_ERROR_OUT_OF_SYNC error, it is an
+indication that the addressbook has been set into a new locale and it would be
+unsafe to set the alphabetic index at this time. If you receive an out of sync
+error from this method, then you should wait until a #EBookClientCursor:alphabet
+property change notification is delivered and then proceed to load the new
+alphabet before trying to set any alphabetic index.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE is returned and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">the alphabetic index</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable to optionally cancel this operation while in progress</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_sexp"
+              c:identifier="e_book_client_cursor_set_sexp"
+              version="3.12">
+        <doc xml:space="preserve">Sets the &lt;link linkend="cursor-search"&gt;Search Expression&lt;/link&gt; for the cursor.
+
+See: e_book_client_cursor_set_sexp_sync().
+
+This asynchronous call is completed with a call to
+e_book_client_cursor_set_sexp_finish() from the specified @callback.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="sexp" transfer-ownership="none">
+            <doc xml:space="preserve">the new search expression for @cursor</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable to optionally cancel this operation while in progress</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to call when a result is ready</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for the @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_sexp_finish"
+              c:identifier="e_book_client_cursor_set_sexp_finish"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Completes an asynchronous call initiated by e_book_client_cursor_set_sexp(), reporting
+whether the new search expression was accepted.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE is returned and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_sexp_sync"
+              c:identifier="e_book_client_cursor_set_sexp_sync"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Sets the &lt;link linkend="cursor-search"&gt;Search Expression&lt;/link&gt; for the cursor.
+
+A side effect of setting the search expression is that the
+&lt;link linkend="cursor-pos-total"&gt;position and total&lt;/link&gt;
+properties will be updated.
+
+If this method is called from the same thread context in which
+the cursor was created, then the updates to the #EBookClientCursor:position
+and #EBookClientCursor:total properties are guaranteed to be delivered
+synchronously upon successful completion of setting the search expression.
+Otherwise, notifications will be delivered asynchronously in the cursor's
+original thread context.
+
+If the backend does not support the given search expression,
+an %E_CLIENT_ERROR_INVALID_QUERY error will be set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE is returned and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="sexp" transfer-ownership="none">
+            <doc xml:space="preserve">the new search expression for @cursor</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable to optionally cancel this operation while in progress</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="step"
+              c:identifier="e_book_client_cursor_step"
+              version="3.12">
+        <doc xml:space="preserve">&lt;link linkend="cursor-iteration"&gt;Steps the cursor through the results&lt;/link&gt; by
+a maximum of @count and fetch the results traversed.
+
+See: e_book_client_cursor_step_sync().
+
+This asynchronous call is completed with a call to
+e_book_client_cursor_step_finish() from the specified @callback.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">The #EBookCursorStepFlags for this step</doc>
+            <type name="EBookContacts.BookCursorStepFlags"
+                  c:type="EBookCursorStepFlags"/>
+          </parameter>
+          <parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">The #EBookCursorOrigin from whence to step</doc>
+            <type name="EBookContacts.BookCursorOrigin"
+                  c:type="EBookCursorOrigin"/>
+          </parameter>
+          <parameter name="count" transfer-ownership="none">
+            <doc xml:space="preserve">a positive or negative amount of contacts to try and fetch</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable to optionally cancel this operation while in progress</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">callback to call when a result is ready</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for the @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="step_finish"
+              c:identifier="e_book_client_cursor_step_finish"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">Completes an asynchronous call initiated by e_book_client_cursor_step(), fetching
+any contacts which might have been returned by the call.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of contacts traversed if successful, otherwise -1 is
+returned and @error is set.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+          <parameter name="out_contacts"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for a #GSList of #EContacts</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="EBookContacts.Contact"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="step_sync"
+              c:identifier="e_book_client_cursor_step_sync"
+              version="3.12"
+              throws="1">
+        <doc xml:space="preserve">&lt;link linkend="cursor-iteration"&gt;Steps the cursor through the results&lt;/link&gt; by
+a maximum of @count and fetch the results traversed.
+
+If @count is negative, then the cursor will move backwards.
+
+If @cursor reaches the beginning or end of the query results, then the
+returned list might not contain the amount of desired contacts, or might
+return no results if the cursor currently points to the last contact.
+Reaching the end of the list is not considered an error condition. Attempts
+to step beyond the end of the list after having reached the end of the list
+will however trigger an %E_CLIENT_ERROR_QUERY_REFUSED error.
+
+If %E_BOOK_CURSOR_STEP_FETCH is specified in %flags, a pointer to
+a %NULL #GSList pointer should be provided for the @results parameter.
+
+If %E_BOOK_CURSOR_STEP_MOVE is specified in %flags, then the cursor's
+state will be modified and the &lt;link linkend="cursor-pos-total"&gt;position&lt;/link&gt;
+property will be updated as a result.
+
+If this method is called from the same thread context in which
+the cursor was created, then the updates to the #EBookClientCursor:position
+property are guaranteed to be delivered synchronously upon successful completion
+of moving the cursor. Otherwise, notifications will be delivered asynchronously
+in the cursor's original thread context.
+
+If this method completes with an %E_CLIENT_ERROR_OUT_OF_SYNC error, it is an
+indication that the addressbook has been modified and it would be unsafe to
+move the cursor at this time. Any %E_CLIENT_ERROR_OUT_OF_SYNC error is guaranteed
+to be followed by an #EBookClientCursor::refresh signal at which point any content
+should be reloaded.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of contacts traversed if successful, otherwise -1 is
+returned and @error is set.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cursor" transfer-ownership="none">
+            <doc xml:space="preserve">an #EBookClientCursor</doc>
+            <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">The #EBookCursorStepFlags for this step</doc>
+            <type name="EBookContacts.BookCursorStepFlags"
+                  c:type="EBookCursorStepFlags"/>
+          </parameter>
+          <parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">The #EBookCursorOrigin from whence to step</doc>
+            <type name="EBookContacts.BookCursorOrigin"
+                  c:type="EBookCursorOrigin"/>
+          </parameter>
+          <parameter name="count" transfer-ownership="none">
+            <doc xml:space="preserve">a positive or negative amount of contacts to try and fetch</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="out_contacts"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for a #GSList of #EContacts</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="EBookContacts.Contact"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable to optionally cancel this operation while in progress</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="alphabet" version="3.12" transfer-ownership="none">
+        <doc xml:space="preserve">The currently &lt;link linkend="cursor-alphabet"&gt;active alphabet&lt;/link&gt;.
+
+The value is a %NULL terminated array of strings,
+each string is suitable to display a specific letter
+in the active alphabet.
+
+Indexes from this array can later be used with
+e_book_client_cursor_set_alphabetic_index().
+
+This property will automatically change if the
+active locale of the addressbook server changes.
+
+Property change notifications are guaranteed to be
+delivered in the #GMainContext which was the thread
+default context at cursor creation time.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
+      </property>
+      <property name="client"
+                version="3.12"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #EBookClient which this cursor was created for</doc>
+        <type name="BookClient"/>
+      </property>
+      <property name="connection"
+                version="3.12"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GDBusConnection to the addressbook server.
+
+&lt;note&gt;&lt;para&gt;This is an internal parameter for constructing the
+cursor, to construct the cursor use e_book_client_get_cursor().
+&lt;/para&gt;&lt;/note&gt;</doc>
+        <type name="Gio.DBusConnection"/>
+      </property>
+      <property name="context"
+                version="3.12"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GMainContext in which the #EBookClient created this cursor.
+
+&lt;note&gt;&lt;para&gt;This is an internal parameter for constructing the
+cursor, to construct the cursor use e_book_client_get_cursor().
+&lt;/para&gt;&lt;/note&gt;</doc>
+        <type name="GLib.MainContext"/>
+      </property>
+      <property name="direct-cursor"
+                version="3.12"
+                introspectable="0"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The direct handle to the #EDataBookCursor for direct read access mode.
+
+&lt;note&gt;&lt;para&gt;This is an internal parameter for constructing the
+cursor, to construct the cursor use e_book_client_get_cursor().
+&lt;/para&gt;&lt;/note&gt;</doc>
+        <type/>
+      </property>
+      <property name="object-path"
+                version="3.12"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The D-Bus object path to find the server side cursor object.
+
+&lt;note&gt;&lt;para&gt;This is an internal parameter for constructing the
+cursor, to construct the cursor use e_book_client_get_cursor().
+&lt;/para&gt;&lt;/note&gt;</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="position" version="3.12" transfer-ownership="none">
+        <doc xml:space="preserve">The current cursor position in the cursor's result list.
+
+More specifically, the cursor position is defined as
+the number of contacts leading up to the current
+cursor position, inclusive of the current cursor
+position.
+
+If the position value is %0, then the cursor is positioned
+before the contact list in the symbolic %E_BOOK_CURSOR_ORIGIN_BEGIN
+position. If the position value is greater than
+#EBookClientCursor:total, this indicates that the cursor is
+positioned after the contact list in the symbolic
+%E_BOOK_CURSOR_ORIGIN_END position.
+
+Property change notifications are guaranteed to be
+delivered in the #GMainContext which was the thread
+default context at cursor creation time.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="sort-fields"
+                version="3.12"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #EContactField names to sort this cursor with
+
+&lt;note&gt;&lt;para&gt;This is an internal parameter for constructing the
+cursor, to construct the cursor use e_book_client_get_cursor().
+&lt;/para&gt;&lt;/note&gt;</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
+      </property>
+      <property name="total" version="3.12" transfer-ownership="none">
+        <doc xml:space="preserve">The total number of contacts which satisfy the cursor's query.
+
+Property change notifications are guaranteed to be
+delivered in the #GMainContext which was the thread
+default context at cursor creation time.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="BookClientCursorPrivate"
+              c:type="EBookClientCursorPrivate*"/>
+      </field>
+      <glib:signal name="refresh" when="last" version="3.12">
+        <doc xml:space="preserve">Indicates that the addressbook has been modified and
+that any content currently being displayed from the current
+cursor position should be reloaded.
+
+This signal is guaranteed to be delivered in the #GMainContext
+which was the thread default context at cursor creation time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="BookClientCursorClass"
+            c:type="EBookClientCursorClass"
+            glib:is-gtype-struct-for="BookClientCursor"
+            version="3.12">
+      <doc xml:space="preserve">The cursor class structure.</doc>
+      <field name="parent_class" readable="0" private="1">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="refresh">
+        <callback name="refresh">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="cursor" transfer-ownership="none">
+              <type name="BookClientCursor" c:type="EBookClientCursor*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <record name="BookClientCursorPrivate"
+            c:type="EBookClientCursorPrivate"
+            disguised="1">
     </record>
     <record name="BookClientPrivate" c:type="EBookClientPrivate" disguised="1">
     </record>
@@ -1436,9 +2445,10 @@ functions below.</doc>
       </virtual-method>
       <method name="get_client"
               c:identifier="e_book_client_view_get_client"
-              deprecated="Use e_book_client_view_ref_client() instead."
+              deprecated="1"
               deprecated-version="3.10">
         <doc xml:space="preserve">Returns the #EBookClientView:client associated with @client_view.</doc>
+        <doc-deprecated xml:space="preserve">Use e_book_client_view_ref_client() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an #EBookClient</doc>
           <type name="gpointer" c:type="_EBookClient*"/>
@@ -1531,7 +2541,8 @@ it will simply return object as is stored in the cache.</doc>
             <type name="BookClientView" c:type="EBookClientView*"/>
           </instance-parameter>
           <parameter name="fields_of_interest" transfer-ownership="none">
-            <doc xml:space="preserve">List of field names in which the client is interested</doc>
+            <doc xml:space="preserve">List of field names in which
+                     the client is interested</doc>
             <type name="GLib.SList" c:type="const GSList*">
               <type name="utf8"/>
             </type>
@@ -1608,10 +2619,10 @@ it will simply return object as is stored in the cache.</doc>
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="parent">
+      <field name="parent" readable="0" private="1">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
+      <field name="priv" readable="0" private="1">
         <type name="BookClientViewPrivate" c:type="EBookClientViewPrivate*"/>
       </field>
       <glib:signal name="complete" when="last">
@@ -1670,8 +2681,10 @@ it will simply return object as is stored in the cache.</doc>
     </class>
     <record name="BookClientViewClass"
             c:type="EBookClientViewClass"
-            glib:is-gtype-struct-for="BookClientView">
-      <field name="parent_class">
+            glib:is-gtype-struct-for="BookClientView"
+            version="3.2">
+      <doc xml:space="preserve">Class structure for the #EBookClient class.</doc>
+      <field name="parent_class" readable="0" private="1">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="objects_added" introspectable="0">
@@ -1764,9 +2777,13 @@ it will simply return object as is stored in the cache.</doc>
             disguised="1">
     </record>
     <enumeration name="BookStatus"
+                 deprecated="1"
+                 deprecated-version="3.2"
                  glib:type-name="EBookStatus"
                  glib:get-type="e_book_status_get_type"
                  c:type="EBookStatus">
+      <doc xml:space="preserve">Error codes for the #E_BOOK_ERROR error</doc>
+      <doc-deprecated xml:space="preserve">Use #EBookClient and it's error codes instead</doc-deprecated>
       <member name="ok"
               value="0"
               c:identifier="E_BOOK_ERROR_OK"
@@ -1949,7 +2966,8 @@ elements in @destv.</doc>
       <function name="import" c:identifier="e_destination_import">
         <doc xml:space="preserve">Creates an #EDestination from an XML document.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">An #EDestination, or %NULL if the document was not well-formed.</doc>
+          <doc xml:space="preserve">An #EDestination, or %NULL if the document was not
+well-formed.</doc>
           <type name="Destination" c:type="EDestination*"/>
         </return-value>
         <parameters>
@@ -1963,7 +2981,8 @@ elements in @destv.</doc>
         <doc xml:space="preserve">Creates an array of pointers to #EDestination elements
 from an XML document.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A %NULL-terminated array of pointers to #EDestination elements.</doc>
+          <doc xml:space="preserve">A %NULL-terminated array of pointers to
+#EDestination elements.</doc>
           <type name="Destination" c:type="EDestination**"/>
         </return-value>
         <parameters>
@@ -2063,7 +3082,8 @@ and values in @attr, suitable for an address book.</doc>
 encoded list of email addresses, from @dest.  The returned string is
 suitable for use in an email header, but not for displaying to users.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">an encoded destination string suitable for use in an email header, or %NULL if the destination was empty</doc>
+          <doc xml:space="preserve">an encoded destination string suitable for use in an
+         email header, or %NULL if the destination was empty</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -2221,7 +3241,7 @@ to hide it from some UI elements.</doc>
       <method name="is_ignored" c:identifier="e_destination_is_ignored">
         <doc xml:space="preserve">Check if @dest is to be ignored.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">#TRUE if this destination should be ignored, else #FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if this destination should be ignored, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -2409,7 +3429,7 @@ addresses indicated by @email_num.</doc>
             <type name="Destination" c:type="EDestination*"/>
           </instance-parameter>
           <parameter name="ignored" transfer-ownership="none">
-            <doc xml:space="preserve">#TRUE if this #EDestination should be ignored.</doc>
+            <doc xml:space="preserve">%TRUE if this #EDestination should be ignored.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>

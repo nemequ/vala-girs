@@ -12,7 +12,7 @@ and/or use gtk-doc annotations.  -->
   <package name="gnome-bluetooth-1.0"/>
   <namespace name="GnomeBluetooth"
              version="1.0"
-             shared-library="libgnome-bluetooth.so.12"
+             shared-library="libgnome-bluetooth.so.13"
              c:identifier-prefixes="Bluetooth"
              c:symbol-prefixes="bluetooth">
     <constant name="CHOOSER_COMBO_FIRST_DEVICE"
@@ -175,7 +175,8 @@ chooser with a toolbar.</doc>
               c:identifier="bluetooth_chooser_get_selected_device_is_connected">
         <doc xml:space="preserve">Returns whether the selected device is connected to this computer.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">whether the selected device is connected to this computer, will always be %FALSE if no devices are selected.</doc>
+          <doc xml:space="preserve">whether the selected device is connected to this computer,
+will always be %FALSE if no devices are selected.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -464,6 +465,7 @@ of the tree from its defaults.</doc>
     </record>
     <class name="ChooserCombo"
            c:symbol-prefix="chooser_combo"
+           c:type="BluetoothChooserCombo"
            parent="Gtk.Box"
            glib:type-name="BluetoothChooserCombo"
            glib:get-type="bluetooth_chooser_combo_get_type"
@@ -501,6 +503,13 @@ only private fields and should not be directly accessed.</doc>
         <doc xml:space="preserve">The Bluetooth address of the selected device or %NULL</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <field name="parent">
+        <type name="Gtk.Box" c:type="GtkBox"/>
+      </field>
+      <field name="priv">
+        <type name="ChooserComboPrivate"
+              c:type="BluetoothChooserComboPrivate*"/>
+      </field>
       <glib:signal name="chooser-created" when="last">
         <doc xml:space="preserve">The signal is sent when a popup dialogue is created for the user to select
 a device. This signal allows you to change the configuration and filtering
@@ -558,17 +567,6 @@ only private fields and should not be directly accessed.</doc>
           <type name="Client" c:type="BluetoothClient*"/>
         </return-value>
       </constructor>
-      <function name="get_connectable"
-                c:identifier="bluetooth_client_get_connectable">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="uuids" transfer-ownership="none">
-            <type name="utf8" c:type="const char**"/>
-          </parameter>
-        </parameters>
-      </function>
       <method name="connect_service"
               c:identifier="bluetooth_client_connect_service">
         <doc xml:space="preserve">When the connection operation is finished, @callback will be called. You can
@@ -592,12 +590,14 @@ operation.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -731,6 +731,19 @@ monitor signals on the "child-model" #GtkTreeModel to monitor for changes.</doc>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
+      <glib:signal name="device-removed" when="last">
+        <doc xml:space="preserve">The #BluetoothClient::device-removed signal is launched when a
+device gets removed from the model.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the D-Bus object path for the now-removed device</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="ClientClass"
             c:type="BluetoothClientClass"
@@ -741,89 +754,69 @@ monitor signals on the "child-model" #GtkTreeModel to monitor for changes.</doc>
     </record>
     <enumeration name="Column" c:type="BluetoothColumn">
       <doc xml:space="preserve">A column identifier to pass to bluetooth_chooser_get_selected_device_info().</doc>
-      <member name="luetooth_column_proxy"
-              value="0"
-              c:identifier="BLUETOOTH_COLUMN_PROXY">
+      <member name="proxy" value="0" c:identifier="BLUETOOTH_COLUMN_PROXY">
         <doc xml:space="preserve">a #GDBusProxy object</doc>
       </member>
-      <member name="luetooth_column_properties"
+      <member name="properties"
               value="1"
               c:identifier="BLUETOOTH_COLUMN_PROPERTIES">
         <doc xml:space="preserve">a #GDBusProxy object for DBus.Properties</doc>
       </member>
-      <member name="luetooth_column_address"
-              value="2"
-              c:identifier="BLUETOOTH_COLUMN_ADDRESS">
+      <member name="address" value="2" c:identifier="BLUETOOTH_COLUMN_ADDRESS">
         <doc xml:space="preserve">a string representing a Bluetooth address</doc>
       </member>
-      <member name="luetooth_column_alias"
-              value="3"
-              c:identifier="BLUETOOTH_COLUMN_ALIAS">
+      <member name="alias" value="3" c:identifier="BLUETOOTH_COLUMN_ALIAS">
         <doc xml:space="preserve">a string to use for display (the name of the device, or its address if the name is not known). Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_name"
-              value="4"
-              c:identifier="BLUETOOTH_COLUMN_NAME">
+      <member name="name" value="4" c:identifier="BLUETOOTH_COLUMN_NAME">
         <doc xml:space="preserve">a string representing the device or adapter's name</doc>
       </member>
-      <member name="luetooth_column_type"
-              value="5"
-              c:identifier="BLUETOOTH_COLUMN_TYPE">
+      <member name="type" value="5" c:identifier="BLUETOOTH_COLUMN_TYPE">
         <doc xml:space="preserve">the #BluetoothType of the device. Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_icon"
-              value="6"
-              c:identifier="BLUETOOTH_COLUMN_ICON">
+      <member name="icon" value="6" c:identifier="BLUETOOTH_COLUMN_ICON">
         <doc xml:space="preserve">a string representing the icon name for the device. Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_default"
-              value="7"
-              c:identifier="BLUETOOTH_COLUMN_DEFAULT">
+      <member name="default" value="7" c:identifier="BLUETOOTH_COLUMN_DEFAULT">
         <doc xml:space="preserve">whether the adapter is the default one. Only available for adapters.</doc>
       </member>
-      <member name="luetooth_column_paired"
-              value="8"
-              c:identifier="BLUETOOTH_COLUMN_PAIRED">
+      <member name="paired" value="8" c:identifier="BLUETOOTH_COLUMN_PAIRED">
         <doc xml:space="preserve">whether the device is paired to its parent adapter. Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_trusted"
-              value="9"
-              c:identifier="BLUETOOTH_COLUMN_TRUSTED">
+      <member name="trusted" value="9" c:identifier="BLUETOOTH_COLUMN_TRUSTED">
         <doc xml:space="preserve">whether the device is trusted. Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_connected"
+      <member name="connected"
               value="10"
               c:identifier="BLUETOOTH_COLUMN_CONNECTED">
         <doc xml:space="preserve">whether the device is connected. Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_discoverable"
+      <member name="discoverable"
               value="11"
               c:identifier="BLUETOOTH_COLUMN_DISCOVERABLE">
         <doc xml:space="preserve">whether the adapter is discoverable/visible. Only available for adapters.</doc>
       </member>
-      <member name="luetooth_column_discovering"
+      <member name="discovering"
               value="12"
               c:identifier="BLUETOOTH_COLUMN_DISCOVERING">
         <doc xml:space="preserve">whether the adapter is discovering. Only available for adapters.</doc>
       </member>
-      <member name="luetooth_column_legacypairing"
+      <member name="legacypairing"
               value="13"
               c:identifier="BLUETOOTH_COLUMN_LEGACYPAIRING">
         <doc xml:space="preserve">whether the device does not support Bluetooth 2.1 Simple Secure Pairing. Only available for devices.</doc>
       </member>
-      <member name="luetooth_column_powered"
+      <member name="powered"
               value="14"
               c:identifier="BLUETOOTH_COLUMN_POWERED">
         <doc xml:space="preserve">whether the adapter is powered. Only available for adapters.</doc>
       </member>
-      <member name="luetooth_column_services"
+      <member name="services"
               value="15"
               c:identifier="BLUETOOTH_COLUMN_SERVICES">
         <doc xml:space="preserve">an array of service names and #BluetoothStatus connection statuses.</doc>
       </member>
-      <member name="luetooth_column_uuids"
-              value="16"
-              c:identifier="BLUETOOTH_COLUMN_UUIDS">
+      <member name="uuids" value="16" c:identifier="BLUETOOTH_COLUMN_UUIDS">
         <doc xml:space="preserve">a string array of human-readable UUIDs.</doc>
       </member>
     </enumeration>
@@ -843,7 +836,10 @@ control filtering of that #BluetoothChooser.
 Usually used in conjunction with a #BluetoothChooser which has the "has-internal-filter"
 property set to FALSE.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A #BluetoothFilterWidget widget  Note: Must call bluetooth_filter_widget_bind_filter () to bind the #BluetoothFilterWidget to a #BluetoothChooser.</doc>
+          <doc xml:space="preserve">A #BluetoothFilterWidget widget
+
+Note: Must call bluetooth_filter_widget_bind_filter () to bind the #BluetoothFilterWidget
+to a #BluetoothChooser.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
       </constructor>
@@ -926,137 +922,49 @@ Any properties set on a bound #BluetoothChooser will also be set on the
         <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
       </field>
     </record>
-    <class name="Killswitch"
-           c:symbol-prefix="killswitch"
-           c:type="BluetoothKillswitch"
-           parent="GObject.Object"
-           glib:type-name="BluetoothKillswitch"
-           glib:get-type="bluetooth_killswitch_get_type"
-           glib:type-struct="KillswitchClass">
-      <constructor name="new" c:identifier="bluetooth_killswitch_new">
-        <return-value transfer-ownership="full">
-          <type name="Killswitch" c:type="BluetoothKillswitch*"/>
+    <class name="SettingsWidget"
+           c:symbol-prefix="settings_widget"
+           c:type="BluetoothSettingsWidget"
+           parent="Gtk.Box"
+           glib:type-name="BluetoothSettingsWidget"
+           glib:get-type="bluetooth_settings_widget_get_type"
+           glib:type-struct="SettingsWidgetClass">
+      <doc xml:space="preserve">The &lt;structname&gt;BluetoothSettingsWidget&lt;/structname&gt; struct contains
+only private fields and should not be directly accessed.</doc>
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <constructor name="new" c:identifier="bluetooth_settings_widget_new">
+        <doc xml:space="preserve">Returns a new #BluetoothSettingsWidget widget.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #BluetoothSettingsWidget widget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
       </constructor>
-      <function name="state_to_string"
-                c:identifier="bluetooth_killswitch_state_to_string">
-        <return-value transfer-ownership="none">
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <parameter name="state" transfer-ownership="none">
-            <type name="KillswitchState" c:type="BluetoothKillswitchState"/>
-          </parameter>
-        </parameters>
-      </function>
-      <virtual-method name="state_changed">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="killswitch" transfer-ownership="none">
-            <type name="Killswitch" c:type="BluetoothKillswitch*"/>
-          </instance-parameter>
-          <parameter name="state" transfer-ownership="none">
-            <type name="KillswitchState" c:type="BluetoothKillswitchState"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <method name="get_state" c:identifier="bluetooth_killswitch_get_state">
-        <return-value transfer-ownership="none">
-          <type name="KillswitchState" c:type="BluetoothKillswitchState"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="killswitch" transfer-ownership="none">
-            <type name="Killswitch" c:type="BluetoothKillswitch*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="has_killswitches"
-              c:identifier="bluetooth_killswitch_has_killswitches">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="killswitch" transfer-ownership="none">
-            <type name="Killswitch" c:type="BluetoothKillswitch*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_state" c:identifier="bluetooth_killswitch_set_state">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="killswitch" transfer-ownership="none">
-            <type name="Killswitch" c:type="BluetoothKillswitch*"/>
-          </instance-parameter>
-          <parameter name="state" transfer-ownership="none">
-            <type name="KillswitchState" c:type="BluetoothKillswitchState"/>
-          </parameter>
-        </parameters>
-      </method>
       <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
+        <type name="Gtk.Box" c:type="GtkBox"/>
       </field>
-      <field name="priv">
-        <type name="KillswitchPrivate" c:type="BluetoothKillswitchPrivate*"/>
-      </field>
-      <glib:signal name="state-changed" when="last">
+      <glib:signal name="panel-changed" when="last">
+        <doc xml:space="preserve">The #BluetoothChooser::selected-device-changed signal is launched when a
+link to another settings panel is clicked.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
+          <parameter name="panel" transfer-ownership="none">
+            <doc xml:space="preserve">the new panel that the Settings application should now open</doc>
+            <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </glib:signal>
     </class>
-    <record name="KillswitchClass"
-            c:type="BluetoothKillswitchClass"
-            glib:is-gtype-struct-for="Killswitch">
+    <record name="SettingsWidgetClass"
+            c:type="BluetoothSettingsWidgetClass"
+            glib:is-gtype-struct-for="SettingsWidget">
       <field name="parent_class">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
-      </field>
-      <field name="state_changed">
-        <callback name="state_changed">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="killswitch" transfer-ownership="none">
-              <type name="Killswitch" c:type="BluetoothKillswitch*"/>
-            </parameter>
-            <parameter name="state" transfer-ownership="none">
-              <type name="KillswitchState" c:type="BluetoothKillswitchState"/>
-            </parameter>
-          </parameters>
-        </callback>
+        <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
       </field>
     </record>
-    <record name="KillswitchPrivate"
-            c:type="BluetoothKillswitchPrivate"
-            disguised="1">
-    </record>
-    <enumeration name="KillswitchState" c:type="BluetoothKillswitchState">
-      <member name="no_adapter"
-              value="-1"
-              c:identifier="BLUETOOTH_KILLSWITCH_STATE_NO_ADAPTER">
-      </member>
-      <member name="soft_blocked"
-              value="0"
-              c:identifier="BLUETOOTH_KILLSWITCH_STATE_SOFT_BLOCKED">
-      </member>
-      <member name="unblocked"
-              value="1"
-              c:identifier="BLUETOOTH_KILLSWITCH_STATE_UNBLOCKED">
-      </member>
-      <member name="hard_blocked"
-              value="2"
-              c:identifier="BLUETOOTH_KILLSWITCH_STATE_HARD_BLOCKED">
-      </member>
-    </enumeration>
     <enumeration name="Status" c:type="BluetoothStatus">
       <doc xml:space="preserve">The connection status of a service on a particular device. Note that @BLUETOOTH_STATUS_CONNECTING and @BLUETOOTH_STATUS_PLAYING might not be available for all services.</doc>
       <member name="invalid" value="0" c:identifier="BLUETOOTH_STATUS_INVALID">
@@ -1143,6 +1051,29 @@ Any properties set on a bound #BluetoothChooser will also be set on the
       </member>
       <member name="video" value="16384" c:identifier="BLUETOOTH_TYPE_VIDEO">
         <doc xml:space="preserve">a video device, such as a webcam</doc>
+      </member>
+      <member name="remote_control"
+              value="32768"
+              c:identifier="BLUETOOTH_TYPE_REMOTE_CONTROL">
+        <doc xml:space="preserve">a remote control</doc>
+      </member>
+      <member name="scanner"
+              value="65536"
+              c:identifier="BLUETOOTH_TYPE_SCANNER">
+        <doc xml:space="preserve">a scanner</doc>
+      </member>
+      <member name="display"
+              value="131072"
+              c:identifier="BLUETOOTH_TYPE_DISPLAY">
+        <doc xml:space="preserve">a display</doc>
+      </member>
+      <member name="wearable"
+              value="262144"
+              c:identifier="BLUETOOTH_TYPE_WEARABLE">
+        <doc xml:space="preserve">a wearable computer</doc>
+      </member>
+      <member name="toy" value="524288" c:identifier="BLUETOOTH_TYPE_TOY">
+        <doc xml:space="preserve">a toy or game</doc>
       </member>
     </bitfield>
     <constant name="UUID_A2DP_SINK"
@@ -1233,15 +1164,6 @@ Any properties set on a bound #BluetoothChooser will also be set on the
               c:type="BLUETOOTH_UUID_VDP_SOURCE">
       <type name="gint" c:type="gint"/>
     </constant>
-    <record name="_ChooserCombo" c:type="_BluetoothChooserCombo">
-      <field name="parent" writable="1">
-        <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv" writable="1">
-        <type name="ChooserComboPrivate"
-              c:type="BluetoothChooserComboPrivate*"/>
-      </field>
-    </record>
     <function name="class_to_type" c:identifier="bluetooth_class_to_type">
       <doc xml:space="preserve">Returns the type of device corresponding to the given @class value.</doc>
       <return-value transfer-ownership="none">
@@ -1254,56 +1176,6 @@ Any properties set on a bound #BluetoothChooser will also be set on the
           <type name="guint32" c:type="guint32"/>
         </parameter>
       </parameters>
-    </function>
-    <function name="plugin_manager_cleanup"
-              c:identifier="bluetooth_plugin_manager_cleanup">
-      <doc xml:space="preserve">Free all the resources used by the Bluetooth plugins.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-    </function>
-    <function name="plugin_manager_device_deleted"
-              c:identifier="bluetooth_plugin_manager_device_deleted">
-      <doc xml:space="preserve">Removes all existing configuration for the device, as
-supported by the plug-ins.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="bdaddr" transfer-ownership="none">
-          <doc xml:space="preserve">a Bluetooth address representing a device</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="plugin_manager_get_widgets"
-              c:identifier="bluetooth_plugin_manager_get_widgets">
-      <doc xml:space="preserve">Returns a list of widgets suitable for configuring the device
-represented by @address, for the services listed in @uuids.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a #GList of #GtkWidget, or %NULL if none.</doc>
-        <type name="GLib.List" c:type="GList*">
-          <type name="Gtk.Widget"/>
-        </type>
-      </return-value>
-      <parameters>
-        <parameter name="bdaddr" transfer-ownership="none">
-          <doc xml:space="preserve">a Bluetooth address representing a device</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-        <parameter name="uuids" transfer-ownership="none">
-          <doc xml:space="preserve">an array of UUIDs supported by the device</doc>
-          <type name="utf8" c:type="const char**"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="plugin_manager_init"
-              c:identifier="bluetooth_plugin_manager_init">
-      <doc xml:space="preserve">Initialise the plugin manager for Bluetooth plugins.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE if the initialisation succedeed, %FALSE otherwise.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
     </function>
     <function name="send_to_address" c:identifier="bluetooth_send_to_address">
       <doc xml:space="preserve">Start a GUI application for transfering files over Bluetooth.</doc>

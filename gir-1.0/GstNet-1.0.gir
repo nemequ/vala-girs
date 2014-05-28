@@ -9,10 +9,10 @@ and/or use gtk-doc annotations.  -->
   <include name="Gio" version="2.0"/>
   <include name="Gst" version="1.0"/>
   <package name="gstreamer-net-1.0"/>
-  <c:include name="gst/net/gstnet.h"/>
+  <c:include name="gst/net/net.h"/>
   <namespace name="GstNet"
              version="1.0"
-             shared-library="libgstreamer-1.0.so.0,libgstnet-1.0.so.0"
+             shared-library="libgstnet-1.0.so.0"
              c:identifier-prefixes="Gst"
              c:symbol-prefixes="gst">
     <constant name="NET_TIME_PACKET_SIZE"
@@ -24,9 +24,7 @@ and/or use gtk-doc annotations.  -->
     <record name="NetAddressMeta" c:type="GstNetAddressMeta">
       <doc xml:space="preserve">#GstNetAddress can be used to store a network address. #GstNetAddressMeta can
 be used to store a network address in a #GstBuffer so that it network
-elements can track the to and from address of the buffer.
-
-Last reviewed on 2011-11-03 (0.11.2)</doc>
+elements can track the to and from address of the buffer.</doc>
       <field name="meta" writable="1">
         <type name="Gst.Meta" c:type="GstMeta"/>
       </field>
@@ -56,25 +54,26 @@ an initial time.
 This clock will poll the time provider and will update its calibration
 parameters based on the local and remote observations.
 
+The "round-trip" property limits the maximum round trip packets can take.
+
 Various parameters of the clock can be configured with the parent #GstClock
 "timeout", "window-size" and "window-threshold" object properties.
 
-A #GstNetClientClock is typically set on a #GstPipeline with 
-gst_pipeline_use_clock().
-
-Last reviewed on 2005-11-23 (0.9.5)</doc>
+A #GstNetClientClock is typically set on a #GstPipeline with
+gst_pipeline_use_clock().</doc>
       <constructor name="new" c:identifier="gst_net_client_clock_new">
         <doc xml:space="preserve">Create a new #GstNetClientClock that will report the time
-provided by the #GstNetTimeProvider on @remote_address and 
+provided by the #GstNetTimeProvider on @remote_address and
 @remote_port.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a new #GstClock that receives a time from the remote clock.</doc>
+          <doc xml:space="preserve">a new #GstClock that receives a time from the remote
+clock.</doc>
           <type name="Gst.Clock" c:type="GstClock*"/>
         </return-value>
         <parameters>
           <parameter name="name" transfer-ownership="none">
             <doc xml:space="preserve">a name for the clock</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="remote_address" transfer-ownership="none">
             <doc xml:space="preserve">the address of the remote clock provider</doc>
@@ -95,6 +94,9 @@ provided by the #GstNetTimeProvider on @remote_address and
       </property>
       <property name="port" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="round-trip-limit" writable="1" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
       </property>
       <field name="clock">
         <type name="Gst.SystemClock" c:type="GstSystemClock"/>
@@ -130,13 +132,13 @@ provided by the #GstNetTimeProvider on @remote_address and
             glib:get-type="gst_net_time_packet_get_type"
             c:symbol-prefix="net_time_packet">
       <doc xml:space="preserve">Various functions for receiving, sending an serializing #GstNetTimePacket
-structures.
-
-Last reviewed on 2005-11-23 (0.9.5)</doc>
+structures.</doc>
       <field name="local_time" writable="1">
+        <doc xml:space="preserve">the local time when this packet was sent</doc>
         <type name="Gst.ClockTime" c:type="GstClockTime"/>
       </field>
       <field name="remote_time" writable="1">
+        <doc xml:space="preserve">the remote time observation</doc>
         <type name="Gst.ClockTime" c:type="GstClockTime"/>
       </field>
       <constructor name="new" c:identifier="gst_net_time_packet_new">
@@ -191,7 +193,7 @@ MT safe. Caller owns return value (gst_net_time_packet_free to free).</doc>
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if successful, FALSE in case an error occured.</doc>
+          <doc xml:space="preserve">TRUE if successful, FALSE in case an error occurred.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -233,7 +235,8 @@ MT safe. Caller owns return value (g_free to free).</doc>
         <doc xml:space="preserve">Receives a #GstNetTimePacket over a socket. Handles interrupted system
 calls, but otherwise returns NULL on error.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GstNetTimePacket, or NULL on error. Free with gst_net_time_packet_free() when done.</doc>
+          <doc xml:space="preserve">a new #GstNetTimePacket, or NULL on error. Free
+   with gst_net_time_packet_free() when done.</doc>
           <type name="NetTimePacket" c:type="GstNetTimePacket*"/>
         </return-value>
         <parameters>
@@ -266,9 +269,7 @@ takes a #GstClock, an address and a port number as arguments.
 After creating the object, a client clock such as #GstNetClientClock can
 query the exposed clock over the network for its values.
 
-The #GstNetTimeProvider typically wraps the clock used by a #GstPipeline.
-
-Last reviewed on 2005-11-23 (0.9.5)</doc>
+The #GstNetTimeProvider typically wraps the clock used by a #GstPipeline.</doc>
       <constructor name="new" c:identifier="gst_net_time_provider_new">
         <doc xml:space="preserve">Allows network clients to get the current time of @clock.</doc>
         <return-value transfer-ownership="none">
@@ -280,8 +281,12 @@ Last reviewed on 2005-11-23 (0.9.5)</doc>
             <doc xml:space="preserve">a #GstClock to export over the network</doc>
             <type name="Gst.Clock" c:type="GstClock*"/>
           </parameter>
-          <parameter name="address" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">an address to bind on as a dotted quad (xxx.xxx.xxx.xxx), or NULL to bind to all addresses</doc>
+          <parameter name="address"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an address to bind on as a dotted quad
+          (xxx.xxx.xxx.xxx), IPv6 address, or NULL to bind to all addresses</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="port" transfer-ownership="none">
@@ -366,7 +371,8 @@ Last reviewed on 2005-11-23 (0.9.5)</doc>
       <doc xml:space="preserve">Receives a #GstNetTimePacket over a socket. Handles interrupted system
 calls, but otherwise returns NULL on error.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a new #GstNetTimePacket, or NULL on error. Free with gst_net_time_packet_free() when done.</doc>
+        <doc xml:space="preserve">a new #GstNetTimePacket, or NULL on error. Free
+   with gst_net_time_packet_free() when done.</doc>
         <type name="NetTimePacket" c:type="GstNetTimePacket*"/>
       </return-value>
       <parameters>

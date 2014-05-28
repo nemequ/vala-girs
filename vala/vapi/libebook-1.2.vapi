@@ -12,6 +12,7 @@ namespace E {
 		public async bool add_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
 		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async E.BookClient connect (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static async E.BookClient connect_direct (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static E.BookClient connect_direct_sync (E.SourceRegistry registry, E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static E.BookClient connect_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contact (string uid, GLib.Cancellable? cancellable, out E.Contact out_contact) throws GLib.Error;
@@ -20,6 +21,9 @@ namespace E {
 		public bool get_contacts_sync (string sexp, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contacts_uids (string sexp, GLib.Cancellable? cancellable, out GLib.SList<string> out_contact_uids) throws GLib.Error;
 		public bool get_contacts_uids_sync (string sexp, out GLib.SList<string> out_contact_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool get_cursor (string sexp, E.ContactField sort_fields, E.BookCursorSortType sort_types, uint n_fields, GLib.Cancellable? cancellable, out E.BookClientCursor out_cursor) throws GLib.Error;
+		public bool get_cursor_sync (string sexp, E.ContactField sort_fields, E.BookCursorSortType sort_types, uint n_fields, out E.BookClientCursor out_cursor, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public unowned string get_locale ();
 		public static bool get_self (E.SourceRegistry registry, out E.Contact out_contact, out E.BookClient out_client) throws GLib.Error;
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.BookClientView out_view) throws GLib.Error;
 		public bool get_view_sync (string sexp, out E.BookClientView out_view, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -35,6 +39,37 @@ namespace E {
 		public async bool remove_contacts (GLib.SList<string> uids, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool remove_contacts_sync (GLib.SList<string> uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_self (E.Contact contact) throws GLib.Error;
+		public string locale { get; }
+	}
+	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_client_cursor_get_type ()")]
+	public class BookClientCursor : GLib.Object, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected BookClientCursor ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_alphabet (out int n_labels, out int underflow, out int inflow, out int overflow);
+		public int get_contact_alphabetic_index (E.Contact contact);
+		public int get_position ();
+		public int get_total ();
+		public void* ref_client ();
+		public async bool set_alphabetic_index (int index, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool set_alphabetic_index_sync (int index, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool set_sexp (string sexp, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool set_sexp_sync (string sexp, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async int step (E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, GLib.Cancellable? cancellable, out GLib.SList<E.Contact> out_contacts) throws GLib.Error;
+		public int step_sync (E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public string[] alphabet { owned get; }
+		[NoAccessorMethod]
+		public E.BookClient client { owned get; construct; }
+		public GLib.DBusConnection connection { construct; }
+		public GLib.MainContext context { construct; }
+		public string object_path { construct; }
+		public int position { get; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] sort_fields { construct; }
+		public int total { get; }
+		public virtual signal void refresh ();
 	}
 	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_book_client_view_get_type ()")]
 	public class BookClientView : GLib.Object, GLib.Initable {
@@ -99,6 +134,7 @@ namespace E {
 		public virtual signal void changed ();
 	}
 	[CCode (cheader_filename = "libebook/libebook.h", cprefix = "E_BOOK_ERROR_", type_id = "e_book_status_get_type ()")]
+	[Deprecated (since = "3.2")]
 	public enum BookStatus {
 		OK,
 		INVALID_ARG,

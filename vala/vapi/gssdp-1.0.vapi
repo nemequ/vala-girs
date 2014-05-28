@@ -5,19 +5,26 @@ namespace GSSDP {
 	[CCode (cheader_filename = "libgssdp/gssdp.h", type_id = "gssdp_client_get_type ()")]
 	public class Client : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
-		public Client (GLib.MainContext? main_context, string iface) throws GLib.Error;
+		public Client (GLib.MainContext? main_context, string? iface) throws GLib.Error;
+		public void append_header (string name, string value);
+		public void clear_headers ();
 		public bool get_active ();
 		public unowned string get_host_ip ();
 		public unowned string get_interface ();
 		public GLib.MainContext get_main_context ();
 		public unowned string get_network ();
 		public unowned string get_server_id ();
+		public void remove_header (string name);
 		public void set_network (string network);
 		public void set_server_id (string server_id);
+		[CCode (has_construct_function = false)]
+		public Client.with_port (string? iface, uint16 msearch_port) throws GLib.Error;
 		[NoAccessorMethod]
 		public bool active { get; set; }
 		public string host_ip { get; }
 		public string @interface { get; construct; }
+		[NoAccessorMethod]
+		public uint msearch_port { get; construct; }
 		public string network { get; set construct; }
 		public string server_id { get; set; }
 		[NoAccessorMethod]

@@ -9,7 +9,7 @@ and/or use gtk-doc annotations.  -->
   <include name="GObject" version="2.0"/>
   <include name="Gio" version="2.0"/>
   <package name="gck-1"/>
-  <c:include name="gck.h"/>
+  <c:include name="gck/gck.h"/>
   <namespace name="Gck"
              version="1"
              shared-library="libgck-1.so.0"
@@ -43,19 +43,25 @@ are valid.</doc>
             c:symbol-prefix="attribute">
       <doc xml:space="preserve">This structure represents a PKCS11 CK_ATTRIBUTE.</doc>
       <field name="type" writable="1">
+        <doc xml:space="preserve">The attribute type, such as CKA_LABEL.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="value" writable="1">
-        <type name="guint8" c:type="guchar*"/>
+        <doc xml:space="preserve">The value of the attribute. May be NULL.</doc>
+        <array length="2" zero-terminated="0" c:type="guchar*">
+          <type name="guint8" c:type="guchar"/>
+        </array>
       </field>
       <field name="length" writable="1">
+        <doc xml:space="preserve">The length of the attribute. May be GCK_INVALID if the attribute is invalid.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <constructor name="new" c:identifier="gck_attribute_new">
         <doc xml:space="preserve">Create a new PKCS\#11 attribute. The value will be copied
 into the new attribute.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute use gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute
+         use gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -77,7 +83,8 @@ into the new attribute.</doc>
         <doc xml:space="preserve">Initialize a PKCS\#11 attribute to boolean. This will result
 in a CK_BBOOL attribute from the PKCS\#11 specs.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute u gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute u
+         gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -95,7 +102,8 @@ in a CK_BBOOL attribute from the PKCS\#11 specs.</doc>
         <doc xml:space="preserve">Initialize a PKCS\#11 attribute to a date. This will result
 in a CK_DATE attribute from the PKCS\#11 specs.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute u gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute u
+         gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -112,7 +120,8 @@ in a CK_DATE attribute from the PKCS\#11 specs.</doc>
       <constructor name="new_empty" c:identifier="gck_attribute_new_empty">
         <doc xml:space="preserve">Create a new PKCS\#11 attribute with empty data.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute use gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute
+         use gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -127,7 +136,8 @@ in a CK_DATE attribute from the PKCS\#11 specs.</doc>
 state. Specifically this sets the value length to (CK_ULONG)-1
 as specified in the PKCS\#11 specification.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute use gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute
+         use gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -143,7 +153,8 @@ in an attribute containing the text, but not the null terminator.
 The text in the attribute will be of the same encoding as you pass
 to this function.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute u gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute u
+         gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -161,7 +172,8 @@ to this function.</doc>
         <doc xml:space="preserve">Initialize a PKCS\#11 attribute to a unsigned long. This will result
 in a CK_ULONG attribute from the PKCS\#11 specs.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new attribute; when done with the attribute u gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the new attribute; when done with the attribute u
+         gck_attribute_free() to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -211,7 +223,8 @@ also copied.
 The @attr must have been allocated or initialized by a Gck function or
 the results of this function are undefined.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the duplicated attribute; use gck_attribute_free() to free it</doc>
+          <doc xml:space="preserve">the duplicated attribute; use gck_attribute_free()
+         to free it</doc>
           <type name="Attribute" c:type="GckAttribute*"/>
         </return-value>
         <parameters>
@@ -268,6 +281,35 @@ boolean value.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_data" c:identifier="gck_attribute_get_data">
+        <doc xml:space="preserve">Get the raw value in the attribute.
+
+This is useful from scripting languages. C callers will generally
+access the #GckAttribute struct directly.
+
+This function will %NULL if the attribute contains empty or invalid
+data. The returned data must not be modified and is only valid
+as long as this @attribute.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the value data or %NULL</doc>
+          <array length="0" zero-terminated="0" c:type="guchar*">
+            <type name="guint8" c:type="guchar"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="attr" transfer-ownership="none">
+            <doc xml:space="preserve">an attribute</doc>
+            <type name="Attribute" c:type="const GckAttribute*"/>
+          </instance-parameter>
+          <parameter name="length"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">the length of the returned data</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_date" c:identifier="gck_attribute_get_date">
         <doc xml:space="preserve">Get the CK_DATE of a PKCS\#11 attribute. No
 conversion is performed. It is an error to pass an attribute
@@ -293,7 +335,8 @@ conversion is performed. It is an error to pass an attribute
 to this function unless you're know it's supposed to contain
 a value of the right type.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a null terminated string, to be freed with g_free(), or %NULL if the value was invalid</doc>
+          <doc xml:space="preserve">a null terminated string, to be freed with
+              g_free(), or %NULL if the value was invalid</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -563,7 +606,8 @@ another gck library function which consumes this floating reference, or if
 you wish to keep these attributes around you should ref them with
 gck_attributes_ref_sink() and unref them later with gck_attributes_unref().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a floating reference to the new attributes array; when done with the array release it with gck_attributes_unref().</doc>
+          <doc xml:space="preserve">a floating reference to the new attributes array;
+         when done with the array release it with gck_attributes_unref().</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -593,9 +637,9 @@ gck_attributes_ref_sink() and unref them later with gck_attributes_unref().</doc
             <doc xml:space="preserve">the first empty attribute type</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="arg1" transfer-ownership="none">
-            <varargs>
-            </varargs>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">the other empty attribute types</doc>
+            <varargs/>
           </parameter>
         </parameters>
       </constructor>
@@ -664,7 +708,8 @@ in the array.</doc>
       <method name="find" c:identifier="gck_attributes_find">
         <doc xml:space="preserve">Find an attribute with the specified type in the array.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the first attribute found with the specified type, or %NULL</doc>
+          <doc xml:space="preserve">the first attribute found with the specified type,
+         or %NULL</doc>
           <type name="Attribute" c:type="const GckAttribute*"/>
         </return-value>
         <parameters>
@@ -697,7 +742,10 @@ then it will be treated as not found.</doc>
             <doc xml:space="preserve">The type of attribute to find.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">The resulting gboolean value.</doc>
             <type name="gboolean" c:type="gboolean*"/>
           </parameter>
@@ -722,7 +770,10 @@ then it will be treated as not found.</doc>
             <doc xml:space="preserve">The type of attribute to find.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
             <doc xml:space="preserve">The resulting GDate value.</doc>
             <type name="GLib.Date" c:type="GDate*"/>
           </parameter>
@@ -747,7 +798,10 @@ using g_free().</doc>
             <doc xml:space="preserve">The type of attribute to find.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">The resulting string value.</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
@@ -772,7 +826,10 @@ then it will be treated as not found.</doc>
             <doc xml:space="preserve">The type of attribute to find.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">The resulting gulong value.</doc>
             <type name="gulong" c:type="gulong*"/>
           </parameter>
@@ -844,7 +901,10 @@ When all outstanding references are gone, the array will be freed.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="attrs" transfer-ownership="none" allow-none="1">
+          <parameter name="attrs"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">(type Gck.Attributes): An attribute array</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -1055,9 +1115,9 @@ between the attributes and the builder.</doc>
             <doc xml:space="preserve">the first type of attribute to to exclude</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="arg3" transfer-ownership="none">
-            <varargs>
-            </varargs>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">the remaining attribute types to exclude, ending with %GCK_INVALID</doc>
+            <varargs/>
           </parameter>
         </parameters>
       </method>
@@ -1152,9 +1212,9 @@ between the attributes and the builder.</doc>
             <doc xml:space="preserve">the first type of attribute to add</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="arg3" transfer-ownership="none">
-            <varargs>
-            </varargs>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">the remaining attribute types to add, ending with %GCK_INVALID</doc>
+            <varargs/>
           </parameter>
         </parameters>
       </method>
@@ -1213,7 +1273,10 @@ already exists.</doc>
             <doc xml:space="preserve">the new attribute type</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none" allow-none="1">
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the attribute value</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -1264,7 +1327,8 @@ with gck_builder_new() and should be freed with gck_builder_unref().
 Attribute value memory is automatically shared between the two builders,
 and is only freed when both are gone.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the builder copy, which should be freed with gck_builder_unref().</doc>
+          <doc xml:space="preserve">the builder copy, which should be freed with
+         gck_builder_unref().</doc>
           <type name="Builder" c:type="GckBuilder*"/>
         </return-value>
         <parameters>
@@ -1286,7 +1350,8 @@ another gck library function which consumes this floating reference, or if
 you wish to keep these attributes around you should ref them with
 gck_attributes_ref_sink() and unref them later with gck_attributes_unref().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a floating reference to the attributes created in the builder</doc>
+          <doc xml:space="preserve">a floating reference to the attributes created
+         in the builder</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -1674,7 +1739,8 @@ will no longer contain any attributes after this function call.
 
 The returned set of attributes is a full reference, not floating.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the stolen attributes, which should be freed with gck_attributes_unref()</doc>
+          <doc xml:space="preserve">the stolen attributes, which should be freed with
+         gck_attributes_unref()</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -1708,7 +1774,8 @@ which case an invalid attribute is created in the PKCS\#11 style.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
           <parameter name="value" transfer-ownership="full">
-            <doc xml:space="preserve">(array length=length): (allow-none): the new attribute memory</doc>
+            <doc xml:space="preserve">(array length=length): (allow-none): the new
+        attribute memory</doc>
             <type name="guint8" c:type="guchar*"/>
           </parameter>
           <parameter name="length" transfer-ownership="none">
@@ -1809,7 +1876,8 @@ either be #GckObject or derived from it.</doc>
 %NULL is also returned if the function fails. Use the @error to determine
 whether a failure occurred or not.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The next object, which must be released using g_object_unref, or %NULL.</doc>
+          <doc xml:space="preserve">The next object, which must be released
+using g_object_unref, or %NULL.</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -1819,6 +1887,7 @@ whether a failure occurred or not.</doc>
           </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1844,12 +1913,14 @@ enumerated.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -1870,7 +1941,8 @@ enumerated.</doc>
 %NULL is also returned if the function fails. Use the @error to determine
 whether a failure occurred or not.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The list of objects, which should be freed with gck_list_unref_free()</doc>
+          <doc xml:space="preserve">The list of objects, which
+should be freed with gck_list_unref_free()</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Module"/>
           </type>
@@ -1894,7 +1966,8 @@ the remaining objects will be returned.
 %NULL is also returned if the function fails. Use the @error to determine
 whether a failure occurred or not.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A list of objects, which should be freed using gck_list_unref_free().</doc>
+          <doc xml:space="preserve">A list of objects, which
+should be freed using gck_list_unref_free().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Object"/>
           </type>
@@ -1910,6 +1983,7 @@ whether a failure occurred or not.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1927,7 +2001,10 @@ are seen.</doc>
             <doc xml:space="preserve">the enumerator</doc>
             <type name="Enumerator" c:type="GckEnumerator*"/>
           </instance-parameter>
-          <parameter name="chained" transfer-ownership="none" allow-none="1">
+          <parameter name="chained"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the chained enumerator or %NULL</doc>
             <type name="Enumerator" c:type="GckEnumerator*"/>
           </parameter>
@@ -1946,6 +2023,7 @@ are seen.</doc>
           </instance-parameter>
           <parameter name="interaction"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">the interaction or %NULL</doc>
             <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
@@ -1953,12 +2031,14 @@ are seen.</doc>
         </parameters>
       </method>
       <method name="set_object_type"
-              c:identifier="gck_enumerator_set_object_type">
+              c:identifier="gck_enumerator_set_object_type"
+              shadowed-by="set_object_type_full"
+              introspectable="0">
         <doc xml:space="preserve">Set the type of objects to be created by this enumerator. The type must
 always be either #GckObject or derived from it.
 
 If the #GckObjectCache interface is implemented on the derived class
-and the attribute_types field is set, then the enumerator will retrieve
+and the default_types class field is set, then the enumerator will retrieve
 attributes for each object.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1974,6 +2054,39 @@ attributes for each object.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_object_type_full"
+              c:identifier="gck_enumerator_set_object_type_full"
+              shadows="set_object_type">
+        <doc xml:space="preserve">Set the type of objects to be created by this enumerator. The type must
+always be either #GckObject or derived from it.
+
+If @attr_types and @attr_count are non-NULL and non-zero respectively,
+then the #GckObjectCache interface is expected to be implemented on the
+derived class, then the enumerator will retrieve attributes for each object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an enumerator</doc>
+            <type name="Enumerator" c:type="GckEnumerator*"/>
+          </instance-parameter>
+          <parameter name="object_type" transfer-ownership="none">
+            <doc xml:space="preserve">the type of objects to create</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="attr_types" transfer-ownership="none">
+            <doc xml:space="preserve">types of attributes to retrieve for objects</doc>
+            <array length="2" zero-terminated="0" c:type="gulong*">
+              <type name="gulong" c:type="gulong"/>
+            </array>
+          </parameter>
+          <parameter name="attr_count" transfer-ownership="none">
+            <doc xml:space="preserve">the number of attributes to retrieve</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="chained" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Chained enumerator, which will be enumerated when this enumerator
 has enumerated all its objects.</doc>
@@ -1985,7 +2098,10 @@ sessions. Used if the session_options of the enumerator have
 %GCK_SESSION_LOGIN_USER</doc>
         <type name="Gio.TlsInteraction"/>
       </property>
-      <property name="object-type" writable="1" transfer-ownership="none">
+      <property name="object-type"
+                introspectable="0"
+                writable="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">The type of objects that are created by the enumerator. Must be
 GckObject or derived from it.</doc>
         <type name="GType" c:type="GType"/>
@@ -2028,7 +2144,8 @@ relevant error codes.</doc>
               value="-951891199"
               c:identifier="GCK_ERROR_MODULE_PROBLEM"
               glib:nick="problem">
-        <doc xml:space="preserve">a result code that signifies there was a problem loading a PKCS\#11 module, usually a shared library</doc>
+        <doc xml:space="preserve">a result code that signifies there was a problem
+                           loading a PKCS\#11 module, usually a shared library</doc>
       </member>
       <function name="get_quark" c:identifier="gck_error_get_quark">
         <return-value transfer-ownership="none">
@@ -2036,15 +2153,34 @@ relevant error codes.</doc>
         </return-value>
       </function>
     </enumeration>
+    <constant name="INVALID" value="-1" c:type="GCK_INVALID">
+      <doc xml:space="preserve">Used as a terminator at the end of variable argument lists.</doc>
+      <type name="gulong" c:type="gulong"/>
+    </constant>
+    <constant name="MAJOR_VERSION" value="3" c:type="GCK_MAJOR_VERSION">
+      <doc xml:space="preserve">The major version number of the Gck library.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="MICRO_VERSION" value="0" c:type="GCK_MICRO_VERSION">
+      <doc xml:space="preserve">The micro version number of the Gck library.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="MINOR_VERSION" value="12" c:type="GCK_MINOR_VERSION">
+      <doc xml:space="preserve">The minor version number of the Gck library.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
     <record name="Mechanism" c:type="GckMechanism">
       <doc xml:space="preserve">Represents a mechanism used with crypto operations.</doc>
       <field name="type" writable="1">
+        <doc xml:space="preserve">The mechanism type</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="parameter" writable="1">
+        <doc xml:space="preserve">Mechanism specific data.</doc>
         <type name="gpointer" c:type="gconstpointer"/>
       </field>
       <field name="n_parameter" writable="1">
+        <doc xml:space="preserve">Length of mechanism specific data.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
     </record>
@@ -2060,12 +2196,15 @@ This is analogous to a CK_MECHANISM_INFO structure.
 When you're done with this structure it should be released with
 gck_mechanism_info_free().</doc>
       <field name="min_key_size" writable="1">
+        <doc xml:space="preserve">The minimum key size that can be used with this mechanism.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="max_key_size" writable="1">
+        <doc xml:space="preserve">The maximum key size that can be used with this mechanism.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="flags" writable="1">
+        <doc xml:space="preserve">Various PKCS11 flags that apply to this mechanism.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <method name="copy" c:identifier="gck_mechanism_info_copy">
@@ -2132,6 +2271,7 @@ finalized when complete.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -2152,12 +2292,14 @@ finalized when complete.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -2286,7 +2428,8 @@ usually reflects the path passed to gck_module_initialize().</doc>
       <method name="get_slots" c:identifier="gck_module_get_slots">
         <doc xml:space="preserve">Get the GckSlot objects for a given module.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The possibly empty list of slots. Release this with gck_list_unref_free().</doc>
+          <doc xml:space="preserve">The possibly empty
+              list of slots. Release this with gck_list_unref_free().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Slot"/>
           </type>
@@ -2365,10 +2508,9 @@ initialized module via the gck_module_new() function.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
-      <glib:signal name="authenticate-object"
-                   when="last"
-                   deprecated="Since 3.4">
+      <glib:signal name="authenticate-object" when="last" deprecated="1">
         <doc xml:space="preserve">Use gck_session_set_interaction() instead of connecting to this signal.</doc>
+        <doc-deprecated xml:space="preserve">Since 3.4</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -2387,8 +2529,9 @@ initialized module via the gck_module_new() function.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="authenticate-slot" when="last" deprecated="Since 3.4">
+      <glib:signal name="authenticate-slot" when="last" deprecated="1">
         <doc xml:space="preserve">Use gck_session_set_interaction() instead of connecting to this signal.</doc>
+        <doc-deprecated xml:space="preserve">Since 3.4</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -2474,24 +2617,31 @@ strings are NULL terminated for easier use.
 
 Use gck_module_info_free() to release this structure when done with it.</doc>
       <field name="pkcs11_version_major" writable="1">
+        <doc xml:space="preserve">The major version of the module.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="pkcs11_version_minor" writable="1">
+        <doc xml:space="preserve">The minor version of the module.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="manufacturer_id" writable="1">
+        <doc xml:space="preserve">The module manufacturer.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="flags" writable="1">
+        <doc xml:space="preserve">The module PKCS&amp;num;11 flags.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="library_description" writable="1">
+        <doc xml:space="preserve">The module description.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="library_version_major" writable="1">
+        <doc xml:space="preserve">The major version of the library.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="library_version_minor" writable="1">
+        <doc xml:space="preserve">The minor version of the library.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <method name="copy" c:identifier="gck_module_info_copy">
@@ -2534,7 +2684,8 @@ Use gck_module_info_free() to release this structure when done with it.</doc>
         <doc xml:space="preserve">Initialize a GckObject from a raw PKCS\#11 handle. Normally you would use
 gck_session_create_object() or gck_session_find_objects() to access objects.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The new GckObject. You should use g_object_unref() when done with this object.</doc>
+          <doc xml:space="preserve">The new GckObject. You should use
+              g_object_unref() when done with this object.</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -2582,6 +2733,7 @@ This may block, use the asynchronous version when this is not desirable</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -2620,12 +2772,14 @@ This will return immediately and complete asynchronously</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -2672,6 +2826,7 @@ This call may block for an indefinite period.</doc>
           </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellable object, or NULL to ignore.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -2691,12 +2846,14 @@ This call will return immediately and complete asynchronously.</doc>
           </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellable object, or NULL to ignore.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="2">
@@ -2751,7 +2908,9 @@ underlying PKCS\#11 object.</doc>
         <doc xml:space="preserve">Get the specified attributes from the object. This call may
 block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the resulting PKCS\#11 attributes, or %NULL if an error occurred; the result must be unreffed when you're finished with it</doc>
+          <doc xml:space="preserve">the resulting PKCS\#11 attributes, or %NULL if an
+         error occurred; the result must be unreffed when you're finished
+         with it</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -2761,6 +2920,7 @@ block for an indefinite period.</doc>
           </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -2769,9 +2929,9 @@ block for an indefinite period.</doc>
             <doc xml:space="preserve">A location to store an error.</doc>
             <type name="GLib.Error" c:type="GError**"/>
           </parameter>
-          <parameter name="arg3" transfer-ownership="none">
-            <varargs>
-            </varargs>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">The attribute types to get.</doc>
+            <varargs/>
           </parameter>
         </parameters>
       </method>
@@ -2802,12 +2962,14 @@ This call returns immediately and completes asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -2826,7 +2988,8 @@ the returned data has a null terminator.
 
 This call may block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the resulting PKCS\#11 attribute data, or %NULL if an error occurred</doc>
+          <doc xml:space="preserve">the resulting PKCS\#11
+         attribute data, or %NULL if an error occurred</doc>
           <array length="2" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -2842,6 +3005,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -2879,12 +3043,14 @@ This call will return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -2904,7 +3070,8 @@ This call will return immediately and complete asynchronously.</doc>
 an object. For convenience the returned data has an extra null terminator,
 not included in the returned length.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The PKCS\#11 attribute data or %NULL if an error occurred.</doc>
+          <doc xml:space="preserve">The PKCS\#11 attribute data
+         or %NULL if an error occurred.</doc>
           <array length="1" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -2936,7 +3103,8 @@ the returned data has an extra null terminator, not included in the returned len
 
 This call may block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The resulting PKCS\#11 attribute data, or %NULL if an error occurred.</doc>
+          <doc xml:space="preserve">The resulting PKCS\#11
+         attribute data, or %NULL if an error occurred.</doc>
           <array length="3" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -2956,6 +3124,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -2977,7 +3146,8 @@ the object.
 
 No extra references are added to the returned attributes pointer.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The filled in attributes structure if successful or NULL if not successful.</doc>
+          <doc xml:space="preserve">The filled in attributes structure if successful or
+NULL if not successful.</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -2998,7 +3168,8 @@ block for an indefinite period.
 No extra references are added to the returned attributes pointer.
 During this call you may not access the attributes in any way.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a pointer to the filled in attributes if successful, or %NULL if not</doc>
+          <doc xml:space="preserve">a pointer to the filled in attributes if successful,
+         or %NULL if not</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -3018,6 +3189,7 @@ During this call you may not access the attributes in any way.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3076,7 +3248,8 @@ an attribute which returns a template.
 
 This call may block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the resulting PKCS\#11 attribute template, or %NULL if an error occurred</doc>
+          <doc xml:space="preserve">the resulting PKCS\#11 attribute template, or %NULL
+         if an error occurred</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -3090,6 +3263,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3116,12 +3290,14 @@ This call will return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -3140,7 +3316,8 @@ This call will return immediately and complete asynchronously.</doc>
         <doc xml:space="preserve">Get the result of an operation to get attribute template from
 an object.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the resulting PKCS\#11 attribute template, or %NULL if an error occurred</doc>
+          <doc xml:space="preserve">the resulting PKCS\#11 attribute template, or %NULL
+         if an error occurred</doc>
           <type name="Attributes" c:type="GckAttributes*"/>
         </return-value>
         <parameters>
@@ -3189,6 +3366,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellable object, or NULL to ignore.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3214,12 +3392,14 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellable object, or NULL to ignore.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -3280,6 +3460,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3312,12 +3493,14 @@ This call will return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -3407,6 +3590,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">an object with the cache</doc>
             <type name="ObjectCache" c:type="GckObjectCache*"/>
           </instance-parameter>
           <parameter name="attrs" transfer-ownership="none">
@@ -3463,7 +3647,10 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
             <doc xml:space="preserve">an object with an attribute cache</doc>
             <type name="ObjectCache" c:type="GckObjectCache*"/>
           </instance-parameter>
-          <parameter name="attrs" transfer-ownership="none" allow-none="1">
+          <parameter name="attrs"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the attributes to set</doc>
             <type name="Attributes" c:type="GckAttributes*"/>
           </parameter>
@@ -3495,6 +3682,7 @@ This may block, use the asynchronous version when this is not desirable</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3526,12 +3714,14 @@ This call will return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -3579,12 +3769,18 @@ gck_enumerator_set_object_type()
 The implementation for @populate should add the attributes to the
 cache. It must be thread safe.</doc>
       <field name="interface">
+        <doc xml:space="preserve">parent interface</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
       <field name="default_types">
-        <type name="gulong" c:type="const gulong*"/>
+        <doc xml:space="preserve">attribute types that an
+                  enumerator should retrieve</doc>
+        <array length="2" zero-terminated="0" c:type="gulong*">
+          <type name="gulong" c:type="gulong"/>
+        </array>
       </field>
       <field name="n_default_types">
+        <doc xml:space="preserve">number of attribute types to be retrieved</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="fill">
@@ -3594,6 +3790,7 @@ cache. It must be thread safe.</doc>
           </return-value>
           <parameters>
             <parameter name="object" transfer-ownership="none">
+              <doc xml:space="preserve">an object with the cache</doc>
               <type name="ObjectCache" c:type="GckObjectCache*"/>
             </parameter>
             <parameter name="attrs" transfer-ownership="none">
@@ -3620,6 +3817,7 @@ with this derived type will retrieve these attributes when enumerating. In
 this case the class must implement an 'attributes' property of boxed type
 GCK_TYPE_ATTRIBUTES.</doc>
       <field name="parent">
+        <doc xml:space="preserve">derived from this</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="reserved" readable="0" private="1">
@@ -3643,7 +3841,8 @@ or key the password is being requested for.</doc>
         <doc xml:space="preserve">If the password request is to unlock a PKCS\#11 key, then this is the
 the object representing that key.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the password is for this key, or %NULL if not being requested for a key; must be unreferenced after use</doc>
+          <doc xml:space="preserve">the password is for this key, or %NULL if not
+         being requested for a key; must be unreferenced after use</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -3656,7 +3855,8 @@ the object representing that key.</doc>
       <method name="get_module" c:identifier="gck_password_get_module">
         <doc xml:space="preserve">Get the PKCS\#11 module that is requesting the password.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the module that is requesting the password, which must be unreferenced after use</doc>
+          <doc xml:space="preserve">the module that is requesting the password, which
+         must be unreferenced after use</doc>
           <type name="Module" c:type="GckModule*"/>
         </return-value>
         <parameters>
@@ -3670,7 +3870,8 @@ the object representing that key.</doc>
         <doc xml:space="preserve">If the password request is to unlock a PKCS\#11 token, then this is the
 slot containing that token.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the slot that contains the token, or %NULL if not being requested for a token; must be unreferenced after use</doc>
+          <doc xml:space="preserve">the slot that contains the token, or %NULL if not
+         being requested for a token; must be unreferenced after use</doc>
           <type name="Slot" c:type="GckSlot*"/>
         </return-value>
         <parameters>
@@ -3717,6 +3918,7 @@ the GckPassword:object property will be %NULL</doc>
             glib:is-gtype-struct-for="Password">
       <doc xml:space="preserve">The class for #GTlsPassword.</doc>
       <field name="parent">
+        <doc xml:space="preserve">parent class</doc>
         <type name="Gio.TlsPasswordClass" c:type="GTlsPasswordClass"/>
       </field>
       <field name="reserved" readable="0" private="1">
@@ -3777,12 +3979,14 @@ create a session.</doc>
           </parameter>
           <parameter name="interaction"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional interaction for logins or object authentication</doc>
             <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3806,18 +4010,21 @@ asynchronously.</doc>
           </parameter>
           <parameter name="interaction"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional interaction for logins or object authentication</doc>
             <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="5">
@@ -3880,6 +4087,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3906,12 +4114,14 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -3947,7 +4157,8 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
         <doc xml:space="preserve">Decrypt data in a mechanism specific manner. This call may
 block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was decrypted, or NULL if an error occured</doc>
+          <doc xml:space="preserve">the data that was decrypted,
+         or NULL if an error occured</doc>
           <array length="4" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -3984,6 +4195,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4021,12 +4233,14 @@ return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="6">
@@ -4044,7 +4258,8 @@ return immediately and complete asynchronously.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of an decryption operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was decrypted, or NULL if an error occurred</doc>
+          <doc xml:space="preserve">the data that was decrypted,
+         or NULL if an error occurred</doc>
           <array length="1" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -4073,7 +4288,8 @@ return immediately and complete asynchronously.</doc>
         <doc xml:space="preserve">Decrypt data in a mechanism specific manner. This call may
 block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was decrypted, or %NULL if an error occured</doc>
+          <doc xml:space="preserve">the data that was decrypted,
+         or %NULL if an error occured</doc>
           <array length="4" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -4110,6 +4326,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4124,7 +4341,8 @@ indefinite period.
 
 If the @attrs #GckAttributes is floating, it is consumed.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new derived key or NULL if the operation failed</doc>
+          <doc xml:space="preserve">the new derived key or NULL if the operation
+         failed</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -4146,6 +4364,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4180,12 +4399,14 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="5">
@@ -4203,7 +4424,8 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of a derive key operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new derived key or %NULL if the operation failed</doc>
+          <doc xml:space="preserve">the new derived key or %NULL if the operation
+         failed</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -4225,7 +4447,8 @@ indefinite period.
 
 If the @attrs #GckAttributes is floating, it is consumed.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new derived key or NULL if the operation failed</doc>
+          <doc xml:space="preserve">the new derived key or NULL if the operation
+         failed</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -4247,6 +4470,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4257,7 +4481,8 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
         <doc xml:space="preserve">Encrypt data in a mechanism specific manner. This call may
 block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was encrypted, or %NULL if an error occured.</doc>
+          <doc xml:space="preserve">the data that was encrypted,
+         or %NULL if an error occured.</doc>
           <array length="4" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -4294,6 +4519,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4331,12 +4557,14 @@ return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="6">
@@ -4354,7 +4582,8 @@ return immediately and complete asynchronously.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of an encryption operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was encrypted, or %NULL if an error occurred.</doc>
+          <doc xml:space="preserve">the data that was encrypted,
+         or %NULL if an error occurred.</doc>
           <array length="1" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -4383,7 +4612,8 @@ return immediately and complete asynchronously.</doc>
         <doc xml:space="preserve">Encrypt data in a mechanism specific manner. This call may
 block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was encrypted, or %NULL if an error occured</doc>
+          <doc xml:space="preserve">the data that was encrypted,
+         or %NULL if an error occured</doc>
           <array length="4" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -4420,6 +4650,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4456,7 +4687,8 @@ block for an indefinite period.
 
 If the @match #GckAttributes is floating, it is consumed.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a list of the matching objects, which may be empty</doc>
+          <doc xml:space="preserve">a list of
+         the matching objects, which may be empty</doc>
           <array length="2" zero-terminated="0" c:type="gulong*">
             <type name="gulong" c:type="gulong"/>
           </array>
@@ -4472,6 +4704,7 @@ If the @match #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4505,12 +4738,14 @@ If the @match #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -4528,7 +4763,8 @@ If the @match #GckAttributes is floating, it is consumed.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of a find handles operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">an array of handles that matched, which may be empty, or %NULL on failure</doc>
+          <doc xml:space="preserve">an array of
+         handles that matched, which may be empty, or %NULL on failure</doc>
           <array length="1" zero-terminated="0" c:type="gulong*">
             <type name="gulong" c:type="gulong"/>
           </array>
@@ -4559,7 +4795,8 @@ block for an indefinite period.
 
 If the @match #GckAttributes is floating, it is consumed.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a list of the matching objects, which may be empty</doc>
+          <doc xml:space="preserve">a list of the matching
+         objects, which may be empty</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Object"/>
           </type>
@@ -4575,6 +4812,7 @@ If the @match #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4601,12 +4839,14 @@ If the @match #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -4624,7 +4864,8 @@ If the @match #GckAttributes is floating, it is consumed.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of a find operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a list of the matching objects, which may be empty</doc>
+          <doc xml:space="preserve">a list of the matching
+         objects, which may be empty</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Object"/>
           </type>
@@ -4673,6 +4914,7 @@ consumed.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
             <doc xml:space="preserve">location to return the resulting public key</doc>
             <type name="Object" c:type="GckObject**"/>
@@ -4681,12 +4923,14 @@ consumed.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
             <doc xml:space="preserve">location to return the resulting private key.</doc>
             <type name="Object" c:type="GckObject**"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4722,12 +4966,14 @@ consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="5">
@@ -4761,6 +5007,7 @@ consumed.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
             <doc xml:space="preserve">a location to return the resulting public key</doc>
             <type name="Object" c:type="GckObject**"/>
@@ -4769,6 +5016,7 @@ consumed.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
             <doc xml:space="preserve">a location to return the resulting private key</doc>
             <type name="Object" c:type="GckObject**"/>
@@ -4808,6 +5056,7 @@ consumed.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
             <doc xml:space="preserve">a location to return the resulting public key</doc>
             <type name="Object" c:type="GckObject**"/>
@@ -4816,12 +5065,14 @@ consumed.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
+                     optional="1"
                      allow-none="1">
             <doc xml:space="preserve">a location to return the resulting private key</doc>
             <type name="Object" c:type="GckObject**"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4844,7 +5095,8 @@ consumed.</doc>
       <method name="get_info" c:identifier="gck_session_get_info">
         <doc xml:space="preserve">Get information about the session.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the session info. Use the gck_session_info_free() to release when done</doc>
+          <doc xml:space="preserve">the session info. Use the gck_session_info_free()
+         to release when done</doc>
           <type name="SessionInfo" c:type="GckSessionInfo*"/>
         </return-value>
         <parameters>
@@ -4936,8 +5188,12 @@ This call may block for an indefinite period.</doc>
             <doc xml:space="preserve">Initialize PIN for this session's slot.</doc>
             <type name="Session" c:type="GckSession*"/>
           </instance-parameter>
-          <parameter name="pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's PIN, or %NULL for protected authentication path</doc>
+          <parameter name="pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's PIN, or %NULL for
+      protected authentication path</doc>
             <array length="1" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -4948,6 +5204,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4968,7 +5225,10 @@ This call will return immediately and completes asynchronously.</doc>
             <doc xml:space="preserve">Initialize PIN for this session's slot.</doc>
             <type name="Session" c:type="GckSession*"/>
           </instance-parameter>
-          <parameter name="pin" transfer-ownership="none" allow-none="1">
+          <parameter name="pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the user's PIN, or %NULL for protected authentication path</doc>
             <array length="1" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
@@ -4980,12 +5240,14 @@ This call will return immediately and completes asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -5033,8 +5295,12 @@ an indefinite period.</doc>
             <doc xml:space="preserve">The type of login user.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's PIN, or %NULL for protected authentication path</doc>
+          <parameter name="pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's PIN, or %NULL for
+      protected authentication path</doc>
             <array length="2" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -5045,6 +5311,7 @@ an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5066,8 +5333,12 @@ immediately and completes asynchronously.</doc>
             <doc xml:space="preserve">The type of login user.</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
-          <parameter name="pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's PIN, or %NULL for protected authentication path</doc>
+          <parameter name="pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's PIN, or %NULL for
+      protected authentication path</doc>
             <array length="2" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -5078,12 +5349,14 @@ immediately and completes asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="5">
@@ -5135,12 +5408,14 @@ when necessary. This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="interaction"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">interaction to request PIN when necessary</doc>
             <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5165,18 +5440,21 @@ necessary. This call will return immediately and completes asynchronously.</doc>
           </parameter>
           <parameter name="interaction"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">interaction to request PIN when necessary</doc>
             <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
@@ -5221,6 +5499,7 @@ necessary. This call will return immediately and completes asynchronously.</doc>
           </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5240,12 +5519,14 @@ asynchronously.</doc>
           </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="2">
@@ -5291,6 +5572,7 @@ pins and the like.</doc>
           </instance-parameter>
           <parameter name="interaction"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">the interaction or %NULL</doc>
             <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
@@ -5310,8 +5592,12 @@ This call may block for an indefinite period.</doc>
             <doc xml:space="preserve">Change the PIN for this session's slot.</doc>
             <type name="Session" c:type="GckSession*"/>
           </instance-parameter>
-          <parameter name="old_pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's old PIN, or %NULL for protected authentication path.</doc>
+          <parameter name="old_pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's old PIN, or %NULL
+          for protected authentication path.</doc>
             <array length="1" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -5320,8 +5606,12 @@ This call may block for an indefinite period.</doc>
             <doc xml:space="preserve">The length of the PIN.</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
-          <parameter name="new_pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's new PIN, or %NULL for protected authentication path</doc>
+          <parameter name="new_pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's new PIN, or %NULL
+          for protected authentication path</doc>
             <array length="3" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -5332,6 +5622,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5350,8 +5641,12 @@ This call will return immediately and completes asynchronously.</doc>
             <doc xml:space="preserve">Change the PIN for this session's slot.</doc>
             <type name="Session" c:type="GckSession*"/>
           </instance-parameter>
-          <parameter name="old_pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's old PIN, or %NULL for protected authentication path</doc>
+          <parameter name="old_pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's old PIN, or %NULL
+          for protected authentication path</doc>
             <array length="3" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -5360,8 +5655,12 @@ This call will return immediately and completes asynchronously.</doc>
             <doc xml:space="preserve">the length of the old PIN</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
-          <parameter name="new_pin" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">the user's new PIN, or %NULL for protected authentication path</doc>
+          <parameter name="new_pin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the user's new PIN, or %NULL
+          for protected authentication path</doc>
             <array length="3" zero-terminated="0" c:type="guchar*">
               <type name="guint8" c:type="guchar"/>
             </array>
@@ -5372,12 +5671,14 @@ This call will return immediately and completes asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="6">
@@ -5413,7 +5714,8 @@ This call will return immediately and completes asynchronously.</doc>
         <doc xml:space="preserve">Sign data in a mechanism specific manner. This call may
 block for an indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was signed, or %NULL if an error occured</doc>
+          <doc xml:space="preserve">the data that was signed,
+         or %NULL if an error occured</doc>
           <array length="4" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -5450,6 +5752,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5487,12 +5790,14 @@ return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="6">
@@ -5510,7 +5815,8 @@ return immediately and complete asynchronously.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of an signing operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the data that was signed, or %NULL if an error occurred</doc>
+          <doc xml:space="preserve">the data that was signed,
+         or %NULL if an error occurred</doc>
           <array length="1" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -5569,6 +5875,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5583,7 +5890,8 @@ indefinite period.
 
 If the @attrs #GckAttributes is floating, it is consumed.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new unwrapped key or NULL if the operation failed</doc>
+          <doc xml:space="preserve">the new unwrapped key or NULL if the
+         operation failed</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -5615,6 +5923,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5659,12 +5968,14 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="7">
@@ -5682,7 +5993,8 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of a unwrap key operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new unwrapped key or %NULL if the operation failed.</doc>
+          <doc xml:space="preserve">the new unwrapped key or %NULL if the operation
+         failed.</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -5704,7 +6016,8 @@ indefinite period.
 
 If the @attrs #GckAttributes is floating, it is consumed.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new unwrapped key or NULL if the operation failed</doc>
+          <doc xml:space="preserve">the new unwrapped key or NULL if the operation
+         failed</doc>
           <type name="Object" c:type="GckObject*"/>
         </return-value>
         <parameters>
@@ -5736,6 +6049,7 @@ If the @attrs #GckAttributes is floating, it is consumed.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5784,6 +6098,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5831,12 +6146,14 @@ immediately and completes asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="8">
@@ -5912,6 +6229,7 @@ block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A GCancellable which can be used to cancel the operation.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5922,7 +6240,8 @@ block for an indefinite period.</doc>
         <doc xml:space="preserve">Wrap a key into a byte stream. This call may block for an
 indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the wrapped data or %NULL if the operation failed</doc>
+          <doc xml:space="preserve">the wrapped data or %NULL
+         if the operation failed</doc>
           <array length="3" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -5953,6 +6272,7 @@ indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -5984,12 +6304,14 @@ return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="5">
@@ -6007,7 +6329,8 @@ return immediately and complete asynchronously.</doc>
               throws="1">
         <doc xml:space="preserve">Get the result of a wrap key operation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the wrapped data or %NULL if the operation failed</doc>
+          <doc xml:space="preserve">the wrapped data or %NULL
+         if the operation failed</doc>
           <array length="1" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -6036,7 +6359,8 @@ return immediately and complete asynchronously.</doc>
         <doc xml:space="preserve">Wrap a key into a byte stream. This call may block for an
 indefinite period.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the wrapped data or %NULL if the operation failed</doc>
+          <doc xml:space="preserve">the wrapped data or %NULL
+         if the operation failed</doc>
           <array length="3" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -6067,6 +6391,7 @@ indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -6184,15 +6509,19 @@ If no signal handler claims the handle, then it is closed.</doc>
 
 When done with this structure, release it using gck_session_info_free().</doc>
       <field name="slot_id" writable="1">
+        <doc xml:space="preserve">The handle of the PKCS11 slot that this session is opened on.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="state" writable="1">
+        <doc xml:space="preserve">The user login state of the session.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="flags" writable="1">
+        <doc xml:space="preserve">Various PKCS11 flags.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="device_error" writable="1">
+        <doc xml:space="preserve">The last device error that occurred from an operation on this session.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <method name="copy" c:identifier="gck_session_info_copy">
@@ -6338,7 +6667,8 @@ underlying PKCS\#11 slot.</doc>
       <method name="get_info" c:identifier="gck_slot_get_info">
         <doc xml:space="preserve">Get the information for this slot.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the slot information, when done, use gck_slot_info_free() to release it.</doc>
+          <doc xml:space="preserve">the slot information, when done, use gck_slot_info_free()
+         to release it.</doc>
           <type name="SlotInfo" c:type="GckSlotInfo*"/>
         </return-value>
         <parameters>
@@ -6352,7 +6682,8 @@ underlying PKCS\#11 slot.</doc>
               c:identifier="gck_slot_get_mechanism_info">
         <doc xml:space="preserve">Get information for the specified mechanism.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the mechanism information, or NULL if failed; use gck_mechanism_info_free() when done with it</doc>
+          <doc xml:space="preserve">the mechanism information, or NULL if failed; use
+         gck_mechanism_info_free() when done with it</doc>
           <type name="MechanismInfo" c:type="GckMechanismInfo*"/>
         </return-value>
         <parameters>
@@ -6369,7 +6700,8 @@ underlying PKCS\#11 slot.</doc>
       <method name="get_mechanisms" c:identifier="gck_slot_get_mechanisms">
         <doc xml:space="preserve">Get the available mechanisms for this slot.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a list of the mechanisms for this slot, which should be freed with g_array_free ()</doc>
+          <doc xml:space="preserve">a list of the mechanisms
+         for this slot, which should be freed with g_array_free ()</doc>
           <array name="GLib.Array" c:type="GArray*">
             <type name="gulong"/>
           </array>
@@ -6384,7 +6716,8 @@ underlying PKCS\#11 slot.</doc>
       <method name="get_module" c:identifier="gck_slot_get_module">
         <doc xml:space="preserve">Get the module that this slot is on.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The module, you must unreference this after you're done with it.</doc>
+          <doc xml:space="preserve">The module, you must unreference this after
+         you're done with it.</doc>
           <type name="Module" c:type="GckModule*"/>
         </return-value>
         <parameters>
@@ -6397,7 +6730,8 @@ underlying PKCS\#11 slot.</doc>
       <method name="get_token_info" c:identifier="gck_slot_get_token_info">
         <doc xml:space="preserve">Get the token information for this slot.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the token information; when done, use gck_token_info_free() to release it</doc>
+          <doc xml:space="preserve">the token information; when done, use gck_token_info_free()
+         to release it</doc>
           <type name="TokenInfo" c:type="GckTokenInfo*"/>
         </return-value>
         <parameters>
@@ -6479,6 +6813,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">An optional cancellation object, or %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -6505,12 +6840,14 @@ This call will return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -6578,6 +6915,7 @@ This call may block for an indefinite period.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -6617,12 +6955,14 @@ This call will return immediately and complete asynchronously.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">Optional cancellation object, or NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="6">
@@ -6686,24 +7026,31 @@ strings are far more usable.
 When you're done with this structure it should be released with
 gck_slot_info_free().</doc>
       <field name="slot_description" writable="1">
+        <doc xml:space="preserve">Description of the slot.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="manufacturer_id" writable="1">
+        <doc xml:space="preserve">The manufacturer of this slot.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="flags" writable="1">
+        <doc xml:space="preserve">Various PKCS11 flags that apply to this slot.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="hardware_version_major" writable="1">
+        <doc xml:space="preserve">The major version of the hardware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="hardware_version_minor" writable="1">
+        <doc xml:space="preserve">The minor version of the hardware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="firmware_version_major" writable="1">
+        <doc xml:space="preserve">The major version of the firmware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="firmware_version_minor" writable="1">
+        <doc xml:space="preserve">The minor version of the firmware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <method name="copy" c:identifier="gck_slot_info_copy">
@@ -6747,63 +7094,83 @@ strings are far more usable.
 When you're done with this structure it should be released with
 gck_token_info_free().</doc>
       <field name="label" writable="1">
+        <doc xml:space="preserve">The displayable token label.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="manufacturer_id" writable="1">
+        <doc xml:space="preserve">The manufacturer of this slot.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="model" writable="1">
+        <doc xml:space="preserve">The token model number as a string.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="serial_number" writable="1">
+        <doc xml:space="preserve">The token serial number as a string.</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="flags" writable="1">
+        <doc xml:space="preserve">Various PKCS11 flags that apply to this token.</doc>
         <type name="gulong" c:type="gulong"/>
       </field>
       <field name="max_session_count" writable="1">
+        <doc xml:space="preserve">The maximum number of sessions allowed on this token.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="session_count" writable="1">
+        <doc xml:space="preserve">The number of sessions open on this token.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="max_rw_session_count" writable="1">
+        <doc xml:space="preserve">The maximum number of read/write sessions allowed on this token.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="rw_session_count" writable="1">
+        <doc xml:space="preserve">The number of sessions open on this token.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="max_pin_len" writable="1">
+        <doc xml:space="preserve">The maximum length of a PIN for locking this token.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="min_pin_len" writable="1">
+        <doc xml:space="preserve">The minimum length of a PIN for locking this token.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="total_public_memory" writable="1">
+        <doc xml:space="preserve">The total amount of memory on this token for storing public objects.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="free_public_memory" writable="1">
+        <doc xml:space="preserve">The available amount of memory on this token for storing public objects.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="total_private_memory" writable="1">
+        <doc xml:space="preserve">The total amount of memory on this token for storing private objects.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="free_private_memory" writable="1">
+        <doc xml:space="preserve">The available amount of memory on this token for storing private objects.</doc>
         <type name="glong" c:type="glong"/>
       </field>
       <field name="hardware_version_major" writable="1">
+        <doc xml:space="preserve">The major version of the hardware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="hardware_version_minor" writable="1">
+        <doc xml:space="preserve">The minor version of the hardware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="firmware_version_major" writable="1">
+        <doc xml:space="preserve">The major version of the firmware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="firmware_version_minor" writable="1">
+        <doc xml:space="preserve">The minor version of the firmware.</doc>
         <type name="guint8" c:type="guint8"/>
       </field>
       <field name="utc_time" writable="1">
+        <doc xml:space="preserve">If the token has a hardware clock, this is set to the number of seconds since the epoch.</doc>
         <type name="gint64" c:type="gint64"/>
       </field>
       <method name="copy" c:identifier="gck_token_info_copy">
@@ -6862,15 +7229,19 @@ Since PKCS\#11 URIs represent a set which results from the intersections of
 all of the URI parts, if @any_recognized is set to %TRUE then usually the URI
 should be treated as not matching anything.</doc>
       <field name="any_unrecognized" writable="1">
+        <doc xml:space="preserve">whether any parts of the PKCS\#11 URI were unsupported or unrecognized.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </field>
       <field name="module_info" writable="1">
+        <doc xml:space="preserve">information about the PKCS\#11 modules matching the URI.</doc>
         <type name="ModuleInfo" c:type="GckModuleInfo*"/>
       </field>
       <field name="token_info" writable="1">
+        <doc xml:space="preserve">information about the PKCS\#11 tokens matching the URI.</doc>
         <type name="TokenInfo" c:type="GckTokenInfo*"/>
       </field>
       <field name="attributes" writable="1">
+        <doc xml:space="preserve">information about the PKCS\#11 objects matching the URI.</doc>
         <type name="Attributes" c:type="GckAttributes*"/>
       </field>
       <field name="dummy" readable="0" private="1">
@@ -6882,7 +7253,8 @@ should be treated as not matching anything.</doc>
         <doc xml:space="preserve">Allocate a new GckUriData structure. None of the fields
 will be set.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly allocated GckUriData, free with gck_uri_data_free()</doc>
+          <doc xml:space="preserve">a newly allocated GckUriData, free with
+         gck_uri_data_free()</doc>
           <type name="UriData" c:type="GckUriData*"/>
         </return-value>
       </constructor>
@@ -7005,7 +7377,10 @@ When all outstanding references are gone, the array will be freed.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="attrs" transfer-ownership="none" allow-none="1">
+        <parameter name="attrs"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">(type Gck.Attributes): An attribute array</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -7048,14 +7423,16 @@ stack.</doc>
       <doc xml:space="preserve">Copy a list of GObject based pointers. All objects
 in the list will be reffed and the list will be copied.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">the copied and reffed list, when done, free it with gck_list_unref_free ()</doc>
+        <doc xml:space="preserve">the copied and
+              reffed list, when done, free it with gck_list_unref_free ()</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="GObject.Object"/>
         </type>
       </return-value>
       <parameters>
         <parameter name="reflist" transfer-ownership="none">
-          <doc xml:space="preserve">list of GObject reference counted objects</doc>
+          <doc xml:space="preserve">list of GObject reference counted
+          objects</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="GObject.Object"/>
           </type>
@@ -7092,14 +7469,15 @@ should be GCK_INVALID.</doc>
       </return-value>
       <parameters>
         <parameter name="mechanisms" transfer-ownership="none">
-          <doc xml:space="preserve">A list of mechanisms, perhaps retrieved from gck_slot_get_mechanisms().</doc>
+          <doc xml:space="preserve">A list of mechanisms, perhaps
+             retrieved from gck_slot_get_mechanisms().</doc>
           <array name="GLib.Array" c:type="GArray*">
             <type name="gulong"/>
           </array>
         </parameter>
-        <parameter name="arg1" transfer-ownership="none">
-          <varargs>
-          </varargs>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">A list of mechanism types followed by GCK_INVALID.</doc>
+          <varargs/>
         </parameter>
       </parameters>
     </function>
@@ -7125,7 +7503,8 @@ This call will not block but will return an enumerator immediately.
 
 If the @attrs #GckAttributes is floating, it is consumed.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A new enumerator, which should be released with g_object_unref().</doc>
+        <doc xml:space="preserve">A new enumerator, which should be released
+with g_object_unref().</doc>
         <type name="Enumerator" c:type="GckEnumerator*"/>
       </return-value>
       <parameters>
@@ -7176,7 +7555,8 @@ get at the actual objects that match.</doc>
     <function name="modules_get_slots" c:identifier="gck_modules_get_slots">
       <doc xml:space="preserve">Get a list of slots for across all of the modules.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A list of #GckSlot objects, which should be freed with gck_list_unref_free().</doc>
+        <doc xml:space="preserve">A list of #GckSlot
+objects, which should be freed with gck_list_unref_free().</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="Slot"/>
         </type>
@@ -7199,13 +7579,17 @@ get at the actual objects that match.</doc>
               throws="1">
       <doc xml:space="preserve">Load and initialize all the registered modules.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A newly allocated list of #GckModule objects, which should be released with gck_list_unref_free().</doc>
+        <doc xml:space="preserve">A newly allocated list
+of #GckModule objects, which should be released with gck_list_unref_free().</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="Module"/>
         </type>
       </return-value>
       <parameters>
-        <parameter name="cancellable" transfer-ownership="none" allow-none="1">
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">optional cancellation object</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
@@ -7218,12 +7602,16 @@ get at the actual objects that match.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="cancellable" transfer-ownership="none" allow-none="1">
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">optional cancellation object</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
+                   nullable="1"
                    allow-none="1"
                    scope="async"
                    closure="2">
@@ -7242,7 +7630,8 @@ get at the actual objects that match.</doc>
       <doc xml:space="preserve">Finishes the asynchronous operation to initialize the registered
 PKCS\#11 modules.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a list of newly initialized #GckModule objects</doc>
+        <doc xml:space="preserve">a list of newly
+initialized #GckModule objects</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="Module"/>
         </type>
@@ -7262,7 +7651,8 @@ PKCS\#11 modules.</doc>
 This call can block. Use gck_modules_enumerate_uri() for a non-blocking
 version.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A new #GckObject which should be released with g_object_unref(), or %NULL if no matching object was found.</doc>
+        <doc xml:space="preserve">A new #GckObject which should be released with
+g_object_unref(), or %NULL if no matching object was found.</doc>
         <type name="Object" c:type="GckObject*"/>
       </return-value>
       <parameters>
@@ -7290,7 +7680,9 @@ version.</doc>
 This call can block. Use gck_modules_enumerate_uri() for a non-blocking
 version.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A list of #GckObject which should be released with gck_list_unref_free(), or %NULL if no matching object was found.</doc>
+        <doc xml:space="preserve">A list of #GckObject which
+should be released with gck_list_unref_free(), or %NULL if no matching object
+was found.</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="Object"/>
         </type>
@@ -7317,7 +7709,8 @@ version.</doc>
               throws="1">
       <doc xml:space="preserve">Lookup a token that matches the URI.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A newly allocated #GckSlot or %NULL if no such token was found.</doc>
+        <doc xml:space="preserve">A newly allocated #GckSlot or %NULL if no such
+token was found.</doc>
         <type name="Slot" c:type="GckSlot*"/>
       </return-value>
       <parameters>
@@ -7338,7 +7731,9 @@ version.</doc>
               throws="1">
       <doc xml:space="preserve">Lookup a token that matches the URI.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A list of newly allocated #GckSlot objects. Use gck_list_unref_free() to release the list once you're done with it.</doc>
+        <doc xml:space="preserve">A list of newly allocated
+#GckSlot objects. Use gck_list_unref_free() to release the list once you're
+done with it.</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="Slot"/>
         </type>
@@ -7361,7 +7756,9 @@ version.</doc>
       <doc xml:space="preserve">Initialize a list of GckObject from raw PKCS\#11 handles. The handles argument must contain
 contiguous CK_OBJECT_HANDLE handles in an array.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">The list of #GckObject objects. You should use gck_list_unref_free() when done with this list.</doc>
+        <doc xml:space="preserve">The list of #GckObject
+         objects. You should use gck_list_unref_free() when done with this
+         list.</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="Object"/>
         </type>
@@ -7496,7 +7893,8 @@ The result will contain the fields that are relevant for
 the given context. See #GckUriData  for more info.
 Other fields will be set to %NULL.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a newly allocated #GckUriData; which should be freed with gck_uri_data_free()</doc>
+        <doc xml:space="preserve">a newly allocated #GckUriData; which should be
+         freed with gck_uri_data_free()</doc>
         <type name="UriData" c:type="GckUriData*"/>
       </return-value>
       <parameters>

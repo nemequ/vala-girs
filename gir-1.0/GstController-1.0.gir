@@ -8,15 +8,10 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="Gst" version="1.0"/>
   <package name="gstreamer-controller-1.0"/>
-  <c:include name="gst/controller/gstargbcontrolbinding.h"/>
-  <c:include name="gst/controller/gstdirectcontrolbinding.h"/>
-  <c:include name="gst/controller/gstinterpolationcontrolsource.h"/>
-  <c:include name="gst/controller/gstlfocontrolsource.h"/>
-  <c:include name="gst/controller/gsttimedvaluecontrolsource.h"/>
-  <c:include name="gst/controller/gsttriggercontrolsource.h"/>
+  <c:include name="gst/controller/controller.h"/>
   <namespace name="GstController"
              version="1.0"
-             shared-library="libgstreamer-1.0.so.0,libgstcontroller-1.0.so.0"
+             shared-library="libgstcontroller-1.0.so.0"
              c:identifier-prefixes="Gst"
              c:symbol-prefixes="gst">
     <class name="ARGBControlBinding"
@@ -65,25 +60,25 @@ color component off and a value of 1.0 will be the color level.</doc>
       </constructor>
       <property name="control-source-a"
                 writable="1"
-                construct-only="1"
+                construct="1"
                 transfer-ownership="none">
         <type name="Gst.ControlSource"/>
       </property>
       <property name="control-source-b"
                 writable="1"
-                construct-only="1"
+                construct="1"
                 transfer-ownership="none">
         <type name="Gst.ControlSource"/>
       </property>
       <property name="control-source-g"
                 writable="1"
-                construct-only="1"
+                construct="1"
                 transfer-ownership="none">
         <type name="Gst.ControlSource"/>
       </property>
       <property name="control-source-r"
                 writable="1"
-                construct-only="1"
+                construct="1"
                 transfer-ownership="none">
         <type name="Gst.ControlSource"/>
       </property>
@@ -119,6 +114,7 @@ color component off and a value of 1.0 will be the color level.</doc>
             glib:is-gtype-struct-for="ARGBControlBinding">
       <doc xml:space="preserve">The class structure of #GstARGBControlBinding.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">Parent class</doc>
         <type name="Gst.ControlBindingClass" c:type="GstControlBindingClass"/>
       </field>
       <field name="_gst_reserved" readable="0" private="1">
@@ -156,7 +152,8 @@ GstTimedValue.</doc>
            glib:get-type="gst_direct_control_binding_get_type"
            glib:type-struct="DirectControlBindingClass">
       <doc xml:space="preserve">A value mapping object that attaches control sources to gobject properties. It
-will map the control values [0.0 ... 1.0] to the target property range.</doc>
+will map the control values [0.0 ... 1.0] to the target property range. If a
+control value is outside of the range, it will be clipped.</doc>
       <constructor name="new" c:identifier="gst_direct_control_binding_new">
         <doc xml:space="preserve">Create a new control-binding that attaches the #GstControlSource to the
 #GObject property.</doc>
@@ -181,7 +178,7 @@ will map the control values [0.0 ... 1.0] to the target property range.</doc>
       </constructor>
       <property name="control-source"
                 writable="1"
-                construct-only="1"
+                construct="1"
                 transfer-ownership="none">
         <type name="Gst.ControlSource"/>
       </property>
@@ -219,6 +216,7 @@ will map the control values [0.0 ... 1.0] to the target property range.</doc>
             glib:is-gtype-struct-for="DirectControlBinding">
       <doc xml:space="preserve">The class structure of #GstDirectControlBinding.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">Parent class</doc>
         <type name="Gst.ControlBindingClass" c:type="GstControlBindingClass"/>
       </field>
       <field name="_gst_reserved" readable="0" private="1">
@@ -357,12 +355,12 @@ All functions are MT-safe.</doc>
            glib:type-name="GstLFOControlSource"
            glib:get-type="gst_lfo_control_source_get_type"
            glib:type-struct="LFOControlSourceClass">
-      <doc xml:space="preserve">#GstLFOControlSource is a #GstControlSource, that provides several periodic waveforms
-as control values. It supports all fundamental, numeric GValue types as property.
+      <doc xml:space="preserve">#GstLFOControlSource is a #GstControlSource, that provides several periodic
+waveforms as control values.
 
-To use #GstLFOControlSource get a new instance by calling gst_lfo_control_source_new(),
-bind it to a #GParamSpec and set the relevant properties or use
-gst_lfo_control_source_set_waveform.
+To use #GstLFOControlSource get a new instance by calling
+gst_lfo_control_source_new(), bind it to a #GParamSpec and set the relevant
+properties.
 
 All functions are MT-safe.</doc>
       <constructor name="new" c:identifier="gst_lfo_control_source_new">
@@ -474,7 +472,7 @@ To get a n nanosecond shift to the left use
            glib:type-name="GstTimedValueControlSource"
            glib:get-type="gst_timed_value_control_source_get_type"
            glib:type-struct="TimedValueControlSourceClass">
-      <doc xml:space="preserve">Base class for #GstContrlSources that use time-stamped values.
+      <doc xml:space="preserve">Base class for #GstControlSource that use time-stamped values.
 
 When overriding bind, chain up first to give this bind implementation a
 chance to setup things.
@@ -509,7 +507,8 @@ For use in control source implementations.</doc>
         <doc xml:space="preserve">Returns a read-only copy of the list of #GstTimedValue for the given property.
 Free the list after done with it.</doc>
         <return-value transfer-ownership="container">
-          <doc xml:space="preserve">a copy of the list, or %NULL if the property isn't handled by the controller</doc>
+          <doc xml:space="preserve">a copy
+of the list, or %NULL if the property isn't handled by the controller</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Gst.TimedValue"/>
           </type>
@@ -573,7 +572,8 @@ Free the list after done with it.</doc>
                   c:type="GstTimedValueControlSource*"/>
           </instance-parameter>
           <parameter name="timedvalues" transfer-ownership="none">
-            <doc xml:space="preserve">a list with #GstTimedValue items</doc>
+            <doc xml:space="preserve">a list
+with #GstTimedValue items</doc>
             <type name="GLib.SList" c:type="const GSList*">
               <type name="Gst.TimedValue"/>
             </type>

@@ -9,10 +9,7 @@ and/or use gtk-doc annotations.  -->
   <include name="Gst" version="1.0"/>
   <include name="GstBase" version="1.0"/>
   <package name="gstreamer-tag-1.0"/>
-  <c:include name="gst/tag/gsttagdemux.h"/>
-  <c:include name="gst/tag/gsttagmux.h"/>
   <c:include name="gst/tag/tag.h"/>
-  <c:include name="gst/tag/xmpwriter.h"/>
   <namespace name="GstTag"
              version="1.0"
              shared-library="libgsttag-1.0.so.0"
@@ -269,6 +266,19 @@ gst_tag_list_from_id3v2_tag() and gst_tag_get_id3v2_tag_size() for example.</doc
       <doc xml:space="preserve">Media (image/video) intended vertical pixel density in ppi. (double)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="TAG_MUSICAL_KEY"
+              value="musical-key"
+              c:type="GST_TAG_MUSICAL_KEY"
+              version="1.2">
+      <doc xml:space="preserve">Musical key in which the sound starts. It is represented as a string
+with a maximum length of three characters. The ground keys are
+represented with "A","B","C","D","E", "F" and "G" and halfkeys
+represented with "b" and "#". Minor is represented as "m" (e.g. "Dbm").
+Off key is represented with an "o" only.
+This notation might be extended in the future to support non-minor/major
+keys.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="TAG_MUSICBRAINZ_ALBUMARTISTID"
               value="musicbrainz-albumartistid"
               c:type="GST_TAG_MUSICBRAINZ_ALBUMARTISTID">
@@ -340,7 +350,7 @@ Subclasses have to do four things:
  &lt;/para&gt;&lt;/listitem&gt;
  &lt;listitem&gt;&lt;para&gt;
  In their class init function, they must also set
- GST_TAG_DEMUX_CLASS(demux_klass)-&gt;min_start_size and/or 
+ GST_TAG_DEMUX_CLASS(demux_klass)-&gt;min_start_size and/or
  GST_TAG_DEMUX_CLASS(demux_klass)-&gt;min_end_size to the minimum size required
  for the identify function to decide whether the stream has a supported tag
  or not. A class parsing ID3v1 tags, for example, would set min_end_size to
@@ -407,6 +417,7 @@ Subclasses have to do four things:
         </parameters>
       </virtual-method>
       <field name="element">
+        <doc xml:space="preserve">parent element</doc>
         <type name="Gst.Element" c:type="GstElement"/>
       </field>
       <field name="priv" readable="0" private="1">
@@ -424,12 +435,19 @@ Subclasses have to do four things:
       <doc xml:space="preserve">The #GstTagDemuxClass structure.  See documentation at beginning of section
 for details about what subclasses need to override and do.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">the parent class.</doc>
         <type name="Gst.ElementClass" c:type="GstElementClass"/>
       </field>
       <field name="min_start_size">
+        <doc xml:space="preserve">minimum size required to identify a tag at the start and
+determine its total size. Set to 0 if not interested in start tags.
+Subclasses should set this in their class_init function.</doc>
         <type name="guint" c:type="guint"/>
       </field>
       <field name="min_end_size">
+        <doc xml:space="preserve">minimum size required to identify a tag at the end and
+determine its total size. Set to 0 if not interested in end tags.
+Subclasses should set this in their class_init function.</doc>
         <type name="guint" c:type="guint"/>
       </field>
       <field name="identify_tag">
@@ -537,7 +555,9 @@ the info structure in the image's #GstSample)</doc>
               value="-1"
               c:identifier="GST_TAG_IMAGE_TYPE_NONE"
               glib:nick="none">
-        <doc xml:space="preserve">No image type. Can be used to tell functions such as gst_tag_image_data_to_image_sample() that no image type should be set.</doc>
+        <doc xml:space="preserve">No image type. Can be used to
+     tell functions such as gst_tag_image_data_to_image_sample() that no
+     image type should be set.</doc>
       </member>
       <member name="undefined"
               value="0"
@@ -663,85 +683,103 @@ the info structure in the image's #GstSample)</doc>
               value="1"
               c:identifier="GST_TAG_LICENSE_PERMITS_REPRODUCTION"
               glib:nick="permits-reproduction">
-        <doc xml:space="preserve">making multiple copies is allowed</doc>
+        <doc xml:space="preserve">making multiple copies
+    is allowed</doc>
       </member>
       <member name="permits_distribution"
               value="2"
               c:identifier="GST_TAG_LICENSE_PERMITS_DISTRIBUTION"
               glib:nick="permits-distribution">
-        <doc xml:space="preserve">distribution, public display and public performance are allowed</doc>
+        <doc xml:space="preserve">distribution, public display
+    and public performance are allowed</doc>
       </member>
       <member name="permits_derivative_works"
               value="4"
               c:identifier="GST_TAG_LICENSE_PERMITS_DERIVATIVE_WORKS"
               glib:nick="permits-derivative-works">
-        <doc xml:space="preserve">distribution of derivative works is allowed</doc>
+        <doc xml:space="preserve">distribution of derivative
+    works is allowed</doc>
       </member>
       <member name="permits_sharing"
               value="8"
               c:identifier="GST_TAG_LICENSE_PERMITS_SHARING"
               glib:nick="permits-sharing">
-        <doc xml:space="preserve">commercial derivatives are allowed, but only non-commercial distribution is allowed</doc>
+        <doc xml:space="preserve">commercial derivatives are allowed,
+    but only non-commercial distribution is allowed</doc>
       </member>
       <member name="requires_notice"
               value="256"
               c:identifier="GST_TAG_LICENSE_REQUIRES_NOTICE"
               glib:nick="requires-notice">
-        <doc xml:space="preserve">copyright and license notices must be kept intact</doc>
+        <doc xml:space="preserve">copyright and license notices
+    must be kept intact</doc>
       </member>
       <member name="requires_attributions"
               value="512"
               c:identifier="GST_TAG_LICENSE_REQUIRES_ATTRIBUTION"
               glib:nick="requires-attributions">
-        <doc xml:space="preserve">credit must be given to copyright holder and/or author</doc>
+        <doc xml:space="preserve">credit must be given to
+    copyright holder and/or author</doc>
       </member>
       <member name="requires_share_alike"
               value="1024"
               c:identifier="GST_TAG_LICENSE_REQUIRES_SHARE_ALIKE"
               glib:nick="requires-share-alike">
-        <doc xml:space="preserve">derivative works must be licensed under the same terms or compatible terms as the original work</doc>
+        <doc xml:space="preserve">derivative works must be
+    licensed under the same terms or compatible terms as the original work</doc>
       </member>
       <member name="requires_source_code"
               value="2048"
               c:identifier="GST_TAG_LICENSE_REQUIRES_SOURCE_CODE"
               glib:nick="requires-source-code">
-        <doc xml:space="preserve">source code (the preferred form for making modifications) must be provided when exercising some rights granted by the license</doc>
+        <doc xml:space="preserve">source code (the preferred
+    form for making modifications) must be provided when exercising some
+    rights granted by the license</doc>
       </member>
       <member name="requires_copyleft"
               value="4096"
               c:identifier="GST_TAG_LICENSE_REQUIRES_COPYLEFT"
               glib:nick="requires-copyleft">
-        <doc xml:space="preserve">derivative and combined works must be licensed under specified terms, similar to those of the original work</doc>
+        <doc xml:space="preserve">derivative and combined works
+    must be licensed under specified terms, similar to those of the original
+    work</doc>
       </member>
       <member name="requires_lesser_copyleft"
               value="8192"
               c:identifier="GST_TAG_LICENSE_REQUIRES_LESSER_COPYLEFT"
               glib:nick="requires-lesser-copyleft">
-        <doc xml:space="preserve">derivative works must be licensed under specified terms, with at least the same conditions as the original work; combinations with the work may be licensed under different terms</doc>
+        <doc xml:space="preserve">derivative works must be
+    licensed under specified terms, with at least the same conditions as
+    the original work; combinations with the work may be licensed under
+    different terms</doc>
       </member>
       <member name="prohibits_commercial_use"
               value="65536"
               c:identifier="GST_TAG_LICENSE_PROHIBITS_COMMERCIAL_USE"
               glib:nick="prohibits-commercial-use">
-        <doc xml:space="preserve">exercising rights for commercial purposes is prohibited</doc>
+        <doc xml:space="preserve">exercising rights for
+    commercial purposes is prohibited</doc>
       </member>
       <member name="prohibits_high_income_nation_use"
               value="131072"
               c:identifier="GST_TAG_LICENSE_PROHIBITS_HIGH_INCOME_NATION_USE"
               glib:nick="prohibits-high-income-nation-use">
-        <doc xml:space="preserve">use in a non-developing country is prohibited</doc>
+        <doc xml:space="preserve">use in a
+    non-developing country is prohibited</doc>
       </member>
       <member name="creative_commons_license"
               value="16777216"
               c:identifier="GST_TAG_LICENSE_CREATIVE_COMMONS_LICENSE"
               glib:nick="creative-commons-license">
-        <doc xml:space="preserve">this license was created by the Creative Commons project</doc>
+        <doc xml:space="preserve">this license was created
+    by the Creative Commons project</doc>
       </member>
       <member name="free_software_foundation_license"
               value="33554432"
               c:identifier="GST_TAG_LICENSE_FREE_SOFTWARE_FOUNDATION_LICENSE"
               glib:nick="free-software-foundation-license">
-        <doc xml:space="preserve">this license was created by the Free Software Foundation (FSF)</doc>
+        <doc xml:space="preserve">this license was
+    created by the Free Software Foundation (FSF)</doc>
       </member>
     </bitfield>
     <class name="TagMux"
@@ -803,6 +841,7 @@ Subclasses have to do the following things:
         </parameters>
       </virtual-method>
       <field name="element">
+        <doc xml:space="preserve">parent element</doc>
         <type name="Gst.Element" c:type="GstElement"/>
       </field>
       <field name="priv" readable="0" private="1">
@@ -820,6 +859,7 @@ Subclasses have to do the following things:
       <doc xml:space="preserve">The #GstTagMuxClass structure. Subclasses need to override at least one
 of the two render vfuncs.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">the parent class.</doc>
         <type name="Gst.ElementClass" c:type="GstElementClass"/>
       </field>
       <field name="render_start_tag">
@@ -991,7 +1031,8 @@ string is a language code (which should be put into a #GST_TAG_LANGUAGE_CODE
 tag) or a free-form language name descriptor (which should be put into a
 #GST_TAG_LANGUAGE_NAME tag instead).</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">TRUE if the two- or three-letter language code in @lang_code is a valid ISO-639 language code.</doc>
+        <doc xml:space="preserve">TRUE if the two- or three-letter language code in @lang_code
+    is a valid ISO-639 language code.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
@@ -1025,7 +1066,8 @@ WINDOWS-1252/ISO-8859-1 is assumed (which will almost always succeed).</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
         <parameter name="env_vars" transfer-ownership="none">
-          <doc xml:space="preserve">a NULL-terminated string array of environment variable names, or NULL</doc>
+          <doc xml:space="preserve">a NULL-terminated string array of environment variable names,
+           or NULL</doc>
           <type name="utf8" c:type="const gchar**"/>
         </parameter>
       </parameters>
@@ -1099,7 +1141,9 @@ convenience).
 
 Language codes are case-sensitive and expected to be lower case.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">two-letter ISO-639-1 language code string that maps to @lang_code, or NULL if no mapping is known. The returned string must not be modified or freed.</doc>
+        <doc xml:space="preserve">two-letter ISO-639-1 language code string that maps to @lang_code,
+    or NULL if no mapping is known. The returned string must not be
+    modified or freed.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
@@ -1121,7 +1165,9 @@ The "bibliographic" code is derived from the English name of the language
 
 Language codes are case-sensitive and expected to be lower case.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">three-letter ISO-639-2 language code string that maps to @lang_code, or NULL if no mapping is known. The returned string must not be modified or freed.</doc>
+        <doc xml:space="preserve">three-letter ISO-639-2 language code string that maps to @lang_code,
+    or NULL if no mapping is known. The returned string must not be
+    modified or freed.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
@@ -1143,7 +1189,9 @@ The "terminological" code is derived from the local name of the language
 
 Language codes are case-sensitive and expected to be lower case.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">three-letter ISO-639-2 language code string that maps to @lang_code, or NULL if no mapping is known. The returned string must not be modified or freed.</doc>
+        <doc xml:space="preserve">three-letter ISO-639-2 language code string that maps to @lang_code,
+    or NULL if no mapping is known. The returned string must not be
+    modified or freed.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
@@ -1160,7 +1208,8 @@ codes). This is useful for UIs to build a list of available languages for
 tagging purposes (e.g. to tag an audio track appropriately in a video or
 audio editor).</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">NULL-terminated string array with two-letter language codes. Free with g_strfreev() when no longer needed.</doc>
+        <doc xml:space="preserve">NULL-terminated string array with two-letter
+    language codes. Free with g_strfreev() when no longer needed.</doc>
         <array c:type="gchar**">
           <type name="utf8"/>
         </array>
@@ -1175,7 +1224,10 @@ iso-codes package, otherwise the English name will be returned).
 
 Language codes are case-sensitive and expected to be lower case.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">language name in UTF-8 format, or NULL if @language_code could not be mapped to a language name. The returned string must not be modified and does not need to freed; it will stay valid until the application is terminated.</doc>
+        <doc xml:space="preserve">language name in UTF-8 format, or NULL if @language_code could
+    not be mapped to a language name. The returned string must not be
+    modified and does not need to freed; it will stay valid until the
+    application is terminated.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
@@ -1190,12 +1242,14 @@ Language codes are case-sensitive and expected to be lower case.</doc>
       <doc xml:space="preserve">Get the description of a license, which is a translated description
 of the license's main features.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the description of the license, or NULL if the license is unknown or a description is not available.</doc>
+        <doc xml:space="preserve">the description of the license, or NULL if the license is unknown
+   or a description is not available.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
         <parameter name="license_ref" transfer-ownership="none">
-          <doc xml:space="preserve">a license reference string in form of a URI, e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
+          <doc xml:space="preserve">a license reference string in form of a URI,
+    e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -1210,7 +1264,8 @@ a license in their most general form.</doc>
       </return-value>
       <parameters>
         <parameter name="license_ref" transfer-ownership="none">
-          <doc xml:space="preserve">a license reference string in form of a URI, e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
+          <doc xml:space="preserve">a license reference string in form of a URI,
+    e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -1225,12 +1280,14 @@ Known jurisdictions: ar, at, au, be, bg, br, ca, ch, cl, cn, co, de,
 dk, es, fi, fr, hr, hu, il, in, it, jp, kr, mk, mt, mx, my, nl, pe, pl,
 pt, scotland, se, si, tw, uk, us, za.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the jurisdiction code of the license, or NULL if the license is unknown or is not specific to a particular jurisdiction.</doc>
+        <doc xml:space="preserve">the jurisdiction code of the license, or NULL if the license is
+   unknown or is not specific to a particular jurisdiction.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
         <parameter name="license_ref" transfer-ownership="none">
-          <doc xml:space="preserve">a license reference string in form of a URI, e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
+          <doc xml:space="preserve">a license reference string in form of a URI,
+    e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -1245,7 +1302,8 @@ such as e.g. "CC BY-NC-ND 2.0 UK".</doc>
       </return-value>
       <parameters>
         <parameter name="license_ref" transfer-ownership="none">
-          <doc xml:space="preserve">a license reference string in form of a URI, e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
+          <doc xml:space="preserve">a license reference string in form of a URI,
+    e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -1255,12 +1313,14 @@ such as e.g. "CC BY-NC-ND 2.0 UK".</doc>
       <doc xml:space="preserve">Get the title of a license, which is a short translated description
 of the license's features (generally not very pretty though).</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the title of the license, or NULL if the license is unknown or no title is available.</doc>
+        <doc xml:space="preserve">the title of the license, or NULL if the license is unknown or
+   no title is available.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
         <parameter name="license_ref" transfer-ownership="none">
-          <doc xml:space="preserve">a license reference string in form of a URI, e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
+          <doc xml:space="preserve">a license reference string in form of a URI,
+    e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -1269,12 +1329,14 @@ of the license's features (generally not very pretty though).</doc>
               c:identifier="gst_tag_get_license_version">
       <doc xml:space="preserve">Get the version of a license.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the version of the license, or NULL if the license is not known or has no version</doc>
+        <doc xml:space="preserve">the version of the license, or NULL if the license is not known or
+   has no version</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
         <parameter name="license_ref" transfer-ownership="none">
-          <doc xml:space="preserve">a license reference string in form of a URI, e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
+          <doc xml:space="preserve">a license reference string in form of a URI,
+    e.g. "http://creativecommons.org/licenses/by-nc-nd/2.0/"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -1285,7 +1347,8 @@ useful for UIs to build a list of available licenses for tagging purposes
 (e.g. to tag an audio track appropriately in a video or audio editor, or
 an image in a camera application).</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">NULL-terminated array of license strings. Free with g_strfreev() when no longer needed.</doc>
+        <doc xml:space="preserve">NULL-terminated array of license strings. Free
+    with g_strfreev() when no longer needed.</doc>
         <array c:type="gchar**">
           <type name="utf8"/>
         </array>
@@ -1293,7 +1356,7 @@ an image in a camera application).</doc>
     </function>
     <function name="tag_id3_genre_count"
               c:identifier="gst_tag_id3_genre_count">
-      <doc xml:space="preserve">Gets the number of ID3v1 genres that can be identified. Winamp genres are 
+      <doc xml:space="preserve">Gets the number of ID3v1 genres that can be identified. Winamp genres are
 included.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of ID3v1 genres that can be identified</doc>
@@ -1351,7 +1414,9 @@ data (we can't trust the declared mime type).</doc>
           <type name="guint" c:type="guint"/>
         </parameter>
         <parameter name="image_type" transfer-ownership="none">
-          <doc xml:space="preserve">type of the image, or #GST_TAG_IMAGE_TYPE_UNDEFINED. Pass #GST_TAG_IMAGE_TYPE_NONE if no image type should be set at all (e.g. for preview images)</doc>
+          <doc xml:space="preserve">type of the image, or #GST_TAG_IMAGE_TYPE_UNDEFINED. Pass
+    #GST_TAG_IMAGE_TYPE_NONE if no image type should be set at all (e.g.
+    for preview images)</doc>
           <type name="TagImageType" c:type="GstTagImageType"/>
         </parameter>
       </parameters>
@@ -1379,7 +1444,8 @@ more information on image tags in GStreamer.</doc>
           <type name="guint" c:type="guint"/>
         </parameter>
         <parameter name="id3_picture_type" transfer-ownership="none">
-          <doc xml:space="preserve">picture type as per the ID3 (v2.4.0) specification for the APIC frame (0 = unknown/other)</doc>
+          <doc xml:space="preserve">picture type as per the ID3 (v2.4.0) specification for
+   the APIC frame (0 = unknown/other)</doc>
           <type name="guint" c:type="guint"/>
         </parameter>
       </parameters>
@@ -1428,7 +1494,8 @@ start</doc>
       <doc xml:space="preserve">Creates a new tag list that contains the information parsed out of a
 ID3 tag.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A new #GstTagList with all tags that could be extracted from the given vorbiscomment buffer or NULL on error.</doc>
+        <doc xml:space="preserve">A new #GstTagList with all tags that could be extracted from the
+         given vorbiscomment buffer or NULL on error.</doc>
         <type name="Gst.TagList" c:type="GstTagList*"/>
       </return-value>
       <parameters>
@@ -1443,7 +1510,8 @@ ID3 tag.</doc>
       <doc xml:space="preserve">Creates a new tag list that contains the information parsed out of a
 vorbiscomment packet.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A new #GstTagList with all tags that could be extracted from the given vorbiscomment buffer or NULL on error.</doc>
+        <doc xml:space="preserve">A new #GstTagList with all tags that could be extracted from the
+         given vorbiscomment buffer or NULL on error.</doc>
         <type name="Gst.TagList" c:type="GstTagList*"/>
       </return-value>
       <parameters>
@@ -1464,7 +1532,8 @@ vorbiscomment packet.</doc>
           <type name="guint" c:type="const guint"/>
         </parameter>
         <parameter name="vendor_string" transfer-ownership="none">
-          <doc xml:space="preserve">pointer to a string that should take the vendor string of this vorbis comment or NULL if you don't need it.</doc>
+          <doc xml:space="preserve">pointer to a string that should take the vendor string
+                of this vorbis comment or NULL if you don't need it.</doc>
           <type name="utf8" c:type="gchar**"/>
         </parameter>
       </parameters>
@@ -1474,7 +1543,8 @@ vorbiscomment packet.</doc>
       <doc xml:space="preserve">Creates a new tag list that contains the information parsed out of a
 vorbiscomment packet.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A new #GstTagList with all tags that could be extracted from the given vorbiscomment buffer or NULL on error.</doc>
+        <doc xml:space="preserve">A new #GstTagList with all tags that could be extracted from the
+         given vorbiscomment buffer or NULL on error.</doc>
         <type name="Gst.TagList" c:type="GstTagList*"/>
       </return-value>
       <parameters>
@@ -1491,7 +1561,8 @@ vorbiscomment packet.</doc>
           <type name="guint" c:type="const guint"/>
         </parameter>
         <parameter name="vendor_string" transfer-ownership="none">
-          <doc xml:space="preserve">pointer to a string that should take the vendor string of this vorbis comment or NULL if you don't need it.</doc>
+          <doc xml:space="preserve">pointer to a string that should take the vendor string
+                of this vorbis comment or NULL if you don't need it.</doc>
           <type name="utf8" c:type="gchar**"/>
         </parameter>
       </parameters>
@@ -1567,7 +1638,8 @@ is put in the beginning of the buffer.</doc>
               c:identifier="gst_tag_list_to_vorbiscomment_buffer">
       <doc xml:space="preserve">Creates a new vorbiscomment buffer from a tag list.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A new #GstBuffer containing a vorbiscomment buffer with all tags that could be converted from the given tag list.</doc>
+        <doc xml:space="preserve">A new #GstBuffer containing a vorbiscomment buffer with all tags
+         that could be converted from the given tag list.</doc>
         <type name="Gst.Buffer" c:type="GstBuffer*"/>
       </return-value>
       <parameters>
@@ -1676,7 +1748,9 @@ function before using them. Can be called multiple times.</doc>
       <doc xml:space="preserve">Creates a new tag list that contains the information parsed out of a
 vorbiscomment packet.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">A #GList of newly-allocated key=value strings. Free with g_list_foreach (list, (GFunc) g_free, NULL) plus g_list_free (list)</doc>
+        <doc xml:space="preserve">A #GList of newly-allocated
+    key=value strings. Free with g_list_foreach (list, (GFunc) g_free, NULL)
+    plus g_list_free (list)</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="utf8"/>
         </type>
@@ -1709,7 +1783,8 @@ vorbiscomment packet.</doc>
               c:identifier="gst_tag_xmp_list_schemas">
       <doc xml:space="preserve">Gets the list of supported schemas in the xmp lib</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a %NULL terminated array of strings with the schema names</doc>
+        <doc xml:space="preserve">a %NULL terminated array of strings with the
+    schema names</doc>
         <array c:type="const gchar**">
           <type name="utf8"/>
         </array>

@@ -239,6 +239,7 @@ namespace Champlain {
 		public unowned Champlain.MapSource create (string id);
 		public unowned Champlain.MapSource create_cached_source (string id);
 		public unowned Champlain.MapSource create_error_source (uint tile_size);
+		public unowned Champlain.MapSource create_memcached_source (string id);
 		public static Champlain.MapSourceFactory dup_default ();
 		public GLib.SList<weak Champlain.MapSourceDesc> get_registered ();
 		public bool register (Champlain.MapSourceDesc desc);
@@ -301,25 +302,6 @@ namespace Champlain {
 		public uint get_size_limit ();
 		public void set_size_limit (uint size_limit);
 		public uint size_limit { get; set construct; }
-	}
-	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_memphis_renderer_get_type ()")]
-	public class MemphisRenderer : Champlain.Renderer {
-		[CCode (has_construct_function = false)]
-		protected MemphisRenderer ();
-		[CCode (has_construct_function = false)]
-		public MemphisRenderer.full (uint tile_size);
-		public Clutter.Color get_background_color ();
-		public Champlain.BoundingBox get_bounding_box ();
-		public GLib.List<string> get_rule_ids ();
-		public uint get_tile_size ();
-		public void load_rules (string rules_path);
-		public void remove_rule (string id);
-		public void set_background_color (Clutter.Color color);
-		public void set_rule (Champlain.MemphisRule rule);
-		public void set_tile_size (uint size);
-		[NoAccessorMethod]
-		public Champlain.BoundingBox bounding_box { owned get; set; }
-		public uint tile_size { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_network_bbox_tile_source_get_type ()")]
 	public class NetworkBboxTileSource : Champlain.TileSource {
@@ -499,6 +481,7 @@ namespace Champlain {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public View ();
 		public void add_layer (Champlain.Layer layer);
+		public void add_overlay_source (Champlain.MapSource map_source, uint8 opacity);
 		[Deprecated (since = "0.12.4")]
 		public void bin_layout_add (Clutter.Actor child, Clutter.BinAlignment x_align, Clutter.BinAlignment y_align);
 		public void center_on (double latitude, double longitude);
@@ -507,6 +490,7 @@ namespace Champlain {
 		public bool get_animate_zoom ();
 		public unowned Clutter.Content get_background_pattern ();
 		public Champlain.BoundingBox get_bounding_box ();
+		public Champlain.BoundingBox get_bounding_box_for_zoom_level (uint zoom_level);
 		public double get_center_latitude ();
 		public double get_center_longitude ();
 		public double get_deceleration ();
@@ -516,6 +500,7 @@ namespace Champlain {
 		public unowned Champlain.MapSource get_map_source ();
 		public uint get_max_zoom_level ();
 		public uint get_min_zoom_level ();
+		public GLib.List<weak Champlain.MapSource> get_overlay_sources ();
 		public Champlain.State get_state ();
 		public void get_viewport_origin (out int x, out int y);
 		public uint get_zoom_level ();
@@ -525,6 +510,7 @@ namespace Champlain {
 		public double longitude_to_x (double longitude);
 		public void reload_tiles ();
 		public void remove_layer (Champlain.Layer layer);
+		public void remove_overlay_source (Champlain.MapSource map_source);
 		public void set_animate_zoom (bool value);
 		public void set_background_pattern (Clutter.Content background);
 		public void set_deceleration (double rate);
@@ -543,6 +529,10 @@ namespace Champlain {
 		public bool animate_zoom { get; set; }
 		public Clutter.Actor background_pattern { get; set; }
 		public double deceleration { get; set; }
+		[NoAccessorMethod]
+		public uint goto_animation_duration { get; set; }
+		[NoAccessorMethod]
+		public Clutter.AnimationMode goto_animation_mode { get; set; }
 		public bool keep_center_on_resize { get; set; }
 		public bool kinetic_mode { get; set; }
 		[NoAccessorMethod]
@@ -589,53 +579,25 @@ namespace Champlain {
 		[NoAccessorMethod]
 		public abstract double longitude { get; set; }
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", has_type_id = false)]
-	public struct MemphisRule {
-		public weak string keys;
-		public weak string values;
-		public Champlain.MemphisRuleType type;
-		public Champlain.MemphisRuleAttr polygon;
-		public Champlain.MemphisRuleAttr line;
-		public Champlain.MemphisRuleAttr border;
-		public Champlain.MemphisRuleAttr text;
-	}
-	[CCode (cheader_filename = "champlain/champlain.h", has_type_id = false)]
-	public struct MemphisRuleAttr {
-		public uint8 z_min;
-		public uint8 z_max;
-		public uint8 color_red;
-		public uint8 color_green;
-		public uint8 color_blue;
-		public uint8 color_alpha;
-		public weak string style;
-		public double size;
-	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_MAP_PROJECTION_")]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_MAP_PROJECTION_", has_type_id = false)]
 	public enum MapProjection {
 		[CCode (cname = "CHAMPLAIN_MAP_PROJECTION_MERCATOR")]
 		MAP_PROJECTION_MERCATOR
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_MEMPHIS_RULE_TYPE_")]
-	public enum MemphisRuleType {
-		UNKNOWN,
-		NODE,
-		WAY,
-		RELATION
-	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_SELECTION_")]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_SELECTION_", has_type_id = false)]
 	public enum SelectionMode {
 		NONE,
 		SINGLE,
 		MULTIPLE
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_STATE_")]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_STATE_", has_type_id = false)]
 	public enum State {
 		NONE,
 		LOADING,
 		LOADED,
 		DONE
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_UNIT_")]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_UNIT_", has_type_id = false)]
 	public enum Unit {
 		KM,
 		MILES
@@ -662,6 +624,16 @@ namespace Champlain {
 	public const string MAP_SOURCE_OSM_OSMARENDER;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_TRANSPORT_MAP")]
 	public const string MAP_SOURCE_OSM_TRANSPORT_MAP;
+	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OWM_CLOUDS")]
+	public const string MAP_SOURCE_OWM_CLOUDS;
+	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OWM_PRECIPITATION")]
+	public const string MAP_SOURCE_OWM_PRECIPITATION;
+	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OWM_PRESSURE")]
+	public const string MAP_SOURCE_OWM_PRESSURE;
+	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OWM_TEMPERATURE")]
+	public const string MAP_SOURCE_OWM_TEMPERATURE;
+	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OWM_WIND")]
+	public const string MAP_SOURCE_OWM_WIND;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAX_LATITUDE")]
 	public const double MAX_LATITUDE;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAX_LONGITUDE")]

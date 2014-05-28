@@ -2,16 +2,45 @@
 
 [CCode (cprefix = "Osinfo", gir_namespace = "Libosinfo", gir_version = "1.0", lower_case_cprefix = "osinfo_")]
 namespace Osinfo {
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_avatar_format_get_type ()")]
+	public class AvatarFormat : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public AvatarFormat ();
+		public bool get_alpha ();
+		public int get_height ();
+		public GLib.List<weak string> get_mime_types ();
+		public int get_width ();
+		public bool alpha { get; }
+		public int height { get; }
+		public GLib.List<weak string> mime_types { owned get; }
+		public int width { get; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_datamap_get_type ()")]
+	public class Datamap : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public Datamap (string id);
+		public void insert (string inval, string outval);
+		public unowned string lookup (string inval);
+		public unowned string reverse_lookup (string outval);
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "datamaplist", type_id = "osinfo_datamaplist_get_type ()")]
+	public class DatamapList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public DatamapList ();
+	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_db_get_type ()")]
 	public class Db : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Db ();
+		public void add_datamap (Osinfo.Datamap datamap);
 		public void add_deployment (Osinfo.Deployment deployment);
 		public void add_device (Osinfo.Device device);
 		public void add_install_script (Osinfo.InstallScript script);
 		public void add_os (Osinfo.Os os);
 		public void add_platform (Osinfo.Platform platform);
 		public unowned Osinfo.Deployment find_deployment (Osinfo.Os os, Osinfo.Platform platform);
+		public unowned Osinfo.Datamap get_datamap (string id);
+		public Osinfo.DatamapList get_datamap_list ();
 		public unowned Osinfo.Deployment get_deployment (string id);
 		public Osinfo.DeploymentList get_deployment_list ();
 		public unowned Osinfo.Device get_device (string id);
@@ -22,8 +51,10 @@ namespace Osinfo {
 		public Osinfo.OsList get_os_list ();
 		public unowned Osinfo.Platform get_platform (string id);
 		public Osinfo.PlatformList get_platform_list ();
+		[Deprecated (since = "0.2.3")]
 		public unowned Osinfo.Os guess_os_from_media (Osinfo.Media media, out unowned Osinfo.Media matched_media);
 		public unowned Osinfo.Os guess_os_from_tree (Osinfo.Tree tree, out unowned Osinfo.Tree matched_tree);
+		public bool identify_media (Osinfo.Media media);
 		public Osinfo.OsList unique_values_for_os_relationship (Osinfo.ProductRelationship relshp);
 		public Osinfo.PlatformList unique_values_for_platform_relationship (Osinfo.ProductRelationship relshp);
 		public GLib.List<weak string> unique_values_for_property_in_deployment (string propName);
@@ -49,9 +80,13 @@ namespace Osinfo {
 	public class DeploymentList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public DeploymentList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeploymentList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeploymentList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeploymentList new_intersection (Osinfo.DeploymentList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeploymentList new_union (Osinfo.DeploymentList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_device_get_type ()")]
@@ -63,8 +98,26 @@ namespace Osinfo {
 		public unowned string get_name ();
 		public unowned string get_product ();
 		public unowned string get_product_id ();
+		public unowned string get_subsystem ();
 		public unowned string get_vendor ();
 		public unowned string get_vendor_id ();
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_device_driver_get_type ()")]
+	public class DeviceDriver : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public DeviceDriver (string id);
+		public void add_device (Osinfo.Device device);
+		public unowned string get_architecture ();
+		public unowned Osinfo.DeviceList get_devices ();
+		public GLib.List<weak string> get_files ();
+		public unowned string get_location ();
+		public bool get_pre_installable ();
+		public bool get_signed ();
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "device_driverlist", type_id = "osinfo_device_driverlist_get_type ()")]
+	public class DeviceDriverList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public DeviceDriverList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "devicelink", type_id = "osinfo_devicelink_get_type ()")]
 	public class DeviceLink : Osinfo.Entity {
@@ -86,18 +139,26 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public DeviceLinkList ();
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_intersection (Osinfo.DeviceLinkList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_union (Osinfo.DeviceLinkList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "devicelist", type_id = "osinfo_devicelist_get_type ()")]
 	public class DeviceList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public DeviceList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceList new_intersection (Osinfo.DeviceList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.DeviceList new_union (Osinfo.DeviceList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_entity_get_type ()")]
@@ -110,10 +171,17 @@ namespace Osinfo {
 		public GLib.List<weak string> get_param_keys ();
 		public unowned string get_param_value (string key);
 		public bool get_param_value_boolean (string key);
+		public bool get_param_value_boolean_with_default (string key, bool default_value);
+		public int get_param_value_enum (string key, GLib.Type enum_type, int default_value);
+		public int64 get_param_value_int64 (string key);
+		public int64 get_param_value_int64_with_default (string key, int64 default_value);
 		public GLib.List<weak string> get_param_value_list (string key);
 		public void set_param (string key, string value);
 		public void set_param_boolean (string key, bool value);
-		public string id { get; construct; }
+		public void set_param_enum (string key, int value, GLib.Type enum_type);
+		public void set_param_int64 (string key, int64 value);
+		[NoAccessorMethod]
+		public string id { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_filter_get_type ()")]
 	public class Filter : GLib.Object {
@@ -131,28 +199,46 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public InstallConfig (string id);
 		public unowned string get_admin_password ();
+		public unowned string get_avatar_disk ();
+		public unowned string get_avatar_location ();
+		public bool get_driver_signing ();
 		public unowned string get_hardware_arch ();
 		public unowned string get_hostname ();
 		public unowned string get_l10n_keyboard ();
 		public unowned string get_l10n_language ();
 		public unowned string get_l10n_timezone ();
+		public unowned string get_post_install_drivers_disk ();
+		public unowned string get_post_install_drivers_location ();
+		public unowned string get_pre_install_drivers_disk ();
+		public unowned string get_pre_install_drivers_location ();
 		public unowned string get_reg_login ();
 		public unowned string get_reg_password ();
 		public unowned string get_reg_product_key ();
+		public unowned string get_script_disk ();
+		public unowned string get_target_disk ();
 		public bool get_user_administrator ();
 		public bool get_user_autologin ();
 		public unowned string get_user_login ();
 		public unowned string get_user_password ();
 		public unowned string get_user_realname ();
 		public void set_admin_password (string password);
+		public void set_avatar_disk (string disk);
+		public void set_avatar_location (string location);
+		public void set_driver_signing (bool signing);
 		public void set_hardware_arch (string arch);
 		public void set_hostname (string hostname);
 		public void set_l10n_keyboard (string keyboard);
 		public void set_l10n_language (string language);
 		public void set_l10n_timezone (string timezone);
+		public void set_post_install_drivers_disk (string disk);
+		public void set_post_install_drivers_location (string location);
+		public void set_pre_install_drivers_disk (string disk);
+		public void set_pre_install_drivers_location (string location);
 		public void set_reg_login (string name);
 		public void set_reg_password (string password);
 		public void set_reg_product_key (string key);
+		public void set_script_disk (string disk);
+		public void set_target_disk (string disk);
 		public void set_user_administrator (bool admin);
 		public void set_user_autologin (bool autologin);
 		public void set_user_login (string username);
@@ -162,11 +248,21 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_config_param_get_type ()")]
 	public class InstallConfigParam : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
-		public InstallConfigParam (string name, string policy);
+		public InstallConfigParam (string name);
 		public unowned string get_name ();
 		public Osinfo.InstallConfigParamPolicy get_policy ();
+		public bool is_optional ();
+		public bool is_required ();
+		public void set_value_map (Osinfo.Datamap datamap);
 		public string name { get; construct; }
-		public string policy { get; construct; }
+		public Osinfo.InstallConfigParamPolicy policy { get; }
+		[NoAccessorMethod]
+		public Osinfo.Datamap value_map { owned get; set; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "install_config_paramlist", type_id = "osinfo_install_config_paramlist_get_type ()")]
+	public class InstallConfigParamList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public InstallConfigParamList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_script_get_type ()")]
 	public class InstallScript : Osinfo.Entity {
@@ -177,19 +273,34 @@ namespace Osinfo {
 		public InstallScript.data (string id, string profile, string templateData);
 		public string generate (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async string generate_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
+		public string generate_command_line (Osinfo.Os os, Osinfo.InstallConfig config);
 		public GLib.File generate_output (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async void generate_output_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable);
+		public async GLib.File generate_output_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
+		public unowned Osinfo.AvatarFormat get_avatar_format ();
+		public bool get_can_post_install_drivers ();
+		public bool get_can_pre_install_drivers ();
+		public Osinfo.InstallConfigParam get_config_param (string name);
+		public GLib.List<weak Osinfo.InstallScript> get_config_param_list ();
+		public unowned Osinfo.InstallConfigParamList get_config_params ();
+		public unowned string get_expected_filename ();
+		public Osinfo.InstallScriptInjectionMethod get_injection_methods ();
 		public unowned string get_output_filename ();
 		public unowned string get_output_prefix ();
+		public Osinfo.PathFormat get_path_format ();
+		public Osinfo.DeviceDriverSigningReq get_post_install_drivers_signing_req ();
+		public Osinfo.DeviceDriverSigningReq get_pre_install_drivers_signing_req ();
 		public unowned string get_product_key_format ();
 		public unowned string get_profile ();
 		public unowned string get_template_data ();
 		public unowned string get_template_uri ();
 		public bool has_config_param (Osinfo.InstallConfigParam config_param);
 		public bool has_config_param_name (string name);
+		public void set_avatar_format (Osinfo.AvatarFormat avatar);
 		public void set_output_prefix (string prefix);
 		[CCode (has_construct_function = false)]
 		public InstallScript.uri (string id, string profile, string templateUri);
+		public Osinfo.AvatarFormat avatar_format { get; }
+		public Osinfo.PathFormat path_format { get; }
 		public string product_key_format { get; }
 		public string profile { get; construct; }
 		public string template_data { get; construct; }
@@ -199,9 +310,13 @@ namespace Osinfo {
 	public class InstallScriptList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public InstallScriptList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.InstallScriptList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.InstallScriptList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.InstallScriptList new_intersection (Osinfo.InstallScriptList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.InstallScriptList new_union (Osinfo.InstallScriptList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_list_get_type ()")]
@@ -218,6 +333,10 @@ namespace Osinfo {
 		public GLib.List<weak Osinfo.Entity> get_elements ();
 		public int get_length ();
 		public unowned Osinfo.Entity get_nth (int idx);
+		public Osinfo.List new_copy ();
+		public Osinfo.List new_filtered (Osinfo.Filter filter);
+		public Osinfo.List new_intersection (Osinfo.List sourceTwo);
+		public Osinfo.List new_union (Osinfo.List sourceTwo);
 		public GLib.Type element_type { get; construct; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_loader_get_type ()")]
@@ -238,17 +357,22 @@ namespace Osinfo {
 		public Media (string id, string architecture);
 		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static GLib.Quark error_quark ();
 		public unowned string get_application_id ();
 		public unowned string get_architecture ();
 		public unowned string get_initrd_path ();
 		public bool get_installer ();
+		public int get_installer_reboots ();
 		public unowned string get_kernel_path ();
+		public GLib.List<weak string> get_languages ();
 		public bool get_live ();
+		public Osinfo.Os get_os ();
+		public Osinfo.OsVariantList get_os_variants ();
 		public unowned string get_publisher_id ();
 		public unowned string get_system_id ();
 		public unowned string get_url ();
 		public unowned string get_volume_id ();
+		public void set_languages (GLib.List<string> languages);
+		public void set_os (Osinfo.Os os);
 		[NoAccessorMethod]
 		public string application_id { owned get; set; }
 		[NoAccessorMethod]
@@ -256,11 +380,15 @@ namespace Osinfo {
 		[NoAccessorMethod]
 		public string initrd_path { owned get; set; }
 		[NoAccessorMethod]
-		public bool installer { get; set construct; }
+		public bool installer { get; set; }
+		[NoAccessorMethod]
+		public int installer_reboots { get; set; }
 		[NoAccessorMethod]
 		public string kernel_path { owned get; set; }
+		public GLib.List<weak string> languages { owned get; }
 		[NoAccessorMethod]
-		public bool live { get; set construct; }
+		public bool live { get; set; }
+		public Osinfo.Os os { owned get; set; }
 		[NoAccessorMethod]
 		public string publisher_id { owned get; set; }
 		[NoAccessorMethod]
@@ -274,9 +402,13 @@ namespace Osinfo {
 	public class MediaList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public MediaList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.MediaList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.MediaList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.MediaList new_intersection (Osinfo.MediaList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.MediaList new_union (Osinfo.MediaList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_os_get_type ()")]
@@ -284,12 +416,16 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public Os (string id);
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
+		public void add_device_driver (Osinfo.DeviceDriver driver);
 		public void add_install_script (Osinfo.InstallScript script);
 		public void add_media (Osinfo.Media media);
 		public void add_minimum_resources (Osinfo.Resources resources);
 		public void add_recommended_resources (Osinfo.Resources resources);
 		public void add_tree (Osinfo.Tree tree);
+		public void add_variant (Osinfo.OsVariant variant);
+		public Osinfo.InstallScript find_install_script (string profile);
 		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
+		public unowned Osinfo.DeviceDriverList get_device_drivers ();
 		public Osinfo.DeviceLinkList get_device_links (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices_by_property (string property, string value, bool inherited);
@@ -299,7 +435,9 @@ namespace Osinfo {
 		public Osinfo.MediaList get_media_list ();
 		public Osinfo.ResourcesList get_minimum_resources ();
 		public Osinfo.ResourcesList get_recommended_resources ();
+		public Osinfo.ReleaseStatus get_release_status ();
 		public Osinfo.TreeList get_tree_list ();
+		public Osinfo.OsVariantList get_variant_list ();
 		public string distro { get; }
 		public string family { get; }
 	}
@@ -307,16 +445,34 @@ namespace Osinfo {
 	public class OsList : Osinfo.ProductList {
 		[CCode (has_construct_function = false)]
 		public OsList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.OsList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.OsList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.OsList new_intersection (Osinfo.OsList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.OsList new_union (Osinfo.OsList sourceTwo);
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_os_variant_get_type ()")]
+	public class OsVariant : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public OsVariant (string id);
+		public unowned string get_name ();
+		[NoAccessorMethod]
+		public string name { owned get; set; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "os_variantlist", type_id = "osinfo_os_variantlist_get_type ()")]
+	public class OsVariantList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public OsVariantList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_platform_get_type ()")]
 	public class Platform : Osinfo.Product {
 		[CCode (has_construct_function = false)]
 		public Platform (string id);
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
+		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
 		public Osinfo.DeviceLinkList get_device_links (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
 	}
@@ -324,9 +480,13 @@ namespace Osinfo {
 	public class PlatformList : Osinfo.ProductList {
 		[CCode (has_construct_function = false)]
 		public PlatformList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.PlatformList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.PlatformList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.PlatformList new_intersection (Osinfo.PlatformList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.PlatformList new_union (Osinfo.PlatformList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_product_get_type ()")]
@@ -335,12 +495,12 @@ namespace Osinfo {
 		protected Product ();
 		public void add_related (Osinfo.ProductRelationship relshp, Osinfo.Product otherproduct);
 		public unowned string get_codename ();
-		public GLib.Date get_eol_date ();
+		public GLib.Date? get_eol_date ();
 		public unowned string get_eol_date_string ();
 		public unowned string get_logo ();
 		public unowned string get_name ();
 		public Osinfo.ProductList get_related (Osinfo.ProductRelationship relshp);
-		public GLib.Date get_release_date ();
+		public GLib.Date? get_release_date ();
 		public unowned string get_release_date_string ();
 		public unowned string get_short_id ();
 		public unowned string get_vendor ();
@@ -366,9 +526,13 @@ namespace Osinfo {
 	public class ProductList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public ProductList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ProductList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ProductList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ProductList new_intersection (Osinfo.ProductList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ProductList new_union (Osinfo.ProductList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_resources_get_type ()")]
@@ -394,9 +558,13 @@ namespace Osinfo {
 	public class ResourcesList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public ResourcesList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ResourcesList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ResourcesList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ResourcesList new_intersection (Osinfo.ResourcesList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.ResourcesList new_union (Osinfo.ResourcesList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_tree_get_type ()")]
@@ -438,35 +606,95 @@ namespace Osinfo {
 	public class TreeList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public TreeList ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.TreeList new_copy ();
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.TreeList new_filtered (Osinfo.Filter filter);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.TreeList new_intersection (Osinfo.TreeList sourceTwo);
+		[Deprecated (since = "0.2.2")]
 		public Osinfo.TreeList new_union (Osinfo.TreeList sourceTwo);
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_DEVICE_DRIVER_SIGNING_REQ_", type_id = "osinfo_device_driver_signing_req_get_type ()")]
+	public enum DeviceDriverSigningReq {
+		NONE,
+		STRICT,
+		WARN
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", type_id = "osinfo_install_config_param_policy_get_type ()")]
 	public enum InstallConfigParamPolicy {
 		NONE,
 		REQUIRED,
 		OPTIONAL
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_", has_type_id = false)]
-	public enum MediaError {
-		NO_DESCRIPTORS,
-		NO_PVD,
-		NO_SVD,
-		INSUFFICIENT_METADATA,
-		NOT_BOOTABLE
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INJECTION_METHOD_", type_id = "osinfo_install_script_injection_method_get_type ()")]
+	[Flags]
+	public enum InstallScriptInjectionMethod {
+		CDROM,
+		DISK,
+		FLOPPY,
+		INITRD,
+		WEB
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PATH_FORMAT_", type_id = "osinfo_path_format_get_type ()")]
+	public enum PathFormat {
+		UNIX,
+		DOS
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_FOREACH_FLAG_", has_type_id = false)]
+	[Flags]
+	public enum ProductForeachFlag {
+		DERIVES_FROM,
+		UPGRADES,
+		CLONES
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", type_id = "osinfo_product_relationship_get_type ()")]
 	public enum ProductRelationship {
 		DERIVES_FROM,
 		UPGRADES,
 		CLONES
 	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", type_id = "osinfo_release_status_get_type ()")]
+	public enum ReleaseStatus {
+		RELEASED,
+		SNAPSHOT,
+		PRERELEASE
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
+	public errordomain MediaError {
+		NO_DESCRIPTORS,
+		NO_PVD,
+		NO_SVD,
+		INSUFFICIENT_METADATA,
+		NOT_BOOTABLE;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", instance_pos = 1.9)]
+	public delegate void ProductForeach (Osinfo.Product product);
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_ARCHITECTURE_ALL")]
 	public const string ARCHITECTURE_ALL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_AVATAR_FORMAT_PROP_ALPHA")]
+	public const string AVATAR_FORMAT_PROP_ALPHA;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_AVATAR_FORMAT_PROP_HEIGHT")]
+	public const string AVATAR_FORMAT_PROP_HEIGHT;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_AVATAR_FORMAT_PROP_MIME_TYPE")]
+	public const string AVATAR_FORMAT_PROP_MIME_TYPE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_AVATAR_FORMAT_PROP_WIDTH")]
+	public const string AVATAR_FORMAT_PROP_WIDTH;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICELINK_PROP_DRIVER")]
 	public const string DEVICELINK_PROP_DRIVER;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_ARCHITECTURE")]
+	public const string DEVICE_DRIVER_PROP_ARCHITECTURE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_DEVICE")]
+	public const string DEVICE_DRIVER_PROP_DEVICE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_FILE")]
+	public const string DEVICE_DRIVER_PROP_FILE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_LOCATION")]
+	public const string DEVICE_DRIVER_PROP_LOCATION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_PRE_INSTALLABLE")]
+	public const string DEVICE_DRIVER_PROP_PRE_INSTALLABLE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_SIGNED")]
+	public const string DEVICE_DRIVER_PROP_SIGNED;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_BUS_TYPE")]
 	public const string DEVICE_PROP_BUS_TYPE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_CLASS")]
@@ -477,6 +705,8 @@ namespace Osinfo {
 	public const string DEVICE_PROP_PRODUCT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_PRODUCT_ID")]
 	public const string DEVICE_PROP_PRODUCT_ID;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_SUBSYSTEM")]
+	public const string DEVICE_PROP_SUBSYSTEM;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_VENDOR")]
 	public const string DEVICE_PROP_VENDOR;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_VENDOR_ID")]
@@ -485,8 +715,20 @@ namespace Osinfo {
 	public const string ENTITY_PROP_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_GIBIBYTES")]
 	public const int GIBIBYTES;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PARAM_PROP_DATAMAP")]
+	public const string INSTALL_CONFIG_PARAM_PROP_DATAMAP;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PARAM_PROP_NAME")]
+	public const string INSTALL_CONFIG_PARAM_PROP_NAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PARAM_PROP_POLICY")]
+	public const string INSTALL_CONFIG_PARAM_PROP_POLICY;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_ADMIN_PASSWORD")]
 	public const string INSTALL_CONFIG_PROP_ADMIN_PASSWORD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_AVATAR_DISK")]
+	public const string INSTALL_CONFIG_PROP_AVATAR_DISK;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_AVATAR_LOCATION")]
+	public const string INSTALL_CONFIG_PROP_AVATAR_LOCATION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_DRIVER_SIGNING")]
+	public const string INSTALL_CONFIG_PROP_DRIVER_SIGNING;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_HARDWARE_ARCH")]
 	public const string INSTALL_CONFIG_PROP_HARDWARE_ARCH;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_HOSTNAME")]
@@ -497,12 +739,24 @@ namespace Osinfo {
 	public const string INSTALL_CONFIG_PROP_L10N_LANGUAGE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_L10N_TIMEZONE")]
 	public const string INSTALL_CONFIG_PROP_L10N_TIMEZONE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_POST_INSTALL_DRIVERS_DISK")]
+	public const string INSTALL_CONFIG_PROP_POST_INSTALL_DRIVERS_DISK;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_POST_INSTALL_DRIVERS_LOCATION")]
+	public const string INSTALL_CONFIG_PROP_POST_INSTALL_DRIVERS_LOCATION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_PRE_INSTALL_DRIVERS_DISK")]
+	public const string INSTALL_CONFIG_PROP_PRE_INSTALL_DRIVERS_DISK;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_PRE_INSTALL_DRIVERS_LOCATION")]
+	public const string INSTALL_CONFIG_PROP_PRE_INSTALL_DRIVERS_LOCATION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_REG_LOGIN")]
 	public const string INSTALL_CONFIG_PROP_REG_LOGIN;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_REG_PASSWORD")]
 	public const string INSTALL_CONFIG_PROP_REG_PASSWORD;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_REG_PRODUCTKEY")]
 	public const string INSTALL_CONFIG_PROP_REG_PRODUCTKEY;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_SCRIPT_DISK")]
+	public const string INSTALL_CONFIG_PROP_SCRIPT_DISK;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_TARGET_DISK")]
+	public const string INSTALL_CONFIG_PROP_TARGET_DISK;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_ADMIN")]
 	public const string INSTALL_CONFIG_PROP_USER_ADMIN;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PROP_USER_AUTOLOGIN")]
@@ -517,12 +771,20 @@ namespace Osinfo {
 	public const string INSTALL_SCRIPT_PROFILE_DESKTOP;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROFILE_JEOS")]
 	public const string INSTALL_SCRIPT_PROFILE_JEOS;
-	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_CONFIG_OPTIONAL")]
-	public const string INSTALL_SCRIPT_PROP_CONFIG_OPTIONAL;
-	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_CONFIG_REQUIRED")]
-	public const string INSTALL_SCRIPT_PROP_CONFIG_REQUIRED;
-	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_OUTPUT_FILENAME")]
-	public const string INSTALL_SCRIPT_PROP_OUTPUT_FILENAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_CAN_POST_INSTALL_DRIVERS")]
+	public const string INSTALL_SCRIPT_PROP_CAN_POST_INSTALL_DRIVERS;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_CAN_PRE_INSTALL_DRIVERS")]
+	public const string INSTALL_SCRIPT_PROP_CAN_PRE_INSTALL_DRIVERS;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_EXPECTED_FILENAME")]
+	public const string INSTALL_SCRIPT_PROP_EXPECTED_FILENAME;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_INJECTION_METHOD")]
+	public const string INSTALL_SCRIPT_PROP_INJECTION_METHOD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PATH_FORMAT")]
+	public const string INSTALL_SCRIPT_PROP_PATH_FORMAT;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_POST_INSTALL_DRIVERS_SIGNING_REQ")]
+	public const string INSTALL_SCRIPT_PROP_POST_INSTALL_DRIVERS_SIGNING_REQ;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PRE_INSTALL_DRIVERS_SIGNING_REQ")]
+	public const string INSTALL_SCRIPT_PROP_PRE_INSTALL_DRIVERS_SIGNING_REQ;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PRODUCT_KEY_FORMAT")]
 	public const string INSTALL_SCRIPT_PROP_PRODUCT_KEY_FORMAT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PROFILE")]
@@ -533,6 +795,8 @@ namespace Osinfo {
 	public const string INSTALL_SCRIPT_PROP_TEMPLATE_URI;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_KIBIBYTES")]
 	public const int KIBIBYTES;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEBIBYTES")]
 	public const int MEBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_APPLICATION_ID")]
@@ -543,8 +807,16 @@ namespace Osinfo {
 	public const string MEDIA_PROP_INITRD;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_INSTALLER")]
 	public const string MEDIA_PROP_INSTALLER;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_INSTALLER_REBOOTS")]
+	public const string MEDIA_PROP_INSTALLER_REBOOTS;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_KERNEL")]
 	public const string MEDIA_PROP_KERNEL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_LANG")]
+	public const string MEDIA_PROP_LANG;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_LANG_MAP")]
+	public const string MEDIA_PROP_LANG_MAP;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_LANG_REGEX")]
+	public const string MEDIA_PROP_LANG_REGEX;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_LIVE")]
 	public const string MEDIA_PROP_LIVE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_PUBLISHER_ID")]
@@ -553,14 +825,24 @@ namespace Osinfo {
 	public const string MEDIA_PROP_SYSTEM_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_URL")]
 	public const string MEDIA_PROP_URL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_VARIANT")]
+	public const string MEDIA_PROP_VARIANT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_VOLUME_ID")]
 	public const string MEDIA_PROP_VOLUME_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEGAHERTZ")]
 	public const int MEGAHERTZ;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_DISTRO")]
 	public const string OS_PROP_DISTRO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_FAMILY")]
 	public const string OS_PROP_FAMILY;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_RELEASE_STATUS")]
+	public const string OS_PROP_RELEASE_STATUS;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_VARIANT_PROP_NAME")]
+	public const string OS_VARIANT_PROP_NAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_CODENAME")]
 	public const string PRODUCT_PROP_CODENAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_PRODUCT_PROP_EOL_DATE")]

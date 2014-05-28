@@ -147,6 +147,7 @@ namespace GUPnP {
 		public unowned string get_id ();
 		public unowned string get_parent_id ();
 		public GLib.List<weak Xml.Node> get_properties (string name);
+		public Xml.Ns* get_pv_namespace ();
 		public GLib.List<GUPnP.DIDLLiteResource> get_resources ();
 		public bool get_restricted ();
 		public unowned string get_title ();
@@ -190,19 +191,20 @@ namespace GUPnP {
 		public string author { get; set; }
 		public string creator { get; set; }
 		public string date { get; set; }
-		public void* dc_namespace { get; construct; }
+		public Xml.Ns* dc_namespace { get; construct; }
 		public string description { get; set; }
 		public GUPnP.OCMFlags dlna_managed { get; set; }
-		public void* dlna_namespace { get; construct; }
+		public Xml.Ns* dlna_namespace { get; construct; }
 		public string genre { get; set; }
 		public string id { get; set; }
 		public string parent_id { get; set; }
+		public Xml.Ns* pv_namespace { get; construct; }
 		public bool restricted { get; set; }
 		public string title { get; set; }
 		public int track_number { get; set; }
 		public uint update_id { get; set; }
 		public string upnp_class { get; set; }
-		public void* upnp_namespace { get; construct; }
+		public Xml.Ns* upnp_namespace { get; construct; }
 		public string write_status { get; set; }
 		public GUPnP.XMLDoc xml_doc { construct; }
 		public Xml.Node* xml_node { get; construct; }
@@ -223,15 +225,21 @@ namespace GUPnP {
 		public int get_audio_channels ();
 		public int get_bitrate ();
 		public int get_bits_per_sample ();
+		public int64 get_cleartext_size ();
 		public int get_color_depth ();
+		public Xml.Ns* get_dlna_namespace ();
 		public long get_duration ();
 		public int get_height ();
 		public unowned string get_import_uri ();
 		public unowned string get_protection ();
 		public unowned GUPnP.ProtocolInfo get_protocol_info ();
+		public Xml.Ns* get_pv_namespace ();
 		public int get_sample_freq ();
 		public long get_size ();
 		public int64 get_size64 ();
+		public unowned string get_subtitle_file_type ();
+		public unowned string get_subtitle_file_uri ();
+		public uint get_track_total ();
 		public uint get_update_count ();
 		public unowned string get_uri ();
 		public int get_width ();
@@ -239,6 +247,7 @@ namespace GUPnP {
 		public void set_audio_channels (int n_channels);
 		public void set_bitrate (int bitrate);
 		public void set_bits_per_sample (int sample_size);
+		public void set_cleartext_size (int64 cleartext_size);
 		public void set_color_depth (int color_depth);
 		public void set_duration (long duration);
 		public void set_height (int height);
@@ -248,23 +257,34 @@ namespace GUPnP {
 		public void set_sample_freq (int sample_freq);
 		public void set_size (long size);
 		public void set_size64 (int64 size);
+		public void set_subtitle_file_type (string? type);
+		public void set_subtitle_file_uri (string? uri);
+		public void set_track_total (uint track_total);
 		public void set_update_count (uint update_count);
 		public void set_uri (string uri);
 		public void set_width (int width);
+		public bool track_total_is_set ();
+		public void unset_track_total ();
 		public void unset_update_count ();
 		public bool update_count_is_set ();
 		public int audio_channels { get; set; }
 		public int bitrate { get; set; }
 		public int bits_per_sample { get; set; }
+		public int64 cleartext_size { get; set; }
 		public int color_depth { get; set; }
+		public Xml.Ns* dlna_namespace { get; construct; }
 		public long duration { get; set; }
 		public int height { get; set; }
 		public string import_uri { get; set; }
 		public string protection { get; set; }
 		public GUPnP.ProtocolInfo protocol_info { get; set; }
+		public Xml.Ns* pv_namespace { get; construct; }
 		public int sample_freq { get; set; }
 		public long size { get; set; }
 		public int64 size64 { get; set; }
+		public string subtitle_file_type { get; set; }
+		public string subtitle_file_uri { get; set; }
+		public uint track_total { get; set; }
 		public uint update_count { get; set; }
 		public string uri { get; set; }
 		public int width { get; set; }

@@ -233,6 +233,18 @@ OUT: [1:retval][1:cmd][1:color_select]
 This command is only available in firmware mode.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="CMD_GET_DAC_VALUE"
+              value="60"
+              c:type="CH_CMD_GET_DAC_VALUE"
+              version="1.1.6">
+      <doc xml:space="preserve">Get the DAC value. @scale is a packed float, where 1.0f is 3.3V
+
+IN:  [1:cmd]
+OUT: [1:retval][1:cmd][4:value]
+
+This command is only available in firmware mode.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="CMD_GET_DARK_OFFSETS"
               value="15"
               c:type="CH_CMD_GET_DARK_OFFSETS"
@@ -266,7 +278,7 @@ This command is available in bootloader and firmware mode.</doc>
 The hardware versions are as follows:
 0x00		= Pre-production hardware
 0x01		= ColorHug
-0x02		= ColorHug Spectro
+0x02		= ColorHug+
 0x03-0x0f	= Reserved for future use
 
 IN:  [1:cmd]
@@ -517,6 +529,18 @@ OUT: [1:retval][1:cmd]
 This command is only available in firmware mode.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="CMD_SET_DAC_VALUE"
+              value="61"
+              c:type="CH_CMD_SET_DAC_VALUE"
+              version="1.1.6">
+      <doc xml:space="preserve">Set the DAC value. @scale is a packed float, where 1.0f is 3.3V
+
+IN:  [1:cmd][4:value]
+OUT: [1:retval][1:cmd]
+
+This command is only available in firmware mode.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="CMD_SET_DARK_OFFSETS"
               value="16"
               c:type="CH_CMD_SET_DARK_OFFSETS"
@@ -713,7 +737,7 @@ All of @red, @green and @blue are packed float values.
 
 This command is useful if you want to do an ambient reading.
 
-IN:  [1:cmd][1:sensor-kind]
+IN:  [1:cmd]
 OUT: [1:retval][1:cmd][4:red][4:green][4:blue]
 
 This command is only available in firmware mode.</doc>
@@ -745,7 +769,7 @@ This command is available in firmware mode.</doc>
               version="0.1.29">
       <doc xml:space="preserve">Take a raw reading.
 
-IN:  [1:cmd][1:sensor-kind]
+IN:  [1:cmd]
 OUT: [1:retval][1:cmd][4:count]
 
 This command is only available in firmware mode.</doc>
@@ -781,7 +805,7 @@ If the calibration index is set to %CH_CALIBRATION_SPECTRAL then the
 spectral hardware is used if it is available. The CIE 1931 luminosity
 function data is used by default.
 
-IN:  [1:cmd][2:calibration-index][1:sensor-kind]
+IN:  [1:cmd][2:calibration-index]
 OUT: [1:retval][1:cmd][4:red][4:green][4:blue]
 
 This command is only available in firmware mode.</doc>
@@ -850,13 +874,13 @@ This command is only available in firmware mode.</doc>
       </member>
       <member name="firmware" value="3" c:identifier="CH_DEVICE_MODE_FIRMWARE">
       </member>
-      <member name="bootloader_spectro"
+      <member name="bootloader_plus"
               value="4"
-              c:identifier="CH_DEVICE_MODE_BOOTLOADER_SPECTRO">
+              c:identifier="CH_DEVICE_MODE_BOOTLOADER_PLUS">
       </member>
-      <member name="firmware_spectro"
+      <member name="firmware_plus"
               value="5"
-              c:identifier="CH_DEVICE_MODE_FIRMWARE_SPECTRO">
+              c:identifier="CH_DEVICE_MODE_FIRMWARE_PLUS">
       </member>
       <member name="last" value="6" c:identifier="CH_DEVICE_MODE_LAST">
       </member>
@@ -1166,6 +1190,30 @@ NOTE: This command is available on hardware version: 1 &amp; 2</doc>
           <parameter name="color_select" transfer-ownership="none">
             <doc xml:space="preserve">The color select, e.g. %CH_COLOR_SELECT_RED</doc>
             <type name="ColorSelect" c:type="ChColorSelect*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_dac_value"
+              c:identifier="ch_device_queue_get_dac_value"
+              version="1.1.6">
+        <doc xml:space="preserve">Gets the DAC value.
+
+NOTE: This command is available on hardware version: 2</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device_queue" transfer-ownership="none">
+            <doc xml:space="preserve">A #ChDeviceQueue</doc>
+            <type name="DeviceQueue" c:type="ChDeviceQueue*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">A #GUsbDevice</doc>
+            <type name="GUsb.Device" c:type="GUsbDevice*"/>
+          </parameter>
+          <parameter name="dac_value" transfer-ownership="none">
+            <doc xml:space="preserve">value between 0.0 and 0.99</doc>
+            <type name="gdouble" c:type="gdouble*"/>
           </parameter>
         </parameters>
       </method>
@@ -1559,6 +1607,7 @@ WARNING: this function is syncronous and will block.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">#GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -1583,12 +1632,14 @@ WARNING: this function is syncronous and will block.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
@@ -1853,6 +1904,30 @@ NOTE: This command is available on hardware version: 1 &amp; 2</doc>
           <parameter name="color_select" transfer-ownership="none">
             <doc xml:space="preserve">The color select, e.g. %CH_COLOR_SELECT_RED</doc>
             <type name="ColorSelect" c:type="ChColorSelect"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_dac_value"
+              c:identifier="ch_device_queue_set_dac_value"
+              version="1.1.6">
+        <doc xml:space="preserve">Sets the post scale value.
+
+NOTE: This command is available on hardware version: 1 &amp; 2</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device_queue" transfer-ownership="none">
+            <doc xml:space="preserve">A #ChDeviceQueue</doc>
+            <type name="DeviceQueue" c:type="ChDeviceQueue*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">A #GUsbDevice</doc>
+            <type name="GUsb.Device" c:type="GUsbDevice*"/>
+          </parameter>
+          <parameter name="dac_value" transfer-ownership="none">
+            <doc xml:space="preserve">The DAC value</doc>
+            <type name="gdouble" c:type="gdouble"/>
           </parameter>
         </parameters>
       </method>
@@ -2206,34 +2281,6 @@ NOTE: This command is available on hardware version: 1 &amp; 2</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="take_reading_full"
-              c:identifier="ch_device_queue_take_reading_full"
-              version="0.1.29">
-        <doc xml:space="preserve">Take a raw reading from the sensor.
-
-NOTE: This command is available on hardware version: 1 &amp; 2</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="device_queue" transfer-ownership="none">
-            <doc xml:space="preserve">A #ChDeviceQueue</doc>
-            <type name="DeviceQueue" c:type="ChDeviceQueue*"/>
-          </instance-parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">A #GUsbDevice</doc>
-            <type name="GUsb.Device" c:type="GUsbDevice*"/>
-          </parameter>
-          <parameter name="sensor_kind" transfer-ownership="none">
-            <doc xml:space="preserve">A #ChSensorKind, e.g. %CH_SENSOR_KIND_AMBIENT</doc>
-            <type name="SensorKind" c:type="ChSensorKind"/>
-          </parameter>
-          <parameter name="take_reading" transfer-ownership="none">
-            <doc xml:space="preserve">A raw reading value</doc>
-            <type name="guint32" c:type="guint32*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="take_reading_raw"
               c:identifier="ch_device_queue_take_reading_raw"
               version="0.1.29">
@@ -2307,34 +2354,6 @@ NOTE: This command is available on hardware version: 1 &amp; 2</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="take_readings_full"
-              c:identifier="ch_device_queue_take_readings_full"
-              version="0.1.31">
-        <doc xml:space="preserve">Take a RGB triplet of readings from the sensor without applying the
-calibration matrix.
-
-NOTE: This command is available on hardware version: 1 &amp; 2</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="device_queue" transfer-ownership="none">
-            <doc xml:space="preserve">A #ChDeviceQueue</doc>
-            <type name="DeviceQueue" c:type="ChDeviceQueue*"/>
-          </instance-parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">A #GUsbDevice</doc>
-            <type name="GUsb.Device" c:type="GUsbDevice*"/>
-          </parameter>
-          <parameter name="sensor_kind" transfer-ownership="none">
-            <type name="SensorKind" c:type="ChSensorKind"/>
-          </parameter>
-          <parameter name="value" transfer-ownership="none">
-            <doc xml:space="preserve">The #CdColorRGB of the raw reading</doc>
-            <type name="Colord.ColorRGB" c:type="CdColorRGB*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="take_readings_xyz"
               c:identifier="ch_device_queue_take_readings_xyz"
               version="0.1.29">
@@ -2355,38 +2374,6 @@ NOTE: This command is available on hardware version: 1 &amp; 2</doc>
           </parameter>
           <parameter name="calibration_index" transfer-ownership="none">
             <type name="guint16" c:type="guint16"/>
-          </parameter>
-          <parameter name="value" transfer-ownership="none">
-            <doc xml:space="preserve">The #CdColorXYZ for a given calibration slot</doc>
-            <type name="Colord.ColorXYZ" c:type="CdColorXYZ*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="take_readings_xyz_full"
-              c:identifier="ch_device_queue_take_readings_xyz_full"
-              version="0.1.31">
-        <doc xml:space="preserve">Take an XYZ fully cooked reading from the sensor.
-
-NOTE: This command is available on hardware version: 1 &amp; 2</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="device_queue" transfer-ownership="none">
-            <doc xml:space="preserve">A #ChDeviceQueue</doc>
-            <type name="DeviceQueue" c:type="ChDeviceQueue*"/>
-          </instance-parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">A #GUsbDevice</doc>
-            <type name="GUsb.Device" c:type="GUsbDevice*"/>
-          </parameter>
-          <parameter name="calibration_index" transfer-ownership="none">
-            <doc xml:space="preserve">A calibration index</doc>
-            <type name="guint16" c:type="guint16"/>
-          </parameter>
-          <parameter name="sensor_kind" transfer-ownership="none">
-            <doc xml:space="preserve">A #ChSensorKind, e.g. %CH_SENSOR_KIND_AMBIENT</doc>
-            <type name="SensorKind" c:type="ChSensorKind"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">The #CdColorXYZ for a given calibration slot</doc>
@@ -2927,16 +2914,6 @@ Flags for controlling processing options</doc>
       <member name="last" value="4" c:identifier="CH_PCB_ERRATA_LAST">
       </member>
     </bitfield>
-    <enumeration name="SensorKind" c:type="ChSensorKind">
-      <member name="main" value="0" c:identifier="CH_SENSOR_KIND_MAIN">
-      </member>
-      <member name="ambient" value="1" c:identifier="CH_SENSOR_KIND_AMBIENT">
-      </member>
-      <member name="ccd" value="2" c:identifier="CH_SENSOR_KIND_CCD">
-      </member>
-      <member name="last" value="3" c:identifier="CH_SENSOR_KIND_LAST">
-      </member>
-    </enumeration>
     <record name="Sha1" c:type="ChSha1">
       <field name="bytes" writable="1">
         <array zero-terminated="0" c:type="guint8" fixed-size="20">
@@ -3010,9 +2987,9 @@ Flags for controlling processing options</doc>
               c:type="CH_USB_PID_BOOTLOADER">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="USB_PID_BOOTLOADER_SPECTRO"
+    <constant name="USB_PID_BOOTLOADER_PLUS"
               value="4099"
-              c:type="CH_USB_PID_BOOTLOADER_SPECTRO">
+              c:type="CH_USB_PID_BOOTLOADER_PLUS">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="USB_PID_FIRMWARE"
@@ -3020,9 +2997,9 @@ Flags for controlling processing options</doc>
               c:type="CH_USB_PID_FIRMWARE">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="USB_PID_FIRMWARE_SPECTRO"
+    <constant name="USB_PID_FIRMWARE_PLUS"
               value="4098"
-              c:type="CH_USB_PID_FIRMWARE_SPECTRO">
+              c:type="CH_USB_PID_FIRMWARE_PLUS">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="USB_PID_LEGACY" value="63706" c:type="CH_USB_PID_LEGACY">
@@ -3154,7 +3131,10 @@ Flags for controlling processing options</doc>
           <doc xml:space="preserve">The output buffer length</doc>
           <type name="gsize" c:type="gsize"/>
         </parameter>
-        <parameter name="cancellable" transfer-ownership="none" allow-none="1">
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">A #GCancellable or %NULL</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
@@ -3192,12 +3172,16 @@ Flags for controlling processing options</doc>
           <doc xml:space="preserve">The output buffer length</doc>
           <type name="gsize" c:type="gsize"/>
         </parameter>
-        <parameter name="cancellable" transfer-ownership="none" allow-none="1">
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">A #GCancellable, or %NULL</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
         <parameter name="callback"
                    transfer-ownership="none"
+                   nullable="1"
                    allow-none="1"
                    scope="async"
                    closure="8">

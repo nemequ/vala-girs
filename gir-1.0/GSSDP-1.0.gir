@@ -8,6 +8,7 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="GObject" version="2.0"/>
   <include name="Gio" version="2.0"/>
+  <include name="Soup" version="2.4"/>
   <package name="gssdp-1.0"/>
   <namespace name="GSSDP"
              version="1.0"
@@ -36,16 +37,78 @@ and/or use gtk-doc annotations.  -->
         <parameters>
           <parameter name="main_context"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">Deprecated: 0.11.2: Always set to NULL. If you want to specify a context use g_main_context_push_thread_default()</doc>
+            <doc xml:space="preserve">Deprecated: 0.11.2: Always set to NULL. If you want to
+               specify a context use g_main_context_push_thread_default()</doc>
             <type name="GLib.MainContext" c:type="GMainContext*"/>
           </parameter>
-          <parameter name="iface" transfer-ownership="none">
+          <parameter name="iface"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">The name of the network interface, or %NULL for auto-detection.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_with_port"
+                   c:identifier="gssdp_client_new_with_port"
+                   throws="1">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #GSSDPClient object.</doc>
+          <type name="Client" c:type="GSSDPClient*"/>
+        </return-value>
+        <parameters>
+          <parameter name="iface"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The name of the network interface, or %NULL for
+auto-detection.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="msearch_port" transfer-ownership="none">
+            <doc xml:space="preserve">The network port to use for M-SEARCH requests or 0 for
+random.</doc>
+            <type name="guint16" c:type="guint16"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="append_header" c:identifier="gssdp_client_append_header">
+        <doc xml:space="preserve">Adds a header field to the message sent by this @client. It is intended to
+be used by clients requiring vendor specific header fields. (If there is an
+existing header with name name , then this creates a second one).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">A #GSSDPClient</doc>
+            <type name="Client" c:type="GSSDPClient*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">Header name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">Header value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear_headers" c:identifier="gssdp_client_clear_headers">
+        <doc xml:space="preserve">Removes all the headers for this @client.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">A #GSSDPClient</doc>
+            <type name="Client" c:type="GSSDPClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_active" c:identifier="gssdp_client_get_active">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @client is active, %FALSE otherwise.</doc>
@@ -120,6 +183,23 @@ and/or use gtk-doc annotations.  -->
           </instance-parameter>
         </parameters>
       </method>
+      <method name="remove_header" c:identifier="gssdp_client_remove_header">
+        <doc xml:space="preserve">Removes @name from the list of headers . If there are multiple values for
+@name, they are all removed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">A #GSSDPClient</doc>
+            <type name="Client" c:type="GSSDPClient*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">Header name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_network" c:identifier="gssdp_client_set_network">
         <doc xml:space="preserve">Sets the network identification of @client to @network.</doc>
         <return-value transfer-ownership="none">
@@ -172,13 +252,23 @@ Set to NULL to autodetect.</doc>
       </property>
       <property name="main-context"
                 introspectable="0"
-                deprecated="Use g_main_context_push_thread_default()."
+                deprecated="1"
                 deprecated-version="0.11.2"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The #GMainContext to use. Set to NULL to use the default.</doc>
+        <doc-deprecated xml:space="preserve">Use g_main_context_push_thread_default().</doc-deprecated>
         <type name="gpointer" c:type="gpointer"/>
+      </property>
+      <property name="msearch-port"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">UDP port to use for sending multicast M-SEARCH requests on the
+network. If not set (or set to 0) a random port will be used.
+This property can be only set during object construction.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="network"
                 writable="1"
@@ -220,17 +310,21 @@ This property can only be set during object construction.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="from_ip" transfer-ownership="none">
+            <doc xml:space="preserve">The IP address of the source.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="from_port" transfer-ownership="none">
+            <doc xml:space="preserve">The UDP port used by the sender.</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
-          <parameter name="p1" transfer-ownership="none">
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">The #_GSSDPMessageType.</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
-          <parameter name="p2" transfer-ownership="none">
-            <type name="gpointer" c:type="gpointer"/>
+          <parameter name="headers" transfer-ownership="none">
+            <doc xml:space="preserve">Parsed #SoupMessageHeaders from the message.</doc>
+            <type name="Soup.MessageHeaders" c:type="gpointer"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -278,7 +372,8 @@ This property can only be set during object construction.</doc>
       <member name="no_ip_address"
               value="0"
               c:identifier="GSSDP_ERROR_NO_IP_ADDRESS">
-        <doc xml:space="preserve">GSSDP could not find a valid IP address of a #GSSDPClient.</doc>
+        <doc xml:space="preserve">GSSDP could not find a valid IP address of a
+#GSSDPClient.</doc>
       </member>
       <member name="failed" value="1" c:identifier="GSSDP_ERROR_FAILED">
         <doc xml:space="preserve">Unknown error.</doc>
@@ -356,7 +451,7 @@ bus. There are several possible targets such as
       <method name="get_active"
               c:identifier="gssdp_resource_browser_get_active">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if @resource_browser is active.</doc>
+          <doc xml:space="preserve">%TRUE if @resource_browser is active.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -436,7 +531,7 @@ performed. Otherwise does nothing.</doc>
             <type name="ResourceBrowser" c:type="GSSDPResourceBrowser*"/>
           </instance-parameter>
           <parameter name="active" transfer-ownership="none">
-            <doc xml:space="preserve">TRUE to activate @resource_browser</doc>
+            <doc xml:space="preserve">%TRUE to activate @resource_browser</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -515,7 +610,8 @@ has become available.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
           <parameter name="locations" transfer-ownership="none">
-            <doc xml:space="preserve">A #GList of strings describing the locations of the discovered resource.</doc>
+            <doc xml:space="preserve">A #GList of strings describing the locations of the
+discovered resource.</doc>
             <type name="GLib.List" c:type="gpointer">
               <type name="utf8"/>
             </type>
@@ -639,7 +735,7 @@ to @resource_group.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="resource_group" transfer-ownership="none">
-            <doc xml:space="preserve">An @GSSDPResourceGroup</doc>
+            <doc xml:space="preserve">A #GSSDPResourceGroup</doc>
             <type name="ResourceGroup" c:type="GSSDPResourceGroup*"/>
           </instance-parameter>
           <parameter name="target" transfer-ownership="none">
@@ -668,7 +764,7 @@ to @resource_group.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="resource_group" transfer-ownership="none">
-            <doc xml:space="preserve">An @GSSDPResourceGroup</doc>
+            <doc xml:space="preserve">A #GSSDPResourceGroup</doc>
             <type name="ResourceGroup" c:type="GSSDPResourceGroup*"/>
           </instance-parameter>
           <parameter name="target" transfer-ownership="none">
@@ -744,7 +840,7 @@ to @resource_group.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="resource_group" transfer-ownership="none">
-            <doc xml:space="preserve">An @GSSDPResourceGroup</doc>
+            <doc xml:space="preserve">A #GSSDPResourceGroup</doc>
             <type name="ResourceGroup" c:type="GSSDPResourceGroup*"/>
           </instance-parameter>
           <parameter name="resource_id" transfer-ownership="none">
@@ -767,7 +863,7 @@ to listening SSDP clients.</doc>
             <type name="ResourceGroup" c:type="GSSDPResourceGroup*"/>
           </instance-parameter>
           <parameter name="available" transfer-ownership="none">
-            <doc xml:space="preserve">TRUE if @resource_group should be available (advertised)</doc>
+            <doc xml:space="preserve">%TRUE if @resource_group should be available (advertised)</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>

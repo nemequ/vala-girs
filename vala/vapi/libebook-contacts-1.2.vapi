@@ -35,6 +35,7 @@ namespace E {
 		[CCode (simple_generics = true)]
 		public T @get<T> (E.ContactField field_id);
 		public GLib.List<E.VCardAttribute> get_attributes (E.ContactField field_id);
+		public GLib.List<E.VCardAttribute> get_attributes_set (E.ContactField field_ids, int size);
 		[CCode (simple_generics = true)]
 		public unowned T get_const<T> (E.ContactField field_id);
 		public bool inline_local_photos () throws GLib.Error;
@@ -439,7 +440,8 @@ namespace E {
 		public void append_attribute (owned E.VCardAttribute attr);
 		public void append_attribute_with_value (owned E.VCardAttribute attr, string value);
 		public void @construct (string str);
-		public void construct_with_uid (string str, string uid);
+		public void construct_full (string str, ssize_t len, string? uid);
+		public void construct_with_uid (string str, string? uid);
 		public void dump_structure ();
 		public static string escape_string (string s);
 		[CCode (has_construct_function = false)]
@@ -448,7 +450,7 @@ namespace E {
 		public unowned E.VCardAttribute? get_attribute_if_parsed (string name);
 		public unowned GLib.List<E.VCardAttribute> get_attributes ();
 		public bool is_parsed ();
-		public void remove_attribute (E.VCardAttribute attr);
+		public void remove_attribute (owned E.VCardAttribute attr);
 		public void remove_attributes (string? attr_group, string attr_name);
 		public string to_string (E.VCardFormat format);
 		public static string unescape_string (string s);
@@ -504,6 +506,7 @@ namespace E {
 		public void free ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", has_type_id = false)]
+	[Deprecated (since = "3.2")]
 	public struct BookChange {
 		public E.BookChangeType change_type;
 		public weak E.Contact contact;
@@ -520,6 +523,7 @@ namespace E {
 		public void free ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CHANGE_CARD_", type_id = "e_book_change_type_get_type ()")]
+	[Deprecated (since = "3.2")]
 	public enum BookChangeType {
 		ADDED,
 		DELETED,
@@ -531,11 +535,29 @@ namespace E {
 		NONE,
 		NOTIFY_INITIAL
 	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_ORIGIN_", type_id = "e_book_cursor_origin_get_type ()")]
+	public enum BookCursorOrigin {
+		CURRENT,
+		BEGIN,
+		END
+	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_SORT_", type_id = "e_book_cursor_sort_type_get_type ()")]
+	public enum BookCursorSortType {
+		ASCENDING,
+		DESCENDING
+	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_STEP_", type_id = "e_book_cursor_step_flags_get_type ()")]
+	[Flags]
+	public enum BookCursorStepFlags {
+		MOVE,
+		FETCH
+	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_INDEX_", type_id = "e_book_index_type_get_type ()")]
 	public enum BookIndexType {
 		PREFIX,
 		SUFFIX,
-		PHONE
+		PHONE,
+		SORT_KEY
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_QUERY_", has_type_id = false)]
 	public enum BookQueryTest {
@@ -547,9 +569,11 @@ namespace E {
 		EQUALS_NATIONAL_PHONE_NUMBER,
 		EQUALS_SHORT_PHONE_NUMBER,
 		REGEX_NORMAL,
-		REGEX_RAW
+		REGEX_RAW,
+		LAST
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_VIEW_", type_id = "e_book_view_status_get_type ()")]
+	[Deprecated (since = "3.2")]
 	public enum BookViewStatus {
 		STATUS_OK,
 		STATUS_TIME_LIMIT_EXCEEDED,

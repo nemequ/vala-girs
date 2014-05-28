@@ -287,6 +287,19 @@ and/or use gtk-doc annotations.  -->
               glib:nick="miles">
       </member>
     </enumeration>
+    <callback name="FilterFunc" c:type="GWeatherFilterFunc">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="location" transfer-ownership="none">
+          <type name="Location" c:type="GWeatherLocation*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <enumeration name="ForecastType"
                  glib:type-name="GWeatherForecastType"
                  glib:get-type="gweather_forecast_type_get_type"
@@ -328,7 +341,10 @@ moon phases.</doc>
           <type name="Info" c:type="GWeatherInfo*"/>
         </return-value>
         <parameters>
-          <parameter name="location" transfer-ownership="none" allow-none="1">
+          <parameter name="location"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the desidered #GWeatherLocation (%NULL for default)</doc>
             <type name="Location" c:type="GWeatherLocation*"/>
           </parameter>
@@ -386,7 +402,8 @@ data to include an attribution text, possibly including links
 to the service website.
 This must be shown prominently toghether with the data.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the required attribution text, in Pango markup form, or %NULL if not required</doc>
+          <doc xml:space="preserve">the required attribution text, in Pango
+         markup form, or %NULL if not required</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -428,12 +445,17 @@ This must be shown prominently toghether with the data.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_forecast" c:identifier="gweather_info_get_forecast">
+      <method name="get_forecast"
+              c:identifier="gweather_info_get_forecast"
+              deprecated="1"
+              deprecated-version="3.10">
+        <doc-deprecated xml:space="preserve">Use gweather_info_get_forecast_list() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="info" transfer-ownership="none">
+            <doc xml:space="preserve">a #GWeatherInfo</doc>
             <type name="Info" c:type="GWeatherInfo*"/>
           </instance-parameter>
         </parameters>
@@ -441,7 +463,13 @@ This must be shown prominently toghether with the data.</doc>
       <method name="get_forecast_list"
               c:identifier="gweather_info_get_forecast_list">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">list of GWeatherInfo* objects for the forecast. The list is owned by the 'info' object thus is alive as long as the 'info'. This list is filled only when requested with type FORECAST_LIST and if available for given location. The 'update' property is the date/time when the forecast info is used for.</doc>
+          <doc xml:space="preserve">list
+of GWeatherInfo* objects for the forecast.
+The list is owned by the 'info' object thus is alive as long
+as the 'info'. This list is filled only when requested with
+type FORECAST_LIST and if available for given location.
+The 'update' property is the date/time when the forecast info
+is used for.</doc>
           <type name="GLib.SList" c:type="GSList*">
             <type name="Info"/>
           </type>
@@ -993,7 +1021,13 @@ This must be shown prominently toghether with the data.</doc>
       </method>
       <method name="is_daytime" c:identifier="gweather_info_is_daytime">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">Whether it is daytime (that is, if the sun is visible) or not at the location and the point of time referred by @info. This is mostly equivalent to comparing the return value of gweather_info_get_value_sunrise() and gweather_info_get_value_sunset(), but it accounts also for midnight sun and polar night, for locations within the Artic and Antartic circles.</doc>
+          <doc xml:space="preserve">Whether it is daytime (that is, if the sun is visible)
+  or not at the location and the point of time referred by @info.
+  This is mostly equivalent to comparing the return value
+  of gweather_info_get_value_sunrise() and
+  gweather_info_get_value_sunset(), but it accounts also
+  for midnight sun and polar night, for locations within
+  the Artic and Antartic circles.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -1060,7 +1094,10 @@ Note that this will clear any forecast or current conditions from
             <doc xml:space="preserve">a #GWeatherInfo</doc>
             <type name="Info" c:type="GWeatherInfo*"/>
           </instance-parameter>
-          <parameter name="location" transfer-ownership="none" allow-none="1">
+          <parameter name="location"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a location for which weather is desired</doc>
             <type name="Location" c:type="GWeatherLocation*"/>
           </parameter>
@@ -1144,12 +1181,22 @@ to @gweather_info_update().</doc>
 libgweather; anything from a single weather station to the entire
 world. See #GWeatherLocationLevel for information about how the
 hierarchy of locations works.</doc>
-      <constructor name="new_world" c:identifier="gweather_location_new_world">
+      <constructor name="new_world"
+                   c:identifier="gweather_location_new_world"
+                   deprecated="1"
+                   deprecated-version="3.10">
+        <doc xml:space="preserve">Creates a new #GWeatherLocation of type %GWEATHER_LOCATION_WORLD,
+representing a hierarchy containing all of the locations from
+Locations.xml.</doc>
+        <doc-deprecated xml:space="preserve">Use gweather_location_get_world() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a %GWEATHER_LOCATION_WORLD location, or
+  %NULL if Locations.xml could not be found or could not be parsed.</doc>
           <type name="Location" c:type="GWeatherLocation*"/>
         </return-value>
         <parameters>
           <parameter name="use_regions" transfer-ownership="none">
+            <doc xml:space="preserve">whether or not to divide the world into regions</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -1175,6 +1222,55 @@ country and region as appropriate).</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="detect_nearest_city"
+              c:identifier="gweather_location_detect_nearest_city"
+              version="3.12">
+        <doc xml:space="preserve">Initializes geocode reversing to find place for (@lat, @lon) coordinates. Calls the callback
+function passed by user when the result is ready.
+
+@loc must be at most a %GWEATHER_LOCATION_LEVEL_ADM2 location.
+This restriction may be lifted in a future version.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">void</doc>
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="loc"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">The parent location, which will be searched recursively</doc>
+            <type name="Location" c:type="GWeatherLocation*"/>
+          </instance-parameter>
+          <parameter name="lat" transfer-ownership="none">
+            <doc xml:space="preserve">Latitude, in degrees</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="lon" transfer-ownership="none">
+            <doc xml:space="preserve">Longitude, in degrees</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional, NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">callback function for GAsyncReadyCallback argument for GSimpleAsyncResult</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="equal" c:identifier="gweather_location_equal">
         <doc xml:space="preserve">Compares two #GWeatherLocation and sees if they represent the same
 place.
@@ -1186,7 +1282,8 @@ locations belong to different worlds (in which case care must be
 taken when passing them GWeatherLocationEntry and GWeatherInfo), or
 if one is them is detached it could have a custom name.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the two locations represent the same place as far as libgweather can tell, and %FALSE otherwise.</doc>
+          <doc xml:space="preserve">%TRUE if the two locations represent the same place as
+         far as libgweather can tell, and %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -1209,7 +1306,8 @@ not usually what you want.
 
 See gweather_location_deserialize() to recover a stored #GWeatherLocation.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a weather station level #GWeatherLocation for @station_code, or %NULL if none exists in the database.</doc>
+          <doc xml:space="preserve">a weather station level #GWeatherLocation for @station_code,
+         or %NULL if none exists in the database.</doc>
           <type name="Location" c:type="GWeatherLocation*"/>
         </return-value>
         <parameters>
@@ -1220,6 +1318,93 @@ See gweather_location_deserialize() to recover a stored #GWeatherLocation.</doc>
           <parameter name="station_code" transfer-ownership="none">
             <doc xml:space="preserve">a 4 letter METAR code</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_nearest_city"
+              c:identifier="gweather_location_find_nearest_city"
+              version="3.12">
+        <doc xml:space="preserve">Finds the nearest city to the passed latitude and
+longitude, among the descendants of @loc.
+
+@loc must be at most a %GWEATHER_LOCATION_LEVEL_ADM2 location.
+This restriction may be lifted in a future version.
+
+Note that this function does not check if (@lat, @lon) fall inside
+@loc, or are in the same region and timezone as the return value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the city closest to (@lat, @lon), in the
+         region or administrative district of @loc.</doc>
+          <type name="Location" c:type="GWeatherLocation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="loc"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">The parent location, which will be searched recursively</doc>
+            <type name="Location" c:type="GWeatherLocation*"/>
+          </instance-parameter>
+          <parameter name="lat" transfer-ownership="none">
+            <doc xml:space="preserve">Latitude, in degrees</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="lon" transfer-ownership="none">
+            <doc xml:space="preserve">Longitude, in degrees</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_nearest_city_full"
+              c:identifier="gweather_location_find_nearest_city_full"
+              version="3.12">
+        <doc xml:space="preserve">Finds the nearest city to the passed latitude and
+longitude, among the descendants of @loc.
+
+Supports the use of own filter function to filter out locations.
+Geocoding should be done on the application side if needed.
+
+@loc must be at most a %GWEATHER_LOCATION_LEVEL_ADM2 location.
+This restriction may be lifted in a future version.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the city closest to (@lat, @lon), in the
+         region or administrative district of @loc with validation of filter function.</doc>
+          <type name="Location" c:type="GWeatherLocation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="loc"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">The parent location, which will be searched recursively</doc>
+            <type name="Location" c:type="GWeatherLocation*"/>
+          </instance-parameter>
+          <parameter name="lat" transfer-ownership="none">
+            <doc xml:space="preserve">Latitude, in degrees</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="lon" transfer-ownership="none">
+            <doc xml:space="preserve">Longitude, in degrees</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="notified"
+                     closure="3"
+                     destroy="4">
+            <doc xml:space="preserve">returns true to continue check for
+                                      the location and false to filter the location out</doc>
+            <type name="FilterFunc" c:type="GWeatherFilterFunc"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">for customization</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">to destroy user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
       </method>
@@ -1246,7 +1431,8 @@ gweather_location_get_timezones().</doc>
         <doc xml:space="preserve">Gets an array of @loc's children; this is owned by @loc and will
 not remain valid if @loc is freed.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@loc's children. (May be empty, but will not be %NULL.)</doc>
+          <doc xml:space="preserve">@loc's
+children. (May be empty, but will not be %NULL.)</doc>
           <array c:type="GWeatherLocation**">
             <type name="Location" c:type="GWeatherLocation*"/>
           </array>
@@ -1321,7 +1507,8 @@ gweather_location_has_coords() before calling this.</doc>
         <doc xml:space="preserve">Gets the ISO 3166 country code of @loc (or %NULL if @loc is a
 region- or world-level location)</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@loc's country code (or %NULL if @loc is a region- or world-level location)</doc>
+          <doc xml:space="preserve">@loc's country code (or %NULL if @loc
+is a region- or world-level location)</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -1384,7 +1571,8 @@ in English, and should therefore not be displayed to the user.
       <method name="get_parent" c:identifier="gweather_location_get_parent">
         <doc xml:space="preserve">Gets @loc's parent location.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@loc's parent, or %NULL if @loc is a %GWEATHER_LOCATION_WORLD node.</doc>
+          <doc xml:space="preserve">@loc's parent, or %NULL
+if @loc is a %GWEATHER_LOCATION_WORLD node.</doc>
           <type name="Location" c:type="GWeatherLocation*"/>
         </return-value>
         <parameters>
@@ -1418,7 +1606,8 @@ user input against a location name.</doc>
 The timezone is owned either by @loc or by one of its parents.
 FIXME.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@loc's timezone, or %NULL</doc>
+          <doc xml:space="preserve">@loc's timezone, or
+%NULL</doc>
           <type name="Timezone" c:type="GWeatherTimezone*"/>
         </return-value>
         <parameters>
@@ -1434,7 +1623,8 @@ FIXME.</doc>
 @loc. You can use gweather_location_free_timezones() to free this
 array.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">an array of timezones. May be empty but will not be %NULL.</doc>
+          <doc xml:space="preserve">an array
+of timezones. May be empty but will not be %NULL.</doc>
           <array c:type="GWeatherTimezone**">
             <type name="Timezone" c:type="GWeatherTimezone*"/>
           </array>
@@ -1506,12 +1696,26 @@ reference count reaches 0.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <function name="detect_nearest_city_finish"
+                c:identifier="gweather_location_detect_nearest_city_finish"
+                throws="1">
+        <return-value transfer-ownership="full">
+          <type name="Location" c:type="GWeatherLocation*"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="get_world" c:identifier="gweather_location_get_world">
         <doc xml:space="preserve">Obtains the shared #GWeatherLocation of type %GWEATHER_LOCATION_WORLD,
 representing a hierarchy containing all of the locations from
 Locations.xml.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a %GWEATHER_LOCATION_WORLD location, or %NULL if Locations.xml could not be found or could not be parsed. The return value is owned by libgweather and should not be modified or freed.</doc>
+          <doc xml:space="preserve">a %GWEATHER_LOCATION_WORLD
+location, or %NULL if Locations.xml could not be found or could not be parsed.
+The return value is owned by libgweather and should not be modified or freed.</doc>
           <type name="Location" c:type="GWeatherLocation*"/>
         </return-value>
       </function>
@@ -1551,7 +1755,9 @@ only accepts a smaller set of locations if you want.</doc>
         <doc xml:space="preserve">Gets the location that was set by a previous call to
 gweather_location_entry_set_location() or was selected by the user.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the selected location (which you must unref when you are done with it), or %NULL if no location is selected.</doc>
+          <doc xml:space="preserve">the selected location
+(which you must unref when you are done with it), or %NULL if no
+location is selected.</doc>
           <type name="Location" c:type="GWeatherLocation*"/>
         </return-value>
         <parameters>
@@ -1567,7 +1773,8 @@ gweather_location_entry_set_location() or was selected by the user.</doc>
 Note that this does not mean that no location is associated with @entry.
 gweather_location_entry_get_location() should be used for this.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if @entry's text was modified by the user, or %FALSE if it's set to the default text of a location.</doc>
+          <doc xml:space="preserve">%TRUE if @entry's text was modified by the user, or %FALSE if
+it's set to the default text of a location.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -1582,7 +1789,8 @@ gweather_location_entry_get_location() should be used for this.</doc>
 @city_name, if non-%NULL. If there is no matching city, sets
 @entry's location to %NULL.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if @entry's location could be set to a matching city, %FALSE otherwise.</doc>
+          <doc xml:space="preserve">%TRUE if @entry's location could be set to a matching city,
+%FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -1590,7 +1798,10 @@ gweather_location_entry_get_location() should be used for this.</doc>
             <doc xml:space="preserve">a #GWeatherLocationEntry</doc>
             <type name="LocationEntry" c:type="GWeatherLocationEntry*"/>
           </instance-parameter>
-          <parameter name="city_name" transfer-ownership="none" allow-none="1">
+          <parameter name="city_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the city name, or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -1614,8 +1825,12 @@ equal to @loc, that will be chosen in place of @loc.</doc>
             <doc xml:space="preserve">a #GWeatherLocationEntry</doc>
             <type name="LocationEntry" c:type="GWeatherLocationEntry*"/>
           </instance-parameter>
-          <parameter name="loc" transfer-ownership="none" allow-none="1">
-            <doc xml:space="preserve">a #GWeatherLocation in @entry, or %NULL to clear @entry</doc>
+          <parameter name="loc"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GWeatherLocation in @entry, or %NULL to
+clear @entry</doc>
             <type name="Location" c:type="GWeatherLocation*"/>
           </parameter>
         </parameters>
@@ -1674,25 +1889,31 @@ create detached instances, but deserializing might.</doc>
               value="1"
               c:identifier="GWEATHER_LOCATION_REGION"
               glib:nick="region">
-        <doc xml:space="preserve">A location representing a continent or other top-level region.</doc>
+        <doc xml:space="preserve">A location representing a continent or
+other top-level region.</doc>
       </member>
       <member name="country"
               value="2"
               c:identifier="GWEATHER_LOCATION_COUNTRY"
               glib:nick="country">
-        <doc xml:space="preserve">A location representing a "country" (or other geographic unit that has an ISO-3166 country code)</doc>
+        <doc xml:space="preserve">A location representing a "country" (or
+other geographic unit that has an ISO-3166 country code)</doc>
       </member>
       <member name="adm1"
               value="3"
               c:identifier="GWEATHER_LOCATION_ADM1"
               glib:nick="adm1">
-        <doc xml:space="preserve">A location representing a "first-level administrative division"; ie, a state, province, or similar division.</doc>
+        <doc xml:space="preserve">A location representing a "first-level
+administrative division"; ie, a state, province, or similar
+division.</doc>
       </member>
       <member name="adm2"
               value="4"
               c:identifier="GWEATHER_LOCATION_ADM2"
               glib:nick="adm2">
-        <doc xml:space="preserve">A location representing a subdivision of a %GWEATHER_LOCATION_ADM1 location, or a direct subdivision of a country that is not represented in a #GWeatherLocationEntry.</doc>
+        <doc xml:space="preserve">A location representing a subdivision of a
+%GWEATHER_LOCATION_ADM1 location, or a direct subdivision of
+a country that is not represented in a #GWeatherLocationEntry.</doc>
       </member>
       <member name="city"
               value="5"
@@ -1704,13 +1925,17 @@ create detached instances, but deserializing might.</doc>
               value="6"
               c:identifier="GWEATHER_LOCATION_WEATHER_STATION"
               glib:nick="weather-station">
-        <doc xml:space="preserve">A location representing a weather station.</doc>
+        <doc xml:space="preserve">A location representing a
+weather station.</doc>
       </member>
       <member name="detached"
               value="7"
               c:identifier="GWEATHER_LOCATION_DETACHED"
               glib:nick="detached">
-        <doc xml:space="preserve">A location that is detached from the database, for example because it was loaded from external storage and could not be fully recovered. The parent of this location is the nearest weather station.</doc>
+        <doc xml:space="preserve">A location that is detached from the
+database, for example because it was loaded from external storage
+and could not be fully recovered. The parent of this location is
+the nearest weather station.</doc>
       </member>
     </enumeration>
     <enumeration name="PressureUnit"
@@ -1937,10 +2162,9 @@ create detached instances, but deserializing might.</doc>
             c:symbol-prefix="timezone">
       <doc xml:space="preserve">A timezone.
 
-There are no public methods for creating timezones; they can only
-be created by calling gweather_location_new_world() to parse
-Locations.xml, and then calling various #GWeatherLocation methods
-to extract relevant timezones from the location hierarchy.</doc>
+Timezones are global to the #GWeatherWorld; they can be gotten
+by passing gweather_timezone_get_by_tzid() with a tzid like
+"America/New_York" or "Europe/London".</doc>
       <method name="get_dst_offset"
               c:identifier="gweather_timezone_get_dst_offset">
         <doc xml:space="preserve">Gets @zone's daylight/summer time offset from UTC, in minutes. Eg,
@@ -2040,6 +2264,22 @@ country is obvious).</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <function name="get_by_tzid"
+                c:identifier="gweather_timezone_get_by_tzid"
+                version="3.12">
+        <doc xml:space="preserve">Get the #GWeatherTimezone for @tzid.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GWeatherTimezone. This object
+belongs to GWeather, do not unref it.</doc>
+          <type name="Timezone" c:type="GWeatherTimezone*"/>
+        </return-value>
+        <parameters>
+          <parameter name="tzid" transfer-ownership="none">
+            <doc xml:space="preserve">A timezone identifier, like "America/New_York" or "Europe/London"</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="get_utc" c:identifier="gweather_timezone_get_utc">
         <doc xml:space="preserve">Gets the UTC timezone.</doc>
         <return-value transfer-ownership="full">
@@ -2080,7 +2320,8 @@ contains the timezones from a smaller set of locations if you want.</doc>
       <method name="get_tzid" c:identifier="gweather_timezone_menu_get_tzid">
         <doc xml:space="preserve">Gets @menu's timezone id.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@menu's tzid, or %NULL if no timezone is selected.</doc>
+          <doc xml:space="preserve">@menu's tzid, or %NULL if no timezone
+is selected.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -2101,7 +2342,10 @@ contains the timezones from a smaller set of locations if you want.</doc>
             <doc xml:space="preserve">a #GWeatherTimezoneMenu</doc>
             <type name="TimezoneMenu" c:type="GWeatherTimezoneMenu*"/>
           </instance-parameter>
-          <parameter name="tzid" transfer-ownership="none" allow-none="1">
+          <parameter name="tzid"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a tzdata id (eg, "America/New_York")</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -2230,6 +2474,19 @@ contains the timezones from a smaller set of locations if you want.</doc>
         </parameters>
       </function>
     </enumeration>
+    <function name="location_detect_nearest_city_finish"
+              c:identifier="gweather_location_detect_nearest_city_finish"
+              moved-to="Location.detect_nearest_city_finish"
+              throws="1">
+      <return-value transfer-ownership="full">
+        <type name="Location" c:type="GWeatherLocation*"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="location_get_world"
               c:identifier="gweather_location_get_world"
               moved-to="Location.get_world">
@@ -2237,7 +2494,9 @@ contains the timezones from a smaller set of locations if you want.</doc>
 representing a hierarchy containing all of the locations from
 Locations.xml.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a %GWEATHER_LOCATION_WORLD location, or %NULL if Locations.xml could not be found or could not be parsed. The return value is owned by libgweather and should not be modified or freed.</doc>
+        <doc xml:space="preserve">a %GWEATHER_LOCATION_WORLD
+location, or %NULL if Locations.xml could not be found or could not be parsed.
+The return value is owned by libgweather and should not be modified or freed.</doc>
         <type name="Location" c:type="GWeatherLocation*"/>
       </return-value>
     </function>
@@ -2250,6 +2509,23 @@ Locations.xml.</doc>
       <parameters>
         <parameter name="sky" transfer-ownership="none">
           <type name="Sky" c:type="GWeatherSky"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="timezone_get_by_tzid"
+              c:identifier="gweather_timezone_get_by_tzid"
+              moved-to="Timezone.get_by_tzid"
+              version="3.12">
+      <doc xml:space="preserve">Get the #GWeatherTimezone for @tzid.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">A #GWeatherTimezone. This object
+belongs to GWeather, do not unref it.</doc>
+        <type name="Timezone" c:type="GWeatherTimezone*"/>
+      </return-value>
+      <parameters>
+        <parameter name="tzid" transfer-ownership="none">
+          <doc xml:space="preserve">A timezone identifier, like "America/New_York" or "Europe/London"</doc>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
