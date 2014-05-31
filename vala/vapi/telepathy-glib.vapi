@@ -878,18 +878,12 @@ namespace TelepathyGLib {
 	public class ConnectionManagerProtocol {
 		public weak string name;
 		public weak TelepathyGLib.ConnectionManagerParam @params;
-		[Deprecated (since = "0.19.1")]
 		public bool can_register ();
-		[Deprecated (since = "0.19.1")]
 		public TelepathyGLib.ConnectionManagerProtocol copy ();
 		[CCode (array_length = false, array_null_terminated = true)]
-		[Deprecated (since = "0.19.1")]
 		public string[] dup_param_names ();
-		[Deprecated (since = "0.19.1")]
 		public void free ();
-		[Deprecated (since = "0.19.1")]
 		public unowned TelepathyGLib.ConnectionManagerParam get_param (string param);
-		[Deprecated (since = "0.19.1")]
 		public bool has_param (string param);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_contact_get_type ()")]

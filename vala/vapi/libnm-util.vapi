@@ -755,6 +755,7 @@ namespace NM {
 		public uint16 get_forward_delay ();
 		public uint16 get_hello_time ();
 		public unowned string get_interface_name ();
+		public unowned GLib.ByteArray get_mac_address ();
 		public uint16 get_max_age ();
 		public uint16 get_priority ();
 		public bool get_stp ();
@@ -2406,6 +2407,8 @@ namespace NM {
 	public const string SETTING_BRIDGE_HELLO_TIME;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_INTERFACE_NAME")]
 	public const string SETTING_BRIDGE_INTERFACE_NAME;
+	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_MAC_ADDRESS")]
+	public const string SETTING_BRIDGE_MAC_ADDRESS;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_MAX_AGE")]
 	public const string SETTING_BRIDGE_MAX_AGE;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]

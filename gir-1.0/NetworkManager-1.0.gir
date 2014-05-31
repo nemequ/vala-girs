@@ -2987,6 +2987,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               c:type="NM_SETTING_BRIDGE_INTERFACE_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_BRIDGE_MAC_ADDRESS"
+              value="mac-address"
+              c:type="NM_SETTING_BRIDGE_MAC_ADDRESS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_BRIDGE_MAX_AGE"
               value="max-age"
               c:type="NM_SETTING_BRIDGE_MAX_AGE">
@@ -7003,6 +7008,22 @@ required</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_mac_address"
+              c:identifier="nm_setting_bridge_get_mac_address"
+              version="0.9.10">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingBridge:mac-address property of the setting</doc>
+          <array name="GLib.ByteArray" c:type="const GByteArray*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingBridge</doc>
+            <type name="SettingBridge" c:type="NMSettingBridge*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_max_age"
               c:identifier="nm_setting_bridge_get_max_age"
               version="0.9.8">
@@ -7075,6 +7096,16 @@ required</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The name of the virtual in-kernel briding network interface</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="mac-address"
+                version="0.9.10"
+                introspectable="0"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">If specified, the MAC address of bridge. When creating a new bridge, this MAC address
+will be set. When matching an existing (outside NetworkManager created) bridge, this
+MAC address must match.</doc>
+        <type/>
       </property>
       <property name="max-age"
                 version="0.9.8"
@@ -16397,18 +16428,16 @@ Bytes in @asc can be sepatared by colons (:), or hyphens (-), but not mixed.</do
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
         <parameter name="length" transfer-ownership="none">
-          <doc xml:space="preserve">the expected length in bytes of the result</doc>
+          <doc xml:space="preserve">the expected length in bytes of the result and
+the size of the buffer in bytes.</doc>
           <type name="gsize" c:type="gsize"/>
         </parameter>
       </parameters>
     </function>
     <function name="utils_hwaddr_len" c:identifier="nm_utils_hwaddr_len">
-      <doc xml:space="preserve">Returns the length in octets of a hardware address of type @type.
-
-Note that this only accepts %ARPHRD_ETHER and %ARPHRD_INFINIBAND,
-not other types.</doc>
+      <doc xml:space="preserve">Returns the length in octets of a hardware address of type @type.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the length</doc>
+        <doc xml:space="preserve">the positive length, or -1 if the type is unknown/unsupported.</doc>
         <type name="gint" c:type="int"/>
       </return-value>
       <parameters>
@@ -16469,7 +16498,8 @@ nm_utils_hwaddr_ntoa() or nm_utils_hwaddr_aton() when you only had
 a length; but you can just use nm_utils_hwaddr_ntoa_len() or
 nm_utils_hwaddr_aton_len() now instead.</doc-deprecated>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the type, either %ARPHRD_ETHER or %ARPHRD_INFINIBAND.</doc>
+        <doc xml:space="preserve">the type, either %ARPHRD_ETHER or %ARPHRD_INFINIBAND.
+If the length is unexpected, return -1 (unsupported type/length).</doc>
         <type name="gint" c:type="int"/>
       </return-value>
       <parameters>

@@ -225,6 +225,7 @@ namespace GUPnP {
 		protected ServiceProxy ();
 		public bool add_notify (string variable, GLib.Type type, [CCode (scope = "async")] owned GUPnP.ServiceProxyNotifyCallback callback);
 		public bool add_notify_full (string variable, GLib.Type type, owned GUPnP.ServiceProxyNotifyCallback callback);
+		public bool add_raw_notify (owned GUPnP.ServiceProxyNotifyCallback callback);
 		public unowned GUPnP.ServiceProxyAction begin_action (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] owned GUPnP.ServiceProxyActionCallback callback, ...);
 		[Deprecated (since = "0.20.9")]
 		public unowned GUPnP.ServiceProxyAction begin_action_hash (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] owned GUPnP.ServiceProxyActionCallback callback, GLib.HashTable<string,GLib.Value?> hash);
@@ -235,6 +236,7 @@ namespace GUPnP {
 		public bool end_action_list (GUPnP.ServiceProxyAction action, [CCode (pos = -0.9)] GLib.List<string> out_names, [CCode (pos = -0.8)] GLib.List<GLib.Type?> out_types, [CCode (pos = -0.7)] out GLib.List<weak GLib.Value*> out_values) throws GLib.Error;
 		public bool get_subscribed ();
 		public bool remove_notify (string variable, GUPnP.ServiceProxyNotifyCallback callback);
+		public bool remove_raw_notify (GUPnP.ServiceProxyNotifyCallback callback);
 		public bool send_action (string action, ...) throws GLib.Error;
 		public bool send_action_hash (string action, [CCode (pos = -0.9)] GLib.HashTable<string,GLib.Value?> in_hash, [CCode (pos = -0.8)] GLib.HashTable<string,weak GLib.Value*> out_hash) throws GLib.Error;
 		public bool send_action_list (string action, [CCode (pos = -0.9)] GLib.List<string> in_names, [CCode (pos = -0.8)] GLib.List<weak GLib.Value?> in_values, [CCode (pos = -0.7)] GLib.List<string> out_names, [CCode (pos = -0.6)] GLib.List<GLib.Type?> out_types, [CCode (pos = -0.5)] out GLib.List<weak GLib.Value*> out_values) throws GLib.Error;
