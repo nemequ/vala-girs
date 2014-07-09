@@ -600,10 +600,11 @@ See g_action_map_add_action_entries() for an example.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="state" writable="1">
-        <doc xml:space="preserve">the initial state for this action, given in GVariant text
-        format.  The state is parsed with no extra type information,
-        so type tags must be added to the string if they are
-        necessary.</doc>
+        <doc xml:space="preserve">the initial state for this action, given in
+        [GVariant text format][gvariant-text].  The state is parsed
+        with no extra type information, so type tags must be added to
+        the string if they are necessary.  Stateless actions should
+        give %NULL here.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </field>
       <field name="change_state">
@@ -5016,6 +5017,17 @@ g_application_get_is_registered().</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_resource_base_path"
+              c:identifier="g_application_get_resource_base_path">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="application" transfer-ownership="none">
+            <type name="Application" c:type="GApplication*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="hold" c:identifier="g_application_hold">
         <doc xml:space="preserve">Increases the use count of @application.
 
@@ -5462,6 +5474,20 @@ zero.  Any timeouts currently in progress are not impacted.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_resource_base_path"
+              c:identifier="g_application_set_resource_base_path">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="application" transfer-ownership="none">
+            <type name="Application" c:type="GApplication*"/>
+          </instance-parameter>
+          <parameter name="resource_base_path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="unmark_busy"
               c:identifier="g_application_unmark_busy"
               version="2.38">
@@ -5537,6 +5563,11 @@ there is no need to explicitly withdraw the notification in that case.</doc>
       </property>
       <property name="is-remote" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="resource-base-path"
+                writable="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent_instance" readable="0" private="1">
         <type name="GObject.Object" c:type="GObject"/>
@@ -9790,6 +9821,9 @@ On FreeBSD, Debian GNU/kFreeBSD, and GNU/Hurd, the native
 credential type is a struct cmsgcred. This corresponds
 to %G_CREDENTIALS_TYPE_FREEBSD_CMSGCRED.
 
+On NetBSD, the native credential type is a struct unpcbid.
+This corresponds to %G_CREDENTIALS_TYPE_NETBSD_UNPCBID.
+
 On OpenBSD, the native credential type is a struct sockpeercred.
 This corresponds to %G_CREDENTIALS_TYPE_OPENBSD_SOCKPEERCRED.
 
@@ -10000,14 +10034,20 @@ returned string may change in future GLib release.</doc>
               glib:nick="freebsd-cmsgcred">
         <doc xml:space="preserve">The native credentials type is a &lt;type&gt;struct cmsgcred&lt;/type&gt;.</doc>
       </member>
-      <member name="openbsd_sockpeercred"
+      <member name="netbsd_unpcbid"
               value="3"
+              c:identifier="G_CREDENTIALS_TYPE_NETBSD_UNPCBID"
+              glib:nick="netbsd-unpcbid">
+        <doc xml:space="preserve">The native credentials type is a &lt;type&gt;struct unpcbid&lt;/type&gt;.</doc>
+      </member>
+      <member name="openbsd_sockpeercred"
+              value="4"
               c:identifier="G_CREDENTIALS_TYPE_OPENBSD_SOCKPEERCRED"
               glib:nick="openbsd-sockpeercred">
         <doc xml:space="preserve">The native credentials type is a &lt;type&gt;struct sockpeercred&lt;/type&gt;. Added in 2.30.</doc>
       </member>
       <member name="solaris_ucred"
-              value="4"
+              value="5"
               c:identifier="G_CREDENTIALS_TYPE_SOLARIS_UCRED"
               glib:nick="solaris-ucred">
         <doc xml:space="preserve">The native credentials type is a &lt;type&gt;ucred_t&lt;/type&gt;. Added in 2.40.</doc>
@@ -10217,7 +10257,7 @@ For example, if you only want to allow D-Bus connections from
 processes owned by the same uid as the server, you would use a
 signal handler like the following:
 
-|[
+|[&lt;!-- language="C" --&gt;
 static gboolean
 on_authorize_authenticated_peer (GDBusAuthObserver *observer,
                                  GIOStream         *stream,
@@ -25990,8 +26030,7 @@ aliasing.
 
 This call does no blocking I/O.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if @file1 and @file2 are equal.
-    %FALSE if either is not a #GFile.</doc>
+          <doc xml:space="preserve">%TRUE if @file1 and @file2 are equal.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -29575,8 +29614,7 @@ aliasing.
 
 This call does no blocking I/O.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if @file1 and @file2 are equal.
-    %FALSE if either is not a #GFile.</doc>
+          <doc xml:space="preserve">%TRUE if @file1 and @file2 are equal.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -35209,8 +35247,7 @@ to be used as icon.</doc>
       <field name="equal">
         <callback name="equal">
           <return-value transfer-ownership="none">
-            <doc xml:space="preserve">%TRUE if @file1 and @file2 are equal.
-    %FALSE if either is not a #GFile.</doc>
+            <doc xml:space="preserve">%TRUE if @file1 and @file2 are equal.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
@@ -52216,6 +52253,23 @@ was sent on is activated.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_priority" c:identifier="g_notification_set_priority">
+        <doc xml:space="preserve">Sets the priority of @notification to @priority. See
+#GNotificationPriority for possible values.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="notification" transfer-ownership="none">
+            <doc xml:space="preserve">a #GNotification</doc>
+            <type name="Notification" c:type="GNotification*"/>
+          </instance-parameter>
+          <parameter name="priority" transfer-ownership="none">
+            <doc xml:space="preserve">a #GNotificationPriority</doc>
+            <type name="NotificationPriority" c:type="GNotificationPriority"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_title"
               c:identifier="g_notification_set_title"
               version="2.40">
@@ -52237,7 +52291,7 @@ was sent on is activated.</doc>
       <method name="set_urgent"
               c:identifier="g_notification_set_urgent"
               version="2.40">
-        <doc xml:space="preserve">Sets or unsets whether @notification is marked as urgent.</doc>
+        <doc xml:space="preserve">Deprecated in favor of g_notification_set_priority().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -52253,6 +52307,45 @@ was sent on is activated.</doc>
         </parameters>
       </method>
     </class>
+    <enumeration name="NotificationPriority"
+                 version="2.42"
+                 glib:type-name="GNotificationPriority"
+                 glib:get-type="g_notification_priority_get_type"
+                 c:type="GNotificationPriority">
+      <doc xml:space="preserve">Priority levels for #GNotifications.</doc>
+      <member name="normal"
+              value="0"
+              c:identifier="G_NOTIFICATION_PRIORITY_NORMAL"
+              glib:nick="normal">
+        <doc xml:space="preserve">the default priority, to be used for the
+  majority of notifications (for example email messages, software updates,
+  completed download/sync operations)</doc>
+      </member>
+      <member name="low"
+              value="1"
+              c:identifier="G_NOTIFICATION_PRIORITY_LOW"
+              glib:nick="low">
+        <doc xml:space="preserve">for notifications that do not require
+  immediate attention - typically used for contextual background
+  information, such as contact birthdays or local weather</doc>
+      </member>
+      <member name="high"
+              value="2"
+              c:identifier="G_NOTIFICATION_PRIORITY_HIGH"
+              glib:nick="high">
+        <doc xml:space="preserve">for events that require more attention,
+  usually because responses are time-sensitive (for example chat and SMS
+  messages or alarms)</doc>
+      </member>
+      <member name="urgent"
+              value="3"
+              c:identifier="G_NOTIFICATION_PRIORITY_URGENT"
+              glib:nick="urgent">
+        <doc xml:space="preserve">for urgent notifications, or notifications
+  that require a response in a short space of time (for example phone calls
+  or emergency warnings)</doc>
+      </member>
+    </enumeration>
     <class name="OutputStream"
            c:symbol-prefix="output_stream"
            c:type="GOutputStream"
@@ -63544,8 +63637,9 @@ checked with g_socket_check_connect_result().</doc>
               c:identifier="g_socket_create_source"
               version="2.22"
               introspectable="0">
-        <doc xml:space="preserve">Creates a %GSource that can be attached to a %GMainContext to monitor
-for the availability of the specified @condition on the socket.
+        <doc xml:space="preserve">Creates a #GSource that can be attached to a %GMainContext to monitor
+for the availability of the specified @condition on the socket. The #GSource
+keeps a reference to the @socket.
 
 The callback on the source is of the #GSocketSourceFunc type.
 
@@ -67943,7 +68037,12 @@ address and listened to.
 @source_object will be passed out in the various calls
 to accept to identify this particular source, which is
 useful if you're listening on multiple addresses and do
-different things depending on what address is connected to.</doc>
+different things depending on what address is connected to.
+
+The @socket will not be automatically closed when the @listener is finalized
+unless the listener held the final reference to the socket. Before GLib 2.42,
+the @socket was automatically closed on finalization of the @listener, even
+if references to it were held elsewhere.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success, %FALSE on error.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -68763,11 +68862,11 @@ The argument list must be terminated with %NULL.</doc>
             <type name="GLib.Error" c:type="GError**"/>
           </parameter>
           <parameter name="argv0" transfer-ownership="none">
-            <doc xml:space="preserve">first commandline argument to pass to the subprocess,
-    followed by more arguments, followed by %NULL</doc>
+            <doc xml:space="preserve">first commandline argument to pass to the subprocess</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">more commandline arguments, followed by %NULL</doc>
             <varargs/>
           </parameter>
         </parameters>
@@ -69000,7 +69099,7 @@ process as UTF-8, and returns it as a regular NUL terminated string.</doc>
       </method>
       <method name="communicate_utf8_async"
               c:identifier="g_subprocess_communicate_utf8_async">
-        <doc xml:space="preserve">Asynchronous version of g_subprocess_communicate_utf().  Complete
+        <doc xml:space="preserve">Asynchronous version of g_subprocess_communicate_utf8().  Complete
 invocation with g_subprocess_communicate_utf8_finish().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -69886,8 +69985,7 @@ strings. On Windows, they should be in UTF-8.</doc>
               c:identifier="g_subprocess_launcher_spawn"
               version="2.40"
               introspectable="0">
-        <doc xml:space="preserve">A convenience helper for creating a #GSubprocess given a provided
-varargs list of arguments.</doc>
+        <doc xml:space="preserve">Creates a #GSubprocess given a provided varargs list of arguments.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A new #GSubprocess, or %NULL on error (and @error will be set)</doc>
           <type name="Subprocess" c:type="GSubprocess*"/>
@@ -69915,8 +70013,7 @@ varargs list of arguments.</doc>
               c:identifier="g_subprocess_launcher_spawnv"
               version="2.40"
               throws="1">
-        <doc xml:space="preserve">A convenience helper for creating a #GSubprocess given a provided
-array of arguments.</doc>
+        <doc xml:space="preserve">Creates a #GSubprocess given a provided array of arguments.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A new #GSubprocess, or %NULL on error (and @error will be set)</doc>
           <type name="Subprocess" c:type="GSubprocess*"/>

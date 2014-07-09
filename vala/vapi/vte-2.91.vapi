@@ -13,15 +13,12 @@ namespace Vte {
 		public int get_fd ();
 		public bool get_size (out int rows, out int columns) throws GLib.Error;
 		public bool set_size (int rows, int columns) throws GLib.Error;
-		public void set_term (string? emulation);
 		public bool set_utf8 (bool utf8) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Pty.sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int fd { get; construct; }
 		[NoAccessorMethod]
 		public Vte.PtyFlags flags { get; construct; }
-		[NoAccessorMethod]
-		public string term { owned get; set; }
 	}
 	[CCode (cheader_filename = "vte/vte.h", type_id = "vte_terminal_get_type ()")]
 	public class Terminal : Gtk.Widget, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
@@ -42,7 +39,6 @@ namespace Vte {
 		public Vte.CursorBlinkMode get_cursor_blink_mode ();
 		public void get_cursor_position (out long column, out long row);
 		public Vte.CursorShape get_cursor_shape ();
-		public unowned string get_emulation ();
 		public unowned string get_encoding ();
 		public unowned Pango.FontDescription get_font ();
 		public double get_font_scale ();
@@ -54,7 +50,6 @@ namespace Vte {
 		public unowned Vte.Pty get_pty ();
 		public bool get_rewrap_on_resize ();
 		public long get_row_count ();
-		public unowned string get_status_line ();
 		public string get_text ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public string get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
@@ -94,9 +89,8 @@ namespace Vte {
 		public void set_cursor_shape (Vte.CursorShape shape);
 		public void set_default_colors ();
 		public void set_delete_binding (Vte.EraseBinding binding);
-		public void set_emulation (string? emulation);
 		public void set_encoding (string? codeset);
-		public void set_font (Pango.FontDescription font_desc);
+		public void set_font (Pango.FontDescription? font_desc);
 		public void set_font_scale (double scale);
 		public void set_geometry_hints_for_window (Gtk.Window window);
 		public void set_input_enabled (bool enabled);
@@ -123,7 +117,6 @@ namespace Vte {
 		public Vte.CursorShape cursor_shape { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding delete_binding { get; set; }
-		public string emulation { get; set; }
 		public string encoding { get; set; }
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }
@@ -154,7 +147,6 @@ namespace Vte {
 		public virtual signal void cursor_moved ();
 		public virtual signal void decrease_font_size ();
 		public virtual signal void deiconify_window ();
-		public virtual signal void emulation_changed ();
 		public virtual signal void encoding_changed ();
 		public virtual signal void eof ();
 		public virtual signal void icon_title_changed ();
@@ -170,7 +162,6 @@ namespace Vte {
 		public virtual signal void resize_window (uint width, uint height);
 		public virtual signal void restore_window ();
 		public virtual signal void selection_changed ();
-		public virtual signal void status_line_changed ();
 		public virtual signal void text_deleted ();
 		public virtual signal void text_inserted ();
 		public virtual signal void text_modified ();
@@ -230,8 +221,6 @@ namespace Vte {
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
-	[CCode (cheader_filename = "vte/vte.h")]
-	public static unowned string get_default_emulation ();
 	[CCode (cheader_filename = "vte/vte.h")]
 	public static string get_user_shell ();
 }

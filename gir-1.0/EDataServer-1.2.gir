@@ -4195,96 +4195,6 @@ If an error occurs, the functon will set @error and return %FALSE.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="allow_auth_prompt"
-              c:identifier="e_source_allow_auth_prompt"
-              version="3.14">
-        <doc xml:space="preserve">Asynchronously tells the source registry that it can ask for passwords,
-if necessary. Password prompts are disabled automatically when a user cancels
-the password prompt. This function is to reverse the effect. It does
-nothing, if the password prompt is not disabled.
-
-When the operation is finished, @callback will be called. You can then
-call e_source_allow_auth_prompt_finish() to get the result of the operation.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="source" transfer-ownership="none">
-            <doc xml:space="preserve">an #ESource</doc>
-            <type name="Source" c:type="ESource*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
-            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">data to pass to the callback function</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="allow_auth_prompt_finish"
-              c:identifier="e_source_allow_auth_prompt_finish"
-              version="3.14"
-              throws="1">
-        <doc xml:space="preserve">Finishes the operation started with e_source_allow_auth_prompt().
-
-If an error occurs, the function sets @error and returns %FALSE.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success, %FALSE on error</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="source" transfer-ownership="none">
-            <doc xml:space="preserve">an #ESource</doc>
-            <type name="Source" c:type="ESource*"/>
-          </instance-parameter>
-          <parameter name="result" transfer-ownership="none">
-            <doc xml:space="preserve">a #GAsyncResult</doc>
-            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="allow_auth_prompt_sync"
-              c:identifier="e_source_allow_auth_prompt_sync"
-              version="3.14"
-              throws="1">
-        <doc xml:space="preserve">Tells the source registry that it can ask for passwords, if necessary.
-Password prompts are disabled automatically when a user cancels
-the password prompt. This function is to reverse the effect. It does
-nothing, if the password prompt is not disabled.
-
-If an error occurs, the function sets @error and returns %FALSE.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success, %FALSE on error</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="source" transfer-ownership="none">
-            <doc xml:space="preserve">an #ESource</doc>
-            <type name="Source" c:type="ESource*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="camel_configure_service"
               c:identifier="e_source_camel_configure_service"
               version="3.6"
@@ -13723,16 +13633,18 @@ and e_source_webdav_store_ssl_trust_prompt().</doc>
               c:identifier="e_source_webdav_prepare_ssl_trust_prompt"
               version="3.8"
               introspectable="0">
-        <doc xml:space="preserve">Checks @cert against currently stored trust response and either returns what
-to do immediately, or returns #E_TRUST_PROMPT_RESPONSE_UNKNOWN and populates
-@parameters with necessary values for a trust prompt.</doc>
+        <doc xml:space="preserve">Checks @messages&lt;!-- --&gt;'s certificate against currently stored trust
+response and either returns what to do immediately, or returns
+#E_TRUST_PROMPT_RESPONSE_UNKNOWN and populates @parameters with necessary
+values for a trust prompt.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">What to do with SSL connection, where
          #E_TRUST_PROMPT_RESPONSE_UNKNOWN means 'ask a user, with
          populated parameters'.
 
-Note: The #E_TRUST_PROMPT_RESPONSE_REJECT is returned on any errors, such as
- invalid parameters.</doc>
+Note: The #E_TRUST_PROMPT_RESPONSE_REJECT is returned on any errors, like
+ the @message not being with the #SOUP_STATUS_SSL_FAILED status code,
+ no certificate being stored in the @message and so on.</doc>
           <type name="TrustPromptResponse" c:type="ETrustPromptResponse"/>
         </return-value>
         <parameters>
@@ -13741,23 +13653,10 @@ Note: The #E_TRUST_PROMPT_RESPONSE_REJECT is returned on any errors, such as
             <type name="SourceWebdav" c:type="ESourceWebdav*"/>
           </instance-parameter>
           <parameter name="message" transfer-ownership="none">
-            <doc xml:space="preserve">a #SoupMessage</doc>
+            <doc xml:space="preserve">a #SoupMessage with #SOUP_STATUS_SSL_FAILED status code</doc>
             <type c:type="SoupMessage*"/>
           </parameter>
-          <parameter name="cert" transfer-ownership="none">
-            <doc xml:space="preserve">the invalid certificate of the connection over which @message is about
-       to be sent</doc>
-            <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
-          </parameter>
-          <parameter name="cert_errors" transfer-ownership="none">
-            <doc xml:space="preserve">the error flags for @cert</doc>
-            <type name="Gio.TlsCertificateFlags"
-                  c:type="GTlsCertificateFlags"/>
-          </parameter>
-          <parameter name="registry"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve">an #ESourceRegistry, to use for parent lookups</doc>
             <type name="gpointer" c:type="_ESourceRegistry*"/>
           </parameter>
@@ -13784,18 +13683,8 @@ See e_source_webdav_prepare_ssl_trust_prompt() for more details.</doc>
             <type name="SourceWebdav" c:type="ESourceWebdav*"/>
           </instance-parameter>
           <parameter name="message" transfer-ownership="none">
-            <doc xml:space="preserve">a #SoupMessage</doc>
+            <doc xml:space="preserve">a #SoupMessage with #SOUP_STATUS_SSL_FAILED status code</doc>
             <type c:type="SoupMessage*"/>
-          </parameter>
-          <parameter name="cert" transfer-ownership="none">
-            <doc xml:space="preserve">the invalid certificate of the connection over which @message is about
-       to be sent</doc>
-            <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
-          </parameter>
-          <parameter name="cert_errors" transfer-ownership="none">
-            <doc xml:space="preserve">the error flags for @cert</doc>
-            <type name="Gio.TlsCertificateFlags"
-                  c:type="GTlsCertificateFlags"/>
           </parameter>
           <parameter name="parent_source" transfer-ownership="none">
             <doc xml:space="preserve">an #ESource, parent of the @extension&lt;!-- --&gt;'s source</doc>
@@ -14049,16 +13938,11 @@ a temporary reject, which means the user will be asked again.</doc>
             <type name="SourceWebdav" c:type="ESourceWebdav*"/>
           </instance-parameter>
           <parameter name="message" transfer-ownership="none">
-            <doc xml:space="preserve">a #SoupMessage</doc>
+            <doc xml:space="preserve">a #SoupMessage with #SOUP_STATUS_SSL_FAILED status code</doc>
             <type c:type="SoupMessage*"/>
           </parameter>
-          <parameter name="cert" transfer-ownership="none">
-            <doc xml:space="preserve">the invalid certificate of the connection over which @message is about
-       to be sent</doc>
-            <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
-          </parameter>
           <parameter name="response" transfer-ownership="none">
-            <doc xml:space="preserve">user's response from a trust prompt for @cert</doc>
+            <doc xml:space="preserve">user's response from a trust prompt</doc>
             <type name="TrustPromptResponse" c:type="ETrustPromptResponse"/>
           </parameter>
         </parameters>
@@ -14337,9 +14221,7 @@ This causes e_async_closure_wait() to terminate and return @result.</doc>
     </function>
     <function name="categories_add" c:identifier="e_categories_add">
       <doc xml:space="preserve">Adds a new category, with its corresponding icon, to the
-configuration database.
-
-This function is thread safe.</doc>
+configuration database.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -14362,44 +14244,8 @@ This function is thread safe.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="categories_dup_icon_file_for"
-              c:identifier="e_categories_dup_icon_file_for"
-              version="3.14">
-      <doc xml:space="preserve">Gets the icon file associated with the given category and returns a copy of
-it.
-
-This function is thread safe.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">icon file name; free with g_free().</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </return-value>
-      <parameters>
-        <parameter name="category" transfer-ownership="none">
-          <doc xml:space="preserve">category to retrieve the icon file for.</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="categories_dup_list"
-              c:identifier="e_categories_dup_list"
-              version="3.14">
-      <doc xml:space="preserve">Returns a sorted list of all the category names currently configured.
-
-This function is thread safe.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a sorted #GList containing
-the names of the categories. The list should be freed using g_list_free(),
-and the names of the categories should be freed using g_free(). Everything
-can be freed simultaneously using g_list_free_full().</doc>
-        <type name="GLib.List" c:type="GList*">
-          <type name="utf8"/>
-        </type>
-      </return-value>
-    </function>
     <function name="categories_exist" c:identifier="e_categories_exist">
-      <doc xml:space="preserve">Checks whether the given category is available in the configuration.
-
-This function is thread safe.</doc>
+      <doc xml:space="preserve">Checks whether the given category is available in the configuration.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the category is available, %FALSE otherwise.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -14412,16 +14258,8 @@ This function is thread safe.</doc>
       </parameters>
     </function>
     <function name="categories_get_icon_file_for"
-              c:identifier="e_categories_get_icon_file_for"
-              deprecated="1"
-              deprecated-version="3.14">
-      <doc xml:space="preserve">Gets the icon file associated with the given category.
-
-This function is mostly thread safe, but as the icon file name is not
-copied, it may be freed by another thread after being returned by this
-function. Use e_categories_dup_icon_file_for() instead.</doc>
-      <doc-deprecated xml:space="preserve">This function is not entirely thread safe. Use
-e_categories_dup_icon_file_for() instead.</doc-deprecated>
+              c:identifier="e_categories_get_icon_file_for">
+      <doc xml:space="preserve">Gets the icon file associated with the given category.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">icon file name.</doc>
         <type name="utf8" c:type="const gchar*"/>
@@ -14433,22 +14271,13 @@ e_categories_dup_icon_file_for() instead.</doc-deprecated>
         </parameter>
       </parameters>
     </function>
-    <function name="categories_get_list"
-              c:identifier="e_categories_get_list"
-              deprecated="1"
-              deprecated-version="3.14">
-      <doc xml:space="preserve">Returns a sorted list of all the category names currently configured.
-
-This function is mostly thread safe, but as the category names are not
-copied, they may be freed by another thread after being returned by this
-function. Use e_categories_dup_list() instead.</doc>
-      <doc-deprecated xml:space="preserve">This function is not entirely thread safe. Use
-e_categories_dup_list() instead.</doc-deprecated>
+    <function name="categories_get_list" c:identifier="e_categories_get_list">
+      <doc xml:space="preserve">Returns a sorted list of all the category names currently configured.</doc>
       <return-value transfer-ownership="container">
         <doc xml:space="preserve">a sorted GList containing
-the names of the categories. The list should be freed using g_list_free(),
-but the names of the categories should not be touched at all, they are
-internal strings.</doc>
+the names of the categories.The list should be freed using g_list_free(), but
+the names of the categories should not be touched at all, they are internal
+strings.</doc>
         <type name="GLib.List" c:type="GList*">
           <type name="utf8"/>
         </type>
@@ -14457,8 +14286,6 @@ internal strings.</doc>
     <function name="categories_is_searchable"
               c:identifier="e_categories_is_searchable">
       <doc xml:space="preserve">Gets whether the given calendar is to be used for searches in the GUI.
-
-This function is thread safe.
 
 Return value; %TRUE% if the category is searchable, %FALSE% if not.</doc>
       <return-value transfer-ownership="none">
@@ -14476,9 +14303,7 @@ Return value; %TRUE% if the category is searchable, %FALSE% if not.</doc>
               version="2.24">
       <doc xml:space="preserve">Registers callback to be called on change of any category.
 Pair listener and user_data is used to distinguish between listeners.
-Listeners can be unregistered with @e_categories_unregister_change_listener.
-
-This function is thread safe.</doc>
+Listeners can be unregistered with @e_categories_unregister_change_listener.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -14497,9 +14322,7 @@ This function is thread safe.</doc>
       </parameters>
     </function>
     <function name="categories_remove" c:identifier="e_categories_remove">
-      <doc xml:space="preserve">Removes the given category from the configuration.
-
-This function is thread safe.</doc>
+      <doc xml:space="preserve">Removes the given category from the configuration.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -14512,9 +14335,7 @@ This function is thread safe.</doc>
     </function>
     <function name="categories_set_icon_file_for"
               c:identifier="e_categories_set_icon_file_for">
-      <doc xml:space="preserve">Sets the icon file associated with the given category.
-
-This function is thread safe.</doc>
+      <doc xml:space="preserve">Sets the icon file associated with the given category.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -14533,9 +14354,7 @@ This function is thread safe.</doc>
               c:identifier="e_categories_unregister_change_listener"
               version="2.24">
       <doc xml:space="preserve">Removes previously registered callback from the list of listeners on changes.
-If it was not registered, then does nothing.
-
-This function is thread safe.</doc>
+If it was not registered, then does nothing.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

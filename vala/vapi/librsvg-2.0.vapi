@@ -33,18 +33,18 @@ namespace Rsvg {
 		[Deprecated (since = "2.36")]
 		public unowned string get_desc ();
 		public Rsvg.DimensionData get_dimensions ();
-		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string id);
+		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
 		[Deprecated (since = "2.36")]
 		public unowned string get_metadata ();
-		public Gdk.Pixbuf get_pixbuf ();
-		public Gdk.Pixbuf get_pixbuf_sub (string id);
+		public Gdk.Pixbuf? get_pixbuf ();
+		public Gdk.Pixbuf? get_pixbuf_sub (string? id);
 		public bool get_position_sub (out Rsvg.PositionData position_data, string id);
 		[Deprecated (since = "2.36")]
 		public unowned string get_title ();
 		public bool has_sub (string id);
 		public bool read_stream_sync (GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool render_cairo (Cairo.Context cr);
-		public bool render_cairo_sub (Cairo.Context cr, string id);
+		public bool render_cairo_sub (Cairo.Context cr, string? id);
 		public void set_base_gfile (GLib.File base_file);
 		public void set_base_uri (string base_uri);
 		public void set_dpi (double dpi);
@@ -91,10 +91,11 @@ namespace Rsvg {
 		public int x;
 		public int y;
 	}
-	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_HANDLE_FLAGS_", type_id = "rsvg_handle_flags_get_type ()")]
+	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_HANDLE_", type_id = "rsvg_handle_flags_get_type ()")]
 	[Flags]
 	public enum HandleFlags {
-		NONE
+		FLAGS_NONE,
+		FLAG_UNLIMITED
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_ERROR_")]
 	public errordomain Error {

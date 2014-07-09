@@ -287,6 +287,7 @@ namespace NM {
 		public Connection.from_hash (GLib.HashTable<string,GLib.HashTable<void*,void*>> hash) throws GLib.Error;
 		public unowned string get_connection_type ();
 		public unowned string get_id ();
+		public unowned string get_interface_name ();
 		public unowned string get_path ();
 		public unowned NM.Setting get_setting (GLib.Type setting_type);
 		public unowned NM.Setting8021x get_setting_802_1x ();
@@ -323,6 +324,7 @@ namespace NM {
 		public static GLib.Type lookup_setting_type (string name);
 		public static GLib.Type lookup_setting_type_by_quark (GLib.Quark error_quark);
 		public unowned string need_secrets (out GLib.GenericArray<weak string> hints);
+		public bool normalize (GLib.HashTable<string,void*>? parameters, out bool modified) throws GLib.Error;
 		public void remove_setting (GLib.Type setting_type);
 		public bool replace_settings (GLib.HashTable<string,GLib.HashTable<void*,void*>> new_settings) throws GLib.Error;
 		public bool replace_settings_from_connection (NM.Connection new_connection) throws GLib.Error;
@@ -439,7 +441,7 @@ namespace NM {
 		[NoWrapper]
 		public virtual int update_one_secret (string key, GLib.Value value) throws GLib.Error;
 		public bool update_secrets (GLib.HashTable<string,GLib.Value?> secrets) throws GLib.Error;
-		public virtual bool verify (GLib.SList<NM.Setting> all_settings) throws GLib.Error;
+		public bool verify (GLib.SList<NM.Setting> all_settings) throws GLib.Error;
 		[NoAccessorMethod]
 		public string name { owned get; set; }
 	}
@@ -1987,7 +1989,9 @@ namespace NM {
 		[CCode (cname = "NM_CONNECTION_ERROR_CONNECTION_TYPE_INVALID")]
 		CONNECTIONTYPEINVALID,
 		[CCode (cname = "NM_CONNECTION_ERROR_SETTING_NOT_FOUND")]
-		SETTINGNOTFOUND
+		SETTINGNOTFOUND,
+		[CCode (cname = "NM_CONNECTION_ERROR_INVALID_SETTING")]
+		INVALIDSETTING
 	}
 	[CCode (cheader_filename = "nm-setting-8021x.h", cprefix = "NM_SETTING_802_1X_ERROR_")]
 	public errordomain Setting8021xError {
@@ -2327,6 +2331,8 @@ namespace NM {
 	public delegate void VPNIterFunc (string key, string value);
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_CONNECTION_CHANGED")]
 	public const string CONNECTION_CHANGED;
+	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD")]
+	public const string CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD;
 	[CCode (cheader_filename = "nm-connection.h", cname = "NM_CONNECTION_PATH")]
 	public const string CONNECTION_PATH;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_CONNECTION_SECRETS_CLEARED")]

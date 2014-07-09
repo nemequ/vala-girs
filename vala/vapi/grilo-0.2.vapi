@@ -191,6 +191,7 @@ namespace Grl {
 		public unowned string get_genre_nth (uint index);
 		public unowned string get_lyrics ();
 		public unowned string get_lyrics_nth (uint index);
+		public unowned string get_mb_album_id ();
 		public int get_track_number ();
 		public unowned string get_url_data (string mime, int bitrate);
 		public unowned string get_url_data_nth (uint index, string mime, int bitrate);
@@ -199,6 +200,7 @@ namespace Grl {
 		public void set_bitrate (int bitrate);
 		public void set_genre (string genre);
 		public void set_lyrics (string lyrics);
+		public void set_mb_album_id (string mb_album_id);
 		public void set_track_number (int track_number);
 		public void set_url_data (string url, string mime, int bitrate);
 	}
@@ -312,6 +314,8 @@ namespace Grl {
 		public static Grl.KeyID HEIGHT;
 		[CCode (cname = "GRL_METADATA_KEY_ID")]
 		public static Grl.KeyID ID;
+		[CCode (cname = "GRL_METADATA_KEY_INVALID")]
+		public static Grl.KeyID INVALID;
 		[CCode (cname = "GRL_METADATA_KEY_ISO_SPEED")]
 		public static Grl.KeyID ISO_SPEED;
 		[CCode (cname = "GRL_METADATA_KEY_KEYWORD")]
@@ -324,6 +328,8 @@ namespace Grl {
 		public static Grl.KeyID LICENSE;
 		[CCode (cname = "GRL_METADATA_KEY_LYRICS")]
 		public static Grl.KeyID LYRICS;
+		[CCode (cname = "GRL_METADATA_KEY_MB_ALBUM_ID")]
+		public static Grl.KeyID MB_ALBUM_ID;
 		[CCode (cname = "GRL_METADATA_KEY_MIME")]
 		public static Grl.KeyID MIME;
 		[CCode (cname = "GRL_METADATA_KEY_MODIFICATION_DATE")]

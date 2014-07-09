@@ -141,8 +141,6 @@ namespace E {
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
-		public async bool allow_auth_prompt (GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool allow_auth_prompt_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int compare_by_display_name (E.Source source2);
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_password_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -880,16 +878,10 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_add (string category, string unused, string icon_file, bool searchable);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static string categories_dup_icon_file_for (string category);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static GLib.List<string> categories_dup_list ();
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_exist (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.14")]
 	public static unowned string categories_get_icon_file_for (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.14")]
 	public static GLib.List<weak string> categories_get_list ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_is_searchable (string category);

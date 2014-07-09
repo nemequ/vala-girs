@@ -134,7 +134,7 @@ keys.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MICRO_VERSION"
-              value="1"
+              value="3"
               c:type="VTE_MICRO_VERSION"
               version="0.16.15">
       <doc xml:space="preserve">The micro version number of the VTE library
@@ -338,25 +338,6 @@ If setting the window size failed, @error will be set to a #GIOError.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_term" c:identifier="vte_pty_set_term" version="0.26">
-        <doc xml:space="preserve">Sets what value of the TERM environment variable to set just after forking.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="pty" transfer-ownership="none">
-            <doc xml:space="preserve">a #VtePty</doc>
-            <type name="Pty" c:type="VtePty*"/>
-          </instance-parameter>
-          <parameter name="emulation"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the name of a terminal description, or %NULL</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_utf8"
               c:identifier="vte_pty_set_utf8"
               version="0.26"
@@ -395,14 +376,6 @@ discipline do multibyte backspace correctly.</doc>
         <doc xml:space="preserve">Controls how the session is recorded in lastlog, utmp, and wtmp,
 and whether to use the GNOME PTY helper.</doc>
         <type name="PtyFlags"/>
-      </property>
-      <property name="term"
-                version="0.26"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The value to set for the TERM environment variable just after
-forking.</doc>
-        <type name="utf8" c:type="gchar*"/>
       </property>
     </class>
     <record name="PtyClass"
@@ -447,32 +420,32 @@ enumeration. See #GError for more information on error domains.</doc>
               value="1"
               c:identifier="VTE_PTY_NO_LASTLOG"
               glib:nick="no-lastlog">
-        <doc xml:space="preserve">don't record the session in lastlog</doc>
+        <doc xml:space="preserve">don't record the session in lastlog. Deprecated: 0.38</doc>
       </member>
       <member name="no_utmp"
               value="2"
               c:identifier="VTE_PTY_NO_UTMP"
               glib:nick="no-utmp">
-        <doc xml:space="preserve">don't record the session in utmp</doc>
+        <doc xml:space="preserve">don't record the session in utmp. Deprecated: 0.38</doc>
       </member>
       <member name="no_wtmp"
               value="4"
               c:identifier="VTE_PTY_NO_WTMP"
               glib:nick="no-wtmp">
-        <doc xml:space="preserve">don't record the session in wtmp</doc>
+        <doc xml:space="preserve">don't record the session in wtmp. Deprecated: 0.38</doc>
       </member>
       <member name="no_helper"
               value="8"
               c:identifier="VTE_PTY_NO_HELPER"
               glib:nick="no-helper">
-        <doc xml:space="preserve">don't use the GNOME PTY helper to allocate the PTY</doc>
+        <doc xml:space="preserve">don't use the GNOME PTY helper to allocate the PTY. Deprecated: 0.38</doc>
       </member>
       <member name="no_fallback"
               value="16"
               c:identifier="VTE_PTY_NO_FALLBACK"
               glib:nick="no-fallback">
         <doc xml:space="preserve">when allocating the PTY with the PTY helper fails,
-  don't fall back to try using PTY98</doc>
+  don't fall back to try using PTY98. Deprecated: 0.38</doc>
       </member>
       <member name="default"
               value="0"
@@ -637,16 +610,6 @@ selection.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="emulation_changed">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
       <virtual-method name="encoding_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -795,16 +758,6 @@ user presses Shift+Insert.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="selection_changed">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="status_line_changed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1136,21 +1089,6 @@ coordinate is absolute.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_emulation" c:identifier="vte_terminal_get_emulation">
-        <doc xml:space="preserve">Queries the terminal for its current emulation, as last set by a call to
-vte_terminal_set_emulation().</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">an interned string containing the name of the terminal type the
-  widget is attempting to emulate</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_encoding" c:identifier="vte_terminal_get_encoding">
         <doc xml:space="preserve">Determines the name of the encoding in which the terminal expects data to be
 encoded.</doc>
@@ -1167,10 +1105,12 @@ encoded.</doc>
       </method>
       <method name="get_font" c:identifier="vte_terminal_get_font">
         <doc xml:space="preserve">Queries the terminal for information about the fonts which will be
-used to draw text in the terminal.</doc>
+used to draw text in the terminal.  The actual font takes the font scale
+into account, this is not reflected in the return value, the unscaled
+font is returned.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #PangoFontDescription describing the font the terminal is
-  currently using to render text</doc>
+          <doc xml:space="preserve">a #PangoFontDescription describing the font the
+terminal uses to render text at the default font scale of 1.0.</doc>
           <type name="Pango.FontDescription"
                 c:type="const PangoFontDescription*"/>
         </return-value>
@@ -1321,24 +1261,6 @@ using vte_terminal_set_mouse_autohide().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of rows</doc>
           <type name="glong" c:type="glong"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_status_line"
-              c:identifier="vte_terminal_get_status_line">
-        <doc xml:space="preserve">Some terminal emulations specify a status line which is separate from the
-main display area, and define a means for applications to move the cursor
-to the status line and back.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the current contents of the terminal's status line.
-  For terminals like "xterm", this will usually be the empty string.  The string
-  must not be modified or freed by the caller.</doc>
-          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="terminal" transfer-ownership="none">
@@ -2264,27 +2186,6 @@ presses the delete key.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_emulation" c:identifier="vte_terminal_set_emulation">
-        <doc xml:space="preserve">Sets what type of terminal the widget attempts to emulate by scanning for
-control sequences defined in the system's termcap file.  Unless you
-are interested in this feature, always use "xterm".</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="emulation"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the name of a terminal description, or %NULL to use the default</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_encoding" c:identifier="vte_terminal_set_encoding">
         <doc xml:space="preserve">Changes the encoding the terminal will expect data from the child to
 be encoded with.  For certain terminal types, applications executing in the
@@ -2308,14 +2209,24 @@ application's locale settings.</doc>
         </parameters>
       </method>
       <method name="set_font" c:identifier="vte_terminal_set_font">
+        <doc xml:space="preserve">Sets the font used for rendering all text displayed by the terminal,
+overriding any fonts set using gtk_widget_modify_font().  The terminal
+will immediately attempt to load the desired font, retrieve its
+metrics, and attempt to resize itself to keep the same number of rows
+and columns.  The font scale is applied to the specified font.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve">a #VteTerminal</doc>
             <type name="Terminal" c:type="VteTerminal*"/>
           </instance-parameter>
-          <parameter name="font_desc" transfer-ownership="none">
+          <parameter name="font_desc"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #PangoFontDescription for the desired font, or %NULL</doc>
             <type name="Pango.FontDescription"
                   c:type="const PangoFontDescription*"/>
           </parameter>
@@ -2548,8 +2459,8 @@ will clear itself to the default foreground color and then repaint itself.</doc>
               throws="1">
         <doc xml:space="preserve">Starts the specified command under a newly-allocated controlling
 pseudo-terminal.  The @argv and @envv lists should be %NULL-terminated.
-The "TERM" environment variable is automatically set to reflect the
-terminal widget's emulation setting.
+The "TERM" environment variable is automatically set to a default value,
+but can be overridden from @envv.
 @pty_flags controls logging the session to the specified system log files.
 
 Note that %G_SPAWN_DO_NOT_REAP_CHILD will always be added to @spawn_flags.
@@ -2786,15 +2697,6 @@ will use the #GtkSettings::gtk-cursor-blink setting.</doc>
 when the user presses the delete key.</doc>
         <type name="EraseBinding"/>
       </property>
-      <property name="emulation"
-                version="0.20"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Sets what type of terminal the widget attempts to emulate by scanning for
-control sequences defined in the system's termcap file.  Unless you
-are interested in this feature, always use the default which is "xterm".</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
       <property name="encoding"
                 version="0.20"
                 writable="1"
@@ -3006,13 +2908,6 @@ primarily by #VteTerminalAccessible.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="emulation-changed" when="last">
-        <doc xml:space="preserve">Emitted whenever the terminal's emulation changes, only possible at
-the parent application's request.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
       <glib:signal name="encoding-changed" when="last">
         <doc xml:space="preserve">Emitted whenever the terminal's current encoding has changed, either
 as a result of receiving a control sequence which toggled between the
@@ -3121,13 +3016,6 @@ always) emitted with a #VteTerminal::child-exited signal.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="status-line-changed" when="last">
-        <doc xml:space="preserve">Emitted whenever the contents of the status line are modified or
-cleared.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
       <glib:signal name="text-deleted" when="last">
         <doc xml:space="preserve">An internal signal used for communication between the terminal and
 its accessibility peer. May not be emitted under certain
@@ -3203,18 +3091,6 @@ circumstances.</doc>
             </parameter>
             <parameter name="status" transfer-ownership="none">
               <type name="gint" c:type="int"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="emulation_changed">
-        <callback name="emulation_changed">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="terminal" transfer-ownership="none">
-              <type name="Terminal" c:type="VteTerminal*"/>
             </parameter>
           </parameters>
         </callback>
@@ -3299,18 +3175,6 @@ circumstances.</doc>
       </field>
       <field name="cursor_moved">
         <callback name="cursor_moved">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="terminal" transfer-ownership="none">
-              <type name="Terminal" c:type="VteTerminal*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="status_line_changed">
-        <callback name="status_line_changed">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3600,17 +3464,6 @@ to an output stream.</doc>
         <doc xml:space="preserve">Write contents as UTF-8 text.  This is the default.</doc>
       </member>
     </enumeration>
-    <function name="get_default_emulation"
-              c:identifier="vte_get_default_emulation"
-              version="0.30">
-      <doc xml:space="preserve">Returns the default emulation, which is used in #VteTerminal if the
-terminal type passed to vte_terminal_set_emulation() is %NULL.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">an interned string containing the name
-  of the default terminal type the widget attempts to emulate</doc>
-        <type name="utf8" c:type="char*"/>
-      </return-value>
-    </function>
     <function name="get_user_shell"
               c:identifier="vte_get_user_shell"
               version="0.28">

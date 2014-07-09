@@ -5376,6 +5376,19 @@ usage.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="session_removed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pool" transfer-ownership="none">
+            <type name="RTSPSessionPool" c:type="GstRTSPSessionPool*"/>
+          </instance-parameter>
+          <parameter name="session" transfer-ownership="none">
+            <type name="RTSPSession" c:type="GstRTSPSession*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="cleanup" c:identifier="gst_rtsp_session_pool_cleanup">
         <doc xml:space="preserve">Inspect all the sessions in @pool and remove the sessions that are inactive
 for more than their timeout.</doc>
@@ -5423,7 +5436,8 @@ up.</doc>
 what happens to the session. @func will be called with the session pool
 locked so no further actions on @pool can be performed from @func.
 
-If @func returns #GST_RTSP_FILTER_REMOVE, the session will be removed from
+If @func returns #GST_RTSP_FILTER_REMOVE, the session will be set to the
+expired state with gst_rtsp_session_set_expired() and removed from
 @pool.
 
 If @func returns #GST_RTSP_FILTER_KEEP, the session will remain in @pool.
@@ -5560,6 +5574,16 @@ A value of 0 means an unlimited amount of sessions.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+      <glib:signal name="session-removed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="RTSPSession"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="RTSPSessionPoolClass"
             c:type="GstRTSPSessionPoolClass"
@@ -5594,8 +5618,23 @@ A value of 0 means an unlimited amount of sessions.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="session_removed">
+        <callback name="session_removed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="pool" transfer-ownership="none">
+              <type name="RTSPSessionPool" c:type="GstRTSPSessionPool*"/>
+            </parameter>
+            <parameter name="session" transfer-ownership="none">
+              <type name="RTSPSession" c:type="GstRTSPSession*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="19">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>

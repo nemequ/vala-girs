@@ -1691,7 +1691,8 @@ namespace MM {
 		@3GPP_LAC_CI,
 		GPS_RAW,
 		GPS_NMEA,
-		CDMA_BS;
+		CDMA_BS,
+		GPS_UNMANAGED;
 		public static string build_string_from_mask (MM.ModemLocationSource mask);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCK_", type_id = "mm_modem_lock_get_type ()")]

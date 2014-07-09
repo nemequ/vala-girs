@@ -162,6 +162,11 @@ Bluetooth device.</doc>
               c:type="NM_CONNECTION_CHANGED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD"
+              value="ip6-config-method"
+              c:type="NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CONNECTION_PATH" value="path" c:type="NM_CONNECTION_PATH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -469,6 +474,26 @@ calling the supplied user function for each property.</doc>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve">the #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_interface_name"
+              c:identifier="nm_connection_get_interface_name"
+              version="1.0">
+        <doc xml:space="preserve">Returns the interface name as stored in NMSettingConnection:interface_name.
+If the connection contains no NMSettingConnection, it will return %NULL.
+
+For hardware devices and software devices created outside of NetworkManager,
+this name is used to match the device. for software devices created by
+NetworkManager, this is the name of the created interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Name of the kernel interface or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">The #NMConnection</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </instance-parameter>
         </parameters>
@@ -945,7 +970,7 @@ connection types, this function will return %NULL.</doc>
       </method>
       <method name="is_type" c:identifier="nm_connection_is_type">
         <doc xml:space="preserve">A convenience function to check if the given @connection is a particular
-type (ie wired, wifi, ppp, etc). Checks the #NMSettingConnection:type
+type (ie wired, Wi-Fi, ppp, etc). Checks the #NMSettingConnection:type
 property of the connection and matches that against @type.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the connection is of the given @type, %FALSE if not</doc>
@@ -994,6 +1019,52 @@ secrets are needed.</doc>
             <array name="GLib.PtrArray" c:type="GPtrArray**">
               <type name="utf8"/>
             </array>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="normalize"
+              c:identifier="nm_connection_normalize"
+              version="1.0"
+              throws="1">
+        <doc xml:space="preserve">Does some basic normalization and fixup of well known inconsistencies
+and deprecated fields. If the connection was modified in any way,
+the output parameter @modified is set %TRUE.
+
+Finally the connection will be verified and %TRUE returns if the connection
+is valid. As this function only performs some specific normalization steps
+it cannot repair all connections. If the connection has errors that
+cannot be normalized, the connection will not be modified.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the connection is valid, %FALSE if it is not</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection to normalize</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+          <parameter name="parameters"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GHashTable with
+normalization parameters to allow customization of the normalization by providing
+specific arguments. Unknown arguments will be ignored and the default will be
+used. The keys must be strings, hashed by g_str_hash() and g_str_equal() functions.
+The values are opaque and depend on the parameter name.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="modified"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">outputs whether any settings were modified.</doc>
+            <type name="gboolean" c:type="gboolean*"/>
           </parameter>
         </parameters>
       </method>
@@ -1148,7 +1219,7 @@ string:#GValue of setting property names and secrets of the given @setting_name<
       <method name="verify" c:identifier="nm_connection_verify" throws="1">
         <doc xml:space="preserve">Validates the connection and all its settings.  Each setting's properties
 have allowed values, and some values are dependent on other values.  For
-example, if a WiFi connection is security enabled, the #NMSettingWireless
+example, if a Wi-Fi connection is security enabled, the #NMSettingWireless
 setting object's 'security' property must contain the setting name of the
 #NMSettingWirelessSecurity object, which must also be present in the
 connection for the connection to be valid.  As another example, the
@@ -1264,6 +1335,13 @@ updated</doc>
               glib:nick="SettingNotFound">
         <doc xml:space="preserve">the #NMConnection object
   did not contain the specified #NMSetting object</doc>
+      </member>
+      <member name="InvalidSetting"
+              value="4"
+              c:identifier="NM_CONNECTION_ERROR_INVALID_SETTING"
+              glib:nick="InvalidSetting">
+        <doc xml:space="preserve">the #NMConnection object contains
+  a conflicting setting object</doc>
       </member>
       <function name="quark" c:identifier="nm_connection_error_quark">
         <doc xml:space="preserve">Registers an error quark for #NMConnection if necessary.</doc>
@@ -4235,25 +4313,17 @@ free the elements.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="verify" invoker="verify" throws="1">
-        <doc xml:space="preserve">Validates the setting.  Each setting's properties have allowed values, and
-some are dependent on other values (hence the need for @all_settings).  The
-returned #GError contains information about which property of the setting
-failed validation, and in what way that property failed validation.</doc>
+      <virtual-method name="verify" introspectable="0" throws="1">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the setting is valid, %FALSE if it is not</doc>
-          <type name="gboolean" c:type="gboolean"/>
+          <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting to verify</doc>
             <type name="Setting" c:type="NMSetting*"/>
           </instance-parameter>
           <parameter name="all_settings" transfer-ownership="none">
-            <doc xml:space="preserve">a #GSList of all settings
-    in the connection from which @setting came</doc>
             <type name="GLib.SList" c:type="GSList*">
-              <type name="Setting"/>
+              <type name="gpointer" c:type="gpointer"/>
             </type>
           </parameter>
         </parameters>
@@ -4596,7 +4666,7 @@ failed validation, and in what way that property failed validation.</doc>
       <property name="name" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The setting's name, which uniquely identifies the setting within the
 connection.  Each setting type has a name unique to that type, for
-example 'ppp' or 'wireless' or 'wired'.</doc>
+example "ppp" or "wireless" or "wired".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -5906,9 +5976,8 @@ key password to prevent unauthorized access to unencrypted private key data.</do
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">List of strings to be matched against the altSubjectName of the
-certificate presented by the authentication server. If the list
-is empty, no verification of the server certificate's
-altSubjectName is performed.</doc>
+certificate presented by the authentication server. If the list is empty,
+no verification of the server certificate's altSubjectName is performed.</doc>
         <type/>
       </property>
       <property name="anonymous-identity"
@@ -5924,8 +5993,19 @@ identity like EAP-TTLS.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Contains the CA certificate if used by the EAP method specified in the
-#NMSetting8021x:eap property.  Setting this property directly is
-discouraged; use the nm_setting_802_1x_set_ca_cert() function instead.</doc>
+#NMSetting8021x:eap property.
+
+Certificate data is specified using a "scheme"; two are currently
+supported: blob and path. When using the blob scheme (which is backwards
+compatible with NM 0.7.x) this property should be set to the
+certificate's DER encoded data. When using the path scheme, this property
+should be set to the full UTF-8 encoded path of the certificate, prefixed
+with the string "file://" and ending with a terminating NUL byte. This
+property can be unset even if the EAP method supports CA certificates,
+but this allows man-in-the-middle attacks and is NOT recommended.
+
+Setting this property directly is discouraged; use the
+nm_setting_802_1x_set_ca_cert() function instead.</doc>
         <type/>
       </property>
       <property name="ca-path" writable="1" transfer-ownership="none">
@@ -5939,8 +6019,17 @@ certificate specified in the #NMSetting8021x:ca-cert property.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Contains the client certificate if used by the EAP method specified in
-the #NMSetting8021x:eap property.  Setting this property directly is
-discouraged; use the nm_setting_802_1x_set_client_cert() function instead.</doc>
+the #NMSetting8021x:eap property.
+
+Certificate data is specified using a "scheme"; two are currently
+supported: blob and path. When using the blob scheme (which is backwards
+compatible with NM 0.7.x) this property should be set to the
+certificate's DER encoded data. When using the path scheme, this property
+should be set to the full UTF-8 encoded path of the certificate, prefixed
+with the string "file://" and ending with a terminating NUL byte.
+
+Setting this property directly is discouraged; use the
+nm_setting_802_1x_set_client_cert() function instead.</doc>
         <type/>
       </property>
       <property name="eap"
@@ -5948,15 +6037,15 @@ discouraged; use the nm_setting_802_1x_set_client_cert() function instead.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The allowed EAP method to be used when authenticating to the network with
-802.1x.  Valid methods are: "leap", "md5", "tls", "peap", "ttls", "pwd" and
-"fast".  Each method requires different configuration using the
-properties of this object; refer to wpa_supplicant documentation for the
+802.1x.  Valid methods are: "leap", "md5", "tls", "peap", "ttls", "pwd",
+and "fast".  Each method requires different configuration using the
+properties of this setting; refer to wpa_supplicant documentation for the
 allowed combinations.</doc>
         <type/>
       </property>
       <property name="identity" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Identity string for EAP authentication methods.  Often the user's
-user or login name.</doc>
+        <doc xml:space="preserve">Identity string for EAP authentication methods.  Often the user's user or
+login name.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pac-file" writable="1" transfer-ownership="none">
@@ -5964,29 +6053,29 @@ user or login name.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Password used for EAP authentication methods. If both
-#NMSetting8021x:password and #NMSetting8021x:password-raw are
-specified, #NMSetting8021x:password is preferred.</doc>
+        <doc xml:space="preserve">UTF-8 encoded password used for EAP authentication methods. If both the
+#NMSetting8021x:password property and the #NMSetting8021x:password-raw
+property are specified, #NMSetting8021x:password is preferred.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSetting8021x:password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="password-raw"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Password used for EAP authentication methods delivered as a
-UTF-8-encoded array of bytes. If both #NMSetting8021x:password
-and #NMSetting8021x:password-raw are specified,
-#NMSetting8021x:password is preferred.</doc>
+        <doc xml:space="preserve">Password used for EAP authentication methods, given as a byte array to
+allow passwords in other encodings than UTF-8 to be used. If both the
+#NMSetting8021x:password property and the #NMSetting8021x:password-raw
+property are specified, #NMSetting8021x:password is preferred.</doc>
         <type/>
       </property>
       <property name="password-raw-flags"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSetting8021x:password-raw:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:password-raw property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="phase1-fast-provisioning"
@@ -6021,26 +6110,25 @@ version.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">List of strings to be matched against the altSubjectName of the
-certificate presented by the authentication server during the
-inner "phase 2" authentication. If the list is empty, no
-verification of the server certificate's altSubjectName is
-performed.</doc>
+certificate presented by the authentication server during the inner
+"phase 2" authentication. If the list is empty, no verification of the
+server certificate's altSubjectName is performed.</doc>
         <type/>
       </property>
       <property name="phase2-auth" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Specifies the allowed "phase 2" inner non-EAP authentication methods when
 an EAP method that uses an inner TLS tunnel is specified in the
-#NMSetting8021x:eap property.  Recognized non-EAP phase2 methods are
+#NMSetting8021x:eap property.  Recognized non-EAP "phase 2" methods are
 "pap", "chap", "mschap", "mschapv2", "gtc", "otp", "md5", and "tls".
-Each 'phase 2' inner method requires specific parameters for successful
+Each "phase 2" inner method requires specific parameters for successful
 authentication; see the wpa_supplicant documentation for more details.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="phase2-autheap" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Specifies the allowed "phase 2" inner EAP-based authentication methods
 when an EAP method that uses an inner TLS tunnel is specified in the
-#NMSetting8021x:eap property.  Recognized EAP-based phase2 methods are
-"md5", "mschapv2", "otp", "gtc", and "tls". Each 'phase 2' inner method
+#NMSetting8021x:eap property.  Recognized EAP-based "phase 2" methods are
+"md5", "mschapv2", "otp", "gtc", and "tls". Each "phase 2" inner method
 requires specific parameters for successful authentication; see the
 wpa_supplicant documentation for more details.</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -6049,8 +6137,19 @@ wpa_supplicant documentation for more details.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Contains the CA certificate if used by the EAP method specified in the
-#NMSetting8021x:phase2-auth or #NMSetting8021x:phase2-autheap properties.
+        <doc xml:space="preserve">Contains the "phase 2" CA certificate if used by the EAP method specified
+in the #NMSetting8021x:phase2-auth or #NMSetting8021x:phase2-autheap
+properties.
+
+Certificate data is specified using a "scheme"; two are currently
+supported: blob and path. When using the blob scheme (which is backwards
+compatible with NM 0.7.x) this property should be set to the
+certificate's DER encoded data. When using the path scheme, this property
+should be set to the full UTF-8 encoded path of the certificate, prefixed
+with the string "file://" and ending with a terminating NUL byte. This
+property can be unset even if the EAP method supports CA certificates,
+but this allows man-in-the-middle attacks and is NOT recommended.
+
 Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_ca_cert() function instead.</doc>
         <type/>
@@ -6065,9 +6164,20 @@ certificate specified in the #NMSetting8021x:phase2-ca-cert property.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Contains the client certificate if used by the EAP method specified in
-the #NMSetting8021x:phase2-auth or #NMSetting8021x:phase2-autheap
-properties.  Setting this property directly is discouraged; use the
+        <doc xml:space="preserve">Contains the "phase 2" client certificate if used by the EAP method
+specified in the #NMSetting8021x:phase2-auth or
+#NMSetting8021x:phase2-autheap properties.
+
+Certificate data is specified using a "scheme"; two are currently
+supported: blob and path. When using the blob scheme (which is backwards
+compatible with NM 0.7.x) this property should be set to the
+certificate's DER encoded data. When using the path scheme, this property
+should be set to the full UTF-8 encoded path of the certificate, prefixed
+with the string "file://" and ending with a terminating NUL byte. This
+property can be unset even if the EAP method supports CA certificates,
+but this allows man-in-the-middle attacks and is NOT recommended.
+
+Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_client_cert() function instead.</doc>
         <type/>
       </property>
@@ -6075,38 +6185,54 @@ nm_setting_802_1x_set_phase2_client_cert() function instead.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Private key data used by "phase 2" inner authentication methods.
+        <doc xml:space="preserve">Contains the "phase 2" inner private key when the
+#NMSetting8021x:phase2-auth or #NMSetting8021x:phase2-autheap property is
+set to "tls".
 
-Contains the "phase 2" inner private key if the #NMSetting8021x:phase2-auth
-or #NMSetting8021x:phase2-autheap property is set to 'tls'.  Setting this
-property directly is discouraged; use the
+Key data is specified using a "scheme"; two are currently supported: blob
+and path. When using the blob scheme and private keys, this property
+should be set to the key's encrypted PEM encoded data. When using private
+keys with the path scheme, this property should be set to the full UTF-8
+encoded path of the key, prefixed with the string "file://" and ending
+with a terminating NUL byte. When using PKCS#12 format private keys and
+the blob scheme, this property should be set to the PKCS#12 data and the
+#NMSetting8021x:phase2-private-key-password property must be set to
+password used to decrypt the PKCS#12 certificate and key. When using
+PKCS#12 files and the path scheme, this property should be set to the
+full UTF-8 encoded path of the key, prefixed with the string "file://"
+and and ending with a terminating NUL byte, and as with the blob scheme
+the #NMSetting8021x:phase2-private-key-password property must be set to
+the password used to decode the PKCS#12 private key and certificate.
+
+Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_private_key() function instead.</doc>
         <type/>
       </property>
       <property name="phase2-private-key-password"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The password used to decrypt the private key specified in
-#NMSetting8021x:phase2-private-key when the private key either uses the
-path scheme, or if the private key is a PKCS#12 format key.  Setting this
-property directly is not generally necessary except when returning
-secrets to NetworkManager; it is generally set automatically when setting
-the private key by the nm_setting_802_1x_set_phase2_private_key() function.</doc>
+        <doc xml:space="preserve">The password used to decrypt the "phase 2" private key specified in the
+#NMSetting8021x:phase2-private-key property when the private key either
+uses the path scheme, or is a PKCS#12 format key.  Setting this property
+directly is not generally necessary except when returning secrets to
+NetworkManager; it is generally set automatically when setting the
+private key by the nm_setting_802_1x_set_phase2_private_key() function.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="phase2-private-key-password-flags"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSetting8021x:phase2-private-key-password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the
+#NMSetting8021x:phase2-private-key-password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="phase2-subject-match"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Substring to be matched against the subject of the certificate
-presented by the authentication server during the inner "phase
-2" authentication. When unset, no verification of the
-authentication server certificate's subject is performed.</doc>
+        <doc xml:space="preserve">Substring to be matched against the subject of the certificate presented
+by the authentication server during the inner "phase 2"
+authentication. When unset, no verification of the authentication server
+certificate's subject is performed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pin" writable="1" transfer-ownership="none">
@@ -6114,15 +6240,32 @@ authentication server certificate's subject is performed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pin-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSetting8021x:pin:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:pin property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="private-key"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Contains the private key if the #NMSetting8021x:eap property is set to
-'tls'.  Setting this property directly is discouraged; use the
+        <doc xml:space="preserve">Contains the private key when the #NMSetting8021x:eap property is set to
+"tls".
+
+Key data is specified using a "scheme"; two are currently supported: blob
+and path. When using the blob scheme and private keys, this property
+should be set to the key's encrypted PEM encoded data. When using private
+keys with the path scheme, this property should be set to the full UTF-8
+encoded path of the key, prefixed with the string "file://" and ending
+with a terminating NUL byte. When using PKCS#12 format private keys and
+the blob scheme, this property should be set to the PKCS#12 data and the
+#NMSetting8021x:private-key-password property must be set to password
+used to decrypt the PKCS#12 certificate and key. When using PKCS#12 files
+and the path scheme, this property should be set to the full UTF-8
+encoded path of the key, prefixed with the string "file://" and and
+ending with a terminating NUL byte, and as with the blob scheme the
+"private-key-password" property must be set to the password used to
+decode the PKCS#12 private key and certificate.
+
+Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_private_key() function instead.
 
 WARNING: #NMSetting8021x:private-key is not a "secret" property, and thus
@@ -6135,9 +6278,9 @@ private key data.</doc>
       <property name="private-key-password"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The password used to decrypt the private key specified in
-#NMSetting8021x:private-key when the private key either uses the path
-scheme, or if the private key is a PKCS#12 format key.  Setting this
+        <doc xml:space="preserve">The password used to decrypt the private key specified in the
+#NMSetting8021x:private-key property when the private key either uses the
+path scheme, or if the private key is a PKCS#12 format key.  Setting this
 property directly is not generally necessary except when returning
 secrets to NetworkManager; it is generally set automatically when setting
 the private key by the nm_setting_802_1x_set_private_key() function.</doc>
@@ -6146,26 +6289,26 @@ the private key by the nm_setting_802_1x_set_private_key() function.</doc>
       <property name="private-key-password-flags"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSetting8021x:private-key-password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:private-key-password
+property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="subject-match" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Substring to be matched against the subject of the certificate
-presented by the authentication server. When unset, no
-verification of the authentication server certificate's subject
-is performed.</doc>
+        <doc xml:space="preserve">Substring to be matched against the subject of the certificate presented
+by the authentication server. When unset, no verification of the
+authentication server certificate's subject is performed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="system-ca-certs"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">When TRUE, overrides #NMSetting8021x:ca-path and
+        <doc xml:space="preserve">When %TRUE, overrides the #NMSetting8021x:ca-path and
 #NMSetting8021x:phase2-ca-path properties using the system CA directory
 specified at configure time with the --system-ca-path switch.  The
 certificates in this directory are added to the verification chain in
-addition to any certificates specified by the #NMSetting8021x:ca-cert
-and #NMSetting8021x:phase2-ca-cert properties.</doc>
+addition to any certificates specified by the #NMSetting8021x:ca-cert and
+#NMSetting8021x:phase2-ca-cert properties.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
@@ -6402,7 +6545,7 @@ required</doc>
         </parameters>
       </method>
       <property name="encapsulation" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">ADSL connection encapsulation, can be vcmux or llc.</doc>
+        <doc xml:space="preserve">Encapsulation of ADSL connection.  Can be "vcmux" or "llc".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password" writable="1" transfer-ownership="none">
@@ -6410,11 +6553,11 @@ required</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingAdsl:password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingAdsl:password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="protocol" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">ADSL connection protocol, can be pppoa, pppoe or ipoatm.</doc>
+        <doc xml:space="preserve">ADSL connection protocol.  Can be "pppoa", "pppoe" or "ipoatm".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="username" writable="1" transfer-ownership="none">
@@ -6422,11 +6565,11 @@ required</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="vci" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">ADSL connection vci.</doc>
+        <doc xml:space="preserve">VCI of ADSL connection</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="vpi" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">ADSL connection vpi.</doc>
+        <doc xml:space="preserve">VPI of ADSL connection</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <field name="parent">
@@ -6553,7 +6696,7 @@ either DUN to a DUN-capable device or PANU to a NAP-capable device).</doc>
         <type/>
       </property>
       <property name="type" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Either 'dun' for Dial-Up Networking connections or 'panu' for Personal
+        <doc xml:space="preserve">Either "dun" for Dial-Up Networking connections or "panu" for Personal
 Area Networking connections to devices supporting the NAP profile.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -6850,9 +6993,9 @@ list, %FALSE if it was not.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Dictionary of key/value pairs of bonding options.  Both keys
-and values must be strings. Option names must contain only
-alphanumeric characters (ie, [a-zA-Z0-9]).</doc>
+        <doc xml:space="preserve">Dictionary of key/value pairs of bonding options.  Both keys and values
+must be strings. Option names must contain only alphanumeric characters
+(ie, [a-zA-Z0-9]).</doc>
         <type/>
       </property>
       <field name="parent">
@@ -7071,7 +7214,7 @@ required</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The ethernet MAC address aging time, in seconds.</doc>
+        <doc xml:space="preserve">The Ethernet MAC address aging time, in seconds.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="forward-delay"
@@ -7094,7 +7237,7 @@ required</doc>
                 version="0.9.8"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The name of the virtual in-kernel briding network interface</doc>
+        <doc xml:space="preserve">The name of the virtual in-kernel bridging network interface</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="mac-address"
@@ -7102,9 +7245,9 @@ required</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, the MAC address of bridge. When creating a new bridge, this MAC address
-will be set. When matching an existing (outside NetworkManager created) bridge, this
-MAC address must match.</doc>
+        <doc xml:space="preserve">If specified, the MAC address of bridge. When creating a new bridge, this
+MAC address will be set. When matching an existing (outside
+NetworkManager created) bridge, this MAC address must match.</doc>
         <type/>
       </property>
       <property name="max-age"
@@ -7269,7 +7412,7 @@ required</doc>
                 version="0.9.8"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Enables or disabled 'hairpin mode' for the port, which allows frames to
+        <doc xml:space="preserve">Enables or disabled "hairpin mode" for the port, which allows frames to
 be sent back out through the port the frame was received on.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -7278,7 +7421,8 @@ be sent back out through the port the frame was received on.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The Spanning Tree Protocol (STP) port cost for destinations via this port.</doc>
+        <doc xml:space="preserve">The Spanning Tree Protocol (STP) port cost for destinations via this
+port.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="priority"
@@ -7439,7 +7583,7 @@ password is required, it is specified here.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingCdma:password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingCdma:password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="username" writable="1" transfer-ownership="none">
@@ -7532,22 +7676,18 @@ is missing in the connection</doc>
       <field name="parent">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-      <field name="verify">
-        <callback name="verify" throws="1">
+      <field name="verify" introspectable="0">
+        <callback name="verify" introspectable="0" throws="1">
           <return-value transfer-ownership="none">
-            <doc xml:space="preserve">%TRUE if the setting is valid, %FALSE if it is not</doc>
-            <type name="gboolean" c:type="gboolean"/>
+            <type name="gint" c:type="gint"/>
           </return-value>
           <parameters>
             <parameter name="setting" transfer-ownership="none">
-              <doc xml:space="preserve">the #NMSetting to verify</doc>
               <type name="Setting" c:type="NMSetting*"/>
             </parameter>
             <parameter name="all_settings" transfer-ownership="none">
-              <doc xml:space="preserve">a #GSList of all settings
-    in the connection from which @setting came</doc>
               <type name="GLib.SList" c:type="GSList*">
-                <type name="Setting"/>
+                <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
           </parameters>
@@ -8204,7 +8344,7 @@ be a username. See #NMSettingConnection:permissions: for more details.</doc>
         <doc xml:space="preserve">Whether or not the connection should be automatically connected by
 NetworkManager when the resources for the connection are available.
 %TRUE to automatically activate the connection, %FALSE to require manual
-intervention to activate the connection.  Defaults to %TRUE.</doc>
+intervention to activate the connection.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="gateway-ping-timeout"
@@ -8217,24 +8357,25 @@ timeout is reached, or an IP gateway replies to a ping.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="id" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">A human readable unique idenfier for the connection, like "Work WiFi" or
-"T-Mobile 3G".</doc>
+        <doc xml:space="preserve">A human readable unique identifier for the connection, like "Work Wi-Fi"
+or "T-Mobile 3G".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="interface-name"
                 version="0.9.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The name of the network interface this connection is bound to. If
-not set, then the connection can be attached to any interface of the
+        <doc xml:space="preserve">The name of the network interface this connection is bound to. If not
+set, then the connection can be attached to any interface of the
 appropriate type (subject to restrictions imposed by other settings).
 
-For connection types where interface names cannot easily be
-made persistent (e.g. mobile broadband or USB ethernet), this
-property should not be used. Setting this property restricts
-the interfaces a connection can be used with, and if interface
-names change or are reordered the connection may be applied to
-the wrong interface.</doc>
+For software devices this specifies the name of the created device.
+
+For connection types where interface names cannot easily be made
+persistent (e.g. mobile broadband or USB Ethernet), this property should
+not be used. Setting this property restricts the interfaces a connection
+can be used with, and if interface names change or are reordered the
+connection may be applied to the wrong interface.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="master" writable="1" transfer-ownership="none">
@@ -8246,18 +8387,16 @@ the wrong interface.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">An array of strings defining what access a given user has to this
-connection.  If this is NULL or empty, all users are allowed to access
+connection.  If this is %NULL or empty, all users are allowed to access
 this connection.  Otherwise a user is allowed to access this connection
 if and only if they are in this list. Each entry is of the form
-"[type]:[id]:[reserved]", for example:
+"[type]:[id]:[reserved]"; for example, "user:dcbw:blah".
 
-   user:dcbw:blah
-
-At this time only the 'user' [type] is allowed.  Any other values are
+At this time only the "user" [type] is allowed.  Any other values are
 ignored and reserved for future use.  [id] is the username that this
-permission refers to, which may not contain the ':' character. Any
-[reserved] information present must be ignored and is reserved for
-future use.  All of [type], [id], and [reserved] must be valid UTF-8.</doc>
+permission refers to, which may not contain the ":" character. Any
+[reserved] information present must be ignored and is reserved for future
+use.  All of [type], [id], and [reserved] must be valid UTF-8.</doc>
         <type/>
       </property>
       <property name="read-only"
@@ -8265,8 +8404,8 @@ future use.  All of [type], [id], and [reserved] must be valid UTF-8.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">%FALSE if the connection can be modified using the provided settings
-service's D-Bus interface with the right privileges, or %TRUE
-if the connection is read-only and cannot be modified.</doc>
+service's D-Bus interface with the right privileges, or %TRUE if the
+connection is read-only and cannot be modified.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="secondaries"
@@ -8274,13 +8413,15 @@ if the connection is read-only and cannot be modified.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">List of connection UUIDs that should be activated when the base connection
-itself is activated. Currently only VPN connections are supported.</doc>
+        <doc xml:space="preserve">List of connection UUIDs that should be activated when the base
+connection itself is activated. Currently only VPN connections are
+supported.</doc>
         <type/>
       </property>
       <property name="slave-type" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Setting name describing the type of slave device (ie
-#NM_SETTING_BOND_SETTING_NAME) or NULL if this connection is not a slave.</doc>
+        <doc xml:space="preserve">Setting name of the device type of this slave's master connection (eg,
+%NM_SETTING_BOND_SETTING_NAME), or %NULL if this connection is not a
+slave.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="timestamp"
@@ -8288,27 +8429,33 @@ itself is activated. Currently only VPN connections are supported.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The time, in seconds since the Unix Epoch, that the connection was last
-_successfully_ fully activated.</doc>
+_successfully_ fully activated.
+
+NetworkManager updates the connection timestamp periodically when the
+connection is active to ensure that an active connection has the latest
+timestamp. The property is only meant for reading (changes to this
+property will not be preserved).</doc>
         <type name="guint64" c:type="guint64"/>
       </property>
       <property name="type" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The general hardware type of the device used for the network connection,
-contains the name of the #NMSetting object that describes that hardware
-type's parameters.  For example, for WiFi devices, the name of the
-#NMSettingWireless setting.</doc>
+        <doc xml:space="preserve">Base type of the connection. For hardware-dependent connections, should
+contain the setting name of the hardware-type specific setting (ie,
+"802-3-ethernet" or "802-11-wireless" or "bluetooth", etc), and for
+non-hardware dependent connections like VPN or otherwise, should contain
+the setting name of that setting type (ie, "vpn" or "bridge", etc).</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="uuid" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">A universally unique idenfier for the connection, for example generated
-with libuuid.  Should be assigned when the connection is created, and
+        <doc xml:space="preserve">A universally unique identifier for the connection, for example generated
+with libuuid.  It should be assigned when the connection is created, and
 never changed as long as the connection still applies to the same
-network.  For example, should not be changed when the
-#NMSettingConnection:id or #NMSettingIP4Config changes, but might need
-to be re-created when the WiFi SSID, mobile broadband network provider,
-or #NMSettingConnection:type changes.
+network.  For example, it should not be changed when the
+#NMSettingConnection:id property or #NMSettingIP4Config changes, but
+might need to be re-created when the Wi-Fi SSID, mobile broadband network
+provider, or #NMSettingConnection:type property changes.
 
-The UUID must be in the format '2815492f-7e56-435e-b2e9-246bd7cdc664'
-(ie, contains only hexadecimal characters and '-').  A suitable UUID may
+The UUID must be in the format "2815492f-7e56-435e-b2e9-246bd7cdc664"
+(ie, contains only hexadecimal characters and "-").  A suitable UUID may
 be generated by nm_utils_uuid_generate() or
 nm_utils_uuid_generate_from_string().</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -8317,10 +8464,10 @@ nm_utils_uuid_generate_from_string().</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The trust level of a the connection.
-Free form case-insensitive string (for example "Home", "Work", "Public").
-NULL or unspecified zone means the connection will be placed in the
-default zone as defined by the firewall.</doc>
+        <doc xml:space="preserve">The trust level of a the connection.  Free form case-insensitive string
+(for example "Home", "Work", "Public").  %NULL or unspecified zone means
+the connection will be placed in the default zone as defined by the
+firewall.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -8812,7 +8959,9 @@ its priority group, or %FALSE if not</doc>
                 version="0.9.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Specifies the %NMSettingDcbFlags for the DCB FCoE application.</doc>
+        <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for the DCB FCoE application.  Flags may
+be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
+%NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="app-fcoe-mode"
@@ -8820,8 +8969,8 @@ its priority group, or %FALSE if not</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The FCoE controller mode; either %NM_SETTING_DCB_FCOE_MODE_FABRIC (default)
-or %NM_SETTING_DCB_FCOE_MODE_VN2VN.</doc>
+        <doc xml:space="preserve">The FCoE controller mode; either %NM_SETTING_DCB_FCOE_MODE_FABRIC
+(default) or %NM_SETTING_DCB_FCOE_MODE_VN2VN.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="app-fcoe-priority"
@@ -8830,15 +8979,17 @@ or %NM_SETTING_DCB_FCOE_MODE_VN2VN.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The highest User Priority (0 - 7) which FCoE frames should use, or -1 for
-default priority.  Only used when #NMSettingDcb:app-fcoe-flags includes
-%NM_SETTING_DCB_FLAG_ENABLE.</doc>
+default priority.  Only used when the #NMSettingDcb:app-fcoe-flags
+property includes the %NM_SETTING_DCB_FLAG_ENABLE flag.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="app-fip-flags"
                 version="0.9.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Specifies the %NMSettingDcbFlags for the DCB FIP application.</doc>
+        <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for the DCB FIP application.  Flags may
+be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
+%NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="app-fip-priority"
@@ -8846,15 +8997,18 @@ default priority.  Only used when #NMSettingDcb:app-fcoe-flags includes
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The highest User Priority (0 - 7) which FIP frames should use.  Only
-used when #NMSettingDcb:app-fip-flags includes %NM_SETTING_DCB_FLAG_ENABLE.</doc>
+        <doc xml:space="preserve">The highest User Priority (0 - 7) which FIP frames should use, or -1 for
+default priority.  Only used when the #NMSettingDcb:app-fip-flags
+property includes the %NM_SETTING_DCB_FLAG_ENABLE flag.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="app-iscsi-flags"
                 version="0.9.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Specifies the %NMSettingDcbFlags for the DCB iSCSI application.</doc>
+        <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for the DCB iSCSI application.  Flags
+may be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
+%NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="app-iscsi-priority"
@@ -8862,8 +9016,9 @@ used when #NMSettingDcb:app-fip-flags includes %NM_SETTING_DCB_FLAG_ENABLE.</doc
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The highest User Priority (0 - 7) which iSCSI frames should use.  Only
-used when #NMSettingDcb:app-iscsi-flags includes %NM_SETTING_DCB_FLAG_ENABLE.</doc>
+        <doc xml:space="preserve">The highest User Priority (0 - 7) which iSCSI frames should use, or -1
+for default priority. Only used when the #NMSettingDcb:app-iscsi-flags
+property includes the %NM_SETTING_DCB_FLAG_ENABLE flag.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="priority-bandwidth"
@@ -8871,11 +9026,11 @@ used when #NMSettingDcb:app-iscsi-flags includes %NM_SETTING_DCB_FLAG_ENABLE.</d
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the
-User Priority (0 - 7) and the value indicates the percentage of bandwidth
-of the priority's assigned group that the priority may use.  The sum of
-all percentages for priorities which belong to the same group must total
-100 percent.</doc>
+        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+Priority (0 - 7) and the value indicates the percentage of bandwidth of
+the priority's assigned group that the priority may use.  The sum of all
+percentages for priorities which belong to the same group must total 100
+percent.</doc>
         <type/>
       </property>
       <property name="priority-flow-control"
@@ -8883,17 +9038,19 @@ all percentages for priorities which belong to the same group must total
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the
-User Priority (0 - 7) and the value indicates whether or not the
-corresponding priority should transmit priority pause.  Allowed values
-are 0 (do not transmit pause) and 1 (transmit pause).</doc>
+        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+Priority (0 - 7) and the value indicates whether or not the corresponding
+priority should transmit priority pause.  Allowed values are 0 (do not
+transmit pause) and 1 (transmit pause).</doc>
         <type/>
       </property>
       <property name="priority-flow-control-flags"
                 version="0.9.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Specifies the %NMSettingDcbFlags for DCB Priority Flow Control (PFC).</doc>
+        <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for DCB Priority Flow Control (PFC).
+Flags may be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
+%NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="priority-group-bandwidth"
@@ -8902,16 +9059,18 @@ are 0 (do not transmit pause) and 1 (transmit pause).</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the
-Priority Group ID (0 - 7) and the value indicates the percentage of
-link bandwidth allocated to that group.  Allowed values are 0 - 100,
-and the sum of all values must total 100 percent.</doc>
+Priority Group ID (0 - 7) and the value indicates the percentage of link
+bandwidth allocated to that group.  Allowed values are 0 - 100, and the
+sum of all values must total 100 percent.</doc>
         <type/>
       </property>
       <property name="priority-group-flags"
                 version="0.9.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Specifies the %NMSettingDcbFlags for DCB Priority Groups.</doc>
+        <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for DCB Priority Groups.  Flags may be
+any combination of %NM_SETTING_DCB_FLAG_ENABLE,
+%NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="priority-group-id"
@@ -8919,16 +9078,21 @@ and the sum of all values must total 100 percent.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the
-User Priority (0 - 7) and the value indicates the Priority Group ID.
-Allowed Priority Group ID values are 0 - 7 or 15 for the unrestricted
-group.</doc>
+        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+Priority (0 - 7) and the value indicates the Priority Group ID.  Allowed
+Priority Group ID values are 0 - 7 or 15 for the unrestricted group.</doc>
         <type/>
       </property>
       <property name="priority-strict-bandwidth"
+                version="0.9.10"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+Priority (0 - 7) and the value indicates whether or not the priority may
+use all of the bandwidth allocated to its assigned group.  Allowed values
+are 0 (the priority may not utilize all bandwidth) or 1 (the priority may
+utilize all bandwidth).</doc>
         <type/>
       </property>
       <property name="priority-traffic-class"
@@ -8936,9 +9100,9 @@ group.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the
-User Priority (0 - 7) and the value indicates the traffic class (0 - 7)
-to which the priority is mapped.</doc>
+        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+Priority (0 - 7) and the value indicates the traffic class (0 - 7) to
+which the priority is mapped.</doc>
         <type/>
       </property>
       <field name="parent">
@@ -9367,7 +9531,8 @@ is required</doc>
         <doc xml:space="preserve">Bitfield of allowed frequency bands.  Note that not all devices allow
 frequency band control.  Permitted values are those specified by
 #NMSettingGsmNetworkBand.</doc>
-        <doc-deprecated xml:space="preserve">No longer used. Band setting should be done talking to ModemManager directly.</doc-deprecated>
+        <doc-deprecated xml:space="preserve">No longer used. Band setting should be done by
+talking to ModemManager directly.</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="apn" writable="1" transfer-ownership="none">
@@ -9376,12 +9541,12 @@ data session with the GSM-based network.  The APN often determines how
 the user will be billed for their network usage and whether the user has
 access to the Internet or just a provider-specific walled-garden, so it
 is important to use the correct APN for the user's mobile broadband plan.
-The APN may only be composed of the characters a-z, 0-9, ., and - per
-GSM 03.60 Section 14.9.</doc>
+The APN may only be composed of the characters a-z, 0-9, ., and - per GSM
+03.60 Section 14.9.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="home-only" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">When TRUE, only connections to the home network will be allowed.
+        <doc xml:space="preserve">When %TRUE, only connections to the home network will be allowed.
 Connections to roaming networks will not be made.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -9400,10 +9565,16 @@ roaming control of the device is not otherwise possible.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Network preference to force the device to only use specific network
-technologies.  Permitted values are those specified by
-#NMSettingGsmNetworkType.  Note that not all devices allow network
+technologies. The permitted values are %NM_SETTING_GSM_NETWORK_TYPE_ANY,
+%NM_SETTING_GSM_NETWORK_TYPE_UMTS_HSPA,
+%NM_SETTING_GSM_NETWORK_TYPE_GPRS_EDGE,
+%NM_SETTING_GSM_NETWORK_TYPE_PREFER_UMTS_HSPA,
+%NM_SETTING_GSM_NETWORK_TYPE_PREFER_GPRS_EDGE,
+%NM_SETTING_GSM_NETWORK_TYPE_PREFER_4G, and
+%NM_SETTING_GSM_NETWORK_TYPE_4G.  Note that not all devices allow network
 preference control.</doc>
-        <doc-deprecated xml:space="preserve">No longer used. Network type setting should be done talking to ModemManager directly.</doc-deprecated>
+        <doc-deprecated xml:space="preserve">No longer used. Network type setting should be done
+by talking to ModemManager directly.</doc-deprecated>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="number" writable="1" transfer-ownership="none">
@@ -9420,17 +9591,17 @@ password is required, it is specified here.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingGsm:password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingGsm:password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="pin" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If the SIM is locked with a PIN it must be unlocked before any other
-operations are requested.  Specify the PIN here to allow operation of
-the device.</doc>
+operations are requested.  Specify the PIN here to allow operation of the
+device.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pin-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingGsm:pin.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingGsm:pin property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="username" writable="1" transfer-ownership="none">
@@ -10234,6 +10405,7 @@ Since 0.9.10</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">Internal use only.</doc>
         <type/>
       </property>
       <property name="addresses"
@@ -10244,9 +10416,9 @@ Since 0.9.10</doc>
 composed of 3 32-bit values; the first being the IPv4 address (network
 byte order), the second the prefix (1 - 32), and last the IPv4 gateway
 (network byte order). The gateway may be left as 0 if no gateway exists
-for that subnet.  For the 'auto' method, given IP addresses are appended
+for that subnet.  For the "auto" method, given IP addresses are appended
 to those returned by automatic configuration.  Addresses cannot be used
-with the 'shared', 'link-local', or 'disabled' methods as addressing is
+with the "shared", "link-local", or "disabled" methods as addressing is
 either automatic or disabled with these methods.</doc>
         <type/>
       </property>
@@ -10256,7 +10428,7 @@ DHCP server may use to customize the DHCP lease and options.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="dhcp-hostname" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">If the #NMSettingIP4Config:dhcp-send-hostname property is TRUE, then the
+        <doc xml:space="preserve">If the #NMSettingIP4Config:dhcp-send-hostname property is %TRUE, then the
 specified name will be sent to the DHCP server when acquiring a lease.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -10264,32 +10436,32 @@ specified name will be sent to the DHCP server when acquiring a lease.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, a hostname is sent to the DHCP server when acquiring a lease.
+        <doc xml:space="preserve">If %TRUE, a hostname is sent to the DHCP server when acquiring a lease.
 Some DHCP servers use this hostname to update DNS databases, essentially
-providing a static hostname for the computer.  If
-#NMSettingIP4Config:dhcp-hostname is empty and this property is TRUE,
-the current persistent hostname of the computer is sent.</doc>
+providing a static hostname for the computer.  If the
+#NMSettingIP4Config:dhcp-hostname property is empty and this property is
+%TRUE, the current persistent hostname of the computer is sent.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="dns"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">List of DNS servers (network byte order).  For the 'auto' method, these
+        <doc xml:space="preserve">List of DNS servers (network byte order).  For the "auto" method, these
 DNS servers are appended to those (if any) returned by automatic
-configuration.  DNS servers cannot be used with the 'shared', 'link-local',
-or 'disabled' methods as there is no upstream network.  In all other
-methods, these DNS servers are used as the only DNS servers for this
-connection.</doc>
+configuration.  DNS servers cannot be used with the "shared",
+"link-local", or "disabled" methods as there is no upstream network.  In
+all other methods, these DNS servers are used as the only DNS servers for
+this connection.</doc>
         <type/>
       </property>
       <property name="dns-search"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">List of DNS search domains.  For the 'auto' method, these search domains
+        <doc xml:space="preserve">List of DNS search domains.  For the "auto" method, these search domains
 are appended to those returned by automatic configuration. Search domains
-cannot be used with the 'shared', 'link-local', or 'disabled' methods as
+cannot be used with the "shared", "link-local", or "disabled" methods as
 there is no upstream network.  In all other methods, these search domains
 are used as the only search domains for this connection.</doc>
         <type/>
@@ -10298,45 +10470,46 @@ are used as the only search domains for this connection.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">When the method is set to 'auto' and this property to TRUE, automatically
-configured nameservers and search domains are ignored and only nameservers
-and search domains specified in #NMSettingIP4Config:dns and
-#NMSettingIP4Config:dns-search, if any, are used.</doc>
+        <doc xml:space="preserve">When the method is set to "auto" and this property to %TRUE,
+automatically configured nameservers and search domains are ignored and
+only nameservers and search domains specified in the
+#NMSettingIP4Config:dns and #NMSettingIP4Config:dns-search properties, if
+any, are used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="ignore-auto-routes"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">When the method is set to 'auto' and this property to TRUE, automatically
-configured routes are ignored and only routes specified in
-#NMSettingIP4Config:routes, if any, are used.</doc>
+        <doc xml:space="preserve">When the method is set to "auto" and this property to %TRUE,
+automatically configured routes are ignored and only routes specified in
+the #NMSettingIP4Config:routes property, if any, are used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="may-fail"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, allow overall network configuration to proceed even if IPv4
-configuration times out.  Note that at least one IP configuration
-must succeed or overall network configuration will still fail.  For
-example, in IPv6-only networks, setting this property to TRUE allows
-the overall network configuration to succeed if IPv4 configuration fails
-but IPv6 configuration completes successfully.</doc>
+        <doc xml:space="preserve">If %TRUE, allow overall network configuration to proceed even if IPv4
+configuration times out.  Note that at least one IP configuration must
+succeed or overall network configuration will still fail.  For example,
+in IPv6-only networks, setting this property to %TRUE allows the overall
+network configuration to succeed if IPv4 configuration fails but IPv6
+configuration completes successfully.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="method" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">IPv4 configuration method.  If 'auto' is specified then the appropriate
+        <doc xml:space="preserve">IPv4 configuration method.  If "auto" is specified then the appropriate
 automatic method (DHCP, PPP, etc) is used for the interface and most
-other properties can be left unset.  If 'link-local' is specified, then a
+other properties can be left unset.  If "link-local" is specified, then a
 link-local address in the 169.254/16 range will be assigned to the
-interface.  If 'manual' is specified, static IP addressing is used and at
-least one IP address must be given in the 'addresses' property.  If
-'shared' is specified (indicating that this connection will provide
+interface.  If "manual" is specified, static IP addressing is used and at
+least one IP address must be given in the "addresses" property.  If
+"shared" is specified (indicating that this connection will provide
 network access to other computers) then the interface is assigned an
 address in the 10.42.x.1/24 range and a DHCP and forwarding DNS server
 are started, and the interface is NAT-ed to the current default network
-connection.  'disabled' means IPv4 will not be used on this connection.
+connection.  "disabled" means IPv4 will not be used on this connection.
 This property must be set.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -10344,7 +10517,7 @@ This property must be set.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, this connection will never be the default IPv4 connection,
+        <doc xml:space="preserve">If %TRUE, this connection will never be the default IPv4 connection,
 meaning it will never be assigned the default route by NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -10352,14 +10525,14 @@ meaning it will never be assigned the default route by NetworkManager.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Array of IPv4 route structures.  Each IPv4 route structure is composed
-of 4 32-bit values; the first being the destination IPv4 network or
-address (network byte order), the second the destination network or
-address prefix (1 - 32), the third being the next-hop (network byte
-order) if any, and the fourth being the route metric. For the 'auto'
-method, given IP routes are appended to those returned by automatic
-configuration.  Routes cannot be used with the 'shared', 'link-local',
-or 'disabled' methods because there is no upstream network.</doc>
+        <doc xml:space="preserve">Array of IPv4 route structures.  Each IPv4 route structure is composed of
+4 32-bit values; the first being the destination IPv4 network or address
+(network byte order), the second the destination network or address
+prefix (1 - 32), the third being the next-hop (network byte order) if
+any, and the fourth being the route metric. For the "auto" method, given
+IP routes are appended to those returned by automatic configuration.
+Routes cannot be used with the "shared", "link-local", or "disabled"
+methods because there is no upstream network.</doc>
         <type/>
       </property>
       <field name="parent">
@@ -10961,10 +11134,10 @@ composed of 3 members, the first being a byte array containing the IPv6
 address (network byte order), the second a 32-bit integer containing the
 IPv6 address prefix, and the third a byte array containing the IPv6
 address (network byte order) of the gateway associated with this address,
-if any.  If no gateway is given, the third element should be given as
-all zeros.  For the 'auto' method, given IP addresses are appended to
-those returned by automatic configuration.  Addresses cannot be used with
-the 'shared' or 'link-local' methods as the interface is automatically
+if any.  If no gateway is given, the third element should be given as all
+zeros.  For the "auto" method, given IP addresses are appended to those
+returned by automatic configuration.  Addresses cannot be used with the
+"shared" or "link-local" methods as the interface is automatically
 assigned an address with these methods.</doc>
         <type/>
       </property>
@@ -10972,7 +11145,8 @@ assigned an address with these methods.</doc>
                 version="0.9.8"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The specified name will be sent to the DHCP server when acquiring a lease.</doc>
+        <doc xml:space="preserve">The specified name will be sent to the DHCP server when acquiring a
+lease.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="dns"
@@ -10981,10 +11155,10 @@ assigned an address with these methods.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Array of DNS servers, where each member of the array is a byte array
 containing the IPv6 address of the DNS server (in network byte order).
-For the 'auto' method, these DNS servers are appended to those (if any)
-returned by automatic configuration.  DNS servers cannot be used with
-the 'shared' or 'link-local' methods as there is no usptream network. In
-all other methods, these DNS servers are used as the only DNS servers for
+For the "auto" method, these DNS servers are appended to those (if any)
+returned by automatic configuration.  DNS servers cannot be used with the
+"shared" or "link-local" methods as there is no usptream network. In all
+other methods, these DNS servers are used as the only DNS servers for
 this connection.</doc>
         <type/>
       </property>
@@ -10992,91 +11166,92 @@ this connection.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">List of DNS search domains.  For the 'auto' method, these search domains
+        <doc xml:space="preserve">List of DNS search domains.  For the "auto" method, these search domains
 are appended to those returned by automatic configuration. Search domains
-cannot be used with the 'shared' or 'link-local' methods as there is no
-upstream network.  In all other methods, these search domains are used
-as the only search domains for this connection.</doc>
+cannot be used with the "shared" or "link-local" methods as there is no
+upstream network.  In all other methods, these search domains are used as
+the only search domains for this connection.</doc>
         <type/>
       </property>
       <property name="ignore-auto-dns"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">When the method is set to 'auto' or 'dhcp' and this property is set to
-TRUE, automatically configured nameservers and search domains are ignored
-and only nameservers and search domains specified in
-#NMSettingIP6Config:dns and #NMSettingIP6Config:dns-search, if any, are
-used.</doc>
+        <doc xml:space="preserve">When the method is set to "auto" or "dhcp" and this property is set to
+%TRUE, automatically configured nameservers and search domains are
+ignored and only nameservers and search domains specified in the
+#NMSettingIP6Config:dns and #NMSettingIP6Config:dns-search properties, if
+any, are used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="ignore-auto-routes"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">When the method is set to 'auto' or 'dhcp' and this property is set to
-TRUE, automatically configured routes are ignored and only routes
-specified in #NMSettingIP6Config:routes, if any, are used.</doc>
+        <doc xml:space="preserve">When the method is set to "auto" or "dhcp" and this property is set to
+%TRUE, automatically configured routes are ignored and only routes
+specified in the #NMSettingIP6Config:routes property, if any, are used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="ip6-privacy"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Configure IPv6 Privacy Extensions for SLAAC, described in RFC4941.
-If enabled, it makes the kernel generate a temporary IPv6 address
-in addition to the public one generated from MAC address via
-modified EUI-64.  This enhances privacy, but could cause problems
-in some applications, on the other hand.  The permitted values
-are: 0: disabled, 1: enabled (prefer public address),
-2: enabled (prefer temporary addresses).</doc>
+        <doc xml:space="preserve">Configure IPv6 Privacy Extensions for SLAAC, described in RFC4941.  If
+enabled, it makes the kernel generate a temporary IPv6 address in
+addition to the public one generated from MAC address via modified
+EUI-64.  This enhances privacy, but could cause problems in some
+applications, on the other hand.  The permitted values are: 0: disabled,
+1: enabled (prefer public address), 2: enabled (prefer temporary
+addresses).</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="may-fail"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, allow overall network configuration to proceed even if IPv6
-configuration times out.  Note that at least one IP configuration
-must succeed or overall network configuration will still fail.  For
-example, in IPv4-only networks, setting this property to TRUE allows
-the overall network configuration to succeed if IPv6 configuration fails
-but IPv4 configuration completes successfully.</doc>
+        <doc xml:space="preserve">If %TRUE, allow overall network configuration to proceed even if IPv6
+configuration times out.  Note that at least one IP configuration must
+succeed or overall network configuration will still fail.  For example,
+in IPv4-only networks, setting this property to %TRUE allows the overall
+network configuration to succeed if IPv6 configuration fails but IPv4
+configuration completes successfully.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="method" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">IPv6 configuration method.  If 'auto' is specified then the appropriate
-automatic method (DHCP, PPP, advertisement, etc) is used for the
-interface and most other properties can be left unset.  To force the use
-of DHCP only, specify 'dhcp'; this  method is only valid for ethernet-
-based hardware.  If 'link-local' is specified, then an IPv6 link-local
-address will be assigned to the interface.  If 'manual' is specified,
-static IP addressing is used and at least one IP address must be given
-in the 'addresses' property.  If 'ignore' is specified, IPv6
-configuration is not done. This property must be set.  Note: the 'shared'
-method is not yet supported.</doc>
+        <doc xml:space="preserve">IPv6 configuration method.  If "auto" is specified then the appropriate
+automatic method (PPP, router advertisement, etc) is used for the device
+and most other properties can be left unset.  To force the use of DHCP
+only, specify "dhcp"; this method is only valid for Ethernet- based
+hardware.  If "link-local" is specified, then an IPv6 link-local address
+will be assigned to the interface.  If "manual" is specified, static IP
+addressing is used and at least one IP address must be given in the
+"addresses" property.  If "ignore" is specified, IPv6 configuration is
+not done. This property must be set.  Note: the "shared" method is not
+yet supported.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="never-default"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, this connection will never be the default IPv6 connection,
-meaning it will never be assigned the default IPv6 route by NetworkManager.</doc>
+        <doc xml:space="preserve">If %TRUE, this connection will never be the default IPv6 connection,
+meaning it will never be assigned the default IPv6 route by
+NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="routes"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Array of IPv6 route structures.  Each IPv6 route structure is composed
-of 4 members; the first being the destination IPv6 network or
-address (network byte order) as a byte array, the second the destination
-network or address IPv6 prefix, the third being the next-hop IPv6 address
+        <doc xml:space="preserve">Array of IPv6 route structures.  Each IPv6 route structure is composed of
+4 members; the first being the destination IPv6 network or address
+(network byte order) as a byte array, the second the destination network
+or address IPv6 prefix, the third being the next-hop IPv6 address
 (network byte order) if any, and the fourth being the route metric. For
-the 'auto' method, given IP routes are appended to those returned by
-automatic configuration.  Routes cannot be used with the 'shared' or
-'link-local' methods because there is no upstream network.</doc>
+the "auto" method, given IP routes are appended to those returned by
+automatic configuration.  Routes cannot be used with the "shared" or
+"link-local" methods because there is no upstream network.</doc>
         <type/>
       </property>
       <field name="parent">
@@ -11279,9 +11454,9 @@ a 16-bit unsigned integer.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, this connection will only apply to the IPoIB
-device whose permanent MAC address matches. This property does
-not change the MAC address of the device (i.e. MAC spoofing).</doc>
+        <doc xml:space="preserve">If specified, this connection will only apply to the IPoIB device whose
+permanent MAC address matches. This property does not change the MAC
+address of the device (i.e. MAC spoofing).</doc>
         <type/>
       </property>
       <property name="mtu"
@@ -11296,18 +11471,18 @@ breaking larger packets up into multiple frames.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The InfiniBand P_Key to use for this device. A value of -1
-means to use the default P_Key (aka "the P_Key at index 0").
-Otherwise it is a 16-bit unsigned integer, whose high bit
-is set if it is a "full membership" P_Key.</doc>
+        <doc xml:space="preserve">The InfiniBand P_Key to use for this device. A value of -1 means to use
+the default P_Key (aka "the P_Key at index 0").  Otherwise it is a 16-bit
+unsigned integer, whose high bit is set if it is a "full membership"
+P_Key.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="parent"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The interface name of the parent device of this device. Normally
-%NULL, but if #NMSettingInfiniband:p_key is set, then you must
+        <doc xml:space="preserve">The interface name of the parent device of this device. Normally %NULL,
+but if the #NMSettingInfiniband:p_key property is set, then you must
 specify the base device by setting either this property or
 #NMSettingInfiniband:mac-address.</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -11316,8 +11491,8 @@ specify the base device by setting either this property or
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The IP-over-InfiniBand transport mode. Either 'datagram' or
-'connected'.</doc>
+        <doc xml:space="preserve">The IP-over-InfiniBand transport mode. Either "datagram" or
+"connected".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -11452,9 +11627,9 @@ required</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Anycast DHCP address used when requesting an IP address via DHCP.  The
-specific anycast address used determines which DHCP server class answers
-the request.</doc>
+        <doc xml:space="preserve">Anycast DHCP MAC address used when requesting an IP address via DHCP.
+The specific anycast address used determines which DHCP server class
+answers the request.</doc>
         <type/>
       </property>
       <property name="ssid"
@@ -11787,9 +11962,9 @@ choose the speed.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, specify that pppd should set the serial port to use hardware
-flow control with RTS and CTS signals.  This value should normally be
-set to FALSE.</doc>
+        <doc xml:space="preserve">If %TRUE, specify that pppd should set the serial port to use hardware
+flow control with RTS and CTS signals.  This value should normally be set
+to %FALSE.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="lcp-echo-failure"
@@ -11798,7 +11973,7 @@ set to FALSE.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">If non-zero, instruct pppd to presume the connection to the peer has
 failed if the specified number of LCP echo-requests go unanswered by the
-peer.  The 'lcp-echo-interval' property must also be set to a non-zero
+peer.  The "lcp-echo-interval" property must also be set to a non-zero
 value if this property is used.</doc>
         <type name="guint" c:type="guint"/>
       </property>
@@ -11816,8 +11991,8 @@ possible to autodetect this.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, stateful MPPE is used.  See pppd documentation for more
-information on stateful MPPE.",</doc>
+        <doc xml:space="preserve">If %TRUE, stateful MPPE is used.  See pppd documentation for more
+information on stateful MPPE.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="mru"
@@ -11841,72 +12016,72 @@ size.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, Van Jacobsen TCP header compression will not be requested.</doc>
+        <doc xml:space="preserve">If %TRUE, Van Jacobsen TCP header compression will not be requested.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="noauth"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, do not require the other side (usually the PPP server) to
-authenticate itself to the client.  If FALSE, require authentication from
-the remote side.  In almost all cases, this should be TRUE.</doc>
+        <doc xml:space="preserve">If %TRUE, do not require the other side (usually the PPP server) to
+authenticate itself to the client.  If %FALSE, require authentication
+from the remote side.  In almost all cases, this should be %TRUE.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="nobsdcomp"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, BSD compression will not be requested.</doc>
+        <doc xml:space="preserve">If %TRUE, BSD compression will not be requested.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="nodeflate"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, 'deflate' compression will not be requested.</doc>
+        <doc xml:space="preserve">If %TRUE, "deflate" compression will not be requested.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="refuse-chap"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, the CHAP authentication method will not be used.</doc>
+        <doc xml:space="preserve">If %TRUE, the CHAP authentication method will not be used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="refuse-eap"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, the EAP authentication method will not be used.</doc>
+        <doc xml:space="preserve">If %TRUE, the EAP authentication method will not be used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="refuse-mschap"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, the MSCHAP authentication method will not be used.</doc>
+        <doc xml:space="preserve">If %TRUE, the MSCHAP authentication method will not be used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="refuse-mschapv2"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, the MSCHAPv2 authentication method will not be used.</doc>
+        <doc xml:space="preserve">If %TRUE, the MSCHAPv2 authentication method will not be used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="refuse-pap"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, the PAP authentication method will not be used.</doc>
+        <doc xml:space="preserve">If %TRUE, the PAP authentication method will not be used.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="require-mppe"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, MPPE (Microsoft Point-to-Point Encrpytion) will be required for
+        <doc xml:space="preserve">If %TRUE, MPPE (Microsoft Point-to-Point Encrpytion) will be required for
 the PPP session.  If either 64-bit or 128-bit MPPE is not available the
 session will fail.  Note that MPPE is not used on mobile broadband
 connections.</doc>
@@ -11916,9 +12091,9 @@ connections.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, 128-bit MPPE (Microsoft Point-to-Point Encrpytion) will be
-required for the PPP session, and the 'require-mppe' property must also
-be set to TRUE.  If 128-bit MPPE is not available the session will fail.</doc>
+        <doc xml:space="preserve">If %TRUE, 128-bit MPPE (Microsoft Point-to-Point Encrpytion) will be
+required for the PPP session, and the "require-mppe" property must also
+be set to %TRUE.  If 128-bit MPPE is not available the session will fail.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
@@ -12067,7 +12242,7 @@ with other setting configuration parameters</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingPPPOE:password:.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingPPPOE:password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="service" writable="1" transfer-ownership="none">
@@ -12278,8 +12453,8 @@ secret is not required</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Speed to use for communication over the serial port.  Note that this value
-usually has no effect for mobile broadband modems as they generally
+        <doc xml:space="preserve">Speed to use for communication over the serial port.  Note that this
+value usually has no effect for mobile broadband modems as they generally
 ignore speed settings and use the highest available speed.</doc>
         <type name="guint" c:type="guint"/>
       </property>
@@ -12287,7 +12462,7 @@ ignore speed settings and use the highest available speed.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Byte-width of the serial communication.</doc>
+        <doc xml:space="preserve">Byte-width of the serial communication. The 8 in "8n1" for example.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="parity"
@@ -12310,7 +12485,7 @@ odd parity, or 'n' for no parity.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Number of stop bits for communication on the serial port.  Either 1 or 2.
-The 1 in '8n1' for example.</doc>
+The 1 in "8n1" for example.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <field name="parent">
@@ -12436,11 +12611,10 @@ setting requires the connection to contain an #NMSettingPPP setting</doc>
         </parameters>
       </method>
       <property name="config" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">JSON configuration for the team network interface.
-The property should contain raw JSON configuration data
-suitable for teamd, because the value is passed directly to
-teamd. If not specified, the default configuration is used.
-See man teamd.conf for the format details.</doc>
+        <doc xml:space="preserve">The JSON configuration for the team network interface.  The property
+should contain raw JSON configuration data suitable for teamd, because
+the value is passed directly to teamd. If not specified, the default
+configuration is used.  See man teamd.conf for the format details.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="interface-name" writable="1" transfer-ownership="none">
@@ -12551,12 +12725,10 @@ required</doc>
         </parameters>
       </method>
       <property name="config" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The config of team port
-JSON configuration for the team port.
-The property should contain raw JSON configuration data
-suitable for teamd, because the value is passed directly to
-teamd. If not specified, the default configuration is used.
-See man teamd.conf for the format details.</doc>
+        <doc xml:space="preserve">The JSON configuration for the team port. The property should contain raw
+JSON configuration data suitable for teamd, because the value is passed
+directly to teamd. If not specified, the default configuration is
+used. See man teamd.conf for the format details.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -12875,8 +13047,8 @@ nm_setting_vpn_add_secret().</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Dictionary of key/value pairs of VPN plugin specific data.  Both keys
-and values must be strings.</doc>
+        <doc xml:space="preserve">Dictionary of key/value pairs of VPN plugin specific data.  Both keys and
+values must be strings.</doc>
         <type/>
       </property>
       <property name="secrets"
@@ -12888,15 +13060,15 @@ passwords or private keys.  Both keys and values must be strings.</doc>
         <type/>
       </property>
       <property name="service-type" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">D-Bus service name of the VPN plugin that this setting uses to connect
-to its network.  i.e. org.freedesktop.NetworkManager.vpnc for the vpnc
+        <doc xml:space="preserve">D-Bus service name of the VPN plugin that this setting uses to connect to
+its network.  i.e. org.freedesktop.NetworkManager.vpnc for the vpnc
 plugin.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="user-name" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If the VPN connection requires a user name for authentication, that name
-should be provided here.  If the connection is available to more than
-one user, and the VPN requires each user to supply a different name, then
+should be provided here.  If the connection is available to more than one
+user, and the VPN requires each user to supply a different name, then
 leave this property empty.  If this property is empty, NetworkManager
 will automatically supply the username of the user which requested the
 VPN connection.</doc>
@@ -13248,21 +13420,24 @@ properties.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">For outgoing packets, a list of mappings from Linux SKB priorities to
-802.1p priorities.  The mapping is given in the format 'from:to'
-where both 'from' and 'to' are unsigned integers, ie '7:3'.</doc>
+802.1p priorities.  The mapping is given in the format "from:to" where
+both "from" and "to" are unsigned integers, ie "7:3".</doc>
         <type/>
       </property>
       <property name="flags"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">One or more of %NMVlanFlags which control the behavior and features of
-the VLAN interface.</doc>
+        <doc xml:space="preserve">One or more flags which control the behavior and features of the VLAN
+interface.  Flags include %NM_VLAN_FLAG_REORDER_HEADERS (reordering of
+output packet headers), %NM_VLAN_FLAG_GVRP (use of the GVRP protocol),
+and %NM_VLAN_FLAG_LOOSE_BINDING (loose binding of the interface to its
+master device's operating state).</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="id" writable="1" construct="1" transfer-ownership="none">
-        <doc xml:space="preserve">The VLAN identifier the interface created by this connection should be
-assigned.</doc>
+        <doc xml:space="preserve">The VLAN identifier that the interface created by this connection should
+be assigned.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="ingress-priority-map"
@@ -13270,8 +13445,8 @@ assigned.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">For incoming packets, a list of mappings from 802.1p priorities to Linux
-SKB priorities.  The mapping is given in the format 'from:to' where both
-'from' and 'to' are unsigned integers, ie '7:3'.</doc>
+SKB priorities.  The mapping is given in the format "from:to" where both
+"from" and "to" are unsigned integers, ie "7:3".</doc>
         <type/>
       </property>
       <property name="interface-name"
@@ -13280,9 +13455,9 @@ SKB priorities.  The mapping is given in the format 'from:to' where both
                 transfer-ownership="none">
         <doc xml:space="preserve">If given, specifies the kernel name of the VLAN interface. If not given,
 a default name will be constructed from the interface described by the
-parent interface and the #NMSettingVlan:id , ex 'eth2.1'. The parent
-interface may be given by the #NMSettingVlan:parent property or by the
-#NMSettingWired:mac-address property of an #NMSettingWired.</doc>
+parent interface and the #NMSettingVlan:id property, eg "eth2.1". The
+parent interface may be given by the #NMSettingVlan:parent property or by
+the #NMSettingWired:mac-address property of an #NMSettingWired setting.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="parent"
@@ -13291,8 +13466,8 @@ interface may be given by the #NMSettingVlan:parent property or by the
                 transfer-ownership="none">
         <doc xml:space="preserve">If given, specifies the parent interface name or parent connection UUID
 from which this VLAN interface should be created.  If this property is
-not specified, the connection must contain a #NMSettingWired:mac-address
-in an #NMSettingWired setting.</doc>
+not specified, the connection must contain an #NMSettingWired setting
+with a #NMSettingWired:mac-address property.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -13455,9 +13630,9 @@ specific WiMAX network this setting describes a connection to.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, this connection will only apply to the WiMAX device
-whose MAC address matches. This property does not change the MAC address
-of the device (known as MAC spoofing).</doc>
+        <doc xml:space="preserve">If specified, this connection will only apply to the WiMAX device whose
+MAC address matches. This property does not change the MAC address of the
+device (known as MAC spoofing).</doc>
         <type/>
       </property>
       <property name="network-name" writable="1" transfer-ownership="none">
@@ -13914,6 +14089,9 @@ list, %FALSE if it was not.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">If %TRUE, allow auto-negotiation of port speed and duplex mode.  If
+%FALSE, do not allow auto-negotiation, in which case the "speed" and
+"duplex" properties should be set.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="cloned-mac-address"
@@ -13926,25 +14104,25 @@ permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
       </property>
       <property name="duplex" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, request that the device only use the specified duplex mode.
-Either 'half' or 'full'.</doc>
+Either "half" or "full".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="mac-address"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, this connection will only apply to the ethernet device
-whose permanent MAC address matches. This property does not change the MAC address
-of the device (i.e. MAC spoofing).</doc>
+        <doc xml:space="preserve">If specified, this connection will only apply to the Ethernet device
+whose permanent MAC address matches. This property does not change the
+MAC address of the device (i.e. MAC spoofing).</doc>
         <type/>
       </property>
       <property name="mac-address-blacklist"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, this connection will never apply to the ethernet device
-whose permanent MAC address matches an address in the list.  Each
-MAC address is in the standard hex-digits-and-colons notation
+        <doc xml:space="preserve">If specified, this connection will never apply to the Ethernet device
+whose permanent MAC address matches an address in the list.  Each MAC
+address is in the standard hex-digits-and-colons notation
 (00:11:22:33:44:55).</doc>
         <type/>
       </property>
@@ -13958,13 +14136,13 @@ breaking larger packets up into multiple Ethernet frames.</doc>
       </property>
       <property name="port" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Specific port type to use if multiple the device supports multiple
-attachment methods.  One of 'tp' (Twisted Pair), 'aui' (Attachment Unit
-Interface), 'bnc' (Thin Ethernet) or 'mii' (Media Independent Interface.
+attachment methods.  One of "tp" (Twisted Pair), "aui" (Attachment Unit
+Interface), "bnc" (Thin Ethernet) or "mii" (Media Independent Interface.
 If the device supports only one port type, this setting is ignored.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="s390-nettype" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">s390 network device type; one of 'qeth', 'lcs', or 'ctc', representing
+        <doc xml:space="preserve">s390 network device type; one of "qeth", "lcs", or "ctc", representing
 the different types of virtual network devices available on s390 systems.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -13973,8 +14151,8 @@ the different types of virtual network devices available on s390 systems.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Dictionary of key/value pairs of s390-specific device options.  Both keys
-and values must be strings.  Allowed keys include 'portno', 'layer2',
-'portname', 'protocol', among others.  Key names must contain only
+and values must be strings.  Allowed keys include "portno", "layer2",
+"portname", "protocol", among others.  Key names must contain only
 alphanumeric characters (ie, [a-zA-Z0-9]).</doc>
         <type/>
       </property>
@@ -13983,19 +14161,20 @@ alphanumeric characters (ie, [a-zA-Z0-9]).</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Identifies specific subchannels that this network device uses for
-communcation with z/VM or s390 host.  Like #NMSettingWired:mac-address
-for non-z/VM devices, this property can be used to ensure this connection
-only applies to the network device that uses these subchannels.  The
-list should contain exactly 3 strings, and each string may only be
-composed of hexadecimal characters and the period (.) character.</doc>
+communication with z/VM or s390 host.  Like the
+#NMSettingWired:mac-address property for non-z/VM devices, this property
+can be used to ensure this connection only applies to the network device
+that uses these subchannels.  The list should contain exactly 3 strings,
+and each string may only be composed of hexadecimal characters and the
+period (.) character.</doc>
         <type/>
       </property>
       <property name="speed"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If non-zero, request that the device use only the specified speed.
-In Mbit/s, ie 100 == 100Mbit/s.</doc>
+        <doc xml:space="preserve">If non-zero, request that the device use only the specified speed.  In
+Mbit/s, ie 100 == 100Mbit/s.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <field name="parent">
@@ -14462,9 +14641,9 @@ the blacklist</doc>
         </parameters>
       </method>
       <property name="band" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">802.11 frequency band of the network.  One of 'a' for 5GHz 802.11a or
-'bg' for 2.4GHz 802.11.  This will lock associations to the WiFi network
-to the specific band, i.e. if 'a' is specified, the device will not
+        <doc xml:space="preserve">802.11 frequency band of the network.  One of "a" for 5GHz 802.11a or
+"bg" for 2.4GHz 802.11.  This will lock associations to the Wi-Fi network
+to the specific band, i.e. if "a" is specified, the device will not
 associate with the same network in the 2.4GHz band even if the network's
 settings are compatible.  This setting depends on specific driver
 capability and may not work with all drivers.</doc>
@@ -14484,24 +14663,24 @@ creating an Ad-Hoc network and is unlikely to in the future.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Wireless channel to use for the WiFi connection.  The device will only
-join (or create for Ad-Hoc networks) a WiFi network on the specified
+        <doc xml:space="preserve">Wireless channel to use for the Wi-Fi connection.  The device will only
+join (or create for Ad-Hoc networks) a Wi-Fi network on the specified
 channel.  Because channel numbers overlap between bands, this property
-also requires the 'band' property to be set.</doc>
+also requires the "band" property to be set.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="cloned-mac-address"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, request that the Wifi device use this MAC address instead of its
-permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
+        <doc xml:space="preserve">If specified, request that the Wi-Fi device use this MAC address instead
+of its permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
         <type/>
       </property>
       <property name="hidden" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">If %TRUE, indicates this network is a non-broadcasting network that
-hides its SSID.  In this case various workarounds may take place, such
-as probe-scanning the SSID for more reliable network discovery.  However,
+        <doc xml:space="preserve">If %TRUE, indicates this network is a non-broadcasting network that hides
+its SSID.  In this case various workarounds may take place, such as
+probe-scanning the SSID for more reliable network discovery.  However,
 these workarounds expose inherent insecurities with hidden SSID networks,
 and thus hidden SSID networks should be used with caution.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -14510,9 +14689,9 @@ and thus hidden SSID networks should be used with caution.</doc>
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, this connection will only apply to the WiFi device
-whose permanent MAC address matches. This property does not change the MAC address
-of the device (i.e. MAC spoofing).</doc>
+        <doc xml:space="preserve">If specified, this connection will only apply to the Wi-Fi device whose
+permanent MAC address matches. This property does not change the MAC
+address of the device (i.e. MAC spoofing).</doc>
         <type/>
       </property>
       <property name="mac-address-blacklist"
@@ -14521,11 +14700,11 @@ of the device (i.e. MAC spoofing).</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">A list of permanent MAC addresses of Wi-Fi devices to which this
 connection should never apply.  Each MAC address should be given in the
-standard hex-digits-and-colons notation (eg '00:11:22:33:44:55').</doc>
+standard hex-digits-and-colons notation (eg "00:11:22:33:44:55").</doc>
         <type/>
       </property>
       <property name="mode" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">WiFi network mode; one of 'infrastructure', 'adhoc' or 'ap'.  If blank,
+        <doc xml:space="preserve">Wi-Fi network mode; one of "infrastructure", "adhoc" or "ap".  If blank,
 infrastructure is assumed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -14553,10 +14732,12 @@ support setting a static bitrate.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">If the wireless connection has any security restrictions, like 802.1x,
-WEP, or WPA, set this property to '802-11-wireless-security' and ensure
-the connection contains a valid 802-11-wireless-security setting.</doc>
-        <doc-deprecated xml:space="preserve">No longer used. Security rescrictions are recognized by
-the presence of NM_SETTING_WIRELESS_SECURITY_SETTING_NAME in the connection.</doc-deprecated>
+WEP, or WPA, set this property to
+%NM_SETTING_WIRELESS_SECURITY_SETTING_NAME and ensure the connection
+contains a valid #NMSettingWirelessSecurity setting.</doc>
+        <doc-deprecated xml:space="preserve">No longer used. Security restrictions are recognized
+by the presence of a #NMSettingWirelessSecurity setting in the
+connection.</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="seen-bssids"
@@ -14564,17 +14745,18 @@ the presence of NM_SETTING_WIRELESS_SECURITY_SETTING_NAME in the connection.</do
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">A list of BSSIDs (each BSSID formatted as a MAC address like
-'00:11:22:33:44:55') that have been detected as part of the Wi-FI network.
-NetworkManager internally tracks previously seen BSSIDs. The property is only
-meant for reading and reflects the BSSID list of NetworkManager. The changes you
-make to this property will not be preserved.</doc>
+"00:11:22:33:44:55") that have been detected as part of the Wi-Fi
+network.  NetworkManager internally tracks previously seen BSSIDs. The
+property is only meant for reading and reflects the BSSID list of
+NetworkManager. The changes you make to this property will not be
+preserved.</doc>
         <type/>
       </property>
       <property name="ssid"
                 introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">SSID of the WiFi network.</doc>
+        <doc xml:space="preserve">SSID of the Wi-Fi network. Must be specified.</doc>
         <type/>
       </property>
       <property name="tx-power"
@@ -14734,9 +14916,9 @@ already in the list</doc>
       </method>
       <method name="add_proto"
               c:identifier="nm_setting_wireless_security_add_proto">
-        <doc xml:space="preserve">Adds a WiFi security protocol (one of "wpa" or "rsn") to the allowed list;
+        <doc xml:space="preserve">Adds a Wi-Fi security protocol (one of "wpa" or "rsn") to the allowed list;
 only protocols in this list will be used when finding and connecting to
-the WiFi network specified by this connection.  For example, if the
+the Wi-Fi network specified by this connection.  For example, if the
 protocol list contains only "wpa" but the access point for the SSID specified
 by this connection only supports WPA2/RSN, the connection cannot be used
 with the access point.</doc>
@@ -14925,7 +15107,7 @@ list.</doc>
               c:identifier="nm_setting_wireless_security_get_num_protos">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of security protocols this connection allows when
-connecting to secure WiFi networks</doc>
+connecting to secure Wi-Fi networks</doc>
           <type name="guint32" c:type="guint32"/>
         </return-value>
         <parameters>
@@ -15207,11 +15389,11 @@ property.</doc>
         </parameters>
       </method>
       <property name="auth-alg" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">When WEP is used (ie, key-mgmt = 'none' or 'ieee8021x') indicate the
-802.11 authentication algorithm required by the AP here.  One of 'open'
-for Open System, 'shared' for Shared Key, or 'leap' for Cisco LEAP.
-When using Cisco LEAP (ie, key-mgmt = 'ieee8021x' and auth-alg = 'leap')
-the 'leap-username' and 'leap-password' properties must be specified.</doc>
+        <doc xml:space="preserve">When WEP is used (ie, key-mgmt = "none" or "ieee8021x") indicate the
+802.11 authentication algorithm required by the AP here.  One of "open"
+for Open System, "shared" for Shared Key, or "leap" for Cisco LEAP.  When
+using Cisco LEAP (ie, key-mgmt = "ieee8021x" and auth-alg = "leap") the
+"leap-username" and "leap-password" properties must be specified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="group"
@@ -15221,30 +15403,31 @@ the 'leap-username' and 'leap-password' properties must be specified.</doc>
         <doc xml:space="preserve">A list of group/broadcast encryption algorithms which prevents
 connections to Wi-Fi networks that do not utilize one of the algorithms
 in the list.  For maximum compatibility leave this property empty.  Each
-list element may be one of 'wep40', 'wep104', 'tkip', or 'ccmp'.</doc>
+list element may be one of "wep40", "wep104", "tkip", or "ccmp".</doc>
         <type/>
       </property>
       <property name="key-mgmt" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Key management used for the connection.  One of 'none' (WEP), 'ieee8021x'
-(Dynamic WEP), 'wpa-none' (Ad-Hoc WPA-PSK), 'wpa-psk' (infrastructure
-WPA-PSK), or 'wpa-eap' (WPA-Enterprise).  This property must be set for
-any WiFi connection that uses security.</doc>
+        <doc xml:space="preserve">Key management used for the connection.  One of "none" (WEP), "ieee8021x"
+(Dynamic WEP), "wpa-none" (Ad-Hoc WPA-PSK), "wpa-psk" (infrastructure
+WPA-PSK), or "wpa-eap" (WPA-Enterprise).  This property must be set for
+any Wi-Fi connection that uses security.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="leap-password" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The login password for legacy LEAP connections (ie, key-mgmt =
-'ieee8021x' and auth-alg = 'leap').</doc>
+"ieee8021x" and auth-alg = "leap").</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="leap-password-flags"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingWirelessSecurity:leap-password.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the
+#NMSettingWirelessSecurity:leap-password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="leap-username" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The login username for legacy LEAP connections (ie, key-mgmt =
-'ieee8021x' and auth-alg = 'leap').</doc>
+"ieee8021x" and auth-alg = "leap").</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pairwise"
@@ -15252,9 +15435,9 @@ any WiFi connection that uses security.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">A list of pairwise encryption algorithms which prevents connections to
-Wi-Fi networks that do not utilize one of the algorithms in the list.  For
-maximum compatibility leave this property empty.  Each list element may
-be one of 'tkip' or 'ccmp'.</doc>
+Wi-Fi networks that do not utilize one of the algorithms in the list.
+For maximum compatibility leave this property empty.  Each list element
+may be one of "tkip" or "ccmp".</doc>
         <type/>
       </property>
       <property name="proto"
@@ -15262,7 +15445,7 @@ be one of 'tkip' or 'ccmp'.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">List of strings specifying the allowed WPA protocol versions to use.
-Each element may be one 'wpa' (allow WPA) or 'rsn' (allow WPA2/RSN).  If
+Each element may be one "wpa" (allow WPA) or "rsn" (allow WPA2/RSN).  If
 not specified, both WPA and RSN connections are allowed.</doc>
         <type/>
       </property>
@@ -15270,56 +15453,59 @@ not specified, both WPA and RSN connections are allowed.</doc>
         <doc xml:space="preserve">Pre-Shared-Key for WPA networks.  If the key is 64-characters long, it
 must contain only hexadecimal characters and is interpreted as a
 hexadecimal WPA key.  Otherwise, the key must be between 8 and 63 ASCII
-characters (as specified in the 802.11i standard) and is interpreted as
-a WPA passphrase, and is hashed to derive the actual WPA-PSK used when
-connecting to the WiFi network.</doc>
+characters (as specified in the 802.11i standard) and is interpreted as a
+WPA passphrase, and is hashed to derive the actual WPA-PSK used when
+connecting to the Wi-Fi network.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="psk-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingWirelessSecurity:psk</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingWirelessSecurity:psk
+property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="wep-key-flags" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Flags indicating how to handle #NMSettingWirelessSecurity WEP keys.</doc>
+        <doc xml:space="preserve">Flags indicating how to handle the #NMSettingWirelessSecurity:wep-key0,
+#NMSettingWirelessSecurity:wep-key1, #NMSettingWirelessSecurity:wep-key2,
+and #NMSettingWirelessSecurity:wep-key3 properties.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="wep-key-type"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Controls the interpretation of WEP keys.  Allowed values are those given
-by %NMWepKeyType.  If set to 1 and the keys are hexadecimal, they must be
-either 10 or 26 characters in length.  If set to 1 and the keys are
-ASCII keys, they must be either 5 or 13 characters in length.  If set to
-2, the passphrase is hashed using the de-facto MD5 method to derive the
-actual WEP key.</doc>
+        <doc xml:space="preserve">Controls the interpretation of WEP keys.  Allowed values are
+%NM_WEP_KEY_TYPE_KEY, in which case the key is either a 10- or
+26-character hexadecimal string, or a 5- or 13-character ASCII password;
+or %NM_WEP_KEY_TYPE_PASSPHRASE, in which case the passphrase is provided
+as a string and will be hashed using the de-facto MD5 method to derive
+the actual WEP key.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="wep-key0" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Index 0 WEP key.  This is the WEP key used in most networks.  See the
-'wep-key-type' property for a description of how this key is interpreted.</doc>
+"wep-key-type" property for a description of how this key is interpreted.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="wep-key1" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Index 1 WEP key.  This WEP index is not used by most networks.  See the
-'wep-key-type' property for a description of how this key is interpreted.</doc>
+"wep-key-type" property for a description of how this key is interpreted.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="wep-key2" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Index 2 WEP key.  This WEP index is not used by most networks.  See the
-'wep-key-type' property for a description of how this key is interpreted.</doc>
+"wep-key-type" property for a description of how this key is interpreted.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="wep-key3" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Index 3 WEP key.  This WEP index is not used by most networks.  See the
-'wep-key-type' property for a description of how this key is interpreted.</doc>
+"wep-key-type" property for a description of how this key is interpreted.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="wep-tx-keyidx"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">When static WEP is used (ie, key-mgmt = 'none') and a non-default WEP key
+        <doc xml:space="preserve">When static WEP is used (ie, key-mgmt = "none") and a non-default WEP key
 index is used by the AP, put that WEP key index here.  Valid values are 0
 (default key) through 3.  Note that some consumer access points (like the
 Linksys WRT54G) number the keys 1 - 4.</doc>
@@ -15837,7 +16023,7 @@ nm_setting_vpn_foreach_secret()</doc>
               c:identifier="NM_VLAN_FLAG_REORDER_HEADERS"
               glib:nick="reorder-headers">
         <doc xml:space="preserve">indicates that this interface should reorder
- outgoing packet headers to look more like a non-VLAN ethernet interface</doc>
+ outgoing packet headers to look more like a non-VLAN Ethernet interface</doc>
       </member>
       <member name="gvrp"
               value="2"
@@ -16192,7 +16378,7 @@ e.g. #NMU_SEC_STATIC_WEP</doc>
           <type name="UtilsSecurityType" c:type="NMUtilsSecurityType"/>
         </parameter>
         <parameter name="wifi_caps" transfer-ownership="none">
-          <doc xml:space="preserve">bitfield of the capabilities of the specific WiFi device, e.g.
+          <doc xml:space="preserve">bitfield of the capabilities of the specific Wi-Fi device, e.g.
 #NM_WIFI_DEVICE_CAP_CIPHER_WEP40</doc>
           <type name="DeviceWifiCapabilities"
                 c:type="NMDeviceWifiCapabilities"/>
@@ -16205,10 +16391,6 @@ e.g. #NMU_SEC_STATIC_WEP</doc>
       <doc xml:space="preserve">Converts a byte-array @bytes into a hexadecimal string.
 If @final_len is greater than -1, the returned string is terminated at
 that index (returned_string[final_len] == '\0'),</doc>
-      <doc-version xml:space="preserve">
-
-Code originally by Alex Larsson &lt;alexl@redhat.com&gt; and
- copyright Red Hat, Inc. under terms of the LGPL.</doc-version>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">the textual form of @bytes</doc>
         <type name="utf8" c:type="char*"/>
@@ -17036,7 +17218,7 @@ e.g. #NMU_SEC_STATIC_WEP</doc>
           <type name="UtilsSecurityType" c:type="NMUtilsSecurityType"/>
         </parameter>
         <parameter name="wifi_caps" transfer-ownership="none">
-          <doc xml:space="preserve">bitfield of the capabilities of the specific WiFi device, e.g.
+          <doc xml:space="preserve">bitfield of the capabilities of the specific Wi-Fi device, e.g.
 #NM_WIFI_DEVICE_CAP_CIPHER_WEP40</doc>
           <type name="DeviceWifiCapabilities"
                 c:type="NMDeviceWifiCapabilities"/>
@@ -17090,7 +17272,7 @@ e.g. (#NM_802_11_AP_SEC_PAIR_CCMP | #NM_802_11_AP_SEC_PAIR_TKIP)</doc>
       </parameters>
     </function>
     <function name="utils_ssid_to_utf8" c:identifier="nm_utils_ssid_to_utf8">
-      <doc xml:space="preserve">WiFi SSIDs are byte arrays, they are _not_ strings.  Thus, an SSID may
+      <doc xml:space="preserve">Wi-Fi SSIDs are byte arrays, they are _not_ strings.  Thus, an SSID may
 contain embedded NULLs and other unprintable characters.  Often it is
 useful to print the SSID out for debugging purposes, but that should be the
 _only_ use of this function.  Do not use this function for any persistent
@@ -17170,7 +17352,7 @@ object's #NMSettingConnection:id: property</doc>
     </function>
     <function name="utils_wifi_channel_to_freq"
               c:identifier="nm_utils_wifi_channel_to_freq">
-      <doc xml:space="preserve">Utility function to translate a WiFi channel to its corresponding frequency.</doc>
+      <doc xml:space="preserve">Utility function to translate a Wi-Fi channel to its corresponding frequency.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the frequency represented by the channel of the band,
          or -1 when the freq is invalid, or 0 when the band
@@ -17190,7 +17372,7 @@ object's #NMSettingConnection:id: property</doc>
     </function>
     <function name="utils_wifi_find_next_channel"
               c:identifier="nm_utils_wifi_find_next_channel">
-      <doc xml:space="preserve">Utility function to find out next/previous WiFi channel for a channel.</doc>
+      <doc xml:space="preserve">Utility function to find out next/previous Wi-Fi channel for a channel.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the next channel in the specified direction or 0</doc>
         <type name="guint32" c:type="guint32"/>
@@ -17212,7 +17394,7 @@ object's #NMSettingConnection:id: property</doc>
     </function>
     <function name="utils_wifi_freq_to_channel"
               c:identifier="nm_utils_wifi_freq_to_channel">
-      <doc xml:space="preserve">Utility function to translate a WiFi frequency to its corresponding channel.</doc>
+      <doc xml:space="preserve">Utility function to translate a Wi-Fi frequency to its corresponding channel.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the channel represented by the frequency or 0</doc>
         <type name="guint32" c:type="guint32"/>
@@ -17226,7 +17408,7 @@ object's #NMSettingConnection:id: property</doc>
     </function>
     <function name="utils_wifi_is_channel_valid"
               c:identifier="nm_utils_wifi_is_channel_valid">
-      <doc xml:space="preserve">Utility function to verify WiFi channel validity.</doc>
+      <doc xml:space="preserve">Utility function to verify Wi-Fi channel validity.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE or %FALSE</doc>
         <type name="gboolean" c:type="gboolean"/>

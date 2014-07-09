@@ -35,7 +35,6 @@ namespace E {
 		[CCode (simple_generics = true)]
 		public T @get<T> (E.ContactField field_id);
 		public GLib.List<E.VCardAttribute> get_attributes (E.ContactField field_id);
-		public GLib.List<E.VCardAttribute> get_attributes_set (E.ContactField field_ids, int size);
 		[CCode (simple_generics = true)]
 		public unowned T get_const<T> (E.ContactField field_id);
 		public bool inline_local_photos () throws GLib.Error;

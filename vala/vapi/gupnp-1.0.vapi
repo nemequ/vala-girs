@@ -25,6 +25,7 @@ namespace GUPnP {
 		public uint get_subscription_timeout ();
 		public void host_path (string local_path, string server_path);
 		public bool host_path_for_agent (string local_path, string server_path, GLib.Regex user_agent);
+		public void remove_server_handler (string path);
 		public void set_acl (GUPnP.Acl? acl);
 		public void set_default_language (string language);
 		public void set_subscription_timeout (uint timeout);
@@ -290,8 +291,8 @@ namespace GUPnP {
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_cname = "GUPnPAclInterface", type_id = "gupnp_acl_get_type ()")]
 	public interface Acl : GLib.Object {
 		public abstract bool can_sync ();
-		public abstract bool is_allowed (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent);
-		public abstract async bool is_allowed_async (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract bool is_allowed (void* device, void* service, string path, string address, string? agent);
+		public abstract async bool is_allowed_async (void* device, void* service, string path, string address, string? agent, GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
 	public struct ServiceActionArgInfo {
