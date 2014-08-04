@@ -4587,6 +4587,17 @@ the user's request for dithering.&lt;/note&gt;</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_is_stereo"
+              c:identifier="cogl_framebuffer_get_is_stereo">
+        <return-value transfer-ownership="none">
+          <type name="Bool" c:type="CoglBool"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="framebuffer" transfer-ownership="none">
+            <type name="Framebuffer" c:type="CoglFramebuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_modelview_matrix"
               c:identifier="cogl_framebuffer_get_modelview_matrix"
               version="1.10"
@@ -4672,6 +4683,23 @@ number of samples that will be made by the GPU.</doc>
         <parameters>
           <instance-parameter name="framebuffer" transfer-ownership="none">
             <doc xml:space="preserve">A #CoglFramebuffer framebuffer</doc>
+            <type name="Framebuffer" c:type="CoglFramebuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stereo_mode"
+              c:identifier="cogl_framebuffer_get_stereo_mode"
+              version="1.20"
+              stability="Unstable">
+        <doc xml:space="preserve">Gets the current #CoglStereoMode, which defines which stereo buffers
+should be drawn to. See cogl_framebuffer_set_stereo_mode().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #CoglStereoMode</doc>
+          <type name="StereoMode" c:type="CoglStereoMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="framebuffer" transfer-ownership="none">
+            <doc xml:space="preserve">a pointer to a #CoglFramebuffer</doc>
             <type name="Framebuffer" c:type="CoglFramebuffer*"/>
           </instance-parameter>
         </parameters>
@@ -5543,6 +5571,32 @@ done.&lt;/note&gt;</doc>
           <parameter name="samples_per_pixel" transfer-ownership="none">
             <doc xml:space="preserve">The minimum number of samples per pixel</doc>
             <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_stereo_mode"
+              c:identifier="cogl_framebuffer_set_stereo_mode"
+              version="1.20"
+              stability="Unstable">
+        <doc xml:space="preserve">Sets which stereo buffers should be drawn to. The default
+is %COGL_STEREO_BOTH, which means that both the left and
+right buffers will be affected by drawing. For this to have
+an effect, the display system must support stereo drawables,
+and the framebuffer must have been created with stereo
+enabled. (See cogl_onscreen_template_set_stereo_enabled(),
+cogl_framebuffer_get_is_stereo().)</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="framebuffer" transfer-ownership="none">
+            <doc xml:space="preserve">a pointer to a #CoglFramebuffer</doc>
+            <type name="Framebuffer" c:type="CoglFramebuffer*"/>
+          </instance-parameter>
+          <parameter name="stereo_mode" transfer-ownership="none">
+            <doc xml:space="preserve">A #CoglStereoMode specifying which stereo buffers
+              should be drawn tow.</doc>
+            <type name="StereoMode" c:type="CoglStereoMode"/>
           </parameter>
         </parameters>
       </method>
@@ -11322,6 +11376,30 @@ rendering.&lt;/note&gt;</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_stereo_enabled"
+              c:identifier="cogl_onscreen_template_set_stereo_enabled"
+              version="1.20"
+              stability="Unstable">
+        <doc xml:space="preserve">Sets whether future #CoglOnscreen framebuffers derived from this
+template are attempted to be created with both left and right
+buffers, for use with stereo display. If the display system
+does not support stereo, then creation of the framebuffer will
+fail.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="onscreen_template"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">A #CoglOnscreenTemplate template framebuffer</doc>
+            <type name="OnscreenTemplate" c:type="CoglOnscreenTemplate*"/>
+          </instance-parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">Whether framebuffers are created with stereo buffers</doc>
+            <type name="Bool" c:type="CoglBool"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_swap_throttled"
               c:identifier="cogl_onscreen_template_set_swap_throttled"
               version="1.10"
@@ -16230,6 +16308,31 @@ variable to alter the returned texel.
   stage of a given layer in a pipeline.</doc>
       </member>
     </enumeration>
+    <enumeration name="StereoMode"
+                 glib:type-name="CoglStereoMode"
+                 glib:get-type="cogl_stereo_mode_get_type"
+                 c:type="CoglStereoMode">
+      <doc xml:space="preserve">Represents how draw should affect the two buffers
+of a stereo framebuffer. See cogl_framebuffer_set_stereo_mode().</doc>
+      <member name="both"
+              value="0"
+              c:identifier="COGL_STEREO_BOTH"
+              glib:nick="both">
+        <doc xml:space="preserve">draw to both stereo buffers</doc>
+      </member>
+      <member name="left"
+              value="1"
+              c:identifier="COGL_STEREO_LEFT"
+              glib:nick="left">
+        <doc xml:space="preserve">draw only to the left stereo buffer</doc>
+      </member>
+      <member name="right"
+              value="2"
+              c:identifier="COGL_STEREO_RIGHT"
+              glib:nick="right">
+        <doc xml:space="preserve">draw only to the left stereo buffer</doc>
+      </member>
+    </enumeration>
     <class name="SubTexture"
            c:symbol-prefix="sub_texture"
            c:type="CoglSubTexture"
@@ -17683,6 +17786,50 @@ the pixmap to the texture.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_left"
+                   c:identifier="cogl_texture_pixmap_x11_new_left"
+                   version="1.20"
+                   stability="Unstable"
+                   throws="1">
+        <doc xml:space="preserve">Creates one of a pair of textures to contain the contents of @pixmap,
+which has stereo content. (Different images for the right and left eyes.)
+The left image is drawn using this texture; the right image is drawn
+using a texture created by calling
+cogl_texture_pixmap_x11_new_right() and passing in this texture as an
+argument.
+
+In general, you should not use this function unless you have
+queried the %GLX_STEREO_TREE_EXT attribute of the corresponding
+window using glXQueryDrawable() and determined that the window is
+stereo. Note that this attribute can change over time and
+notification is also provided through events defined in the
+EXT_stereo_tree GLX extension. As long as the system has support for
+stereo content, drawing using the left and right pixmaps will not
+produce an error even if the window doesn't have stereo
+content any more, but drawing with the right pixmap will produce
+undefined output, so you need to listen for these events and
+re-render to avoid race conditions. (Recreating a non-stereo
+pixmap is not necessary, but may save resources.)</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #CoglTexturePixmapX11 instance</doc>
+          <type name="TexturePixmapX11" c:type="CoglTexturePixmapX11*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">A #CoglContext</doc>
+            <type name="Context" c:type="CoglContext*"/>
+          </parameter>
+          <parameter name="pixmap" transfer-ownership="none">
+            <doc xml:space="preserve">A X11 pixmap ID</doc>
+            <type name="guint32" c:type="uint32_t"/>
+          </parameter>
+          <parameter name="automatic_updates" transfer-ownership="none">
+            <doc xml:space="preserve">Whether to automatically copy the contents of
+the pixmap to the texture.</doc>
+            <type name="Bool" c:type="CoglBool"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <function name="error_quark"
                 c:identifier="cogl_texture_pixmap_x11_error_quark">
         <return-value transfer-ownership="none">
@@ -17706,6 +17853,26 @@ working efficiently.</doc>
         <parameters>
           <instance-parameter name="texture" transfer-ownership="none">
             <doc xml:space="preserve">A #CoglTexturePixmapX11 instance</doc>
+            <type name="TexturePixmapX11" c:type="CoglTexturePixmapX11*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="new_right"
+              c:identifier="cogl_texture_pixmap_x11_new_right"
+              version="1.20"
+              introspectable="0"
+              stability="Unstable">
+        <doc xml:space="preserve">Creates a texture object that corresponds to the right-eye image
+of a pixmap with stereo content. @left_texture must have been
+created using cogl_texture_pixmap_x11_new_left().</doc>
+        <return-value>
+          <doc xml:space="preserve">a new #CoglTexturePixmapX11 instance</doc>
+          <type name="TexturePixmapX11" c:type="CoglTexturePixmapX11*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="left_texture" transfer-ownership="none">
+            <doc xml:space="preserve">A #CoglTexturePixmapX11 instance created with
+               cogl_texture_pixmap_x11_new_left().</doc>
             <type name="TexturePixmapX11" c:type="CoglTexturePixmapX11*"/>
           </instance-parameter>
         </parameters>

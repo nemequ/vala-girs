@@ -157,8 +157,6 @@ namespace NM {
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void deactivate_connection (NM.ActiveConnection active);
-		[CCode (has_construct_function = false)]
-		public Client.finish (GLib.AsyncResult result) throws GLib.Error;
 		public unowned NM.ActiveConnection get_activating_connection ();
 		public unowned GLib.GenericArray<NM.ActiveConnection> get_active_connections ();
 		public NM.ConnectivityState get_connectivity ();
@@ -174,6 +172,7 @@ namespace NM {
 		public unowned string get_version ();
 		public bool networking_get_enabled ();
 		public void networking_set_enabled (bool enabled);
+		public static async NM.Client new_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_logging (string? level, string? domains) throws GLib.Error;
 		public void sleep (bool sleep_);
 		public bool wimax_get_enabled ();
@@ -186,7 +185,7 @@ namespace NM {
 		public bool wwan_hardware_get_enabled ();
 		public void wwan_set_enabled (bool enabled);
 		public NM.ActiveConnection activating_connection { get; }
-		public NM.ObjectArray active_connections { get; }
+		public GLib.GenericArray<weak void*> active_connections { get; }
 		public uint connectivity { get; }
 		public NM.ObjectArray devices { get; }
 		public bool manager_running { get; }
@@ -300,9 +299,10 @@ namespace NM {
 		public Device (DBus.Connection connection, string path);
 		public virtual bool connection_compatible (NM.Connection connection) throws GLib.Error;
 		public bool connection_valid (NM.Connection connection);
+		public void @delete ([CCode (scope = "async")] owned NM.DeviceCallbackFn? callback);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public static string[] disambiguate_names ([CCode (array_length_cname = "num_devices", array_length_pos = 1.1)] NM.Device[] devices);
-		public void disconnect ([CCode (scope = "async")] owned NM.DeviceDeactivateFn? callback);
+		public void disconnect ([CCode (scope = "async")] owned NM.DeviceCallbackFn? callback);
 		public GLib.SList<weak NM.Connection> filter_connections (GLib.SList<NM.Connection> connections);
 		public unowned NM.ActiveConnection get_active_connection ();
 		public bool get_autoconnect ();
@@ -331,6 +331,7 @@ namespace NM {
 		public virtual unowned string get_type_description ();
 		public unowned string get_udi ();
 		public unowned string get_vendor ();
+		public bool is_software ();
 		public void set_autoconnect (bool autoconnect);
 		public NM.ActiveConnection active_connection { get; }
 		public bool autoconnect { get; set; }
@@ -729,13 +730,12 @@ namespace NM {
 		public RemoteSettings (DBus.Connection? bus);
 		public bool add_connection (NM.Connection connection, [CCode (scope = "async")] owned NM.RemoteSettingsAddConnectionFunc callback);
 		public bool add_connection_unsaved (NM.Connection connection, [CCode (scope = "async")] owned NM.RemoteSettingsAddConnectionFunc callback);
-		[CCode (has_construct_function = false)]
-		public RemoteSettings.finish (GLib.AsyncResult result) throws GLib.Error;
 		public unowned NM.RemoteConnection get_connection_by_id (string id);
 		public unowned NM.RemoteConnection get_connection_by_path (string path);
 		public unowned NM.RemoteConnection get_connection_by_uuid (string uuid);
 		public GLib.SList<weak NM.RemoteConnection> list_connections ();
 		public bool load_connections (string filenames, out string failures) throws GLib.Error;
+		public static async NM.RemoteSettings new_async (DBus.Connection? bus, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool reload_connections () throws GLib.Error;
 		public bool save_hostname (string hostname, [CCode (scope = "async")] owned NM.RemoteSettingsSaveHostnameFunc? callback);
 		[NoAccessorMethod]
@@ -1112,6 +1112,8 @@ namespace NM {
 	public delegate void ClientActivateFn (NM.Client client, NM.ActiveConnection active_connection, GLib.Error error);
 	[CCode (cheader_filename = "nm-client.h", instance_pos = 4.9)]
 	public delegate void ClientAddActivateFn (NM.Client client, NM.ActiveConnection connection, string new_connection_path, GLib.Error error);
+	[CCode (cheader_filename = "NMClient-1.0.h", instance_pos = 2.9)]
+	public delegate void DeviceCallbackFn (NM.Device device, GLib.Error error);
 	[CCode (cheader_filename = "nm-device.h", instance_pos = 2.9)]
 	public delegate void DeviceDeactivateFn (NM.Device device, GLib.Error error);
 	[CCode (cheader_filename = "NMClient-1.0.h", instance_pos = 2.9)]

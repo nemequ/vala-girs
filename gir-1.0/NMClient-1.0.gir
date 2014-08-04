@@ -1730,7 +1730,10 @@ likely to become the new #NMClient:primary-connection.</doc>
         <type name="ActiveConnection"/>
       </property>
       <property name="active-connections" transfer-ownership="none">
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">The active connections.</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="connectivity"
                 version="0.9.8.6"
@@ -1743,11 +1746,13 @@ likely to become the new #NMClient:primary-connection.</doc>
         <type name="ObjectArray"/>
       </property>
       <property name="manager-running" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the daemon is running.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="networking-enabled"
                 writable="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">Whether networking is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="primary-connection"
@@ -1770,21 +1775,27 @@ see nm_client_get_primary_connection() for more details.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="wimax-enabled" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Whether WiMAX functionality is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="wimax-hardware-enabled" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the WiMAX hardware is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="wireless-enabled" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Whether wireless is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="wireless-hardware-enabled" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the wireless hardware is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="wwan-enabled" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Whether WWAN functionality is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="wwan-hardware-enabled" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the WWAN hardware is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
@@ -2905,6 +2916,32 @@ if is incompatible with the device's capabilities and characteristics.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="delete" c:identifier="nm_device_delete" version="1.0">
+        <doc xml:space="preserve">Deletes the software device. Hardware devices can't be deleted.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="1">
+            <doc xml:space="preserve">callback to be called when delete
+operation completes</doc>
+            <type name="DeviceCallbackFn" c:type="NMDeviceCallbackFn"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="disconnect" c:identifier="nm_device_disconnect">
         <doc xml:space="preserve">Disconnects the device if currently connected, and prevents the device from
 automatically connecting to networks until the next manual network connection
@@ -2925,7 +2962,7 @@ request.</doc>
                      closure="1">
             <doc xml:space="preserve">callback to be called when disconnect
 operation completes</doc>
-            <type name="DeviceDeactivateFn" c:type="NMDeviceDeactivateFn"/>
+            <type name="DeviceCallbackFn" c:type="NMDeviceCallbackFn"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">caller-specific data passed to @callback</doc>
@@ -3388,6 +3425,21 @@ system services like udev or sysfs.</doc>
           <doc xml:space="preserve">the vendor name of the device. This is the internal string used by the
 device, and must not be modified.</doc>
           <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_software"
+              c:identifier="nm_device_is_software"
+              version="1.0">
+        <doc xml:space="preserve">Whether the device is a software device.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @device is a software device, %FALSE if it is a hardware device.</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
@@ -4209,6 +4261,22 @@ device, and must not be modified.</doc>
         </return-value>
       </function>
     </enumeration>
+    <callback name="DeviceCallbackFn" c:type="NMDeviceCallbackFn">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="device" transfer-ownership="none">
+          <type name="Device" c:type="NMDevice*"/>
+        </parameter>
+        <parameter name="error" transfer-ownership="none">
+          <type name="GLib.Error" c:type="GError*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="2">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <record name="DeviceClass"
             c:type="NMDeviceClass"
             glib:is-gtype-struct-for="Device">
@@ -7302,6 +7370,7 @@ save completes</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The #DBusGConnection that the #NMRemoteConnection is connected to.</doc>
         <type/>
       </property>
       <property name="dbus-connection"
@@ -7867,15 +7936,21 @@ hostname operation completes</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The #DBusGConnection that the #NMRemoteSettings is connected to. Defaults
+to the system bus if not specified.</doc>
         <type/>
       </property>
       <property name="can-modify" transfer-ownership="none">
+        <doc xml:space="preserve">If %TRUE, adding and modifying connections is supported.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="hostname" transfer-ownership="none">
+        <doc xml:space="preserve">The machine hostname stored in persistent configuration. This can be
+modified by calling nm_remote_settings_save_hostname().</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="service-running" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the settings service is running.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">

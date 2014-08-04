@@ -1703,7 +1703,8 @@ namespace NM {
 	public enum DeviceCapabilities {
 		NONE,
 		NM_SUPPORTED,
-		CARRIER_DETECT
+		CARRIER_DETECT,
+		IS_SOFTWARE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_MODEM_CAPABILITY_", has_type_id = false)]
 	public enum DeviceModemCapabilities {
@@ -2405,6 +2406,12 @@ namespace NM {
 	public const string DBUS_VPN_STOPPING_IN_PROGRESS;
 	[CCode (cheader_filename = "NetworkManagerVPN.h", cname = "NM_DBUS_VPN_WRONG_STATE")]
 	public const string DBUS_VPN_WRONG_STATE;
+	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_AGEING_TIME")]
 	public const string SETTING_BRIDGE_AGEING_TIME;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]

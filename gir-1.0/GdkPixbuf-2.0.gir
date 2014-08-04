@@ -97,17 +97,17 @@ the gdk-pixbuf library.  Currently only RGB is supported.</doc>
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_MICRO" value="8" c:type="GDK_PIXBUF_MICRO">
+    <constant name="PIXBUF_MICRO" value="1" c:type="GDK_PIXBUF_MICRO">
       <doc xml:space="preserve">Micro version of gdk-pixbuf library, that is the "2" in
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_MINOR" value="30" c:type="GDK_PIXBUF_MINOR">
+    <constant name="PIXBUF_MINOR" value="31" c:type="GDK_PIXBUF_MINOR">
       <doc xml:space="preserve">Minor version of gdk-pixbuf library, that is the "8" in
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_VERSION" value="2.30.8" c:type="GDK_PIXBUF_VERSION">
+    <constant name="PIXBUF_VERSION" value="2.31.1" c:type="GDK_PIXBUF_VERSION">
       <doc xml:space="preserve">Contains the full version of the gdk-pixbuf header as a string.
 This is the version being compiled against; contrast with
 #gdk_pixbuf_version.</doc>
@@ -164,10 +164,59 @@ you will have to fill it completely yourself.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_from_bytes"
+                   c:identifier="gdk_pixbuf_new_from_bytes"
+                   version="2.32">
+        <doc xml:space="preserve">Creates a new #GdkPixbuf out of in-memory readonly image data.
+Currently only RGB images with 8 bits per sample are supported.
+This is the #GBytes variant of gdk_pixbuf_new_from_data().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly-created #GdkPixbuf structure with a reference count of 1.</doc>
+          <type name="Pixbuf" c:type="GdkPixbuf*"/>
+        </return-value>
+        <parameters>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">Image data in 8-bit/sample packed format inside a #GBytes</doc>
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+          <parameter name="colorspace" transfer-ownership="none">
+            <doc xml:space="preserve">Colorspace for the image data</doc>
+            <type name="Colorspace" c:type="GdkColorspace"/>
+          </parameter>
+          <parameter name="has_alpha" transfer-ownership="none">
+            <doc xml:space="preserve">Whether the data has an opacity channel</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="bits_per_sample" transfer-ownership="none">
+            <doc xml:space="preserve">Number of bits per sample</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">Width of the image in pixels, must be &gt; 0</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">Height of the image in pixels, must be &gt; 0</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="rowstride" transfer-ownership="none">
+            <doc xml:space="preserve">Distance in bytes between row starts</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_from_data"
                    c:identifier="gdk_pixbuf_new_from_data">
         <doc xml:space="preserve">Creates a new #GdkPixbuf out of in-memory image data.  Currently only RGB
-images with 8 bits per sample are supported.</doc>
+images with 8 bits per sample are supported.
+
+Since you are providing a pre-allocated pixel buffer, you must also
+specify a way to free that data.  This is done with a function of
+type #GdkPixbufDestroyNotify.  When a pixbuf created with is
+finalized, your destroy notification function will be called, and
+it is its responsibility to free the pixel array.
+
+See also gdk_pixbuf_new_from_bytes().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A newly-created #GdkPixbuf structure with a reference count of 1.</doc>
           <type name="Pixbuf" c:type="GdkPixbuf*"/>
@@ -1231,7 +1280,10 @@ string that should not be freed or %NULL if @key was not found.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">A pointer to the pixbuf's pixel data.
 Please see the section on [image data](image-data) for information
-about how the pixel data is stored in memory.</doc>
+about how the pixel data is stored in memory.
+
+This function will cause an implicit copy of the pixbuf data if the
+pixbuf was created from read-only data.</doc>
           <array zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -1251,7 +1303,10 @@ about how the pixel data is stored in memory.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">A pointer to the pixbuf's
 pixel data.  Please see the section on [image data](image-data)
-for information about how the pixel data is stored in memory.</doc>
+for information about how the pixel data is stored in memory.
+
+This function will cause an implicit copy of the pixbuf data if the
+pixbuf was created from read-only data.</doc>
           <array length="0" zero-terminated="0" c:type="guchar*">
             <type name="guint8" c:type="guchar"/>
           </array>
@@ -1298,12 +1353,14 @@ the start of a row and the start of the next row.</doc>
         </parameters>
       </method>
       <method name="new_subpixbuf" c:identifier="gdk_pixbuf_new_subpixbuf">
-        <doc xml:space="preserve">Creates a new pixbuf which represents a sub-region of
-@src_pixbuf. The new pixbuf shares its pixels with the
-original pixbuf, so writing to one affects both.
-The new pixbuf holds a reference to @src_pixbuf, so
-@src_pixbuf will not be finalized until the new pixbuf
-is finalized.</doc>
+        <doc xml:space="preserve">Creates a new pixbuf which represents a sub-region of @src_pixbuf.
+The new pixbuf shares its pixels with the original pixbuf, so
+writing to one affects both.  The new pixbuf holds a reference to
+@src_pixbuf, so @src_pixbuf will not be finalized until the new
+pixbuf is finalized.
+
+Note that if @src_pixbuf is read-only, this function will force it
+to be mutable.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new pixbuf</doc>
           <type name="Pixbuf" c:type="GdkPixbuf*"/>
@@ -1329,6 +1386,40 @@ is finalized.</doc>
             <doc xml:space="preserve">height of region in @src_pixbuf</doc>
             <type name="gint" c:type="int"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="read_pixel_bytes"
+              c:identifier="gdk_pixbuf_read_pixel_bytes"
+              version="2.32">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new reference to a read-only copy of
+the pixel data.  Note that for mutable pixbufs, this function will
+incur a one-time copy of the pixel data for conversion into the
+returned #GBytes.</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">A pixbuf</doc>
+            <type name="Pixbuf" c:type="const GdkPixbuf*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="read_pixels"
+              c:identifier="gdk_pixbuf_read_pixels"
+              version="2.32">
+        <doc xml:space="preserve">Returns a read-only pointer to the raw pixel data; must not be
+modified.  This function allows skipping the implicit copy that
+must be made if gdk_pixbuf_get_pixels() is called on a read-only
+pixbuf.</doc>
+        <return-value transfer-ownership="none">
+          <type name="guint8" c:type="const guint8*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">A pixbuf</doc>
+            <type name="Pixbuf" c:type="const GdkPixbuf*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="ref"
@@ -1985,6 +2076,12 @@ Currently only 8 bit per sample are supported.</doc>
         <doc xml:space="preserve">The number of samples per pixel.
 Currently, only 3 or 4 samples per pixel are supported.</doc>
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="pixel-bytes"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="GLib.Bytes"/>
       </property>
       <property name="pixels"
                 writable="1"

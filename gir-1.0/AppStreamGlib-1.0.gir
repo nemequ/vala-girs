@@ -1048,6 +1048,23 @@ NOTE: this is not set for %AS_APP_SOURCE_KIND_APPSTREAM entries.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_source_pkgname"
+              c:identifier="as_app_get_source_pkgname"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the source package name that produced the binary package.
+Only source packages producing more than one binary package will have this
+entry set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string, or %NULL if unset</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_state" c:identifier="as_app_get_state" version="0.2.2">
         <doc xml:space="preserve">Gets the application state.</doc>
         <return-value transfer-ownership="none">
@@ -1585,6 +1602,28 @@ are better than negative numbers.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_source_pkgname"
+              c:identifier="as_app_set_source_pkgname"
+              version="0.2.4">
+        <doc xml:space="preserve">Set the project license.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="source_pkgname" transfer-ownership="none">
+            <doc xml:space="preserve">the project license string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="source_pkgname_len" transfer-ownership="none">
+            <doc xml:space="preserve">the size of @source_pkgname, or -1 if %NULL-terminated.</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_state" c:identifier="as_app_set_state" version="0.2.2">
         <doc xml:space="preserve">Sets the application state.</doc>
         <return-value transfer-ownership="none">
@@ -1913,6 +1952,11 @@ trusted input.</doc>
               value="2"
               c:identifier="AS_APP_SUBSUME_FLAG_BOTH_WAYS">
         <doc xml:space="preserve">Copy unset properties both ways</doc>
+      </member>
+      <member name="partial"
+              value="4"
+              c:identifier="AS_APP_SUBSUME_FLAG_PARTIAL">
+        <doc xml:space="preserve">Only subsume a safe subset</doc>
       </member>
     </enumeration>
     <enumeration name="AppTrustFlags" c:type="AsAppTrustFlags">
@@ -2525,7 +2569,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="4" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="2" c:type="AS_MINOR_VERSION">
@@ -3101,6 +3145,11 @@ using as_image_get_basename(). This can be overridden if required.</doc>
       </member>
       <member name="dbus" value="8" c:identifier="AS_PROVIDE_KIND_DBUS">
         <doc xml:space="preserve">A D-Bus service</doc>
+      </member>
+      <member name="dbus_system"
+              value="9"
+              c:identifier="AS_PROVIDE_KIND_DBUS_SYSTEM">
+        <doc xml:space="preserve">A D-Bus system service</doc>
       </member>
     </enumeration>
     <class name="Release"
@@ -3806,6 +3855,21 @@ icons are required.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_destdir"
+              c:identifier="as_store_get_destdir"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the destdir, which is used to prefix usr.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the destdir path, or %NULL if unset</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_origin"
               c:identifier="as_store_get_origin"
               version="0.1.1">
@@ -3946,6 +4010,24 @@ your level of paranoia, and should not be used by default.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_destdir"
+              c:identifier="as_store_set_destdir"
+              version="0.2.4">
+        <doc xml:space="preserve">Sets the destdir, which is used to prefix usr.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="destdir" transfer-ownership="none">
+            <doc xml:space="preserve">the destdir, e.g. "/tmp"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_origin"
               c:identifier="as_store_set_origin"
               version="0.1.1">
@@ -4009,6 +4091,29 @@ your level of paranoia, and should not be used by default.</doc>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve">the AsNodeToXmlFlags, e.g. %AS_NODE_INSERT_FLAG_NONE.</doc>
             <type name="NodeToXmlFlags" c:type="AsNodeToXmlFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="validate"
+              c:identifier="as_store_validate"
+              version="0.2.4"
+              throws="1">
+        <doc xml:space="preserve">Validates infomation in the store for data applicable to the defined
+metadata version.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">A list of problems, or %NULL</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Problem"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsAppValidateFlags to use, e.g. %AS_APP_VALIDATE_FLAG_NONE</doc>
+            <type name="AppValidateFlags" c:type="AsAppValidateFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -4271,6 +4376,11 @@ have changed.</doc>
       </member>
       <member name="kudo" value="38" c:identifier="AS_TAG_KUDO">
         <doc xml:space="preserve">`kudo`</doc>
+      </member>
+      <member name="source_pkgname"
+              value="39"
+              c:identifier="AS_TAG_SOURCE_PKGNAME">
+        <doc xml:space="preserve">`source_pkgname`</doc>
       </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">
@@ -5069,18 +5179,6 @@ legacy key names.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="util_get_possible_kudos"
-              c:identifier="as_util_get_possible_kudos"
-              version="0.2.2">
-      <doc xml:space="preserve">Returns a list of all known kudos, which are metadata values that
-infer a level of integration or quality.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a static list of possible metadata keys</doc>
-        <array c:type="const gchar* const*">
-          <type name="utf8"/>
-        </array>
-      </return-value>
-    </function>
     <function name="utils_check_url_exists"
               c:identifier="as_utils_check_url_exists"
               version="0.1.5"
@@ -5112,6 +5210,36 @@ infer a level of integration or quality.</doc>
       <parameters>
         <parameter name="desktop_id" transfer-ownership="none">
           <doc xml:space="preserve">a desktop ID, e.g. "gimp.desktop"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_is_category_id"
+              c:identifier="as_utils_is_category_id"
+              version="0.2.4">
+      <doc xml:space="preserve">Searches the known list of registered category IDs.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the category ID is valid</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="category_id" transfer-ownership="none">
+          <doc xml:space="preserve">a desktop ID, e.g. "AudioVideoEditing"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_is_environment_id"
+              c:identifier="as_utils_is_environment_id"
+              version="0.2.4">
+      <doc xml:space="preserve">Searches the known list of registered environment IDs.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the environment ID is valid</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="environment_id" transfer-ownership="none">
+          <doc xml:space="preserve">a desktop ID, e.g. "GNOME"</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

@@ -26,6 +26,7 @@ namespace E {
 		public E.Contact duplicate ();
 		public static E.ContactField field_id (string field_name);
 		public static E.ContactField field_id_from_vcard (string vcard_field);
+		public static bool field_is_string (E.ContactField field_id);
 		public static unowned string field_name (E.ContactField field_id);
 		public static GLib.Type field_type (E.ContactField field_id);
 		[CCode (has_construct_function = false)]

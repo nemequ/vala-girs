@@ -5018,12 +5018,18 @@ g_application_get_is_registered().</doc>
         </parameters>
       </method>
       <method name="get_resource_base_path"
-              c:identifier="g_application_get_resource_base_path">
-        <return-value transfer-ownership="none">
+              c:identifier="g_application_get_resource_base_path"
+              version="2.42">
+        <doc xml:space="preserve">Gets the resource base path of @application.
+
+See g_application_set_resource_base_path() for more information.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the base resource path, if one is set</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="application" transfer-ownership="none">
+            <doc xml:space="preserve">a #GApplication</doc>
             <type name="Application" c:type="GApplication*"/>
           </instance-parameter>
         </parameters>
@@ -5475,12 +5481,42 @@ zero.  Any timeouts currently in progress are not impacted.</doc>
         </parameters>
       </method>
       <method name="set_resource_base_path"
-              c:identifier="g_application_set_resource_base_path">
+              c:identifier="g_application_set_resource_base_path"
+              version="2.42">
+        <doc xml:space="preserve">Sets (or unsets) the base resource path of @application.
+
+The path is used to automatically load various [application
+resources][gresource] such as menu layouts and action descriptions.
+The various types of resources will be found at fixed names relative
+to the given base path.
+
+By default, the resource base path is determined from the application
+ID by prefixing '/' and replacing each '.' with '/'.  This is done at
+the time that the #GApplication object is constructed.  Changes to
+the application ID after that point will not have an impact on the
+resource base path.
+
+As an example, if the application has an ID of "org.example.app" then
+the default resource base path will be "/org/example/app".  If this
+is a #GtkApplication (and you have not manually changed the path)
+then Gtk will then search for the menus of the application at
+"/org/example/app/gtk/menus.ui".
+
+See #GResource for more information about adding resources to your
+application.
+
+You can disable automatic resource loading functionality by setting
+the path to %NULL.
+
+Changing the resource base path once the application is running is
+not recommended.  The point at which the resource path is consulted
+for forming paths for various purposes is unspecified.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="application" transfer-ownership="none">
+            <doc xml:space="preserve">a #GApplication</doc>
             <type name="Application" c:type="GApplication*"/>
           </instance-parameter>
           <parameter name="resource_base_path" transfer-ownership="none">
@@ -10424,7 +10460,7 @@ lot of flexibility. For instance, it lets you establish a connection
 over any transport that can by represented as an #GIOStream.
 
 This class is rarely used directly in D-Bus clients. If you are writing
-an D-Bus client, it is often easier to use the g_bus_own_name(),
+a D-Bus client, it is often easier to use the g_bus_own_name(),
 g_bus_watch_name() or g_dbus_proxy_new_for_bus() APIs.
 
 As an exception to the usual GLib rule that a particular object must not
@@ -44546,6 +44582,9 @@ It is not an error if this is not the same as the requested size, as it
 can happen e.g. near the end of a file. Zero is returned on end of file
 (or if @count is zero),  but never otherwise.
 
+The returned @buffer is not a nul-terminated string, it can contain nul bytes
+at any position, and this function doesn't nul-terminate the @buffer.
+
 If @cancellable is not %NULL, then the operation can be cancelled by
 triggering the cancellable object from another thread. If the operation
 was cancelled, the error %G_IO_ERROR_CANCELLED will be returned. If an
@@ -44706,6 +44745,7 @@ of the request.</doc>
       </method>
       <method name="read_bytes"
               c:identifier="g_input_stream_read_bytes"
+              version="2.34"
               throws="1">
         <doc xml:space="preserve">Like g_input_stream_read(), this tries to read @count bytes from
 the stream in a blocking fashion. However, rather than reading into
@@ -44754,7 +44794,8 @@ values include 4096 and 8192.</doc>
         </parameters>
       </method>
       <method name="read_bytes_async"
-              c:identifier="g_input_stream_read_bytes_async">
+              c:identifier="g_input_stream_read_bytes_async"
+              version="2.34">
         <doc xml:space="preserve">Request an asynchronous read of @count bytes from the stream into a
 new #GBytes. When the operation is finished @callback will be
 called. You can then call g_input_stream_read_bytes_finish() to get the
@@ -44815,6 +44856,7 @@ priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
       </method>
       <method name="read_bytes_finish"
               c:identifier="g_input_stream_read_bytes_finish"
+              version="2.34"
               throws="1">
         <doc xml:space="preserve">Finishes an asynchronous stream read-into-#GBytes operation.</doc>
         <return-value transfer-ownership="full">
@@ -69424,7 +69466,10 @@ functions such as g_subprocess_get_if_exited() and
 g_subprocess_get_exit_status().
 
 This function does not fail in the case of the subprocess having
-abnormal termination.  See g_subprocess_wait_check() for that.</doc>
+abnormal termination.  See g_subprocess_wait_check() for that.
+
+Cancelling @cancellable doesn't kill the subprocess.  Call
+g_subprocess_force_exit() if it is desirable.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success, %FALSE if @cancellable was cancelled</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -70539,6 +70584,7 @@ Running a task in a thread:
       task = g_task_new (self, cancellable, callback, user_data);
       g_task_set_task_data (task, cake_data, (GDestroyNotify) cake_data_free);
       g_task_run_in_thread (task, bake_cake_thread);
+      g_object_unref (task);
     }
 
     Cake *
