@@ -66,7 +66,7 @@ namespace Dee {
 		public virtual uint get_n_rows ();
 		public virtual uint get_n_rows_for_term (string term);
 		public virtual uint get_n_terms ();
-		public Dee.ModelReader get_reader ();
+		public unowned Dee.ModelReader? get_reader ();
 		public virtual uint get_supported_term_match_flags ();
 		public virtual Dee.ResultSet lookup (string term, Dee.TermMatchFlag flags);
 		public unowned Dee.ModelIter lookup_one (string term);
@@ -118,6 +118,8 @@ namespace Dee {
 		[NoAccessorMethod]
 		public Dee.Model back_end { owned get; construct; }
 		[NoAccessorMethod]
+		public bool inherit_seqnums { get; construct; }
+		[NoAccessorMethod]
 		public bool proxy_signals { get; construct; }
 	}
 	[CCode (cheader_filename = "dee.h", type_id = "dee_sequence_model_get_type ()")]
@@ -151,16 +153,20 @@ namespace Dee {
 		[CCode (has_construct_function = false, type = "DeeModel*")]
 		public SharedModel (string name);
 		public uint flush_revision_queue ();
+		public uint flush_revision_queue_sync ();
 		[CCode (has_construct_function = false, type = "DeeModel*")]
 		public SharedModel.for_peer (owned Dee.Peer peer);
+		public Dee.SharedModelFlushMode get_flush_mode ();
 		public unowned Dee.Peer get_peer ();
 		public unowned string get_swarm_name ();
 		public bool is_leader ();
 		public bool is_synchronized ();
+		public void set_flush_mode (Dee.SharedModelFlushMode mode);
 		[CCode (has_construct_function = false, type = "DeeModel*")]
 		public SharedModel.with_back_end (string name, owned Dee.Model back_end);
 		[NoAccessorMethod]
 		public Dee.SharedModelAccessMode access_mode { get; construct; }
+		public Dee.SharedModelFlushMode flush_mode { get; set; }
 		public Dee.Peer peer { get; construct; }
 		[NoAccessorMethod]
 		public bool synchronized { get; }
@@ -206,14 +212,24 @@ namespace Dee {
 	public interface Model : GLib.Object {
 		public unowned Dee.ModelIter append (...);
 		public abstract unowned Dee.ModelIter append_row ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members);
+		public abstract void begin_changeset ();
+		[CCode (array_length_pos = 1.33333, array_length_type = "guint", cname = "dee_model_build_named_row_sunk")]
+		public GLib.Variant[] build_named_row ([CCode (array_length = false)] GLib.Variant[]? out_row_members, string first_column_name, ...);
+		[CCode (array_length_pos = 1.33333, array_length_type = "guint", cname = "dee_model_build_named_row_sunk")]
+		public unowned GLib.Variant[] build_named_row_static ([CCode (array_length = false)] GLib.Variant[] out_row_members, string first_column_name, ...);
 		public abstract void clear ();
+		public abstract void end_changeset ();
 		public abstract unowned Dee.ModelIter find_row_sorted ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_spec, [CCode (delegate_target_pos = 2.5)] Dee.CompareRowFunc cmp_func, out bool out_was_found);
 		public unowned Dee.ModelIter find_row_sorted_with_sizes ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_spec, [CCode (delegate_target_pos = 2.5)] Dee.CompareRowSizedFunc cmp_func, out bool out_was_found);
 		public unowned Dee.ModelIter find_sorted ([CCode (delegate_target_pos = 1.5)] Dee.CompareRowFunc cmp_func, out bool out_was_found, ...);
 		public void @get (Dee.ModelIter iter, ...);
 		public abstract bool get_bool (Dee.ModelIter iter, uint column);
+		public abstract int get_column_index (string column_name);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		public abstract unowned string[] get_column_names ();
 		public abstract unowned string get_column_schema (uint column);
 		public abstract double get_double (Dee.ModelIter iter, uint column);
+		public abstract unowned string get_field_schema (string field_name, out uint out_column);
 		public abstract unowned Dee.ModelIter get_first_iter ();
 		public abstract int32 get_int32 (Dee.ModelIter iter, uint column);
 		public abstract int64 get_int64 (Dee.ModelIter iter, uint column);
@@ -223,7 +239,9 @@ namespace Dee {
 		public abstract uint get_n_rows ();
 		public abstract uint get_position (Dee.ModelIter iter);
 		[CCode (array_length = false, array_null_terminated = true)]
-		public abstract GLib.Variant[] get_row (Dee.ModelIter iter, [CCode (array_length = false)] out GLib.Variant[] out_row_members = null);
+		public abstract GLib.Variant[] get_row (Dee.ModelIter iter, [CCode (array_length = false)] GLib.Variant[]? out_row_members = null);
+		[CCode (array_length = false, array_null_terminated = true, cname = "dee_model_get_row")]
+		public unowned GLib.Variant[] get_row_static (Dee.ModelIter iter, [CCode (array_length = false)] GLib.Variant[] out_row_members);
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		public abstract unowned string[] get_schema ();
 		public abstract unowned string get_string (Dee.ModelIter iter, uint column);
@@ -231,6 +249,8 @@ namespace Dee {
 		public abstract uint32 get_uint32 (Dee.ModelIter iter, uint column);
 		public abstract uint64 get_uint64 (Dee.ModelIter iter, uint column);
 		public abstract GLib.Variant get_value (Dee.ModelIter iter, uint column);
+		public abstract GLib.Variant get_value_by_name (Dee.ModelIter iter, string column_name);
+		public abstract GLib.HashTable<weak string,weak string> get_vardict_schema (uint num_column);
 		public unowned Dee.ModelIter insert (uint pos, ...);
 		public unowned Dee.ModelIter insert_before (Dee.ModelIter iter, ...);
 		public abstract unowned Dee.ModelIter insert_row (uint pos, [CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members);
@@ -244,12 +264,17 @@ namespace Dee {
 		public unowned Dee.ModelIter prepend (...);
 		public abstract unowned Dee.ModelIter prepend_row ([CCode (array_length = false, array_null_terminated = true)] GLib.Variant[] row_members);
 		public abstract unowned Dee.ModelIter prev (Dee.ModelIter iter);
+		public abstract void register_vardict_schema (uint num_column, GLib.HashTable<string,string> schemas);
 		public abstract void remove (Dee.ModelIter iter);
 		public void @set (Dee.ModelIter iter, ...);
+		public void set_column_names (string first_column_name, ...);
+		public abstract void set_column_names_full ([CCode (array_length_cname = "num_columns", array_length_pos = 1.1, array_length_type = "guint", array_null_terminated = true)] string[] column_names);
 		public abstract void set_row (Dee.ModelIter iter, [CCode (array_length = false)] GLib.Variant[] row_members);
 		public void set_schema (...);
 		public abstract void set_schema_full ([CCode (array_length_cname = "num_columns", array_length_pos = 1.1, array_length_type = "guint", array_null_terminated = true)] string[] column_schemas);
 		public abstract void set_value (Dee.ModelIter iter, uint column, GLib.Variant value);
+		public virtual signal void changeset_finished ();
+		public virtual signal void changeset_started ();
 		public virtual signal void row_added (Dee.ModelIter iter);
 		public virtual signal void row_changed (Dee.ModelIter iter);
 		public virtual signal void row_removed (Dee.ModelIter iter);
@@ -292,7 +317,7 @@ namespace Dee {
 		public void* userdata;
 		public void destroy ();
 		public void map (Dee.Model orig_model, Dee.FilterModel filter_model);
-		public static Dee.Filter @new (Dee.FilterMapFunc map_func, owned Dee.FilterMapNotify map_notify);
+		public static Dee.Filter @new (Dee.StaticFilterMapFunc map_func, owned Dee.FilterMapNotify map_notify);
 		public static Dee.Filter new_collator (uint column);
 		public static Dee.Filter new_collator_desc (uint column);
 		public static Dee.Filter new_for_any_column (uint column, GLib.Variant value);
@@ -312,18 +337,23 @@ namespace Dee {
 		public static Dee.ModelReader new_for_uint32_column (uint column);
 		public string read (Dee.Model model, Dee.ModelIter iter);
 	}
-	[CCode (cheader_filename = "dee.h", cprefix = "DEE_SHARED_MODEL_ACCESS_MODE_")]
+	[CCode (cheader_filename = "dee.h", cprefix = "DEE_SHARED_MODEL_ACCESS_MODE_", type_id = "dee_shared_model_access_mode_get_type ()")]
 	public enum SharedModelAccessMode {
 		WORLD_WRITABLE,
 		LEADER_WRITABLE
 	}
-	[CCode (cheader_filename = "dee.h", cprefix = "DEE_TERM_MATCH_")]
+	[CCode (cheader_filename = "dee.h", cprefix = "DEE_SHARED_MODEL_FLUSH_MODE_", type_id = "dee_shared_model_flush_mode_get_type ()")]
+	public enum SharedModelFlushMode {
+		AUTOMATIC,
+		MANUAL
+	}
+	[CCode (cheader_filename = "dee.h", cprefix = "DEE_TERM_MATCH_", has_type_id = false)]
 	[Flags]
 	public enum TermMatchFlag {
 		EXACT,
 		PREFIX
 	}
-	[CCode (cheader_filename = "dee.h", cprefix = "DEE_TRANSACTION_ERROR_")]
+	[CCode (cheader_filename = "dee.h", cprefix = "DEE_TRANSACTION_ERROR_", has_type_id = false)]
 	public enum TransactionError {
 		CONCURRENT_MODIFICATION,
 		COMMITTED
@@ -356,6 +386,8 @@ namespace Dee {
 	public delegate string ModelReaderFunc (Dee.Model model, Dee.ModelIter iter);
 	[CCode (cheader_filename = "dee.h", has_target = false)]
 	public delegate GLib.Object SerializableParseFunc (GLib.Variant data);
+	[CCode (cheader_filename = "dee.h", cname = "DeeFilterMapFunc", has_target = false)]
+	public delegate void StaticFilterMapFunc (Dee.Model orig_model, Dee.FilterModel filter_model, void* data);
 	[CCode (cheader_filename = "dee.h", instance_pos = 2.9)]
 	public delegate void TermFilterFunc (Dee.TermList terms_in, Dee.TermList terms_out);
 	[CCode (cheader_filename = "dee.h", cname = "DEE_PEER_DBUS_IFACE")]

@@ -7,7 +7,6 @@ and/or use gtk-doc annotations.  -->
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="GLib" version="2.0"/>
-  <include name="GObject" version="2.0"/>
   <include name="Gio" version="2.0"/>
   <include name="Json" version="1.0"/>
   <include name="Rest" version="0.7"/>
@@ -29,24 +28,34 @@ and/or use gtk-doc annotations.  -->
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_service_name"
               c:identifier="zpj_authorization_domain_get_service_name">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <property name="scope"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="service-name"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
@@ -75,41 +84,53 @@ and/or use gtk-doc annotations.  -->
                glib:type-struct="AuthorizerInterface">
       <virtual-method name="is_authorized_for_domain"
                       invoker="is_authorized_for_domain">
-        <doc xml:whitespace="preserve">Whether the authorization tokens held by @iface are valid for
+        <doc xml:space="preserve">Whether the authorization tokens held by @iface are valid for
 @domain.
 
 This method is thread safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the tokens are valid.</doc>
+          <doc xml:space="preserve">%TRUE if the tokens are valid.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
           <parameter name="domain" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ZpjAuthorizationDomain.</doc>
+            <doc xml:space="preserve">A #ZpjAuthorizationDomain.</doc>
             <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="process_call" invoker="process_call">
-        <doc xml:whitespace="preserve">Adds the necessary authorization to @call.
+        <doc xml:space="preserve">Adds the necessary authorization to @call.
 
 This method modifies @call in place and is thread safe.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="domain" transfer-ownership="none" allow-none="1">
-            <doc xml:whitespace="preserve">An optional #ZpjAuthorizationDomain object, or %NULL.</doc>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
+          <parameter name="domain"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional #ZpjAuthorizationDomain object,
+  or %NULL.</doc>
             <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
           </parameter>
           <parameter name="call" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #RestProxyCall.</doc>
+            <doc xml:space="preserve">A #RestProxyCall.</doc>
             <type name="Rest.ProxyCall" c:type="RestProxyCall*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="process_message" invoker="process_message">
-        <doc xml:whitespace="preserve">Adds the necessary authorization to @message. The type of @message
+        <doc xml:space="preserve">Adds the necessary authorization to @message. The type of @message
 can be DELETE, GET and POST.
 
 This method modifies @message in place and is thread safe.</doc>
@@ -117,12 +138,20 @@ This method modifies @message in place and is thread safe.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="domain" transfer-ownership="none" allow-none="1">
-            <doc xml:whitespace="preserve">An optional #ZpjAuthorizationDomain object, or %NULL.</doc>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
+          <parameter name="domain"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional #ZpjAuthorizationDomain object,
+  or %NULL.</doc>
             <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
           </parameter>
           <parameter name="message" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #SoupMessage.</doc>
+            <doc xml:space="preserve">A #SoupMessage.</doc>
             <type name="Soup.Message" c:type="SoupMessage*"/>
           </parameter>
         </parameters>
@@ -130,62 +159,80 @@ This method modifies @message in place and is thread safe.</doc>
       <virtual-method name="refresh_authorization"
                       invoker="refresh_authorization"
                       throws="1">
-        <doc xml:whitespace="preserve">Synchronously forces @iface to refresh any authorization tokens
+        <doc xml:space="preserve">Synchronously forces @iface to refresh any authorization tokens
 held by it. See zpj_authorizer_refresh_authorization_async() for the
 asynchronous version of this call.
 
 This method is thread safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the authorizer now has a valid token.</doc>
+          <doc xml:space="preserve">%TRUE if the authorizer now has a valid token.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <method name="is_authorized_for_domain"
               c:identifier="zpj_authorizer_is_authorized_for_domain">
-        <doc xml:whitespace="preserve">Whether the authorization tokens held by @iface are valid for
+        <doc xml:space="preserve">Whether the authorization tokens held by @iface are valid for
 @domain.
 
 This method is thread safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the tokens are valid.</doc>
+          <doc xml:space="preserve">%TRUE if the tokens are valid.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
           <parameter name="domain" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ZpjAuthorizationDomain.</doc>
+            <doc xml:space="preserve">A #ZpjAuthorizationDomain.</doc>
             <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
           </parameter>
         </parameters>
       </method>
       <method name="process_call" c:identifier="zpj_authorizer_process_call">
-        <doc xml:whitespace="preserve">Adds the necessary authorization to @call.
+        <doc xml:space="preserve">Adds the necessary authorization to @call.
 
 This method modifies @call in place and is thread safe.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="domain" transfer-ownership="none" allow-none="1">
-            <doc xml:whitespace="preserve">An optional #ZpjAuthorizationDomain object, or %NULL.</doc>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
+          <parameter name="domain"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional #ZpjAuthorizationDomain object,
+  or %NULL.</doc>
             <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
           </parameter>
           <parameter name="call" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #RestProxyCall.</doc>
+            <doc xml:space="preserve">A #RestProxyCall.</doc>
             <type name="Rest.ProxyCall" c:type="RestProxyCall*"/>
           </parameter>
         </parameters>
       </method>
       <method name="process_message"
               c:identifier="zpj_authorizer_process_message">
-        <doc xml:whitespace="preserve">Adds the necessary authorization to @message. The type of @message
+        <doc xml:space="preserve">Adds the necessary authorization to @message. The type of @message
 can be DELETE, GET and POST.
 
 This method modifies @message in place and is thread safe.</doc>
@@ -193,12 +240,20 @@ This method modifies @message in place and is thread safe.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="domain" transfer-ownership="none" allow-none="1">
-            <doc xml:whitespace="preserve">An optional #ZpjAuthorizationDomain object, or %NULL.</doc>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
+          <parameter name="domain"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional #ZpjAuthorizationDomain object,
+  or %NULL.</doc>
             <type name="AuthorizationDomain" c:type="ZpjAuthorizationDomain*"/>
           </parameter>
           <parameter name="message" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #SoupMessage.</doc>
+            <doc xml:space="preserve">A #SoupMessage.</doc>
             <type name="Soup.Message" c:type="SoupMessage*"/>
           </parameter>
         </parameters>
@@ -206,27 +261,33 @@ This method modifies @message in place and is thread safe.</doc>
       <method name="refresh_authorization"
               c:identifier="zpj_authorizer_refresh_authorization"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously forces @iface to refresh any authorization tokens
+        <doc xml:space="preserve">Synchronously forces @iface to refresh any authorization tokens
 held by it. See zpj_authorizer_refresh_authorization_async() for the
 asynchronous version of this call.
 
 This method is thread safe.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the authorizer now has a valid token.</doc>
+          <doc xml:space="preserve">%TRUE if the authorizer now has a valid token.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="refresh_authorization_async"
               c:identifier="zpj_authorizer_refresh_authorization_async">
-        <doc xml:whitespace="preserve">Asynchronously forces @iface to refresh any authorization tokens
+        <doc xml:space="preserve">Asynchronously forces @iface to refresh any authorization tokens
 held by it. See zpj_authorizer_refresh_authorization() for the
 synchronous version of this call.
 
@@ -239,22 +300,30 @@ This method is thread safe.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="2">
-            <doc xml:whitespace="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the
+  request is satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The data to pass to @callback.</doc>
+            <doc xml:space="preserve">The data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -262,15 +331,19 @@ This method is thread safe.</doc>
       <method name="refresh_authorization_finish"
               c:identifier="zpj_authorizer_refresh_authorization_finish"
               throws="1">
-        <doc xml:whitespace="preserve">Finishes an asynchronous operation started with
+        <doc xml:space="preserve">Finishes an asynchronous operation started with
 zpj_authorizer_refresh_authorization_async().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the authorizer now has a valid token.</doc>
+          <doc xml:space="preserve">%TRUE if the authorizer now has a valid token.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="iface" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
+            <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </instance-parameter>
           <parameter name="res" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #GAsyncResult.</doc>
+            <doc xml:space="preserve">A #GAsyncResult.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -279,23 +352,25 @@ zpj_authorizer_refresh_authorization_async().</doc>
     <record name="AuthorizerInterface"
             c:type="ZpjAuthorizerInterface"
             glib:is-gtype-struct-for="Authorizer">
-      <doc xml:whitespace="preserve">Interface structure for #ZpjAuthorizer. All methods should be
+      <doc xml:space="preserve">Interface structure for #ZpjAuthorizer. All methods should be
 thread safe.</doc>
       <field name="parent_iface">
+        <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
       <field name="is_authorized_for_domain">
         <callback name="is_authorized_for_domain">
           <return-value transfer-ownership="none">
-            <doc xml:whitespace="preserve">%TRUE if the tokens are valid.</doc>
+            <doc xml:space="preserve">%TRUE if the tokens are valid.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="iface" transfer-ownership="none">
+              <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
               <type name="Authorizer" c:type="ZpjAuthorizer*"/>
             </parameter>
             <parameter name="domain" transfer-ownership="none">
-              <doc xml:whitespace="preserve">A #ZpjAuthorizationDomain.</doc>
+              <doc xml:space="preserve">A #ZpjAuthorizationDomain.</doc>
               <type name="AuthorizationDomain"
                     c:type="ZpjAuthorizationDomain*"/>
             </parameter>
@@ -309,15 +384,20 @@ thread safe.</doc>
           </return-value>
           <parameters>
             <parameter name="iface" transfer-ownership="none">
+              <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
               <type name="Authorizer" c:type="ZpjAuthorizer*"/>
             </parameter>
-            <parameter name="domain" transfer-ownership="none" allow-none="1">
-              <doc xml:whitespace="preserve">An optional #ZpjAuthorizationDomain object, or %NULL.</doc>
+            <parameter name="domain"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">An optional #ZpjAuthorizationDomain object,
+  or %NULL.</doc>
               <type name="AuthorizationDomain"
                     c:type="ZpjAuthorizationDomain*"/>
             </parameter>
             <parameter name="call" transfer-ownership="none">
-              <doc xml:whitespace="preserve">A #RestProxyCall.</doc>
+              <doc xml:space="preserve">A #RestProxyCall.</doc>
               <type name="Rest.ProxyCall" c:type="RestProxyCall*"/>
             </parameter>
           </parameters>
@@ -330,15 +410,20 @@ thread safe.</doc>
           </return-value>
           <parameters>
             <parameter name="iface" transfer-ownership="none">
+              <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
               <type name="Authorizer" c:type="ZpjAuthorizer*"/>
             </parameter>
-            <parameter name="domain" transfer-ownership="none" allow-none="1">
-              <doc xml:whitespace="preserve">An optional #ZpjAuthorizationDomain object, or %NULL.</doc>
+            <parameter name="domain"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">An optional #ZpjAuthorizationDomain object,
+  or %NULL.</doc>
               <type name="AuthorizationDomain"
                     c:type="ZpjAuthorizationDomain*"/>
             </parameter>
             <parameter name="message" transfer-ownership="none">
-              <doc xml:whitespace="preserve">A #SoupMessage.</doc>
+              <doc xml:space="preserve">A #SoupMessage.</doc>
               <type name="Soup.Message" c:type="SoupMessage*"/>
             </parameter>
           </parameters>
@@ -347,23 +432,40 @@ thread safe.</doc>
       <field name="refresh_authorization">
         <callback name="refresh_authorization" throws="1">
           <return-value transfer-ownership="none">
-            <doc xml:whitespace="preserve">%TRUE if the authorizer now has a valid token.</doc>
+            <doc xml:space="preserve">%TRUE if the authorizer now has a valid token.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="iface" transfer-ownership="none">
+              <doc xml:space="preserve">A #ZpjAuthorizer.</doc>
               <type name="Authorizer" c:type="ZpjAuthorizer*"/>
             </parameter>
             <parameter name="cancellable"
                        transfer-ownership="none"
+                       nullable="1"
                        allow-none="1">
-              <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+              <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
         </callback>
       </field>
     </record>
+    <enumeration name="Error"
+                 c:type="ZpjError"
+                 glib:error-domain="zpj-error-quark">
+      <doc xml:space="preserve">This enumeration can be expanded at a later date.</doc>
+      <member name="request_url_invalid"
+              value="0"
+              c:identifier="ZPJ_ERROR_REQUEST_URL_INVALID">
+        <doc xml:space="preserve">The server received an invalid URL,
+  possibly because of an invalid @file_id.</doc>
+      </member>
+      <member name="unknown" value="1" c:identifier="ZPJ_ERROR_UNKNOWN">
+        <doc xml:space="preserve">An unknown error occurred.</doc>
+      </member>
+    </enumeration>
     <class name="GoaAuthorizer"
            c:symbol-prefix="goa_authorizer"
            c:type="ZpjGoaAuthorizer"
@@ -371,20 +473,21 @@ thread safe.</doc>
            glib:type-name="ZpjGoaAuthorizer"
            glib:get-type="zpj_goa_authorizer_get_type"
            glib:type-struct="GoaAuthorizerClass">
-      <doc xml:whitespace="preserve">The #ZpjGoaAuthorizer structure contains only private data and
+      <doc xml:space="preserve">The #ZpjGoaAuthorizer structure contains only private data and
 should only be accessed using the provided API.</doc>
       <implements name="Authorizer"/>
       <constructor name="new"
                    c:identifier="zpj_goa_authorizer_new"
                    introspectable="0">
-        <doc xml:whitespace="preserve">Creates a new #ZpjGoaAuthorizer using @goa_object.</doc>
+        <doc xml:space="preserve">Creates a new #ZpjGoaAuthorizer using @goa_object.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjGoaAuthorizer. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjGoaAuthorizer. Free the returned
+object with g_object_unref().</doc>
           <type name="GoaAuthorizer" c:type="ZpjGoaAuthorizer*"/>
         </return-value>
         <parameters>
           <parameter name="goa_object" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #GoaObject representing a Windows Live account.</doc>
+            <doc xml:space="preserve">A #GoaObject representing a Windows Live account.</doc>
             <type c:type="GoaObject*"/>
           </parameter>
         </parameters>
@@ -392,11 +495,18 @@ should only be accessed using the provided API.</doc>
       <method name="get_goa_object"
               c:identifier="zpj_goa_authorizer_get_goa_object"
               introspectable="0">
-        <doc xml:whitespace="preserve">Gets the GOA account used by @self for authorization.</doc>
+        <doc xml:space="preserve">Gets the GOA account used by @self for authorization.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A #GoaObject. The returned object is owned by #ZpjGoaAuthorizer and should not be modified or freed.</doc>
+          <doc xml:space="preserve">A #GoaObject. The returned object is
+owned by #ZpjGoaAuthorizer and should not be modified or freed.</doc>
           <type c:type="GoaObject*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjGoaAuthorizer.</doc>
+            <type name="GoaAuthorizer" c:type="ZpjGoaAuthorizer*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <property name="goa-object"
                 introspectable="0"
@@ -415,8 +525,9 @@ should only be accessed using the provided API.</doc>
     <record name="GoaAuthorizerClass"
             c:type="ZpjGoaAuthorizerClass"
             glib:is-gtype-struct-for="GoaAuthorizer">
-      <doc xml:whitespace="preserve">Class structure for #ZpjGoaAuthorizer.</doc>
+      <doc xml:space="preserve">Class structure for #ZpjGoaAuthorizer.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
@@ -427,21 +538,37 @@ should only be accessed using the provided API.</doc>
     <constant name="SKYDRIVE_FOLDER_MY_DOCUMENTS"
               value="me/skydrive/my_documents"
               c:type="ZPJ_SKYDRIVE_FOLDER_MY_DOCUMENTS">
+      <doc xml:space="preserve">&lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh826545#friendly"&gt;
+Friendly name&lt;/ulink&gt; for the Documents folder. It can be used as
+the #ZpjSkydriveEntry:id and #ZpjSkydriveEntry:parent_id.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SKYDRIVE_FOLDER_MY_PHOTOS"
               value="me/skydrive/my_photos"
               c:type="ZPJ_SKYDRIVE_FOLDER_MY_PHOTOS">
+      <doc xml:space="preserve">&lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh826545#friendly"&gt;
+Friendly name&lt;/ulink&gt; for the Pictures folder. It can be used as the
+#ZpjSkydriveEntry:id and #ZpjSkydriveEntry:parent_id.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SKYDRIVE_FOLDER_PUBLIC_DOCUMENTS"
               value="me/skydrive/public_documents"
               c:type="ZPJ_SKYDRIVE_FOLDER_PUBLIC_DOCUMENTS">
+      <doc xml:space="preserve">&lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh826545#friendly"&gt;
+Friendly name&lt;/ulink&gt; for the Public folder. It can be used as the
+#ZpjSkydriveEntry:id and #ZpjSkydriveEntry:parent_id.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SKYDRIVE_FOLDER_SKYDRIVE"
               value="me/skydrive"
               c:type="ZPJ_SKYDRIVE_FOLDER_SKYDRIVE">
+      <doc xml:space="preserve">&lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh826545#friendly"&gt;
+Friendly name&lt;/ulink&gt; for the Skydrive top-level folder. It can be
+used as the #ZpjSkydriveEntry:id and #ZpjSkydriveEntry:parent_id.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="Skydrive"
@@ -451,17 +578,18 @@ should only be accessed using the provided API.</doc>
            glib:type-name="ZpjSkydrive"
            glib:get-type="zpj_skydrive_get_type"
            glib:type-struct="SkydriveClass">
-      <doc xml:whitespace="preserve">The #ZpjSkydrive structure contains only private data and should
+      <doc xml:space="preserve">The #ZpjSkydrive structure contains only private data and should
 only be accessed using the provided API.</doc>
       <constructor name="new" c:identifier="zpj_skydrive_new">
-        <doc xml:whitespace="preserve">Creates a new #ZpjSkydrive using the given @authorizer.</doc>
+        <doc xml:space="preserve">Creates a new #ZpjSkydrive using the given @authorizer.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjSkydrive. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjSkydrive. Free the returned
+object with g_object_unref().</doc>
           <type name="Skydrive" c:type="ZpjSkydrive*"/>
         </return-value>
         <parameters>
           <parameter name="authorizer" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #ZpjAuthorizer to authorize the service's requests.</doc>
+            <doc xml:space="preserve">A #ZpjAuthorizer to authorize the service's requests.</doc>
             <type name="Authorizer" c:type="ZpjAuthorizer*"/>
           </parameter>
         </parameters>
@@ -473,11 +601,15 @@ only be accessed using the provided API.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="folder" transfer-ownership="none">
             <type name="SkydriveFolder" c:type="ZpjSkydriveFolder*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
@@ -490,6 +622,9 @@ only be accessed using the provided API.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="name" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -498,6 +633,7 @@ only be accessed using the provided API.</doc>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
@@ -506,22 +642,28 @@ only be accessed using the provided API.</doc>
       <method name="delete_entry_id"
               c:identifier="zpj_skydrive_delete_entry_id"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously deletes the entry corresponding to @entry_id from
+        <doc xml:space="preserve">Synchronously deletes the entry corresponding to @entry_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the #ZpjSkydriveEntry was deleted successfully.</doc>
+          <doc xml:space="preserve">%TRUE if the #ZpjSkydriveEntry was deleted successfully.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="entry_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the #ZpjSkydriveEntry to be deleted.</doc>
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveEntry to be deleted.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -529,29 +671,35 @@ Skydrive&lt;/ulink&gt;.</doc>
       <method name="download_file_id_to_path"
               c:identifier="zpj_skydrive_download_file_id_to_path"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously downloads the file corresponding to @file_id from
+        <doc xml:space="preserve">Synchronously downloads the file corresponding to @file_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt; and saves it in @path. The file is temporarily
 saved in the preferred directory for temporary files (as returned
 by g_get_tmp_dir()) while the download is going on, and then moved
 to @path.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the #ZpjSkydriveFile was downloaded successfully.</doc>
+          <doc xml:space="preserve">%TRUE if the #ZpjSkydriveFile was downloaded successfully.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="file_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the #ZpjSkydriveFile to be downloaded.</doc>
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveFile to be downloaded.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="path" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The destination.</doc>
+            <doc xml:space="preserve">The destination.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -559,32 +707,39 @@ to @path.</doc>
       <method name="download_file_id_to_stream"
               c:identifier="zpj_skydrive_download_file_id_to_stream"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously returns a stream for downloading the file
+        <doc xml:space="preserve">Synchronously returns a stream for downloading the file
 corresponding to @file_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See
 zpj_skydrive_download_file_id_to_stream_async() for the asynchronous
 version of this call.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A #GInputStream to read the file data from. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A #GInputStream to read the file data
+from. Free the returned object with g_object_unref().</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="file_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the #ZpjSkydriveFile to be downloaded.</doc>
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveFile to be downloaded.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="download_file_id_to_stream_async"
               c:identifier="zpj_skydrive_download_file_id_to_stream_async">
-        <doc xml:whitespace="preserve">Asynchronously returns a stream for downloading the file
+        <doc xml:space="preserve">Asynchronously returns a stream for downloading the file
 corresponding to @file_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See zpj_skydrive_download_file_id_to_stream() for
@@ -597,26 +752,34 @@ the result of the operation.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="file_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the #ZpjSkydriveFile to be downloaded.</doc>
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveFile to be downloaded.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
-            <doc xml:whitespace="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the
+  request is satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The data to pass to @callback.</doc>
+            <doc xml:space="preserve">The data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -624,15 +787,20 @@ the result of the operation.</doc>
       <method name="download_file_id_to_stream_finish"
               c:identifier="zpj_skydrive_download_file_id_to_stream_finish"
               throws="1">
-        <doc xml:whitespace="preserve">Finishes an asynchronous operation started with
+        <doc xml:space="preserve">Finishes an asynchronous operation started with
 zpj_skydrive_download_file_id_to_stream_async().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A #GInputStream to read the file data from. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A #GInputStream to read the file data
+from. Free the returned object with g_object_unref().</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="res" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #GAsyncResult.</doc>
+            <doc xml:space="preserve">A #GAsyncResult.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -640,29 +808,35 @@ zpj_skydrive_download_file_id_to_stream_async().</doc>
       <method name="download_file_to_path"
               c:identifier="zpj_skydrive_download_file_to_path"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously downloads @file from
+        <doc xml:space="preserve">Synchronously downloads @file from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt; and saves it in @path. The file is temporarily
 saved in the preferred directory for temporary files (as returned
 by g_get_tmp_dir()) while the download is going on, and then moved
 to @path.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the #ZpjSkydriveFile was downloaded successfully.</doc>
+          <doc xml:space="preserve">%TRUE if the #ZpjSkydriveFile was downloaded successfully.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="file" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ZpjSkydriveFile to be downloaded.</doc>
+            <doc xml:space="preserve">The #ZpjSkydriveFile to be downloaded.</doc>
             <type name="SkydriveFile" c:type="ZpjSkydriveFile*"/>
           </parameter>
           <parameter name="path" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The destination.</doc>
+            <doc xml:space="preserve">The destination.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -670,30 +844,37 @@ to @path.</doc>
       <method name="download_file_to_stream"
               c:identifier="zpj_skydrive_download_file_to_stream"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously returns a stream for downloading @file from
+        <doc xml:space="preserve">Synchronously returns a stream for downloading @file from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See zpj_skydrive_download_file_to_stream_async()
 for the asynchronous version of this call.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A #GInputStream to read the file data from. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A #GInputStream to read the file data
+from. Free the returned object with g_object_unref().</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="file" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ZpjSkydriveFile to be downloaded.</doc>
+            <doc xml:space="preserve">The #ZpjSkydriveFile to be downloaded.</doc>
             <type name="SkydriveFile" c:type="ZpjSkydriveFile*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="download_file_to_stream_async"
               c:identifier="zpj_skydrive_download_file_to_stream_async">
-        <doc xml:whitespace="preserve">Asynchronously returns a stream for downloading @file from
+        <doc xml:space="preserve">Asynchronously returns a stream for downloading @file from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See zpj_skydrive_download_file_to_stream() for the
 synchronous version of this call.
@@ -705,26 +886,34 @@ result of the operation.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="file" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ZpjSkydriveFile to be downloaded.</doc>
+            <doc xml:space="preserve">The #ZpjSkydriveFile to be downloaded.</doc>
             <type name="SkydriveFile" c:type="ZpjSkydriveFile*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
-            <doc xml:whitespace="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the
+  request is satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The data to pass to @callback.</doc>
+            <doc xml:space="preserve">The data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -732,47 +921,68 @@ result of the operation.</doc>
       <method name="download_file_to_stream_finish"
               c:identifier="zpj_skydrive_download_file_to_stream_finish"
               throws="1">
-        <doc xml:whitespace="preserve">Finishes an asynchronous operation started with
+        <doc xml:space="preserve">Finishes an asynchronous operation started with
 zpj_skydrive_download_file_to_stream_async().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A #GInputStream to read the file data from. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A #GInputStream to read the file data
+from. Free the returned object with g_object_unref().</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="res" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #GAsyncResult.</doc>
+            <doc xml:space="preserve">A #GAsyncResult.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_authorizer" c:identifier="zpj_skydrive_get_authorizer">
-        <doc xml:whitespace="preserve">Gets the authorizer used to authorize requests to @self.</doc>
+        <doc xml:space="preserve">Gets the authorizer used to authorize requests to @self.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">A #ZpjAuthorizer. The returned object is owned by #ZpjSkydrive and should not be modified or freed.</doc>
+          <doc xml:space="preserve">A #ZpjAuthorizer. The returned object is
+owned by #ZpjSkydrive and should not be modified or freed.</doc>
           <type name="Authorizer" c:type="ZpjAuthorizer*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="list_folder"
               c:identifier="zpj_skydrive_list_folder"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously lists the contents of @folder_id from
+        <doc xml:space="preserve">Synchronously lists the contents of @folder_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A list of the #ZpjSkydrive entries within the #ZpjSkydriveFolder. Free the returned list with g_list_free() after each element has been freed with g_object_unref().</doc>
+          <doc xml:space="preserve">A
+list of the #ZpjSkydrive entries within the #ZpjSkydriveFolder.
+Free the returned list with g_list_free() after each element has
+been freed with g_object_unref().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="SkydriveEntry"/>
           </type>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="folder" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The #ZpjSkydriveFolder to be listed.</doc>
+            <doc xml:space="preserve">The #ZpjSkydriveFolder to be listed.</doc>
             <type name="SkydriveFolder" c:type="ZpjSkydriveFolder*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -780,32 +990,41 @@ Skydrive&lt;/ulink&gt;.</doc>
       <method name="list_folder_id"
               c:identifier="zpj_skydrive_list_folder_id"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously lists the contents of the folder corresponding to
+        <doc xml:space="preserve">Synchronously lists the contents of the folder corresponding to
 @folder_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A list of the #ZpjSkydrive entries within the #ZpjSkydriveFolder, or %NULL on error. Free the returned list with g_list_free() after each element has been freed with g_object_unref().</doc>
+          <doc xml:space="preserve">A
+list of the #ZpjSkydrive entries within the #ZpjSkydriveFolder, or
+%NULL on error. Free the returned list with g_list_free() after
+each element has been freed with g_object_unref().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="SkydriveEntry"/>
           </type>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="folder_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the #ZpjSkydriveFolder to be listed.</doc>
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveFolder to be listed.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="list_folder_id_async"
               c:identifier="zpj_skydrive_list_folder_id_async">
-        <doc xml:whitespace="preserve">Asynchronously lists the contents of the folder corresponding to
+        <doc xml:space="preserve">Asynchronously lists the contents of the folder corresponding to
 @folder_id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See zpj_skydrive_list_folder_id() for the
@@ -818,26 +1037,34 @@ of the operation.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="folder_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the #ZpjSkydriveFolder to be listed.</doc>
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveFolder to be listed.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
-            <doc xml:whitespace="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the
+  request is satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The data to pass to @callback.</doc>
+            <doc xml:space="preserve">The data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -845,17 +1072,24 @@ of the operation.</doc>
       <method name="list_folder_id_finish"
               c:identifier="zpj_skydrive_list_folder_id_finish"
               throws="1">
-        <doc xml:whitespace="preserve">Finishes an asynchronous operation started with
+        <doc xml:space="preserve">Finishes an asynchronous operation started with
 zpj_skydrive_list_folder_id_async().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A list of the #ZpjSkydrive entries within the #ZpjSkydriveFolder, or %NULL on error. Free the returned list with g_list_free() after each element has been freed with g_object_unref().</doc>
+          <doc xml:space="preserve">A
+list of the #ZpjSkydrive entries within the #ZpjSkydriveFolder, or
+%NULL on error. Free the returned list with g_list_free() after
+each element has been freed with g_object_unref().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="SkydriveEntry"/>
           </type>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="res" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #GAsyncResult.</doc>
+            <doc xml:space="preserve">A #GAsyncResult.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -863,31 +1097,38 @@ zpj_skydrive_list_folder_id_async().</doc>
       <method name="query_info_from_id"
               c:identifier="zpj_skydrive_query_info_from_id"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously reads the properties of the entry corresponding to
+        <doc xml:space="preserve">Synchronously reads the properties of the entry corresponding to
 @id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See zpj_skydrive_query_info_from_id_async() for
 the asynchronous version of this call.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjSkydriveEntry. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjSkydriveEntry. Free the
+returned object with g_object_unref().</doc>
           <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">An ID to be queried.</doc>
+            <doc xml:space="preserve">An ID to be queried.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="query_info_from_id_async"
               c:identifier="zpj_skydrive_query_info_from_id_async">
-        <doc xml:whitespace="preserve">Asynchronously reads the properties of the entry corresponding to
+        <doc xml:space="preserve">Asynchronously reads the properties of the entry corresponding to
 @id from
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt;. See zpj_skydrive_query_info_from_id() for the
@@ -900,26 +1141,34 @@ of the operation.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID to be queried.</doc>
+            <doc xml:space="preserve">The ID to be queried.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="3">
-            <doc xml:whitespace="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the
+  request is satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The data to pass to @callback.</doc>
+            <doc xml:space="preserve">The data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -927,55 +1176,112 @@ of the operation.</doc>
       <method name="query_info_from_id_finish"
               c:identifier="zpj_skydrive_query_info_from_id_finish"
               throws="1">
-        <doc xml:whitespace="preserve">Finishes an asynchronous operation started with
+        <doc xml:space="preserve">Finishes an asynchronous operation started with
 zpj_skydrive_query_info_from_id_async().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjSkydriveEntry. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjSkydriveEntry. Free the returned
+object with g_object_unref().</doc>
           <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="res" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #GAsyncResult.</doc>
+            <doc xml:space="preserve">A #GAsyncResult.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_authorizer" c:identifier="zpj_skydrive_set_authorizer">
-        <doc xml:whitespace="preserve">Uses the new @authorizer to replace the old one that was used to
+        <doc xml:space="preserve">Uses the new @authorizer to replace the old one that was used to
 authorize requests to @self.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="authorizer" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A new #ZpjAuthorizer.</doc>
+            <doc xml:space="preserve">A new #ZpjAuthorizer.</doc>
             <type name="Authorizer" c:type="ZpjAuthorizer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="thumbnail_file_id_to_stream"
+              c:identifier="zpj_skydrive_thumbnail_file_id_to_stream"
+              throws="1">
+        <doc xml:space="preserve">Synchronously returns a stream for downloading the thumbnail of the
+file corresponding to @file_id from
+&lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
+Skydrive&lt;/ulink&gt;. See
+zpj_skydrive_thumbnail_file_id_to_stream_async() for the
+asynchronous version of this call.
+
+Thumbnails are only available for #ZpjSkydrivePhoto and
+#ZpjSkydriveVideo objects. If @file_id refers to some other kind of
+#ZpjSkydriveFile, the error %ZPJ_ERROR_REQUEST_URL_INVALID will be
+returned.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GInputStream to read the thumbnail
+data from. Free the returned object with g_object_unref().</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
+          <parameter name="file_id" transfer-ownership="none">
+            <doc xml:space="preserve">The ID of the #ZpjSkydriveFile to be thumbnailed.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <doc xml:space="preserve">The thumbnail size.</doc>
+            <type name="ThumbnailSize" c:type="ZpjThumbnailSize"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="upload_path_to_folder"
               c:identifier="zpj_skydrive_upload_path_to_folder"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously uploads the file at @path to
+        <doc xml:space="preserve">Synchronously uploads the file at @path to
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt; and places it under @folder.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the file was uploaded successfully.</doc>
+          <doc xml:space="preserve">%TRUE if the file was uploaded successfully.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="path" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The source.</doc>
+            <doc xml:space="preserve">The source.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="folder" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The destination #ZpjSkydriveFolder.</doc>
+            <doc xml:space="preserve">The destination #ZpjSkydriveFolder.</doc>
             <type name="SkydriveFolder" c:type="ZpjSkydriveFolder*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -983,27 +1289,33 @@ Skydrive&lt;/ulink&gt; and places it under @folder.</doc>
       <method name="upload_path_to_folder_id"
               c:identifier="zpj_skydrive_upload_path_to_folder_id"
               throws="1">
-        <doc xml:whitespace="preserve">Synchronously uploads the file at @path to
+        <doc xml:space="preserve">Synchronously uploads the file at @path to
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826521"&gt;
 Skydrive&lt;/ulink&gt; and places it under the folder corresponding to
 @folder_id.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the file was uploaded successfully.</doc>
+          <doc xml:space="preserve">%TRUE if the file was uploaded successfully.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydrive.</doc>
+            <type name="Skydrive" c:type="ZpjSkydrive*"/>
+          </instance-parameter>
           <parameter name="path" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The source.</doc>
+            <doc xml:space="preserve">The source.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="folder_id" transfer-ownership="none">
-            <doc xml:whitespace="preserve">The ID of the destination #ZpjSkydriveFolder.</doc>
+            <doc xml:space="preserve">The ID of the destination #ZpjSkydriveFolder.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
+                     nullable="1"
                      allow-none="1">
-            <doc xml:whitespace="preserve">An optional #GCancellable object, or %NULL.</doc>
+            <doc xml:space="preserve">An optional #GCancellable object, or
+  %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1024,8 +1336,9 @@ Skydrive&lt;/ulink&gt; and places it under the folder corresponding to
     <record name="SkydriveClass"
             c:type="ZpjSkydriveClass"
             glib:is-gtype-struct-for="Skydrive">
-      <doc xml:whitespace="preserve">Class structure for #ZpjSkydrive.</doc>
+      <doc xml:space="preserve">Class structure for #ZpjSkydrive.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
@@ -1037,13 +1350,16 @@ Skydrive&lt;/ulink&gt; and places it under the folder corresponding to
            glib:type-name="ZpjSkydriveEntry"
            glib:get-type="zpj_skydrive_entry_get_type"
            glib:type-struct="SkydriveEntryClass">
-      <doc xml:whitespace="preserve">The #ZpjSkydriveEntry structure contains only private data and
+      <doc xml:space="preserve">The #ZpjSkydriveEntry structure contains only private data and
 should only be accessed using the provided API.</doc>
       <virtual-method name="parse_json_node">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
           <parameter name="node" transfer-ownership="none">
             <type name="Json.Node" c:type="JsonNode*"/>
           </parameter>
@@ -1051,106 +1367,172 @@ should only be accessed using the provided API.</doc>
       </virtual-method>
       <method name="get_created_time"
               c:identifier="zpj_skydrive_entry_get_created_time">
-        <doc xml:whitespace="preserve">Gets the time at which @self was created. This is the value of the
+        <doc xml:space="preserve">Gets the time at which @self was created. This is the value of the
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 updated_time&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #GDateTime representing the time at which the entry was created. The returned time is owned by the #ZpjSkydriveEntry and should not be unreferenced.</doc>
+          <doc xml:space="preserve">a #GDateTime representing the time at
+which the entry was created. The returned time is owned by the
+#ZpjSkydriveEntry and should not be unreferenced.</doc>
           <type name="GLib.DateTime" c:type="GDateTime*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_description"
               c:identifier="zpj_skydrive_entry_get_description">
-        <doc xml:whitespace="preserve">Gets the description of @self. This is the value of the &lt;ulink
+        <doc xml:space="preserve">Gets the description of @self. This is the value of the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 description&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">description of the entry. This string is owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
+          <doc xml:space="preserve">description of the entry. This string is
+owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_from_id" c:identifier="zpj_skydrive_entry_get_from_id">
-        <doc xml:whitespace="preserve">Gets the ID of the user who created or uploaded @self. This is part
+        <doc xml:space="preserve">Gets the ID of the user who created or uploaded @self. This is part
 of the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 from&lt;/ulink&gt; object in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">ID of the user who created the entry. This string is by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
+          <doc xml:space="preserve">ID of the user who created the entry.
+This string is by the #ZpjSkydriveEntry and should not be modified
+or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_from_name"
               c:identifier="zpj_skydrive_entry_get_from_name">
-        <doc xml:whitespace="preserve">Gets the name of the user who created or uploaded @self. This is
+        <doc xml:space="preserve">Gets the name of the user who created or uploaded @self. This is
 part of the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 from&lt;/ulink&gt; object in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">name of the user who created the entry. This string is by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
+          <doc xml:space="preserve">name of the user who created the entry.
+This string is by the #ZpjSkydriveEntry and should not be modified
+or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_id" c:identifier="zpj_skydrive_entry_get_id">
-        <doc xml:whitespace="preserve">Gets the ID of @self. This is the value of the &lt;ulink
+        <doc xml:space="preserve">Gets the ID of @self. This is the value of the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 id&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the entry's ID. This string is owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
+          <doc xml:space="preserve">the entry's ID. This string is
+owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_name" c:identifier="zpj_skydrive_entry_get_name">
-        <doc xml:whitespace="preserve">Gets the name of @self. This is the value of the &lt;ulink
+        <doc xml:space="preserve">Gets the name of @self. This is the value of the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 name&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">name of the entry. This string is owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
+          <doc xml:space="preserve">name of the entry. This string is
+owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_parent_id"
               c:identifier="zpj_skydrive_entry_get_parent_id">
-        <doc xml:whitespace="preserve">Gets the ID of the folder containing @self. This is the value of
+        <doc xml:space="preserve">Gets the ID of the folder containing @self. This is the value of
 the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 parent_id&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">ID of the parent folder. This string is owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
+          <doc xml:space="preserve">ID of the parent folder. This string is
+owned by the #ZpjSkydriveEntry and should not be modified or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_updated_time"
               c:identifier="zpj_skydrive_entry_get_updated_time">
-        <doc xml:whitespace="preserve">Gets the time at which @self was last updated. This is the value of
+        <doc xml:space="preserve">Gets the time at which @self was last updated. This is the value of
 the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 updated_time&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">a #GDateTime representing the time at which the entry was last updated. The returned time is owned by the #ZpjSkydriveEntry and should not be unreferenced.</doc>
+          <doc xml:space="preserve">a #GDateTime representing the time at
+which the entry was last updated. The returned time is owned by the
+#ZpjSkydriveEntry and should not be unreferenced.</doc>
           <type name="GLib.DateTime" c:type="GDateTime*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="is_folder" c:identifier="zpj_skydrive_entry_is_folder">
-        <doc xml:whitespace="preserve">Whether @self is a folder.</doc>
+        <doc xml:space="preserve">Whether @self is a folder.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">%TRUE if the entry is a folder.</doc>
+          <doc xml:space="preserve">%TRUE if the entry is a folder.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveEntry.</doc>
+            <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <property name="created-time" transfer-ownership="none">
         <type name="GLib.DateTime"/>
       </property>
       <property name="description" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="from-id" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="from-name" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="id" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="json"
                 readable="0"
@@ -1160,10 +1542,10 @@ updated_time&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <type name="Json.Node"/>
       </property>
       <property name="name" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="parent-id" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="type" transfer-ownership="none">
         <type name="SkydriveEntryType"/>
@@ -1181,8 +1563,9 @@ updated_time&lt;/ulink&gt; member in the JSON returned by the server.</doc>
     <record name="SkydriveEntryClass"
             c:type="ZpjSkydriveEntryClass"
             glib:is-gtype-struct-for="SkydriveEntry">
-      <doc xml:whitespace="preserve">Class structure for #ZpjSkydriveEntry.</doc>
+      <doc xml:space="preserve">Class structure for #ZpjSkydriveEntry.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="parse_json_node">
@@ -1209,7 +1592,7 @@ updated_time&lt;/ulink&gt; member in the JSON returned by the server.</doc>
                  glib:type-name="ZpjSkydriveEntryType"
                  glib:get-type="zpj_skydrive_entry_type_get_type"
                  c:type="ZpjSkydriveEntryType">
-      <doc xml:whitespace="preserve">The types of Skydrive
+      <doc xml:space="preserve">The types of Skydrive
 &lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh243648"&gt;
 objects&lt;/ulink&gt;.
 
@@ -1217,19 +1600,33 @@ This enumeration can be expanded at a later date.</doc>
       <member name="file"
               value="0"
               c:identifier="ZPJ_SKYDRIVE_ENTRY_TYPE_FILE"
-              glib:nick="file"/>
+              glib:nick="file">
+        <doc xml:space="preserve">A file.</doc>
+      </member>
       <member name="folder"
               value="1"
               c:identifier="ZPJ_SKYDRIVE_ENTRY_TYPE_FOLDER"
-              glib:nick="folder"/>
+              glib:nick="folder">
+        <doc xml:space="preserve">A folder.</doc>
+      </member>
       <member name="photo"
               value="2"
               c:identifier="ZPJ_SKYDRIVE_ENTRY_TYPE_PHOTO"
-              glib:nick="photo"/>
-      <member name="invalid"
+              glib:nick="photo">
+        <doc xml:space="preserve">A photo.</doc>
+      </member>
+      <member name="video"
               value="3"
+              c:identifier="ZPJ_SKYDRIVE_ENTRY_TYPE_VIDEO"
+              glib:nick="video">
+        <doc xml:space="preserve">A video.</doc>
+      </member>
+      <member name="invalid"
+              value="4"
               c:identifier="ZPJ_SKYDRIVE_ENTRY_TYPE_INVALID"
-              glib:nick="invalid"/>
+              glib:nick="invalid">
+        <doc xml:space="preserve">Invalid or unknown object.</doc>
+      </member>
     </enumeration>
     <class name="SkydriveFile"
            c:symbol-prefix="skydrive_file"
@@ -1238,34 +1635,41 @@ This enumeration can be expanded at a later date.</doc>
            glib:type-name="ZpjSkydriveFile"
            glib:get-type="zpj_skydrive_file_get_type"
            glib:type-struct="SkydriveFileClass">
-      <doc xml:whitespace="preserve">The #ZpjSkydriveFile structure contains only private data and should
+      <doc xml:space="preserve">The #ZpjSkydriveFile structure contains only private data and should
 only be accessed using the provided API.</doc>
       <constructor name="new" c:identifier="zpj_skydrive_file_new">
-        <doc xml:whitespace="preserve">Creates a new #ZpjSkydriveFile from the given @node. If you already
+        <doc xml:space="preserve">Creates a new #ZpjSkydriveFile from the given @node. If you already
 know the ID of the file then you can use
 zpj_skydrive_query_info_from_id().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjSkydriveFile. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjSkydriveFile. Free the returned
+object with g_object_unref().</doc>
           <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
         </return-value>
         <parameters>
           <parameter name="node" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #JsonNode returned by the server.</doc>
+            <doc xml:space="preserve">A #JsonNode returned by the server.</doc>
             <type name="Json.Node" c:type="JsonNode*"/>
           </parameter>
         </parameters>
       </constructor>
       <method name="get_size" c:identifier="zpj_skydrive_file_get_size">
-        <doc xml:whitespace="preserve">Gets the size of @self in bytes. This is the value of the &lt;ulink
+        <doc xml:space="preserve">Gets the size of @self in bytes. This is the value of the &lt;ulink
 url="http://msdn.microsoft.com/en-us/library/live/hh243648#file"&gt;
 size&lt;/ulink&gt; member in the JSON returned by the server.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">The entry's size in bytes.</doc>
+          <doc xml:space="preserve">The entry's size in bytes.</doc>
           <type name="gint64" c:type="goffset"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveFile.</doc>
+            <type name="SkydriveFile" c:type="ZpjSkydriveFile*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <property name="size" transfer-ownership="none">
-        <type name="gint64"/>
+        <type name="gint64" c:type="gint64"/>
       </property>
       <field name="parent_instance">
         <type name="SkydriveEntry" c:type="ZpjSkydriveEntry"/>
@@ -1277,8 +1681,9 @@ size&lt;/ulink&gt; member in the JSON returned by the server.</doc>
     <record name="SkydriveFileClass"
             c:type="ZpjSkydriveFileClass"
             glib:is-gtype-struct-for="SkydriveFile">
-      <doc xml:whitespace="preserve">Class structure for #ZpjSkydriveFile.</doc>
+      <doc xml:space="preserve">Class structure for #ZpjSkydriveFile.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
         <type name="SkydriveEntryClass" c:type="ZpjSkydriveEntryClass"/>
       </field>
     </record>
@@ -1293,19 +1698,20 @@ size&lt;/ulink&gt; member in the JSON returned by the server.</doc>
            glib:type-name="ZpjSkydriveFolder"
            glib:get-type="zpj_skydrive_folder_get_type"
            glib:type-struct="SkydriveFolderClass">
-      <doc xml:whitespace="preserve">The #ZpjSkydriveFolder structure contains only private data and
+      <doc xml:space="preserve">The #ZpjSkydriveFolder structure contains only private data and
 should only be accessed using the provided API.</doc>
       <constructor name="new" c:identifier="zpj_skydrive_folder_new">
-        <doc xml:whitespace="preserve">Creates a new #ZpjSkydriveFolder from the given @node. If you
+        <doc xml:space="preserve">Creates a new #ZpjSkydriveFolder from the given @node. If you
 already know the ID of the folder then you can use
 zpj_skydrive_query_info_from_id().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjSkydriveFolder. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjSkydriveFolder. Free the
+returned object with g_object_unref().</doc>
           <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
         </return-value>
         <parameters>
           <parameter name="node" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #JsonNode returned by the server.</doc>
+            <doc xml:space="preserve">A #JsonNode returned by the server.</doc>
             <type name="Json.Node" c:type="JsonNode*"/>
           </parameter>
         </parameters>
@@ -1317,8 +1723,9 @@ zpj_skydrive_query_info_from_id().</doc>
     <record name="SkydriveFolderClass"
             c:type="ZpjSkydriveFolderClass"
             glib:is-gtype-struct-for="SkydriveFolder">
-      <doc xml:whitespace="preserve">Class structure for #ZpjSkydriveFolder.</doc>
+      <doc xml:space="preserve">Class structure for #ZpjSkydriveFolder.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
         <type name="SkydriveEntryClass" c:type="ZpjSkydriveEntryClass"/>
       </field>
     </record>
@@ -1329,19 +1736,20 @@ zpj_skydrive_query_info_from_id().</doc>
            glib:type-name="ZpjSkydrivePhoto"
            glib:get-type="zpj_skydrive_photo_get_type"
            glib:type-struct="SkydrivePhotoClass">
-      <doc xml:whitespace="preserve">The #ZpjSkydrivePhoto structure contains only private data and
+      <doc xml:space="preserve">The #ZpjSkydrivePhoto structure contains only private data and
 should only be accessed using the provided API.</doc>
       <constructor name="new" c:identifier="zpj_skydrive_photo_new">
-        <doc xml:whitespace="preserve">Creates a new #ZpjSkydrivePhoto from the given @node. If you already
+        <doc xml:space="preserve">Creates a new #ZpjSkydrivePhoto from the given @node. If you already
 know the ID of the photo then you can use
 zpj_skydrive_query_info_from_id().</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">A new #ZpjSkydrivePhoto. Free the returned object with g_object_unref().</doc>
+          <doc xml:space="preserve">A new #ZpjSkydrivePhoto. Free the returned
+object with g_object_unref().</doc>
           <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
         </return-value>
         <parameters>
           <parameter name="node" transfer-ownership="none">
-            <doc xml:whitespace="preserve">A #JsonNode returned by the server.</doc>
+            <doc xml:space="preserve">A #JsonNode returned by the server.</doc>
             <type name="Json.Node" c:type="JsonNode*"/>
           </parameter>
         </parameters>
@@ -1353,12 +1761,151 @@ zpj_skydrive_query_info_from_id().</doc>
     <record name="SkydrivePhotoClass"
             c:type="ZpjSkydrivePhotoClass"
             glib:is-gtype-struct-for="SkydrivePhoto">
-      <doc xml:whitespace="preserve">Class structure for #ZpjSkydrivePhoto.</doc>
+      <doc xml:space="preserve">Class structure for #ZpjSkydrivePhoto.</doc>
       <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
         <type name="SkydriveFileClass" c:type="ZpjSkydriveFileClass"/>
       </field>
     </record>
     <record name="SkydrivePrivate" c:type="ZpjSkydrivePrivate" disguised="1">
     </record>
+    <class name="SkydriveVideo"
+           c:symbol-prefix="skydrive_video"
+           c:type="ZpjSkydriveVideo"
+           parent="SkydriveFile"
+           glib:type-name="ZpjSkydriveVideo"
+           glib:get-type="zpj_skydrive_video_get_type"
+           glib:type-struct="SkydriveVideoClass">
+      <doc xml:space="preserve">The #ZpjSkydriveVideo structure contains only private data and
+should only be accessed using the provided API.</doc>
+      <constructor name="new" c:identifier="zpj_skydrive_video_new">
+        <doc xml:space="preserve">Creates a new #ZpjSkydriveVideo from the given @node. If you already
+know the ID of the video then you can use
+zpj_skydrive_query_info_from_id().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #ZpjSkydriveVideo. Free the returned
+object with g_object_unref().</doc>
+          <type name="SkydriveEntry" c:type="ZpjSkydriveEntry*"/>
+        </return-value>
+        <parameters>
+          <parameter name="node" transfer-ownership="none">
+            <doc xml:space="preserve">A #JsonNode returned by the server.</doc>
+            <type name="Json.Node" c:type="JsonNode*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_bitrate" c:identifier="zpj_skydrive_video_get_bitrate">
+        <doc xml:space="preserve">Gets the bit rate of @self in bits per second. This is the value of
+the &lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh243648#video"&gt;
+bitrate&lt;/ulink&gt; member in the JSON returned by the server.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The video's bit rate in bits per second.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveVideo.</doc>
+            <type name="SkydriveVideo" c:type="ZpjSkydriveVideo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_duration"
+              c:identifier="zpj_skydrive_video_get_duration">
+        <doc xml:space="preserve">Gets the run time duration of @self in milliseconds. This is the
+value of the &lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh243648#video"&gt;
+duration&lt;/ulink&gt; member in the JSON returned by the server.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The video's run time duration in milliseconds.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveVideo.</doc>
+            <type name="SkydriveVideo" c:type="ZpjSkydriveVideo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_height" c:identifier="zpj_skydrive_video_get_height">
+        <doc xml:space="preserve">Gets the height of @self in pixels. This is the value of the &lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh243648#video"&gt;
+height&lt;/ulink&gt; member in the JSON returned by the server.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The video's height in pixels.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveVideo.</doc>
+            <type name="SkydriveVideo" c:type="ZpjSkydriveVideo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_width" c:identifier="zpj_skydrive_video_get_width">
+        <doc xml:space="preserve">Gets the width of @self in pixels. This is the value of the &lt;ulink
+url="http://msdn.microsoft.com/en-us/library/live/hh243648#video"&gt;
+width&lt;/ulink&gt; member in the JSON returned by the server.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The video's width in pixels.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #ZpjSkydriveVideo.</doc>
+            <type name="SkydriveVideo" c:type="ZpjSkydriveVideo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="bitrate" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="duration" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="height" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="width" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <field name="parent_instance">
+        <type name="SkydriveFile" c:type="ZpjSkydriveFile"/>
+      </field>
+      <field name="priv">
+        <type name="SkydriveVideoPrivate" c:type="ZpjSkydriveVideoPrivate*"/>
+      </field>
+    </class>
+    <record name="SkydriveVideoClass"
+            c:type="ZpjSkydriveVideoClass"
+            glib:is-gtype-struct-for="SkydriveVideo">
+      <doc xml:space="preserve">Class structure for #ZpjSkydriveVideo.</doc>
+      <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
+        <type name="SkydriveFileClass" c:type="ZpjSkydriveFileClass"/>
+      </field>
+    </record>
+    <record name="SkydriveVideoPrivate"
+            c:type="ZpjSkydriveVideoPrivate"
+            disguised="1">
+    </record>
+    <enumeration name="ThumbnailSize" c:type="ZpjThumbnailSize">
+      <doc xml:space="preserve">Different
+&lt;ulink url="http://msdn.microsoft.com/en-us/library/live/hh826522.aspx#reading_photos_videos_props"&gt;
+thumbnail sizes&lt;/ulink&gt; offered by SkyDrive.
+
+This enumeration can be expanded at a later date.</doc>
+      <member name="small" value="0" c:identifier="ZPJ_THUMBNAIL_SIZE_SMALL">
+        <doc xml:space="preserve">Smallest possible size.</doc>
+      </member>
+      <member name="normal" value="1" c:identifier="ZPJ_THUMBNAIL_SIZE_NORMAL">
+        <doc xml:space="preserve">The default.</doc>
+      </member>
+    </enumeration>
+    <function name="error_quark" c:identifier="zpj_error_quark">
+      <return-value transfer-ownership="none">
+        <type name="GLib.Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
   </namespace>
 </repository>
