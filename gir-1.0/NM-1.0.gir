@@ -945,14 +945,14 @@ Bluetooth device.
     <constant name="CLIENT_DEVICES" value="devices" c:type="NM_CLIENT_DEVICES">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="CLIENT_MANAGER_RUNNING"
-              value="manager-running"
-              c:type="NM_CLIENT_MANAGER_RUNNING">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="CLIENT_NETWORKING_ENABLED"
               value="networking-enabled"
               c:type="NM_CLIENT_NETWORKING_ENABLED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_NM_RUNNING"
+              value="nm-running"
+              c:type="NM_CLIENT_NM_RUNNING">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="CLIENT_PRIMARY_CONNECTION"
@@ -1503,8 +1503,7 @@ containing all the #NMDevices.  The returned array is owned by the
           </parameter>
         </parameters>
       </method>
-      <method name="get_manager_running"
-              c:identifier="nm_client_get_manager_running">
+      <method name="get_nm_running" c:identifier="nm_client_get_nm_running">
         <doc xml:space="preserve">Determines whether the daemon is running.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the daemon is running</doc>
@@ -1819,14 +1818,14 @@ likely to become the new #NMClient:primary-connection.</doc>
         <doc xml:space="preserve">List of known network devices.</doc>
         <type name="ObjectArray"/>
       </property>
-      <property name="manager-running" transfer-ownership="none">
-        <doc xml:space="preserve">Whether the daemon is running.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
       <property name="networking-enabled"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Whether networking is enabled.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="nm-running" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the daemon is running.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="primary-connection" transfer-ownership="none">
@@ -8868,6 +8867,9 @@ device, and must not be modified.</doc>
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <property name="nm-running-internal" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
@@ -8970,24 +8972,14 @@ Note: Be aware that the signal is private for libnm's internal
               c:type="NM_REMOTE_CONNECTION_BUS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="REMOTE_CONNECTION_REMOVED"
-              value="removed"
-              c:type="NM_REMOTE_CONNECTION_REMOVED">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="REMOTE_CONNECTION_UNSAVED"
               value="unsaved"
               c:type="NM_REMOTE_CONNECTION_UNSAVED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="REMOTE_CONNECTION_UPDATED"
-              value="updated"
-              c:type="NM_REMOTE_CONNECTION_UPDATED">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_BUS"
-              value="bus"
-              c:type="NM_REMOTE_SETTINGS_BUS">
+    <constant name="REMOTE_CONNECTION_VISIBLE"
+              value="visible"
+              c:type="NM_REMOTE_CONNECTION_VISIBLE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="REMOTE_SETTINGS_CAN_MODIFY"
@@ -8995,9 +8987,19 @@ Note: Be aware that the signal is private for libnm's internal
               c:type="NM_REMOTE_SETTINGS_CAN_MODIFY">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="REMOTE_SETTINGS_CONNECTIONS_READ"
-              value="connections-read"
-              c:type="NM_REMOTE_SETTINGS_CONNECTIONS_READ">
+    <constant name="REMOTE_SETTINGS_CONNECTIONS"
+              value="connections"
+              c:type="NM_REMOTE_SETTINGS_CONNECTIONS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="REMOTE_SETTINGS_CONNECTION_ADDED"
+              value="connection-added"
+              c:type="NM_REMOTE_SETTINGS_CONNECTION_ADDED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="REMOTE_SETTINGS_CONNECTION_REMOVED"
+              value="connection-removed"
+              c:type="NM_REMOTE_SETTINGS_CONNECTION_REMOVED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="REMOTE_SETTINGS_HOSTNAME"
@@ -9005,14 +9007,9 @@ Note: Be aware that the signal is private for libnm's internal
               c:type="NM_REMOTE_SETTINGS_HOSTNAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="REMOTE_SETTINGS_NEW_CONNECTION"
-              value="new-connection"
-              c:type="NM_REMOTE_SETTINGS_NEW_CONNECTION">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_SERVICE_RUNNING"
-              value="service-running"
-              c:type="NM_REMOTE_SETTINGS_SERVICE_RUNNING">
+    <constant name="REMOTE_SETTINGS_NM_RUNNING"
+              value="nm-running"
+              c:type="NM_REMOTE_SETTINGS_NM_RUNNING">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="RemoteConnection"
@@ -9024,32 +9021,6 @@ Note: Be aware that the signal is private for libnm's internal
            glib:type-struct="RemoteConnectionClass">
       <implements name="Gio.AsyncInitable"/>
       <implements name="Gio.Initable"/>
-      <virtual-method name="removed">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="connection" transfer-ownership="none">
-            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="updated">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="connection" transfer-ownership="none">
-            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-          </instance-parameter>
-          <parameter name="new_settings" transfer-ownership="none">
-            <type name="GLib.HashTable" c:type="GHashTable*">
-              <type name="gpointer" c:type="gpointer"/>
-              <type name="gpointer" c:type="gpointer"/>
-            </type>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <method name="commit_changes"
               c:identifier="nm_remote_connection_commit_changes">
         <doc xml:space="preserve">Send any local changes to the settings and properties of this connection to
@@ -9181,6 +9152,28 @@ representation.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_visible"
+              c:identifier="nm_remote_connection_get_visible">
+        <doc xml:space="preserve">Checks if the connection is visible to the current user.  If the
+connection is not visible then it is essentially useless; it will
+not contain any settings, and operations such as
+nm_remote_connection_save() and nm_remote_connection_delete() will
+always fail. (#NMRemoteSettings will not normally return
+non-visible connections to callers, but it is possible for a
+connection's visibility to change after you already have a
+reference to it.)</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the remote connection is visible to the current
+user, %FALSE if not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="save" c:identifier="nm_remote_connection_save">
         <doc xml:space="preserve">Saves the connection to disk if the connection has changes that have not yet
 been written to disk, or if the connection has never been saved.</doc>
@@ -9238,69 +9231,25 @@ save completes</doc>
 to disk, %FALSE if the connection is the same as its on-disk representation.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="visible" transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the remote connection is visible to the current user, %FALSE if
+not.  If the connection is not visible then it is essentially useless; it
+will not contain any settings, and operations such as
+nm_remote_connection_save() and nm_remote_connection_delete() will always
+fail. (#NMRemoteSettings will not normally return non-visible connections
+to callers, but it is possible for a connection's visibility to change
+after you already have a reference to it.)</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="parent">
         <type name="Connection" c:type="NMConnection"/>
       </field>
-      <glib:signal name="removed" when="first">
-        <doc xml:space="preserve">This signal is emitted when a connection is either deleted or becomes
-invisible to the current user.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="updated" when="first">
-        <doc xml:space="preserve">This signal is emitted when a connection changes, and it is
-still visible to the user.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="visible" when="first">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="object" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
     </class>
     <record name="RemoteConnectionClass"
             c:type="NMRemoteConnectionClass"
             glib:is-gtype-struct-for="RemoteConnection">
       <field name="parent_class">
         <type name="ConnectionClass" c:type="NMConnectionClass"/>
-      </field>
-      <field name="updated">
-        <callback name="updated">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="connection" transfer-ownership="none">
-              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-            </parameter>
-            <parameter name="new_settings" transfer-ownership="none">
-              <type name="GLib.HashTable" c:type="GHashTable*">
-                <type name="gpointer" c:type="gpointer"/>
-                <type name="gpointer" c:type="gpointer"/>
-              </type>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="removed">
-        <callback name="removed">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="connection" transfer-ownership="none">
-              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-            </parameter>
-          </parameters>
-        </callback>
       </field>
       <field name="padding" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="8">
@@ -9392,7 +9341,7 @@ connection, like commit changes, deleting, saving, etc.</doc>
     <class name="RemoteSettings"
            c:symbol-prefix="remote_settings"
            c:type="NMRemoteSettings"
-           parent="GObject.Object"
+           parent="Object"
            glib:type-name="NMRemoteSettings"
            glib:get-type="nm_remote_settings_get_type"
            glib:type-struct="RemoteSettingsClass">
@@ -9464,7 +9413,7 @@ result.</doc>
           </parameter>
         </parameters>
       </function>
-      <virtual-method name="connections_read">
+      <virtual-method name="connection_added">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9472,9 +9421,12 @@ result.</doc>
           <instance-parameter name="settings" transfer-ownership="none">
             <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
           </instance-parameter>
+          <parameter name="connection" transfer-ownership="none">
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="new_connection">
+      <virtual-method name="connection_removed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9727,43 +9679,52 @@ hostname operation completes</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="bus"
-                introspectable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The #DBusGConnection that the #NMRemoteSettings is connected to. Defaults
-to the system bus if not specified.</doc>
-        <type/>
-      </property>
       <property name="can-modify" transfer-ownership="none">
         <doc xml:space="preserve">If %TRUE, adding and modifying connections is supported.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="connections" transfer-ownership="none">
+        <doc xml:space="preserve">The list of configured connections that are available to the user. (Note
+that this differs from the underlying D-Bus property, which may also
+contain the object paths of connections that the user does not have
+permission to read the details of.)</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="hostname" transfer-ownership="none">
         <doc xml:space="preserve">The machine hostname stored in persistent configuration. This can be
 modified by calling nm_remote_settings_save_hostname().</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="service-running" transfer-ownership="none">
-        <doc xml:space="preserve">Whether the settings service is running.</doc>
+      <property name="nm-running" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the NetworkManager settings service is running.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
+        <type name="Object" c:type="NMObject"/>
       </field>
-      <glib:signal name="connections-read" when="first">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="new-connection" when="first">
+      <glib:signal name="connection-added" when="first">
+        <doc xml:space="preserve">Notifies that a #NMConnection has been added.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
-            <type name="GObject.Object"/>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the new connection</doc>
+            <type name="RemoteConnection"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="connection-removed" when="first">
+        <doc xml:space="preserve">Notifies that a #NMConnection has been removed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the removed connection</doc>
+            <type name="RemoteConnection"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -9792,10 +9753,10 @@ modified by calling nm_remote_settings_save_hostname().</doc>
             c:type="NMRemoteSettingsClass"
             glib:is-gtype-struct-for="RemoteSettings">
       <field name="parent">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+        <type name="ObjectClass" c:type="NMObjectClass"/>
       </field>
-      <field name="new_connection">
-        <callback name="new_connection">
+      <field name="connection_added">
+        <callback name="connection_added">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -9809,14 +9770,17 @@ modified by calling nm_remote_settings_save_hostname().</doc>
           </parameters>
         </callback>
       </field>
-      <field name="connections_read">
-        <callback name="connections_read">
+      <field name="connection_removed">
+        <callback name="connection_removed">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
             <parameter name="settings" transfer-ownership="none">
               <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
+            </parameter>
+            <parameter name="connection" transfer-ownership="none">
+              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
             </parameter>
           </parameters>
         </callback>
@@ -24171,40 +24135,13 @@ be parsed</doc>
           <doc xml:space="preserve">the ASCII representation of a hardware address</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="type" transfer-ownership="none">
-          <doc xml:space="preserve">the type of address; either %ARPHRD_ETHER or %ARPHRD_INFINIBAND</doc>
-          <type name="gint" c:type="int"/>
+        <parameter name="length" transfer-ownership="none">
+          <doc xml:space="preserve">the expected length in bytes of the result</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
       </parameters>
     </function>
     <function name="utils_hwaddr_aton" c:identifier="nm_utils_hwaddr_aton">
-      <doc xml:space="preserve">Parses @asc and converts it to binary form in @buffer. See
-nm_utils_hwaddr_atoba() if you'd rather have the result in a
-#GByteArray.
-
-See also nm_utils_hwaddr_aton_len(), which takes an output length
-instead of a type.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">@buffer, or %NULL if @asc couldn't be parsed</doc>
-        <type name="guint8" c:type="guint8*"/>
-      </return-value>
-      <parameters>
-        <parameter name="asc" transfer-ownership="none">
-          <doc xml:space="preserve">the ASCII representation of a hardware address</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-        <parameter name="type" transfer-ownership="none">
-          <doc xml:space="preserve">the type of address; either %ARPHRD_ETHER or %ARPHRD_INFINIBAND</doc>
-          <type name="gint" c:type="int"/>
-        </parameter>
-        <parameter name="buffer" transfer-ownership="none">
-          <doc xml:space="preserve">buffer to store the result into</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="utils_hwaddr_aton_len"
-              c:identifier="nm_utils_hwaddr_aton_len">
       <doc xml:space="preserve">Parses @asc and converts it to binary form in @buffer.
 Bytes in @asc can be sepatared by colons (:), or hyphens (-), but not mixed.</doc>
       <return-value transfer-ownership="none">
@@ -24229,40 +24166,69 @@ the size of the buffer in bytes.</doc>
       </parameters>
     </function>
     <function name="utils_hwaddr_len" c:identifier="nm_utils_hwaddr_len">
-      <doc xml:space="preserve">Returns the length in octets of a hardware address of type @type.</doc>
+      <doc xml:space="preserve">Returns the length in octets of a hardware address of type @type.
+
+It is an error to call this function with any value other than %ARPHRD_ETHER
+or %ARPHRD_INFINIBAND.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the positive length, or -1 if the type is unknown/unsupported.</doc>
-        <type name="gint" c:type="int"/>
+        <doc xml:space="preserve">the length.</doc>
+        <type name="gsize" c:type="gsize"/>
       </return-value>
       <parameters>
         <parameter name="type" transfer-ownership="none">
           <doc xml:space="preserve">the type of address; either %ARPHRD_ETHER or %ARPHRD_INFINIBAND</doc>
           <type name="gint" c:type="int"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_hwaddr_matches"
+              c:identifier="nm_utils_hwaddr_matches">
+      <doc xml:space="preserve">Generalized hardware address comparison function. Tests if @hwaddr1 and
+@hwaddr2 "equal" (or more precisely, "equivalent"), with several advantages
+over a simple memcmp():
+
+  1. If @hwaddr1_len or @hwaddr2_len is -1, then the corresponding address is
+     assumed to be ASCII rather than binary, and will be converted to binary
+     before being compared.
+
+  2. If @hwaddr1 or @hwaddr2 is %NULL, it is treated instead as though it was
+     a zero-filled buffer @hwaddr1_len or @hwaddr2_len bytes long.
+
+  3. If @hwaddr1 and @hwaddr2 are InfiniBand hardware addresses (that is, if
+     they are %INFINIBAND_ALEN bytes long in binary form) then only the last
+     8 bytes are compared, since those are the only bytes that matter for
+     InfiniBand hardware address matching.
+
+If a passed-in ASCII hardware address cannot be parsed, or would parse to an
+address larger than %NM_UTILS_HWADDR_LEN_MAX, then it will silently fail to
+match. (This means that externally-provided address strings do not need to be
+sanity-checked before comparing them against known good addresses; they are
+guaranteed to not match if they are invalid.)</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @hwaddr1 and @hwaddr2 are equivalent, %FALSE if they are
+  different (or either of them is invalid).</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="hwaddr1" transfer-ownership="none">
+          <doc xml:space="preserve">pointer to a binary or ASCII hardware address, or %NULL</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+        <parameter name="hwaddr1_len" transfer-ownership="none">
+          <doc xml:space="preserve">size of @hwaddr1, or -1 if @hwaddr1 is ASCII</doc>
+          <type name="gssize" c:type="gssize"/>
+        </parameter>
+        <parameter name="hwaddr2" transfer-ownership="none">
+          <doc xml:space="preserve">pointer to a binary or ASCII hardware address, or %NULL</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+        <parameter name="hwaddr2_len" transfer-ownership="none">
+          <doc xml:space="preserve">size of @hwaddr2, or -1 if @hwaddr2 is ASCII</doc>
+          <type name="gssize" c:type="gssize"/>
         </parameter>
       </parameters>
     </function>
     <function name="utils_hwaddr_ntoa" c:identifier="nm_utils_hwaddr_ntoa">
-      <doc xml:space="preserve">Converts @addr to textual form.
-
-See also nm_utils_hwaddr_ntoa_len(), which takes a length instead of
-a type.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">the textual form of @addr</doc>
-        <type name="utf8" c:type="char*"/>
-      </return-value>
-      <parameters>
-        <parameter name="addr" transfer-ownership="none">
-          <doc xml:space="preserve">a binary hardware address</doc>
-          <type name="gpointer" c:type="gconstpointer"/>
-        </parameter>
-        <parameter name="type" transfer-ownership="none">
-          <doc xml:space="preserve">the type of address; either %ARPHRD_ETHER or %ARPHRD_INFINIBAND</doc>
-          <type name="gint" c:type="int"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="utils_hwaddr_ntoa_len"
-              c:identifier="nm_utils_hwaddr_ntoa_len">
       <doc xml:space="preserve">Converts @addr to textual form.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">the textual form of @addr</doc>
@@ -24280,16 +24246,22 @@ a type.</doc>
       </parameters>
     </function>
     <function name="utils_hwaddr_valid" c:identifier="nm_utils_hwaddr_valid">
-      <doc xml:space="preserve">Parses @asc to see if it is a valid hardware address of some type.</doc>
+      <doc xml:space="preserve">Parses @asc to see if it is a valid hardware address of the given
+length.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if @asc appears to be a valid hardware address
-  of some type, %FALSE if not.</doc>
+  of the indicated length, %FALSE if not.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="asc" transfer-ownership="none">
           <doc xml:space="preserve">the ASCII representation of a hardware address</doc>
           <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <doc xml:space="preserve">the length of address that @asc is expected to convert to
+  (or -1 to accept any length up to %NM_UTILS_HWADDR_LEN_MAX)</doc>
+          <type name="gssize" c:type="gssize"/>
         </parameter>
       </parameters>
     </function>

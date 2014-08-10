@@ -20,14 +20,19 @@ namespace GVir {
 		public async GVirConfig.Capabilities get_capabilities_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVir.Domain get_domain (string uuid);
 		public GLib.List<GVir.Domain> get_domains ();
+		public string get_hypervisor_name () throws GLib.Error;
 		public GVir.NodeInfo get_node_info () throws GLib.Error;
 		public GVir.StoragePool get_storage_pool (string uuid);
 		public GLib.List<GVir.StoragePool> get_storage_pools ();
 		public GVir.Stream get_stream (uint flags);
 		public unowned string get_uri ();
+		public ulong get_version () throws GLib.Error;
 		public bool is_open ();
+		public bool is_read_only ();
 		public bool open (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool open_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool open_read_only (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool open_read_only_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool restore_domain_from_file (string filename, GVirConfig.Domain? custom_conf, uint flags) throws GLib.Error;
 		public async bool restore_domain_from_file_async (string filename, GVirConfig.Domain? custom_conf, uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVir.Domain start_domain (GVirConfig.Domain conf, uint flags) throws GLib.Error;
@@ -49,6 +54,8 @@ namespace GVir {
 		protected Domain ();
 		public GVir.DomainSnapshot create_snapshot (GVirConfig.DomainSnapshot? custom_conf, uint flags) throws GLib.Error;
 		public bool @delete (uint flags) throws GLib.Error;
+		public bool fetch_snapshots (uint list_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool fetch_snapshots_async (uint list_flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVirConfig.Domain get_config (uint flags) throws GLib.Error;
 		public GLib.List<GVir.DomainDevice> get_devices () throws GLib.Error;
 		public int get_id () throws GLib.Error;
@@ -57,6 +64,7 @@ namespace GVir {
 		public unowned string get_name ();
 		public bool get_persistent ();
 		public bool get_saved ();
+		public GLib.List<GVir.DomainSnapshot> get_snapshots ();
 		public unowned string get_uuid ();
 		public bool open_console (GVir.Stream stream, string? devname, uint flags) throws GLib.Error;
 		public bool open_graphics (uint idx, int fd, uint flags) throws GLib.Error;
@@ -74,9 +82,13 @@ namespace GVir {
 		public async bool start_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool stop (uint flags) throws GLib.Error;
 		public bool suspend () throws GLib.Error;
+		public bool update_device (GVirConfig.DomainDevice device, uint flags) throws GLib.Error;
+		public bool wakeup (uint flags) throws GLib.Error;
+		public async bool wakeup_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoAccessorMethod]
 		public GVir.DomainHandle handle { owned get; construct; }
 		public bool persistent { get; }
+		public virtual signal void pmsuspended ();
 		public virtual signal void resumed ();
 		public virtual signal void started ();
 		public virtual signal void stopped ();
@@ -143,6 +155,7 @@ namespace GVir {
 	public class DomainSnapshot : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected DomainSnapshot ();
+		public bool @delete (uint flags) throws GLib.Error;
 		public GVirConfig.DomainSnapshot get_config (uint flags) throws GLib.Error;
 		public unowned string get_name ();
 		[NoAccessorMethod]
@@ -255,9 +268,13 @@ namespace GVir {
 		public bool build (uint flags) throws GLib.Error;
 		public async bool build_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVir.StorageVol create_volume (GVirConfig.StorageVol conf) throws GLib.Error;
+		public bool @delete (uint flags) throws GLib.Error;
+		public async bool delete_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_active ();
 		public GVirConfig.StoragePool get_config (uint flags) throws GLib.Error;
 		public GVir.StoragePoolInfo get_info () throws GLib.Error;
 		public unowned string get_name ();
+		public bool get_persistent ();
 		public unowned string get_uuid ();
 		public GVir.StorageVol get_volume (string name);
 		public GLib.List<GVir.StorageVol> get_volumes ();
@@ -265,6 +282,10 @@ namespace GVir {
 		public async bool refresh_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool start (uint flags) throws GLib.Error;
 		public async bool start_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool stop () throws GLib.Error;
+		public async bool stop_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool undefine () throws GLib.Error;
+		public async bool undefine_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoAccessorMethod]
 		public GVir.StoragePoolHandle handle { owned get; construct; }
 	}
@@ -313,7 +334,7 @@ namespace GVir {
 		[CCode (has_construct_function = false)]
 		protected Stream ();
 		public uint add_watch_full (int priority, GVir.StreamIOCondition cond, owned GVir.StreamIOFunc func);
-		public ssize_t receive (string buffer, size_t size, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public ssize_t receive ([CCode (array_length_cname = "size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] buffer, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ssize_t receive_all (GLib.Cancellable? cancellable, GVir.StreamSinkFunc func) throws GLib.Error;
 		public ssize_t send (string buffer, size_t size, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ssize_t send_all (GLib.Cancellable? cancellable, GVir.StreamSourceFunc func) throws GLib.Error;
@@ -329,6 +350,12 @@ namespace GVir {
 		NONE,
 		SAVED_STATE,
 		SNAPSHOTS_METADATA
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_REBOOT_", type_id = "gvir_domain_reboot_flags_get_type ()")]
+	public enum DomainRebootFlags {
+		NONE,
+		ACPI_POWER_BTN,
+		GUEST_AGENT
 	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SHUTDOWN_", type_id = "gvir_domain_shutdown_flags_get_type ()")]
 	public enum DomainShutdownFlags {
@@ -348,6 +375,27 @@ namespace GVir {
 		QUIESCE,
 		ATOMIC
 	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SNAPSHOT_DELETE_", type_id = "gvir_domain_snapshot_delete_flags_get_type ()")]
+	public enum DomainSnapshotDeleteFlags {
+		CHILDREN,
+		METADATA_ONLY,
+		CHILDREN_ONLY
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SNAPSHOT_LIST_", type_id = "gvir_domain_snapshot_list_flags_get_type ()")]
+	public enum DomainSnapshotListFlags {
+		ALL,
+		DESCENDANTS,
+		ROOTS,
+		METADATA,
+		LEAVES,
+		NO_LEAVES,
+		NO_METADATA,
+		INACTIVE,
+		ACTIVE,
+		DISK_ONLY,
+		INTERNAL,
+		EXTERNAL
+	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_START_", type_id = "gvir_domain_start_flags_get_type ()")]
 	[Flags]
 	public enum DomainStartFlags {
@@ -365,7 +413,14 @@ namespace GVir {
 		PAUSED,
 		SHUTDOWN,
 		SHUTOFF,
-		CRASHED
+		CRASHED,
+		PMSUSPENDED
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_UPDATE_DEVICE_", type_id = "gvir_domain_update_device_flags_get_type ()")]
+	public enum DomainUpdateDeviceFlags {
+		CURRENT,
+		LIVE,
+		CONFIG
 	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_XML_", type_id = "gvir_domain_xml_flags_get_type ()")]
 	public enum DomainXMLFlags {
@@ -374,7 +429,7 @@ namespace GVir {
 		INACTIVE,
 		UPDATE_CPU
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_POOL_STATE_", has_type_id = false)]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_POOL_STATE_", type_id = "gvir_storage_pool_state_get_type ()")]
 	public enum StoragePoolState {
 		INACTIVE,
 		BUILDING,
@@ -382,20 +437,20 @@ namespace GVir {
 		DEGRADED,
 		INACCESSIBLE
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_RESIZE_", has_type_id = false)]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_RESIZE_", type_id = "gvir_storage_vol_resize_flags_get_type ()")]
 	public enum StorageVolResizeFlags {
 		NONE,
 		ALLOCATE,
 		DELTA,
 		SHRINK
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_STATE_", has_type_id = false)]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_VOL_STATE_", type_id = "gvir_storage_vol_type_get_type ()")]
 	public enum StorageVolType {
 		FILE,
 		BLOCK,
 		DIR
 	}
-	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STREAM_IO_CONDITION_", has_type_id = false)]
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STREAM_IO_CONDITION_", type_id = "gvir_stream_io_condition_get_type ()")]
 	[Flags]
 	public enum StreamIOCondition {
 		READABLE,

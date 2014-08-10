@@ -434,6 +434,29 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_veto"
+              c:identifier="as_app_add_veto"
+              version="0.2.5"
+              introspectable="0">
+        <doc xml:space="preserve">Adds a reason to not include the application in the metadata.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">A #AsApp</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="fmt" transfer-ownership="none">
+            <doc xml:space="preserve">format string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">varargs</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_addons"
               c:identifier="as_app_get_addons"
               version="0.1.7">
@@ -1143,6 +1166,21 @@ entry set.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_vetos" c:identifier="as_app_get_vetos" version="0.2.5">
+        <doc xml:space="preserve">Gets the list of vetos.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A list of vetos</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">A #AsApp</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="has_category"
               c:identifier="as_app_has_category"
               version="0.1.5">
@@ -1202,7 +1240,9 @@ entry set.</doc>
               c:identifier="as_app_parse_file"
               version="0.1.2"
               throws="1">
-        <doc xml:space="preserve">Parses a desktop or AppData file and populates the application state.</doc>
+        <doc xml:space="preserve">Parses a desktop or AppData file and populates the application state.
+
+Applications that are not suitable for the store will have vetos added.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE for success</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1869,6 +1909,11 @@ trusted input.</doc>
               c:identifier="AS_APP_PARSE_FLAG_APPEND_DATA">
         <doc xml:space="preserve">Append new data rather than replacing</doc>
       </member>
+      <member name="allow_veto"
+              value="16"
+              c:identifier="AS_APP_PARSE_FLAG_ALLOW_VETO">
+        <doc xml:space="preserve">Do not return errors for vetoed apps</doc>
+      </member>
     </enumeration>
     <enumeration name="AppSourceKind" c:type="AsAppSourceKind">
       <doc xml:space="preserve">The source kind.</doc>
@@ -1934,8 +1979,6 @@ trusted input.</doc>
       </member>
       <member name="removing" value="8" c:identifier="AS_APP_STATE_REMOVING">
         <doc xml:space="preserve">Application is being removed</doc>
-      </member>
-      <member name="last" value="9" c:identifier="AS_APP_STATE_LAST">
       </member>
     </enumeration>
     <enumeration name="AppSubsumeFlags" c:type="AsAppSubsumeFlags">
@@ -2067,6 +2110,7 @@ trusted input.</doc>
         <doc xml:space="preserve">A software source</doc>
       </member>
       <member name="addon" value="7" c:identifier="AS_ID_KIND_ADDON">
+        <doc xml:space="preserve">An addon, e.g. a plugin</doc>
       </member>
     </enumeration>
     <class name="Image"
@@ -2127,6 +2171,7 @@ xx@@@@@@@xxxxxx@@@@@@@@@@@xx
 xx@@@@@@@@@@@@@@@@@@@@@@@@xx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#AsImageAlphaFlags, e.g. %AS_IMAGE_ALPHA_FLAG_LEFT</doc>
           <type name="ImageAlphaFlags" c:type="AsImageAlphaFlags"/>
         </return-value>
         <parameters>
@@ -2532,11 +2577,14 @@ using as_image_get_basename(). This can be overridden if required.</doc>
       </member>
     </enumeration>
     <enumeration name="ImageSaveFlags" c:type="AsImageSaveFlags">
+      <doc xml:space="preserve">The flags used for saving images.</doc>
       <member name="none" value="0" c:identifier="AS_IMAGE_SAVE_FLAG_NONE">
+        <doc xml:space="preserve">No special flags set</doc>
       </member>
       <member name="pad_16_9"
               value="1"
               c:identifier="AS_IMAGE_SAVE_FLAG_PAD_16_9">
+        <doc xml:space="preserve">Pad with alpha to 16:9 aspect</doc>
       </member>
     </enumeration>
     <enumeration name="KudoKind" c:type="AsKudoKind">
@@ -2550,10 +2598,10 @@ using as_image_get_basename(). This can be overridden if required.</doc>
         <doc xml:space="preserve">Installs a search provider</doc>
       </member>
       <member name="user_docs" value="2" c:identifier="AS_KUDO_KIND_USER_DOCS">
-        <doc xml:space="preserve">Installs user documentation
-@AS_KUDO_KIND_APP_MENU		Uses the GNOME application menu</doc>
+        <doc xml:space="preserve">Installs user documentation</doc>
       </member>
       <member name="app_menu" value="3" c:identifier="AS_KUDO_KIND_APP_MENU">
+        <doc xml:space="preserve">Uses the GNOME application menu</doc>
       </member>
       <member name="modern_toolkit"
               value="4"
@@ -2569,7 +2617,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="5" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="2" c:type="AS_MINOR_VERSION">
@@ -2581,6 +2629,11 @@ using as_image_get_basename(). This can be overridden if required.</doc>
       <doc xml:space="preserve">The error type.</doc>
       <member name="failed" value="0" c:identifier="AS_NODE_ERROR_FAILED">
         <doc xml:space="preserve">Generic failure</doc>
+      </member>
+      <member name="invalid_markup"
+              value="1"
+              c:identifier="AS_NODE_ERROR_INVALID_MARKUP">
+        <doc xml:space="preserve">XML markup was invalid</doc>
       </member>
     </enumeration>
     <enumeration name="NodeFromXmlFlags" c:type="AsNodeFromXmlFlags">
@@ -4243,6 +4296,11 @@ have changed.</doc>
               c:identifier="AS_STORE_LOAD_FLAG_DESKTOP">
         <doc xml:space="preserve">The installed desktop files</doc>
       </member>
+      <member name="allow_veto"
+              value="32"
+              c:identifier="AS_STORE_LOAD_FLAG_ALLOW_VETO">
+        <doc xml:space="preserve">Add vetoed applications</doc>
+      </member>
     </enumeration>
     <enumeration name="Tag" c:type="AsTag">
       <doc xml:space="preserve">The tag type.</doc>
@@ -5130,6 +5188,7 @@ legacy key names.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">the #AsTagFlags e.g. %AS_TAG_FLAG_USE_FALLBACKS</doc>
           <type name="TagFlags" c:type="AsTagFlags"/>
         </parameter>
       </parameters>
@@ -5196,6 +5255,26 @@ legacy key names.</doc>
         <parameter name="timeout" transfer-ownership="none">
           <doc xml:space="preserve">the timeout in seconds.</doc>
           <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_find_icon_filename"
+              c:identifier="as_utils_find_icon_filename"
+              version="0.2.5"
+              throws="1">
+      <doc xml:space="preserve">Finds an icon filename from a filesystem root.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated %NULL terminated string</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="destdir" transfer-ownership="none">
+          <doc xml:space="preserve">the destdir.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="search" transfer-ownership="none">
+          <doc xml:space="preserve">the icon search name, e.g. "microphone.svg"</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>

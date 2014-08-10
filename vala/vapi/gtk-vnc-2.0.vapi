@@ -22,7 +22,7 @@ namespace Vnc {
 		public int get_height ();
 		public bool get_keyboard_grab ();
 		public bool get_lossy_encoding ();
-		public static GLib.OptionEntry get_option_entries ();
+		public static unowned GLib.OptionEntry? get_option_entries ();
 		public Gdk.Pixbuf get_pixbuf ();
 		public bool get_pointer_grab ();
 		public bool get_pointer_local ();
@@ -32,10 +32,12 @@ namespace Vnc {
 		public int get_width ();
 		public bool is_open ();
 		public bool is_pointer_absolute ();
+		public bool open_addr (GLib.SocketAddress addr, string hostname);
 		public bool open_fd (int fd);
+		public bool open_fd_with_hostname (int fd, string hostname);
 		public bool open_host (string host, string port);
 		public bool request_update ();
-		public void send_keys (uint keyvals, int nkeyvals);
+		public void send_keys ([CCode (array_length_cname = "nkeyvals", array_length_pos = 1.1)] uint[] keyvals);
 		public void send_keys_ex (uint keyvals, int nkeyvals, Vnc.DisplayKeyEvent kind);
 		public void send_pointer (int x, int y, int button_mask);
 		public bool set_credential (int type, string data);
@@ -94,14 +96,15 @@ namespace Vnc {
 		public void free ();
 		[CCode (has_construct_function = false)]
 		public GrabSequence.from_string (string str);
+		public uint get_nth (uint n);
 	}
-	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_CREDENTIAL_")]
+	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_CREDENTIAL_", type_id = "vnc_display_credential_get_type ()")]
 	public enum DisplayCredential {
 		PASSWORD,
 		USERNAME,
 		CLIENTNAME
 	}
-	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_DEPTH_COLOR_")]
+	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_DEPTH_COLOR_", type_id = "vnc_display_depth_color_get_type ()")]
 	public enum DisplayDepthColor {
 		DEFAULT,
 		FULL,
@@ -109,7 +112,7 @@ namespace Vnc {
 		LOW,
 		ULTRA_LOW
 	}
-	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_KEY_EVENT_")]
+	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_KEY_EVENT_", type_id = "vnc_display_key_event_get_type ()")]
 	public enum DisplayKeyEvent {
 		PRESS,
 		RELEASE,

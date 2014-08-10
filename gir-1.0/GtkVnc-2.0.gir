@@ -6,23 +6,14 @@ and/or use gtk-doc annotations.  -->
             xmlns="http://www.gtk.org/introspection/core/1.0"
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
-  <include name="Atk" version="1.0"/>
-  <include name="GLib" version="2.0"/>
-  <include name="GModule" version="2.0"/>
   <include name="GObject" version="2.0"/>
   <include name="GVnc" version="1.0"/>
-  <include name="Gdk" version="3.0"/>
-  <include name="GdkPixbuf" version="2.0"/>
-  <include name="Gio" version="2.0"/>
   <include name="Gtk" version="3.0"/>
-  <include name="Pango" version="1.0"/>
-  <include name="cairo" version="1.0"/>
-  <include name="xlib" version="2.0"/>
-  <package name="gtk-vnc-2.0"/>
+  <package name="gtk-vnc-"/>
   <c:include name="gtk-vnc.h"/>
   <namespace name="GtkVnc"
              version="2.0"
-             shared-library="libgtk-vnc-2.0.so.0"
+             shared-library="libgvnc-1.0.so.0,libgtk-vnc-2.0.so.0"
              c:identifier-prefixes="Vnc"
              c:symbol-prefixes="vnc">
     <class name="CairoFramebuffer"
@@ -45,7 +36,7 @@ and/or use gtk-doc annotations.  -->
             <type name="guint16" c:type="guint16"/>
           </parameter>
           <parameter name="remoteFormat" transfer-ownership="none">
-            <type name="GVnc.PixelFormat" c:type="VncPixelFormat*"/>
+            <type name="GVnc.PixelFormat" c:type="const VncPixelFormat*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -54,12 +45,17 @@ and/or use gtk-doc annotations.  -->
         <return-value transfer-ownership="full">
           <type name="cairo.Surface" c:type="cairo_surface_t*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="fb" transfer-ownership="none">
+            <type name="CairoFramebuffer" c:type="VncCairoFramebuffer*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <property name="surface"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <type name="gpointer"/>
+        <type name="gpointer" c:type="gpointer"/>
       </property>
       <field name="parent">
         <type name="GVnc.BaseFramebuffer" c:type="VncBaseFramebuffer"/>
@@ -103,7 +99,7 @@ and/or use gtk-doc annotations.  -->
       <function name="get_option_entries"
                 c:identifier="vnc_display_get_option_entries">
         <return-value transfer-ownership="none">
-          <type name="GLib.OptionEntry" c:type="GOptionEntry*"/>
+          <type name="GLib.OptionEntry" c:type="const GOptionEntry*"/>
         </return-value>
       </function>
       <function name="get_option_group"
@@ -118,6 +114,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="credList" transfer-ownership="none">
             <type name="GObject.ValueArray" c:type="GValueArray*"/>
           </parameter>
@@ -127,16 +126,31 @@ and/or use gtk-doc annotations.  -->
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="vnc_disconnected">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <virtual-method name="vnc_initialized">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </virtual-method>
       <method name="client_cut_text"
               c:identifier="vnc_display_client_cut_text">
@@ -144,8 +158,11 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="text" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -153,12 +170,20 @@ and/or use gtk-doc annotations.  -->
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="force_grab" c:identifier="vnc_display_force_grab">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -170,104 +195,227 @@ and/or use gtk-doc annotations.  -->
         <return-value>
           <type name="GVnc.Connection" c:type="VncConnection*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_depth" c:identifier="vnc_display_get_depth">
         <return-value transfer-ownership="none">
           <type name="DisplayDepthColor" c:type="VncDisplayDepthColor"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_force_size" c:identifier="vnc_display_get_force_size">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_grab_keys" c:identifier="vnc_display_get_grab_keys">
-        <doc xml:whitespace="preserve">Get the current grab key sequence</doc>
+        <doc xml:space="preserve">Get the current grab key sequence</doc>
         <return-value transfer-ownership="none">
-          <doc xml:whitespace="preserve">the current grab keys</doc>
+          <doc xml:space="preserve">the current grab keys</doc>
           <type name="GrabSequence" c:type="VncGrabSequence*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <doc xml:space="preserve">the vnc display object</doc>
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_height" c:identifier="vnc_display_get_height">
         <return-value transfer-ownership="none">
           <type name="gint" c:type="int"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_keyboard_grab"
               c:identifier="vnc_display_get_keyboard_grab">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_lossy_encoding"
               c:identifier="vnc_display_get_lossy_encoding">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_name" c:identifier="vnc_display_get_name">
         <return-value transfer-ownership="none">
-          <type name="utf8" c:type="char*"/>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_pixbuf" c:identifier="vnc_display_get_pixbuf">
-        <doc xml:whitespace="preserve">Take a screenshot of the display.</doc>
+        <doc xml:space="preserve">Take a screenshot of the display.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a #GdkPixbuf with the screenshot image buffer</doc>
+          <doc xml:space="preserve">a #GdkPixbuf with the screenshot image buffer</doc>
           <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <doc xml:space="preserve">a #VncDisplay</doc>
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_pointer_grab"
               c:identifier="vnc_display_get_pointer_grab">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_pointer_local"
               c:identifier="vnc_display_get_pointer_local">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_read_only" c:identifier="vnc_display_get_read_only">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_scaling" c:identifier="vnc_display_get_scaling">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_shared_flag"
               c:identifier="vnc_display_get_shared_flag">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="get_width" c:identifier="vnc_display_get_width">
         <return-value transfer-ownership="none">
           <type name="gint" c:type="int"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="is_open" c:identifier="vnc_display_is_open">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="is_pointer_absolute"
               c:identifier="vnc_display_is_pointer_absolute">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="open_addr" c:identifier="vnc_display_open_addr">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+          <parameter name="addr" transfer-ownership="none">
+            <type name="Gio.SocketAddress" c:type="GSocketAddress*"/>
+          </parameter>
+          <parameter name="hostname" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
       </method>
       <method name="open_fd" c:identifier="vnc_display_open_fd">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="fd" transfer-ownership="none">
             <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="open_fd_with_hostname"
+              c:identifier="vnc_display_open_fd_with_hostname">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+          <parameter name="fd" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="hostname" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -276,11 +424,14 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="host" transfer-ownership="none">
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="port" transfer-ownership="none">
-            <type name="utf8" c:type="char*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -288,16 +439,30 @@ and/or use gtk-doc annotations.  -->
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="send_keys" c:identifier="vnc_display_send_keys">
+        <doc xml:space="preserve">Send keyval click events to the display.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <doc xml:space="preserve">The #VncDisplay</doc>
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="keyvals" transfer-ownership="none">
-            <type name="guint" c:type="guint*"/>
+            <doc xml:space="preserve">Keyval array</doc>
+            <array length="1" zero-terminated="0" c:type="guint*">
+              <type name="guint" c:type="guint"/>
+            </array>
           </parameter>
           <parameter name="nkeyvals" transfer-ownership="none">
+            <doc xml:space="preserve">Length of keyvals</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -307,8 +472,11 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="keyvals" transfer-ownership="none">
-            <type name="guint" c:type="guint*"/>
+            <type name="guint" c:type="const guint*"/>
           </parameter>
           <parameter name="nkeyvals" transfer-ownership="none">
             <type name="gint" c:type="int"/>
@@ -323,6 +491,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="x" transfer-ownership="none">
             <type name="gint" c:type="gint"/>
           </parameter>
@@ -339,11 +510,14 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="type" transfer-ownership="none">
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -352,6 +526,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="depth" transfer-ownership="none">
             <type name="DisplayDepthColor" c:type="VncDisplayDepthColor"/>
           </parameter>
@@ -362,19 +539,26 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_grab_keys" c:identifier="vnc_display_set_grab_keys">
-        <doc xml:whitespace="preserve">Set the key grab sequence</doc>
+        <doc xml:space="preserve">Set the key grab sequence</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <doc xml:space="preserve">the vnc display object</doc>
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="seq" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the new grab sequence</doc>
+            <doc xml:space="preserve">the new grab sequence</doc>
             <type name="GrabSequence" c:type="VncGrabSequence*"/>
           </parameter>
         </parameters>
@@ -385,6 +569,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -396,6 +583,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -407,6 +597,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -418,6 +611,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -428,6 +624,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -438,6 +637,9 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -449,6 +651,9 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
+          <instance-parameter name="obj" transfer-ownership="none">
+            <type name="Display" c:type="VncDisplay*"/>
+          </instance-parameter>
           <parameter name="shared" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -467,13 +672,13 @@ and/or use gtk-doc annotations.  -->
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="grab-keyboard"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="grab-keys"
                 writable="1"
@@ -485,46 +690,46 @@ and/or use gtk-doc annotations.  -->
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="height" transfer-ownership="none">
-        <type name="gint"/>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="local-pointer"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="lossy-encoding"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="name" transfer-ownership="none">
-        <type name="utf8"/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="read-only"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="scaling"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="shared-flag"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <type name="gboolean"/>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="width" transfer-ownership="none">
-        <type name="gint"/>
+        <type name="gint" c:type="gint"/>
       </property>
       <field name="parent">
         <type name="Gtk.DrawingArea" c:type="GtkDrawingArea"/>
@@ -534,7 +739,7 @@ and/or use gtk-doc annotations.  -->
       </field>
       <glib:signal name="vnc-auth-credential" when="first">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
@@ -544,84 +749,84 @@ and/or use gtk-doc annotations.  -->
       </glib:signal>
       <glib:signal name="vnc-auth-failure" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
-            <type name="utf8"/>
+            <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="vnc-auth-unsupported" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
-            <type name="guint"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="vnc-bell" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-connected" when="first">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-desktop-resize" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
-            <type name="gint"/>
+            <type name="gint" c:type="gint"/>
           </parameter>
           <parameter name="p0" transfer-ownership="none">
-            <type name="gint"/>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </glib:signal>
       <glib:signal name="vnc-disconnected" when="first">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-initialized" when="first">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-keyboard-grab" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-keyboard-ungrab" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-pointer-grab" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-pointer-ungrab" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
       <glib:signal name="vnc-server-cut-text" when="last" no-hooks="1">
         <return-value transfer-ownership="none">
-          <type name="none"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
-            <type name="utf8"/>
+            <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -691,15 +896,18 @@ and/or use gtk-doc annotations.  -->
       <member name="password"
               value="0"
               c:identifier="VNC_DISPLAY_CREDENTIAL_PASSWORD"
-              glib:nick="password"/>
+              glib:nick="password">
+      </member>
       <member name="username"
               value="1"
               c:identifier="VNC_DISPLAY_CREDENTIAL_USERNAME"
-              glib:nick="username"/>
+              glib:nick="username">
+      </member>
       <member name="clientname"
               value="2"
               c:identifier="VNC_DISPLAY_CREDENTIAL_CLIENTNAME"
-              glib:nick="clientname"/>
+              glib:nick="clientname">
+      </member>
     </enumeration>
     <enumeration name="DisplayDepthColor"
                  glib:type-name="VncDisplayDepthColor"
@@ -708,23 +916,28 @@ and/or use gtk-doc annotations.  -->
       <member name="default"
               value="0"
               c:identifier="VNC_DISPLAY_DEPTH_COLOR_DEFAULT"
-              glib:nick="default"/>
+              glib:nick="default">
+      </member>
       <member name="full"
               value="1"
               c:identifier="VNC_DISPLAY_DEPTH_COLOR_FULL"
-              glib:nick="full"/>
+              glib:nick="full">
+      </member>
       <member name="medium"
               value="2"
               c:identifier="VNC_DISPLAY_DEPTH_COLOR_MEDIUM"
-              glib:nick="medium"/>
+              glib:nick="medium">
+      </member>
       <member name="low"
               value="3"
               c:identifier="VNC_DISPLAY_DEPTH_COLOR_LOW"
-              glib:nick="low"/>
+              glib:nick="low">
+      </member>
       <member name="ultra_low"
               value="4"
               c:identifier="VNC_DISPLAY_DEPTH_COLOR_ULTRA_LOW"
-              glib:nick="ultra-low"/>
+              glib:nick="ultra-low">
+      </member>
     </enumeration>
     <enumeration name="DisplayKeyEvent"
                  glib:type-name="VncDisplayKeyEvent"
@@ -733,15 +946,18 @@ and/or use gtk-doc annotations.  -->
       <member name="press"
               value="1"
               c:identifier="VNC_DISPLAY_KEY_EVENT_PRESS"
-              glib:nick="press"/>
+              glib:nick="press">
+      </member>
       <member name="release"
               value="2"
               c:identifier="VNC_DISPLAY_KEY_EVENT_RELEASE"
-              glib:nick="release"/>
+              glib:nick="release">
+      </member>
       <member name="click"
               value="3"
               c:identifier="VNC_DISPLAY_KEY_EVENT_CLICK"
-              glib:nick="click"/>
+              glib:nick="click">
+      </member>
     </enumeration>
     <record name="DisplayPrivate" c:type="VncDisplayPrivate" disguised="1">
     </record>
@@ -757,18 +973,18 @@ and/or use gtk-doc annotations.  -->
         <type name="guint" c:type="guint*"/>
       </field>
       <constructor name="new" c:identifier="vnc_grab_sequence_new">
-        <doc xml:whitespace="preserve">Creates a new grab sequence from a list of keysym values</doc>
+        <doc xml:space="preserve">Creates a new grab sequence from a list of keysym values</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new grab sequence object</doc>
+          <doc xml:space="preserve">a new grab sequence object</doc>
           <type name="GrabSequence" c:type="VncGrabSequence*"/>
         </return-value>
         <parameters>
           <parameter name="nkeysyms" transfer-ownership="none">
-            <doc xml:whitespace="preserve">length of @keysyms</doc>
+            <doc xml:space="preserve">length of @keysyms</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="keysyms" transfer-ownership="none">
-            <doc xml:whitespace="preserve">the keysym values</doc>
+            <doc xml:space="preserve">the keysym values</doc>
             <array length="0" zero-terminated="0" c:type="guint*">
               <type name="guint" c:type="guint"/>
             </array>
@@ -777,34 +993,66 @@ and/or use gtk-doc annotations.  -->
       </constructor>
       <constructor name="new_from_string"
                    c:identifier="vnc_grab_sequence_new_from_string">
-        <doc xml:whitespace="preserve">Creates a new grab sequence from a list of keysym names</doc>
+        <doc xml:space="preserve">Creates a new grab sequence from a list of keysym names</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">a new grab sequence object</doc>
+          <doc xml:space="preserve">a new grab sequence object</doc>
           <type name="GrabSequence" c:type="VncGrabSequence*"/>
         </return-value>
         <parameters>
           <parameter name="str" transfer-ownership="none">
-            <doc xml:whitespace="preserve">string of keysym names</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <doc xml:space="preserve">string of keysym names</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </constructor>
       <method name="as_string" c:identifier="vnc_grab_sequence_as_string">
-        <doc xml:whitespace="preserve">Convert the grab sequence to a string of keysym names</doc>
+        <doc xml:space="preserve">Convert the grab sequence to a string of keysym names</doc>
         <return-value transfer-ownership="full">
-          <doc xml:whitespace="preserve">the grab sequence as a string</doc>
+          <doc xml:space="preserve">the grab sequence as a string</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="sequence" transfer-ownership="none">
+            <doc xml:space="preserve">the grab sequence</doc>
+            <type name="GrabSequence" c:type="VncGrabSequence*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="copy" c:identifier="vnc_grab_sequence_copy">
         <return-value transfer-ownership="full">
           <type name="GrabSequence" c:type="VncGrabSequence*"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="sequence" transfer-ownership="none">
+            <type name="GrabSequence" c:type="VncGrabSequence*"/>
+          </instance-parameter>
+        </parameters>
       </method>
       <method name="free" c:identifier="vnc_grab_sequence_free">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <instance-parameter name="sequence" transfer-ownership="none">
+            <type name="GrabSequence" c:type="VncGrabSequence*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_nth" c:identifier="vnc_grab_sequence_get_nth">
+        <doc xml:space="preserve">Obtain the nth key symbol in the sequence</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the nth key symbol</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sequence" transfer-ownership="none">
+            <doc xml:space="preserve">the grab sequence</doc>
+            <type name="GrabSequence" c:type="VncGrabSequence*"/>
+          </instance-parameter>
+          <parameter name="n" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
       </method>
     </record>
   </namespace>

@@ -82,6 +82,7 @@ namespace Vnc {
 		public unowned Vnc.AudioFormat get_audio_format ();
 		public bool get_ext_key_event ();
 		public int get_height ();
+		public int get_ledstate ();
 		public unowned string get_name ();
 		public unowned Vnc.PixelFormat get_pixel_format ();
 		public bool get_shared ();
@@ -91,6 +92,7 @@ namespace Vnc {
 		public bool is_open ();
 		public bool key_event (bool down_flag, uint32 key, uint16 scancode);
 		public bool open_fd (int fd);
+		public bool open_fd_with_hostname (int fd, string hostname);
 		public bool open_host (string host, string port);
 		public bool pointer_event (uint8 button_mask, uint16 x, uint16 y);
 		public bool set_audio (Vnc.Audio audio);
@@ -117,6 +119,7 @@ namespace Vnc {
 		public virtual signal void vnc_disconnected ();
 		public virtual signal void vnc_framebuffer_update (int x, int y, int width, int height);
 		public virtual signal void vnc_initialized ();
+		public virtual signal void vnc_led_state ();
 		public virtual signal void vnc_pixel_format_changed (void* format);
 		public virtual signal void vnc_pointer_mode_changed (bool absPointer);
 		public virtual signal void vnc_server_cut_text (string text);
@@ -190,7 +193,7 @@ namespace Vnc {
 		public uint16 green;
 		public uint16 blue;
 	}
-	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_AUDIO_FORMAT_RAW_")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_AUDIO_FORMAT_RAW_", has_type_id = false)]
 	public enum AudioFormatType {
 		U8,
 		S8,
@@ -199,7 +202,7 @@ namespace Vnc {
 		U32,
 		S32
 	}
-	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_", type_id = "vnc_connection_auth_get_type ()")]
 	public enum ConnectionAuth {
 		INVALID,
 		NONE,
@@ -214,7 +217,7 @@ namespace Vnc {
 		ARD,
 		MSLOGON
 	}
-	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_VENCRYPT_")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_VENCRYPT_", type_id = "vnc_connection_auth_vencrypt_get_type ()")]
 	public enum ConnectionAuthVencrypt {
 		PLAIN,
 		TLSNONE,
@@ -226,13 +229,13 @@ namespace Vnc {
 		X509SASL,
 		TLSSASL
 	}
-	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_CREDENTIAL_")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_CREDENTIAL_", type_id = "vnc_connection_credential_get_type ()")]
 	public enum ConnectionCredential {
 		PASSWORD,
 		USERNAME,
 		CLIENTNAME
 	}
-	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_ENCODING_")]
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_ENCODING_", type_id = "vnc_connection_encoding_get_type ()")]
 	public enum ConnectionEncoding {
 		RAW,
 		COPY_RECT,
@@ -259,8 +262,15 @@ namespace Vnc {
 		XCURSOR,
 		POINTER_CHANGE,
 		EXT_KEY_EVENT,
-		AUDIO
+		AUDIO,
+		LED_STATE
 	}
+	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_CAPS_LOCK")]
+	public const int LEDSTATE_CAPS_LOCK;
+	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_NUM_LOCK")]
+	public const int LEDSTATE_NUM_LOCK;
+	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_SCROLL_LOCK")]
+	public const int LEDSTATE_SCROLL_LOCK;
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_PADDING")]
 	public const int PADDING;
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_PADDING_LARGE")]

@@ -7,9 +7,9 @@ namespace GVir {
 	[CCode (cheader_filename = "libvirt-glib/libvirt-glib.h")]
 	public static void event_register ();
 	[CCode (cheader_filename = "libvirt-glib/libvirt-glib.h")]
-	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv);
+	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "libvirt-glib/libvirt-glib.h")]
-	public static bool init_check ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv) throws GLib.Error;
+	public static bool init_check ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv) throws GLib.Error;
 	[CCode (cheader_filename = "libvirt-glib/libvirt-glib.h")]
 	public static void set_error_literal (GLib.Error error, GLib.Quark domain, int code, string message);
 }
