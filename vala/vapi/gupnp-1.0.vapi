@@ -288,11 +288,11 @@ namespace GUPnP {
 		[CCode (has_construct_function = false)]
 		public XMLDoc.from_path (string path) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", type_cname = "GUPnPAclInterface", type_id = "gupnp_acl_get_type ()")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", type_cname = "GUPnPAclInterface")]
 	public interface Acl : GLib.Object {
 		public abstract bool can_sync ();
-		public abstract bool is_allowed (void* device, void* service, string path, string address, string? agent);
-		public abstract async bool is_allowed_async (void* device, void* service, string path, string address, string? agent, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract bool is_allowed (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent);
+		public abstract async bool is_allowed_async (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent, GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
 	public struct ServiceActionArgInfo {

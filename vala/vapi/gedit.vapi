@@ -70,7 +70,7 @@ namespace Gedit {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public EncodingsComboBox (bool save_mode);
 		public unowned Gtk.SourceEncoding get_selected_encoding ();
-		public void set_selected_encoding (Gtk.SourceEncoding? encoding);
+		public void set_selected_encoding (Gtk.SourceEncoding encoding);
 		[NoAccessorMethod]
 		public bool save_mode { get; set construct; }
 	}

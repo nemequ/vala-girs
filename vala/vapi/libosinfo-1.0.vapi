@@ -284,6 +284,7 @@ namespace Osinfo {
 		public unowned Osinfo.InstallConfigParamList get_config_params ();
 		public unowned string get_expected_filename ();
 		public Osinfo.InstallScriptInjectionMethod get_injection_methods ();
+		public bool get_needs_internet ();
 		public unowned string get_output_filename ();
 		public unowned string get_output_prefix ();
 		public Osinfo.PathFormat get_path_format ();
@@ -779,6 +780,8 @@ namespace Osinfo {
 	public const string INSTALL_SCRIPT_PROP_EXPECTED_FILENAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_INJECTION_METHOD")]
 	public const string INSTALL_SCRIPT_PROP_INJECTION_METHOD;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_NEEDS_INTERNET")]
+	public const string INSTALL_SCRIPT_PROP_NEEDS_INTERNET;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_PATH_FORMAT")]
 	public const string INSTALL_SCRIPT_PROP_PATH_FORMAT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_SCRIPT_PROP_POST_INSTALL_DRIVERS_SIGNING_REQ")]

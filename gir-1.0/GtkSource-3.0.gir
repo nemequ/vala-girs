@@ -531,8 +531,9 @@ with the buffer, or %NULL.</doc>
         <doc xml:space="preserve">Returns the #GtkSourceUndoManager associated with the buffer,
 see gtk_source_buffer_set_undo_manager().  The returned object should not be
 unreferenced by the user.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GtkSourceUndoManager associated with the buffer, or %NULL.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the #GtkSourceUndoManager associated
+with the buffer, or %NULL.</doc>
           <type name="UndoManager" c:type="GtkSourceUndoManager*"/>
         </return-value>
         <parameters>
@@ -2708,7 +2709,7 @@ will contain only alphanumerical and the "_" characters.</doc>
       </virtual-method>
       <virtual-method name="get_icon" invoker="get_icon">
         <doc xml:space="preserve">Get the icon of the provider.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The icon to be used for the provider,
          or %NULL if the provider does not have a special icon.</doc>
           <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
@@ -2737,9 +2738,10 @@ content of the #GtkLabel.
     &lt;emphasis&gt;must&lt;/emphasis&gt; also be implemented.
   &lt;/para&gt;
 &lt;/note&gt;</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a custom #GtkWidget to show extra
-information about @proposal.</doc>
+information about @proposal, or %NULL if the provider does not have a special
+info widget.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
         <parameters>
@@ -2964,7 +2966,7 @@ will contain only alphanumerical and the "_" characters.</doc>
       <method name="get_icon"
               c:identifier="gtk_source_completion_provider_get_icon">
         <doc xml:space="preserve">Get the icon of the provider.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The icon to be used for the provider,
          or %NULL if the provider does not have a special icon.</doc>
           <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
@@ -2994,9 +2996,10 @@ content of the #GtkLabel.
     &lt;emphasis&gt;must&lt;/emphasis&gt; also be implemented.
   &lt;/para&gt;
 &lt;/note&gt;</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a custom #GtkWidget to show extra
-information about @proposal.</doc>
+information about @proposal, or %NULL if the provider does not have a special
+info widget.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
         <parameters>
@@ -3199,7 +3202,7 @@ gtk_source_completion_context_add_proposals() function.</doc>
       </field>
       <field name="get_icon">
         <callback name="get_icon">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">The icon to be used for the provider,
          or %NULL if the provider does not have a special icon.</doc>
             <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
@@ -3270,9 +3273,10 @@ gtk_source_completion_context_add_proposals() function.</doc>
       </field>
       <field name="get_info_widget">
         <callback name="get_info_widget">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">a custom #GtkWidget to show extra
-information about @proposal.</doc>
+information about @proposal, or %NULL if the provider does not have a special
+info widget.</doc>
             <type name="Gtk.Widget" c:type="GtkWidget*"/>
           </return-value>
           <parameters>
@@ -3715,23 +3719,14 @@ the line will be drawn (i.e. it has the same effect as specifying all of them).<
           <type name="Encoding" c:type="const GtkSourceEncoding*"/>
         </return-value>
       </function>
-      <function name="get_default_candidates"
-                c:identifier="gtk_source_encoding_get_default_candidates">
-        <return-value transfer-ownership="container">
-          <doc xml:space="preserve">the list of
-default candidates encodings. Free with g_slist_free().</doc>
-          <type name="GLib.SList" c:type="GSList*">
-            <type name="Encoding"/>
-          </type>
-        </return-value>
-      </function>
       <function name="get_from_charset"
                 c:identifier="gtk_source_encoding_get_from_charset"
                 version="3.14">
         <doc xml:space="preserve">Gets a #GtkSourceEncoding from a character set such as "UTF-8" or
 "ISO-8859-1".</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the corresponding #GtkSourceEncoding, or %NULL if not found.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the corresponding #GtkSourceEncoding, or %NULL
+if not found.</doc>
           <type name="Encoding" c:type="const GtkSourceEncoding*"/>
         </return-value>
         <parameters>
@@ -3802,6 +3797,8 @@ to gtk_source_encoding_foreach().</doc>
       <method name="get_encoding"
               c:identifier="gtk_source_file_get_encoding"
               version="3.14">
+        <doc xml:space="preserve">The encoding is initially %NULL. After a successful file loading or saving
+operation, the encoding is non-%NULL.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the character encoding.</doc>
           <type name="Encoding" c:type="const GtkSourceEncoding*"/>
@@ -3912,7 +3909,8 @@ called.</doc>
         <type name="CompressionType"/>
       </property>
       <property name="encoding" version="3.14" transfer-ownership="none">
-        <doc xml:space="preserve">The character encoding. UTF-8 by default.</doc>
+        <doc xml:space="preserve">The character encoding, initially %NULL. After a successful file
+loading or saving operation, the encoding is non-%NULL.</doc>
         <type name="Encoding"/>
       </property>
       <property name="location"
@@ -4196,8 +4194,14 @@ type.</doc>
         <doc xml:space="preserve">Sets the candidate encodings for the file loading. The encodings are tried in
 the same order as the list.
 
-There is by default only one candidate encoding, the #GtkSourceFile's
-encoding.</doc>
+For convenience, @candidate_encodings can contain duplicates. Only the first
+occurrence of a duplicated encoding is kept in the list.
+
+By default the candidate encodings are (in that order):
+1. If set, the #GtkSourceFile's encoding. See gtk_source_file_get_encoding().
+2. Depending on the current locale (language and country), a list of common
+encodings are added. The UTF-8 encoding and the current locale encoding are
+always present.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -6830,10 +6834,10 @@ Return value is owned by GtkSourceView library and must not be unref'ed.</doc>
               c:identifier="gtk_source_language_manager_get_language">
         <doc xml:space="preserve">Gets the #GtkSourceLanguage identified by the given @id in the language
 manager.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GtkSourceLanguage, or %NULL if there is no language
-identified by the given @id. Return value is owned by @lm and should not
-be freed.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a #GtkSourceLanguage, or %NULL
+if there is no language identified by the given @id. Return value is
+owned by @lm and should not be freed.</doc>
           <type name="Language" c:type="GtkSourceLanguage*"/>
         </return-value>
         <parameters>
@@ -6850,13 +6854,12 @@ be freed.</doc>
       <method name="get_language_ids"
               c:identifier="gtk_source_language_manager_get_language_ids">
         <doc xml:space="preserve">Returns the ids of the available languages.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a %NULL-terminated array of string
-containing the ids of the available languages or %NULL if
-no language is available.
-The array is sorted alphabetically according to the language
-name.
-The array is owned by @lm and must not be modified.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a %NULL-terminated array of
+string containing the ids of the available languages or %NULL if no
+language is available.  The array is sorted alphabetically
+according to the language name.  The array is owned by @lm and must
+not be modified.</doc>
           <array c:type="const gchar* const*">
             <type name="utf8"/>
           </array>
@@ -6921,10 +6924,10 @@ or
 
 etc. Use gtk_source_language_get_mime_types() and gtk_source_language_get_globs()
 if you need full control over file -&gt; language mapping.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GtkSourceLanguage, or %NULL if there is no suitable language
-for given @filename and/or @content_type. Return value is owned by @lm
-and should not be freed.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a #GtkSourceLanguage, or %NULL if there
+is no suitable language for given @filename and/or @content_type. Return
+value is owned by @lm and should not be freed.</doc>
           <type name="Language" c:type="GtkSourceLanguage*"/>
         </return-value>
         <parameters>
@@ -7094,7 +7097,7 @@ category, or all the marks representing a compilation error could belong to
 was not added to a buffer. If there is no next mark, %NULL will be returned.
 
 If @category is %NULL, looks for marks of any category.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the next #GtkSourceMark, or %NULL.</doc>
           <type name="Mark" c:type="GtkSourceMark*"/>
         </return-value>
@@ -7117,7 +7120,7 @@ If @category is %NULL, looks for marks of any category.</doc>
 was not added to a buffer. If there is no previous mark, %NULL is returned.
 
 If @category is %NULL, looks for marks of any category</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the previous #GtkSourceMark, or %NULL.</doc>
           <type name="Mark" c:type="GtkSourceMark*"/>
         </return-value>
@@ -8999,7 +9002,7 @@ returned.</doc>
 with this function. The error domain is #G_REGEX_ERROR.
 
 Free the return value with g_error_free().</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the #GError, or %NULL if the pattern is valid.</doc>
           <type name="GLib.Error" c:type="GError*"/>
         </return-value>
@@ -9260,7 +9263,7 @@ Free with g_error_free().</doc>
 
 You may be interested to call gtk_source_utils_escape_search_text() after
 this function.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the text to search, or %NULL if the search is disabled.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
@@ -9629,10 +9632,10 @@ when you are done with it.</doc>
       <method name="get_authors"
               c:identifier="gtk_source_style_scheme_get_authors"
               version="2.0">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a %NULL-terminated
-array containing the @scheme authors or %NULL if no author
-is specified by the style scheme.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a
+%NULL-terminated array containing the @scheme authors or %NULL if
+no author is specified by the style scheme.</doc>
           <array c:type="gchar**">
             <type name="utf8"/>
           </array>
@@ -9647,7 +9650,7 @@ is specified by the style scheme.</doc>
       <method name="get_description"
               c:identifier="gtk_source_style_scheme_get_description"
               version="2.0">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">@scheme description (if defined), or %NULL.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
@@ -9661,9 +9664,9 @@ is specified by the style scheme.</doc>
       <method name="get_filename"
               c:identifier="gtk_source_style_scheme_get_filename"
               version="2.0">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@scheme file name if the scheme was created parsing a
-style scheme file or %NULL in the other cases.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">@scheme file name if the scheme was created
+parsing a style scheme file or %NULL in the other cases.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -9704,10 +9707,10 @@ style scheme file or %NULL in the other cases.</doc>
       <method name="get_style"
               c:identifier="gtk_source_style_scheme_get_style"
               version="2.0">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">style which corresponds to @style_id
-in the @scheme, or %NULL when no style with this name found.
-It is owned by @scheme and may not be unref'ed.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">style which corresponds to @style_id in
+the @scheme, or %NULL when no style with this name found.  It is owned by
+@scheme and may not be unref'ed.</doc>
           <type name="Style" c:type="GtkSourceStyle*"/>
         </return-value>
         <parameters>
@@ -11298,25 +11301,15 @@ renderer</doc>
         <type name="Encoding" c:type="const GtkSourceEncoding*"/>
       </return-value>
     </function>
-    <function name="encoding_get_default_candidates"
-              c:identifier="gtk_source_encoding_get_default_candidates"
-              moved-to="Encoding.get_default_candidates">
-      <return-value transfer-ownership="container">
-        <doc xml:space="preserve">the list of
-default candidates encodings. Free with g_slist_free().</doc>
-        <type name="GLib.SList" c:type="GSList*">
-          <type name="Encoding"/>
-        </type>
-      </return-value>
-    </function>
     <function name="encoding_get_from_charset"
               c:identifier="gtk_source_encoding_get_from_charset"
               moved-to="Encoding.get_from_charset"
               version="3.14">
       <doc xml:space="preserve">Gets a #GtkSourceEncoding from a character set such as "UTF-8" or
 "ISO-8859-1".</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the corresponding #GtkSourceEncoding, or %NULL if not found.</doc>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve">the corresponding #GtkSourceEncoding, or %NULL
+if not found.</doc>
         <type name="Encoding" c:type="const GtkSourceEncoding*"/>
       </return-value>
       <parameters>

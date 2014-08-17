@@ -357,10 +357,26 @@ will point to a location in the XDG user cache directory, meanwhile
 @local_file will point to a cache file that resides in the same
 filesystem than @file.
 
+The @file provided is required if @local_file is to be returned.
+The @local_file relates to a location on the media the local file
+system or media storage it is found on, so for example, if you have
+a mounted volume with MP3s on it in
+&lt;filename&gt;file:///media/martyn/pendrive&lt;/filename&gt;, the @local_file
+will point to a URI that looks like
+&lt;filename&gt;file:///media/martyn/pendrive/.mediaartlocal/...&lt;/filename&gt;.
+
+The @cache_file is very different to the @local_file, the
+@cache_file relates to a symlink stored in XDG cache directories
+for the user. A @cache_file would be expected to look like
+&lt;filename&gt;file:///home/martyn/.cache/media-art/...&lt;/filename&gt;. This
+is normally the location that is most useful (assuming the cache
+has been extracted in the first place).
+
 When done, both #GFile&lt;!-- --&gt;s must be freed with g_object_unref() if
 non-%NULL.</doc>
       <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+        <doc xml:space="preserve">%TRUE if @cache_file or @local_file were returned, otherwise %FALSE.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="artist" transfer-ownership="none">
@@ -379,7 +395,7 @@ non-%NULL.</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
-          <doc xml:space="preserve">the file or %NULL</doc>
+          <doc xml:space="preserve">a #GFile representing the actual media art or %NULL</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </parameter>
         <parameter name="cache_file"
@@ -388,8 +404,9 @@ non-%NULL.</doc>
                    transfer-ownership="full"
                    optional="1"
                    allow-none="1">
-          <doc xml:space="preserve">the location to store
-a #GFile pointing to the user cache path, or %NULL</doc>
+          <doc xml:space="preserve">a pointer to a
+#GFile which represents the cached file for media art, or %NULL
+a #GFile representing the user&amp;apos;s cache path, or %NULL</doc>
           <type name="Gio.File" c:type="GFile**"/>
         </parameter>
         <parameter name="local_file"
@@ -398,9 +415,8 @@ a #GFile pointing to the user cache path, or %NULL</doc>
                    transfer-ownership="full"
                    optional="1"
                    allow-none="1">
-          <doc xml:space="preserve">the location to store
-a #GFile pointing to a cache file in the same filesystem than @file,
-or %NULL.</doc>
+          <doc xml:space="preserve">a pointer to a
+#GFile representing the location of the local media art</doc>
           <type name="Gio.File" c:type="GFile**"/>
         </parameter>
       </parameters>
@@ -408,10 +424,16 @@ or %NULL.</doc>
     <function name="get_path"
               c:identifier="media_art_get_path"
               version="0.2.0">
-      <doc xml:space="preserve">Get the path to media art for a given resource. Newly allocated
-data returned in @path and @local_uri must be freed with g_free().</doc>
+      <doc xml:space="preserve">This function calls media_art_get_file() by creating a #GFile for
+@uri and passing the same arguments to media_art_get_file(). For more
+details about what this function does, see media_art_get_file().
+
+Get the path to media art for a given resource. Newly allocated
+data returned in @cache_path and @local_uri must be freed with g_free().</doc>
       <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+        <doc xml:space="preserve">%TRUE if @cache_path or @local_uri were returned,
+otherwise %FALSE.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="artist" transfer-ownership="none">
@@ -433,13 +455,14 @@ data returned in @path and @local_uri must be freed with g_free().</doc>
           <doc xml:space="preserve">the uri of the file or %NULL</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
-        <parameter name="path"
+        <parameter name="cache_path"
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full"
                    optional="1"
                    allow-none="1">
-          <doc xml:space="preserve">the location to store the local
+          <doc xml:space="preserve">a string
+representing the path to the cache for this media art
 path or %NULL</doc>
           <type name="utf8" c:type="gchar**"/>
         </parameter>
@@ -449,8 +472,8 @@ path or %NULL</doc>
                    transfer-ownership="full"
                    optional="1"
                    allow-none="1">
-          <doc xml:space="preserve">the location to store the
-local uri or %NULL</doc>
+          <doc xml:space="preserve">a string
+representing the URI to the local media art or %NULL</doc>
           <type name="utf8" c:type="gchar**"/>
         </parameter>
       </parameters>

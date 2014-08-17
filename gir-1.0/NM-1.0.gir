@@ -1009,9 +1009,6 @@ Bluetooth device.
               c:type="NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="CONNECTION_PATH" value="path" c:type="NM_CONNECTION_PATH">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="CONNECTION_SECRETS_CLEARED"
               value="secrets-cleared"
               c:type="NM_CONNECTION_SECRETS_CLEARED">
@@ -2171,90 +2168,34 @@ the user requires to obtain a given #NMClientPermission</doc>
  denied by system policy</doc>
       </member>
     </enumeration>
-    <class name="Connection"
-           c:symbol-prefix="connection"
-           c:type="NMConnection"
-           parent="GObject.Object"
-           glib:type-name="NMConnection"
-           glib:get-type="nm_connection_get_type"
-           glib:type-struct="ConnectionClass">
-      <doc xml:space="preserve">The NMConnection struct contains only private data.
-It should only be accessed through the functions described below.</doc>
-      <constructor name="new" c:identifier="nm_connection_new">
-        <doc xml:space="preserve">Creates a new #NMConnection object with no #NMSetting objects.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new empty #NMConnection object</doc>
-          <type name="Connection" c:type="NMConnection*"/>
-        </return-value>
-      </constructor>
-      <constructor name="new_from_hash"
-                   c:identifier="nm_connection_new_from_hash"
-                   throws="1">
-        <doc xml:space="preserve">Creates a new #NMConnection from a hash table describing the connection.  See
-nm_connection_to_hash() for a description of the expected hash table.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new #NMConnection object, populated with settings created
-from the values in the hash table, or %NULL if the connection failed to
-validate</doc>
-          <type name="Connection" c:type="NMConnection*"/>
-        </return-value>
-        <parameters>
-          <parameter name="hash" transfer-ownership="none">
-            <doc xml:space="preserve">the #GHashTable describing
-the connection</doc>
-            <type name="GLib.HashTable" c:type="GHashTable*">
-              <type name="utf8"/>
-              <type name="GLib.HashTable">
-                <type name="gpointer" c:type="gpointer"/>
-                <type name="gpointer" c:type="gpointer"/>
-              </type>
-            </type>
-          </parameter>
-        </parameters>
-      </constructor>
-      <function name="create_setting"
-                c:identifier="nm_connection_create_setting">
-        <doc xml:space="preserve">Create a new #NMSetting object of the desired type, given a setting name.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new setting object, or %NULL if the setting name was unknown</doc>
-          <type name="Setting" c:type="NMSetting*"/>
-        </return-value>
-        <parameters>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:space="preserve">a setting name</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="lookup_setting_type"
-                c:identifier="nm_connection_lookup_setting_type">
-        <doc xml:space="preserve">Returns the #GType of the setting's class for a given setting name.</doc>
+    <interface name="Connection"
+               c:symbol-prefix="connection"
+               c:type="NMConnection"
+               glib:type-name="NMConnection"
+               glib:get-type="nm_connection_get_type"
+               glib:type-struct="ConnectionInterface">
+      <doc xml:space="preserve">NMConnection is the interface implemented by #NMRemoteConnection on the
+client side, and #NMSettingsConnection on the daemon side.</doc>
+      <virtual-method name="changed">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GType of the setting's class</doc>
-          <type name="GType" c:type="GType"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:space="preserve">a setting name</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
         </parameters>
-      </function>
-      <function name="lookup_setting_type_by_quark"
-                c:identifier="nm_connection_lookup_setting_type_by_quark">
-        <doc xml:space="preserve">Returns the #GType of the setting's class for a given setting error quark.
-Useful for figuring out which setting a returned error is for.</doc>
+      </virtual-method>
+      <virtual-method name="secrets_cleared">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GType of the setting's class</doc>
-          <type name="GType" c:type="GType"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="error_quark" transfer-ownership="none">
-            <doc xml:space="preserve">a setting error quark</doc>
-            <type name="GLib.Quark" c:type="GQuark"/>
-          </parameter>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
         </parameters>
-      </function>
+      </virtual-method>
       <virtual-method name="secrets_updated">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2398,20 +2339,6 @@ output format is not guaranteed to be stable and may change at any time.</doc>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve">the #NMConnection</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="duplicate" c:identifier="nm_connection_duplicate">
-        <doc xml:space="preserve">Duplicates a #NMConnection.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #NMConnection containing the same settings and properties
-as the source #NMConnection</doc>
-          <type name="Connection" c:type="NMConnection*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMConnection to duplicate</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </instance-parameter>
         </parameters>
@@ -3219,17 +3146,6 @@ setting and which property failed validation, and how it failed validation.</doc
           </instance-parameter>
         </parameters>
       </method>
-      <property name="path"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The connection's D-Bus path, used only by the calling process as a record
-of the D-Bus path of the connection as provided by a settings service.</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
-      </field>
       <glib:signal name="changed" when="first">
         <doc xml:space="preserve">The ::changed signal is emitted when any property of any property
 (including secrets) of any setting of the connection is modified,
@@ -3259,34 +3175,7 @@ updated</doc>
           </parameter>
         </parameters>
       </glib:signal>
-    </class>
-    <record name="ConnectionClass"
-            c:type="NMConnectionClass"
-            glib:is-gtype-struct-for="Connection">
-      <field name="parent">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
-      </field>
-      <field name="secrets_updated">
-        <callback name="secrets_updated">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="connection" transfer-ownership="none">
-              <type name="Connection" c:type="NMConnection*"/>
-            </parameter>
-            <parameter name="setting" transfer-ownership="none">
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
+    </interface>
     <enumeration name="ConnectionError"
                  glib:type-name="NMConnectionError"
                  glib:get-type="nm_connection_error_get_type"
@@ -3338,6 +3227,52 @@ updated</doc>
         </return-value>
       </function>
     </enumeration>
+    <record name="ConnectionInterface"
+            c:type="NMConnectionInterface"
+            glib:is-gtype-struct-for="Connection">
+      <field name="parent">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="secrets_updated">
+        <callback name="secrets_updated">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="connection" transfer-ownership="none">
+              <type name="Connection" c:type="NMConnection*"/>
+            </parameter>
+            <parameter name="setting" transfer-ownership="none">
+              <type name="utf8" c:type="const char*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="secrets_cleared">
+        <callback name="secrets_cleared">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="connection" transfer-ownership="none">
+              <type name="Connection" c:type="NMConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="changed">
+        <callback name="changed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="connection" transfer-ownership="none">
+              <type name="Connection" c:type="NMConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <enumeration name="ConnectivityState"
                  glib:type-name="NMConnectivityState"
                  glib:get-type="nm_connectivity_state_get_type"
@@ -8786,9 +8721,7 @@ is compiled against.</doc>
               c:type="NM_OBJECT_DBUS_CONNECTION">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="OBJECT_DBUS_PATH"
-              value="dbus-path"
-              c:type="NM_OBJECT_DBUS_PATH">
+    <constant name="OBJECT_PATH" value="path" c:type="NM_OBJECT_PATH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <class name="Object"
@@ -8827,7 +8760,8 @@ is compiled against.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="get_connection" c:identifier="nm_object_get_connection">
+      <method name="get_dbus_connection"
+              c:identifier="nm_object_get_dbus_connection">
         <doc xml:space="preserve">Gets the #NMObject's DBusGConnection.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the connection</doc>
@@ -8861,14 +8795,15 @@ device, and must not be modified.</doc>
                 transfer-ownership="none">
         <type/>
       </property>
-      <property name="dbus-path"
+      <property name="nm-running-internal" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="path"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The D-Bus object path.</doc>
         <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="nm-running-internal" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
@@ -8967,9 +8902,14 @@ Note: Be aware that the signal is private for libnm's internal
         </return-value>
       </function>
     </enumeration>
-    <constant name="REMOTE_CONNECTION_BUS"
-              value="bus"
-              c:type="NM_REMOTE_CONNECTION_BUS">
+    <constant name="REMOTE_CONNECTION_DBUS_CONNECTION"
+              value="dbus-connection"
+              c:type="NM_REMOTE_CONNECTION_DBUS_CONNECTION">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="REMOTE_CONNECTION_PATH"
+              value="path"
+              c:type="NM_REMOTE_CONNECTION_PATH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="REMOTE_CONNECTION_UNSAVED"
@@ -9015,12 +8955,13 @@ Note: Be aware that the signal is private for libnm's internal
     <class name="RemoteConnection"
            c:symbol-prefix="remote_connection"
            c:type="NMRemoteConnection"
-           parent="Connection"
+           parent="Object"
            glib:type-name="NMRemoteConnection"
            glib:get-type="nm_remote_connection_get_type"
            glib:type-struct="RemoteConnectionClass">
       <implements name="Gio.AsyncInitable"/>
       <implements name="Gio.Initable"/>
+      <implements name="Connection"/>
       <method name="commit_changes"
               c:identifier="nm_remote_connection_commit_changes">
         <doc xml:space="preserve">Send any local changes to the settings and properties of this connection to
@@ -9202,30 +9143,6 @@ save completes</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="bus"
-                introspectable="0"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The #DBusGConnection that the #NMRemoteConnection is connected to.</doc>
-        <type/>
-      </property>
-      <property name="dbus-connection"
-                introspectable="0"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type/>
-      </property>
-      <property name="dbus-path"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="utf8" c:type="gchar*"/>
-      </property>
       <property name="unsaved" transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the remote connection contains changes that have not been saved
 to disk, %FALSE if the connection is the same as its on-disk representation.</doc>
@@ -9242,14 +9159,14 @@ after you already have a reference to it.)</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
-        <type name="Connection" c:type="NMConnection"/>
+        <type name="Object" c:type="NMObject"/>
       </field>
     </class>
     <record name="RemoteConnectionClass"
             c:type="NMRemoteConnectionClass"
             glib:is-gtype-struct-for="RemoteConnection">
       <field name="parent_class">
-        <type name="ConnectionClass" c:type="NMConnectionClass"/>
+        <type name="ObjectClass" c:type="NMObjectClass"/>
       </field>
       <field name="padding" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="8">
@@ -12127,6 +12044,34 @@ string to GValue mapping of properties that apply to the setting</doc>
           </parameter>
         </parameters>
       </constructor>
+      <function name="lookup_type" c:identifier="nm_setting_lookup_type">
+        <doc xml:space="preserve">Returns the #GType of the setting's class for a given setting name.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GType of the setting's class</doc>
+          <type name="GType" c:type="GType"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a setting name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="lookup_type_by_quark"
+                c:identifier="nm_setting_lookup_type_by_quark">
+        <doc xml:space="preserve">Returns the #GType of the setting's class for a given setting error quark.
+Useful for figuring out which setting a returned error is for.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GType of the setting's class</doc>
+          <type name="GType" c:type="GType"/>
+        </return-value>
+        <parameters>
+          <parameter name="error_quark" transfer-ownership="none">
+            <doc xml:space="preserve">a setting error quark</doc>
+            <type name="GLib.Quark" c:type="GQuark"/>
+          </parameter>
+        </parameters>
+      </function>
       <virtual-method name="clear_secrets_with_flags" introspectable="0">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -22613,6 +22558,79 @@ encryption protocol</doc>
         </return-value>
       </function>
     </enumeration>
+    <class name="SimpleConnection"
+           c:symbol-prefix="simple_connection"
+           c:type="NMSimpleConnection"
+           parent="GObject.Object"
+           glib:type-name="NMSimpleConnection"
+           glib:get-type="nm_simple_connection_get_type"
+           glib:type-struct="SimpleConnectionClass">
+      <implements name="Connection"/>
+      <function name="new" c:identifier="nm_simple_connection_new">
+        <doc xml:space="preserve">Creates a new #NMSimpleConnection object with no #NMSetting objects. An
+#NMSimpleConnection does not directly represent a D-Bus-exported connection,
+but might be used in the process of creating a new one.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMConnection object</doc>
+          <type name="Connection" c:type="NMConnection*"/>
+        </return-value>
+      </function>
+      <function name="new_clone" c:identifier="nm_simple_connection_new_clone">
+        <doc xml:space="preserve">Clones an #NMConnection as an #NMSimpleConnection.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #NMConnection containing the same settings
+and properties as the source #NMConnection</doc>
+          <type name="Connection" c:type="NMConnection*"/>
+        </return-value>
+        <parameters>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection to clone</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_from_hash"
+                c:identifier="nm_simple_connection_new_from_hash"
+                throws="1">
+        <doc xml:space="preserve">Creates a new #NMSimpleConnection from a hash table describing the
+connection.  See nm_connection_to_hash() for a description of the expected
+hash table.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMSimpleConnection object, populated with
+settings created from the values in the hash table, or %NULL if the
+connection failed to validate</doc>
+          <type name="Connection" c:type="NMConnection*"/>
+        </return-value>
+        <parameters>
+          <parameter name="hash" transfer-ownership="none">
+            <doc xml:space="preserve">the #GHashTable describing
+the connection</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GLib.HashTable">
+                <type name="gpointer" c:type="gpointer"/>
+                <type name="gpointer" c:type="gpointer"/>
+              </type>
+            </type>
+          </parameter>
+        </parameters>
+      </function>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="SimpleConnectionClass"
+            c:type="NMSimpleConnectionClass"
+            glib:is-gtype-struct-for="SimpleConnection">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <glib:boxed glib:name="Ssid"
                 c:symbol-prefix="ssid"
                 glib:type-name="NMSsid"
