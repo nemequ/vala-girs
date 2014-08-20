@@ -89,7 +89,7 @@ namespace Vte {
 		public void set_cursor_shape (Vte.CursorShape shape);
 		public void set_default_colors ();
 		public void set_delete_binding (Vte.EraseBinding binding);
-		public void set_encoding (string? codeset);
+		public bool set_encoding (string? codeset) throws GLib.Error;
 		public void set_font (Pango.FontDescription? font_desc);
 		public void set_font_scale (double scale);
 		public void set_geometry_hints_for_window (Gtk.Window window);
@@ -105,7 +105,7 @@ namespace Vte {
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void unselect_all ();
 		public void watch_child (GLib.Pid child_pid);
-		public bool write_contents (GLib.OutputStream stream, Vte.WriteFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool write_contents_sync (GLib.OutputStream stream, Vte.WriteFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool allow_bold { get; set; }
 		public bool audible_bell { get; set; }
 		[NoAccessorMethod]
@@ -117,7 +117,8 @@ namespace Vte {
 		public Vte.CursorShape cursor_shape { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding delete_binding { get; set; }
-		public string encoding { get; set; }
+		[NoAccessorMethod]
+		public string encoding { owned get; set; }
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }
 		public double font_scale { get; set; }
