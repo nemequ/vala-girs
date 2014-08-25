@@ -16,6 +16,916 @@ and/or use gtk-doc annotations.  -->
              shared-library="libtracker-miner-1.0.so.0"
              c:identifier-prefixes="Tracker"
              c:symbol-prefixes="tracker">
+    <bitfield name="CrawlFlags"
+              glib:type-name="TrackerCrawlFlags"
+              glib:get-type="tracker_crawl_flags_get_type"
+              c:type="TrackerCrawlFlags">
+      <member name="none"
+              value="0"
+              c:identifier="TRACKER_CRAWL_FLAG_NONE"
+              glib:nick="none">
+      </member>
+      <member name="no_stat"
+              value="2"
+              c:identifier="TRACKER_CRAWL_FLAG_NO_STAT"
+              glib:nick="no-stat">
+      </member>
+      <member name="follow_symlinks"
+              value="4"
+              c:identifier="TRACKER_CRAWL_FLAG_FOLLOW_SYMLINKS"
+              glib:nick="follow-symlinks">
+      </member>
+    </bitfield>
+    <interface name="DataProvider"
+               c:symbol-prefix="data_provider"
+               c:type="TrackerDataProvider"
+               glib:type-name="TrackerDataProvider"
+               glib:get-type="tracker_data_provider_get_type"
+               glib:type-struct="DataProviderIface">
+      <doc xml:space="preserve">An interface to enumerate URIs and feed the data to Tracker.</doc>
+      <virtual-method name="begin" invoker="begin" version="1.2" throws="1">
+        <doc xml:space="preserve">Creates a #TrackerEnumerator to enumerate children at the URI
+provided by @url.
+
+The attributes value is a string that specifies the file attributes
+that should be gathered. It is not an error if it's not possible to
+read a particular requested attribute from a file - it just won't
+be set. attributes should be a comma-separated list of attributes
+or attribute wildcards. The wildcard "*" means all attributes, and
+a wildcard like "standard::*" means all attributes in the standard
+namespace. An example attribute query be "standard::*,owner::user".
+The standard attributes are available as defines, like
+G_FILE_ATTRIBUTE_STANDARD_NAME. See g_file_enumerate_children() for
+more details.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #TrackerEnumerator or %NULL on failure.
+This must be freed with g_object_unref().</doc>
+          <type name="Enumerator" c:type="TrackerEnumerator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="url" transfer-ownership="none">
+            <doc xml:space="preserve">a #GFile to enumerate</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="attributes" transfer-ownership="none">
+            <doc xml:space="preserve">an attribute query string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a set of GFileQueryInfoFlags</doc>
+            <type name="Gio.FileQueryInfoFlags" c:type="GFileQueryInfoFlags"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="begin_async" invoker="begin_async" version="1.2">
+        <doc xml:space="preserve">Precisely the same operation as tracker_data_provider_begin()
+is performing, but asynchronously.
+
+When all i/o for the operation is finished the @callback will be
+called with the requested information.
+
+See the documentation of #TrackerDataProvider for information about the
+order of returned files.
+
+In case of a partial error the callback will be called with any
+succeeding items and no error, and on the next request the error
+will be reported. If a request is cancelled the callback will be
+called with %G_IO_ERROR_CANCELLED.
+
+During an async request no other sync and async calls are allowed,
+and will result in %G_IO_ERROR_PENDING errors.
+
+Any outstanding i/o request with higher priority (lower numerical
+value) will be executed before an outstanding request with lower
+priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="url" transfer-ownership="none">
+            <doc xml:space="preserve">a #GFile to enumerate</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="attributes" transfer-ownership="none">
+            <doc xml:space="preserve">an attribute query string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a set of GFileQueryInfoFlags</doc>
+            <type name="Gio.FileQueryInfoFlags" c:type="GFileQueryInfoFlags"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" closure="6">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="begin_finish"
+                      invoker="begin_finish"
+                      version="1.2"
+                      throws="1">
+        <doc xml:space="preserve">Finishes the asynchronous operation started with
+tracker_data_provider_begin_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #TrackerEnumerator or %NULL on failure.
+This must be freed with g_object_unref().</doc>
+          <type name="Enumerator" c:type="TrackerEnumerator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="end" invoker="end" version="1.2" throws="1">
+        <doc xml:space="preserve">Closes any caches or operations related to creating the
+#TrackerEnumerator to enumerate data at @url.
+
+The attributes value is a string that specifies the file attributes
+that should be gathered. It is not an error if it's not possible to
+read a particular requested attribute from a file - it just won't
+be set. attributes should be a comma-separated list of attributes
+or attribute wildcards. The wildcard "*" means all attributes, and
+a wildcard like "standard::*" means all attributes in the standard
+namespace. An example attribute query be "standard::*,owner::user".
+The standard attributes are available as defines, like
+G_FILE_ATTRIBUTE_STANDARD_NAME. See g_file_enumerate_children() for
+more details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator originally created by
+tracker_data_provider_begin().</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="end_async" invoker="end_async" version="1.2">
+        <doc xml:space="preserve">Precisely the same operation as tracker_data_provider_end()
+is performing, but asynchronously.
+
+When all i/o for the operation is finished the @callback will be
+called with the requested information.
+
+See the documentation of #TrackerDataProvider for information about the
+order of returned files.
+
+In case of a partial error the callback will be called with any
+succeeding items and no error, and on the next request the error
+will be reported. If a request is cancelled the callback will be
+called with %G_IO_ERROR_CANCELLED.
+
+During an async request no other sync and async calls are allowed,
+and will result in %G_IO_ERROR_PENDING errors.
+
+Any outstanding i/o request with higher priority (lower numerical
+value) will be executed before an outstanding request with lower
+priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator originally created by
+tracker_data_provider_begin().</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" closure="4">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="end_finish"
+                      invoker="end_finish"
+                      version="1.2"
+                      throws="1">
+        <doc xml:space="preserve">Finishes the asynchronous operation started with
+tracker_data_provider_end_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_crawl_flags"
+                      invoker="get_crawl_flags"
+                      version="1.2">
+        <doc xml:space="preserve">Get the conditions used to provide data, for example, following symlinks.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #TrackerCrawlFlags used with this @data_provider.</doc>
+          <type name="CrawlFlags" c:type="TrackerCrawlFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="set_crawl_flags"
+                      invoker="set_crawl_flags"
+                      version="1.2">
+        <doc xml:space="preserve">Sets the #TrackerCrawlFlags used with this @data_provider. Each time
+tracker_data_provider_begin() is called, these flags are used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">the #TrackerCrawlFlags to use</doc>
+            <type name="CrawlFlags" c:type="TrackerCrawlFlags"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="begin"
+              c:identifier="tracker_data_provider_begin"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Creates a #TrackerEnumerator to enumerate children at the URI
+provided by @url.
+
+The attributes value is a string that specifies the file attributes
+that should be gathered. It is not an error if it's not possible to
+read a particular requested attribute from a file - it just won't
+be set. attributes should be a comma-separated list of attributes
+or attribute wildcards. The wildcard "*" means all attributes, and
+a wildcard like "standard::*" means all attributes in the standard
+namespace. An example attribute query be "standard::*,owner::user".
+The standard attributes are available as defines, like
+G_FILE_ATTRIBUTE_STANDARD_NAME. See g_file_enumerate_children() for
+more details.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #TrackerEnumerator or %NULL on failure.
+This must be freed with g_object_unref().</doc>
+          <type name="Enumerator" c:type="TrackerEnumerator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="url" transfer-ownership="none">
+            <doc xml:space="preserve">a #GFile to enumerate</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="attributes" transfer-ownership="none">
+            <doc xml:space="preserve">an attribute query string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a set of GFileQueryInfoFlags</doc>
+            <type name="Gio.FileQueryInfoFlags" c:type="GFileQueryInfoFlags"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="begin_async"
+              c:identifier="tracker_data_provider_begin_async"
+              version="1.2">
+        <doc xml:space="preserve">Precisely the same operation as tracker_data_provider_begin()
+is performing, but asynchronously.
+
+When all i/o for the operation is finished the @callback will be
+called with the requested information.
+
+See the documentation of #TrackerDataProvider for information about the
+order of returned files.
+
+In case of a partial error the callback will be called with any
+succeeding items and no error, and on the next request the error
+will be reported. If a request is cancelled the callback will be
+called with %G_IO_ERROR_CANCELLED.
+
+During an async request no other sync and async calls are allowed,
+and will result in %G_IO_ERROR_PENDING errors.
+
+Any outstanding i/o request with higher priority (lower numerical
+value) will be executed before an outstanding request with lower
+priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="url" transfer-ownership="none">
+            <doc xml:space="preserve">a #GFile to enumerate</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="attributes" transfer-ownership="none">
+            <doc xml:space="preserve">an attribute query string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a set of GFileQueryInfoFlags</doc>
+            <type name="Gio.FileQueryInfoFlags" c:type="GFileQueryInfoFlags"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="begin_finish"
+              c:identifier="tracker_data_provider_begin_finish"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Finishes the asynchronous operation started with
+tracker_data_provider_begin_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #TrackerEnumerator or %NULL on failure.
+This must be freed with g_object_unref().</doc>
+          <type name="Enumerator" c:type="TrackerEnumerator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="end"
+              c:identifier="tracker_data_provider_end"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Closes any caches or operations related to creating the
+#TrackerEnumerator to enumerate data at @url.
+
+The attributes value is a string that specifies the file attributes
+that should be gathered. It is not an error if it's not possible to
+read a particular requested attribute from a file - it just won't
+be set. attributes should be a comma-separated list of attributes
+or attribute wildcards. The wildcard "*" means all attributes, and
+a wildcard like "standard::*" means all attributes in the standard
+namespace. An example attribute query be "standard::*,owner::user".
+The standard attributes are available as defines, like
+G_FILE_ATTRIBUTE_STANDARD_NAME. See g_file_enumerate_children() for
+more details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator originally created by
+tracker_data_provider_begin().</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="end_async"
+              c:identifier="tracker_data_provider_end_async"
+              version="1.2">
+        <doc xml:space="preserve">Precisely the same operation as tracker_data_provider_end()
+is performing, but asynchronously.
+
+When all i/o for the operation is finished the @callback will be
+called with the requested information.
+
+See the documentation of #TrackerDataProvider for information about the
+order of returned files.
+
+In case of a partial error the callback will be called with any
+succeeding items and no error, and on the next request the error
+will be reported. If a request is cancelled the callback will be
+called with %G_IO_ERROR_CANCELLED.
+
+During an async request no other sync and async calls are allowed,
+and will result in %G_IO_ERROR_PENDING errors.
+
+Any outstanding i/o request with higher priority (lower numerical
+value) will be executed before an outstanding request with lower
+priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator originally created by
+tracker_data_provider_begin().</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="end_finish"
+              c:identifier="tracker_data_provider_end_finish"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Finishes the asynchronous operation started with
+tracker_data_provider_end_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_crawl_flags"
+              c:identifier="tracker_data_provider_get_crawl_flags"
+              version="1.2">
+        <doc xml:space="preserve">Get the conditions used to provide data, for example, following symlinks.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #TrackerCrawlFlags used with this @data_provider.</doc>
+          <type name="CrawlFlags" c:type="TrackerCrawlFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_crawl_flags"
+              c:identifier="tracker_data_provider_set_crawl_flags"
+              version="1.2">
+        <doc xml:space="preserve">Sets the #TrackerCrawlFlags used with this @data_provider. Each time
+tracker_data_provider_begin() is called, these flags are used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="data_provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDataProvider</doc>
+            <type name="DataProvider" c:type="TrackerDataProvider*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">the #TrackerCrawlFlags to use</doc>
+            <type name="CrawlFlags" c:type="TrackerCrawlFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="DataProviderIface"
+            c:type="TrackerDataProviderIface"
+            glib:is-gtype-struct-for="DataProvider">
+      <doc xml:space="preserve">Virtual methods left to implement.</doc>
+      <field name="g_iface">
+        <doc xml:space="preserve">Parent interface type.</doc>
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="get_crawl_flags">
+        <callback name="get_crawl_flags">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the #TrackerCrawlFlags used with this @data_provider.</doc>
+            <type name="CrawlFlags" c:type="TrackerCrawlFlags"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="set_crawl_flags">
+        <callback name="set_crawl_flags">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="flags" transfer-ownership="none">
+              <doc xml:space="preserve">the #TrackerCrawlFlags to use</doc>
+              <type name="CrawlFlags" c:type="TrackerCrawlFlags"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="begin">
+        <callback name="begin" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a #TrackerEnumerator or %NULL on failure.
+This must be freed with g_object_unref().</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="url" transfer-ownership="none">
+              <doc xml:space="preserve">a #GFile to enumerate</doc>
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+            <parameter name="attributes" transfer-ownership="none">
+              <doc xml:space="preserve">an attribute query string</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="flags" transfer-ownership="none">
+              <doc xml:space="preserve">a set of GFileQueryInfoFlags</doc>
+              <type name="Gio.FileQueryInfoFlags"
+                    c:type="GFileQueryInfoFlags"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="begin_async">
+        <callback name="begin_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="url" transfer-ownership="none">
+              <doc xml:space="preserve">a #GFile to enumerate</doc>
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+            <parameter name="attributes" transfer-ownership="none">
+              <doc xml:space="preserve">an attribute query string</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="flags" transfer-ownership="none">
+              <doc xml:space="preserve">a set of GFileQueryInfoFlags</doc>
+              <type name="Gio.FileQueryInfoFlags"
+                    c:type="GFileQueryInfoFlags"/>
+            </parameter>
+            <parameter name="io_priority" transfer-ownership="none">
+              <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="7">
+              <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data" transfer-ownership="none" closure="7">
+              <doc xml:space="preserve">the data to pass to callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="begin_finish">
+        <callback name="begin_finish" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a #TrackerEnumerator or %NULL on failure.
+This must be freed with g_object_unref().</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult.</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="end">
+        <callback name="end" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE on success, otherwise %FALSE and @error is set.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="enumerator" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerEnumerator originally created by
+tracker_data_provider_begin().</doc>
+              <type name="Enumerator" c:type="TrackerEnumerator*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="end_async">
+        <callback name="end_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="enumerator" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerEnumerator originally created by
+tracker_data_provider_begin().</doc>
+              <type name="Enumerator" c:type="TrackerEnumerator*"/>
+            </parameter>
+            <parameter name="io_priority" transfer-ownership="none">
+              <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="5">
+              <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data" transfer-ownership="none" closure="5">
+              <doc xml:space="preserve">the data to pass to callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="end_finish">
+        <callback name="end_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE on success, otherwise %FALSE and @error is set.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="data_provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerDataProvider.</doc>
+              <type name="DataProvider" c:type="TrackerDataProvider*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult.</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_tracker_reserved1" introspectable="0">
+        <callback name="_tracker_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved2" introspectable="0">
+        <callback name="_tracker_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved3" introspectable="0">
+        <callback name="_tracker_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved4" introspectable="0">
+        <callback name="_tracker_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved5" introspectable="0">
+        <callback name="_tracker_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved6" introspectable="0">
+        <callback name="_tracker_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved7" introspectable="0">
+        <callback name="_tracker_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved8" introspectable="0">
+        <callback name="_tracker_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
     <class name="Decorator"
            c:symbol-prefix="decorator"
            c:type="TrackerDecorator"
@@ -338,6 +1248,25 @@ because the miner is currently paused.</doc>
            glib:type-struct="DecoratorFSClass">
       <doc xml:space="preserve">A decorator object.</doc>
       <implements name="Gio.Initable"/>
+      <method name="prepend_file"
+              c:identifier="tracker_decorator_fs_prepend_file"
+              version="1.2">
+        <doc xml:space="preserve">Prepends a file for processing.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the tracker:id of the element corresponding to the file</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="decorator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerDecoratorFS</doc>
+            <type name="DecoratorFS" c:type="TrackerDecoratorFS*"/>
+          </instance-parameter>
+          <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">a #GFile to process</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+        </parameters>
+      </method>
       <field name="parent_instance">
         <type name="Decorator" c:type="TrackerDecorator"/>
       </field>
@@ -515,6 +1444,379 @@ for a resource in the database.</doc>
               glib:nick="priority">
       </member>
     </bitfield>
+    <interface name="Enumerator"
+               c:symbol-prefix="enumerator"
+               c:type="TrackerEnumerator"
+               glib:type-name="TrackerEnumerator"
+               glib:get-type="tracker_enumerator_get_type"
+               glib:type-struct="EnumeratorIface">
+      <doc xml:space="preserve">An interface to enumerate URIs and feed the data to Tracker.</doc>
+      <virtual-method name="next" invoker="next" version="1.2" throws="1">
+        <doc xml:space="preserve">Enumerates to the next piece of data according to the @enumerator
+implementation.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">Returns a #gpointer with the next item
+from the @enumerator, or %NULL when @error is set or the operation
+was cancelled in @cancellable. The data must be freed. The function
+to free depends on the data returned by the enumerator and the
+#TrackerDataProvider that created the @enumerator.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="next_async" invoker="next_async" version="1.2">
+        <doc xml:space="preserve">Precisely the same operation as tracker_enumerator_next()
+is performing, but asynchronously.
+
+When all i/o for the operation is finished the @callback will be
+called with the requested information.
+
+In case of a partial error the callback will be called with any
+succeeding items and no error, and on the next request the error
+will be reported. If a request is cancelled the callback will be
+called with %G_IO_ERROR_CANCELLED.
+
+During an async request no other sync and async calls are allowed,
+and will result in %G_IO_ERROR_PENDING errors.
+
+Any outstanding i/o request with higher priority (lower numerical
+value) will be executed before an outstanding request with lower
+priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator.</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </instance-parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none" closure="3">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="next_finish"
+                      invoker="next_finish"
+                      version="1.2"
+                      throws="1">
+        <doc xml:space="preserve">Finishes the asynchronous operation started with
+tracker_enumerator_next_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">Returns a #gpointer with the next item
+from the @enumerator, or %NULL when @error is set or the operation
+was cancelled in @cancellable. The data must be freed. The function
+to free depends on the data returned by the enumerator and the
+#TrackerDataProvider that created the @enumerator.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator.</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="next"
+              c:identifier="tracker_enumerator_next"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Enumerates to the next piece of data according to the @enumerator
+implementation.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">Returns a #gpointer with the next item
+from the @enumerator, or %NULL when @error is set or the operation
+was cancelled in @cancellable. The data must be freed. The function
+to free depends on the data returned by the enumerator and the
+#TrackerDataProvider that created the @enumerator.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next_async"
+              c:identifier="tracker_enumerator_next_async"
+              version="1.2">
+        <doc xml:space="preserve">Precisely the same operation as tracker_enumerator_next()
+is performing, but asynchronously.
+
+When all i/o for the operation is finished the @callback will be
+called with the requested information.
+
+In case of a partial error the callback will be called with any
+succeeding items and no error, and on the next request the error
+will be reported. If a request is cancelled the callback will be
+called with %G_IO_ERROR_CANCELLED.
+
+During an async request no other sync and async calls are allowed,
+and will result in %G_IO_ERROR_PENDING errors.
+
+Any outstanding i/o request with higher priority (lower numerical
+value) will be executed before an outstanding request with lower
+priority. Default priority is %G_PRIORITY_DEFAULT.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator.</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </instance-parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next_finish"
+              c:identifier="tracker_enumerator_next_finish"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Finishes the asynchronous operation started with
+tracker_enumerator_next_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">Returns a #gpointer with the next item
+from the @enumerator, or %NULL when @error is set or the operation
+was cancelled in @cancellable. The data must be freed. The function
+to free depends on the data returned by the enumerator and the
+#TrackerDataProvider that created the @enumerator.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enumerator" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerEnumerator.</doc>
+            <type name="Enumerator" c:type="TrackerEnumerator*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="EnumeratorIface"
+            c:type="TrackerEnumeratorIface"
+            glib:is-gtype-struct-for="Enumerator">
+      <doc xml:space="preserve">Virtual methods left to implement.</doc>
+      <field name="g_iface">
+        <doc xml:space="preserve">Parent interface type.</doc>
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="next">
+        <callback name="next" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">Returns a #gpointer with the next item
+from the @enumerator, or %NULL when @error is set or the operation
+was cancelled in @cancellable. The data must be freed. The function
+to free depends on the data returned by the enumerator and the
+#TrackerDataProvider that created the @enumerator.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </return-value>
+          <parameters>
+            <parameter name="enumerator" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerEnumerator</doc>
+              <type name="Enumerator" c:type="TrackerEnumerator*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="next_async">
+        <callback name="next_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="enumerator" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerEnumerator.</doc>
+              <type name="Enumerator" c:type="TrackerEnumerator*"/>
+            </parameter>
+            <parameter name="io_priority" transfer-ownership="none">
+              <doc xml:space="preserve">the [I/O priority][io-priority] of the request</doc>
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to
+ignore</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <doc xml:space="preserve">a #GAsyncReadyCallback to call when the
+request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data" transfer-ownership="none" closure="4">
+              <doc xml:space="preserve">the data to pass to callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="next_finish">
+        <callback name="next_finish" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">Returns a #gpointer with the next item
+from the @enumerator, or %NULL when @error is set or the operation
+was cancelled in @cancellable. The data must be freed. The function
+to free depends on the data returned by the enumerator and the
+#TrackerDataProvider that created the @enumerator.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </return-value>
+          <parameters>
+            <parameter name="enumerator" transfer-ownership="none">
+              <doc xml:space="preserve">a #TrackerEnumerator.</doc>
+              <type name="Enumerator" c:type="TrackerEnumerator*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult.</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_tracker_reserved1" introspectable="0">
+        <callback name="_tracker_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved2" introspectable="0">
+        <callback name="_tracker_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved3" introspectable="0">
+        <callback name="_tracker_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved4" introspectable="0">
+        <callback name="_tracker_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved5" introspectable="0">
+        <callback name="_tracker_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved6" introspectable="0">
+        <callback name="_tracker_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved7" introspectable="0">
+        <callback name="_tracker_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_tracker_reserved8" introspectable="0">
+        <callback name="_tracker_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
     <enumeration name="FilterPolicy"
                  glib:type-name="TrackerFilterPolicy"
                  glib:get-type="tracker_filter_policy_get_type"
@@ -559,11 +1861,17 @@ for a resource in the database.</doc>
            glib:type-struct="IndexingTreeClass">
       <doc xml:space="preserve">Base object used to configure indexing within #TrackerMinerFS items.</doc>
       <constructor name="new" c:identifier="tracker_indexing_tree_new">
-        <doc xml:space="preserve">Returns a newly created #TrackerIndexingTree</doc>
+        <doc xml:space="preserve">If @root is %NULL, the default value is 'file:///'.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a newly allocated #TrackerIndexingTree</doc>
           <type name="IndexingTree" c:type="TrackerIndexingTree*"/>
         </return-value>
+        <parameters>
+          <parameter name="root" transfer-ownership="none">
+            <doc xml:space="preserve">The top level URL</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+        </parameters>
       </constructor>
       <virtual-method name="directory_added">
         <return-value transfer-ownership="none">
@@ -751,6 +2059,45 @@ file system.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_master_root"
+              c:identifier="tracker_indexing_tree_get_master_root"
+              version="1.2.">
+        <doc xml:space="preserve">Returns the #GFile that represents the master root location for all
+indexing locations. For example, if
+&lt;filename&gt;file:///etc&lt;/filename&gt; is an indexed path and so was
+&lt;filename&gt;file:///home/user&lt;/filename&gt;, the master root is
+&lt;filename&gt;file:///&lt;/filename&gt;. Only one scheme per @tree can be
+used, so you can not mix &lt;filename&gt;http&lt;/filename&gt; and
+&lt;filename&gt;file&lt;/filename&gt; roots in @tree.
+
+The return value should &lt;emphasis&gt;NEVER&lt;/emphasis&gt; be %NULL. In
+cases where no root is given, we fallback to
+&lt;filename&gt;file:///&lt;/filename&gt;.
+
+Roots explained:
+
+- master root = top most level root node,
+  e.g. file:///
+
+- config root = a root node from GSettings,
+  e.g. file:///home/martyn/Documents
+
+- root = ANY root, normally config root, but it can also apply to
+  roots added for devices, which technically are not a config root or a
+  master root.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the effective root for all locations, or
+%NULL on error. The root is owned by @tree and should not be freed.
+It can be referenced using g_object_ref().</doc>
+          <type name="Gio.File" c:type="GFile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tree" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerIndexingTree</doc>
+            <type name="IndexingTree" c:type="TrackerIndexingTree*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_root" c:identifier="tracker_indexing_tree_get_root">
         <doc xml:space="preserve">Returns the #GFile that was previously added through tracker_indexing_tree_add()
 and would equal or contain @file, or %NULL if none applies.
@@ -873,6 +2220,12 @@ can be effectively removed.</doc>
       </method>
       <property name="filter-hidden" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="root"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Gio.File"/>
       </property>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
@@ -1004,7 +2357,8 @@ can be effectively removed.</doc>
       <function name="error_quark"
                 c:identifier="tracker_miner_error_quark"
                 version="0.8">
-        <doc xml:space="preserve">Returns the #GQuark used to identify miner errors in GError structures.</doc>
+        <doc xml:space="preserve">Gives the caller the #GQuark used to identify miner errors in
+GError structures.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the error #GQuark</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
@@ -1281,6 +2635,18 @@ operations until all pause requests have been resumed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="introspection-handler"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="gpointer" c:type="gpointer"/>
+      </property>
+      <property name="introspection-xml"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="name"
                 writable="1"
                 construct-only="1"
@@ -1487,6 +2853,46 @@ tracker_miner_stop().</doc>
         </array>
       </field>
     </record>
+    <enumeration name="MinerError" c:type="TrackerMinerError">
+      <doc xml:space="preserve">Possible errors returned when calling #TrackerMiner APIs or
+subclassed miners where the error is generic to all miners.</doc>
+      <member name="name_missing"
+              value="0"
+              c:identifier="TRACKER_MINER_ERROR_NAME_MISSING">
+        <doc xml:space="preserve">No name was given when creating
+the miner. The name is crucial for D-Bus presence and a host of
+other things.</doc>
+      </member>
+      <member name="name_unavailable"
+              value="1"
+              c:identifier="TRACKER_MINER_ERROR_NAME_UNAVAILABLE">
+        <doc xml:space="preserve">The name trying to be used
+for the miner was not available, possibly because the miner is
+already running with the same name in another process.</doc>
+      </member>
+      <member name="paused"
+              value="2"
+              c:identifier="TRACKER_MINER_ERROR_PAUSED">
+        <doc xml:space="preserve">Given by miners when an API is used at
+the time the miner itself is paused and such actions should be avoided.</doc>
+      </member>
+      <member name="paused_already"
+              value="3"
+              c:identifier="TRACKER_MINER_ERROR_PAUSED_ALREADY">
+        <doc xml:space="preserve">The pause request has already
+been given by the same application with the same reason. Duplicate
+pause calls with the same reason by the same application can not
+be carried out.</doc>
+      </member>
+      <member name="invalid_cookie"
+              value="4"
+              c:identifier="TRACKER_MINER_ERROR_INVALID_COOKIE">
+        <doc xml:space="preserve">When pausing a miner, a cookie
+(or @gint based ID) is given. That cookie must be used to resume a
+previous pause request. If the cookie is unrecognised, this error
+is given.</doc>
+      </member>
+    </enumeration>
     <class name="MinerFS"
            c:symbol-prefix="miner_fs"
            c:type="TrackerMinerFS"
@@ -1497,6 +2903,11 @@ tracker_miner_stop().</doc>
            glib:type-struct="MinerFSClass">
       <doc xml:space="preserve">Abstract miner implementation to get data from the filesystem.</doc>
       <implements name="Gio.Initable"/>
+      <function name="error_quark" c:identifier="tracker_miner_fs_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
       <virtual-method name="finished">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1505,6 +2916,46 @@ tracker_miner_stop().</doc>
           <instance-parameter name="fs" transfer-ownership="none">
             <type name="MinerFS" c:type="TrackerMinerFS*"/>
           </instance-parameter>
+          <parameter name="elapsed" transfer-ownership="none">
+            <type name="gdouble" c:type="gdouble"/>
+          </parameter>
+          <parameter name="directories_found" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="directories_ignored" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="files_found" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="files_ignored" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="finished_root">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="fs" transfer-ownership="none">
+            <type name="MinerFS" c:type="TrackerMinerFS*"/>
+          </instance-parameter>
+          <parameter name="root" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="directories_found" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="directories_ignored" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="files_found" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="files_ignored" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="ignore_next_update_file">
@@ -1840,6 +3291,22 @@ configuration) on the given @directory.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_data_provider"
+              c:identifier="tracker_miner_fs_get_data_provider"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #TrackerDataProvider implementation, which is being used
+to supply #GFile and #GFileInfo content to Tracker.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #TrackerDataProvider supplying content</doc>
+          <type name="DataProvider" c:type="TrackerDataProvider*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="fs" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerMinerFS</doc>
+            <type name="MinerFS" c:type="TrackerMinerFS*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_indexing_tree"
               c:identifier="tracker_miner_fs_get_indexing_tree">
         <doc xml:space="preserve">Returns the #TrackerIndexingTree which determines
@@ -1892,7 +3359,7 @@ processing order of #TrackerMinerFS guarantees that a folder
 has been already fully processed for indexing before any
 children is processed, so most usually this function should
 return non-%NULL.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The parent folder URN, or %NULL.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
@@ -1930,7 +3397,7 @@ the URN for a #GFile being currently processed.
 
 If @file is not being currently processed by @fs, or doesn't
 exist in the store yet, %NULL will be returned.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The URN containing the data associated to @file,
          or %NULL.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -2107,6 +3574,12 @@ that parameter will contain %NULL to reflect success.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="data-provider"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="DataProvider"/>
+      </property>
       <property name="initial-crawling" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -2127,6 +3600,12 @@ that parameter will contain %NULL to reflect success.</doc>
                 construct="1"
                 transfer-ownership="none">
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="root"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Gio.File"/>
       </property>
       <property name="throttle" writable="1" transfer-ownership="none">
         <type name="gdouble" c:type="gdouble"/>
@@ -2163,6 +3642,23 @@ all pending processing.</doc>
           <parameter name="files_ignored" transfer-ownership="none">
             <doc xml:space="preserve">number of ignored files</doc>
             <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="finished-root" when="last" version="1.2">
+        <doc xml:space="preserve">The ::finished-crawl signal is emitted when @miner_fs has
+finished finding all resources that need to be indexed
+with the root location of @file. At this point, it's likely
+many are still in the queue to be added to the database,
+but this gives some indication that a location is
+processed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">a #GFile</doc>
+            <type name="Gio.File"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -2376,6 +3872,21 @@ in the deriving class in order to actually extract data.</doc>
             <parameter name="fs" transfer-ownership="none">
               <type name="MinerFS" c:type="TrackerMinerFS*"/>
             </parameter>
+            <parameter name="elapsed" transfer-ownership="none">
+              <type name="gdouble" c:type="gdouble"/>
+            </parameter>
+            <parameter name="directories_found" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="directories_ignored" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="files_found" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="files_ignored" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
           </parameters>
         </callback>
       </field>
@@ -2429,13 +3940,53 @@ in the deriving class in order to actually extract data.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="finished_root">
+        <callback name="finished_root">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="fs" transfer-ownership="none">
+              <type name="MinerFS" c:type="TrackerMinerFS*"/>
+            </parameter>
+            <parameter name="root" transfer-ownership="none">
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+            <parameter name="directories_found" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="directories_ignored" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="files_found" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="files_ignored" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="padding">
         <doc xml:space="preserve">Reserved for future API improvements.</doc>
-        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="9">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
     </record>
+    <enumeration name="MinerFSError"
+                 version="1.2."
+                 c:type="TrackerMinerFSError">
+      <doc xml:space="preserve">Possible errors returned when calling creating new objects based on
+the #TrackerMinerFS type and other APIs available with this class.</doc>
+      <member name="miner_fs_error_init"
+              value="0"
+              c:identifier="TRACKER_MINER_FS_ERROR_INIT">
+        <doc xml:space="preserve">There was an error during
+initialization of the object. The specific details are in the
+message.</doc>
+      </member>
+    </enumeration>
     <record name="MinerFSPrivate" c:type="TrackerMinerFSPrivate" disguised="1">
     </record>
     <class name="MinerOnline"

@@ -1065,6 +1065,68 @@ unreffed when no longer needed</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_snapshot_async"
+              c:identifier="gvir_domain_create_snapshot_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dom" transfer-ownership="none">
+            <doc xml:space="preserve">The #GVirDomain</doc>
+            <type name="Domain" c:type="GVirDomain*"/>
+          </instance-parameter>
+          <parameter name="custom_conf"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Configuration of snapshot or %NULL</doc>
+            <type name="LibvirtGConfig.DomainSnapshot"
+                  c:type="GVirConfigDomainSnapshot*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Bitwise-OR of #GVirDomainSnapshotCreateFlags</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">cancellation object</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">Completion callback</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">Opaque data for callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_snapshot_finish"
+              c:identifier="gvir_domain_create_snapshot_finish"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The created snapshot</doc>
+          <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="domain" transfer-ownership="none">
+            <doc xml:space="preserve">A #GVirDomain</doc>
+            <type name="Domain" c:type="GVirDomain*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">Async method result</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="delete" c:identifier="gvir_domain_delete" throws="1">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -1084,7 +1146,7 @@ unreffed when no longer needed</doc>
               c:identifier="gvir_domain_fetch_snapshots"
               throws="1">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE on success, FALSE otherwise.</doc>
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -1112,15 +1174,18 @@ unreffed when no longer needed</doc>
         </return-value>
         <parameters>
           <instance-parameter name="dom" transfer-ownership="none">
+            <doc xml:space="preserve">The domain</doc>
             <type name="Domain" c:type="GVirDomain*"/>
           </instance-parameter>
           <parameter name="list_flags" transfer-ownership="none">
+            <doc xml:space="preserve">bitwise-OR of #GVirDomainSnapshotListFlags</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">cancellation object</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1129,9 +1194,11 @@ unreffed when no longer needed</doc>
                      allow-none="1"
                      scope="async"
                      closure="3">
+            <doc xml:space="preserve">completion callback</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">opaque data for callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1191,6 +1258,32 @@ allocated #GList of #GVirDomainDevice.</doc>
             <doc xml:space="preserve">the domain</doc>
             <type name="Domain" c:type="GVirDomain*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_has_current_snapshot"
+              c:identifier="gvir_domain_get_has_current_snapshot"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dom" transfer-ownership="none">
+            <doc xml:space="preserve">a #GVirDomain</doc>
+            <type name="Domain" c:type="GVirDomain*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Unused, pass 0</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="has_current_snapshot"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">Will be set to %TRUE if the given domain
+has a current snapshot and to %FALSE otherwise.</doc>
+            <type name="gboolean" c:type="gboolean*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_id" c:identifier="gvir_domain_get_id" throws="1">
@@ -2401,6 +2494,60 @@ needed.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="delete_async"
+              c:identifier="gvir_domain_snapshot_delete_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">A #GVirDomainSnapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Bitwise-OR of #GVirDomainSnapshotDeleteFlags</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">cancellation object</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">completion callback</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">opaque data for callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="delete_finish"
+              c:identifier="gvir_domain_snapshot_delete_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">A #GVirDomainSnapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:space="preserve">async method result</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_config"
               c:identifier="gvir_domain_snapshot_get_config"
               throws="1">
@@ -2421,6 +2568,32 @@ unreffed with g_object_unref() when no longer needed.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_is_current"
+              c:identifier="gvir_domain_snapshot_get_is_current"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">The domain snapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Currently unused, pass 0</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="is_current"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">%TRUE if the given snapshot is the current snapshot
+of its domain, %FALSE otherwise.</doc>
+            <type name="gboolean" c:type="gboolean*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_name" c:identifier="gvir_domain_snapshot_get_name">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -2429,6 +2602,101 @@ unreffed with g_object_unref() when no longer needed.</doc>
           <instance-parameter name="snapshot" transfer-ownership="none">
             <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="revert_to"
+              c:identifier="gvir_domain_snapshot_revert_to"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE if the snapshot's domain has successfully been
+reverted to the given snapshot, FALSE otherwise, in which case
+@error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">The domain snapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Bitwise OR of GVirDomainSnapshotRevertFlags</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="revert_to_async"
+              c:identifier="gvir_domain_snapshot_revert_to_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">A #GVirDomainSnapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Bitwise OR of #GVirDomainSnapshotRevertFlags</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">cancellation object</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">The callback</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">Opaque data for callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="revert_to_finish"
+              c:identifier="gvir_domain_snapshot_revert_to_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">The domain snapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">The result</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_config"
+              c:identifier="gvir_domain_snapshot_set_config"
+              throws="1">
+        <doc xml:space="preserve">Updates the given snapshot's configuration according to the
+given GVirConfigDomainSnapshot.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if no error was reported, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">The domain snapshot</doc>
+            <type name="DomainSnapshot" c:type="GVirDomainSnapshot*"/>
+          </instance-parameter>
+          <parameter name="conf" transfer-ownership="none">
+            <doc xml:space="preserve">The new config object</doc>
+            <type name="LibvirtGConfig.DomainSnapshot"
+                  c:type="GVirConfigDomainSnapshot*"/>
+          </parameter>
         </parameters>
       </method>
       <property name="handle"
@@ -2628,6 +2896,29 @@ unreffed with g_object_unref() when no longer needed.</doc>
             c:type="GVirDomainSnapshotPrivate"
             disguised="1">
     </record>
+    <enumeration name="DomainSnapshotRevertFlags"
+                 glib:type-name="GVirDomainSnapshotRevertFlags"
+                 glib:get-type="gvir_domain_snapshot_revert_flags_get_type"
+                 c:type="GVirDomainSnapshotRevertFlags">
+      <member name="running"
+              value="1"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_REVERT_RUNNING"
+              glib:nick="running">
+        <doc xml:space="preserve">Run after revert</doc>
+      </member>
+      <member name="paused"
+              value="2"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_REVERT_PAUSED"
+              glib:nick="paused">
+        <doc xml:space="preserve">Pause after revert</doc>
+      </member>
+      <member name="force"
+              value="4"
+              c:identifier="GVIR_DOMAIN_SNAPSHOT_REVERT_FORCE"
+              glib:nick="force">
+        <doc xml:space="preserve">Allow risky reverts</doc>
+      </member>
+    </enumeration>
     <bitfield name="DomainStartFlags"
               glib:type-name="GVirDomainStartFlags"
               glib:get-type="gvir_domain_start_flags_get_type"

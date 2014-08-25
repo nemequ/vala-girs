@@ -53,11 +53,13 @@ namespace GVir {
 		[CCode (has_construct_function = false)]
 		protected Domain ();
 		public GVir.DomainSnapshot create_snapshot (GVirConfig.DomainSnapshot? custom_conf, uint flags) throws GLib.Error;
+		public async GVir.DomainSnapshot create_snapshot_async (GVirConfig.DomainSnapshot? custom_conf, uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool @delete (uint flags) throws GLib.Error;
 		public bool fetch_snapshots (uint list_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool fetch_snapshots_async (uint list_flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVirConfig.Domain get_config (uint flags) throws GLib.Error;
 		public GLib.List<GVir.DomainDevice> get_devices () throws GLib.Error;
+		public bool get_has_current_snapshot (uint flags, out bool has_current_snapshot) throws GLib.Error;
 		public int get_id () throws GLib.Error;
 		public GVir.DomainInfo get_info () throws GLib.Error;
 		public async GVir.DomainInfo get_info_async (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -156,8 +158,13 @@ namespace GVir {
 		[CCode (has_construct_function = false)]
 		protected DomainSnapshot ();
 		public bool @delete (uint flags) throws GLib.Error;
+		public async bool delete_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVirConfig.DomainSnapshot get_config (uint flags) throws GLib.Error;
+		public bool get_is_current (uint flags, out bool is_current) throws GLib.Error;
 		public unowned string get_name ();
+		public bool revert_to (uint flags) throws GLib.Error;
+		public async bool revert_to_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool set_config (GVirConfig.DomainSnapshot conf) throws GLib.Error;
 		[NoAccessorMethod]
 		public GVir.DomainSnapshotHandle handle { owned get; construct; }
 	}
@@ -395,6 +402,12 @@ namespace GVir {
 		DISK_ONLY,
 		INTERNAL,
 		EXTERNAL
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_SNAPSHOT_REVERT_", type_id = "gvir_domain_snapshot_revert_flags_get_type ()")]
+	public enum DomainSnapshotRevertFlags {
+		RUNNING,
+		PAUSED,
+		FORCE
 	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_START_", type_id = "gvir_domain_start_flags_get_type ()")]
 	[Flags]

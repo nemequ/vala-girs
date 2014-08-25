@@ -242,7 +242,7 @@ namespace Ggit {
 	public class Diff : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		protected Diff ();
-		public static void blob_to_buffer (Ggit.Blob? old_blob, string? old_as_path, [CCode (array_length_cname = "buffer_len", array_length_pos = 3.5, array_length_type = "gsize")] string[]? buffer, string? buffer_as_path, Ggit.DiffOptions? diff_options, [CCode (delegate_target_pos = 8.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 8.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
+		public static void blob_to_buffer (Ggit.Blob? old_blob, string? old_as_path, [CCode (array_length_cname = "buffer_len", array_length_pos = 3.5, array_length_type = "gssize")] uint8[]? buffer, string? buffer_as_path, Ggit.DiffOptions? diff_options, [CCode (delegate_target_pos = 8.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 8.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
 		public static void blobs (Ggit.Blob? old_blob, string? old_as_path, Ggit.Blob? new_blob, string? new_as_path, Ggit.DiffOptions? diff_options, [CCode (delegate_target_pos = 8.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 8.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
 		public bool find_similar (Ggit.DiffFindOptions? options) throws GLib.Error;
 		public void @foreach ([CCode (delegate_target_pos = 3.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 3.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
