@@ -80,7 +80,6 @@ namespace Vte {
 		public void set_color_background (Gdk.RGBA background);
 		public void set_color_bold (Gdk.RGBA? bold);
 		public void set_color_cursor (Gdk.RGBA? cursor_background);
-		public void set_color_dim (Gdk.RGBA? dim);
 		public void set_color_foreground (Gdk.RGBA foreground);
 		public void set_color_highlight (Gdk.RGBA? highlight_background);
 		public void set_color_highlight_foreground (Gdk.RGBA? highlight_foreground);
