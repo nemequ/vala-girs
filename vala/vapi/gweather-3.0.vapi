@@ -76,6 +76,7 @@ namespace GWeather {
 		public unowned string get_code ();
 		public void get_coords (out double latitude, out double longitude);
 		public unowned string get_country ();
+		public string get_country_name ();
 		public double get_distance (GWeather.Location loc2);
 		public GWeather.LocationLevel get_level ();
 		public unowned string get_name ();

@@ -331,6 +331,8 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
 	public static void marshal_BOOLEAN__VOID (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
+	public static void marshal_ENUM__VOID (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
+	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
 	public static void marshal_OBJECT__OBJECT_OBJECT_INT_INT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
 	public static void marshal_VOID__BOOLEAN_POINTER (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
