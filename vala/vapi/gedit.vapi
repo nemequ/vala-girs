@@ -385,6 +385,8 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_menu_position_under_widget (Gtk.Menu menu, int x, int y, bool push_in, void* user_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	public static unowned string utils_newline_type_to_string (Gtk.SourceNewlineType newline_type);
+	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_replace_home_dir_with_tilde (string uri);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_set_atk_name_description (Gtk.Widget widget, string name, string description);

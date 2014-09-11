@@ -35,9 +35,9 @@ namespace MediaArt {
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
 	public static bool file_to_jpeg (string filename, string target) throws GLib.Error;
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
-	public static bool get_file (string artist, string title, string prefix, GLib.File? file, out GLib.File cache_file, out GLib.File local_file);
+	public static bool get_file (string? artist, string? title, string? prefix, GLib.File? file, out GLib.File cache_file, out GLib.File local_file);
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
-	public static bool get_path (string artist, string title, string prefix, string? uri, out string cache_path, out string local_uri);
+	public static bool get_path (string? artist, string? title, string? prefix, string? uri, out string cache_path, out string local_uri);
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
 	public static void plugin_init (int max_width);
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]

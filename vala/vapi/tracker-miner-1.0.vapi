@@ -162,24 +162,15 @@ namespace Tracker {
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_data_provider_get_type ()")]
 	public interface DataProvider : GLib.Object {
-		public abstract Tracker.Enumerator begin (GLib.File url, string attributes, GLib.FileQueryInfoFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public abstract async Tracker.Enumerator begin_async (GLib.File url, string attributes, GLib.FileQueryInfoFlags flags, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public abstract Tracker.Enumerator begin (GLib.File url, string attributes, Tracker.DirectoryFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public abstract async Tracker.Enumerator begin_async (GLib.File url, string attributes, Tracker.DirectoryFlags flags, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public abstract bool end (Tracker.Enumerator enumerator, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public abstract async bool end_async (Tracker.Enumerator enumerator, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public abstract Tracker.CrawlFlags get_crawl_flags ();
-		public abstract void set_crawl_flags (Tracker.CrawlFlags flags);
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_enumerator_get_type ()")]
 	public interface Enumerator : GLib.Object {
 		public abstract void* next (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public abstract async void* next_async (int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	}
-	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cprefix = "TRACKER_CRAWL_FLAG_", type_id = "tracker_crawl_flags_get_type ()")]
-	[Flags]
-	public enum CrawlFlags {
-		NONE,
-		NO_STAT,
-		FOLLOW_SYMLINKS
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cprefix = "TRACKER_DIRECTORY_FLAG_", type_id = "tracker_directory_flags_get_type ()")]
 	[Flags]

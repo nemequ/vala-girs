@@ -73,7 +73,7 @@ namespace Gcr {
 		public Gck.Object object { owned get; set; }
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_key_widget_get_type ()")]
-	public class KeyWidget : Gtk.Alignment, Atk.Implementor, Gtk.Buildable {
+	public class KeyWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public KeyWidget (Gck.Attributes? attrs);
 		public unowned Gck.Attributes get_attributes ();
@@ -119,7 +119,7 @@ namespace Gcr {
 		public void* columns { get; construct; }
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_unlock_options_widget_get_type ()")]
-	public class UnlockOptionsWidget : Gtk.Alignment, Atk.Implementor, Gtk.Buildable {
+	public class UnlockOptionsWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public UnlockOptionsWidget ();
 		public unowned string get_choice ();

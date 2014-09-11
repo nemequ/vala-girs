@@ -442,12 +442,9 @@ point.</doc>
       </method>
       <method name="get_ssid" c:identifier="nm_access_point_get_ssid">
         <doc xml:space="preserve">Gets the SSID of the access point.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GByteArray containing the SSID. This is the internal copy used by the
-access point, and must not be modified.</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the #GBytes containing the SSID.</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="ap" transfer-ownership="none">
@@ -519,7 +516,7 @@ coordinator of the wireless network allowing clients to connect) or
       </property>
       <property name="ssid" transfer-ownership="none">
         <doc xml:space="preserve">The SSID of the access point.</doc>
-        <type name="Ssid"/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="strength" transfer-ownership="none">
         <doc xml:space="preserve">The current signal strength of the access point.</doc>
@@ -796,7 +793,12 @@ This is the internal string used by the connection, and must not be modified.</d
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="devices" transfer-ownership="none">
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">The devices of the active connection.
+
+Element-type: NMDevice</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="dhcp4-config" transfer-ownership="none">
         <doc xml:space="preserve">The #NMDhcp4Config of the connection.</doc>
@@ -1802,7 +1804,9 @@ likely to become the new #NMClient:primary-connection.</doc>
         <type name="ActiveConnection"/>
       </property>
       <property name="active-connections" transfer-ownership="none">
-        <doc xml:space="preserve">The active connections.</doc>
+        <doc xml:space="preserve">The active connections.
+
+Element-type: NMActiveConnection</doc>
         <array name="GLib.PtrArray">
           <type name="gpointer" c:type="gpointer"/>
         </array>
@@ -1812,8 +1816,12 @@ likely to become the new #NMClient:primary-connection.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="devices" transfer-ownership="none">
-        <doc xml:space="preserve">List of known network devices.</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">List of known network devices.
+
+Element-type: NMDevice</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="networking-enabled"
                 writable="1"
@@ -2265,6 +2273,19 @@ keeping secret data in memory when not needed.</doc>
             <doc xml:space="preserve">caller-supplied data passed to @func</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="clear_settings"
+              c:identifier="nm_connection_clear_settings">
+        <doc xml:space="preserve">Deletes all of @connection's settings.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="compare" c:identifier="nm_connection_compare">
@@ -2862,23 +2883,6 @@ Eg, "VLAN (eth1.1)".</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_virtual_iface_name"
-              c:identifier="nm_connection_get_virtual_iface_name">
-        <doc xml:space="preserve">Returns the name of the virtual kernel interface which the connection
-needs to use if specified in the settings. This function abstracts all
-connection types which require this functionality. For all other
-connection types, this function will return %NULL.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">Name of the kernel interface or %NULL</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">The #NMConnection</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="is_type" c:identifier="nm_connection_is_type">
         <doc xml:space="preserve">A convenience function to check if the given @connection is a particular
 type (ie wired, Wi-Fi, ppp, etc). Checks the #NMSettingConnection:type
@@ -2897,6 +2901,20 @@ property of the connection and matches that against @type.</doc>
 %NM_SETTING_WIRELESS_SETTING_NAME or %NM_SETTING_WIRED_SETTING_NAME)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="is_virtual" c:identifier="nm_connection_is_virtual">
+        <doc xml:space="preserve">Checks if @connection refers to a virtual device (and thus can potentially be
+activated even if the device it refers to doesn't exist).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether @connection refers to a virtual device</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="need_secrets" c:identifier="nm_connection_need_secrets">
@@ -3001,7 +3019,7 @@ operation dereferences the #NMSetting object.</doc>
               throws="1">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the settings were valid and added to the connection, %FALSE
-if they were not</doc>
+  if they were not (in which case @connection will be unchanged).</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -3028,7 +3046,7 @@ if they were not</doc>
 with the copied settings.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the settings were valid and added to the connection, %FALSE
-if they were not</doc>
+  if they were not (in which case @connection will be unchanged).</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -3061,12 +3079,12 @@ which provides the connection</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="to_hash" c:identifier="nm_connection_to_hash">
+      <method name="to_dbus" c:identifier="nm_connection_to_dbus">
         <doc xml:space="preserve">Converts the #NMConnection into a #GHashTable describing the connection,
-suitable for marshalling over D-Bus or serializing.  The hash table mapping
-is string:#GHashTable with each element in the returned hash representing
-a #NMSetting object.  The keys are setting object names, and the values
-are #GHashTables mapping string:GValue, each of which represents the
+suitable for marshalling over D-Bus or otherwise serializing.  The hash table
+mapping is string:#GHashTable with each element in the returned hash
+representing a #NMSetting object.  The keys are setting object names, and the
+values are #GHashTables mapping string:GValue, each of which represents the
 properties of the #NMSetting object.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new
@@ -3087,8 +3105,9 @@ with g_hash_table_unref() when it is no longer needed.</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </instance-parameter>
           <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">hash flags, e.g. %NM_SETTING_HASH_FLAG_ALL</doc>
-            <type name="SettingHashFlags" c:type="NMSettingHashFlags"/>
+            <doc xml:space="preserve">serialization flags, e.g. %NM_CONNECTION_SERIALIZE_ALL</doc>
+            <type name="ConnectionSerializationFlags"
+                  c:type="NMConnectionSerializationFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -3098,8 +3117,8 @@ with g_hash_table_unref() when it is no longer needed.</doc>
         <doc xml:space="preserve">Update the specified setting's secrets, given a hash table of secrets
 intended for that setting (deserialized from D-Bus for example).  Will also
 extract the given setting's secrets hash if given a hash of hashes, as would
-be returned from nm_connection_to_hash().  If @setting_name is %NULL, expects
-a fully serialized #NMConnection as returned by nm_connection_to_hash() and
+be returned from nm_connection_to_dbus().  If @setting_name is %NULL, expects
+a fully serialized #NMConnection as returned by nm_connection_to_dbus() and
 will update all secrets from all settings contained in @secrets.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the secrets were successfully updated, %FALSE if the update
@@ -3273,6 +3292,31 @@ updated</doc>
         </callback>
       </field>
     </record>
+    <bitfield name="ConnectionSerializationFlags"
+              glib:type-name="NMConnectionSerializationFlags"
+              glib:get-type="nm_connection_serialization_flags_get_type"
+              c:type="NMConnectionSerializationFlags">
+      <doc xml:space="preserve">These flags determine which properties are serialized when calling when
+calling nm_connection_to_dbus().</doc>
+      <member name="all"
+              value="0"
+              c:identifier="NM_CONNECTION_SERIALIZE_ALL"
+              glib:nick="all">
+        <doc xml:space="preserve">serialize all properties (including secrets)</doc>
+      </member>
+      <member name="no_secrets"
+              value="1"
+              c:identifier="NM_CONNECTION_SERIALIZE_NO_SECRETS"
+              glib:nick="no-secrets">
+        <doc xml:space="preserve">do not include secrets</doc>
+      </member>
+      <member name="only_secrets"
+              value="2"
+              c:identifier="NM_CONNECTION_SERIALIZE_ONLY_SECRETS"
+              glib:nick="only-secrets">
+        <doc xml:space="preserve">only serialize secrets</doc>
+      </member>
+    </bitfield>
     <enumeration name="ConnectivityState"
                  glib:type-name="NMConnectivityState"
                  glib:get-type="nm_connectivity_state_get_type"
@@ -4426,26 +4470,16 @@ that can be used on @device.</doc>
       </method>
       <method name="get_state_reason"
               c:identifier="nm_device_get_state_reason">
-        <doc xml:space="preserve">Gets the current #NMDevice state (return value) and the reason for entering
-the state (@reason argument).</doc>
+        <doc xml:space="preserve">Gets the reason for entering the current #NMDevice state.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the current device state</doc>
-          <type name="DeviceState" c:type="NMDeviceState"/>
+          <doc xml:space="preserve">the reason for entering the current device state</doc>
+          <type name="DeviceStateReason" c:type="NMDeviceStateReason"/>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
             <doc xml:space="preserve">a #NMDevice</doc>
             <type name="Device" c:type="NMDevice*"/>
           </instance-parameter>
-          <parameter name="reason"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
-            <doc xml:space="preserve">location to store reason (#NMDeviceStateReason), or %NULL</doc>
-            <type name="DeviceStateReason" c:type="NMDeviceStateReason*"/>
-          </parameter>
         </parameters>
       </method>
       <method name="get_type_description"
@@ -4531,8 +4565,12 @@ device, and must not be modified.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="available-connections" transfer-ownership="none">
-        <doc xml:space="preserve">The available connections (#NMRemoteConnection) of the device</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">The available connections of the device
+
+Element-type: NMRemoteConnection</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="capabilities" transfer-ownership="none">
         <doc xml:space="preserve">The capabilities of the device.</doc>
@@ -4605,11 +4643,9 @@ nm_device_get_physical_port_id().)</doc>
         <doc xml:space="preserve">The state of the device.</doc>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="state-reason"
-                introspectable="0"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The state and reason of the device.</doc>
-        <type/>
+      <property name="state-reason" transfer-ownership="none">
+        <doc xml:space="preserve">The reason for the device state.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="udi" transfer-ownership="none">
         <doc xml:space="preserve">An operating-system specific device hardware identifier; this is not
@@ -4784,8 +4820,12 @@ copy used by the device, and must not be modified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="slaves" transfer-ownership="none">
-        <doc xml:space="preserve">The devices (#NMDevice) slaved to the bond device.</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">The devices slaved to the bond device.
+
+Element-type: NMDevice</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Device" c:type="NMDevice"/>
@@ -4903,8 +4943,12 @@ copy used by the device, and must not be modified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="slaves" transfer-ownership="none">
-        <doc xml:space="preserve">The devices (#NMDevice) slaved to the bridge device.</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">The devices slaved to the bridge device.
+
+Element-type: NMDevice</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Device" c:type="NMDevice"/>
@@ -6387,8 +6431,12 @@ copy used by the device, and must not be modified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="slaves" transfer-ownership="none">
-        <doc xml:space="preserve">The devices (#NMDevice) enslaved to the team device.</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">The devices enslaved to the team device.
+
+Element-type: NMDevice</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Device" c:type="NMDevice"/>
@@ -6861,8 +6909,12 @@ to get available access points.</doc>
         </parameters>
       </method>
       <property name="access-points" transfer-ownership="none">
-        <doc xml:space="preserve">List of all Wi-Fi access points the device can see.</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">List of all Wi-Fi access points the device can see.
+
+Element-type: NMAccessPoint</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="active-access-point" transfer-ownership="none">
         <doc xml:space="preserve">The active #NMAccessPoint of the device.</doc>
@@ -7294,8 +7346,12 @@ meaning when the device is not connected.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="nsps" transfer-ownership="none">
-        <doc xml:space="preserve">List of all WiMAX Network Service Providers the device can see.</doc>
-        <type name="ObjectArray"/>
+        <doc xml:space="preserve">List of all WiMAX Network Service Providers the device can see.
+
+Element-type: NMWimaxNsp</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="rssi" transfer-ownership="none">
         <doc xml:space="preserve">RSSI of the current radio link in dBm.  This value indicates how strong
@@ -7743,9 +7799,9 @@ This is the internal copy used by the configuration and must not be modified.</d
       <method name="get_domains" c:identifier="nm_ip4_config_get_domains">
         <doc xml:space="preserve">Gets the domain names.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GPtrArray containing domains as strings. This is the
-internal copy used by the configuration, and must not be modified.</doc>
-          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+          <doc xml:space="preserve">the array of domains.
+(This is never %NULL, though it may be 0-length).</doc>
+          <array c:type="const char* const*">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -7773,11 +7829,9 @@ internal copy used by the configuration, and must not be modified.</doc>
               c:identifier="nm_ip4_config_get_nameservers">
         <doc xml:space="preserve">Gets the domain name servers (DNS).</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GArray containing #guint32s.
-This is the internal copy used by the configuration and must not be
-modified.</doc>
-          <array name="GLib.Array" c:type="const GArray*">
-            <type name="guint32"/>
+          <doc xml:space="preserve">the array of nameserver IP addresses</doc>
+          <array c:type="const char* const*">
+            <type name="utf8"/>
           </array>
         </return-value>
         <parameters>
@@ -7805,11 +7859,11 @@ and must not be modified.</doc>
         </parameters>
       </method>
       <method name="get_searches" c:identifier="nm_ip4_config_get_searches">
-        <doc xml:space="preserve">Gets the dns searches.</doc>
+        <doc xml:space="preserve">Gets the DNS searches.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GPtrArray containing dns searches as strings. This is the
-internal copy used by the configuration, and must not be modified.</doc>
-          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+          <doc xml:space="preserve">the array of DNS search strings.
+(This is never %NULL, though it may be 0-length).</doc>
+          <array c:type="const char* const*">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -7827,7 +7881,7 @@ internal copy used by the configuration, and must not be modified.</doc>
           <doc xml:space="preserve">the #GArray containing #guint32s.
 This is the internal copy used by the configuration and must not be
 modified.</doc>
-          <array name="GLib.Array" c:type="const GArray*">
+          <array c:type="const char* const*">
             <type name="guint32"/>
           </array>
         </return-value>
@@ -7839,32 +7893,44 @@ modified.</doc>
         </parameters>
       </method>
       <property name="addresses" transfer-ownership="none">
-        <doc xml:space="preserve">The #GPtrArray containing #NMIP4Address&lt;!-- --&gt;es of the configuration.</doc>
-        <type name="gpointer" c:type="gpointer"/>
+        <doc xml:space="preserve">A #GPtrArray containing the addresses (#NMIP4Address) of the configuration.</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="domains" transfer-ownership="none">
-        <doc xml:space="preserve">The #GPtrArray containing domain strings of the configuration.</doc>
-        <type name="StringArray"/>
+        <doc xml:space="preserve">The array containing domain strings of the configuration.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="gateway" transfer-ownership="none">
         <doc xml:space="preserve">The IP4 gateway address of the configuration as string.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="nameservers" transfer-ownership="none">
-        <doc xml:space="preserve">The #GArray containing name servers (#guint32s) of the configuration.</doc>
-        <type name="UintArray"/>
+        <doc xml:space="preserve">The array containing name server IP addresses of the configuration.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="routes" transfer-ownership="none">
-        <doc xml:space="preserve">The #GPtrArray containing #NMSettingIP4Routes of the configuration.</doc>
-        <type name="gpointer" c:type="gpointer"/>
+        <doc xml:space="preserve">A #GPtrArray containing the routes (#NMIP4Route) of the configuration.</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="searches" transfer-ownership="none">
-        <doc xml:space="preserve">The #GPtrArray containing dns search strings of the configuration.</doc>
-        <type name="StringArray"/>
+        <doc xml:space="preserve">The array containing DNS search strings of the configuration.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="wins-servers" transfer-ownership="none">
-        <doc xml:space="preserve">The #GArray containing WINS servers (#guint32s) of the configuration.</doc>
-        <type name="UintArray"/>
+        <doc xml:space="preserve">The array containing WINS server IP addresses of the configuration.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Object" c:type="NMObject"/>
@@ -8264,16 +8330,6 @@ reaches zero, the object will be destroyed.</doc>
         </parameters>
       </method>
     </record>
-    <glib:boxed glib:name="IP6AddressArray"
-                c:symbol-prefix="ip6_address_array"
-                glib:type-name="NMIP6AddressArray"
-                glib:get-type="nm_ip6_address_array_get_type">
-    </glib:boxed>
-    <glib:boxed glib:name="IP6AddressObjectArray"
-                c:symbol-prefix="ip6_address_object_array"
-                glib:type-name="NMIP6AddressObjectArray"
-                glib:get-type="nm_ip6_address_object_array_get_type">
-    </glib:boxed>
     <class name="IP6Config"
            c:symbol-prefix="ip6_config"
            c:type="NMIP6Config"
@@ -8303,9 +8359,9 @@ and must not be modified.</doc>
       <method name="get_domains" c:identifier="nm_ip6_config_get_domains">
         <doc xml:space="preserve">Gets the domain names.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GPtrArray containing domains as strings.
-This is the internal copy used by the configuration, and must not be modified.</doc>
-          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+          <doc xml:space="preserve">the array of domains.
+(This is never %NULL, though it may be 0-length).</doc>
+          <array c:type="const char* const*">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -8329,52 +8385,14 @@ This is the internal copy used by the configuration, and must not be modified.</
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_nameserver"
-              c:identifier="nm_ip6_config_get_nameserver">
-        <doc xml:space="preserve">Gets the domain name server at index @idx in the configuration.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">
-         the IPv6 address of domain name server at index @iidx</doc>
-          <array zero-terminated="0" c:type="gpointer*" fixed-size="16">
-            <type name="guint8"/>
-          </array>
-        </return-value>
-        <parameters>
-          <instance-parameter name="config" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMIP6Config</doc>
-            <type name="IP6Config" c:type="NMIP6Config*"/>
-          </instance-parameter>
-          <parameter name="idx" transfer-ownership="none">
-            <doc xml:space="preserve">index of the nameserver to return</doc>
-            <type name="guint32" c:type="guint32"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_nameservers"
-              c:identifier="nm_ip6_config_get_nameservers"
-              introspectable="0">
+              c:identifier="nm_ip6_config_get_nameservers">
         <doc xml:space="preserve">Gets the domain name servers (DNS).</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GSList containing elements of type 'struct in6_addr' which
-contain the addresses of nameservers of the configuration.  This is the
-internal copy used by the configuration and must not be modified.</doc>
-          <type name="GLib.SList" c:type="const GSList*">
-            <type name="gpointer" c:type="gpointer"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="config" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMIP6Config</doc>
-            <type name="IP6Config" c:type="NMIP6Config*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_num_nameservers"
-              c:identifier="nm_ip6_config_get_num_nameservers">
-        <doc xml:space="preserve">Gets the number of the domain name servers in the configuration.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the number of domain name servers</doc>
-          <type name="guint32" c:type="guint32"/>
+          <doc xml:space="preserve">the array of nameserver IP addresses</doc>
+          <array c:type="const char* const*">
+            <type name="utf8"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="config" transfer-ownership="none">
@@ -8386,7 +8404,7 @@ internal copy used by the configuration and must not be modified.</doc>
       <method name="get_routes" c:identifier="nm_ip6_config_get_routes">
         <doc xml:space="preserve">Gets the routes.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GSList containing
+          <doc xml:space="preserve">(transfer none): the #GSList containing
 #NMIP6Routes. This is the internal copy used by the configuration,
 and must not be modified.</doc>
           <type name="GLib.SList" c:type="const GSList*">
@@ -8401,11 +8419,11 @@ and must not be modified.</doc>
         </parameters>
       </method>
       <method name="get_searches" c:identifier="nm_ip6_config_get_searches">
-        <doc xml:space="preserve">Gets the dns searches.</doc>
+        <doc xml:space="preserve">Gets the DNS search strings.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GPtrArray containing dns searches as strings.
-This is the internal copy used by the configuration, and must not be modified.</doc>
-          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+          <doc xml:space="preserve">the array of DNS search strings.
+(This is never %NULL, though it may be 0-length).</doc>
+          <array c:type="const char* const*">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -8417,14 +8435,16 @@ This is the internal copy used by the configuration, and must not be modified.</
         </parameters>
       </method>
       <property name="addresses" transfer-ownership="none">
-        <doc xml:space="preserve">The #GPtrArray containing the IPv6 addresses;  use
-nm_utils_ip6_addresses_from_gvalue() to return a #GSList of
-#NMSettingIP6Address objects that is more usable than the raw data.</doc>
-        <type name="IP6AddressObjectArray"/>
+        <doc xml:space="preserve">The #GPtrArray containing the IPv6 addresses (#NMIP6Address).</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="domains" transfer-ownership="none">
         <doc xml:space="preserve">The #GPtrArray containing domain strings of the configuration.</doc>
-        <type name="StringArray"/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="gateway" transfer-ownership="none">
         <doc xml:space="preserve">The IPv6 gateway as string</doc>
@@ -8433,17 +8453,21 @@ nm_utils_ip6_addresses_from_gvalue() to return a #GSList of
       <property name="nameservers" transfer-ownership="none">
         <doc xml:space="preserve">The #GPtrArray containing elements of type 'struct ip6_addr' which
 contain the addresses of nameservers of the configuration.</doc>
-        <type name="IP6AddressArray"/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="routes" transfer-ownership="none">
-        <doc xml:space="preserve">The #GPtrArray containing the IPv6 routes;  use
-nm_utils_ip6_routes_from_gvalue() to return a #GSList of
-#NMSettingIP6Address objects that is more usable than the raw data.</doc>
-        <type name="IP6RouteObjectArray"/>
+        <doc xml:space="preserve">The #GPtrArray containing the IPv6 routes (#NMIP6Route).</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="searches" transfer-ownership="none">
         <doc xml:space="preserve">The #GPtrArray containing dns search strings of the configuration.</doc>
-        <type name="StringArray"/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Object" c:type="NMObject"/>
@@ -8653,11 +8677,6 @@ reaches zero, the object will be destroyed.</doc>
         </parameters>
       </method>
     </record>
-    <glib:boxed glib:name="IP6RouteObjectArray"
-                c:symbol-prefix="ip6_route_object_array"
-                glib:type-name="NMIP6RouteObjectArray"
-                glib:get-type="nm_ip6_route_object_array_get_type">
-    </glib:boxed>
     <constant name="IP6_CONFIG_ADDRESSES"
               value="addresses"
               c:type="NM_IP6_CONFIG_ADDRESSES">
@@ -8703,11 +8722,6 @@ compiled against.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="OBJECT_DBUS_CONNECTION"
-              value="dbus-connection"
-              c:type="NM_OBJECT_DBUS_CONNECTION">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="OBJECT_PATH" value="path" c:type="NM_OBJECT_PATH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -8747,20 +8761,6 @@ is compiled against.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="get_dbus_connection"
-              c:identifier="nm_object_get_dbus_connection">
-        <doc xml:space="preserve">Gets the #NMObject's DBusGConnection.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the connection</doc>
-          <type name="DBusGLib.Connection" c:type="DBusGConnection*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="object" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMObject</doc>
-            <type name="Object" c:type="NMObject*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_path" c:identifier="nm_object_get_path">
         <doc xml:space="preserve">Gets the DBus path of the #NMObject.</doc>
         <return-value transfer-ownership="none">
@@ -8775,13 +8775,6 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="dbus-connection"
-                introspectable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type/>
-      </property>
       <property name="nm-running-internal" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -8816,11 +8809,6 @@ Note: Be aware that the signal is private for libnm's internal
         </parameters>
       </glib:signal>
     </class>
-    <glib:boxed glib:name="ObjectArray"
-                c:symbol-prefix="object_array"
-                glib:type-name="NMObjectArray"
-                glib:get-type="nm_object_array_get_type">
-    </glib:boxed>
     <record name="ObjectClass"
             c:type="NMObjectClass"
             glib:is-gtype-struct-for="Object">
@@ -9591,7 +9579,9 @@ hostname operation completes</doc>
         <doc xml:space="preserve">The list of configured connections that are available to the user. (Note
 that this differs from the underlying D-Bus property, which may also
 contain the object paths of connections that the user does not have
-permission to read the details of.)</doc>
+permission to read the details of.)
+
+Element-type: NMRemoteConnection</doc>
         <array name="GLib.PtrArray">
           <type name="gpointer" c:type="gpointer"/>
         </array>
@@ -9790,11 +9780,6 @@ modified by calling nm_remote_settings_save_hostname().</doc>
     <constant name="SECRET_AGENT_REGISTERED"
               value="registered"
               c:type="NM_SECRET_AGENT_REGISTERED">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SECRET_AGENT_REGISTRATION_RESULT"
-              value="registration-result"
-              c:type="NM_SECRET_AGENT_REGISTRATION_RESULT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_802_1X_ALTSUBJECT_MATCHES"
@@ -10052,11 +10037,6 @@ DUN profile.</doc>
 NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SETTING_BOND_INTERFACE_NAME"
-              value="interface-name"
-              c:type="NM_SETTING_BOND_INTERFACE_NAME">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="SETTING_BOND_OPTIONS"
               value="options"
               c:type="NM_SETTING_BOND_OPTIONS">
@@ -10150,11 +10130,6 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
     <constant name="SETTING_BRIDGE_HELLO_TIME"
               value="hello-time"
               c:type="NM_SETTING_BRIDGE_HELLO_TIME">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SETTING_BRIDGE_INTERFACE_NAME"
-              value="interface-name"
-              c:type="NM_SETTING_BRIDGE_INTERFACE_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_BRIDGE_MAC_ADDRESS"
@@ -10394,11 +10369,6 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               c:type="NM_SETTING_GENERIC_SETTING_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SETTING_GSM_ALLOWED_BANDS"
-              value="allowed-bands"
-              c:type="NM_SETTING_GSM_ALLOWED_BANDS">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="SETTING_GSM_APN" value="apn" c:type="NM_SETTING_GSM_APN">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -10410,11 +10380,6 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
     <constant name="SETTING_GSM_NETWORK_ID"
               value="network-id"
               c:type="NM_SETTING_GSM_NETWORK_ID">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SETTING_GSM_NETWORK_TYPE"
-              value="network-type"
-              c:type="NM_SETTING_GSM_NETWORK_TYPE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_GSM_NUMBER"
@@ -10881,11 +10846,6 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_TEAM_CONFIG">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SETTING_TEAM_INTERFACE_NAME"
-              value="interface-name"
-              c:type="NM_SETTING_TEAM_INTERFACE_NAME">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="SETTING_TEAM_PORT_CONFIG"
               value="config"
               c:type="NM_SETTING_TEAM_PORT_CONFIG">
@@ -10917,11 +10877,6 @@ supported for IPv6)</doc>
     <constant name="SETTING_VLAN_INGRESS_PRIORITY_MAP"
               value="ingress-priority-map"
               c:type="NM_SETTING_VLAN_INGRESS_PRIORITY_MAP">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SETTING_VLAN_INTERFACE_NAME"
-              value="interface-name"
-              c:type="NM_SETTING_VLAN_INTERFACE_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_VLAN_PARENT"
@@ -11104,11 +11059,6 @@ for this connection.</doc>
               c:type="NM_SETTING_WIRELESS_RATE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SETTING_WIRELESS_SEC"
-              value="security"
-              c:type="NM_SETTING_WIRELESS_SEC">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="SETTING_WIRELESS_SECURITY_AUTH_ALG"
               value="auth-alg"
               c:type="NM_SETTING_WIRELESS_SECURITY_AUTH_ALG">
@@ -11227,6 +11177,8 @@ for this connection.</doc>
            glib:type-name="NMSecretAgent"
            glib:get-type="nm_secret_agent_get_type"
            glib:type-struct="SecretAgentClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.Initable"/>
       <virtual-method name="cancel_get_secrets">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -11244,7 +11196,7 @@ for this connection.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="delete_secrets" invoker="delete_secrets">
-        <doc xml:space="preserve">Asynchronously ask the agent to delete all saved secrets belonging to
+        <doc xml:space="preserve">Asynchronously asks the agent to delete all saved secrets belonging to
 @connection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -11276,7 +11228,7 @@ for this connection.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="get_secrets" invoker="get_secrets">
-        <doc xml:space="preserve">Asyncronously retrieve secrets belonging to @connection for the
+        <doc xml:space="preserve">Asynchronously retrieves secrets belonging to @connection for the
 setting @setting_name.  @flags indicate specific behavior that the secret
 agent should use when performing the request, for example returning only
 existing secrets without user interaction, or requesting entirely new
@@ -11325,22 +11277,9 @@ secrets from the user.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="registration_result">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="agent" transfer-ownership="none">
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="error" transfer-ownership="none">
-            <type name="GLib.Error" c:type="GError*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <virtual-method name="save_secrets" invoker="save_secrets">
-        <doc xml:space="preserve">Asyncronously ensure that all secrets inside @connection
-are stored to disk.</doc>
+        <doc xml:space="preserve">Asynchronously ensures that all secrets inside @connection are stored to
+disk.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11372,7 +11311,7 @@ are stored to disk.</doc>
       </virtual-method>
       <method name="delete_secrets"
               c:identifier="nm_secret_agent_delete_secrets">
-        <doc xml:space="preserve">Asynchronously ask the agent to delete all saved secrets belonging to
+        <doc xml:space="preserve">Asynchronously asks the agent to delete all saved secrets belonging to
 @connection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -11414,7 +11353,7 @@ are stored to disk.</doc>
         </parameters>
       </method>
       <method name="get_secrets" c:identifier="nm_secret_agent_get_secrets">
-        <doc xml:space="preserve">Asyncronously retrieve secrets belonging to @connection for the
+        <doc xml:space="preserve">Asynchronously retrieves secrets belonging to @connection for the
 setting @setting_name.  @flags indicate specific behavior that the secret
 agent should use when performing the request, for example returning only
 existing secrets without user interaction, or requesting entirely new
@@ -11460,16 +11399,17 @@ secrets from the user.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="register" c:identifier="nm_secret_agent_register">
+      <method name="register"
+              c:identifier="nm_secret_agent_register"
+              throws="1">
         <doc xml:space="preserve">Registers the #NMSecretAgent with the NetworkManager secret manager,
 indicating to NetworkManager that the agent is able to provide and save
-secrets for connections on behalf of its user.  Registration is an
-asynchronous operation and its success or failure is indicated via the
-'registration-result' signal.</doc>
+secrets for connections on behalf of its user.
+
+It is a programmer error to attempt to register an agent that is already
+registered, or in the process of registering.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a new %TRUE if registration was successfully requested (this does
-not mean registration itself was successful), %FALSE if registration was not
-successfully requested.</doc>
+          <doc xml:space="preserve">%TRUE if registration was successful, %FALSE on error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -11477,11 +11417,75 @@ successfully requested.</doc>
             <doc xml:space="preserve">a #NMSecretAgent</doc>
             <type name="SecretAgent" c:type="NMSecretAgent*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="register_async"
+              c:identifier="nm_secret_agent_register_async">
+        <doc xml:space="preserve">Asynchronously registers the #NMSecretAgent with the NetworkManager secret
+manager, indicating to NetworkManager that the agent is able to provide and
+save secrets for connections on behalf of its user.
+
+It is a programmer error to attempt to register an agent that is already
+registered, or in the process of registering.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMSecretAgent</doc>
+            <type name="SecretAgent" c:type="NMSecretAgent*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">callback to call when the agent is registered</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data for @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="register_finish"
+              c:identifier="nm_secret_agent_register_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_secret_agent_register_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if registration was successful, %FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMSecretAgent</doc>
+            <type name="SecretAgent" c:type="NMSecretAgent*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="save_secrets" c:identifier="nm_secret_agent_save_secrets">
-        <doc xml:space="preserve">Asyncronously ensure that all secrets inside @connection
-are stored to disk.</doc>
+        <doc xml:space="preserve">Asynchronously ensures that all secrets inside @connection are stored to
+disk.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11508,12 +11512,17 @@ are stored to disk.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="unregister" c:identifier="nm_secret_agent_unregister">
+      <method name="unregister"
+              c:identifier="nm_secret_agent_unregister"
+              throws="1">
         <doc xml:space="preserve">Unregisters the #NMSecretAgent with the NetworkManager secret manager,
-indicating to NetworkManager that the agent is will no longer provide or
-store secrets on behalf of this user.</doc>
+indicating to NetworkManager that the agent will no longer provide or
+store secrets on behalf of this user.
+
+It is a programmer error to attempt to unregister an agent that is not
+registered.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a new %TRUE if unregistration was successful, %FALSE if it was not.</doc>
+          <doc xml:space="preserve">%TRUE if unregistration was successful, %FALSE on error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -11521,19 +11530,93 @@ store secrets on behalf of this user.</doc>
             <doc xml:space="preserve">a #NMSecretAgent</doc>
             <type name="SecretAgent" c:type="NMSecretAgent*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unregister_async"
+              c:identifier="nm_secret_agent_unregister_async">
+        <doc xml:space="preserve">Asynchronously unregisters the #NMSecretAgent with the NetworkManager secret
+manager, indicating to NetworkManager that the agent will no longer provide
+or store secrets on behalf of this user.
+
+It is a programmer error to attempt to unregister an agent that is not
+registered.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMSecretAgent</doc>
+            <type name="SecretAgent" c:type="NMSecretAgent*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">callback to call when the agent is unregistered</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data for @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unregister_finish"
+              c:identifier="nm_secret_agent_unregister_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_secret_agent_unregister_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if unregistration was successful, %FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMSecretAgent</doc>
+            <type name="SecretAgent" c:type="NMSecretAgent*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
         </parameters>
       </method>
       <property name="auto-register"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If TRUE, the agent will attempt to automatically register itself after
-it is created (via an idle handler) and to re-register itself if
-NetworkManager restarts.  If FALSE, the agent does not automatically
-register with NetworkManager, and nm_secret_agent_register() must be
-called.  If 'auto-register' is TRUE, calling nm_secret_agent_unregister()
-will suppress auto-registration until nm_secret_agent_register() is
-called, which re-enables auto-registration.</doc>
+        <doc xml:space="preserve">If %TRUE (the default), the agent will always be registered when
+NetworkManager is running; if NetworkManager exits and restarts, the
+agent will re-register itself automatically.
+
+In particular, if this property is %TRUE at construct time, then the
+agent will register itself with NetworkManager during
+construction/initialization, and initialization will fail with an error
+if the agent is unable to register itself.
+
+If the property is %FALSE, the agent will not automatically register with
+NetworkManager, and nm_secret_agent_register() or
+nm_secret_agent_register_async() must be called to register it.
+
+Calling nm_secret_agent_unregister() will suppress auto-registration
+until nm_secret_agent_register() is called, which re-enables
+auto-registration. This ensures that the agent remains un-registered when
+you expect it to be unregistered.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="capabilities"
@@ -11563,19 +11646,6 @@ of 3 characters.  An example valid identifier is 'org.gnome.nm-applet'
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <glib:signal name="registration-result" when="first">
-        <doc xml:space="preserve">Indicates the result of a registration request; if @error is NULL the
-request was successful.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="error" transfer-ownership="none">
-            <doc xml:space="preserve">the error, if any, that occured while registering</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
     </class>
     <bitfield name="SecretAgentCapabilities"
               glib:type-name="NMSecretAgentCapabilities"
@@ -11609,21 +11679,6 @@ VPN plugin authentication dialogs.</doc>
             glib:is-gtype-struct-for="SecretAgent">
       <field name="parent">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
-      </field>
-      <field name="registration_result">
-        <callback name="registration_result">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="agent" transfer-ownership="none">
-              <type name="SecretAgent" c:type="NMSecretAgent*"/>
-            </parameter>
-            <parameter name="error" transfer-ownership="none">
-              <type name="GLib.Error" c:type="GError*"/>
-            </parameter>
-          </parameters>
-        </callback>
       </field>
       <field name="get_secrets">
         <callback name="get_secrets">
@@ -11914,7 +11969,7 @@ something like this:
                 NM_SETTING_WIRELESS_SECURITY_PSK, "my really cool PSK",
                 NULL);
   nm_connection_add_setting (secrets, NM_SETTING (s_wsec));
-  secrets_hash = nm_connection_to_hash (secrets, NM_SETTING_HASH_FLAG_ALL);
+  secrets_hash = nm_connection_to_dbus (secrets, NM_CONNECTION_SERIALIZE_ALL);
 
   (call the NMSecretAgentGetSecretsFunc with secrets_hash)
 
@@ -11940,7 +11995,7 @@ has returned</doc>
         <parameter name="secrets" transfer-ownership="none">
           <doc xml:space="preserve">the #GHashTable containing
 the requested secrets in the same format as an #NMConnection hash (as
-created by nm_connection_to_hash() for example).  Each key in @secrets
+created by nm_connection_to_dbus() for example).  Each key in @secrets
 should be the name of a #NMSetting object (like "802-11-wireless-security")
 and each value should be a #GHashTable.  The sub-hashes map string:#GValue
 where the string is the setting property name (like "psk") and the value
@@ -12003,38 +12058,11 @@ has returned</doc>
            glib:type-struct="SettingClass">
       <doc xml:space="preserve">The NMSetting struct contains only private data.
 It should only be accessed through the functions described below.</doc>
-      <constructor name="new_from_hash"
-                   c:identifier="nm_setting_new_from_hash">
-        <doc xml:space="preserve">Creates a new #NMSetting object and populates that object with the properties
-contained in the hash table, using each hash key as the property to set,
-and each hash value as the value to set that property to.  Setting properties
-are strongly typed, thus the GValue type of the hash value must be correct.
-See the documentation on each #NMSetting object subclass for the correct
-property names and value types.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #NMSetting object populated with the properties from the
-hash table, or %NULL on failure</doc>
-          <type name="Setting" c:type="NMSetting*"/>
-        </return-value>
-        <parameters>
-          <parameter name="setting_type" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting type which the hash contains properties for</doc>
-            <type name="GType" c:type="GType"/>
-          </parameter>
-          <parameter name="hash" transfer-ownership="none">
-            <doc xml:space="preserve">the #GHashTable containing a
-string to GValue mapping of properties that apply to the setting</doc>
-            <type name="GLib.HashTable" c:type="GHashTable*">
-              <type name="utf8"/>
-              <type name="GObject.Value"/>
-            </type>
-          </parameter>
-        </parameters>
-      </constructor>
       <function name="lookup_type" c:identifier="nm_setting_lookup_type">
         <doc xml:space="preserve">Returns the #GType of the setting's class for a given setting name.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GType of the setting's class</doc>
+          <doc xml:space="preserve">the #GType of the setting's class, or %G_TYPE_INVALID if
+  @name is not recognized.</doc>
           <type name="GType" c:type="GType"/>
         </return-value>
         <parameters>
@@ -12049,7 +12077,8 @@ string to GValue mapping of properties that apply to the setting</doc>
         <doc xml:space="preserve">Returns the #GType of the setting's class for a given setting error quark.
 Useful for figuring out which setting a returned error is for.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GType of the setting's class</doc>
+          <doc xml:space="preserve">the #GType of the setting's class, or %G_TYPE_INVALID if
+  @error_quark is not recognized</doc>
           <type name="GType" c:type="GType"/>
         </return-value>
         <parameters>
@@ -12115,22 +12144,6 @@ Useful for figuring out which setting a returned error is for.</doc>
           <parameter name="out_flags" transfer-ownership="none">
             <type name="SettingSecretFlags" c:type="NMSettingSecretFlags*"/>
           </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="get_virtual_iface_name"
-                      invoker="get_virtual_iface_name">
-        <doc xml:space="preserve">Returns the name of the virtual kernel interface which the connection
-needs to use if specified in the settings.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">Name of the virtual interface or %NULL if the setting does not
-support this feature</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="need_secrets" invoker="need_secrets">
@@ -12389,22 +12402,6 @@ this setting, and if that property is secret), %FALSE if not</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_virtual_iface_name"
-              c:identifier="nm_setting_get_virtual_iface_name">
-        <doc xml:space="preserve">Returns the name of the virtual kernel interface which the connection
-needs to use if specified in the settings.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">Name of the virtual interface or %NULL if the setting does not
-support this feature</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="need_secrets" c:identifier="nm_setting_need_secrets">
         <doc xml:space="preserve">Returns an array of property names for each secret which may be required
 to make a successful connection.  The returned hints are only intended as a
@@ -12451,29 +12448,6 @@ this setting, and if that property is secret), %FALSE if not</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="to_hash" c:identifier="nm_setting_to_hash">
-        <doc xml:space="preserve">Converts the #NMSetting into a #GHashTable mapping each setting property
-name to a GValue describing that property, suitable for marshalling over
-D-Bus or serializing.  The mapping is string to GValue.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GHashTable
-describing the setting's properties</doc>
-          <type name="GLib.HashTable" c:type="GHashTable*">
-            <type name="utf8"/>
-            <type name="GObject.Value"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">hash flags, e.g. %NM_SETTING_HASH_FLAG_ALL</doc>
-            <type name="SettingHashFlags" c:type="NMSettingHashFlags"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="to_string" c:identifier="nm_setting_to_string">
         <doc xml:space="preserve">Convert the setting into a string.  For debugging purposes ONLY, should NOT
 be used for serialization of the setting, or machine-parsed in any way. The
@@ -12489,31 +12463,6 @@ free with g_free()</doc>
             <doc xml:space="preserve">the #NMSetting</doc>
             <type name="Setting" c:type="NMSetting*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="update_secrets"
-              c:identifier="nm_setting_update_secrets"
-              throws="1">
-        <doc xml:space="preserve">Update the setting's secrets, given a hash table of secrets intended for that
-setting (deserialized from D-Bus for example).</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the secrets were successfully updated, %FALSE on failure to
-update one or more of the secrets.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
-          <parameter name="secrets" transfer-ownership="none">
-            <doc xml:space="preserve">a #GHashTable mapping
-string to #GValue of setting property names and secrets</doc>
-            <type name="GLib.HashTable" c:type="GHashTable*">
-              <type name="utf8"/>
-              <type name="GObject.Value"/>
-            </type>
-          </parameter>
         </parameters>
       </method>
       <method name="verify" c:identifier="nm_setting_verify" throws="1">
@@ -12709,11 +12658,9 @@ CA certificate (LEAP for example), and those that can take advantage of the
 CA certificate allow it to be unset.  Note that lack of a CA certificate
 reduces security by allowing man-in-the-middle attacks, because the identity
 of the network cannot be confirmed by the client.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the CA certificate data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -12779,11 +12726,9 @@ certificates for verifying the network to client.</doc>
         <doc xml:space="preserve">Client certificates are used to identify the connecting client to the network
 when EAP-TLS is used as either the "phase 1" or "phase 2" 802.1x
 authentication method.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the client certificate data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -12948,13 +12893,11 @@ allowed EAP methods.</doc>
       </method>
       <method name="get_password_raw"
               c:identifier="nm_setting_802_1x_get_password_raw">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the password used by the authentication method as a
 UTF-8-encoded array of bytes, as specified by the
 #NMSetting8021x:password-raw property</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -13078,11 +13021,9 @@ a CA certificate (LEAP for example), and those that can take advantage of the
 CA certificate allow it to be unset.  Note that lack of a CA certificate
 reduces security by allowing man-in-the-middle attacks, because the identity
 of the network cannot be confirmed by the client.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the "phase 2" CA certificate data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -13150,11 +13091,9 @@ to add more CA certificates for verifying the network to client.</doc>
         <doc xml:space="preserve">Client certificates are used to identify the connecting client to the network
 when EAP-TLS is used as either the "phase 1" or "phase 2" 802.1x
 authentication method.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the "phase 2" client certificate data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -13206,11 +13145,9 @@ authentication method.
 WARNING: the phase2 private key property is not a "secret" property, and thus
 unencrypted private key data may be readable by unprivileged users.  Private
 keys should always be encrypted with a private key password.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the "phase 2" private key data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -13348,11 +13285,9 @@ authentication method.
 WARNING: the private key property is not a "secret" property, and thus
 unencrypted private key data may be readable by unprivileged users.  Private
 keys should always be encrypted with a private key password.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the private key data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -13845,13 +13780,14 @@ key password to prevent unauthorized access to unencrypted private key data.</do
         </parameters>
       </method>
       <property name="altsubject-matches"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">List of strings to be matched against the altSubjectName of the
 certificate presented by the authentication server. If the list is empty,
 no verification of the server certificate's altSubjectName is performed.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="anonymous-identity"
                 writable="1"
@@ -13861,10 +13797,7 @@ unencrypted identity with EAP types that support different tunneled
 identity like EAP-TTLS.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="ca-cert"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="ca-cert" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Contains the CA certificate if used by the EAP method specified in the
 #NMSetting8021x:eap property.
 
@@ -13879,7 +13812,7 @@ but this allows man-in-the-middle attacks and is NOT recommended.
 
 Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_ca_cert() function instead.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="ca-path" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">UTF-8 encoded path to a directory containing PEM or DER formatted
@@ -13887,10 +13820,7 @@ certificates to be added to the verification chain in addition to the
 certificate specified in the #NMSetting8021x:ca-cert property.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="client-cert"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="client-cert" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Contains the client certificate if used by the EAP method specified in
 the #NMSetting8021x:eap property.
 
@@ -13903,18 +13833,17 @@ with the string "file://" and ending with a terminating NUL byte.
 
 Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_client_cert() function instead.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
-      <property name="eap"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="eap" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The allowed EAP method to be used when authenticating to the network with
 802.1x.  Valid methods are: "leap", "md5", "tls", "peap", "ttls", "pwd",
 and "fast".  Each method requires different configuration using the
 properties of this setting; refer to wpa_supplicant documentation for the
 allowed combinations.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="identity" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Identity string for EAP authentication methods.  Often the user's user or
@@ -13935,15 +13864,12 @@ property are specified, #NMSetting8021x:password is preferred.</doc>
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:password property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="password-raw"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="password-raw" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Password used for EAP authentication methods, given as a byte array to
 allow passwords in other encodings than UTF-8 to be used. If both the
 #NMSetting8021x:password property and the #NMSetting8021x:password-raw
 property are specified, #NMSetting8021x:password is preferred.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="password-raw-flags"
                 writable="1"
@@ -13979,14 +13905,15 @@ version.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="phase2-altsubject-matches"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">List of strings to be matched against the altSubjectName of the
 certificate presented by the authentication server during the inner
 "phase 2" authentication. If the list is empty, no verification of the
 server certificate's altSubjectName is performed.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="phase2-auth" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Specifies the allowed "phase 2" inner non-EAP authentication methods when
@@ -14006,10 +13933,7 @@ requires specific parameters for successful authentication; see the
 wpa_supplicant documentation for more details.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="phase2-ca-cert"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="phase2-ca-cert" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Contains the "phase 2" CA certificate if used by the EAP method specified
 in the #NMSetting8021x:phase2-auth or #NMSetting8021x:phase2-autheap
 properties.
@@ -14025,7 +13949,7 @@ but this allows man-in-the-middle attacks and is NOT recommended.
 
 Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_ca_cert() function instead.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="phase2-ca-path" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">UTF-8 encoded path to a directory containing PEM or DER formatted
@@ -14034,7 +13958,6 @@ certificate specified in the #NMSetting8021x:phase2-ca-cert property.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="phase2-client-cert"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Contains the "phase 2" client certificate if used by the EAP method
@@ -14052,10 +13975,9 @@ but this allows man-in-the-middle attacks and is NOT recommended.
 
 Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_client_cert() function instead.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="phase2-private-key"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Contains the "phase 2" inner private key when the
@@ -14079,7 +14001,7 @@ the password used to decode the PKCS#12 private key and certificate.
 
 Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_private_key() function instead.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="phase2-private-key-password"
                 writable="1"
@@ -14116,10 +14038,7 @@ certificate's subject is performed.</doc>
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:pin property.</doc>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="private-key"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="private-key" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Contains the private key when the #NMSetting8021x:eap property is set to
 "tls".
 
@@ -14146,7 +14065,7 @@ unencrypted private key data using the BLOB scheme may be readable by
 unprivileged users.  Private keys should always be encrypted with a
 private key password to prevent unauthorized access to unencrypted
 private key data.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="private-key-password"
                 writable="1"
@@ -14489,9 +14408,7 @@ required</doc>
 describes a connection to.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the Bluetooth address</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -14515,12 +14432,9 @@ either DUN to a DUN-capable device or PANU to a NAP-capable device).</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="bdaddr"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="bdaddr" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The Bluetooth address of the device.</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="type" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Either "dun" for Dial-Up Networking connections or "panu" for Personal
@@ -14643,19 +14557,6 @@ list, %FALSE if it was not.</doc>
             <doc xml:space="preserve">value for the option</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
-        </parameters>
-      </method>
-      <method name="get_interface_name"
-              c:identifier="nm_setting_bond_get_interface_name">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #NMSettingBond:interface-name property of the setting</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSettingBond</doc>
-            <type name="SettingBond" c:type="NMSettingBond*"/>
-          </instance-parameter>
         </parameters>
       </method>
       <method name="get_num_options"
@@ -14788,18 +14689,14 @@ list, %FALSE if it was not.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="interface-name" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The name of the virtual in-kernel bonding network interface</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="options"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="options" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Dictionary of key/value pairs of bonding options.  Both keys and values
 must be strings. Option names must contain only alphanumeric characters
 (ie, [a-zA-Z0-9]).</doc>
-        <type/>
+        <type name="GLib.HashTable">
+          <type name="utf8"/>
+          <type name="utf8"/>
+        </type>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
@@ -14912,26 +14809,11 @@ required</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_interface_name"
-              c:identifier="nm_setting_bridge_get_interface_name">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #NMSettingBridge:interface-name property of the setting</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSettingBridge</doc>
-            <type name="SettingBridge" c:type="NMSettingBridge*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_mac_address"
               c:identifier="nm_setting_bridge_get_mac_address">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingBridge:mac-address property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -14998,18 +14880,11 @@ required</doc>
         <doc xml:space="preserve">The Spanning Tree Protocol (STP) hello time, in seconds.</doc>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="interface-name" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The name of the virtual in-kernel bridging network interface</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="mac-address"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, the MAC address of bridge. When creating a new bridge, this
 MAC address will be set. When matching an existing (outside
 NetworkManager created) bridge, this MAC address must match.</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="max-age"
                 writable="1"
@@ -15484,21 +15359,6 @@ free the elements.</doc>
             </parameter>
             <parameter name="flags" transfer-ownership="none">
               <type name="SettingCompareFlags" c:type="NMSettingCompareFlags"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="get_virtual_iface_name">
-        <callback name="get_virtual_iface_name">
-          <return-value transfer-ownership="none">
-            <doc xml:space="preserve">Name of the virtual interface or %NULL if the setting does not
-support this feature</doc>
-            <type name="utf8" c:type="const char*"/>
-          </return-value>
-          <parameters>
-            <parameter name="setting" transfer-ownership="none">
-              <doc xml:space="preserve">the #NMSetting</doc>
-              <type name="Setting" c:type="NMSetting*"/>
             </parameter>
           </parameters>
         </callback>
@@ -16041,10 +15901,7 @@ connection may be applied to the wrong interface.</doc>
         <doc xml:space="preserve">Interface name of the master device or UUID of the master connection.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="permissions"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="permissions" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">An array of strings defining what access a given user has to this
 connection.  If this is %NULL or empty, all users are allowed to access
 this connection.  Otherwise a user is allowed to access this connection
@@ -16056,7 +15913,9 @@ ignored and reserved for future use.  [id] is the username that this
 permission refers to, which may not contain the ":" character. Any
 [reserved] information present must be ignored and is reserved for future
 use.  All of [type], [id], and [reserved] must be valid UTF-8.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="read-only"
                 writable="1"
@@ -16067,14 +15926,13 @@ service's D-Bus interface with the right privileges, or %TRUE if the
 connection is read-only and cannot be modified.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="secondaries"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="secondaries" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">List of connection UUIDs that should be activated when the base
 connection itself is activated. Currently only VPN connections are
 supported.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="slave-type" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Setting name of the device type of this slave's master connection (eg,
@@ -16629,25 +16487,30 @@ property includes the %NM_SETTING_DCB_FLAG_ENABLE flag.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="priority-bandwidth"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
 Priority (0 - 7) and the value indicates the percentage of bandwidth of
 the priority's assigned group that the priority may use.  The sum of all
 percentages for priorities which belong to the same group must total 100
-percent.</doc>
-        <type/>
+percent.
+
+Element-type: guint</doc>
+        <array name="GLib.Array">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="priority-flow-control"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+        <doc xml:space="preserve">An array of 8 boolean values, where the array index corresponds to the User
 Priority (0 - 7) and the value indicates whether or not the corresponding
-priority should transmit priority pause.  Allowed values are 0 (do not
-transmit pause) and 1 (transmit pause).</doc>
-        <type/>
+priority should transmit priority pause.
+
+Element-type: gboolean</doc>
+        <array name="GLib.Array">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="priority-flow-control-flags"
                 writable="1"
@@ -16658,14 +16521,17 @@ Flags may be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
         <type name="guint" c:type="guint"/>
       </property>
       <property name="priority-group-bandwidth"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the
 Priority Group ID (0 - 7) and the value indicates the percentage of link
 bandwidth allocated to that group.  Allowed values are 0 - 100, and the
-sum of all values must total 100 percent.</doc>
-        <type/>
+sum of all values must total 100 percent.
+
+Element-type: guint</doc>
+        <array name="GLib.Array">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="priority-group-flags"
                 writable="1"
@@ -16676,33 +16542,40 @@ any combination of %NM_SETTING_DCB_FLAG_ENABLE,
         <type name="guint" c:type="guint"/>
       </property>
       <property name="priority-group-id"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
 Priority (0 - 7) and the value indicates the Priority Group ID.  Allowed
-Priority Group ID values are 0 - 7 or 15 for the unrestricted group.</doc>
-        <type/>
+Priority Group ID values are 0 - 7 or 15 for the unrestricted group.
+
+Element-type: guint</doc>
+        <array name="GLib.Array">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="priority-strict-bandwidth"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
+        <doc xml:space="preserve">An array of 8 boolean values, where the array index corresponds to the User
 Priority (0 - 7) and the value indicates whether or not the priority may
-use all of the bandwidth allocated to its assigned group.  Allowed values
-are 0 (the priority may not utilize all bandwidth) or 1 (the priority may
-utilize all bandwidth).</doc>
-        <type/>
+use all of the bandwidth allocated to its assigned group.
+
+Element-type: gboolean</doc>
+        <array name="GLib.Array">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="priority-traffic-class"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">An array of 8 uint values, where the array index corresponds to the User
 Priority (0 - 7) and the value indicates the traffic class (0 - 7) to
-which the priority is mapped.</doc>
-        <type/>
+which the priority is mapped.
+
+Element-type: guint</doc>
+        <array name="GLib.Array">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
@@ -17035,17 +16908,6 @@ is required</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="allowed-bands"
-                deprecated="1"
-                deprecated-version="0.9.10"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">(Unused)</doc>
-        <doc-deprecated xml:space="preserve">No longer used. Band setting should be done by
-talking to ModemManager directly.</doc-deprecated>
-        <type name="guint" c:type="guint"/>
-      </property>
       <property name="apn" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The GPRS Access Point Name specifying the APN used when establishing a
 data session with the GSM-based network.  The APN often determines how
@@ -17068,17 +16930,6 @@ attempt to force the device to register only on the specified network.
 This can be used to ensure that the device does not roam when direct
 roaming control of the device is not otherwise possible.</doc>
         <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="network-type"
-                deprecated="1"
-                deprecated-version="0.9.10"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">(Unused)</doc>
-        <doc-deprecated xml:space="preserve">No longer used. Network type setting should be done
-by talking to ModemManager directly.</doc-deprecated>
-        <type name="gint" c:type="gint"/>
       </property>
       <property name="number" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Number to dial when establishing a PPP data session with the GSM-based
@@ -17168,31 +17019,6 @@ is missing in the connection</doc>
         </return-value>
       </function>
     </enumeration>
-    <enumeration name="SettingHashFlags"
-                 glib:type-name="NMSettingHashFlags"
-                 glib:get-type="nm_setting_hash_flags_get_type"
-                 c:type="NMSettingHashFlags">
-      <doc xml:space="preserve">These flags determine which properties are added to the resulting hash
-when calling nm_setting_to_hash().</doc>
-      <member name="all"
-              value="0"
-              c:identifier="NM_SETTING_HASH_FLAG_ALL"
-              glib:nick="all">
-        <doc xml:space="preserve">hash all properties (including secrets)</doc>
-      </member>
-      <member name="no_secrets"
-              value="1"
-              c:identifier="NM_SETTING_HASH_FLAG_NO_SECRETS"
-              glib:nick="no-secrets">
-        <doc xml:space="preserve">do not include secrets</doc>
-      </member>
-      <member name="only_secrets"
-              value="2"
-              c:identifier="NM_SETTING_HASH_FLAG_ONLY_SECRETS"
-              glib:nick="only-secrets">
-        <doc xml:space="preserve">only hash secrets</doc>
-      </member>
-    </enumeration>
     <class name="SettingIP4Config"
            c:symbol-prefix="setting_ip4_config"
            c:type="NMSettingIP4Config"
@@ -17240,8 +17066,8 @@ known</doc>
             <type name="SettingIP4Config" c:type="NMSettingIP4Config*"/>
           </instance-parameter>
           <parameter name="dns" transfer-ownership="none">
-            <doc xml:space="preserve">the IPv4 address (network byte order) of the DNS server to add</doc>
-            <type name="guint32" c:type="guint32"/>
+            <doc xml:space="preserve">the IPv4 address of the DNS server to add</doc>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -17400,9 +17226,8 @@ update DNS information for this machine.</doc>
       </method>
       <method name="get_dns" c:identifier="nm_setting_ip4_config_get_dns">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the IPv4 address (network byte order) of the DNS server at index
-@i</doc>
-          <type name="guint32" c:type="guint32"/>
+          <doc xml:space="preserve">the IPv4 address of the DNS server at index @i</doc>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -17633,8 +17458,7 @@ for IPv4 addressing</doc>
               c:identifier="nm_setting_ip4_config_remove_dns_by_value">
         <doc xml:space="preserve">Removes the DNS server @dns.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the DNS server was found and removed; %FALSE if it was not.
-domain was already known</doc>
+          <doc xml:space="preserve">%TRUE if the DNS server was found and removed; %FALSE if it was not.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -17644,7 +17468,7 @@ domain was already known</doc>
           </instance-parameter>
           <parameter name="dns" transfer-ownership="none">
             <doc xml:space="preserve">the DNS server to remove</doc>
-            <type name="guint32" c:type="guint32"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -17718,26 +17542,23 @@ domain was already known</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="address-labels"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="address-labels" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Internal use only.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
-      <property name="addresses"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Array of IPv4 address structures.  Each IPv4 address structure is
-composed of 3 32-bit values; the first being the IPv4 address (network
-byte order), the second the prefix (1 - 32), and last the IPv4 gateway
-(network byte order). The gateway may be left as 0 if no gateway exists
-for that subnet.  For the "auto" method, given IP addresses are appended
+      <property name="addresses" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of IPv4 addresses.  The gateway may be left as 0 if no gateway exists
+for that subnet.  For the 'auto' method, given IP addresses are appended
 to those returned by automatic configuration.  Addresses cannot be used
 with the "shared", "link-local", or "disabled" methods as addressing is
-either automatic or disabled with these methods.</doc>
-        <type/>
+either automatic or disabled with these methods.
+
+Element-Type: NMIP4Address</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="dhcp-client-id" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">A string sent to the DHCP server to identify the local machine which the
@@ -17760,28 +17581,26 @@ providing a static hostname for the computer.  If the
 %TRUE, the current persistent hostname of the computer is sent.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="dns"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">List of DNS servers (network byte order).  For the "auto" method, these
+      <property name="dns" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of IPv4 addresses of DNS servers.  For the 'auto' method, these
 DNS servers are appended to those (if any) returned by automatic
 configuration.  DNS servers cannot be used with the "shared",
 "link-local", or "disabled" methods as there is no upstream network.  In
 all other methods, these DNS servers are used as the only DNS servers for
 this connection.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
-      <property name="dns-search"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="dns-search" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">List of DNS search domains.  For the "auto" method, these search domains
 are appended to those returned by automatic configuration. Search domains
 cannot be used with the "shared", "link-local", or "disabled" methods as
 there is no upstream network.  In all other methods, these search domains
 are used as the only search domains for this connection.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="ignore-auto-dns"
                 writable="1"
@@ -17838,19 +17657,16 @@ This property must be set.</doc>
 meaning it will never be assigned the default route by NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="routes"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Array of IPv4 route structures.  Each IPv4 route structure is composed of
-4 32-bit values; the first being the destination IPv4 network or address
-(network byte order), the second the destination network or address
-prefix (1 - 32), the third being the next-hop (network byte order) if
-any, and the fourth being the route metric. For the "auto" method, given
-IP routes are appended to those returned by automatic configuration.
-Routes cannot be used with the "shared", "link-local", or "disabled"
-methods because there is no upstream network.</doc>
-        <type/>
+      <property name="routes" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of IPv4 routes. For the 'auto' method, given IP routes are appended
+to those returned by automatic configuration. Routes cannot be used with
+the 'shared', 'link-local', or 'disabled' methods because there is no
+upstream network.
+
+Element-Type: NMIP4Route</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
@@ -17955,7 +17771,7 @@ known</doc>
           </instance-parameter>
           <parameter name="dns" transfer-ownership="none">
             <doc xml:space="preserve">the IPv6 address of the DNS server to add</doc>
-            <type name="gpointer" c:type="const in6_addr*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -18082,7 +17898,7 @@ property.</doc>
       <method name="get_dns" c:identifier="nm_setting_ip6_config_get_dns">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the IPv6 address of the DNS server at index @i</doc>
-          <type name="gpointer" c:type="const in6_addr*"/>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -18339,7 +18155,7 @@ for IPv6 addressing</doc>
           </instance-parameter>
           <parameter name="dns" transfer-ownership="none">
             <doc xml:space="preserve">the IPv6 address of the DNS server to remove</doc>
-            <type name="gpointer" c:type="const in6_addr*"/>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -18413,50 +18229,42 @@ for IPv6 addressing</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="addresses"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Array of IPv6 address structures.  Each IPv6 address structure is
-composed of 3 members, the first being a byte array containing the IPv6
-address (network byte order), the second a 32-bit integer containing the
-IPv6 address prefix, and the third a byte array containing the IPv6
-address (network byte order) of the gateway associated with this address,
-if any.  If no gateway is given, the third element should be given as all
-zeros.  For the "auto" method, given IP addresses are appended to those
-returned by automatic configuration.  Addresses cannot be used with the
-"shared" or "link-local" methods as the interface is automatically
-assigned an address with these methods.</doc>
-        <type/>
+      <property name="addresses" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of IPv6 addresses.  For the 'auto' method, given IP addresses are
+appended to those returned by automatic configuration.  Addresses cannot
+be used with the 'shared' or 'link-local' methods as the interface is
+automatically assigned an address with these methods.
+
+Element-Type: NMIP6Address</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="dhcp-hostname" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The specified name will be sent to the DHCP server when acquiring a
 lease.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="dns"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Array of DNS servers, where each member of the array is a byte array
-containing the IPv6 address of the DNS server (in network byte order).
-For the "auto" method, these DNS servers are appended to those (if any)
-returned by automatic configuration.  DNS servers cannot be used with the
-"shared" or "link-local" methods as there is no usptream network. In all
-other methods, these DNS servers are used as the only DNS servers for
-this connection.</doc>
-        <type/>
+      <property name="dns" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of IPv6 addresses of DNS servers.  For the "auto" method, these DNS
+servers are appended to those (if any) returned by automatic
+configuration.  DNS servers cannot be used with the "shared" or
+"link-local" methods as there is no usptream network.  In all other
+methods, these DNS servers are used as the only DNS servers for this
+connection.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
-      <property name="dns-search"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="dns-search" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">List of DNS search domains.  For the "auto" method, these search domains
 are appended to those returned by automatic configuration. Search domains
 cannot be used with the "shared" or "link-local" methods as there is no
 upstream network.  In all other methods, these search domains are used as
 the only search domains for this connection.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="ignore-auto-dns"
                 writable="1"
@@ -18525,19 +18333,15 @@ meaning it will never be assigned the default IPv6 route by
 NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="routes"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Array of IPv6 route structures.  Each IPv6 route structure is composed of
-4 members; the first being the destination IPv6 network or address
-(network byte order) as a byte array, the second the destination network
-or address IPv6 prefix, the third being the next-hop IPv6 address
-(network byte order) if any, and the fourth being the route metric. For
-the "auto" method, given IP routes are appended to those returned by
-automatic configuration.  Routes cannot be used with the "shared" or
-"link-local" methods because there is no upstream network.</doc>
-        <type/>
+      <property name="routes" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of IPv6 routes. For the 'auto' method, given IP routes are appended
+to those returned by automatic configuration. Routes cannot be used with
+the 'shared' or 'link-local' methods because there is no upstream network.
+
+Element-Type: NMIP6Route</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
@@ -18645,9 +18449,7 @@ are enabled and temporary addresses are preferred over public addresses</doc>
               c:identifier="nm_setting_infiniband_get_mac_address">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingInfiniband:mac-address property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -18712,14 +18514,27 @@ a 16-bit unsigned integer.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="mac-address"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <method name="get_virtual_interface_name"
+              c:identifier="nm_setting_infiniband_get_virtual_interface_name">
+        <doc xml:space="preserve">Returns the interface name created by combining #NMSettingInfiniband:parent
+and #NMSettingInfiniband:p-key. (If either property is unset, this will
+return %NULL.)</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the interface name, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingInfiniband</doc>
+            <type name="SettingInfiniband" c:type="NMSettingInfiniband*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will only apply to the IPoIB device whose
 permanent MAC address matches. This property does not change the MAC
 address of the device (i.e. MAC spoofing).</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="mtu"
                 writable="1"
@@ -18833,9 +18648,7 @@ required</doc>
       <method name="get_dhcp_anycast_address"
               c:identifier="nm_setting_olpc_mesh_get_dhcp_anycast_address">
         <return-value transfer-ownership="none">
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -18844,10 +18657,8 @@ required</doc>
         </parameters>
       </method>
       <method name="get_ssid" c:identifier="nm_setting_olpc_mesh_get_ssid">
-        <return-value transfer-ownership="none">
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+        <return-value transfer-ownership="full">
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -18863,20 +18674,16 @@ required</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="dhcp-anycast-address"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Anycast DHCP MAC address used when requesting an IP address via DHCP.
 The specific anycast address used determines which DHCP server class
 answers the request.</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="ssid"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="ssid" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">SSID of the mesh network to join.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
@@ -19739,28 +19546,11 @@ setting requires the connection to contain an #NMSettingPpp setting</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_interface_name"
-              c:identifier="nm_setting_team_get_interface_name">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #NMSettingTeam:interface-name property of the setting</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSettingTeam</doc>
-            <type name="SettingTeam" c:type="NMSettingTeam*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <property name="config" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The JSON configuration for the team network interface.  The property
 should contain raw JSON configuration data suitable for teamd, because
 the value is passed directly to teamd. If not specified, the default
 configuration is used.  See man teamd.conf for the format details.</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="interface-name" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The name of the virtual in-kernel team network interface</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -20036,19 +19826,6 @@ overwrote the old value, %FALSE if error</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_interface_name"
-              c:identifier="nm_setting_vlan_get_interface_name">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #NMSettingVlan:interface_name property of the setting</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSettingVlan</doc>
-            <type name="SettingVlan" c:type="NMSettingVlan*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_num_priorities"
               c:identifier="nm_setting_vlan_get_num_priorities">
         <doc xml:space="preserve">Returns the number of entires in the
@@ -20193,13 +19970,14 @@ properties.</doc>
         </parameters>
       </method>
       <property name="egress-priority-map"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">For outgoing packets, a list of mappings from Linux SKB priorities to
 802.1p priorities.  The mapping is given in the format "from:to" where
 both "from" and "to" are unsigned integers, ie "7:3".</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="flags"
                 writable="1"
@@ -20218,24 +19996,14 @@ be assigned.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="ingress-priority-map"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">For incoming packets, a list of mappings from 802.1p priorities to Linux
 SKB priorities.  The mapping is given in the format "from:to" where both
 "from" and "to" are unsigned integers, ie "7:3".</doc>
-        <type/>
-      </property>
-      <property name="interface-name"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">If given, specifies the kernel name of the VLAN interface. If not given,
-a default name will be constructed from the interface described by the
-parent interface and the #NMSettingVlan:id property, eg "eth2.1". The
-parent interface may be given by the #NMSettingVlan:parent property or by
-the #NMSettingWired:mac-address property of an #NMSettingWired setting.</doc>
-        <type name="utf8" c:type="gchar*"/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="parent"
                 writable="1"
@@ -20541,21 +20309,21 @@ nm_setting_vpn_add_secret().</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="data"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="data" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Dictionary of key/value pairs of VPN plugin specific data.  Both keys and
 values must be strings.</doc>
-        <type/>
+        <type name="GLib.HashTable">
+          <type name="utf8"/>
+          <type name="utf8"/>
+        </type>
       </property>
-      <property name="secrets"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="secrets" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Dictionary of key/value pairs of VPN plugin specific secrets like
 passwords or private keys.  Both keys and values must be strings.</doc>
-        <type/>
+        <type name="GLib.HashTable">
+          <type name="utf8"/>
+          <type name="utf8"/>
+        </type>
       </property>
       <property name="service-type" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">D-Bus service name of the VPN plugin that this setting uses to connect to
@@ -20640,9 +20408,7 @@ required</doc>
 to.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the MAC address</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -20666,14 +20432,11 @@ specific WiMAX network this setting describes a connection to.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="mac-address"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will only apply to the WiMAX device whose
 MAC address matches. This property does not change the MAC address of the
 device (known as MAC spoofing).</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="network-name" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Network Service Provider (NSP) name of the WiMAX network this connection
@@ -20817,9 +20580,7 @@ list, %FALSE if it was not.</doc>
               c:identifier="nm_setting_wired_get_cloned_mac_address">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWired:cloned-mac-address property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -20844,9 +20605,7 @@ list, %FALSE if it was not.</doc>
               c:identifier="nm_setting_wired_get_mac_address">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWired:mac-address property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -20861,9 +20620,7 @@ list, %FALSE if it was not.</doc>
           <doc xml:space="preserve">the #NMSettingWired:mac-address-blacklist
 property of the setting</doc>
           <type name="GLib.SList" c:type="const GSList*">
-            <array name="GLib.ByteArray">
-              <type name="gpointer" c:type="gpointer"/>
-            </array>
+            <type name="utf8"/>
           </type>
         </return-value>
         <parameters>
@@ -21026,9 +20783,9 @@ setting; the value is owned by the setting and must not be modified</doc>
 connection is applicable to.  The connection should only be used in
 conjunction with that device.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">#GPtrArray of strings, each specifying one
-subchannel the s390 device uses to communicate to the host.</doc>
-          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+          <doc xml:space="preserve">array of strings, each specifying
+  one subchannel the s390 device uses to communicate to the host.</doc>
+          <array c:type="const char* const*">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -21133,36 +20890,33 @@ list, %FALSE if it was not.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="cloned-mac-address"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">If specified, request that the device use this MAC address instead of its
 permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="duplex" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, request that the device only use the specified duplex mode.
 Either "half" or "full".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="mac-address"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will only apply to the Ethernet device
 whose permanent MAC address matches. This property does not change the
 MAC address of the device (i.e. MAC spoofing).</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="mac-address-blacklist"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will never apply to the Ethernet device
 whose permanent MAC address matches an address in the list.  Each MAC
 address is in the standard hex-digits-and-colons notation
 (00:11:22:33:44:55).</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="mtu"
                 writable="1"
@@ -21184,20 +20938,17 @@ If the device supports only one port type, this setting is ignored.</doc>
 the different types of virtual network devices available on s390 systems.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="s390-options"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="s390-options" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Dictionary of key/value pairs of s390-specific device options.  Both keys
 and values must be strings.  Allowed keys include "portno", "layer2",
 "portname", "protocol", among others.  Key names must contain only
 alphanumeric characters (ie, [a-zA-Z0-9]).</doc>
-        <type/>
+        <type name="GLib.HashTable">
+          <type name="utf8"/>
+          <type name="utf8"/>
+        </type>
       </property>
-      <property name="s390-subchannels"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="s390-subchannels" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Identifies specific subchannels that this network device uses for
 communication with z/VM or s390 host.  Like the
 #NMSettingWired:mac-address property for non-z/VM devices, this property
@@ -21205,7 +20956,9 @@ can be used to ensure this connection only applies to the network device
 that uses these subchannels.  The list should contain exactly 3 strings,
 and each string may only be composed of hexadecimal characters and the
 period (.) character.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="speed"
                 writable="1"
@@ -21388,9 +21141,7 @@ capabilities</doc>
       <method name="get_bssid" c:identifier="nm_setting_wireless_get_bssid">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWireless:bssid property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21416,9 +21167,7 @@ capabilities</doc>
               c:identifier="nm_setting_wireless_get_cloned_mac_address">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWireless:cloned-mac-address property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21443,9 +21192,7 @@ capabilities</doc>
               c:identifier="nm_setting_wireless_get_mac_address">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWireless:mac-address property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21460,9 +21207,7 @@ capabilities</doc>
           <doc xml:space="preserve">the
 #NMSettingWireless:mac-address-blacklist property of the setting</doc>
           <type name="GLib.SList" c:type="const GSList*">
-            <array name="GLib.ByteArray">
-              <type name="gpointer" c:type="gpointer"/>
-            </array>
+            <type name="utf8"/>
           </type>
         </return-value>
         <parameters>
@@ -21570,11 +21315,9 @@ at index @idx</doc>
         </parameters>
       </method>
       <method name="get_ssid" c:identifier="nm_setting_wireless_get_ssid">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the #NMSettingWireless:ssid property of the setting</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21641,15 +21384,12 @@ settings are compatible.  This setting depends on specific driver
 capability and may not work with all drivers.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="bssid"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="bssid" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, directs the device to only associate with the given access
 point.  This capability is highly driver dependent and not supported by
 all devices.  Note: this property does not control the BSSID used when
 creating an Ad-Hoc network and is unlikely to in the future.</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="channel"
                 writable="1"
@@ -21662,12 +21402,11 @@ also requires the "band" property to be set.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="cloned-mac-address"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">If specified, request that the Wi-Fi device use this MAC address instead
 of its permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="hidden" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If %TRUE, indicates this network is a non-broadcasting network that hides
@@ -21677,23 +21416,21 @@ these workarounds expose inherent insecurities with hidden SSID networks,
 and thus hidden SSID networks should be used with caution.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="mac-address"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will only apply to the Wi-Fi device whose
 permanent MAC address matches. This property does not change the MAC
 address of the device (i.e. MAC spoofing).</doc>
-        <type/>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="mac-address-blacklist"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">A list of permanent MAC addresses of Wi-Fi devices to which this
 connection should never apply.  Each MAC address should be given in the
 standard hex-digits-and-colons notation (eg "00:11:22:33:44:55").</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="mode" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Wi-Fi network mode; one of "infrastructure", "adhoc" or "ap".  If blank,
@@ -21718,35 +21455,20 @@ Mbit/s.  This property is highly driver dependent and not all devices
 support setting a static bitrate.</doc>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="security"
-                deprecated="1"
-                deprecated-version="0.9.10"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">(Unused)</doc>
-        <doc-deprecated xml:space="preserve">No longer used. Security restrictions are recognized
-by the presence of a #NMSettingWirelessSecurity setting in the
-connection.</doc-deprecated>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="seen-bssids"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="seen-bssids" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">A list of BSSIDs (each BSSID formatted as a MAC address like
 "00:11:22:33:44:55") that have been detected as part of the Wi-Fi
 network.  NetworkManager internally tracks previously seen BSSIDs. The
 property is only meant for reading and reflects the BSSID list of
 NetworkManager. The changes you make to this property will not be
 preserved.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
-      <property name="ssid"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="ssid" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">SSID of the Wi-Fi network. Must be specified.</doc>
-        <type/>
+        <type name="GLib.Bytes"/>
       </property>
       <property name="tx-power"
                 writable="1"
@@ -22359,15 +22081,14 @@ using Cisco LEAP (ie, key-mgmt = "ieee8021x" and auth-alg = "leap") the
 "leap-username" and "leap-password" properties must be specified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="group"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="group" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">A list of group/broadcast encryption algorithms which prevents
 connections to Wi-Fi networks that do not utilize one of the algorithms
 in the list.  For maximum compatibility leave this property empty.  Each
 list element may be one of "wep40", "wep104", "tkip", or "ccmp".</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="key-mgmt" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Key management used for the connection.  One of "none" (WEP), "ieee8021x"
@@ -22393,24 +22114,22 @@ any Wi-Fi connection that uses security.</doc>
 "ieee8021x" and auth-alg = "leap").</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="pairwise"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="pairwise" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">A list of pairwise encryption algorithms which prevents connections to
 Wi-Fi networks that do not utilize one of the algorithms in the list.
 For maximum compatibility leave this property empty.  Each list element
 may be one of "tkip" or "ccmp".</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
-      <property name="proto"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
+      <property name="proto" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">List of strings specifying the allowed WPA protocol versions to use.
 Each element may be one "wpa" (allow WPA) or "rsn" (allow WPA2/RSN).  If
 not specified, both WPA and RSN connections are allowed.</doc>
-        <type/>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="psk" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Pre-Shared-Key for WPA networks.  If the key is 64-characters long, it
@@ -22583,11 +22302,11 @@ and properties as the source #NMConnection</doc>
           </parameter>
         </parameters>
       </function>
-      <function name="new_from_hash"
-                c:identifier="nm_simple_connection_new_from_hash"
+      <function name="new_from_dbus"
+                c:identifier="nm_simple_connection_new_from_dbus"
                 throws="1">
         <doc xml:space="preserve">Creates a new #NMSimpleConnection from a hash table describing the
-connection.  See nm_connection_to_hash() for a description of the expected
+connection.  See nm_connection_to_dbus() for a description of the expected
 hash table.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new #NMSimpleConnection object, populated with
@@ -22625,11 +22344,6 @@ the connection</doc>
         </array>
       </field>
     </record>
-    <glib:boxed glib:name="Ssid"
-                c:symbol-prefix="ssid"
-                glib:type-name="NMSsid"
-                glib:get-type="nm_ssid_get_type">
-    </glib:boxed>
     <enumeration name="State"
                  glib:type-name="NMState"
                  glib:get-type="nm_state_get_type"
@@ -22686,11 +22400,6 @@ the connection</doc>
         <doc xml:space="preserve">there is global IPv4 and/or IPv6 Internet connectivity</doc>
       </member>
     </enumeration>
-    <glib:boxed glib:name="StringArray"
-                c:symbol-prefix="string_array"
-                glib:type-name="NMStringArray"
-                glib:get-type="nm_string_array_get_type">
-    </glib:boxed>
     <constant name="UTILS_HWADDR_LEN_MAX"
               value="20"
               c:type="NM_UTILS_HWADDR_LEN_MAX">
@@ -22698,11 +22407,6 @@ the connection</doc>
 nm_utils_hwaddr_len(), and nm_utils_hwaddr_aton().</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <glib:boxed glib:name="UintArray"
-                c:symbol-prefix="uint_array"
-                glib:type-name="NMUintArray"
-                glib:get-type="nm_uint_array_get_type">
-    </glib:boxed>
     <enumeration name="UtilsSecurityType"
                  glib:type-name="NMUtilsSecurityType"
                  glib:get-type="nm_utils_security_type_get_type"
@@ -24062,7 +23766,7 @@ and will be overwritten by subsequent calls to this function</doc>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">length of the SSID data in @ssid</doc>
-          <type name="guint32" c:type="guint32"/>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
       </parameters>
     </function>
@@ -24538,7 +24242,7 @@ g_value_unset().</doc>
               c:identifier="nm_utils_ip6_dns_from_gvalue"
               introspectable="0">
       <doc xml:space="preserve">Converts a #GValue containing a #GPtrArray of IP6 DNS, represented as
-#GByteArrays into a #GSList of &lt;literal&gt;&lt;type&gt;struct in6_addr&lt;/type&gt;&lt;/literal&gt;s.</doc>
+#GByteArrays into a #GSList of IP address strings.</doc>
       <return-value>
         <doc xml:space="preserve">a #GSList of IP6 addresses.</doc>
         <type name="GLib.SList" c:type="GSList*">
@@ -24639,7 +24343,7 @@ number of known SSID-cloaking methods.</doc>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">length of the SSID data in @ssid</doc>
-          <type name="gint" c:type="int"/>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
       </parameters>
     </function>
@@ -24672,9 +24376,11 @@ certificate/private key file.</doc>
       <parameters>
         <parameter name="data" transfer-ownership="none">
           <doc xml:space="preserve">RSA private key data to be encrypted</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+        <parameter name="len" transfer-ownership="none">
+          <doc xml:space="preserve">length of @data</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
         <parameter name="in_password"
                    transfer-ownership="none"
@@ -24711,9 +24417,11 @@ certificate/private key file.</doc>
       <parameters>
         <parameter name="data" transfer-ownership="none">
           <doc xml:space="preserve">RSA private key data to be encrypted</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+        <parameter name="len" transfer-ownership="none">
+          <doc xml:space="preserve">length of @data</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
         <parameter name="in_password"
                    transfer-ownership="none"
@@ -24747,16 +24455,20 @@ NULLs, even though that is functionally pointless.</doc>
       </return-value>
       <parameters>
         <parameter name="ssid1" transfer-ownership="none">
-          <doc xml:space="preserve">first SSID data to compare</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <doc xml:space="preserve">the first SSID to compare</doc>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+        <parameter name="len1" transfer-ownership="none">
+          <doc xml:space="preserve">length of the SSID data in @ssid1</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
         <parameter name="ssid2" transfer-ownership="none">
-          <doc xml:space="preserve">second SSID data to compare</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <doc xml:space="preserve">the second SSID to compare</doc>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+        <parameter name="len2" transfer-ownership="none">
+          <doc xml:space="preserve">length of the SSID data in @ssid2</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
         <parameter name="ignore_trailing_null" transfer-ownership="none">
           <doc xml:space="preserve">%TRUE to ignore one trailing NULL byte</doc>
@@ -24844,10 +24556,12 @@ Returns %NULL on errors.</doc>
       </return-value>
       <parameters>
         <parameter name="ssid" transfer-ownership="none">
-          <doc xml:space="preserve">a byte array containing the SSID data</doc>
-          <array name="GLib.ByteArray" c:type="const GByteArray*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
+          <doc xml:space="preserve">pointer to a buffer containing the SSID data</doc>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+        <parameter name="len" transfer-ownership="none">
+          <doc xml:space="preserve">length of the SSID data in @ssid</doc>
+          <type name="gsize" c:type="gsize"/>
         </parameter>
       </parameters>
     </function>
