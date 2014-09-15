@@ -181,7 +181,8 @@ namespace Tracker {
 		MONITOR,
 		IGNORE,
 		PRESERVE,
-		PRIORITY
+		PRIORITY,
+		NO_STAT
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cprefix = "TRACKER_FILTER_POLICY_", type_id = "tracker_filter_policy_get_type ()")]
 	public enum FilterPolicy {
