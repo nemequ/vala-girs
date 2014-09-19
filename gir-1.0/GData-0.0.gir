@@ -326,9 +326,10 @@ called with @progress_user_data as a parameter and can be used to free any memor
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_key" c:identifier="gdata_access_rule_get_key">
+      <method name="get_key"
+              c:identifier="gdata_access_rule_get_key"
+              version="0.16.0">
         <doc xml:space="preserve">Gets the #GDataAccessRule:key property.</doc>
-        <doc-version xml:space="preserve">UNRELEASED</doc-version>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the access rule's authorisation key, or %NULL</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -445,12 +446,11 @@ For more information, see the &lt;ulink type="http" url="http://www.atomenabled.
 Atom Publishing Protocol specification&lt;/ulink&gt;.</doc>
         <type name="gint64" c:type="gint64"/>
       </property>
-      <property name="key" transfer-ownership="none">
+      <property name="key" version="0.16.0" transfer-ownership="none">
         <doc xml:space="preserve">An optional authorisation key required to access this item with the given scope. If set, this restricts
 access to those principals who have a copy of the key. The key is generated server-side and cannot be
 modified by the client. If no authorisation key is set (and hence none is needed for access to the item),
 this will be %NULL.</doc>
-        <doc-version xml:space="preserve">UNRELEASED</doc-version>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="role"
@@ -19697,7 +19697,7 @@ For more information, see the
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MICRO_VERSION"
-              value="3"
+              value="1"
               c:type="GDATA_MICRO_VERSION"
               version="0.11.0">
       <doc xml:space="preserve">Evaluates to the micro version of the GData headers at compile time.
@@ -19705,7 +19705,7 @@ For more information, see the
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION"
-              value="15"
+              value="16"
               c:type="GDATA_MINOR_VERSION"
               version="0.11.0">
       <doc xml:space="preserve">Evaluates to the minor version of the GData headers at compile time.
@@ -26131,6 +26131,14 @@ and uploading the modified entry</doc>
               glib:nick="with-batch-operation">
         <doc xml:space="preserve">Generic error when running a batch operation and the whole operation fails</doc>
       </member>
+      <member name="api_quota_exceeded"
+              value="12"
+              c:identifier="GDATA_SERVICE_ERROR_API_QUOTA_EXCEEDED"
+              glib:nick="api-quota-exceeded">
+        <doc xml:space="preserve">The API request quota for this
+developer account has been exceeded for the current time period (e.g. day).
+Try again later. (Since: 0.16.0.)</doc>
+      </member>
       <function name="quark" c:identifier="gdata_service_error_quark">
         <return-value transfer-ownership="none">
           <type name="GLib.Quark" c:type="GQuark"/>
@@ -26139,6 +26147,29 @@ and uploading the modified entry</doc>
     </enumeration>
     <record name="ServicePrivate" c:type="GDataServicePrivate" disguised="1">
     </record>
+    <constant name="TASKS_STATUS_COMPLETED"
+              value="completed"
+              c:type="GDATA_TASKS_STATUS_COMPLETED"
+              version="0.16.0">
+      <doc xml:space="preserve">A value for #GDataTasksTask:status indicating the task has been completed.
+
+Reference:
+&lt;ulink type="http" url="https://developers.google.com/google-apps/tasks/v1/reference/tasks#status"&gt;
+Google Tasks documentation&lt;/ulink&gt;.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TASKS_STATUS_NEEDS_ACTION"
+              value="needsAction"
+              c:type="GDATA_TASKS_STATUS_NEEDS_ACTION"
+              version="0.16.0">
+      <doc xml:space="preserve">A value for #GDataTasksTask:status indicating the task still needs action
+before it is complete.
+
+Reference:
+&lt;ulink type="http" url="https://developers.google.com/google-apps/tasks/v1/reference/tasks#status"&gt;
+Google Tasks documentation&lt;/ulink&gt;.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <class name="TasksQuery"
            c:symbol-prefix="tasks_query"
            c:type="GDataTasksQuery"
@@ -26151,7 +26182,7 @@ and uploading the modified entry</doc>
       <constructor name="new"
                    c:identifier="gdata_tasks_query_new"
                    version="0.15.0">
-        <doc xml:space="preserve">Creates a new #GDataTasksQuery with its #GDataQuery:q property set to @q.</doc>
+        <doc xml:space="preserve">Creates a new #GDataTasksQuery. @q is unused and must be set to %NULL.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GDataTasksQuery</doc>
           <type name="TasksQuery" c:type="GDataTasksQuery*"/>
@@ -27484,16 +27515,22 @@ Set @status to %NULL to unset the property in the task.</doc>
                 version="0.15.0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Completion date of the task (as a RFC 3339 timestamp).
-This field is &lt;code class="literal"&gt;-1&lt;/code&gt; if the task has not been completed.</doc>
+        <doc xml:space="preserve">Completion date of the task (as a RFC 3339 timestamp; seconds since
+the UNIX epoch).
+
+This field is &lt;code class="literal"&gt;-1&lt;/code&gt; if the task has not
+been completed.</doc>
         <type name="gint64" c:type="gint64"/>
       </property>
       <property name="due"
                 version="0.15.0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Due date of the task (as a RFC 3339 timestamp).
-This field is &lt;code class="literal"&gt;-1&lt;/code&gt; if task has not due date asigned.</doc>
+        <doc xml:space="preserve">Due date of the task (as a RFC 3339 timestamp; seconds since the UNIX
+epoch).
+
+This field is &lt;code class="literal"&gt;-1&lt;/code&gt; if the task has no due
+date assigned.</doc>
         <type name="gint64" c:type="gint64"/>
       </property>
       <property name="is-deleted"
@@ -27531,7 +27568,8 @@ parent task (or at the top level). This field is read-only.</doc>
                 version="0.15.0"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Status of the task. This is either "needsAction" or "completed".</doc>
+        <doc xml:space="preserve">Status of the task. This is either %GDATA_TASKS_STATUS_NEEDS_ACTION
+or %GDATA_TASKS_STATUS_COMPLETED.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">

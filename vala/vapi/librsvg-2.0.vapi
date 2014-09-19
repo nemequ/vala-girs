@@ -95,7 +95,8 @@ namespace Rsvg {
 	[Flags]
 	public enum HandleFlags {
 		FLAGS_NONE,
-		FLAG_UNLIMITED
+		FLAG_UNLIMITED,
+		FLAG_KEEP_IMAGE_DATA
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_ERROR_")]
 	public errordomain Error {

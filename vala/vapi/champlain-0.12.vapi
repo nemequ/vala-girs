@@ -111,14 +111,14 @@ namespace Champlain {
 		public Label.full (string text, Clutter.Actor actor);
 		public Pango.Alignment get_alignment ();
 		public Pango.AttrList get_attributes ();
-		public Clutter.Color get_color ();
+		public Clutter.Color? get_color ();
 		public bool get_draw_background ();
 		public Pango.EllipsizeMode get_ellipsize ();
 		public unowned string get_font_name ();
 		public unowned Clutter.Actor get_image ();
 		public bool get_single_line_mode ();
 		public unowned string get_text ();
-		public Clutter.Color get_text_color ();
+		public Clutter.Color? get_text_color ();
 		public bool get_use_markup ();
 		public bool get_wrap ();
 		public Pango.WrapMode get_wrap_mode ();
@@ -255,8 +255,8 @@ namespace Champlain {
 		public bool get_draggable ();
 		public bool get_selectable ();
 		public bool get_selected ();
-		public static Clutter.Color get_selection_color ();
-		public static Clutter.Color get_selection_text_color ();
+		public static unowned Clutter.Color? get_selection_color ();
+		public static unowned Clutter.Color? get_selection_text_color ();
 		public void set_draggable (bool value);
 		public void set_selectable (bool value);
 		public void set_selected (bool value);
@@ -265,10 +265,10 @@ namespace Champlain {
 		public bool draggable { get; set; }
 		public bool selectable { get; set; }
 		public bool selected { get; set; }
-		public signal void button_press (Clutter.Event object);
-		public signal void button_release (Clutter.Event object);
-		public signal void drag_finish (Clutter.Event object);
-		public signal void drag_motion (double object, double p0, Clutter.Event p1);
+		public signal void button_press (Clutter.Event event);
+		public signal void button_release (Clutter.Event event);
+		public signal void drag_finish (Clutter.Event event);
+		public signal void drag_motion (double dx, double dy, Clutter.Event event);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_marker_layer_get_type ()")]
 	public class MarkerLayer : Champlain.Layer, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
@@ -347,10 +347,10 @@ namespace Champlain {
 		public bool get_closed ();
 		public GLib.List<weak uint> get_dash ();
 		public bool get_fill ();
-		public Clutter.Color get_fill_color ();
+		public Clutter.Color? get_fill_color ();
 		public GLib.List<weak Champlain.Location> get_nodes ();
 		public bool get_stroke ();
-		public Clutter.Color get_stroke_color ();
+		public Clutter.Color? get_stroke_color ();
 		public double get_stroke_width ();
 		public bool get_visible ();
 		public void insert_node (Champlain.Location location, uint position);
@@ -378,7 +378,7 @@ namespace Champlain {
 		public Point ();
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public Point.full (double size, Clutter.Color color);
-		public Clutter.Color get_color ();
+		public Clutter.Color? get_color ();
 		public double get_size ();
 		public void set_color (Clutter.Color? color);
 		public void set_size (double size);
@@ -414,7 +414,7 @@ namespace Champlain {
 		public unowned Clutter.Actor get_content ();
 		public unowned string get_etag ();
 		public bool get_fade_in ();
-		public GLib.TimeVal get_modified_time ();
+		public unowned GLib.TimeVal? get_modified_time ();
 		public uint get_size ();
 		public Champlain.State get_state ();
 		public uint get_x ();
@@ -611,6 +611,7 @@ namespace Champlain {
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_MFF_RELIEF")]
 	public const string MAP_SOURCE_MFF_RELIEF;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OAM")]
+	[Deprecated]
 	public const string MAP_SOURCE_OAM;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_AERIAL_MAP")]
 	public const string MAP_SOURCE_OSM_AERIAL_MAP;
@@ -621,6 +622,7 @@ namespace Champlain {
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_MAPQUEST")]
 	public const string MAP_SOURCE_OSM_MAPQUEST;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_OSMARENDER")]
+	[Deprecated]
 	public const string MAP_SOURCE_OSM_OSMARENDER;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_TRANSPORT_MAP")]
 	public const string MAP_SOURCE_OSM_TRANSPORT_MAP;
