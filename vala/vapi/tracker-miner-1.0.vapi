@@ -46,7 +46,7 @@ namespace Tracker {
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_indexing_tree_get_type ()")]
 	public class IndexingTree : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public IndexingTree (GLib.File root);
+		public IndexingTree ();
 		public void add (GLib.File directory, Tracker.DirectoryFlags flags);
 		public void add_filter (Tracker.FilterType filter, string glob_string);
 		public void clear_filters (Tracker.FilterType type);
@@ -62,6 +62,8 @@ namespace Tracker {
 		public void remove (GLib.File directory);
 		public void set_default_policy (Tracker.FilterType filter, Tracker.FilterPolicy policy);
 		public void set_filter_hidden (bool filter_hidden);
+		[CCode (has_construct_function = false)]
+		public IndexingTree.with_root (GLib.File root);
 		public bool filter_hidden { get; set; }
 		[NoAccessorMethod]
 		public GLib.File root { owned get; construct; }

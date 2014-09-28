@@ -1921,6 +1921,23 @@ operation is effectively cancelled the signal
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_allow_overwrite"
+              c:identifier="webkit_download_get_allow_overwrite"
+              version="2.6">
+        <doc xml:space="preserve">Returns the current value of the #WebKitDownload:allow-overwrite property,
+which determines whether the download will overwrite an existing file on
+disk, or if it will fail if the destination already exists.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the current value of the #WebKitDownload:allow-overwrite property</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="download" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitDownload</doc>
+            <type name="Download" c:type="WebKitDownload*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_destination"
               c:identifier="webkit_download_get_destination">
         <doc xml:space="preserve">Obtains the URI to which the downloaded file will be written. You
@@ -2030,6 +2047,26 @@ signal to be notified when the response is received.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="set_allow_overwrite"
+              c:identifier="webkit_download_set_allow_overwrite"
+              version="2.6">
+        <doc xml:space="preserve">Sets the #WebKitDownload:allow-overwrite property, which determines whether
+the download may overwrite an existing file on disk, or if it will fail if
+the destination already exists.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="download" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitDownload</doc>
+            <type name="Download" c:type="WebKitDownload*"/>
+          </instance-parameter>
+          <parameter name="allowed" transfer-ownership="none">
+            <doc xml:space="preserve">the new value for the #WebKitDownload:allow-overwrite property</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_destination"
               c:identifier="webkit_download_set_destination">
         <doc xml:space="preserve">Sets the URI to which the downloaded file will be written.
@@ -2059,6 +2096,15 @@ the file will be saved with the filename suggested by the server in
           </parameter>
         </parameters>
       </method>
+      <property name="allow-overwrite"
+                version="2.6"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether or not the download is allowed to overwrite an existing file on
+disk. If this property is %FALSE and the destination already exists,
+the download will fail.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="destination" transfer-ownership="none">
         <doc xml:space="preserve">The local URI to where the download will be saved.</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -3672,13 +3718,13 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="0" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="5" c:type="WEBKIT_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="6" c:type="WEBKIT_MINOR_VERSION">
       <doc xml:space="preserve">Like webkit_get_minor_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -5190,7 +5236,7 @@ display these URIs unless they are from the same scheme.</doc>
       <method name="register_uri_scheme_as_empty_document"
               c:identifier="webkit_security_manager_register_uri_scheme_as_empty_document">
         <doc xml:space="preserve">Register @scheme as an empty document scheme. This means that
-they are allowd to commit synchronously.</doc>
+they are allowed to commit synchronously.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7684,6 +7730,22 @@ be 0 if the server provided an incorrect or missing Content-Length.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_http_headers"
+              c:identifier="webkit_uri_response_get_http_headers"
+              version="2.6">
+        <doc xml:space="preserve">Get the HTTP headers of a #WebKitURIResponse as a #SoupMessageHeaders.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #SoupMessageHeaders with the HTTP headers of @response
+   or %NULL if @response is not an HTTP response.</doc>
+          <type name="Soup.MessageHeaders" c:type="SoupMessageHeaders*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="response" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitURIResponse</doc>
+            <type name="URIResponse" c:type="WebKitURIResponse*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_mime_type"
               c:identifier="webkit_uri_response_get_mime_type">
         <return-value transfer-ownership="none">
@@ -7746,6 +7808,10 @@ present.</doc>
       <property name="content-length" transfer-ownership="none">
         <doc xml:space="preserve">The expected content length of the response.</doc>
         <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="http-headers" version="2.6" transfer-ownership="none">
+        <doc xml:space="preserve">The HTTP headers of the response, or %NULL if the response is not an HTTP response.</doc>
+        <type name="Soup.MessageHeaders"/>
       </property>
       <property name="mime-type" transfer-ownership="none">
         <doc xml:space="preserve">The MIME type of the response.</doc>
@@ -9808,15 +9874,15 @@ in the view by the user content manager.</doc>
           <instance-parameter name="web_view" transfer-ownership="none">
             <type name="WebView" c:type="WebKitWebView*"/>
           </instance-parameter>
+          <parameter name="failing_uri" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
           <parameter name="certificate" transfer-ownership="none">
             <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
           </parameter>
           <parameter name="errors" transfer-ownership="none">
             <type name="Gio.TlsCertificateFlags"
                   c:type="GTlsCertificateFlags"/>
-          </parameter>
-          <parameter name="host" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -11544,8 +11610,8 @@ You need to handle the signal if you want to provide your own error page.</doc>
                    when="last"
                    version="2.6">
         <doc xml:space="preserve">Emitted when a TLS error occurs during a load operation.
-To allow an exception for this certificate
-and this host use webkit_web_context_allow_tls_certificate_for_host().
+To allow an exception for this @certificate
+and the host of @failing_uri use webkit_web_context_allow_tls_certificate_for_host().
 
 To handle this signal asynchronously you should call g_object_ref() on @certificate
 and return %TRUE.
@@ -11558,6 +11624,10 @@ will finish regardless of the returned value.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
+          <parameter name="failing_uri" transfer-ownership="none">
+            <doc xml:space="preserve">the URI that failed to load</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
           <parameter name="certificate" transfer-ownership="none">
             <doc xml:space="preserve">a #GTlsCertificate</doc>
             <type name="Gio.TlsCertificate"/>
@@ -11565,10 +11635,6 @@ will finish regardless of the returned value.</doc>
           <parameter name="errors" transfer-ownership="none">
             <doc xml:space="preserve">a #GTlsCertificateFlags with the verification status of @certificate</doc>
             <type name="Gio.TlsCertificateFlags"/>
-          </parameter>
-          <parameter name="host" transfer-ownership="none">
-            <doc xml:space="preserve">the host on which the error occurred</doc>
-            <type name="utf8" c:type="gchar*"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -12193,15 +12259,15 @@ form has not been submitted, webkit_form_submission_request_submit() will be cal
             <parameter name="web_view" transfer-ownership="none">
               <type name="WebView" c:type="WebKitWebView*"/>
             </parameter>
+            <parameter name="failing_uri" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
             <parameter name="certificate" transfer-ownership="none">
               <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
             </parameter>
             <parameter name="errors" transfer-ownership="none">
               <type name="Gio.TlsCertificateFlags"
                     c:type="GTlsCertificateFlags"/>
-            </parameter>
-            <parameter name="host" transfer-ownership="none">
-              <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
         </callback>
