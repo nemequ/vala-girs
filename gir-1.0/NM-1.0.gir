@@ -13,16 +13,6 @@ and/or use gtk-doc annotations.  -->
              shared-library="libnm.so.0"
              c:identifier-prefixes="NM"
              c:symbol-prefixes="nm">
-    <alias name="RemoteConnectionCommitFunc"
-           c:type="NMRemoteConnectionCommitFunc">
-      <type name="RemoteConnectionResultFunc"
-            c:type="NMRemoteConnectionResultFunc"/>
-    </alias>
-    <alias name="RemoteConnectionDeleteFunc"
-           c:type="NMRemoteConnectionDeleteFunc">
-      <type name="RemoteConnectionResultFunc"
-            c:type="NMRemoteConnectionResultFunc"/>
-    </alias>
     <bitfield name="80211ApFlags"
               glib:type-name="NM80211ApFlags"
               glib:get-type="nm_802_11_ap_flags_get_type"
@@ -265,9 +255,9 @@ is supported</doc>
               c:type="NM_ACTIVE_CONNECTION_MASTER">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="ACTIVE_CONNECTION_SPECIFIC_OBJECT"
-              value="specific-object"
-              c:type="NM_ACTIVE_CONNECTION_SPECIFIC_OBJECT">
+    <constant name="ACTIVE_CONNECTION_SPECIFIC_OBJECT_PATH"
+              value="specific-object-path"
+              c:type="NM_ACTIVE_CONNECTION_SPECIFIC_OBJECT_PATH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="ACTIVE_CONNECTION_STATE"
@@ -485,7 +475,7 @@ point.</doc>
       </property>
       <property name="flags" transfer-ownership="none">
         <doc xml:space="preserve">The flags of the access point.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="80211ApFlags"/>
       </property>
       <property name="frequency" transfer-ownership="none">
         <doc xml:space="preserve">The frequency of the access point.</doc>
@@ -507,11 +497,11 @@ point.</doc>
         <doc xml:space="preserve">The mode of the access point; either "infrastructure" (a central
 coordinator of the wireless network allowing clients to connect) or
 "ad-hoc" (a network with no central controller).</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="80211Mode"/>
       </property>
       <property name="rsn-flags" transfer-ownership="none">
         <doc xml:space="preserve">The RSN flags of the access point.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="80211ApSecurityFlags"/>
       </property>
       <property name="ssid" transfer-ownership="none">
         <doc xml:space="preserve">The SSID of the access point, or %NULL if it is not known.</doc>
@@ -523,7 +513,7 @@ coordinator of the wireless network allowing clients to connect) or
       </property>
       <property name="wpa-flags" transfer-ownership="none">
         <doc xml:space="preserve">The WPA flags of the access point.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="80211ApSecurityFlags"/>
       </property>
       <field name="parent">
         <type name="Object" c:type="NMObject"/>
@@ -552,14 +542,11 @@ coordinator of the wireless network allowing clients to connect) or
       <implements name="Gio.Initable"/>
       <method name="get_connection"
               c:identifier="nm_active_connection_get_connection">
-        <doc xml:space="preserve">Gets the #NMConnection's DBus object path.  This is often used with
-nm_remote_settings_get_connection_by_path() to retrieve the
-#NMRemoteConnection object that describes the connection.</doc>
+        <doc xml:space="preserve">Gets the #NMRemoteConnection associated with @connection.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the object path of the #NMConnection which this #NMActiveConnection
-is an active instance of.  This is the internal string used by the
-connection, and must not be modified.</doc>
-          <type name="utf8" c:type="const char*"/>
+          <doc xml:space="preserve">the #NMRemoteConnection which this
+#NMActiveConnection is an active instance of.</doc>
+          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
@@ -711,11 +698,10 @@ This is the internal string used by the connection, and must not be modified.</d
         </parameters>
       </method>
       <method name="get_master" c:identifier="nm_active_connection_get_master">
-        <doc xml:space="preserve">Gets the path to the master #NMDevice of the connection.</doc>
+        <doc xml:space="preserve">Gets the master #NMDevice of the connection.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the path of the master #NMDevice of the #NMActiveConnection.
-This is the internal string used by the connection, and must not be modified.</doc>
-          <type name="utf8" c:type="const char*"/>
+          <doc xml:space="preserve">the master #NMDevice of the #NMActiveConnection.</doc>
+          <type name="Device" c:type="NMDevice*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
@@ -724,12 +710,18 @@ This is the internal string used by the connection, and must not be modified.</d
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_specific_object"
-              c:identifier="nm_active_connection_get_specific_object">
-        <doc xml:space="preserve">Gets the "specific object" used at the activation.</doc>
+      <method name="get_specific_object_path"
+              c:identifier="nm_active_connection_get_specific_object_path">
+        <doc xml:space="preserve">Gets the path of the "specific object" used at activation.
+
+Currently there is no single method that will allow you to automatically turn
+this into an appropriate #NMObject; you need to know what kind of object it
+is based on other information. (Eg, if @connection corresponds to a Wi-Fi
+connection, then the specific object will be an #NMAccessPoint, and you can
+resolve it with nm_device_wifi_get_access_point_by_path().)</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the specific object's DBus path. This is the internal string used by the
-connection, and must not be modified.</doc>
+          <doc xml:space="preserve">the specific object's D-Bus path. This is the internal string used
+by the connection, and must not be modified.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -780,8 +772,8 @@ This is the internal string used by the connection, and must not be modified.</d
         </parameters>
       </method>
       <property name="connection" transfer-ownership="none">
-        <doc xml:space="preserve">The connection's path of the active connection.</doc>
-        <type name="utf8" c:type="gchar*"/>
+        <doc xml:space="preserve">The connection that this is an active instance of.</doc>
+        <type name="RemoteConnection"/>
       </property>
       <property name="default" transfer-ownership="none">
         <doc xml:space="preserve">Whether the active connection is the default IPv4 one.</doc>
@@ -820,16 +812,17 @@ Element-type: NMDevice</doc>
         <type name="IP6Config"/>
       </property>
       <property name="master" transfer-ownership="none">
-        <doc xml:space="preserve">The path of the master device if one exists.</doc>
-        <type name="utf8" c:type="gchar*"/>
+        <doc xml:space="preserve">The master device if one exists.</doc>
+        <type name="Device"/>
       </property>
-      <property name="specific-object" transfer-ownership="none">
-        <doc xml:space="preserve">The specific object's path of the active connection.</doc>
+      <property name="specific-object-path" transfer-ownership="none">
+        <doc xml:space="preserve">The path to the "specific object" of the active connection; see
+nm_active_connection_get_specific_object_path() for more details.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="state" transfer-ownership="none">
         <doc xml:space="preserve">The state of the active connection.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="ActiveConnectionState"/>
       </property>
       <property name="type" transfer-ownership="none">
         <doc xml:space="preserve">The active connection's type</doc>
@@ -938,12 +931,47 @@ Bluetooth device.
               c:type="NM_CLIENT_ACTIVE_CONNECTIONS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_CAN_MODIFY"
+              value="can-modify"
+              c:type="NM_CLIENT_CAN_MODIFY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_CONNECTIONS"
+              value="connections"
+              c:type="NM_CLIENT_CONNECTIONS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_CONNECTION_ADDED"
+              value="connection-added"
+              c:type="NM_CLIENT_CONNECTION_ADDED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_CONNECTION_REMOVED"
+              value="connection-removed"
+              c:type="NM_CLIENT_CONNECTION_REMOVED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_CONNECTIVITY"
               value="connectivity"
               c:type="NM_CLIENT_CONNECTIVITY">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="CLIENT_DEVICES" value="devices" c:type="NM_CLIENT_DEVICES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_DEVICE_ADDED"
+              value="device-added"
+              c:type="NM_CLIENT_DEVICE_ADDED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_DEVICE_REMOVED"
+              value="device-removed"
+              c:type="NM_CLIENT_DEVICE_REMOVED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_HOSTNAME"
+              value="hostname"
+              c:type="NM_CLIENT_HOSTNAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="CLIENT_NETWORKING_ENABLED"
@@ -954,6 +982,11 @@ Bluetooth device.
     <constant name="CLIENT_NM_RUNNING"
               value="nm-running"
               c:type="NM_CLIENT_NM_RUNNING">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_PERMISSION_CHANGED"
+              value="permission-changed"
+              c:type="NM_CLIENT_PERMISSION_CHANGED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="CLIENT_PRIMARY_CONNECTION"
@@ -1023,7 +1056,7 @@ Bluetooth device.
     <class name="Client"
            c:symbol-prefix="client"
            c:type="NMClient"
-           parent="Object"
+           parent="GObject.Object"
            glib:type-name="NMClient"
            glib:get-type="nm_client_get_type"
            glib:type-struct="ClientClass">
@@ -1034,11 +1067,7 @@ Bluetooth device.
 
 Note that this will do blocking D-Bus calls to initialize the
 client. You can use nm_client_new_async() if you want to avoid
-that.
-
-NOTE: #NMClient provides information about devices and a mechanism to
-control them.  To access and modify network configuration data, use the
-#NMRemoteSettings object.</doc>
+that.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #NMClient or NULL on an error</doc>
           <type name="Client" c:type="NMClient*"/>
@@ -1072,11 +1101,7 @@ control them.  To access and modify network configuration data, use the
         <doc xml:space="preserve">Creates a new #NMClient and begins asynchronously initializing it.
 @callback will be called when it is done; use
 nm_client_new_finish() to get the result. Note that on an error,
-the callback can be invoked with two first parameters as NULL.
-
-NOTE: #NMClient provides information about devices and a mechanism to
-control them.  To access and modify network configuration data, use the
-#NMRemoteSettings object.</doc>
+the callback can be invoked with two first parameters as NULL.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1103,6 +1128,32 @@ control them.  To access and modify network configuration data, use the
           </parameter>
         </parameters>
       </function>
+      <virtual-method name="connection_added">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="connection" transfer-ownership="none">
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="connection_removed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="connection" transfer-ownership="none">
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="device_added">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1146,18 +1197,24 @@ control them.  To access and modify network configuration data, use the
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="activate_connection"
-              c:identifier="nm_client_activate_connection">
-        <doc xml:space="preserve">Starts a connection to a particular network using the configuration settings
-from @connection and the network device @device.  Certain connection types
-also take a "specific object" which is the object path of a connection-
-specific object, like an #NMAccessPoint for Wi-Fi connections, or an
-#NMWimaxNsp for WiMAX connections, to which you wish to connect.  If the
-specific object is not given, NetworkManager can, in some cases, automatically
-determine which network to connect to given the settings in @connection.
+      <method name="activate_connection_async"
+              c:identifier="nm_client_activate_connection_async">
+        <doc xml:space="preserve">Asynchronously starts a connection to a particular network using the
+configuration settings from @connection and the network device @device.
+Certain connection types also take a "specific object" which is the object
+path of a connection- specific object, like an #NMAccessPoint for Wi-Fi
+connections, or an #NMWimaxNsp for WiMAX connections, to which you wish to
+connect.  If the specific object is not given, NetworkManager can, in some
+cases, automatically determine which network to connect to given the settings
+in @connection.
 
 If @connection is not given for a device-based activation, NetworkManager
-picks the best available connection for the device and activates it.</doc>
+picks the best available connection for the device and activates it.
+
+Note that the callback is invoked when NetworkManager has started activating
+the new connection, not when it finishes. You can used the returned
+#NMActiveConnection object (in particular, #NMActiveConnection:state) to
+track the activation to its completion.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1193,27 +1250,60 @@ picks the best available connection for the device and activates it.</doc>
   details of the newly added connection.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="4">
-            <doc xml:space="preserve">the function to call when the call is done</doc>
-            <type name="ClientActivateFn" c:type="NMClientActivateFn"/>
+                     closure="5">
+            <doc xml:space="preserve">callback to be called when the activation has started</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data to pass to the callback function</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
-      <method name="add_and_activate_connection"
-              c:identifier="nm_client_add_and_activate_connection">
+      <method name="activate_connection_finish"
+              c:identifier="nm_client_activate_connection_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_activate_connection_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMActiveConnection on success, %NULL on
+  failure, in which case @error will be set.</doc>
+          <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_and_activate_connection_async"
+              c:identifier="nm_client_add_and_activate_connection_async">
         <doc xml:space="preserve">Adds a new connection using the given details (if any) as a template,
-automatically filling in missing settings with the capabilities of the
-given device and specific object.  The new connection is then activated.
-Cannot be used for VPN connections at this time.</doc>
+automatically filling in missing settings with the capabilities of the given
+device and specific object.  The new connection is then asynchronously
+activated as with nm_client_activate_connection_async(). Cannot be used for
+VPN connections at this time.
+
+Note that the callback is invoked when NetworkManager has started activating
+the new connection, not when it finishes. You can used the returned
+#NMActiveConnection object (in particular, #NMActiveConnection:state) to
+track the activation to its completion.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1248,18 +1338,123 @@ Cannot be used for VPN connections at this time.</doc>
   details of the newly added connection.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">callback to be called when the activation has started</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_and_activate_connection_finish"
+              c:identifier="nm_client_add_and_activate_connection_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_add_and_activate_connection_async().
+
+You can call nm_active_connection_get_connection() on the returned
+#NMActiveConnection to find the path of the created #NMConnection.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMActiveConnection on success, %NULL on
+  failure, in which case @error will be set.</doc>
+          <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_connection_async"
+              c:identifier="nm_client_add_connection_async">
+        <doc xml:space="preserve">Requests that the remote settings service add the given settings to a new
+connection.  If @save_to_disk is %TRUE, the connection is immediately written
+to disk; otherwise it is initially only stored in memory, but may be saved
+later by calling the connection's nm_remote_connection_commit_changes()
+method.
+
+@connection is untouched by this function and only serves as a template of
+the settings to add.  The #NMRemoteConnection object that represents what
+NetworkManager actually added is returned to @callback when the addition
+operation is complete.
+
+Note that the #NMRemoteConnection returned in @callback may not contain
+identical settings to @connection as NetworkManager may perform automatic
+completion and/or normalization of connection properties.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the connection to add. Note that this object's settings will be
+  added, not the object itself</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </parameter>
+          <parameter name="save_to_disk" transfer-ownership="none">
+            <doc xml:space="preserve">whether to immediately save the connection to disk</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
                      closure="4">
-            <doc xml:space="preserve">the function to call when the call is done</doc>
-            <type name="ClientAddActivateFn" c:type="NMClientAddActivateFn"/>
+            <doc xml:space="preserve">callback to be called when the add operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data to pass to the callback function</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_connection_finish"
+              c:identifier="nm_client_add_connection_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_add_connection_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMRemoteConnection on success, %NULL on
+  failure, in which case @error will be set.</doc>
+          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -1347,8 +1542,34 @@ call.</doc>
         </parameters>
       </method>
       <method name="deactivate_connection"
-              c:identifier="nm_client_deactivate_connection">
+              c:identifier="nm_client_deactivate_connection"
+              throws="1">
         <doc xml:space="preserve">Deactivates an active #NMActiveConnection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">success or failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="active" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMActiveConnection to deactivate</doc>
+            <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="deactivate_connection_async"
+              c:identifier="nm_client_deactivate_connection_async">
+        <doc xml:space="preserve">Asynchronously deactivates an active #NMActiveConnection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1360,6 +1581,45 @@ call.</doc>
           <parameter name="active" transfer-ownership="none">
             <doc xml:space="preserve">the #NMActiveConnection to deactivate</doc>
             <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the deactivation has completed</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="deactivate_connection_finish"
+              c:identifier="nm_client_deactivate_connection_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_deactivate_connection_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">success or failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -1396,6 +1656,63 @@ The returned array is owned by the client and should not be modified.</doc>
             <doc xml:space="preserve">a #NMClient</doc>
             <type name="Client" c:type="NMClient*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_connection_by_id"
+              c:identifier="nm_client_get_connection_by_id">
+        <doc xml:space="preserve">Returns the first matching %NMRemoteConnection matching a given @id.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the remote connection object on success, or %NULL if no
+ matching object was found.</doc>
+          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">the id of the remote connection</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_connection_by_path"
+              c:identifier="nm_client_get_connection_by_path">
+        <doc xml:space="preserve">Returns the %NMRemoteConnection representing the connection at @path.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the remote connection object on success, or %NULL if the object was
+ not known</doc>
+          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:space="preserve">the D-Bus object path of the remote connection</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_connection_by_uuid"
+              c:identifier="nm_client_get_connection_by_uuid">
+        <doc xml:space="preserve">Returns the %NMRemoteConnection identified by @uuid.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the remote connection object on success, or %NULL if the object was
+ not known</doc>
+          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="uuid" transfer-ownership="none">
+            <doc xml:space="preserve">the UUID of the remote connection</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_connectivity"
@@ -1589,7 +1906,7 @@ connections at startup.</doc>
       <method name="get_version" c:identifier="nm_client_get_version">
         <doc xml:space="preserve">Gets NetworkManager version.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">string with the version</doc>
+          <doc xml:space="preserve">string with the version (or %NULL if NetworkManager is not running)</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -1597,6 +1914,141 @@ connections at startup.</doc>
             <doc xml:space="preserve">a #NMClient</doc>
             <type name="Client" c:type="NMClient*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="list_connections"
+              c:identifier="nm_client_list_connections">
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">a
+list containing all connections provided by the remote settings service.
+Each element of the returned list is a %NMRemoteConnection instance, which is
+owned by the %NMClient object and should not be freed by the caller.
+The returned list is, however, owned by the caller and should be freed
+using g_slist_free() when no longer required.</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="RemoteConnection"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="load_connections"
+              c:identifier="nm_client_load_connections"
+              throws="1">
+        <doc xml:space="preserve">Requests that the remote settings service load or reload the given files,
+adding or updating the connections described within.
+
+The changes to the indicated files will not yet be reflected in
+@client's connections array when the function returns.
+
+If all of the indicated files were successfully loaded, the
+function will return %TRUE, and @failures will be set to %NULL. If
+NetworkManager tried to load the files, but some (or all) failed,
+then @failures will be set to a %NULL-terminated array of the
+filenames that failed to load.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if NetworkManager at least tried to load @filenames,
+%FALSE if an error occurred (eg, permission denied).</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="filenames" transfer-ownership="none">
+            <doc xml:space="preserve">%NULL-terminated array of filenames to load</doc>
+            <type name="utf8" c:type="char**"/>
+          </parameter>
+          <parameter name="failures"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">on return, a %NULL-terminated array of
+  filenames that failed to load</doc>
+            <type name="utf8" c:type="char***"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_connections_async"
+              c:identifier="nm_client_load_connections_async">
+        <doc xml:space="preserve">Requests that the remote settings service asynchronously load or reload the
+given files, adding or updating the connections described within.
+
+See nm_client_load_connections() for more details.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="filenames" transfer-ownership="none">
+            <doc xml:space="preserve">%NULL-terminated array of filenames to load</doc>
+            <type name="utf8" c:type="char**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_connections_finish"
+              c:identifier="nm_client_load_connections_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of an nm_client_load_connections_async() call.
+
+See nm_client_load_connections() for more details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if NetworkManager at least tried to load @filenames,
+%FALSE if an error occurred (eg, permission denied).</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="failures"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">on return, a %NULL-terminated array of
+  filenames that failed to load</doc>
+            <type name="utf8" c:type="char***"/>
+          </parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="networking_get_enabled"
@@ -1614,12 +2066,14 @@ connections at startup.</doc>
         </parameters>
       </method>
       <method name="networking_set_enabled"
-              c:identifier="nm_client_networking_set_enabled">
+              c:identifier="nm_client_networking_set_enabled"
+              throws="1">
         <doc xml:space="preserve">Enables or disables networking.  When networking is disabled, all controlled
 interfaces are disconnected and deactivated.  When networking is enabled,
 all controlled interfaces are available for activation.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
@@ -1629,6 +2083,176 @@ all controlled interfaces are available for activation.</doc>
           <parameter name="enabled" transfer-ownership="none">
             <doc xml:space="preserve">%TRUE to set networking enabled, %FALSE to set networking disabled</doc>
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reload_connections"
+              c:identifier="nm_client_reload_connections"
+              throws="1">
+        <doc xml:space="preserve">Requests that the remote settings service reload all connection
+files from disk, adding, updating, and removing connections until
+the in-memory state matches the on-disk state.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reload_connections_async"
+              c:identifier="nm_client_reload_connections_async">
+        <doc xml:space="preserve">Requests that the remote settings service begin reloading all connection
+files from disk, adding, updating, and removing connections until the
+in-memory state matches the on-disk state.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">callback to be called when the reload operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reload_connections_finish"
+              c:identifier="nm_client_reload_connections_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of an nm_client_reload_connections_async() call.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on failure</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_hostname"
+              c:identifier="nm_client_save_hostname"
+              throws="1">
+        <doc xml:space="preserve">Requests that the machine's persistent hostname be set to the specified value
+or cleared.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the request was successful, %FALSE if it failed</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="hostname"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the new persistent hostname to set, or %NULL to
+  clear any existing persistent hostname</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_hostname_async"
+              c:identifier="nm_client_save_hostname_async">
+        <doc xml:space="preserve">Requests that the machine's persistent hostname be set to the specified value
+or cleared.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="hostname"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the new persistent hostname to set, or %NULL to
+  clear any existing persistent hostname</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_hostname_finish"
+              c:identifier="nm_client_save_hostname_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of an nm_client_save_hostname_async() call.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the request was successful, %FALSE if it failed</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -1810,9 +2434,24 @@ Element-type: NMActiveConnection</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </property>
+      <property name="can-modify" transfer-ownership="none">
+        <doc xml:space="preserve">If %TRUE, adding and modifying connections is supported.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="connections" transfer-ownership="none">
+        <doc xml:space="preserve">The list of configured connections that are available to the user. (Note
+that this differs from the underlying D-Bus property, which may also
+contain the object paths of connections that the user does not have
+permission to read the details of.)
+
+Element-type: NMRemoteConnection</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </property>
       <property name="connectivity" transfer-ownership="none">
         <doc xml:space="preserve">The network connectivity state.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="ConnectivityState"/>
       </property>
       <property name="devices" transfer-ownership="none">
         <doc xml:space="preserve">List of known network devices.
@@ -1821,6 +2460,11 @@ Element-type: NMDevice</doc>
         <array name="GLib.PtrArray">
           <type name="gpointer" c:type="gpointer"/>
         </array>
+      </property>
+      <property name="hostname" transfer-ownership="none">
+        <doc xml:space="preserve">The machine hostname stored in persistent configuration. This can be
+modified by calling nm_client_save_hostname().</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="networking-enabled"
                 writable="1"
@@ -1843,7 +2487,7 @@ see nm_client_get_primary_connection() for more details.</doc>
       </property>
       <property name="state" transfer-ownership="none">
         <doc xml:space="preserve">The current daemon state.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="State"/>
       </property>
       <property name="version" transfer-ownership="none">
         <doc xml:space="preserve">The NetworkManager version.</doc>
@@ -1874,8 +2518,32 @@ see nm_client_get_primary_connection() for more details.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
-        <type name="Object" c:type="NMObject"/>
+        <type name="GObject.Object" c:type="GObject"/>
       </field>
+      <glib:signal name="connection-added" when="first">
+        <doc xml:space="preserve">Notifies that a #NMConnection has been added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the new connection</doc>
+            <type name="RemoteConnection"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="connection-removed" when="first">
+        <doc xml:space="preserve">Notifies that a #NMConnection has been removed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the removed connection</doc>
+            <type name="RemoteConnection"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="device-added" when="first">
         <doc xml:space="preserve">Notifies that a #NMDevice is added.</doc>
         <return-value transfer-ownership="none">
@@ -1917,52 +2585,11 @@ see nm_client_get_primary_connection() for more details.</doc>
         </parameters>
       </glib:signal>
     </class>
-    <callback name="ClientActivateFn" c:type="NMClientActivateFn">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="client" transfer-ownership="none">
-          <type name="Client" c:type="NMClient*"/>
-        </parameter>
-        <parameter name="active_connection" transfer-ownership="none">
-          <type name="ActiveConnection" c:type="NMActiveConnection*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <callback name="ClientAddActivateFn" c:type="NMClientAddActivateFn">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="client" transfer-ownership="none">
-          <type name="Client" c:type="NMClient*"/>
-        </parameter>
-        <parameter name="connection" transfer-ownership="none">
-          <type name="ActiveConnection" c:type="NMActiveConnection*"/>
-        </parameter>
-        <parameter name="new_connection_path" transfer-ownership="none">
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <record name="ClientClass"
             c:type="NMClientClass"
             glib:is-gtype-struct-for="Client">
       <field name="parent">
-        <type name="ObjectClass" c:type="NMObjectClass"/>
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="device_added">
         <callback name="device_added">
@@ -2013,6 +2640,36 @@ see nm_client_get_primary_connection() for more details.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="connection_added">
+        <callback name="connection_added">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="client" transfer-ownership="none">
+              <type name="Client" c:type="NMClient*"/>
+            </parameter>
+            <parameter name="connection" transfer-ownership="none">
+              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="connection_removed">
+        <callback name="connection_removed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="client" transfer-ownership="none">
+              <type name="Client" c:type="NMClient*"/>
+            </parameter>
+            <parameter name="connection" transfer-ownership="none">
+              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="padding" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="8">
           <type name="gpointer" c:type="gpointer"/>
@@ -2037,6 +2694,20 @@ see nm_client_get_primary_connection() for more details.</doc>
               glib:nick="ManagerNotRunning">
         <doc xml:space="preserve">an operation that requires NetworkManager
   failed because NetworkManager is not running</doc>
+      </member>
+      <member name="ConnectionRemoved"
+              value="2"
+              c:identifier="NM_CLIENT_ERROR_CONNECTION_REMOVED"
+              glib:nick="ConnectionRemoved">
+        <doc xml:space="preserve">the #NMRemoteConnection object
+  was removed before it was completely initialized</doc>
+      </member>
+      <member name="ConnectionUnavailable"
+              value="3"
+              c:identifier="NM_CLIENT_ERROR_CONNECTION_UNAVAILABLE"
+              glib:nick="ConnectionUnavailable">
+        <doc xml:space="preserve">the #NMRemoteConnection object
+  is not visible or otherwise unreadable</doc>
       </member>
       <function name="quark" c:identifier="nm_client_error_quark">
         <doc xml:space="preserve">Registers an error quark for #NMClient if necessary.</doc>
@@ -4009,8 +4680,30 @@ if is incompatible with the device's capabilities and characteristics.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="delete" c:identifier="nm_device_delete">
+      <method name="delete" c:identifier="nm_device_delete" throws="1">
         <doc xml:space="preserve">Deletes the software device. Hardware devices can't be deleted.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error
+will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="delete_async" c:identifier="nm_device_delete_async">
+        <doc xml:space="preserve">Asynchronously begins deleteing the software device. Hardware devices can't
+be deleted.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -4019,15 +4712,21 @@ if is incompatible with the device's capabilities and characteristics.</doc>
             <doc xml:space="preserve">a #NMDevice</doc>
             <type name="Device" c:type="NMDevice*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="1">
-            <doc xml:space="preserve">callback to be called when delete
-operation completes</doc>
-            <type name="DeviceCallbackFn" c:type="NMDeviceCallbackFn"/>
+                     closure="2">
+            <doc xml:space="preserve">callback to be called when delete operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">caller-specific data passed to @callback</doc>
@@ -4035,10 +4734,53 @@ operation completes</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="disconnect" c:identifier="nm_device_disconnect">
+      <method name="delete_finish"
+              c:identifier="nm_device_delete_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_device_delete_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error
+will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="disconnect" c:identifier="nm_device_disconnect" throws="1">
         <doc xml:space="preserve">Disconnects the device if currently connected, and prevents the device from
 automatically connecting to networks until the next manual network connection
 request.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="disconnect_async"
+              c:identifier="nm_device_disconnect_async">
+        <doc xml:space="preserve">Asynchronously begins disconnecting the device if currently connected, and
+prevents the device from automatically connecting to networks until the next
+manual network connection request.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -4047,19 +4789,45 @@ request.</doc>
             <doc xml:space="preserve">a #NMDevice</doc>
             <type name="Device" c:type="NMDevice*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="1">
-            <doc xml:space="preserve">callback to be called when disconnect
-operation completes</doc>
-            <type name="DeviceCallbackFn" c:type="NMDeviceCallbackFn"/>
+                     closure="2">
+            <doc xml:space="preserve">callback to be called when the disconnect operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="disconnect_finish"
+              c:identifier="nm_device_disconnect_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_device_disconnect_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error
+will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -4553,11 +5321,11 @@ Element-type: NMRemoteConnection</doc>
       </property>
       <property name="capabilities" transfer-ownership="none">
         <doc xml:space="preserve">The capabilities of the device.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="DeviceCapabilities"/>
       </property>
       <property name="device-type" transfer-ownership="none">
         <doc xml:space="preserve">The numeric type of the device.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="DeviceType"/>
       </property>
       <property name="dhcp4-config" transfer-ownership="none">
         <doc xml:space="preserve">The #NMDhcp4Config of the device.</doc>
@@ -4620,7 +5388,7 @@ nm_device_get_physical_port_id().)</doc>
       </property>
       <property name="state" transfer-ownership="none">
         <doc xml:space="preserve">The state of the device.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="DeviceState"/>
       </property>
       <property name="state-reason" transfer-ownership="none">
         <doc xml:space="preserve">The reason for the device state.</doc>
@@ -5034,7 +5802,7 @@ device, and must not be modified.</doc>
       </method>
       <property name="bt-capabilities" transfer-ownership="none">
         <doc xml:space="preserve">The device's bluetooth capabilities, a combination of #NMBluetoothCapabilities.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="BluetoothCapabilities"/>
       </property>
       <property name="hw-address" transfer-ownership="none">
         <doc xml:space="preserve">The hardware (MAC) address of the device.</doc>
@@ -5109,22 +5877,6 @@ device, and must not be modified.</doc>
         </return-value>
       </function>
     </enumeration>
-    <callback name="DeviceCallbackFn" c:type="NMDeviceCallbackFn">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="device" transfer-ownership="none">
-          <type name="Device" c:type="NMDevice*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="2">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <bitfield name="DeviceCapabilities"
               glib:type-name="NMDeviceCapabilities"
               glib:get-type="nm_device_capabilities_get_type"
@@ -5651,14 +6403,14 @@ may require a firmware reload or reinitialization.</doc>
       <property name="current-capabilities" transfer-ownership="none">
         <doc xml:space="preserve">The generic family of access technologies the modem currently supports
 without a firmware reload or reinitialization.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="DeviceModemCapabilities"/>
       </property>
       <property name="modem-capabilities" transfer-ownership="none">
         <doc xml:space="preserve">The generic family of access technologies the modem supports.  Not all
 capabilities are available at the same time however; some modems require
 a firmware reload or other reinitialization to switch between eg
 CDMA/EVDO and GSM/UMTS.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="DeviceModemCapabilities"/>
       </property>
       <field name="parent">
         <type name="Device" c:type="NMDevice"/>
@@ -6858,11 +7610,36 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="request_scan_simple"
-              c:identifier="nm_device_wifi_request_scan_simple">
-        <doc xml:space="preserve">Request NM to scan for access points on the #NMDeviceWifi. This function only
-instructs NM to perform scanning. Use nm_device_wifi_get_access_points()
-to get available access points.</doc>
+      <method name="request_scan"
+              c:identifier="nm_device_wifi_request_scan"
+              throws="1">
+        <doc xml:space="preserve">Request NM to scan for access points on @device. Note that the function
+returns immediately after requesting the scan, and it may take some time
+after that for the scan to complete.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be
+set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWifi</doc>
+            <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_scan_async"
+              c:identifier="nm_device_wifi_request_scan_async">
+        <doc xml:space="preserve">Request NM to scan for access points on @device. Note that @callback will be
+called immediately after requesting the scan, and it may take some time after
+that for the scan to complete.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -6871,19 +7648,45 @@ to get available access points.</doc>
             <doc xml:space="preserve">a #NMDeviceWifi</doc>
             <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="1">
-            <doc xml:space="preserve">the function to call when the call is done</doc>
-            <type name="DeviceWifiRequestScanFn"
-                  c:type="NMDeviceWifiRequestScanFn"/>
+                     closure="2">
+            <doc xml:space="preserve">callback to be called when the scan has been requested</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">user data to pass to the callback function</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_scan_finish"
+              c:identifier="nm_device_wifi_request_scan_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_device_wifi_request_scan_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be
+set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWifi</doc>
+            <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -6909,7 +7712,7 @@ Element-type: NMAccessPoint</doc>
       </property>
       <property name="mode" transfer-ownership="none">
         <doc xml:space="preserve">The mode of the device.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="80211Mode"/>
       </property>
       <property name="perm-hw-address" transfer-ownership="none">
         <doc xml:space="preserve">The hardware (MAC) address of the device.</doc>
@@ -6917,7 +7720,7 @@ Element-type: NMAccessPoint</doc>
       </property>
       <property name="wireless-capabilities" transfer-ownership="none">
         <doc xml:space="preserve">The wireless capabilities of the device.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="DeviceWifiCapabilities"/>
       </property>
       <field name="parent">
         <type name="Device" c:type="NMDevice"/>
@@ -7108,23 +7911,6 @@ required by the connection</doc>
         </return-value>
       </function>
     </enumeration>
-    <callback name="DeviceWifiRequestScanFn"
-              c:type="NMDeviceWifiRequestScanFn">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="device" transfer-ownership="none">
-          <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="2">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <class name="DeviceWimax"
            c:symbol-prefix="device_wimax"
            c:type="NMDeviceWimax"
@@ -8702,6 +9488,11 @@ compiled against.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="OBJECT_DBUS_CONNECTION"
+              value="dbus-connection"
+              c:type="NM_OBJECT_DBUS_CONNECTION">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="OBJECT_PATH" value="path" c:type="NM_OBJECT_PATH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -8755,6 +9546,14 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="dbus-connection"
+                introspectable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GDBusConnection of the object.</doc>
+        <type name="Gio.DBusConnection"/>
+      </property>
       <property name="nm-running-internal" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -8877,36 +9676,6 @@ Note: Be aware that the signal is private for libnm's internal
               c:type="NM_REMOTE_CONNECTION_VISIBLE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="REMOTE_SETTINGS_CAN_MODIFY"
-              value="can-modify"
-              c:type="NM_REMOTE_SETTINGS_CAN_MODIFY">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_CONNECTIONS"
-              value="connections"
-              c:type="NM_REMOTE_SETTINGS_CONNECTIONS">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_CONNECTION_ADDED"
-              value="connection-added"
-              c:type="NM_REMOTE_SETTINGS_CONNECTION_ADDED">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_CONNECTION_REMOVED"
-              value="connection-removed"
-              c:type="NM_REMOTE_SETTINGS_CONNECTION_REMOVED">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_HOSTNAME"
-              value="hostname"
-              c:type="NM_REMOTE_SETTINGS_HOSTNAME">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="REMOTE_SETTINGS_NM_RUNNING"
-              value="nm-running"
-              c:type="NM_REMOTE_SETTINGS_NM_RUNNING">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <class name="RemoteConnection"
            c:symbol-prefix="remote_connection"
            c:type="NMRemoteConnection"
@@ -8918,9 +9687,39 @@ Note: Be aware that the signal is private for libnm's internal
       <implements name="Gio.Initable"/>
       <implements name="Connection"/>
       <method name="commit_changes"
-              c:identifier="nm_remote_connection_commit_changes">
-        <doc xml:space="preserve">Send any local changes to the settings and properties of this connection to
-NetworkManager, which will immediately save them to disk.</doc>
+              c:identifier="nm_remote_connection_commit_changes"
+              throws="1">
+        <doc xml:space="preserve">Send any local changes to the settings and properties of @connection to
+NetworkManager. If @save_to_disk is %TRUE, the updated connection will be saved to
+disk; if %FALSE, then only the in-memory representation will be changed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="save_to_disk" transfer-ownership="none">
+            <doc xml:space="preserve">whether to persist the changes to disk</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="commit_changes_async"
+              c:identifier="nm_remote_connection_commit_changes_async">
+        <doc xml:space="preserve">Asynchronously sends any local changes to the settings and properties of
+@connection to NetworkManager. If @save is %TRUE, the updated connection will
+be saved to disk; if %FALSE, then only the in-memory representation will be
+changed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8929,29 +9728,76 @@ NetworkManager, which will immediately save them to disk.</doc>
             <doc xml:space="preserve">the #NMRemoteConnection</doc>
             <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
           </instance-parameter>
+          <parameter name="save_to_disk" transfer-ownership="none">
+            <doc xml:space="preserve">whether to save the changes to persistent storage</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="1">
-            <doc xml:space="preserve">a function to be called when the
-commit completes</doc>
-            <type name="RemoteConnectionResultFunc"
-                  c:type="NMRemoteConnectionResultFunc"/>
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the commit operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
-      <method name="commit_changes_unsaved"
-              c:identifier="nm_remote_connection_commit_changes_unsaved">
-        <doc xml:space="preserve">Send any local changes to the settings and properties of this connection to
-NetworkManager.  The changes are not saved to disk until either
-nm_remote_connection_save() or nm_remote_connection_commit_changes() is
-called.</doc>
+      <method name="commit_changes_finish"
+              c:identifier="nm_remote_connection_commit_changes_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_remote_connection_commit_changes_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="delete"
+              c:identifier="nm_remote_connection_delete"
+              throws="1">
+        <doc xml:space="preserve">Deletes the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="delete_async"
+              c:identifier="nm_remote_connection_delete_async">
+        <doc xml:space="preserve">Asynchronously deletes the connection.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8960,52 +9806,78 @@ called.</doc>
             <doc xml:space="preserve">the #NMRemoteConnection</doc>
             <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="1">
-            <doc xml:space="preserve">a function to be called when the
-commit completes</doc>
-            <type name="RemoteConnectionResultFunc"
-                  c:type="NMRemoteConnectionResultFunc"/>
+                     closure="2">
+            <doc xml:space="preserve">callback to be called when the delete operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
-      <method name="delete" c:identifier="nm_remote_connection_delete">
-        <doc xml:space="preserve">Delete the connection.</doc>
+      <method name="delete_finish"
+              c:identifier="nm_remote_connection_delete_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_remote_connection_delete_async().</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve">the #NMRemoteConnection</doc>
             <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
           </instance-parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="1">
-            <doc xml:space="preserve">a function to be called when the delete completes</doc>
-            <type name="RemoteConnectionResultFunc"
-                  c:type="NMRemoteConnectionResultFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_secrets"
-              c:identifier="nm_remote_connection_get_secrets">
-        <doc xml:space="preserve">Request the connection's secrets.</doc>
+              c:identifier="nm_remote_connection_get_secrets"
+              throws="1">
+        <doc xml:space="preserve">Request the connection's secrets. Note that this is a blocking D-Bus call,
+not a simple property accessor.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GVariant of type %NM_VARIANT_TYPE_CONNECTION containing
+@connection's secrets, or %NULL on error.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="setting_name" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting object name to get secrets for</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_secrets_async"
+              c:identifier="nm_remote_connection_get_secrets_async">
+        <doc xml:space="preserve">Asynchronously requests the connection's secrets.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9018,18 +9890,45 @@ commit completes</doc>
             <doc xml:space="preserve">the #NMSetting object name to get secrets for</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
                      scope="async"
-                     closure="2">
-            <doc xml:space="preserve">a function to be called when the update completes;
-must not be %NULL</doc>
-            <type name="RemoteConnectionGetSecretsFunc"
-                  c:type="NMRemoteConnectionGetSecretsFunc"/>
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the secret request completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_secrets_finish"
+              c:identifier="nm_remote_connection_get_secrets_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_remote_connection_get_secrets_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GVariant of type %NM_VARIANT_TYPE_CONNECTION
+  containing @connection's secrets, or %NULL on error.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -9070,7 +9969,28 @@ user, %FALSE if not.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="save" c:identifier="nm_remote_connection_save">
+      <method name="save" c:identifier="nm_remote_connection_save" throws="1">
+        <doc xml:space="preserve">Saves the connection to disk if the connection has changes that have not yet
+been written to disk, or if the connection has never been saved.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_async" c:identifier="nm_remote_connection_save_async">
         <doc xml:space="preserve">Saves the connection to disk if the connection has changes that have not yet
 been written to disk, or if the connection has never been saved.</doc>
         <return-value transfer-ownership="none">
@@ -9081,20 +10001,44 @@ been written to disk, or if the connection has never been saved.</doc>
             <doc xml:space="preserve">the #NMRemoteConnection</doc>
             <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
           </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="1">
-            <doc xml:space="preserve">a function to be called when the
-save completes</doc>
-            <type name="RemoteConnectionResultFunc"
-                  c:type="NMRemoteConnectionResultFunc"/>
+                     closure="2">
+            <doc xml:space="preserve">callback to be called when the save operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_finish"
+              c:identifier="nm_remote_connection_save_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_remote_connection_save_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -9154,587 +10098,6 @@ after you already have a reference to it.)</doc>
         </return-value>
       </function>
     </enumeration>
-    <callback name="RemoteConnectionGetSecretsFunc"
-              c:type="NMRemoteConnectionGetSecretsFunc">
-      <doc xml:space="preserve">Called when NetworkManager returns secrets in response to a request for
-secrets via nm_remote_connection_get_secrets().</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="connection" transfer-ownership="none">
-          <doc xml:space="preserve">the connection for which secrets were requested</doc>
-          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-        </parameter>
-        <parameter name="secrets" transfer-ownership="none">
-          <doc xml:space="preserve">on success, a #GVariant of type %NM_VARIANT_TYPE_CONNECTION
- containing secrets.</doc>
-          <type name="GLib.Variant" c:type="GVariant*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <doc xml:space="preserve">on failure, a descriptive error</doc>
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
-          <doc xml:space="preserve">user data passed to nm_remote_connection_get_secrets()</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <callback name="RemoteConnectionResultFunc"
-              c:type="NMRemoteConnectionResultFunc">
-      <doc xml:space="preserve">Called when NetworkManager has finished an asynchronous operation on a
-connection, like commit changes, deleting, saving, etc.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="connection" transfer-ownership="none">
-          <doc xml:space="preserve">the connection for which an operation was performed</doc>
-          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <doc xml:space="preserve">on failure, a descriptive error</doc>
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="2">
-          <doc xml:space="preserve">user data passed to function which began the operation</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <class name="RemoteSettings"
-           c:symbol-prefix="remote_settings"
-           c:type="NMRemoteSettings"
-           parent="Object"
-           glib:type-name="NMRemoteSettings"
-           glib:get-type="nm_remote_settings_get_type"
-           glib:type-struct="RemoteSettingsClass">
-      <implements name="Gio.AsyncInitable"/>
-      <implements name="Gio.Initable"/>
-      <constructor name="new" c:identifier="nm_remote_settings_new" throws="1">
-        <doc xml:space="preserve">Creates a new object representing the remote settings service.
-
-Note that this will do blocking D-Bus calls to initialize the
-settings object. You can use nm_remote_settings_new_async() if you
-want to avoid that.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new remote settings object on success, or %NULL on failure</doc>
-          <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-        </return-value>
-        <parameters>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <constructor name="new_finish"
-                   c:identifier="nm_remote_settings_new_finish"
-                   throws="1">
-        <doc xml:space="preserve">Gets the result of an nm_remote_settings_new_async() call.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #NMRemoteSettings object, or %NULL on error</doc>
-          <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-        </return-value>
-        <parameters>
-          <parameter name="result" transfer-ownership="none">
-            <doc xml:space="preserve">a #GAsyncResult</doc>
-            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <function name="new_async" c:identifier="nm_remote_settings_new_async">
-        <doc xml:space="preserve">Creates a new object representing the remote settings service and
-begins asynchronously initializing it. @callback will be called
-when it is done; use nm_remote_settings_new_finish() to get the
-result.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">callback to call when the settings object is created</doc>
-            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">data for @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </function>
-      <virtual-method name="connection_added">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="connection_removed">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <method name="add_connection"
-              c:identifier="nm_remote_settings_add_connection">
-        <doc xml:space="preserve">Requests that the remote settings service add the given settings to a new
-connection.  The connection is immediately written to disk.  @connection is
-untouched by this function and only serves as a template of the settings to
-add.  The #NMRemoteConnection object that represents what NetworkManager
-actually added is returned to @callback when the addition operation is complete.
-
-Note that the #NMRemoteConnection returned in @callback may not contain
-identical settings to @connection as NetworkManager may perform automatic
-completion and/or normalization of connection properties.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the request was successful, %FALSE if it failed</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the connection to add. Note that this object's settings will be
-  added, not the object itself</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">callback to be called when the add operation completes</doc>
-            <type name="RemoteSettingsAddConnectionFunc"
-                  c:type="NMRemoteSettingsAddConnectionFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="add_connection_unsaved"
-              c:identifier="nm_remote_settings_add_connection_unsaved">
-        <doc xml:space="preserve">Requests that the remote settings service add the given settings to a new
-connection.  The connection is not written to disk, which may be done at
-a later time by calling the connection's nm_remote_connection_commit_changes()
-method.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the request was successful, %FALSE if it failed</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the connection to add. Note that this object's settings will be
-  added, not the object itself</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">callback to be called when the add operation completes</doc>
-            <type name="RemoteSettingsAddConnectionFunc"
-                  c:type="NMRemoteSettingsAddConnectionFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_connection_by_id"
-              c:identifier="nm_remote_settings_get_connection_by_id">
-        <doc xml:space="preserve">Returns the first matching %NMRemoteConnection matching a given @id.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the remote connection object on success, or %NULL if no
- matching object was found.</doc>
-          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="id" transfer-ownership="none">
-            <doc xml:space="preserve">the id of the remote connection</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_connection_by_path"
-              c:identifier="nm_remote_settings_get_connection_by_path">
-        <doc xml:space="preserve">Returns the %NMRemoteConnection representing the connection at @path.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the remote connection object on success, or %NULL if the object was
- not known</doc>
-          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="path" transfer-ownership="none">
-            <doc xml:space="preserve">the D-Bus object path of the remote connection</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_connection_by_uuid"
-              c:identifier="nm_remote_settings_get_connection_by_uuid">
-        <doc xml:space="preserve">Returns the %NMRemoteConnection identified by @uuid.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the remote connection object on success, or %NULL if the object was
- not known</doc>
-          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="uuid" transfer-ownership="none">
-            <doc xml:space="preserve">the UUID of the remote connection</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="list_connections"
-              c:identifier="nm_remote_settings_list_connections">
-        <return-value transfer-ownership="container">
-          <doc xml:space="preserve">a
-list containing all connections provided by the remote settings service.
-Each element of the returned list is a %NMRemoteConnection instance, which is
-owned by the %NMRemoteSettings object and should not be freed by the caller.
-The returned list is, however, owned by the caller and should be freed
-using g_slist_free() when no longer required.</doc>
-          <type name="GLib.SList" c:type="GSList*">
-            <type name="RemoteConnection"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="load_connections"
-              c:identifier="nm_remote_settings_load_connections"
-              throws="1">
-        <doc xml:space="preserve">Requests that the remote settings service load or reload the given files,
-adding or updating the connections described within.
-
-The changes to the indicated files will not yet be reflected in
-@settings's connections array when the function returns.
-
-If all of the indicated files were successfully loaded, the
-function will return %TRUE, and @failures will be set to %NULL. If
-NetworkManager tried to load the files, but some (or all) failed,
-then @failures will be set to a %NULL-terminated array of the
-filenames that failed to load.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if NetworkManager at least tried to load @filenames,
-%FALSE if an error occurred (eg, permission denied).</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="filenames" transfer-ownership="none">
-            <doc xml:space="preserve">%NULL-terminated array of filenames to load</doc>
-            <type name="utf8" c:type="char**"/>
-          </parameter>
-          <parameter name="failures"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve">on return, a %NULL-terminated array of
-  filenames that failed to load</doc>
-            <type name="utf8" c:type="char***"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="reload_connections"
-              c:identifier="nm_remote_settings_reload_connections"
-              throws="1">
-        <doc xml:space="preserve">Requests that the remote settings service reload all connection
-files from disk, adding, updating, and removing connections until
-the in-memory state matches the on-disk state.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success, %FALSE on failure</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="save_hostname"
-              c:identifier="nm_remote_settings_save_hostname">
-        <doc xml:space="preserve">Requests that the machine's persistent hostname be set to the specified value
-or cleared.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the request was successful, %FALSE if it failed</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="settings" transfer-ownership="none">
-            <doc xml:space="preserve">the %NMRemoteSettings</doc>
-            <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-          </instance-parameter>
-          <parameter name="hostname" transfer-ownership="none">
-            <doc xml:space="preserve">the new persistent hostname to set, or %NULL to clear any existing
- persistent hostname</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">callback to be called when the
-hostname operation completes</doc>
-            <type name="RemoteSettingsSaveHostnameFunc"
-                  c:type="NMRemoteSettingsSaveHostnameFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="can-modify" transfer-ownership="none">
-        <doc xml:space="preserve">If %TRUE, adding and modifying connections is supported.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <property name="connections" transfer-ownership="none">
-        <doc xml:space="preserve">The list of configured connections that are available to the user. (Note
-that this differs from the underlying D-Bus property, which may also
-contain the object paths of connections that the user does not have
-permission to read the details of.)
-
-Element-type: NMRemoteConnection</doc>
-        <array name="GLib.PtrArray">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </property>
-      <property name="hostname" transfer-ownership="none">
-        <doc xml:space="preserve">The machine hostname stored in persistent configuration. This can be
-modified by calling nm_remote_settings_save_hostname().</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="nm-running" transfer-ownership="none">
-        <doc xml:space="preserve">Whether the NetworkManager settings service is running.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <field name="parent">
-        <type name="Object" c:type="NMObject"/>
-      </field>
-      <glib:signal name="connection-added" when="first">
-        <doc xml:space="preserve">Notifies that a #NMConnection has been added.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the new connection</doc>
-            <type name="RemoteConnection"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
-      <glib:signal name="connection-removed" when="first">
-        <doc xml:space="preserve">Notifies that a #NMConnection has been removed.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the removed connection</doc>
-            <type name="RemoteConnection"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
-    </class>
-    <callback name="RemoteSettingsAddConnectionFunc"
-              c:type="NMRemoteSettingsAddConnectionFunc">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="settings" transfer-ownership="none">
-          <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-        </parameter>
-        <parameter name="connection" transfer-ownership="none">
-          <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <record name="RemoteSettingsClass"
-            c:type="NMRemoteSettingsClass"
-            glib:is-gtype-struct-for="RemoteSettings">
-      <field name="parent">
-        <type name="ObjectClass" c:type="NMObjectClass"/>
-      </field>
-      <field name="connection_added">
-        <callback name="connection_added">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="settings" transfer-ownership="none">
-              <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-            </parameter>
-            <parameter name="connection" transfer-ownership="none">
-              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="connection_removed">
-        <callback name="connection_removed">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="settings" transfer-ownership="none">
-              <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-            </parameter>
-            <parameter name="connection" transfer-ownership="none">
-              <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
-    <enumeration name="RemoteSettingsError"
-                 glib:type-name="NMRemoteSettingsError"
-                 glib:get-type="nm_remote_settings_error_get_type"
-                 c:type="NMRemoteSettingsError"
-                 glib:error-domain="nm-remote-settings-error-quark">
-      <doc xml:space="preserve">Describes errors that may result from operations involving a #NMRemoteSettings.</doc>
-      <member name="UnknownError"
-              value="0"
-              c:identifier="NM_REMOTE_SETTINGS_ERROR_UNKNOWN"
-              glib:nick="UnknownError">
-        <doc xml:space="preserve">unknown or unclassified error</doc>
-      </member>
-      <member name="ConnectionRemoved"
-              value="1"
-              c:identifier="NM_REMOTE_SETTINGS_ERROR_CONNECTION_REMOVED"
-              glib:nick="ConnectionRemoved">
-        <doc xml:space="preserve">the #NMRemoteConnection object
-  was removed before it was completely initialized</doc>
-      </member>
-      <member name="ConnectionUnavailable"
-              value="2"
-              c:identifier="NM_REMOTE_SETTINGS_ERROR_CONNECTION_UNAVAILABLE"
-              glib:nick="ConnectionUnavailable">
-        <doc xml:space="preserve">the #NMRemoteConnection object
-  is not visible or otherwise unreadable</doc>
-      </member>
-      <member name="ServiceUnavailable"
-              value="3"
-              c:identifier="NM_REMOTE_SETTINGS_ERROR_SERVICE_UNAVAILABLE"
-              glib:nick="ServiceUnavailable">
-        <doc xml:space="preserve">NetworkManager is not running.</doc>
-      </member>
-      <function name="quark" c:identifier="nm_remote_settings_error_quark">
-        <doc xml:space="preserve">Registers an error quark for #NMRemoteSettings if necessary.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the error quark used for #NMRemoteSettings errors.</doc>
-          <type name="GLib.Quark" c:type="GQuark"/>
-        </return-value>
-      </function>
-    </enumeration>
-    <callback name="RemoteSettingsLoadConnectionsFunc"
-              c:type="NMRemoteSettingsLoadConnectionsFunc">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="settings" transfer-ownership="none">
-          <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-        </parameter>
-        <parameter name="failures" transfer-ownership="none">
-          <type name="utf8" c:type="char**"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <callback name="RemoteSettingsSaveHostnameFunc"
-              c:type="NMRemoteSettingsSaveHostnameFunc">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="settings" transfer-ownership="none">
-          <type name="RemoteSettings" c:type="NMRemoteSettings*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="2">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <constant name="SECRET_AGENT_AUTO_REGISTER"
               value="auto-register"
               c:type="NM_SECRET_AGENT_AUTO_REGISTER">
@@ -10045,6 +10408,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               c:type="NM_SETTING_BOND_OPTION_FAIL_OVER_MAC">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_BOND_OPTION_LACP_RATE"
+              value="lacp_rate"
+              c:type="NM_SETTING_BOND_OPTION_LACP_RATE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_BOND_OPTION_MIIMON"
               value="miimon"
               c:type="NM_SETTING_BOND_OPTION_MIIMON">
@@ -10179,6 +10547,26 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               value="autoconnect"
               c:type="NM_SETTING_CONNECTION_AUTOCONNECT">
       <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_CONNECTION_AUTOCONNECT_PRIORITY"
+              value="autoconnect-priority"
+              c:type="NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_CONNECTION_AUTOCONNECT_PRIORITY_DEFAULT"
+              value="0"
+              c:type="NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MAX"
+              value="999"
+              c:type="NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MAX">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MIN"
+              value="-999"
+              c:type="NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MIN">
+      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="SETTING_CONNECTION_GATEWAY_PING_TIMEOUT"
               value="gateway-ping-timeout"
@@ -12112,23 +12500,14 @@ Useful for figuring out which setting a returned error is for.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="need_secrets" invoker="need_secrets">
-        <doc xml:space="preserve">Returns an array of property names for each secret which may be required
-to make a successful connection.  The returned hints are only intended as a
-guide to what secrets may be required, because in some circumstances, there
-is no way to conclusively determine exactly which secrets are needed.</doc>
-        <return-value transfer-ownership="container">
-          <doc xml:space="preserve">a #GPtrArray containing
-the property names of secrets of the #NMSetting which may be required; the
-caller owns the array and must free it with g_ptr_array_free(), but must not
-free the elements.</doc>
+      <virtual-method name="need_secrets" introspectable="0">
+        <return-value>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
-            <type name="utf8"/>
+            <type name="gpointer" c:type="gpointer"/>
           </array>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
             <type name="Setting" c:type="NMSetting*"/>
           </instance-parameter>
         </parameters>
@@ -12183,46 +12562,6 @@ free the elements.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="clear_secrets" c:identifier="nm_setting_clear_secrets">
-        <doc xml:space="preserve">Resets and clears any secrets in the setting.  Secrets should be added to the
-setting only when needed, and cleared immediately after use to prevent
-leakage of information.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="clear_secrets_with_flags"
-              c:identifier="nm_setting_clear_secrets_with_flags">
-        <doc xml:space="preserve">Clears and frees secrets determined by @func.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
-          <parameter name="func"
-                     transfer-ownership="none"
-                     scope="call"
-                     closure="1">
-            <doc xml:space="preserve">function to be called to determine whether a
-    specific secret should be cleared or not</doc>
-            <type name="SettingClearSecretsWithFlagsFn"
-                  c:type="NMSettingClearSecretsWithFlagsFn"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-supplied data passed to @func</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="compare" c:identifier="nm_setting_compare">
         <doc xml:space="preserve">Compares two #NMSetting objects for similarity, with comparison behavior
 modified by a set of flags.  See the documentation for #NMSettingCompareFlags
@@ -12366,27 +12705,6 @@ this setting, and if that property is secret), %FALSE if not</doc>
             <doc xml:space="preserve">on success, the #NMSettingSecretFlags for the secret</doc>
             <type name="SettingSecretFlags" c:type="NMSettingSecretFlags*"/>
           </parameter>
-        </parameters>
-      </method>
-      <method name="need_secrets" c:identifier="nm_setting_need_secrets">
-        <doc xml:space="preserve">Returns an array of property names for each secret which may be required
-to make a successful connection.  The returned hints are only intended as a
-guide to what secrets may be required, because in some circumstances, there
-is no way to conclusively determine exactly which secrets are needed.</doc>
-        <return-value transfer-ownership="container">
-          <doc xml:space="preserve">a #GPtrArray containing
-the property names of secrets of the #NMSetting which may be required; the
-caller owns the array and must free it with g_ptr_array_free(), but must not
-free the elements.</doc>
-          <array name="GLib.PtrArray" c:type="GPtrArray*">
-            <type name="utf8"/>
-          </array>
-        </return-value>
-        <parameters>
-          <instance-parameter name="setting" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMSetting</doc>
-            <type name="Setting" c:type="NMSetting*"/>
-          </instance-parameter>
         </parameters>
       </method>
       <method name="set_secret_flags"
@@ -13828,7 +14146,7 @@ property are specified, #NMSetting8021x:password is preferred.</doc>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="password-raw" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Password used for EAP authentication methods, given as a byte array to
@@ -13841,7 +14159,7 @@ property are specified, #NMSetting8021x:password is preferred.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:password-raw property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="phase1-fast-provisioning"
                 writable="1"
@@ -13985,7 +14303,7 @@ private key by the nm_setting_802_1x_set_phase2_private_key() function.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the
 #NMSetting8021x:phase2-private-key-password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="phase2-subject-match"
                 writable="1"
@@ -14002,7 +14320,7 @@ certificate's subject is performed.</doc>
       </property>
       <property name="pin-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:pin property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="private-key" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Contains the private key when the #NMSetting8021x:eap property is set to
@@ -14049,7 +14367,7 @@ the private key by the nm_setting_802_1x_set_private_key() function.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:private-key-password
 property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="subject-match" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Substring to be matched against the subject of the certificate presented
@@ -14289,7 +14607,7 @@ required</doc>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingAdsl:password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="protocol" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">ADSL connection protocol.  Can be "pppoa", "pppoe" or "ipoatm".</doc>
@@ -15121,7 +15439,7 @@ password is required, it is specified here.</doc>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingCdma:password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="username" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The username used to authenticate with the network, if required.  Many
@@ -15207,20 +15525,15 @@ is missing in the connection</doc>
           </parameters>
         </callback>
       </field>
-      <field name="need_secrets">
-        <callback name="need_secrets">
-          <return-value transfer-ownership="container">
-            <doc xml:space="preserve">a #GPtrArray containing
-the property names of secrets of the #NMSetting which may be required; the
-caller owns the array and must free it with g_ptr_array_free(), but must not
-free the elements.</doc>
+      <field name="need_secrets" introspectable="0">
+        <callback name="need_secrets" introspectable="0">
+          <return-value>
             <array name="GLib.PtrArray" c:type="GPtrArray*">
-              <type name="utf8"/>
+              <type name="gpointer" c:type="gpointer"/>
             </array>
           </return-value>
           <parameters>
             <parameter name="setting" transfer-ownership="none">
-              <doc xml:space="preserve">the #NMSetting</doc>
               <type name="Setting" c:type="NMSetting*"/>
             </parameter>
           </parameters>
@@ -15408,6 +15721,30 @@ the secret's flags indicate the secret is owned by a user secret agent
 the secret's flags indicate the secret should not be saved to persistent
 storage (ie, the secret's flag includes @NM_SETTING_SECRET_FLAG_NOT_SAVED)</doc>
       </member>
+      <member name="diff_result_with_default"
+              value="32"
+              c:identifier="NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT"
+              glib:nick="diff-result-with-default">
+        <doc xml:space="preserve">if this flag is set,
+nm_setting_diff() and nm_connection_diff() will also include properties that
+are set to their default value. See also @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT.</doc>
+      </member>
+      <member name="diff_result_no_default"
+              value="64"
+              c:identifier="NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT"
+              glib:nick="diff-result-no-default">
+        <doc xml:space="preserve">if this flag is set,
+nm_setting_diff() and nm_connection_diff() will not include properties that
+are set to their default value. This is the opposite of
+@NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT. If both flags are set together,
+@NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT wins. If both flags are unset,
+this means to exclude default properties if there is a setting to compare,
+but include all properties, if the setting 'b' is missing. This is the legacy
+behaviour of libnm-util, where nm_setting_diff() behaved differently depending
+on whether the setting 'b' was available. If @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT
+is set, nm_setting_diff() will also set the flags @NM_SETTING_DIFF_RESULT_IN_A_DEFAULT
+and @NM_SETTING_DIFF_RESULT_IN_B_DEFAULT, if the values are default values.</doc>
+      </member>
     </enumeration>
     <class name="SettingConnection"
            c:symbol-prefix="setting_connection"
@@ -15483,6 +15820,21 @@ was already present</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the connection's autoconnect behavior</doc>
           <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingConnection</doc>
+            <type name="SettingConnection" c:type="NMSettingConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_autoconnect_priority"
+              c:identifier="nm_setting_connection_get_autoconnect_priority">
+        <doc xml:space="preserve">Returns the #NMSettingConnection:autoconnect-priority property of the connection.
+The higher number, the higher priority.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the connection's autoconnect priority</doc>
+          <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -15835,6 +16187,15 @@ NetworkManager when the resources for the connection are available.
 %TRUE to automatically activate the connection, %FALSE to require manual
 intervention to activate the connection.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="autoconnect-priority"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The autoconnect priority. If the connection is set to autoconnect,
+connections with higher priority will be preferred. Defaults to 0.
+The higher number means higher priority.</doc>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="gateway-ping-timeout"
                 writable="1"
@@ -16403,7 +16764,7 @@ its priority group, or %FALSE if not</doc>
         <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for the DCB FCoE application.  Flags may
 be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
 %NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingDcbFlags"/>
       </property>
       <property name="app-fcoe-mode"
                 writable="1"
@@ -16426,7 +16787,7 @@ property includes the %NM_SETTING_DCB_FLAG_ENABLE flag.</doc>
         <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for the DCB FIP application.  Flags may
 be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
 %NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingDcbFlags"/>
       </property>
       <property name="app-fip-priority"
                 writable="1"
@@ -16441,7 +16802,7 @@ property includes the %NM_SETTING_DCB_FLAG_ENABLE flag.</doc>
         <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for the DCB iSCSI application.  Flags
 may be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
 %NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingDcbFlags"/>
       </property>
       <property name="app-iscsi-priority"
                 writable="1"
@@ -16484,7 +16845,7 @@ Element-type: gboolean</doc>
         <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for DCB Priority Flow Control (PFC).
 Flags may be any combination of %NM_SETTING_DCB_FLAG_ENABLE,
 %NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingDcbFlags"/>
       </property>
       <property name="priority-group-bandwidth"
                 writable="1"
@@ -16505,7 +16866,7 @@ Element-type: guint</doc>
         <doc xml:space="preserve">Specifies the #NMSettingDcbFlags for DCB Priority Groups.  Flags may be
 any combination of %NM_SETTING_DCB_FLAG_ENABLE,
 %NM_SETTING_DCB_FLAG_ADVERTISE, and %NM_SETTING_DCB_FLAG_WILLING.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingDcbFlags"/>
       </property>
       <property name="priority-group-id"
                 writable="1"
@@ -16591,10 +16952,10 @@ required</doc>
         </return-value>
       </function>
     </enumeration>
-    <enumeration name="SettingDcbFlags"
-                 glib:type-name="NMSettingDcbFlags"
-                 glib:get-type="nm_setting_dcb_flags_get_type"
-                 c:type="NMSettingDcbFlags">
+    <bitfield name="SettingDcbFlags"
+              glib:type-name="NMSettingDcbFlags"
+              glib:get-type="nm_setting_dcb_flags_get_type"
+              c:type="NMSettingDcbFlags">
       <doc xml:space="preserve">DCB feature flags.</doc>
       <member name="none"
               value="0"
@@ -16621,7 +16982,7 @@ required</doc>
         <doc xml:space="preserve">the feature is willing to change based on
 peer configuration advertisements</doc>
       </member>
-    </enumeration>
+    </bitfield>
     <enumeration name="SettingDiffResult"
                  glib:type-name="NMSettingDiffResult"
                  glib:get-type="nm_setting_diff_result_get_type"
@@ -16644,6 +17005,20 @@ peer configuration advertisements</doc>
               c:identifier="NM_SETTING_DIFF_RESULT_IN_B"
               glib:nick="in-b">
         <doc xml:space="preserve">the property is present in setting B</doc>
+      </member>
+      <member name="in_a_default"
+              value="4"
+              c:identifier="NM_SETTING_DIFF_RESULT_IN_A_DEFAULT"
+              glib:nick="in-a-default">
+        <doc xml:space="preserve">the property is present in
+setting A but is set to the default value. This flag is only set,
+if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
+      </member>
+      <member name="in_b_default"
+              value="4"
+              c:identifier="NM_SETTING_DIFF_RESULT_IN_B_DEFAULT"
+              glib:nick="in-b-default">
+        <doc xml:space="preserve">analog to @NM_SETTING_DIFF_RESULT_IN_A_DEFAULT.</doc>
       </member>
     </enumeration>
     <enumeration name="SettingError"
@@ -16912,7 +17287,7 @@ password is required, it is specified here.</doc>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingGsm:password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="pin" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If the SIM is locked with a PIN it must be unlocked before any other
@@ -16922,7 +17297,7 @@ device.</doc>
       </property>
       <property name="pin-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingGsm:pin property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="username" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The username used to authenticate with the network, if required.  Many
@@ -18263,7 +18638,7 @@ EUI-64.  This enhances privacy, but could cause problems in some
 applications, on the other hand.  The permitted values are: 0: disabled,
 1: enabled (prefer public address), 2: enabled (prefer temporary
 addresses).</doc>
-        <type name="gint" c:type="gint"/>
+        <type name="SettingIP6ConfigPrivacy"/>
       </property>
       <property name="may-fail"
                 writable="1"
@@ -19209,7 +19584,7 @@ with other setting configuration parameters</doc>
       </property>
       <property name="password-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingPppoe:password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="service" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, instruct PPPoE to only initiate sessions with access
@@ -19277,10 +19652,10 @@ did not contain a required PPP setting for PPP related options</doc>
         </return-value>
       </function>
     </enumeration>
-    <enumeration name="SettingSecretFlags"
-                 glib:type-name="NMSettingSecretFlags"
-                 glib:get-type="nm_setting_secret_flags_get_type"
-                 c:type="NMSettingSecretFlags">
+    <bitfield name="SettingSecretFlags"
+              glib:type-name="NMSettingSecretFlags"
+              glib:get-type="nm_setting_secret_flags_get_type"
+              c:type="NMSettingSecretFlags">
       <doc xml:space="preserve">These flags indicate specific behavior related to handling of a secret.  Each
 secret has a corresponding set of these flags which indicate how the secret
 is to be stored and/or requested when it is needed.</doc>
@@ -19315,7 +19690,7 @@ automatically determined that the secret is required (some VPNs and PPP
 providers dont require all secrets) this flag indicates that the specific
 secret is not required</doc>
       </member>
-    </enumeration>
+    </bitfield>
     <class name="SettingSerial"
            c:symbol-prefix="setting_serial"
            c:type="NMSettingSerial"
@@ -19357,7 +19732,7 @@ secret is not required</doc>
       <method name="get_parity" c:identifier="nm_setting_serial_get_parity">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingSerial:parity property of the setting</doc>
-          <type name="gchar" c:type="char"/>
+          <type name="SettingSerialParity" c:type="NMSettingSerialParity"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -19412,9 +19787,8 @@ ignore speed settings and use the highest available speed.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Parity setting of the serial port.  Either 'E' for even parity, 'o' for
-odd parity, or 'n' for no parity.</doc>
-        <type name="gchar" c:type="gchar"/>
+        <doc xml:space="preserve">Parity setting of the serial port.</doc>
+        <type name="SettingSerialParity"/>
       </property>
       <property name="send-delay"
                 writable="1"
@@ -19485,6 +19859,30 @@ setting requires the connection to contain an #NMSettingPpp setting</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
+    </enumeration>
+    <enumeration name="SettingSerialParity"
+                 glib:type-name="NMSettingSerialParity"
+                 glib:get-type="nm_setting_serial_parity_get_type"
+                 c:type="NMSettingSerialParity">
+      <doc xml:space="preserve">The parity setting of a serial port.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="NM_SETTING_SERIAL_PARITY_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">No parity bits (default)</doc>
+      </member>
+      <member name="even"
+              value="1"
+              c:identifier="NM_SETTING_SERIAL_PARITY_EVEN"
+              glib:nick="even">
+        <doc xml:space="preserve">Even parity</doc>
+      </member>
+      <member name="odd"
+              value="2"
+              c:identifier="NM_SETTING_SERIAL_PARITY_ODD"
+              glib:nick="odd">
+        <doc xml:space="preserve">Odd parity</doc>
+      </member>
     </enumeration>
     <class name="SettingTeam"
            c:symbol-prefix="setting_team"
@@ -19954,7 +20352,7 @@ interface.  Flags include %NM_VLAN_FLAG_REORDER_HEADERS (reordering of
 output packet headers), %NM_VLAN_FLAG_GVRP (use of the GVRP protocol),
 and %NM_VLAN_FLAG_LOOSE_BINDING (loose binding of the interface to its
 master device's operating state).</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="VlanFlags"/>
       </property>
       <property name="id" writable="1" construct="1" transfer-ownership="none">
         <doc xml:space="preserve">The VLAN identifier that the interface created by this connection should
@@ -22073,7 +22471,7 @@ any Wi-Fi connection that uses security.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the
 #NMSettingWirelessSecurity:leap-password property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="leap-username" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The login username for legacy LEAP connections (ie, key-mgmt =
@@ -22109,13 +22507,13 @@ connecting to the Wi-Fi network.</doc>
       <property name="psk-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingWirelessSecurity:psk
 property.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="wep-key-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingWirelessSecurity:wep-key0,
 #NMSettingWirelessSecurity:wep-key1, #NMSettingWirelessSecurity:wep-key2,
 and #NMSettingWirelessSecurity:wep-key3 properties.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="SettingSecretFlags"/>
       </property>
       <property name="wep-key-type"
                 writable="1"
@@ -22127,7 +22525,7 @@ and #NMSettingWirelessSecurity:wep-key3 properties.</doc>
 or %NM_WEP_KEY_TYPE_PASSPHRASE, in which case the passphrase is provided
 as a string and will be hashed using the de-facto MD5 method to derive
 the actual WEP key.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="WepKeyType"/>
       </property>
       <property name="wep-key0" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Index 0 WEP key.  This is the WEP key used in most networks.  See the
@@ -22610,10 +23008,10 @@ generating the dynamic WEP keys automatically</doc>
               c:type="NM_VPN_PLUGIN_UI_INTERFACE_SERVICE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <enumeration name="VlanFlags"
-                 glib:type-name="NMVlanFlags"
-                 glib:get-type="nm_vlan_flags_get_type"
-                 c:type="NMVlanFlags">
+    <bitfield name="VlanFlags"
+              glib:type-name="NMVlanFlags"
+              glib:get-type="nm_vlan_flags_get_type"
+              c:type="NMVlanFlags">
       <doc xml:space="preserve">#NMVlanFlags values control the behavior of the VLAN interface.</doc>
       <member name="reorder_headers"
               value="1"
@@ -22637,7 +23035,7 @@ generating the dynamic WEP keys automatically</doc>
  state is tied to the underlying network interface but other details
  (like routing) are not.</doc>
       </member>
-    </enumeration>
+    </bitfield>
     <enumeration name="VlanPriorityMap"
                  glib:type-name="NMVlanPriorityMap"
                  glib:get-type="nm_vlan_priority_map_get_type"
@@ -22717,7 +23115,7 @@ string used by the connection, and must not be modified.</doc>
       </property>
       <property name="vpn-state" transfer-ownership="none">
         <doc xml:space="preserve">The VPN state of the active VPN connection.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="VpnConnectionState"/>
       </property>
       <field name="parent">
         <type name="ActiveConnection" c:type="NMActiveConnection"/>
@@ -23320,7 +23718,7 @@ information to complete the request.</doc>
       </property>
       <property name="state" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The state of the plugin.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="VpnServiceState"/>
       </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
@@ -24120,7 +24518,7 @@ be freed with g_slist_free() when it is no longer required.</doc>
       </property>
       <property name="network-type" transfer-ownership="none">
         <doc xml:space="preserve">The network type of the WiMAX NSP.</doc>
-        <type name="guint" c:type="guint"/>
+        <type name="WimaxNspNetworkType"/>
       </property>
       <property name="signal-quality" transfer-ownership="none">
         <doc xml:space="preserve">The signal quality of the WiMAX NSP.</doc>
@@ -24326,15 +24724,6 @@ be freed with g_slist_free() when it is no longer required.</doc>
       <doc xml:space="preserve">Registers an error quark for #NMRemoteConnection if necessary.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the error quark used for #NMRemoteConnection errors.</doc>
-        <type name="GLib.Quark" c:type="GQuark"/>
-      </return-value>
-    </function>
-    <function name="remote_settings_error_quark"
-              c:identifier="nm_remote_settings_error_quark"
-              moved-to="RemoteSettingsError.quark">
-      <doc xml:space="preserve">Registers an error quark for #NMRemoteSettings if necessary.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the error quark used for #NMRemoteSettings errors.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
@@ -25562,6 +25951,23 @@ object's #NMSettingConnection:id: property</doc>
         <parameter name="band" transfer-ownership="none">
           <doc xml:space="preserve">frequency band for wireless ("a" or "bg")</doc>
           <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_wifi_strength_bars"
+              c:identifier="nm_utils_wifi_strength_bars">
+      <doc xml:space="preserve">Converts @strength into a 4-character-wide graphical representation of
+strength suitable for printing to stdout. If the current locale and terminal
+support it, this will use unicode graphics characters to represent
+"bars". Otherwise it will use 0 to 4 asterisks.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the graphical representation of the access point strength</doc>
+        <type name="utf8" c:type="const char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="strength" transfer-ownership="none">
+          <doc xml:space="preserve">the access point strength, from 0 to 100</doc>
+          <type name="guint8" c:type="guint8"/>
         </parameter>
       </parameters>
     </function>

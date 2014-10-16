@@ -152,8 +152,8 @@ namespace E {
 		public unowned string get_display_name ();
 		public bool get_enabled ();
 		public unowned E.SourceExtension get_extension (string extension_name);
-		public virtual async bool get_oauth2_access_token (GLib.Cancellable? cancellable) throws GLib.Error;
-		public virtual bool get_oauth2_access_token_sync (GLib.Cancellable? cancellable, string? out_access_token, int? out_expires_in) throws GLib.Error;
+		public virtual async bool get_oauth2_access_token (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
+		public virtual bool get_oauth2_access_token_sync (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
 		public unowned string get_parent ();
 		public bool get_remote_creatable ();
 		public bool get_remote_deletable ();
@@ -162,10 +162,10 @@ namespace E {
 		public bool get_writable ();
 		public bool has_extension (string extension_name);
 		public uint hash ();
-		public async bool lookup_password (GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool lookup_password_sync (GLib.Cancellable? cancellable, string out_password) throws GLib.Error;
-		public async bool mail_signature_load (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool mail_signature_load_sync (string contents, size_t? length, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool lookup_password (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
+		public bool lookup_password_sync (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
+		public async bool mail_signature_load (int io_priority, GLib.Cancellable? cancellable, out string contents, out size_t length) throws GLib.Error;
+		public bool mail_signature_load_sync (out string contents, out size_t length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool mail_signature_replace (string contents, size_t length, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool mail_signature_replace_sync (string contents, size_t length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool mail_signature_symlink (string symlink_target, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1026,11 +1026,11 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void weak_ref_free (GLib.WeakRef weak_ref);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xml_destroy_hash (GLib.HashTable<void*,void*> hash);
+	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int xml_save_file (string filename, [CCode (type = "xmlDocPtr")] Xml.Doc* doc);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static GLib.HashTable<void*,void*> xml_to_hash (Xml.Doc doc, E.XmlHashType type);
+	public static GLib.HashTable<string,string> xml_to_hash (Xml.Doc doc, E.XmlHashType type);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xmlhash_add (E.XmlHash hash, string key, string data);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

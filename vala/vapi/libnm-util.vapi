@@ -716,6 +716,8 @@ namespace NM {
 		public const string OPTION_DOWNDELAY;
 		[CCode (cheader_filename = "nm-setting-bond.h", cname = "NM_SETTING_BOND_OPTION_FAIL_OVER_MAC")]
 		public const string OPTION_FAIL_OVER_MAC;
+		[CCode (cheader_filename = "nm-setting-bond.h", cname = "NM_SETTING_BOND_OPTION_LACP_RATE")]
+		public const string OPTION_LACP_RATE;
 		[CCode (cheader_filename = "nm-setting-bond.h", cname = "NM_SETTING_BOND_OPTION_MIIMON")]
 		public const string OPTION_MIIMON;
 		[CCode (cheader_filename = "nm-setting-bond.h", cname = "NM_SETTING_BOND_OPTION_MODE")]
@@ -1845,7 +1847,9 @@ namespace NM {
 		IGNORE_ID,
 		IGNORE_SECRETS,
 		IGNORE_AGENT_OWNED_SECRETS,
-		IGNORE_NOT_SAVED_SECRETS
+		IGNORE_NOT_SAVED_SECRETS,
+		DIFF_RESULT_WITH_DEFAULT,
+		DIFF_RESULT_NO_DEFAULT
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_DCB_FLAG_", type_id = "nm_setting_dcb_flags_get_type ()")]
 	public enum SettingDcbFlags {
@@ -1858,7 +1862,9 @@ namespace NM {
 	public enum SettingDiffResult {
 		UNKNOWN,
 		IN_A,
-		IN_B
+		IN_B,
+		IN_A_DEFAULT,
+		IN_B_DEFAULT
 	}
 	[CCode (cheader_filename = "nm-setting-gsm.h", cprefix = "NM_SETTING_GSM_BAND_", type_id = "nm_setting_gsm_network_band_get_type ()")]
 	[Deprecated (since = "0.9.10")]
