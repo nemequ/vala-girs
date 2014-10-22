@@ -17,6 +17,7 @@ namespace E {
 		public void cancel_all ();
 		public bool check_capability (string capability);
 		public bool check_refresh_supported ();
+		public string dup_bus_name ();
 		[Deprecated (since = "3.8")]
 		public static GLib.Error error_create (E.ClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
@@ -48,6 +49,7 @@ namespace E {
 		public virtual async bool set_backend_property (string prop_name, string prop_value, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Deprecated (since = "3.8")]
 		public virtual bool set_backend_property_sync (string prop_name, string prop_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void set_bus_name (string bus_name);
 		[Deprecated (since = "3.8")]
 		public virtual void unwrap_dbus_error (GLib.Error dbus_error) throws GLib.Error;
 		[Deprecated (since = "3.8")]
@@ -141,6 +143,8 @@ namespace E {
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
+		public async bool allow_auth_prompt (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool allow_auth_prompt_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int compare_by_display_name (E.Source source2);
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_password_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -341,9 +345,13 @@ namespace E {
 	public class SourceMailAccount : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceMailAccount ();
+		public string dup_archive_folder ();
 		public string dup_identity_uid ();
+		public unowned string get_archive_folder ();
 		public unowned string get_identity_uid ();
+		public void set_archive_folder (string? archive_folder);
 		public void set_identity_uid (string? identity_uid);
+		public string archive_folder { get; set construct; }
 		public string identity_uid { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_composition_get_type ()")]
@@ -878,10 +886,16 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_add (string category, string unused, string icon_file, bool searchable);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static string categories_dup_icon_file_for (string category);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static GLib.List<string> categories_dup_list ();
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_exist (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.14")]
 	public static unowned string categories_get_icon_file_for (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Deprecated (since = "3.14")]
 	public static GLib.List<weak string> categories_get_list ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_is_searchable (string category);

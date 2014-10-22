@@ -1010,7 +1010,8 @@ namespace GVirConfig {
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INPUT_DEVICE_", type_id = "gvir_config_domain_input_device_type_get_type ()")]
 	public enum DomainInputDeviceType {
 		MOUSE,
-		TABLET
+		TABLET,
+		KEYBOARD
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_INTERFACE_LINK_STATE_", type_id = "gvir_config_domain_interface_link_state_get_type ()")]
 	public enum DomainInterfaceLinkState {

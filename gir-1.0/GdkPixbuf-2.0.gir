@@ -369,6 +369,8 @@ invalid data.</doc>
       </constructor>
       <constructor name="new_from_inline"
                    c:identifier="gdk_pixbuf_new_from_inline"
+                   deprecated="1"
+                   deprecated-version="2.32"
                    throws="1">
         <doc xml:space="preserve">Create a #GdkPixbuf from a flat representation that is suitable for
 storing as inline data in a program. This is useful if you want to
@@ -400,6 +402,7 @@ pixbuf = gdk_pixbuf_new_from_inline (-1, myimage_inline, FALSE, NULL);
 For non-const inline data, you could get out of memory. For untrusted
 inline data located at runtime, you could have corrupt inline data in
 addition.</doc>
+        <doc-deprecated xml:space="preserve">Use #GResource instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A newly-created #GdkPixbuf structure with a reference,
   count of 1, or %NULL if an error occurred.</doc>
@@ -619,10 +622,13 @@ the result of including an XPM file into a program's C source.</doc>
       </constructor>
       <function name="from_pixdata"
                 c:identifier="gdk_pixbuf_from_pixdata"
+                deprecated="1"
+                deprecated-version="2.32"
                 throws="1">
         <doc xml:space="preserve">Converts a #GdkPixdata to a #GdkPixbuf. If @copy_pixels is %TRUE or
 if the pixel data is run-length-encoded, the pixel data is copied into
 newly-allocated memory; otherwise it is reused.</doc>
+        <doc-deprecated xml:space="preserve">Use #GResource instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GdkPixbuf.</doc>
           <type name="Pixbuf" c:type="GdkPixbuf*"/>
@@ -1332,7 +1338,8 @@ The ICO, XBM, and XPM loaders provide "x_hot" and "y_hot" hot-spot
 options for cursor definitions. The PNG loader provides the tEXt ancillary
 chunk key/value pairs as options. Since 2.12, the TIFF and JPEG loaders
 return an "orientation" option string that corresponds to the embedded
-TIFF/Exif orientation tag (if present).</doc>
+TIFF/Exif orientation tag (if present). Since 2.32, the TIFF loader sets
+the "multipage" option string to "yes" when a multi-page TIFF is loaded.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the value associated with @key. This is a nul-terminated
 string that should not be freed or %NULL if @key was not found.</doc>
@@ -1347,6 +1354,28 @@ string that should not be freed or %NULL if @key was not found.</doc>
             <doc xml:space="preserve">a nul-terminated string.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_options"
+              c:identifier="gdk_pixbuf_get_options"
+              version="2.32">
+        <doc xml:space="preserve">Returns a #GHashTable with a list of all the options that may have been
+attached to the @pixbuf when it was loaded, or that may have been
+attached by another function using gdk_pixbuf_set_option().
+
+See gdk_pixbuf_get_option() for more details.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">a #GHashTable of key/values</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPixbuf</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_pixels"
@@ -1569,7 +1598,10 @@ rowstride.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="save" c:identifier="gdk_pixbuf_save" introspectable="0">
+      <method name="save"
+              c:identifier="gdk_pixbuf_save"
+              shadowed-by="savev"
+              introspectable="0">
         <doc xml:space="preserve">Saves pixbuf to a file in format @type. By default, "jpeg", "png", "ico"
 and "bmp" are possible file formats to save in, but more formats may be
 installed. The list of all writable formats can be determined in the
@@ -1659,6 +1691,7 @@ it produces a CUR instead of an ICO.</doc>
       </method>
       <method name="save_to_buffer"
               c:identifier="gdk_pixbuf_save_to_buffer"
+              shadowed-by="save_to_bufferv"
               version="2.4"
               introspectable="0">
         <doc xml:space="preserve">Saves pixbuf to a new buffer in format @type, which is currently "jpeg",
@@ -1715,6 +1748,7 @@ See gdk_pixbuf_save() for more details.</doc>
       </method>
       <method name="save_to_bufferv"
               c:identifier="gdk_pixbuf_save_to_bufferv"
+              shadows="save_to_buffer"
               version="2.4"
               throws="1">
         <doc xml:space="preserve">Saves pixbuf to a new buffer in format @type, which is currently "jpeg",
@@ -1766,6 +1800,7 @@ for more details.</doc>
       </method>
       <method name="save_to_callback"
               c:identifier="gdk_pixbuf_save_to_callback"
+              shadowed-by="save_to_callbackv"
               version="2.4"
               introspectable="0">
         <doc xml:space="preserve">Saves pixbuf in format @type by feeding the produced data to a
@@ -1816,6 +1851,7 @@ See gdk_pixbuf_save() for more details.</doc>
       </method>
       <method name="save_to_callbackv"
               c:identifier="gdk_pixbuf_save_to_callbackv"
+              shadows="save_to_callback"
               version="2.4"
               throws="1">
         <doc xml:space="preserve">Saves pixbuf to a callback in format @type, which is currently "jpeg",
@@ -1966,7 +2002,10 @@ You can then call gdk_pixbuf_save_to_stream_finish() to get the result of the op
           </parameter>
         </parameters>
       </method>
-      <method name="savev" c:identifier="gdk_pixbuf_savev" throws="1">
+      <method name="savev"
+              c:identifier="gdk_pixbuf_savev"
+              shadows="save"
+              throws="1">
         <doc xml:space="preserve">Saves pixbuf to a file in @type, which is currently "jpeg", "png", "tiff", "ico" or "bmp".
 If @error is set, %FALSE will be returned.
 See gdk_pixbuf_save () for more details.</doc>
@@ -3525,6 +3564,8 @@ serialization and streaming.</doc>
       </field>
       <method name="deserialize"
               c:identifier="gdk_pixdata_deserialize"
+              deprecated="1"
+              deprecated-version="2.32"
               throws="1">
         <doc xml:space="preserve">Deserializes (reconstruct) a #GdkPixdata structure from a byte stream.
 The byte stream consists of a straightforward writeout of the
@@ -3533,6 +3574,7 @@ bytes the structure points to.
 The @pixdata contents are reconstructed byte by byte and are checked
 for validity. This function may fail with %GDK_PIXBUF_ERROR_CORRUPT_IMAGE
 or %GDK_PIXBUF_ERROR_UNKNOWN_TYPE.</doc>
+        <doc-deprecated xml:space="preserve">Use #GResource instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">Upon successful deserialization %TRUE is returned,
 %FALSE otherwise.</doc>
@@ -3558,10 +3600,13 @@ or %GDK_PIXBUF_ERROR_UNKNOWN_TYPE.</doc>
       </method>
       <method name="from_pixbuf"
               c:identifier="gdk_pixdata_from_pixbuf"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.32">
         <doc xml:space="preserve">Converts a #GdkPixbuf to a #GdkPixdata. If @use_rle is %TRUE, the
 pixel data is run-length encoded into newly-allocated memory and a
 pointer to that memory is returned.</doc>
+        <doc-deprecated xml:space="preserve">Use #GResource instead.</doc-deprecated>
         <return-value nullable="1">
           <doc xml:space="preserve">If @use_rle is %TRUE, a pointer to the
   newly-allocated memory for the run-length encoded pixel data,
@@ -3583,11 +3628,15 @@ pointer to that memory is returned.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="serialize" c:identifier="gdk_pixdata_serialize">
+      <method name="serialize"
+              c:identifier="gdk_pixdata_serialize"
+              deprecated="1"
+              deprecated-version="2.32">
         <doc xml:space="preserve">Serializes a #GdkPixdata structure into a byte stream.
 The byte stream consists of a straightforward writeout of the
 #GdkPixdata fields in network byte order, plus the @pixel_data
 bytes the structure points to.</doc>
+        <doc-deprecated xml:space="preserve">Use #GResource instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A
 newly-allocated string containing the serialized #GdkPixdata
@@ -3610,13 +3659,17 @@ structure.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="to_csource" c:identifier="gdk_pixdata_to_csource">
+      <method name="to_csource"
+              c:identifier="gdk_pixdata_to_csource"
+              deprecated="1"
+              deprecated-version="2.32">
         <doc xml:space="preserve">Generates C source code suitable for compiling images directly
 into programs.
 
 gdk-pixbuf ships with a program called
 [gdk-pixbuf-csource][gdk-pixbuf-csource], which offers a command
 line interface to this function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GResource instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a newly-allocated string containing the C source form
   of @pixdata.</doc>

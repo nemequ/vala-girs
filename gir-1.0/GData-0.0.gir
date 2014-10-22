@@ -19697,7 +19697,7 @@ For more information, see the
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MICRO_VERSION"
-              value="1"
+              value="0"
               c:type="GDATA_MICRO_VERSION"
               version="0.11.0">
       <doc xml:space="preserve">Evaluates to the micro version of the GData headers at compile time.
@@ -19705,7 +19705,7 @@ For more information, see the
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION"
-              value="16"
+              value="17"
               c:type="GDATA_MINOR_VERSION"
               version="0.11.0">
       <doc xml:space="preserve">Evaluates to the minor version of the GData headers at compile time.
@@ -20463,6 +20463,30 @@ For more information, see the &lt;ulink type="http" url="http://video.search.yah
             c:type="GDataMediaThumbnailPrivate"
             disguised="1">
     </record>
+    <constant name="OAUTH2_REDIRECT_URI_OOB"
+              value="urn:ietf:wg:oauth:2.0:oob"
+              c:type="GDATA_OAUTH2_REDIRECT_URI_OOB">
+      <doc xml:space="preserve">OAuth 2 redirect URI for out-of-band authorisation code transfer, where the
+user is shown the authorisation code and asked to copy it.
+
+See
+&lt;ulink type="http" url="https://developers.google.com/accounts/docs/OAuth2InstalledApp#choosingredirecturi"&gt;reference
+documentation&lt;/ulink&gt; for details.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="OAUTH2_REDIRECT_URI_OOB_AUTO"
+              value="urn:ietf:wg:oauth:2.0:oob:auto"
+              c:type="GDATA_OAUTH2_REDIRECT_URI_OOB_AUTO">
+      <doc xml:space="preserve">OAuth 2 redirect URI for out-of-band authorisation code transfer, where the
+user is not shown the authorisation code or asked to copy it.
+
+See
+&lt;ulink type="http" url="https://developers.google.com/accounts/docs/OAuth2InstalledApp#choosingredirecturi"&gt;reference
+documentation&lt;/ulink&gt; for details.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <class name="OAuth1Authorizer"
            c:symbol-prefix="oauth1_authorizer"
            c:type="GDataOAuth1Authorizer"
@@ -21043,6 +21067,505 @@ If the timeout is &lt;code class="literal"&gt;0&lt;/code&gt;, operations will ne
     </record>
     <record name="OAuth1AuthorizerPrivate"
             c:type="GDataOAuth1AuthorizerPrivate"
+            disguised="1">
+    </record>
+    <class name="OAuth2Authorizer"
+           c:symbol-prefix="oauth2_authorizer"
+           c:type="GDataOAuth2Authorizer"
+           parent="GObject.Object"
+           glib:type-name="GDataOAuth2Authorizer"
+           glib:get-type="gdata_oauth2_authorizer_get_type"
+           glib:type-struct="OAuth2AuthorizerClass">
+      <doc xml:space="preserve">All the fields in the #GDataOAuth2Authorizer structure are private and should never be accessed directly.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <implements name="Authorizer"/>
+      <constructor name="new" c:identifier="gdata_oauth2_authorizer_new">
+        <doc xml:space="preserve">Creates a new #GDataOAuth2Authorizer. The @client_id must be unique for your
+application, and as registered with Google, and the @client_secret must be
+paired with it.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GDataOAuth2Authorizer; unref with
+g_object_unref()</doc>
+          <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client_id" transfer-ownership="none">
+            <doc xml:space="preserve">your application’s client ID</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="client_secret" transfer-ownership="none">
+            <doc xml:space="preserve">your application’s client secret</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="redirect_uri" transfer-ownership="none">
+            <doc xml:space="preserve">authorisation redirect URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="service_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of a #GDataService subclass which the
+#GDataOAuth2Authorizer will be used with</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_for_authorization_domains"
+                   c:identifier="gdata_oauth2_authorizer_new_for_authorization_domains">
+        <doc xml:space="preserve">Creates a new #GDataOAuth2Authorizer. The @client_id must be unique for your
+application, and as registered with Google, and the @client_secret must be
+paired with it.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GDataOAuth2Authorizer; unref with
+g_object_unref()</doc>
+          <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="client_id" transfer-ownership="none">
+            <doc xml:space="preserve">your application’s client ID</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="client_secret" transfer-ownership="none">
+            <doc xml:space="preserve">your application’s client secret</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="redirect_uri" transfer-ownership="none">
+            <doc xml:space="preserve">authorisation redirect URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="authorization_domains" transfer-ownership="none">
+            <doc xml:space="preserve">
+a non-empty list of #GDataAuthorizationDomains to be authorized against by
+the #GDataOAuth2Authorizer</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="AuthorizationDomain"/>
+            </type>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="build_authentication_uri"
+              c:identifier="gdata_oauth2_authorizer_build_authentication_uri">
+        <doc xml:space="preserve">Build an authentication URI to open in the user’s web browser (or an embedded
+browser widget). This will display an authentication page from Google,
+including an authentication form and confirmation of the authorisation
+domains being requested by this #GDataAuthorizer. The user will authenticate
+in the browser, then an authorisation code will be returned via the
+#GDataOAuth2Authorizer:redirect-uri, ready to be passed to
+gdata_oauth2_authorizer_request_authorization().
+
+If @login_hint is non-%NULL, it will be passed to the server as a hint of
+which user is attempting to authenticate, which can be used to pre-fill the
+e-mail address box in the authentication form.
+
+If @include_granted_scopes is %TRUE, the authentication request will
+automatically include all authorisation domains previously granted to this
+user/application pair, allowing for incremental authentication — asking for
+permissions as needed, rather than all in one large bundle at the first
+opportunity. If @include_granted_scopes is %FALSE, incremental authentication
+will not be enabled, and only the domains passed to the
+#GDataOAuth2Authorizer constructor will eventually be authenticated.
+See the
+&lt;ulink type="http" url="https://developers.google.com/accounts/docs/OAuth2WebServer#incrementalAuth"&gt;reference
+documentation&lt;/ulink&gt; for more details.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the authentication URI to open in a web
+browser; free with g_free()</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="login_hint"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional e-mail address or sub identifier for the
+user</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="include_granted_scopes" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE to enable incremental authorisation</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_client_id"
+              c:identifier="gdata_oauth2_authorizer_get_client_id">
+        <doc xml:space="preserve">Returns the authorizer's client ID, #GDataOAuth2Authorizer:client-id, as
+specified on constructing the #GDataOAuth2Authorizer.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the authorizer's client ID</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_client_secret"
+              c:identifier="gdata_oauth2_authorizer_get_client_secret">
+        <doc xml:space="preserve">Returns the authorizer's client secret, #GDataOAuth2Authorizer:client-secret,
+as specified on constructing the #GDataOAuth2Authorizer.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the authorizer's client secret</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_locale"
+              c:identifier="gdata_oauth2_authorizer_get_locale">
+        <doc xml:space="preserve">Returns the locale currently being used for network requests, or %NULL if the
+locale is the default.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the current locale</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_proxy_resolver"
+              c:identifier="gdata_oauth2_authorizer_get_proxy_resolver">
+        <doc xml:space="preserve">Gets the #GProxyResolver on the #GDataOAuth2Authorizer's #SoupSession.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GProxyResolver, or %NULL</doc>
+          <type name="Gio.ProxyResolver" c:type="GProxyResolver*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_redirect_uri"
+              c:identifier="gdata_oauth2_authorizer_get_redirect_uri">
+        <doc xml:space="preserve">Returns the authorizer’s redirect URI, #GDataOAuth2Authorizer:redirect-uri,
+as specified on constructing the #GDataOAuth2Authorizer.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the authorizer’s redirect URI</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_timeout"
+              c:identifier="gdata_oauth2_authorizer_get_timeout">
+        <doc xml:space="preserve">Gets the #GDataOAuth2Authorizer:timeout property; the network timeout, in
+seconds.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the timeout, or &lt;code class="literal"&gt;0&lt;/code&gt;</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="request_authorization"
+              c:identifier="gdata_oauth2_authorizer_request_authorization"
+              throws="1">
+        <doc xml:space="preserve">Request an authorisation code from the user’s web browser is converted to
+authorisation (access and refresh) tokens. This is the final step in the
+authentication process; once complete, the #GDataOAuth2Authorizer should be
+fully authorised for its domains.
+
+On failure, %GDATA_SERVICE_ERROR_FORBIDDEN will be returned if the user or
+server denied the authorisation request. %GDATA_SERVICE_ERROR_PROTOCOL_ERROR
+will be returned if the server didn’t follow the expected protocol.
+%G_IO_ERROR_CANCELLED will be returned if the operation was cancelled using
+@cancellable.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="authorization_code" transfer-ownership="none">
+            <doc xml:space="preserve">code returned from the authentication page</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_authorization_async"
+              c:identifier="gdata_oauth2_authorizer_request_authorization_async">
+        <doc xml:space="preserve">Asynchronous version of gdata_oauth2_authorizer_request_authorization().</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="authorization_code" transfer-ownership="none">
+            <doc xml:space="preserve">code returned from the authentication page</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when authorization is finished</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data to pass to the @callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_authorization_finish"
+              c:identifier="gdata_oauth2_authorizer_request_authorization_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous authorization operation started with
+gdata_oauth2_authorizer_request_authorization_async().</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if authorization was successful, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="async_result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_locale"
+              c:identifier="gdata_oauth2_authorizer_set_locale">
+        <doc xml:space="preserve">Set the locale used for network requests to @locale, given in standard UNIX
+locale format. See #GDataOAuth2Authorizer:locale for more details.
+
+Note that while it’s possible to change the locale after sending network
+requests (i.e. calling gdata_oauth2_authorizer_build_authentication_uri() for
+the first time), it is unsupported, as the server-side software may behave
+unexpectedly. The only supported use of this method is after creation of the
+authorizer, but before any network requests are made.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="locale"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the new locale in UNIX locale format, or %NULL for the
+default locale</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_proxy_resolver"
+              c:identifier="gdata_oauth2_authorizer_set_proxy_resolver">
+        <doc xml:space="preserve">Sets the #GProxyResolver on the #SoupSession used internally by the given
+#GDataOAuth2Authorizer.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="proxy_resolver"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GProxyResolver, or %NULL</doc>
+            <type name="Gio.ProxyResolver" c:type="GProxyResolver*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_timeout"
+              c:identifier="gdata_oauth2_authorizer_set_timeout">
+        <doc xml:space="preserve">Sets the #GDataOAuth2Authorizer:timeout property; the network timeout, in
+seconds.
+
+If @timeout is &lt;code class="literal"&gt;0&lt;/code&gt;, network operations will never
+time out.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDataOAuth2Authorizer</doc>
+            <type name="OAuth2Authorizer" c:type="GDataOAuth2Authorizer*"/>
+          </instance-parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the timeout, or &lt;code class="literal"&gt;0&lt;/code&gt;</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="client-id"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">A client ID for your application (see the
+&lt;ulink url="https://developers.google.com/accounts/docs/OAuth2InstalledApp#handlingtheresponse" type="http"&gt;reference documentation&lt;/ulink&gt;).
+
+It is recommended that the ID is of the form
+&lt;literal&gt;&lt;replaceable&gt;company name&lt;/replaceable&gt;-
+&lt;replaceable&gt;application name&lt;/replaceable&gt;-
+&lt;replaceable&gt;version ID&lt;/replaceable&gt;&lt;/literal&gt;.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="client-secret"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Client secret provided by Google. This is unique for each application
+and is accessible from Google’s Developer Console when registering
+an application. It must be paired with the
+#GDataOAuth2Authorizer:client-id.
+
+See the
+&lt;ulink url="https://developers.google.com/accounts/docs/OAuth2InstalledApp#handlingtheresponse" type="http"&gt;reference
+documentation&lt;/ulink&gt; for details.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="locale" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The locale to use for network requests, in UNIX locale format.
+(e.g. "en_GB", "cs", "de_DE".) Use %NULL for the default "C" locale
+(typically "en_US").
+
+This locale will be used by the server-side software to localise the
+authentication and authorization pages at the URI returned by
+gdata_oauth2_authorizer_build_authentication_uri().
+
+The server-side behaviour is undefined if it doesn't support a given
+locale.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="proxy-resolver" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The #GProxyResolver used to determine a proxy URI.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <type name="Gio.ProxyResolver"/>
+      </property>
+      <property name="redirect-uri"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Redirect URI to send the response from the authorisation request to.
+This must either be %GDATA_OAUTH2_REDIRECT_URI_OOB,
+%GDATA_OAUTH2_REDIRECT_URI_OOB_AUTO, or a
+&lt;code&gt;http://localhost&lt;/code&gt; URI with any port number (optionally)
+specified.
+
+This URI is where the authorisation server will redirect the user
+after they have completed interacting with the authentication page
+(gdata_oauth2_authorizer_build_authentication_uri()). If it is
+%GDATA_OAUTH2_REDIRECT_URI_OOB, a page will be returned in the user’s
+browser with the authorisation code in its title and also embedded in
+the page for the user to copy if it is not possible to automatically
+extract the code from the page title. If it is
+%GDATA_OAUTH2_REDIRECT_URI_OOB_AUTO, a similar page will be returned
+with the authorisation code in its title, but without displaying the
+code to the user — the user will simply be asked to close the page.
+If it is a localhost URI, the authentication page will redirect to
+that URI with the authorisation code appended as a &lt;code&gt;code&lt;/code&gt;
+query parameter. If the user denies the authentication request, the
+authentication page will redirect to that URI with
+&lt;code&gt;error=access_denied&lt;/code&gt; appended as a query parameter.
+
+Note that the redirect URI used must match that registered in
+Google’s Developer Console for your application.
+
+See the &lt;ulink type="http" url="https://developers.google.com/accounts/docs/OAuth2InstalledApp#choosingredirecturi"&gt;reference
+documentation&lt;/ulink&gt; for details about choosing a redirect URI.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="timeout" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">A timeout, in seconds, for network operations. If the timeout is
+exceeded, the operation will be cancelled and
+%GDATA_SERVICE_ERROR_NETWORK_ERROR will be returned.
+
+If the timeout is &lt;code class="literal"&gt;0&lt;/code&gt;, operations will
+never time out.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="OAuth2AuthorizerPrivate"
+              c:type="GDataOAuth2AuthorizerPrivate*"/>
+      </field>
+    </class>
+    <record name="OAuth2AuthorizerClass"
+            c:type="GDataOAuth2AuthorizerClass"
+            glib:is-gtype-struct-for="OAuth2Authorizer">
+      <doc xml:space="preserve">All the fields in the #GDataOAuth2AuthorizerClass structure are private and should never be accessed directly.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="OAuth2AuthorizerPrivate"
+            c:type="GDataOAuth2AuthorizerPrivate"
             disguised="1">
     </record>
     <enumeration name="OperationType"

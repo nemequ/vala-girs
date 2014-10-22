@@ -1591,7 +1591,8 @@ by gdk_device_list_axes()</doc>
       <method name="get_has_cursor"
               c:identifier="gdk_device_get_has_cursor"
               version="2.20">
-        <doc xml:space="preserve">Determines whether the pointer follows device motion.</doc>
+        <doc xml:space="preserve">Determines whether the pointer follows device motion.
+This is not meaningful for keyboard devices, which don't have a pointer.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the pointer follows device motion</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -3280,12 +3281,16 @@ running.</doc>
       </method>
       <method name="supports_composite"
               c:identifier="gdk_display_supports_composite"
-              version="2.12">
+              version="2.12"
+              deprecated="1"
+              deprecated-version="3.16">
         <doc xml:space="preserve">Returns %TRUE if gdk_window_set_composited() can be used
 to redirect drawing on the window using compositing.
 
 Currently this only works on X11 with XComposite and
 XDamage extensions available.</doc>
+        <doc-deprecated xml:space="preserve">Compositing is an outdated technology that
+  only ever worked on X11.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if windows may be composited.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -6557,6 +6562,187 @@ when in fullscreen mode.</doc>
               c:identifier="GDK_FULLSCREEN_ON_ALL_MONITORS"
               glib:nick="all-monitors">
         <doc xml:space="preserve">Span across all monitors when fullscreen.</doc>
+      </member>
+    </enumeration>
+    <class name="GLContext"
+           c:symbol-prefix="gl_context"
+           c:type="GdkGLContext"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="GdkGLContext"
+           glib:get-type="gdk_gl_context_get_type">
+      <doc xml:space="preserve">#GdkGLContext is an object representing the platform-specific
+OpenGL drawing context.
+
+#GdkGLContexts are created for a #GdkWindow using
+gdk_window_create_gl_context(), and the context will match
+the #GdkVisual of the window.
+
+A #GdkGLContext is not tied to any particular normal framebuffer.
+For instance, it cannot draw to the #GdkWindow back buffer. The GDK
+repaint system is in full control of the painting to that. Instead,
+you can create render buffers or textures and use gdk_cairo_draw_from_gl()
+in the draw function of your widget to draw them. Then GDK will handle
+the integration of your rendering with that of other widgets.
+
+Support for #GdkGLContext is platform-specific, context creation
+can fail, returning %NULL context.
+
+A #GdkGLContext has to be made "current" in order to start using
+it, otherwise any OpenGL call will be ignored.
+
+## Creating a new OpenGL context ##
+
+In order to create a new #GdkGLContext instance you need a
+#GdkWindow, which you typically get during the realize call
+of a widget.
+
+## Using a GdkGLContext ##
+
+You will need to make the #GdkGLContext the current context
+before issuing OpenGL calls; the system sends OpenGL commands to
+whichever context is current. It is possible to have multiple
+contexts, so you always need to ensure that the one which you
+want to draw with is the current one before issuing commands:
+
+|[&lt;!-- language="C" --&gt;
+  gdk_gl_context_make_current (context);
+]|
+
+You can now perform your drawing using OpenGL commands.
+
+You can check which #GdkGLContext is the current one by using
+gdk_gl_context_get_current(); you can also unset any #GdkGLContext
+that is currently set by calling gdk_gl_context_clear_current().</doc>
+      <function name="clear_current"
+                c:identifier="gdk_gl_context_clear_current"
+                version="3.16">
+        <doc xml:space="preserve">Clears the current #GdkGLContext.
+
+Any OpenGL call after this function returns will be ignored
+until gdk_gl_context_make_current() is called.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </function>
+      <function name="get_current"
+                c:identifier="gdk_gl_context_get_current"
+                version="3.16">
+        <doc xml:space="preserve">Retrieves the current #GdkGLContext.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the current #GdkGLContext, or %NULL</doc>
+          <type name="GLContext" c:type="GdkGLContext*"/>
+        </return-value>
+      </function>
+      <method name="get_visual"
+              c:identifier="gdk_gl_context_get_visual"
+              version="3.16">
+        <doc xml:space="preserve">Retrieves the #GdkVisual associated with the @context.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GdkVisual</doc>
+          <type name="Visual" c:type="GdkVisual*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_window"
+              c:identifier="gdk_gl_context_get_window"
+              version="3.16">
+        <doc xml:space="preserve">Retrieves the #GdkWindow used by the @context.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkWindow or %NULL</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="make_current"
+              c:identifier="gdk_gl_context_make_current"
+              version="3.16">
+        <doc xml:space="preserve">Makes the @context the current one.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="visual"
+                version="3.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkVisual matching the pixel format used by the context.</doc>
+        <type name="Visual"/>
+      </property>
+      <property name="window"
+                version="3.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkWindow the gl context is bound to.</doc>
+        <type name="Window"/>
+      </property>
+    </class>
+    <enumeration name="GLError"
+                 glib:type-name="GdkGLError"
+                 glib:get-type="gdk_gl_error_get_type"
+                 c:type="GdkGLError"
+                 glib:error-domain="gdk-gl-error-quark">
+      <member name="not_available"
+              value="0"
+              c:identifier="GDK_GL_ERROR_NOT_AVAILABLE"
+              glib:nick="not-available">
+      </member>
+      <member name="unsupported_format"
+              value="1"
+              c:identifier="GDK_GL_ERROR_UNSUPPORTED_FORMAT"
+              glib:nick="unsupported-format">
+      </member>
+      <member name="unsupported_profile"
+              value="2"
+              c:identifier="GDK_GL_ERROR_UNSUPPORTED_PROFILE"
+              glib:nick="unsupported-profile">
+      </member>
+      <function name="quark" c:identifier="gdk_gl_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
+    </enumeration>
+    <enumeration name="GLProfile"
+                 glib:type-name="GdkGLProfile"
+                 glib:get-type="gdk_gl_profile_get_type"
+                 c:type="GdkGLProfile">
+      <doc xml:space="preserve">...</doc>
+      <member name="default"
+              value="0"
+              c:identifier="GDK_GL_PROFILE_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">...</doc>
+      </member>
+      <member name="legacy"
+              value="1"
+              c:identifier="GDK_GL_PROFILE_LEGACY"
+              glib:nick="legacy">
+        <doc xml:space="preserve">...</doc>
+      </member>
+      <member name="3_2_core"
+              value="2"
+              c:identifier="GDK_GL_PROFILE_3_2_CORE"
+              glib:nick="3-2-core">
+        <doc xml:space="preserve">...</doc>
       </member>
     </enumeration>
     <record name="Geometry" c:type="GdkGeometry">
@@ -18853,6 +19039,31 @@ in parent’s coordinate system, or %NULL</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_gl_context"
+              c:identifier="gdk_window_create_gl_context"
+              version="3.16"
+              throws="1">
+        <doc xml:space="preserve">Creates a new #GdkGLContext matching the
+framebuffer format to the visual of the #GdkWindow. The context
+is disconnected from any particular window or surface.
+
+If the creation of the #GdkGLContext failed, @error will be set.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the newly created #GdkGLContext, or
+%NULL on error</doc>
+          <type name="GLContext" c:type="GdkGLContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkWindow</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </instance-parameter>
+          <parameter name="profile" transfer-ownership="none">
+            <doc xml:space="preserve">the GL profile the context should target</doc>
+            <type name="GLProfile" c:type="GdkGLProfile"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="create_similar_image_surface"
               c:identifier="gdk_window_create_similar_image_surface"
               version="3.10">
@@ -19000,12 +19211,13 @@ reaches zero. You must call this function yourself before that happens.</doc>
         </parameters>
       </method>
       <method name="end_paint" c:identifier="gdk_window_end_paint">
-        <doc xml:space="preserve">Indicates that the backing store created by the most recent call to
-gdk_window_begin_paint_region() should be copied onscreen and
+        <doc xml:space="preserve">Indicates that the backing store created by the most recent call
+to gdk_window_begin_paint_region() should be copied onscreen and
 deleted, leaving the next-most-recent backing store or no backing
 store at all as the active paint region. See
-gdk_window_begin_paint_region() for full details. It is an error to
-call this function without a matching
+gdk_window_begin_paint_region() for full details.
+
+It is an error to call this function without a matching
 gdk_window_begin_paint_region() first.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -19255,10 +19467,14 @@ primitives.</doc>
       </method>
       <method name="get_composited"
               c:identifier="gdk_window_get_composited"
-              version="2.22">
+              version="2.22"
+              deprecated="1"
+              deprecated-version="3.16">
         <doc xml:space="preserve">Determines whether @window is composited.
 
 See gdk_window_set_composited().</doc>
+        <doc-deprecated xml:space="preserve">Compositing is an outdated technology that
+  only ever worked on X11.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the window is composited.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -20489,6 +20705,31 @@ function before gdk_window_show(). (Try gdk_window_show_unraised().)</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="mark_paint_from_clip"
+              c:identifier="gdk_window_mark_paint_from_clip"
+              version="3.16">
+        <doc xml:space="preserve">If you call this during a paint (e.g. between gdk_window_begin_paint_region()
+and gdk_window_end_paint() then GDK will mark the current clip region of the
+window as being drawn. This is required when mixing GL rendering via
+gdk_cairo_draw_from_gl() and cairo rendering, as otherwise GDK has no way
+of knowing when something paints over the GL-drawn regions.
+
+This is typically called automatically by GTK+ and you don't need
+to care about this.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkWindow</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </instance-parameter>
+          <parameter name="cr" transfer-ownership="none">
+            <doc xml:space="preserve">a #cairo_t</doc>
+            <type name="cairo.Context" c:type="cairo_t*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="maximize" c:identifier="gdk_window_maximize">
         <doc xml:space="preserve">Maximizes the window. If the window was already maximized, then
 this function does nothing.
@@ -20973,7 +21214,9 @@ the shape mask of @window in the masks to be merged.</doc>
       </method>
       <method name="set_composited"
               c:identifier="gdk_window_set_composited"
-              version="2.12">
+              version="2.12"
+              deprecated="1"
+              deprecated-version="3.16">
         <doc xml:space="preserve">Sets a #GdkWindow as composited, or unsets it. Composited
 windows do not automatically have their contents drawn to
 the screen. Drawing is redirected to an offscreen buffer
@@ -20996,6 +21239,8 @@ only X11 with new enough Xcomposite and Xdamage extensions).
 You must call gdk_display_supports_composite() to check if
 setting a window as composited is supported before
 attempting to do so.</doc>
+        <doc-deprecated xml:space="preserve">Compositing is an outdated technology that
+  only ever worked on X11.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21714,13 +21959,17 @@ instead of this low-level function.</doc>
         </parameters>
       </method>
       <method name="set_static_gravities"
-              c:identifier="gdk_window_set_static_gravities">
-        <doc xml:space="preserve">Set the bit gravity of the given window to static, and flag it so
-all children get static subwindow gravity. This is used if you are
-implementing scary features that involve deep knowledge of the
-windowing system. Don’t worry about it unless you have to.</doc>
+              c:identifier="gdk_window_set_static_gravities"
+              deprecated="1"
+              deprecated-version="3.16">
+        <doc xml:space="preserve">Used to set the bit gravity of the given window to static, and flag
+it so all children get static subwindow gravity. This is used if you
+are implementing scary features that involve deep knowledge of the
+windowing system. Don’t worry about it.</doc>
+        <doc-deprecated xml:space="preserve">static gravities haven't worked on anything but X11
+  for a long time.</doc-deprecated>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the server supports static gravity</doc>
+          <doc xml:space="preserve">%FALSE</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -22944,7 +23193,7 @@ GTK+ theme engines).</doc>
       <doc xml:space="preserve">Creates a Cairo context for drawing to @window.
 
 Note that calling cairo_reset_clip() on the resulting #cairo_t will
-rproduce undefined results, so avoid it at all costs.</doc>
+produce undefined results, so avoid it at all costs.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">A newly created Cairo context. Free with
  cairo_destroy() when you are done drawing.</doc>
@@ -22954,6 +23203,63 @@ rproduce undefined results, so avoid it at all costs.</doc>
         <parameter name="window" transfer-ownership="none">
           <doc xml:space="preserve">a #GdkWindow</doc>
           <type name="Window" c:type="GdkWindow*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="cairo_draw_from_gl"
+              c:identifier="gdk_cairo_draw_from_gl"
+              version="3.16">
+      <doc xml:space="preserve">This is the main way to draw GL content in GTK+. It takes a render buffer ID
+(@source_type == #GL_RENDERBUFFER) or a texture id (@source_type == #GL_TEXTURE)
+and draws it onto @cr with an OVER operation, respecting the current clip.
+
+This will work for *all* cairo_t, as long as @window is realized, but the
+fallback implementation that reads back the pixels from the buffer may be
+used in the general case. In the case of direct drawing to a window with
+no special effects applied to @cr it will however use a more efficient
+approach.
+
+For #GL_RENDERBUFFER the code will always fall back to software for buffers
+with alpha components, so make sure you use #GL_TEXTURE if using alpha.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="cr" transfer-ownership="none">
+          <doc xml:space="preserve">a cairo context</doc>
+          <type name="cairo.Context" c:type="cairo_t*"/>
+        </parameter>
+        <parameter name="window" transfer-ownership="none">
+          <doc xml:space="preserve">The window we're rendering for (not necessarily into)</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </parameter>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">The GL ID of the source buffer</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="source_type" transfer-ownership="none">
+          <doc xml:space="preserve">The type of the @source</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="buffer_scale" transfer-ownership="none">
+          <doc xml:space="preserve">The scale-factor that the @source buffer is allocated for</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="x" transfer-ownership="none">
+          <doc xml:space="preserve">The source x position in @source to start copying from in GL coordinates</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="y" transfer-ownership="none">
+          <doc xml:space="preserve">The source y position in @source to start copying from in GL coordinates</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="width" transfer-ownership="none">
+          <doc xml:space="preserve">The width of the region to draw</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="height" transfer-ownership="none">
+          <doc xml:space="preserve">The height of the region to draw</doc>
+          <type name="gint" c:type="int"/>
         </parameter>
       </parameters>
     </function>
@@ -23798,6 +24104,13 @@ with g_get_prgname()) with the first character converted to uppercase.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if event debugging output is enabled.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+    </function>
+    <function name="gl_error_quark"
+              c:identifier="gdk_gl_error_quark"
+              moved-to="GLError.quark">
+      <return-value transfer-ownership="none">
+        <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
     <function name="init" c:identifier="gdk_init">

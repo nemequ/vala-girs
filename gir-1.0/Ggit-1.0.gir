@@ -6050,6 +6050,88 @@ If the reference count drops to 0, @entry is freed.</doc>
     </record>
     <record name="NativePrivate" c:type="GgitNativePrivate" disguised="1">
     </record>
+    <record name="Note"
+            c:type="GgitNote"
+            glib:type-name="GgitNote"
+            glib:get-type="ggit_note_get_type"
+            c:symbol-prefix="note">
+      <doc xml:space="preserve">Represents a note object.</doc>
+      <method name="get_id" c:identifier="ggit_note_get_id">
+        <doc xml:space="preserve">Gets the note object's id.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the object's id.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="note" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitNote.</doc>
+            <type name="Note" c:type="GgitNote*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_message" c:identifier="ggit_note_get_message">
+        <doc xml:space="preserve">Gets the note message.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the note message.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="note" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitNote.</doc>
+            <type name="Note" c:type="GgitNote*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="ggit_note_ref">
+        <doc xml:space="preserve">Atomically increments the reference count of @note by one.
+This function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GgitNote.</doc>
+          <type name="Note" c:type="GgitNote*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="note" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitNote.</doc>
+            <type name="Note" c:type="GgitNote*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="ggit_note_unref">
+        <doc xml:space="preserve">Atomically decrements the reference count of @note by one.
+If the reference count drops to 0, @note is freed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="note" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitNote.</doc>
+            <type name="Note" c:type="GgitNote*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
+    <callback name="NoteCallback" c:type="GgitNoteCallback">
+      <doc xml:space="preserve">When iterating over all the notes, callback that will be
+issued per note. See ggit_repository_note_foreach().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">0 to go continue or a #GgitError in case there was an error.</doc>
+        <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="blob_id" transfer-ownership="none">
+          <doc xml:space="preserve">id of the blob containing the message.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </parameter>
+        <parameter name="annotated_object_id" transfer-ownership="none">
+          <doc xml:space="preserve">id of the git object being annotated.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="2">
+          <doc xml:space="preserve">user-suplied data.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <record name="OId"
             c:type="GgitOId"
             glib:type-name="GgitOId"
@@ -8702,6 +8784,48 @@ or a tree (for a directory).</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_note"
+              c:identifier="ggit_repository_create_note"
+              throws="1">
+        <doc xml:space="preserve">Adds a note for an object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the OID for the note or %NULL in case of error.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="author" transfer-ownership="none">
+            <doc xml:space="preserve">author signature.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+          <parameter name="committer" transfer-ownership="none">
+            <doc xml:space="preserve">committer signature.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+          <parameter name="notes_ref"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">canonical name of the reference to use, or %NULL to use the default ref.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">OID of the git object to decorate.</doc>
+            <type name="OId" c:type="GgitOId*"/>
+          </parameter>
+          <parameter name="note" transfer-ownership="none">
+            <doc xml:space="preserve">content of the note to add for object oid.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="force" transfer-ownership="none">
+            <doc xml:space="preserve">whether to overwrite existing note.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="create_reference"
               c:identifier="ggit_repository_create_reference"
               throws="1">
@@ -9140,6 +9264,22 @@ what git would report for the branches.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_default_notes_ref"
+              c:identifier="ggit_repository_get_default_notes_ref"
+              throws="1">
+        <doc xml:space="preserve">Gets the default notes reference for @repository. It defaults to
+"refs/notes/commits".</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the default notes reference for @repository.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_descendant_of"
               c:identifier="ggit_repository_get_descendant_of"
               throws="1">
@@ -9460,6 +9600,67 @@ does not exist, %NULL is returned and a GGIT_ERROR_NOTFOUND error set.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="note_foreach"
+              c:identifier="ggit_repository_note_foreach"
+              throws="1">
+        <doc xml:space="preserve">Loop over all the notes within a specified namespace
+and issue a callback for each one.
+If @callback returns a non-zero value, this will stop looping.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if there was no error, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="notes_ref"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">canonical name of the reference to use, or %NULL to use the default ref.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="2">
+            <doc xml:space="preserve">a #GgitNoteCallback.</doc>
+            <type name="NoteCallback" c:type="GgitNoteCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">callback user data.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_note"
+              c:identifier="ggit_repository_read_note"
+              throws="1">
+        <doc xml:space="preserve">Reads the note for an object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the read note or %NULL in case of an error.</doc>
+          <type name="Note" c:type="GgitNote*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="notes_ref"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">canonical name of the reference to use, or %NULL to use the default ref.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">OID of the git object to decorate.</doc>
+            <type name="OId" c:type="GgitOId*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="references_foreach_name"
               c:identifier="ggit_repository_references_foreach_name"
               throws="1">
@@ -9488,6 +9689,40 @@ passed to this function. If the callback returns something other than
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">callback user data.</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_note"
+              c:identifier="ggit_repository_remove_note"
+              throws="1">
+        <doc xml:space="preserve">Removes the note for an object.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the note was removed from @id.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="notes_ref"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">canonical name of the reference to use, or %NULL to use the default ref.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="author" transfer-ownership="none">
+            <doc xml:space="preserve">author signature.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+          <parameter name="committer" transfer-ownership="none">
+            <doc xml:space="preserve">committer signature.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">OID of the git object to decorate.</doc>
+            <type name="OId" c:type="GgitOId*"/>
           </parameter>
         </parameters>
       </method>
@@ -10361,7 +10596,7 @@ most recent stashed state.</doc>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="3">
           <doc xml:space="preserve">user-suplied data.</doc>
-          <type name="gpointer" c:type="gpointer*"/>
+          <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </callback>
@@ -11211,7 +11446,7 @@ issued per entry. See ggit_repository_tag_foreach().</doc>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="2">
           <doc xml:space="preserve">user-suplied data.</doc>
-          <type name="gpointer" c:type="gpointer*"/>
+          <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </callback>
