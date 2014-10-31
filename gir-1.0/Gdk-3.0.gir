@@ -616,11 +616,15 @@ and “\#ffffffffffff”).</doc>
            glib:type-name="GdkCursor"
            glib:get-type="gdk_cursor_get_type">
       <doc xml:space="preserve">A #GdkCursor represents a cursor. Its contents are private.</doc>
-      <constructor name="new" c:identifier="gdk_cursor_new">
+      <constructor name="new"
+                   c:identifier="gdk_cursor_new"
+                   deprecated="1"
+                   deprecated-version="3.16">
         <doc xml:space="preserve">Creates a new cursor from the set of builtin cursors for the default display.
 See gdk_cursor_new_for_display().
 
 To make the cursor invisible, use %GDK_BLANK_CURSOR.</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_cursor_new_for_display() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GdkCursor</doc>
           <type name="Cursor" c:type="GdkCursor*"/>
@@ -2008,6 +2012,8 @@ unless there is an ongoing grab on them, see gdk_device_grab().</doc>
 this application until the device is ungrabbed with gdk_device_ungrab(),
 or the window becomes unviewable. This overrides any previous grab on the device
 by this client.
+
+Note that @device and @window need to be on the same display.
 
 Device grabs are used for operations which need complete control over the
 given device events (either pointer or keyboard). For example in GTK+ this
@@ -6634,13 +6640,13 @@ until gdk_gl_context_make_current() is called.</doc>
           <type name="GLContext" c:type="GdkGLContext*"/>
         </return-value>
       </function>
-      <method name="get_visual"
-              c:identifier="gdk_gl_context_get_visual"
+      <method name="get_profile"
+              c:identifier="gdk_gl_context_get_profile"
               version="3.16">
-        <doc xml:space="preserve">Retrieves the #GdkVisual associated with the @context.</doc>
+        <doc xml:space="preserve">Retrieves the #GdkGLProfile that @context was created for.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GdkVisual</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
+          <doc xml:space="preserve">a #GdkGLProfile</doc>
+          <type name="GLProfile" c:type="GdkGLProfile"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
@@ -6678,13 +6684,21 @@ until gdk_gl_context_make_current() is called.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="visual"
+      <property name="profile"
                 version="3.16"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The #GdkVisual matching the pixel format used by the context.</doc>
-        <type name="Visual"/>
+        <doc xml:space="preserve">The #GdkGLProfile of the context</doc>
+        <type name="GLProfile"/>
+      </property>
+      <property name="shared-context"
+                version="3.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkGLContext that this context is sharing data with, or #NULL</doc>
+        <type name="GLContext"/>
       </property>
       <property name="window"
                 version="3.16"
@@ -6913,6 +6927,12 @@ indicate success or the reason for the failure of the grab attempt.</doc>
               c:identifier="GDK_GRAB_FROZEN"
               glib:nick="frozen">
         <doc xml:space="preserve">the resource is frozen by an active grab of another client.</doc>
+      </member>
+      <member name="failed"
+              value="5"
+              c:identifier="GDK_GRAB_FAILED"
+              glib:nick="failed">
+        <doc xml:space="preserve">the grab failed for some other reason.</doc>
       </member>
     </enumeration>
     <enumeration name="Gravity"
@@ -21256,11 +21276,15 @@ attempting to do so.</doc>
         </parameters>
       </method>
       <method name="set_cursor" c:identifier="gdk_window_set_cursor">
-        <doc xml:space="preserve">Sets the default mouse pointer for a #GdkWindow. Use gdk_cursor_new_for_display()
-or gdk_cursor_new_from_pixbuf() to create the cursor. To make the cursor
-invisible, use %GDK_BLANK_CURSOR. Passing %NULL for the @cursor argument
-to gdk_window_set_cursor() means that @window will use the cursor of its
-parent window. Most windows should use this default.</doc>
+        <doc xml:space="preserve">Sets the default mouse pointer for a #GdkWindow.
+
+Note that @cursor must be for the same display as @window.
+
+Use gdk_cursor_new_for_display() or gdk_cursor_new_from_pixbuf() to
+create the cursor. To make the cursor invisible, use %GDK_BLANK_CURSOR.
+Passing %NULL for the @cursor argument to gdk_window_set_cursor() means
+that @window will use the cursor of its parent window. Most windows
+should use this default.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21725,7 +21749,12 @@ of the opacity parameter are clamped to the [0,1] range.)
 
 For toplevel windows this depends on support from the windowing system
 that may not always be there. For instance, On X11, this works only on
-X screens with a compositing manager running.
+X screens with a compositing manager running. On Wayland, there is no
+per-window opacity value that the compositor would apply. Instead, use
+`gdk_window_set_opaque_region (window, NULL)` to tell the compositor
+that the entire window is (potentially) non-opaque, and draw your content
+with alpha, or use gtk_widget_set_opacity() to set an overall opacity
+for your widgets.
 
 For child windows this function only works for non-native windows.
 
@@ -23212,6 +23241,8 @@ produce undefined results, so avoid it at all costs.</doc>
       <doc xml:space="preserve">This is the main way to draw GL content in GTK+. It takes a render buffer ID
 (@source_type == #GL_RENDERBUFFER) or a texture id (@source_type == #GL_TEXTURE)
 and draws it onto @cr with an OVER operation, respecting the current clip.
+The top left corner of the rectangle specified by @x, @y, @width and @height
+will be drawn at the current (0,0) position of the cairo_t.
 
 This will work for *all* cairo_t, as long as @window is realized, but the
 fallback implementation that reads back the pixels from the buffer may be

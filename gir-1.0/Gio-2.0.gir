@@ -8968,7 +8968,9 @@ primarily useful for attaching to another (non-cancellable) source
 with g_source_add_child_source() to add cancellability to it.
 
 For convenience, you can call this with a %NULL #GCancellable,
-in which case the source will never trigger.</doc>
+in which case the source will never trigger.
+
+The new #GSource will hold a reference to the #GCancellable.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new #GSource.</doc>
           <type name="GLib.Source" c:type="GSource*"/>
@@ -13747,8 +13749,8 @@ the memory used is freed.</doc>
           <doc xml:space="preserve">A #GVariant tuple with parameters.</doc>
           <type name="GLib.Variant" c:type="GVariant*"/>
         </parameter>
-        <parameter name="invocation" transfer-ownership="none">
-          <doc xml:space="preserve">A #GDBusMethodInvocation object that can be used to return a value or error.</doc>
+        <parameter name="invocation" transfer-ownership="full">
+          <doc xml:space="preserve">A #GDBusMethodInvocation object that must be used to return a value or error.</doc>
           <type name="DBusMethodInvocation" c:type="GDBusMethodInvocation*"/>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="7">
@@ -14352,6 +14354,16 @@ Since 2.38, if you want to handle getting/setting D-Bus properties
 asynchronously, give %NULL as your get_property() or set_property()
 function. The D-Bus call will be directed to your @method_call function,
 with the provided @interface_name set to "org.freedesktop.DBus.Properties".
+
+Ownership of the #GDBusMethodInvocation object passed to the
+method_call() function is transferred to your handler; you must
+call one of the methods of #GDBusMethodInvocation to return a reply
+(possibly empty), or an error. These functions also take ownership
+of the passed-in invocation object, so unless the invocation
+object has otherwise been referenced, it will be then be freed.
+Calling one of these functions may be done within your
+method_call() implementation but it also can be done at a later
+point to handle the method asynchronously.
 
 The usual checks on the validity of the calls is performed. For
 `Get` calls, an error is automatically returned if the property does

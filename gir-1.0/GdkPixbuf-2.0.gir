@@ -774,16 +774,6 @@ owned by #GdkPixbuf and should not be freed.</doc>
           </type>
         </return-value>
       </function>
-      <function name="gettext" c:identifier="gdk_pixbuf_gettext">
-        <return-value transfer-ownership="none">
-          <type name="utf8" c:type="const gchar*"/>
-        </return-value>
-        <parameters>
-          <parameter name="msgid" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </function>
       <function name="new_from_stream_async"
                 c:identifier="gdk_pixbuf_new_from_stream_async"
                 version="2.24">
@@ -1339,7 +1329,9 @@ options for cursor definitions. The PNG loader provides the tEXt ancillary
 chunk key/value pairs as options. Since 2.12, the TIFF and JPEG loaders
 return an "orientation" option string that corresponds to the embedded
 TIFF/Exif orientation tag (if present). Since 2.32, the TIFF loader sets
-the "multipage" option string to "yes" when a multi-page TIFF is loaded.</doc>
+the "multipage" option string to "yes" when a multi-page TIFF is loaded.
+Since 2.32 the JPEG and PNG loaders set "x-dpi" and "y-dpi" if the file
+contains image density information in dots per inch.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the value associated with @key. This is a nul-terminated
 string that should not be freed or %NULL if @key was not found.</doc>
@@ -1367,8 +1359,8 @@ See gdk_pixbuf_get_option() for more details.</doc>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve">a #GHashTable of key/values</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
-            <type name="gpointer" c:type="gpointer"/>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
+            <type name="utf8"/>
           </type>
         </return-value>
         <parameters>
@@ -1631,7 +1623,9 @@ gdk_pixbuf_save (pixbuf, handle, "jpeg", &amp;error, "quality", "100", NULL);
 ]|
 
 Currently only few parameters exist. JPEG images can be saved with a
-"quality" parameter; its value should be in the range [0,100].
+"quality" parameter; its value should be in the range [0,100]. JPEG
+and PNG density can be set by setting the "x-dpi" and "y-dpi" parameters
+to the appropriate values in dots per inch.
 
 Text chunks can be attached to PNG images by specifying parameters of
 the form "tEXt::key", where key is an ASCII string of length 1-79.
@@ -1652,9 +1646,13 @@ contents_encode = g_base64_encode ((const guchar *) contents, length);
 gdk_pixbuf_save (pixbuf, handle, "png", &amp;error, "icc-profile", contents_encode, NULL);
 ]|
 
-TIFF images recognize a "compression" option which acceps an integer value.
-Among the codecs are 1 None, 2 Huffman, 5 LZW, 7 JPEG and 8 Deflate, see
-the libtiff documentation and tiff.h for all supported codec values.
+TIFF images recognize: (1) a "bits-per-sample" option (integer) which
+can be either 1 for saving bi-level CCITTFAX4 images, or 8 for saving
+8-bits per sample; (2) a "compression" option (integer) which can be
+1 for no compression, 2 for Huffman, 5 for LZW, 7 for JPEG and 8 for
+DEFLATE (see the libtiff documentation and tiff.h for all supported
+codec values); (3) an "icc-profile" option (zero-terminated string)
+containing a base64 encoded ICC color profile.
 
 ICO images can be saved in depth 16, 24, or 32, by using the "depth"
 parameter. When the ICO saver is given "x_hot" and "y_hot" parameters,
@@ -2593,7 +2591,11 @@ and update the display with the new pixbuf.</doc>
         <doc xml:space="preserve">Gets the number of milliseconds the current pixbuf should be displayed,
 or -1 if the current pixbuf should be displayed forever. g_timeout_add()
 conveniently takes a timeout in milliseconds, so you can use a timeout
-to schedule the next update.</doc>
+to schedule the next update.
+
+Note that some formats, like GIF, might clamp the timeout values in the
+image file to avoid updates that are just too quick. The minimum timeout
+for GIF images is currently 20 milliseconds.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">delay time in milliseconds (thousandths of a second)</doc>
           <type name="gint" c:type="int"/>

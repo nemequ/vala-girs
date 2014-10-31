@@ -3338,6 +3338,23 @@ associated to @request.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="context_is_selection"
+              c:identifier="webkit_hit_test_result_context_is_selection"
+              version="2.8">
+        <doc xml:space="preserve">Gets whether %WEBKIT_HIT_TEST_RESULT_CONTEXT_SELECTION flag is present in
+#WebKitHitTestResult:context.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if there's a selected element at the coordinates of the @hit_test_result,
+   or %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="hit_test_result" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitHitTestResult</doc>
+            <type name="HitTestResult" c:type="WebKitHitTestResult*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_context"
               c:identifier="webkit_hit_test_result_get_context">
         <doc xml:space="preserve">Gets the value of the #WebKitHitTestResult:context property.</doc>
@@ -3561,6 +3578,12 @@ is present in #WebKitHitTestResult:context</doc>
               glib:nick="scrollbar">
         <doc xml:space="preserve">a scrollbar element.</doc>
       </member>
+      <member name="selection"
+              value="128"
+              c:identifier="WEBKIT_HIT_TEST_RESULT_CONTEXT_SELECTION"
+              glib:nick="selection">
+        <doc xml:space="preserve">a selected element. Since 2.8</doc>
+      </member>
     </bitfield>
     <record name="HitTestResultPrivate"
             c:type="WebKitHitTestResultPrivate"
@@ -3724,7 +3747,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="6" c:type="WEBKIT_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="7" c:type="WEBKIT_MINOR_VERSION">
       <doc xml:space="preserve">Like webkit_get_minor_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -9218,6 +9241,23 @@ returns 0.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_can_attach"
+              c:identifier="webkit_web_inspector_get_can_attach"
+              version="2.8">
+        <doc xml:space="preserve">Whether the @inspector can be attached to the same window that contains
+the inspected view.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if there is enough room for the inspector view inside the
+    window that contains the inspected view, or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="inspector" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebInspector</doc>
+            <type name="WebInspector" c:type="WebKitWebInspector*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_inspected_uri"
               c:identifier="webkit_web_inspector_get_inspected_uri">
         <doc xml:space="preserve">Get the URI that is currently being inspected. This can be %NULL if
@@ -9281,6 +9321,11 @@ the inspected view.</doc>
       <property name="attached-height" transfer-ownership="none">
         <doc xml:space="preserve">The height that the inspector view should have when it is attached.</doc>
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="can-attach" version="2.8" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the @inspector can be attached to the same window that contains
+the inspected view.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="inspected-uri" transfer-ownership="none">
         <doc xml:space="preserve">The URI that is currently being inspected.</doc>
@@ -10413,13 +10458,20 @@ be notified when the title has been received.</doc>
         </parameters>
       </method>
       <method name="get_tls_info" c:identifier="webkit_web_view_get_tls_info">
-        <doc xml:space="preserve">Retrieves the #GTlsCertificate associated with the @web_view connection,
+        <doc xml:space="preserve">Retrieves the #GTlsCertificate associated with the main resource of @web_view,
 and the #GTlsCertificateFlags showing what problems, if any, have been found
 with that certificate.
 If the connection is not HTTPS, this function returns %FALSE.
 This function should be called after a response has been received from the
 server, so you can connect to #WebKitWebView::load-changed and call this function
-when it's emitted with %WEBKIT_LOAD_COMMITTED event.</doc>
+when it's emitted with %WEBKIT_LOAD_COMMITTED event.
+
+Note that this function provides no information about the security of the web
+page if the current #WebKitTLSErrorsPolicy is @WEBKIT_TLS_ERRORS_POLICY_IGNORE,
+as subresources of the page may be controlled by an attacker. This function
+may safely be used to determine the security status of the current page only
+if the current #WebKitTLSErrorsPolicy is @WEBKIT_TLS_ERRORS_POLICY_FAIL, in
+which case subresources that fail certificate verification will be blocked.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the @web_view connection uses HTTPS and a response has been received
    from the server, or %FALSE otherwise.</doc>
