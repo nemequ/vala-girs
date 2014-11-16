@@ -4866,7 +4866,10 @@ to create an instance of a subclass of #AtkObject</doc>
       </method>
       <method name="notify_state_change"
               c:identifier="atk_object_notify_state_change">
-        <doc xml:space="preserve">Emits a state-change signal for the specified state.</doc>
+        <doc xml:space="preserve">Emits a state-change signal for the specified state.
+
+Note that as a general rule when the state of an existing object changes,
+emitting a notification is expected.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8045,8 +8048,9 @@ as needed.</doc>
            glib:type-name="AtkStateSet"
            glib:get-type="atk_state_set_get_type"
            glib:type-struct="StateSetClass">
-      <doc xml:space="preserve">An AtkStateSet determines a component's state set. It is composed
-of a set of AtkStates.</doc>
+      <doc xml:space="preserve">An AtkStateSet is a read-only representation of the full set of #AtkStates
+that apply to an object at a given time. This set is not meant to be
+modified, but rather created when #atk_object_ref_state_set() is called.</doc>
       <constructor name="new" c:identifier="atk_state_set_new">
         <doc xml:space="preserve">Creates a new empty state set.</doc>
         <return-value transfer-ownership="full">
@@ -8055,8 +8059,13 @@ of a set of AtkStates.</doc>
         </return-value>
       </constructor>
       <method name="add_state" c:identifier="atk_state_set_add_state">
-        <doc xml:space="preserve">Add a new state for the specified type to the current state set if
-it is not already present.</doc>
+        <doc xml:space="preserve">Adds the state of the specified type to the state set if it is not already
+present.
+
+Note that because an #AtkStateSet is a read-only object, this method should
+be used to add a state to a newly-created set which will then be returned by
+#atk_object_ref_state_set. It should not be used to modify the existing state
+of an object. See also #atk_object_notify_state_change.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if  the state for @type is not already in @set.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -8073,7 +8082,12 @@ it is not already present.</doc>
         </parameters>
       </method>
       <method name="add_states" c:identifier="atk_state_set_add_states">
-        <doc xml:space="preserve">Add the states for the specified types to the current state set.</doc>
+        <doc xml:space="preserve">Adds the states of the specified types to the state set.
+
+Note that because an #AtkStateSet is a read-only object, this method should
+be used to add states to a newly-created set which will then be returned by
+#atk_object_ref_state_set. It should not be used to modify the existing state
+of an object. See also #atk_object_notify_state_change.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8200,7 +8214,12 @@ the union of the two sets, returning %NULL is empty.</doc>
         </parameters>
       </method>
       <method name="remove_state" c:identifier="atk_state_set_remove_state">
-        <doc xml:space="preserve">Removes the state for the specified type from the state set.</doc>
+        <doc xml:space="preserve">Removes the state for the specified type from the state set.
+
+Note that because an #AtkStateSet is a read-only object, this method should
+be used to remove a state to a newly-created set which will then be returned
+by #atk_object_ref_state_set. It should not be used to modify the existing
+state of an object. See also #atk_object_notify_state_change.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @type was the state type is in @set.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -8262,7 +8281,7 @@ which are in exactly one of the two sets.</doc>
               value="1"
               c:identifier="ATK_STATE_ACTIVE"
               glib:nick="active">
-        <doc xml:space="preserve">Indicates a window is currently the active window, or is an active subelement within a container or table</doc>
+        <doc xml:space="preserve">Indicates a window is currently the active window, or an object is the active subelement within a container or table. ATK_STATE_ACTIVE should not be used for objects which have ATK_STATE_FOCUSABLE or ATK_STATE_SELECTABLE: Those objects should use ATK_STATE_FOCUSED and ATK_STATE_SELECTED respectively. ATK_STATE_ACTIVE is a means to indicate that an object which is not focusable and not selectable is the currently-active item within its parent container.</doc>
       </member>
       <member name="armed"
               value="2"

@@ -3607,6 +3607,11 @@ through that interface to the default network.</doc>
               c:type="NM_SETTING_IP4_CONFIG_ROUTES">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_IP4_CONFIG_ROUTE_METRIC"
+              value="route-metric"
+              c:type="NM_SETTING_IP4_CONFIG_ROUTE_METRIC">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_IP4_CONFIG_SETTING_NAME"
               value="ipv4"
               c:type="NM_SETTING_IP4_CONFIG_SETTING_NAME">
@@ -3713,6 +3718,11 @@ supported for IPv6)</doc>
     <constant name="SETTING_IP6_CONFIG_ROUTES"
               value="routes"
               c:type="NM_SETTING_IP6_CONFIG_ROUTES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP6_CONFIG_ROUTE_METRIC"
+              value="route-metric"
+              c:type="NM_SETTING_IP6_CONFIG_ROUTE_METRIC">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_IP6_CONFIG_SETTING_NAME"
@@ -3970,6 +3980,11 @@ supported for IPv6)</doc>
     <constant name="SETTING_VPN_DATA"
               value="data"
               c:type="NM_SETTING_VPN_DATA">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_VPN_PERSISTENT"
+              value="persistent"
+              c:type="NM_SETTING_VPN_PERSISTENT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_VPN_SECRETS"
@@ -10401,6 +10416,23 @@ for IPv4 addressing</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_route_metric"
+              c:identifier="nm_setting_ip4_config_get_route_metric"
+              version="1.0">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingIP4Config:route-metric
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the route metric that is used for IPv4 routes that don't explicitly
+specify a metric. See #NMSettingIP4Config:route-metric for more details.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIP4Config</doc>
+            <type name="SettingIP4Config" c:type="NMSettingIP4Config*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="remove_address"
               c:identifier="nm_setting_ip4_config_remove_address">
         <doc xml:space="preserve">Removes the address at index @i.</doc>
@@ -10659,6 +10691,21 @@ This property must be set.</doc>
         <doc xml:space="preserve">If %TRUE, this connection will never be the default IPv4 connection,
 meaning it will never be assigned the default route by NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="route-metric"
+                version="1.0"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The default metric for routes that don't explicitly specify a metric.
+The default value -1 means that the metric is choosen automatically
+based on the device type.
+The metric applies to dynamic routes, manual (static) routes that
+don't have an explicit metric setting, address prefix routes, and
+the default route.
+As the linux kernel accepts zero (0) as a valid metric, zero is
+a valid value.</doc>
+        <type name="gint64" c:type="gint64"/>
       </property>
       <property name="routes"
                 introspectable="0"
@@ -11119,6 +11166,23 @@ for IPv6 addressing</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_route_metric"
+              c:identifier="nm_setting_ip6_config_get_route_metric"
+              version="1.0">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingIP6Config:route-metric
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the route metric that is used for IPv6 routes that don't explicitly
+specify a metric. See #NMSettingIP6Config:route-metric for more details.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIP6Config</doc>
+            <type name="SettingIP6Config" c:type="NMSettingIP6Config*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="remove_address"
               c:identifier="nm_setting_ip6_config_remove_address">
         <doc xml:space="preserve">Removes the address at index @i.</doc>
@@ -11378,6 +11442,21 @@ yet supported.</doc>
 meaning it will never be assigned the default IPv6 route by
 NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="route-metric"
+                version="1.0"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The default metric for routes that don't explicitly specify a metric.
+The default value -1 means that the metric is choosen automatically
+based on the device type.
+The metric applies to dynamic routes, manual (static) routes that
+don't have an explicit metric setting, address prefix routes, and
+the default route.
+As the linux kernel replaces zero (0) by 1024 (user-default), setting
+this property to 0 means effectively setting it to 1024.</doc>
+        <type name="gint64" c:type="gint64"/>
       </property>
       <property name="routes"
                 introspectable="0"
@@ -13098,6 +13177,19 @@ by nm_setting_vpn_add_data_item().</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_persistent"
+              c:identifier="nm_setting_vpn_get_persistent">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingVPN:persistent property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingVPN</doc>
+            <type name="SettingVPN" c:type="NMSettingVPN*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_secret" c:identifier="nm_setting_vpn_get_secret">
         <doc xml:space="preserve">Retrieves the secret of a key/value relationship previously established
 by nm_setting_vpn_add_secret().</doc>
@@ -13189,6 +13281,12 @@ nm_setting_vpn_add_secret().</doc>
         <doc xml:space="preserve">Dictionary of key/value pairs of VPN plugin specific data.  Both keys and
 values must be strings.</doc>
         <type/>
+      </property>
+      <property name="persistent" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">If the VPN service supports persistence, and this property is %TRUE,
+the VPN will attempt to stay connected across link changes and outages,
+until explicitly disconnected.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="secrets"
                 introspectable="0"
@@ -16075,6 +16173,11 @@ nm_setting_vpn_foreach_secret()</doc>
     <constant name="VPN_DBUS_PLUGIN_PATH"
               value="/org/freedesktop/NetworkManager/VPN/Plugin"
               c:type="NM_VPN_DBUS_PLUGIN_PATH">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_CAN_PERSIST"
+              value="can-persist"
+              c:type="NM_VPN_PLUGIN_CAN_PERSIST">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="VPN_PLUGIN_CONFIG_BANNER"

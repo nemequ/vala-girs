@@ -37,6 +37,8 @@ namespace NM {
 		public const string CONFIG_NEVER_DEFAULT;
 		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_ROUTES")]
 		public const string CONFIG_ROUTES;
+		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_ROUTE_METRIC")]
+		public const string CONFIG_ROUTE_METRIC;
 		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_SETTING_NAME")]
 		public const string CONFIG_SETTING_NAME;
 	}
@@ -75,6 +77,8 @@ namespace NM {
 		public const string CONFIG_NEVER_DEFAULT;
 		[CCode (cheader_filename = "nm-setting-ip6-config.h", cname = "NM_SETTING_IP6_CONFIG_ROUTES")]
 		public const string CONFIG_ROUTES;
+		[CCode (cheader_filename = "nm-setting-ip6-config.h", cname = "NM_SETTING_IP6_CONFIG_ROUTE_METRIC")]
+		public const string CONFIG_ROUTE_METRIC;
 		[CCode (cheader_filename = "nm-setting-ip6-config.h", cname = "NM_SETTING_IP6_CONFIG_SETTING_NAME")]
 		public const string CONFIG_SETTING_NAME;
 	}
@@ -91,6 +95,8 @@ namespace NM {
 	namespace SettingVpn {
 		[CCode (cheader_filename = "nm-setting-vpn.h", cname = "NM_SETTING_VPN_DATA")]
 		public const string DATA;
+		[CCode (cheader_filename = "nm-setting-vpn.h", cname = "NM_SETTING_VPN_PERSISTENT")]
+		public const string PERSISTENT;
 		[CCode (cheader_filename = "nm-setting-vpn.h", cname = "NM_SETTING_VPN_SECRETS")]
 		public const string SECRETS;
 		[CCode (cheader_filename = "nm-setting-vpn.h", cname = "NM_SETTING_VPN_SERVICE_TYPE")]
@@ -213,6 +219,8 @@ namespace NM {
 		public const string DBUS_PLUGIN_INTERFACE;
 		[CCode (cheader_filename = "NetworkManagerVPN.h", cname = "NM_VPN_DBUS_PLUGIN_PATH")]
 		public const string DBUS_PLUGIN_PATH;
+		[CCode (cheader_filename = "NetworkManagerVPN.h", cname = "NM_VPN_PLUGIN_CAN_PERSIST")]
+		public const string PLUGIN_CAN_PERSIST;
 		[CCode (cheader_filename = "NetworkManagerVPN.h", cname = "NM_VPN_PLUGIN_CONFIG_BANNER")]
 		public const string PLUGIN_CONFIG_BANNER;
 		[CCode (cheader_filename = "NetworkManagerVPN.h", cname = "NM_VPN_PLUGIN_CONFIG_EXT_GATEWAY")]
@@ -1043,6 +1051,7 @@ namespace NM {
 		public uint32 get_num_dns_searches ();
 		public uint32 get_num_routes ();
 		public NM.IP4Route get_route (uint32 i);
+		public int64 get_route_metric ();
 		public void remove_address (uint32 i);
 		public bool remove_address_by_value (NM.IP4Address address);
 		public void remove_dns (uint32 i);
@@ -1067,6 +1076,8 @@ namespace NM {
 		public string method { owned get; set; }
 		[NoAccessorMethod]
 		public bool never_default { get; set construct; }
+		[NoAccessorMethod]
+		public int64 route_metric { get; set construct; }
 	}
 	[CCode (cheader_filename = "nm-setting-ip6-config.h", type_id = "nm_setting_ip6_config_get_type ()")]
 	public class SettingIP6Config : NM.Setting {
@@ -1095,6 +1106,7 @@ namespace NM {
 		public uint32 get_num_dns_searches ();
 		public uint32 get_num_routes ();
 		public NM.IP6Route get_route (uint32 i);
+		public int64 get_route_metric ();
 		public void remove_address (uint32 i);
 		public bool remove_address_by_value (NM.IP6Address address);
 		public void remove_dns (uint32 i);
@@ -1117,6 +1129,8 @@ namespace NM {
 		public string method { owned get; set; }
 		[NoAccessorMethod]
 		public bool never_default { get; set construct; }
+		[NoAccessorMethod]
+		public int64 route_metric { get; set construct; }
 	}
 	[CCode (cheader_filename = "nm-setting-infiniband.h", type_id = "nm_setting_infiniband_get_type ()")]
 	public class SettingInfiniband : NM.Setting {
@@ -1344,11 +1358,14 @@ namespace NM {
 		public unowned string get_data_item (string key);
 		public uint32 get_num_data_items ();
 		public uint32 get_num_secrets ();
+		public bool get_persistent ();
 		public unowned string get_secret (string key);
 		public unowned string get_service_type ();
 		public unowned string get_user_name ();
 		public bool remove_data_item (string key);
 		public bool remove_secret (string key);
+		[NoAccessorMethod]
+		public bool persistent { get; set; }
 		[NoAccessorMethod]
 		public string service_type { owned get; set; }
 		[NoAccessorMethod]

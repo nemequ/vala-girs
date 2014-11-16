@@ -59,6 +59,7 @@ namespace Vte {
 		public string match_check_event (Gdk.Event event, out int tag);
 		public void match_remove (int tag);
 		public void match_remove_all ();
+		[Deprecated (since = "0.40")]
 		public void match_set_cursor (int tag, Gdk.Cursor? cursor);
 		public void match_set_cursor_name (int tag, string cursor_name);
 		public void match_set_cursor_type (int tag, Gdk.CursorType cursor_type);

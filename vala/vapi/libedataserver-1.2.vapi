@@ -557,6 +557,7 @@ namespace E {
 		public async bool create_sources (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool create_sources_sync (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void debug_dump (string? extension_name);
+		public static bool debug_enabled ();
 		public string dup_unique_display_name (E.Source source, string? extension_name);
 		public E.Source find_extension (E.Source source, string extension_name);
 		public static void free_display_tree (GLib.Node display_tree);
