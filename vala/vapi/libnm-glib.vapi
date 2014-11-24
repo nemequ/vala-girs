@@ -505,6 +505,8 @@ namespace NM {
 		public const string CARRIER;
 		[CCode (cheader_filename = "nm-device-vlan.h", cname = "NM_DEVICE_VLAN_HW_ADDRESS")]
 		public const string HW_ADDRESS;
+		[CCode (cheader_filename = "nm-device-vlan.h", cname = "NM_DEVICE_VLAN_PARENT")]
+		public const string PARENT;
 		[CCode (cheader_filename = "nm-device-vlan.h", cname = "NM_DEVICE_VLAN_VLAN_ID")]
 		public const string VLAN_ID;
 		[CCode (has_construct_function = false, type = "GObject*")]
@@ -514,6 +516,8 @@ namespace NM {
 		public uint get_vlan_id ();
 		public bool carrier { get; }
 		public string hw_address { get; }
+		[NoAccessorMethod]
+		public NM.Device parent { owned get; }
 		public uint vlan_id { get; }
 	}
 	[CCode (cheader_filename = "nm-device-wifi.h", type_id = "nm_device_wifi_get_type ()")]

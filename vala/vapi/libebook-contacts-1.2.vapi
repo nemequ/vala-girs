@@ -415,7 +415,7 @@ namespace E {
 		public int get_country_code (E.PhoneNumberCountrySource source);
 		public static int get_country_code_for_region (string? region_code) throws GLib.Error;
 		public static string get_default_region () throws GLib.Error;
-		public string get_national_number (bool with_leading_zeros);
+		public string get_national_number ();
 		public static bool is_supported ();
 		public string to_string (E.PhoneNumberFormat format);
 	}

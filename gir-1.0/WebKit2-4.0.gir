@@ -804,6 +804,23 @@ See also webkit_context_menu_new()</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_user_data"
+              c:identifier="webkit_context_menu_get_user_data"
+              version="2.8">
+        <doc xml:space="preserve">Gets the user data of @menu.
+This function can be used from the UI Process to get user data previously set
+from the Web Process with webkit_context_menu_set_user_data().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the user data of @menu, or %NULL if @menu doesn't have user data</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="menu" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitContextMenu</doc>
+            <type name="ContextMenu" c:type="WebKitContextMenu*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="insert" c:identifier="webkit_context_menu_insert">
         <doc xml:space="preserve">Inserts @item into the @menu at the given position.
 If @position is negative, or is larger than the number of items
@@ -908,6 +925,26 @@ See also webkit_context_menu_remove_all() to remove all items.</doc>
             <doc xml:space="preserve">a #WebKitContextMenu</doc>
             <type name="ContextMenu" c:type="WebKitContextMenu*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_user_data"
+              c:identifier="webkit_context_menu_set_user_data"
+              version="2.8">
+        <doc xml:space="preserve">Sets user data to @menu.
+This function can be used from a Web Process extension to set user data
+that can be retrieved from the UI Process using webkit_context_menu_get_user_data().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="menu" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitContextMenu</doc>
+            <type name="ContextMenu" c:type="WebKitContextMenu*"/>
+          </instance-parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #GVariant</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
         </parameters>
       </method>
       <field name="parent">
@@ -3741,7 +3778,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="1" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="2" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -4715,7 +4752,7 @@ as a list of #WebKitMimeInfo.</doc>
       <method name="get_page_setup"
               c:identifier="webkit_print_operation_get_page_setup">
         <doc xml:space="preserve">Return the current page setup of @print_operation. It returns %NULL until
-either webkit_print_operation_set_print_settings() or webkit_print_operation_run_dialog()
+either webkit_print_operation_set_page_setup() or webkit_print_operation_run_dialog()
 have been called.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the current #GtkPageSetup of @print_operation.</doc>
@@ -8151,6 +8188,44 @@ The same #WebKitUserStyleSheet can be reused with multiple
           </parameter>
         </parameters>
       </method>
+      <method name="register_script_message_handler"
+              c:identifier="webkit_user_content_manager_register_script_message_handler"
+              version="2.8">
+        <doc xml:space="preserve">Registers a new user script message handler. After it is registered,
+scripts can use `window.webkit.messageHandlers.&amp;lt;name&amp;gt;.postMessage(value)`
+to send messages. Those messages are received by connecting handlers
+to the #WebKitUserContentManager::script-message-received signal. The
+handler name is used as the detail of the signal. To avoid race
+conditions between registering the handler name, and starting to
+receive the signals, it is recommended to connect to the signal
+*before* registering the handler name:
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+WebKitWebView *view = webkit_web_view_new ();
+WebKitUserContentManager *manager = webkit_web_view_get_user_content_manager ();
+g_signal_connect (manager, "script-message-received::foobar",
+                  G_CALLBACK (handle_script_message), NULL);
+webkit_user_content_manager_register_script_message_handler (manager, "foobar");
+&lt;/programlisting&gt;&lt;/informalexample&gt;
+
+Registering a script message handler will fail if the requested
+name has been already registered before.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if message handler was registered successfully, or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">A #WebKitUserContentManager</doc>
+            <type name="UserContentManager"
+                  c:type="WebKitUserContentManager*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">Name of the script message channel</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="remove_all_scripts"
               c:identifier="webkit_user_content_manager_remove_all_scripts"
               version="2.6">
@@ -8181,6 +8256,32 @@ The same #WebKitUserStyleSheet can be reused with multiple
           </instance-parameter>
         </parameters>
       </method>
+      <method name="unregister_script_message_handler"
+              c:identifier="webkit_user_content_manager_unregister_script_message_handler"
+              version="2.8">
+        <doc xml:space="preserve">Unregisters a previously registered message handler.
+
+Note that this does *not* disconnect handlers for the
+#WebKitUserContentManager::script-message-received signal,
+they will be kept connected, but the signal will not be emitted
+unless the handler name is registered again.
+
+See also webkit_user_content_manager_register_script_message_handler()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">A #WebKitUserContentManager</doc>
+            <type name="UserContentManager"
+                  c:type="WebKitUserContentManager*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">Name of the script message channel</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
@@ -8188,6 +8289,24 @@ The same #WebKitUserStyleSheet can be reused with multiple
         <type name="UserContentManagerPrivate"
               c:type="WebKitUserContentManagerPrivate*"/>
       </field>
+      <glib:signal name="script-message-received"
+                   when="last"
+                   detailed="1"
+                   version="2.8">
+        <doc xml:space="preserve">This signal is emitted when JavaScript in a web view calls
+&lt;code&gt;window.webkit.messageHandlers.&amp;lt;name&amp;gt;.postMessage()&lt;/code&gt;, after registering
+&lt;code&gt;&amp;lt;name&amp;gt;&lt;/code&gt; using
+webkit_user_content_manager_register_script_message_handler()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="js_result" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitJavascriptResult holding the value received from the JavaScript world.</doc>
+            <type name="JavascriptResult"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="UserContentManagerClass"
             c:type="WebKitUserContentManagerClass"
@@ -8453,6 +8572,15 @@ called from any thread.</doc>
            glib:type-name="WebKitWebContext"
            glib:get-type="webkit_web_context_get_type"
            glib:type-struct="WebContextClass">
+      <constructor name="new"
+                   c:identifier="webkit_web_context_new"
+                   version="2.8">
+        <doc xml:space="preserve">Create a new #WebKitWebContext</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly created #WebKitWebContext</doc>
+          <type name="WebContext" c:type="WebKitWebContext*"/>
+        </return-value>
+      </constructor>
       <function name="get_default"
                 c:identifier="webkit_web_context_get_default">
         <doc xml:space="preserve">Gets the default web context</doc>
@@ -8461,6 +8589,29 @@ called from any thread.</doc>
           <type name="WebContext" c:type="WebKitWebContext*"/>
         </return-value>
       </function>
+      <virtual-method name="download_started">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+          <parameter name="download" transfer-ownership="none">
+            <type name="Download" c:type="WebKitDownload*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="initialize_web_extensions">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <method name="allow_tls_certificate_for_host"
               c:identifier="webkit_web_context_allow_tls_certificate_for_host"
               version="2.6">
@@ -9085,6 +9236,14 @@ before anything is loaded.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="local-storage-directory"
+                version="2.8"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The directory where local storage data will be saved.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
@@ -9118,6 +9277,33 @@ and webkit_web_context_set_web_extensions_directory().</doc>
             glib:is-gtype-struct-for="WebContext">
       <field name="parent">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="download_started">
+        <callback name="download_started">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="WebContext" c:type="WebKitWebContext*"/>
+            </parameter>
+            <parameter name="download" transfer-ownership="none">
+              <type name="Download" c:type="WebKitDownload*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="initialize_web_extensions">
+        <callback name="initialize_web_extensions">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="WebContext" c:type="WebKitWebContext*"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
       <field name="_webkit_reserved0" introspectable="0">
         <callback name="_webkit_reserved0">
@@ -9156,20 +9342,6 @@ and webkit_web_context_set_web_extensions_directory().</doc>
       </field>
       <field name="_webkit_reserved5" introspectable="0">
         <callback name="_webkit_reserved5">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_webkit_reserved6" introspectable="0">
-        <callback name="_webkit_reserved6">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_webkit_reserved7" introspectable="0">
-        <callback name="_webkit_reserved7">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -9605,6 +9777,22 @@ load operation.</doc>
           <parameter name="error" transfer-ownership="none">
             <doc xml:space="preserve">the #GError that was triggered</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="failed-with-tls-errors" when="last" version="2.8">
+        <doc xml:space="preserve">This signal is emitted when a TLS error occurs during the resource load operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="certificate" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsCertificate</doc>
+            <type name="Gio.TlsCertificate"/>
+          </parameter>
+          <parameter name="errors" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsCertificateFlags with the verification status of @certificate</doc>
+            <type name="Gio.TlsCertificateFlags"/>
           </parameter>
         </parameters>
       </glib:signal>

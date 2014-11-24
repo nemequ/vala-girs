@@ -220,5 +220,11 @@ namespace Vte {
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
 	[CCode (cheader_filename = "vte/vte.h")]
+	public static uint get_major_version ();
+	[CCode (cheader_filename = "vte/vte.h")]
+	public static uint get_micro_version ();
+	[CCode (cheader_filename = "vte/vte.h")]
+	public static uint get_minor_version ();
+	[CCode (cheader_filename = "vte/vte.h")]
 	public static string get_user_shell ();
 }

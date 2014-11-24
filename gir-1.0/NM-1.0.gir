@@ -4551,6 +4551,11 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DEVICE_VLAN_HW_ADDRESS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_VLAN_PARENT"
+              value="parent"
+              c:type="NM_DEVICE_VLAN_PARENT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_VLAN_VLAN_ID"
               value="vlan-id"
               c:type="NM_DEVICE_VLAN_VLAN_ID">
@@ -7162,6 +7167,20 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_parent"
+              c:identifier="nm_device_vlan_get_parent"
+              introspectable="0">
+        <return-value>
+          <doc xml:space="preserve">the device's parent device</doc>
+          <type name="Device" c:type="NMDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceVlan</doc>
+            <type name="DeviceVlan" c:type="NMDeviceVlan*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_vlan_id" c:identifier="nm_device_vlan_get_vlan_id">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the device's VLAN ID</doc>
@@ -7181,6 +7200,10 @@ device, and must not be modified.</doc>
       <property name="hw-address" transfer-ownership="none">
         <doc xml:space="preserve">The hardware (MAC) address of the device.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="parent" transfer-ownership="none">
+        <doc xml:space="preserve">The devices's parent device.</doc>
+        <type name="Device"/>
       </property>
       <property name="vlan-id" transfer-ownership="none">
         <doc xml:space="preserve">The device's VLAN ID.</doc>
@@ -9548,26 +9571,6 @@ after you already have a reference to it.)</doc>
         </array>
       </field>
     </record>
-    <constant name="SECRET_AGENT_AUTO_REGISTER"
-              value="auto-register"
-              c:type="NM_SECRET_AGENT_AUTO_REGISTER">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SECRET_AGENT_CAPABILITIES"
-              value="capabilities"
-              c:type="NM_SECRET_AGENT_CAPABILITIES">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SECRET_AGENT_IDENTIFIER"
-              value="identifier"
-              c:type="NM_SECRET_AGENT_IDENTIFIER">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SECRET_AGENT_REGISTERED"
-              value="registered"
-              c:type="NM_SECRET_AGENT_REGISTERED">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="SETTING_802_1X_ALTSUBJECT_MATCHES"
               value="altsubject-matches"
               c:type="NM_SETTING_802_1X_ALTSUBJECT_MATCHES">
@@ -10945,484 +10948,6 @@ for this connection.</doc>
               c:type="NM_SETTING_WIRELESS_TX_POWER">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <class name="SecretAgent"
-           c:symbol-prefix="secret_agent"
-           c:type="NMSecretAgent"
-           parent="GObject.Object"
-           abstract="1"
-           glib:type-name="NMSecretAgent"
-           glib:get-type="nm_secret_agent_get_type"
-           glib:type-struct="SecretAgentClass">
-      <implements name="Gio.AsyncInitable"/>
-      <implements name="Gio.Initable"/>
-      <virtual-method name="cancel_get_secrets">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection_path" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="setting_name" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="delete_secrets" invoker="delete_secrets">
-        <doc xml:space="preserve">Asynchronously asks the agent to delete all saved secrets belonging to
-@connection.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMConnection</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="connection_path" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="3">
-            <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-            <type name="SecretAgentDeleteSecretsFunc"
-                  c:type="NMSecretAgentDeleteSecretsFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none" closure="3">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="get_secrets" invoker="get_secrets">
-        <doc xml:space="preserve">Asynchronously retrieves secrets belonging to @connection for the
-setting @setting_name.  @flags indicate specific behavior that the secret
-agent should use when performing the request, for example returning only
-existing secrets without user interaction, or requesting entirely new
-secrets from the user.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMConnection for which we're asked secrets</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="connection_path" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="setting_name" transfer-ownership="none">
-            <doc xml:space="preserve">the name of the secret setting</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="hints" transfer-ownership="none">
-            <doc xml:space="preserve">hints to the agent</doc>
-            <array c:type="char**">
-              <type name="utf8" c:type="char*"/>
-            </array>
-          </parameter>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">flags that modify the behavior of the request</doc>
-            <type name="SecretAgentGetSecretsFlags"
-                  c:type="NMSecretAgentGetSecretsFlags"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="6">
-            <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-            <type name="SecretAgentGetSecretsFunc"
-                  c:type="NMSecretAgentGetSecretsFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none" closure="6">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="save_secrets" invoker="save_secrets">
-        <doc xml:space="preserve">Asynchronously ensures that all secrets inside @connection are stored to
-disk.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMConnection</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="connection_path" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="3">
-            <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-            <type name="SecretAgentSaveSecretsFunc"
-                  c:type="NMSecretAgentSaveSecretsFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none" closure="3">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <method name="delete_secrets"
-              c:identifier="nm_secret_agent_delete_secrets">
-        <doc xml:space="preserve">Asynchronously asks the agent to delete all saved secrets belonging to
-@connection.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMConnection</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-            <type name="SecretAgentDeleteSecretsFunc"
-                  c:type="NMSecretAgentDeleteSecretsFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_registered"
-              c:identifier="nm_secret_agent_get_registered">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a %TRUE if the agent is registered, %FALSE if it is not.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_secrets" c:identifier="nm_secret_agent_get_secrets">
-        <doc xml:space="preserve">Asynchronously retrieves secrets belonging to @connection for the
-setting @setting_name.  @flags indicate specific behavior that the secret
-agent should use when performing the request, for example returning only
-existing secrets without user interaction, or requesting entirely new
-secrets from the user.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMConnection for which we're asked secrets</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="setting_name" transfer-ownership="none">
-            <doc xml:space="preserve">the name of the secret setting</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="hints" transfer-ownership="none">
-            <doc xml:space="preserve">hints to the agent</doc>
-            <array c:type="char**">
-              <type name="utf8" c:type="char*"/>
-            </array>
-          </parameter>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">flags that modify the behavior of the request</doc>
-            <type name="SecretAgentGetSecretsFlags"
-                  c:type="NMSecretAgentGetSecretsFlags"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="5">
-            <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-            <type name="SecretAgentGetSecretsFunc"
-                  c:type="NMSecretAgentGetSecretsFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="register"
-              c:identifier="nm_secret_agent_register"
-              throws="1">
-        <doc xml:space="preserve">Registers the #NMSecretAgent with the NetworkManager secret manager,
-indicating to NetworkManager that the agent is able to provide and save
-secrets for connections on behalf of its user.
-
-It is a programmer error to attempt to register an agent that is already
-registered, or in the process of registering.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if registration was successful, %FALSE on error.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="register_async"
-              c:identifier="nm_secret_agent_register_async">
-        <doc xml:space="preserve">Asynchronously registers the #NMSecretAgent with the NetworkManager secret
-manager, indicating to NetworkManager that the agent is able to provide and
-save secrets for connections on behalf of its user.
-
-It is a programmer error to attempt to register an agent that is already
-registered, or in the process of registering.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">callback to call when the agent is registered</doc>
-            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">data for @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="register_finish"
-              c:identifier="nm_secret_agent_register_finish"
-              throws="1">
-        <doc xml:space="preserve">Gets the result of a call to nm_secret_agent_register_async().</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if registration was successful, %FALSE on error.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="result" transfer-ownership="none">
-            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
-            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="save_secrets" c:identifier="nm_secret_agent_save_secrets">
-        <doc xml:space="preserve">Asynchronously ensures that all secrets inside @connection are stored to
-disk.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMConnection</doc>
-            <type name="Connection" c:type="NMConnection*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-            <type name="SecretAgentSaveSecretsFunc"
-                  c:type="NMSecretAgentSaveSecretsFunc"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="unregister"
-              c:identifier="nm_secret_agent_unregister"
-              throws="1">
-        <doc xml:space="preserve">Unregisters the #NMSecretAgent with the NetworkManager secret manager,
-indicating to NetworkManager that the agent will no longer provide or
-store secrets on behalf of this user.
-
-It is a programmer error to attempt to unregister an agent that is not
-registered.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if unregistration was successful, %FALSE on error</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="unregister_async"
-              c:identifier="nm_secret_agent_unregister_async">
-        <doc xml:space="preserve">Asynchronously unregisters the #NMSecretAgent with the NetworkManager secret
-manager, indicating to NetworkManager that the agent will no longer provide
-or store secrets on behalf of this user.
-
-It is a programmer error to attempt to unregister an agent that is not
-registered.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="2">
-            <doc xml:space="preserve">callback to call when the agent is unregistered</doc>
-            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
-          </parameter>
-          <parameter name="user_data" transfer-ownership="none">
-            <doc xml:space="preserve">data for @callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="unregister_finish"
-              c:identifier="nm_secret_agent_unregister_finish"
-              throws="1">
-        <doc xml:space="preserve">Gets the result of a call to nm_secret_agent_unregister_async().</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if unregistration was successful, %FALSE on error.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #NMSecretAgent</doc>
-            <type name="SecretAgent" c:type="NMSecretAgent*"/>
-          </instance-parameter>
-          <parameter name="result" transfer-ownership="none">
-            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
-            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="auto-register"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">If %TRUE (the default), the agent will always be registered when
-NetworkManager is running; if NetworkManager exits and restarts, the
-agent will re-register itself automatically.
-
-In particular, if this property is %TRUE at construct time, then the
-agent will register itself with NetworkManager during
-construction/initialization, and initialization will fail with an error
-if the agent is unable to register itself.
-
-If the property is %FALSE, the agent will not automatically register with
-NetworkManager, and nm_secret_agent_register() or
-nm_secret_agent_register_async() must be called to register it.
-
-Calling nm_secret_agent_unregister() will suppress auto-registration
-until nm_secret_agent_register() is called, which re-enables
-auto-registration. This ensures that the agent remains un-registered when
-you expect it to be unregistered.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <property name="capabilities"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">A bitfield of %NMSecretAgentCapabilities.</doc>
-        <type name="SecretAgentCapabilities"/>
-      </property>
-      <property name="identifier"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Identifies this agent; only one agent in each user session may use the
-same identifier.  Identifier formatting follows the same rules as
-D-Bus bus names with the exception that the ':' character is not
-allowed.  The valid set of characters is "[A-Z][a-z][0-9]_-." and the
-identifier is limited in length to 255 characters with a minimum
-of 3 characters.  An example valid identifier is 'org.gnome.nm-applet'
-(without quotes).</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="registered" transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE if the agent is registered with NetworkManager, %FALSE if not.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
-      </field>
-    </class>
     <bitfield name="SecretAgentCapabilities"
               glib:type-name="NMSecretAgentCapabilities"
               glib:get-type="nm_secret_agent_capabilities_get_type"
@@ -11450,177 +10975,6 @@ VPN plugin authentication dialogs.</doc>
         <doc xml:space="preserve">bounds checking value; should not be used.</doc>
       </member>
     </bitfield>
-    <record name="SecretAgentClass"
-            c:type="NMSecretAgentClass"
-            glib:is-gtype-struct-for="SecretAgent">
-      <field name="parent">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
-      </field>
-      <field name="get_secrets">
-        <callback name="get_secrets">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <doc xml:space="preserve">a #NMSecretAgent</doc>
-              <type name="SecretAgent" c:type="NMSecretAgent*"/>
-            </parameter>
-            <parameter name="connection" transfer-ownership="none">
-              <doc xml:space="preserve">the #NMConnection for which we're asked secrets</doc>
-              <type name="Connection" c:type="NMConnection*"/>
-            </parameter>
-            <parameter name="connection_path" transfer-ownership="none">
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-            <parameter name="setting_name" transfer-ownership="none">
-              <doc xml:space="preserve">the name of the secret setting</doc>
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-            <parameter name="hints" transfer-ownership="none">
-              <doc xml:space="preserve">hints to the agent</doc>
-              <array c:type="char**">
-                <type name="utf8" c:type="char*"/>
-              </array>
-            </parameter>
-            <parameter name="flags" transfer-ownership="none">
-              <doc xml:space="preserve">flags that modify the behavior of the request</doc>
-              <type name="SecretAgentGetSecretsFlags"
-                    c:type="NMSecretAgentGetSecretsFlags"/>
-            </parameter>
-            <parameter name="callback"
-                       transfer-ownership="none"
-                       scope="async"
-                       closure="7">
-              <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-              <type name="SecretAgentGetSecretsFunc"
-                    c:type="NMSecretAgentGetSecretsFunc"/>
-            </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="7">
-              <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-              <type name="gpointer" c:type="gpointer"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="cancel_get_secrets">
-        <callback name="cancel_get_secrets">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="SecretAgent" c:type="NMSecretAgent*"/>
-            </parameter>
-            <parameter name="connection_path" transfer-ownership="none">
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-            <parameter name="setting_name" transfer-ownership="none">
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="save_secrets">
-        <callback name="save_secrets">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <doc xml:space="preserve">a #NMSecretAgent</doc>
-              <type name="SecretAgent" c:type="NMSecretAgent*"/>
-            </parameter>
-            <parameter name="connection" transfer-ownership="none">
-              <doc xml:space="preserve">a #NMConnection</doc>
-              <type name="Connection" c:type="NMConnection*"/>
-            </parameter>
-            <parameter name="connection_path" transfer-ownership="none">
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-            <parameter name="callback"
-                       transfer-ownership="none"
-                       scope="async"
-                       closure="4">
-              <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-              <type name="SecretAgentSaveSecretsFunc"
-                    c:type="NMSecretAgentSaveSecretsFunc"/>
-            </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="4">
-              <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-              <type name="gpointer" c:type="gpointer"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="delete_secrets">
-        <callback name="delete_secrets">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <doc xml:space="preserve">a #NMSecretAgent</doc>
-              <type name="SecretAgent" c:type="NMSecretAgent*"/>
-            </parameter>
-            <parameter name="connection" transfer-ownership="none">
-              <doc xml:space="preserve">a #NMConnection</doc>
-              <type name="Connection" c:type="NMConnection*"/>
-            </parameter>
-            <parameter name="connection_path" transfer-ownership="none">
-              <type name="utf8" c:type="const char*"/>
-            </parameter>
-            <parameter name="callback"
-                       transfer-ownership="none"
-                       scope="async"
-                       closure="4">
-              <doc xml:space="preserve">a callback, to be invoked when the operation is done</doc>
-              <type name="SecretAgentDeleteSecretsFunc"
-                    c:type="NMSecretAgentDeleteSecretsFunc"/>
-            </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="4">
-              <doc xml:space="preserve">caller-specific data to be passed to @callback</doc>
-              <type name="gpointer" c:type="gpointer"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
-    <callback name="SecretAgentDeleteSecretsFunc"
-              c:type="NMSecretAgentDeleteSecretsFunc">
-      <doc xml:space="preserve">Called as a result of a request by NM to delete secrets.  When the
-#NMSecretAgent subclass has finished deleting the secrets, this function
-should be called.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="agent" transfer-ownership="none">
-          <doc xml:space="preserve">the secret agent object</doc>
-          <type name="SecretAgent" c:type="NMSecretAgent*"/>
-        </parameter>
-        <parameter name="connection" transfer-ownership="none">
-          <doc xml:space="preserve">the connection for which secrets were to be deleted,
-note that this object will be unrefed after the callback has returned, use
-g_object_ref()/g_object_unref() if you want to use this object after the callback
-has returned</doc>
-          <type name="Connection" c:type="NMConnection*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <doc xml:space="preserve">if the deleting secrets failed, give a descriptive error here</doc>
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
-          <doc xml:space="preserve">caller-specific data to be passed to the function</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <enumeration name="SecretAgentError"
                  glib:type-name="NMSecretAgentError"
                  glib:get-type="nm_secret_agent_error_get_type"
@@ -11729,100 +11083,6 @@ corresponding #NMAgentManagerError codes.</doc>
   the D-Bus API.</doc>
       </member>
     </bitfield>
-    <callback name="SecretAgentGetSecretsFunc"
-              c:type="NMSecretAgentGetSecretsFunc">
-      <doc xml:space="preserve">Called as a result of a request by NM to retrieve secrets.  When the
-#NMSecretAgent subclass has finished retrieving secrets and is ready to
-return them, or to return an error, this function should be called with
-those secrets or the error.
-
-To easily create the dictionary to return the Wi-Fi PSK, you could do
-something like this:
-&lt;example&gt;
- &lt;title&gt;Creating a secrets dictionary&lt;/title&gt;
- &lt;programlisting&gt;
-  NMConnection *secrets;
-  NMSettingWirelessSecurity *s_wsec;
-  GVariant *secrets_dict;
-
-  secrets = nm_connection_new ();
-  s_wsec = (NMSettingWirelessSecurity *) nm_setting_wireless_security_new ();
-  g_object_set (G_OBJECT (s_wsec),
-                NM_SETTING_WIRELESS_SECURITY_PSK, "my really cool PSK",
-                NULL);
-  nm_connection_add_setting (secrets, NM_SETTING (s_wsec));
-  secrets_dict = nm_connection_to_dbus (secrets, NM_CONNECTION_SERIALIZE_ALL);
-
-  (call the NMSecretAgentGetSecretsFunc with secrets_dict)
-
-  g_object_unref (secrets);
-  g_variant_unref (secrets_dict);
- &lt;/programlisting&gt;
-&lt;/example&gt;</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="agent" transfer-ownership="none">
-          <doc xml:space="preserve">the secret agent object</doc>
-          <type name="SecretAgent" c:type="NMSecretAgent*"/>
-        </parameter>
-        <parameter name="connection" transfer-ownership="none">
-          <doc xml:space="preserve">the connection for which secrets were requested,
-note that this object will be unrefed after the callback has returned, use
-g_object_ref()/g_object_unref() if you want to use this object after the callback
-has returned</doc>
-          <type name="Connection" c:type="NMConnection*"/>
-        </parameter>
-        <parameter name="secrets" transfer-ownership="none">
-          <doc xml:space="preserve">the #GVariant of type %NM_VARIANT_TYPE_CONNECTION containing the requested
-secrets (as created by nm_connection_to_dbus() for example).  Each key in @secrets
-should be the name of a #NMSetting object (like "802-11-wireless-security")
-and each value should be an %NM_VARIANT_TYPE_SETTING variant.  The sub-dicts
-map string:value, where the string is the setting property name (like "psk")
-and the value is the secret</doc>
-          <type name="GLib.Variant" c:type="GVariant*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <doc xml:space="preserve">if the secrets request failed, give a descriptive error here</doc>
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="4">
-          <doc xml:space="preserve">caller-specific data to be passed to the function</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <callback name="SecretAgentSaveSecretsFunc"
-              c:type="NMSecretAgentSaveSecretsFunc">
-      <doc xml:space="preserve">Called as a result of a request by NM to save secrets.  When the
-#NMSecretAgent subclass has finished saving the secrets, this function
-should be called.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="agent" transfer-ownership="none">
-          <doc xml:space="preserve">the secret agent object</doc>
-          <type name="SecretAgent" c:type="NMSecretAgent*"/>
-        </parameter>
-        <parameter name="connection" transfer-ownership="none">
-          <doc xml:space="preserve">the connection for which secrets were to be saved,
-note that this object will be unrefed after the callback has returned, use
-g_object_ref()/g_object_unref() if you want to use this object after the callback
-has returned</doc>
-          <type name="Connection" c:type="NMConnection*"/>
-        </parameter>
-        <parameter name="error" transfer-ownership="none">
-          <doc xml:space="preserve">if the saving secrets failed, give a descriptive error here</doc>
-          <type name="GLib.Error" c:type="GError*"/>
-        </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
-          <doc xml:space="preserve">caller-specific data to be passed to the function</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <class name="Setting"
            c:symbol-prefix="setting"
            c:type="NMSetting"
@@ -12068,6 +11328,25 @@ user function for each property.</doc>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">user data passed to @func at each invocation</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_dbus_property_type"
+              c:identifier="nm_setting_get_dbus_property_type">
+        <doc xml:space="preserve">Gets the D-Bus marshalling type of a property. @property_name is a D-Bus
+property name, which may not necessarily be a #GObject property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the D-Bus marshalling type of @property on @setting.</doc>
+          <type name="GLib.VariantType" c:type="const GVariantType*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMSetting</doc>
+            <type name="Setting" c:type="NMSetting*"/>
+          </instance-parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:space="preserve">the property of @setting to get the type of</doc>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -14868,40 +14147,46 @@ two connections.</doc>
               c:identifier="NM_SETTING_COMPARE_FLAG_IGNORE_AGENT_OWNED_SECRETS"
               glib:nick="ignore-agent-owned-secrets">
         <doc xml:space="preserve">ignore secrets for which
-the secret's flags indicate the secret is owned by a user secret agent
-(ie, the secret's flag includes @NM_SETTING_SECRET_FLAG_AGENT_OWNED)</doc>
+  the secret's flags indicate the secret is owned by a user secret agent
+  (ie, the secret's flag includes @NM_SETTING_SECRET_FLAG_AGENT_OWNED)</doc>
       </member>
       <member name="ignore_not_saved_secrets"
               value="16"
               c:identifier="NM_SETTING_COMPARE_FLAG_IGNORE_NOT_SAVED_SECRETS"
               glib:nick="ignore-not-saved-secrets">
         <doc xml:space="preserve">ignore secrets for which
-the secret's flags indicate the secret should not be saved to persistent
-storage (ie, the secret's flag includes @NM_SETTING_SECRET_FLAG_NOT_SAVED)</doc>
+  the secret's flags indicate the secret should not be saved to persistent
+  storage (ie, the secret's flag includes @NM_SETTING_SECRET_FLAG_NOT_SAVED)</doc>
       </member>
       <member name="diff_result_with_default"
               value="32"
               c:identifier="NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT"
               glib:nick="diff-result-with-default">
         <doc xml:space="preserve">if this flag is set,
-nm_setting_diff() and nm_connection_diff() will also include properties that
-are set to their default value. See also @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT.</doc>
+  nm_setting_diff() and nm_connection_diff() will also include properties that
+  are set to their default value. See also @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT.</doc>
       </member>
       <member name="diff_result_no_default"
               value="64"
               c:identifier="NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT"
               glib:nick="diff-result-no-default">
         <doc xml:space="preserve">if this flag is set,
-nm_setting_diff() and nm_connection_diff() will not include properties that
-are set to their default value. This is the opposite of
-@NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT. If both flags are set together,
-@NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT wins. If both flags are unset,
-this means to exclude default properties if there is a setting to compare,
-but include all properties, if the setting 'b' is missing. This is the legacy
-behaviour of libnm-util, where nm_setting_diff() behaved differently depending
-on whether the setting 'b' was available. If @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT
-is set, nm_setting_diff() will also set the flags @NM_SETTING_DIFF_RESULT_IN_A_DEFAULT
-and @NM_SETTING_DIFF_RESULT_IN_B_DEFAULT, if the values are default values.</doc>
+  nm_setting_diff() and nm_connection_diff() will not include properties that
+  are set to their default value. This is the opposite of
+  @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT. If both flags are set together,
+  @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT wins. If both flags are unset,
+  this means to exclude default properties if there is a setting to compare,
+  but include all properties, if the setting 'b' is missing. This is the legacy
+  behaviour of libnm-util, where nm_setting_diff() behaved differently depending
+  on whether the setting 'b' was available. If @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT
+  is set, nm_setting_diff() will also set the flags @NM_SETTING_DIFF_RESULT_IN_A_DEFAULT
+  and @NM_SETTING_DIFF_RESULT_IN_B_DEFAULT, if the values are default values.</doc>
+      </member>
+      <member name="ignore_timestamp"
+              value="128"
+              c:identifier="NM_SETTING_COMPARE_FLAG_IGNORE_TIMESTAMP"
+              glib:nick="ignore-timestamp">
+        <doc xml:space="preserve">ignore the connection's timestamp</doc>
       </member>
     </enumeration>
     <class name="SettingConnection"
@@ -22232,9 +21517,25 @@ and will be overwritten by subsequent calls to this function</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="utils_file_is_certificate"
+              c:identifier="nm_utils_file_is_certificate">
+      <doc xml:space="preserve">Tests if @filename has a valid extension for an X.509 certificate file
+(".cer", ".crt", ".der", or ".pem"), and contains a certificate in a format
+recognized by NetworkManager.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the file is a certificate, %FALSE if it is not</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <doc xml:space="preserve">name of the file to test</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="utils_file_is_pkcs12"
               c:identifier="nm_utils_file_is_pkcs12">
-      <doc xml:space="preserve">Utility function to find out if the @filename is in PKCS#&lt;!-- --&gt;12 format.</doc>
+      <doc xml:space="preserve">Tests if @filename is a PKCS#&lt;!-- --&gt;12 file.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the file is PKCS#&lt;!-- --&gt;12, %FALSE if it is not</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -22243,6 +21544,29 @@ and will be overwritten by subsequent calls to this function</doc>
         <parameter name="filename" transfer-ownership="none">
           <doc xml:space="preserve">name of the file to test</doc>
           <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_file_is_private_key"
+              c:identifier="nm_utils_file_is_private_key">
+      <doc xml:space="preserve">Tests if @filename has a valid extension for an X.509 private key file
+(".der", ".key", ".pem", or ".p12"), and contains a private key in a format
+recognized by NetworkManager.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the file is a private key, %FALSE if it is not</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <doc xml:space="preserve">name of the file to test</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="out_encrypted"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">on return, whether the file is encrypted</doc>
+          <type name="gboolean" c:type="gboolean*"/>
         </parameter>
       </parameters>
     </function>

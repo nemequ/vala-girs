@@ -662,7 +662,7 @@ namespace Gtk {
 		public uint get_visual_column (Gtk.TextIter iter);
 		public void set_auto_indent (bool enable);
 		public void set_draw_spaces (Gtk.SourceDrawSpacesFlags flags);
-		public void set_highlight_current_line (bool hl);
+		public void set_highlight_current_line (bool highlight);
 		public void set_indent_on_tab (bool enable);
 		public void set_indent_width (int width);
 		public void set_insert_spaces_instead_of_tabs (bool enable);

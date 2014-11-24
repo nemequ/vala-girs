@@ -10,7 +10,7 @@ and/or use gtk-doc annotations.  -->
   <include name="Gst" version="1.0"/>
   <namespace name="Farstream"
              version="0.2"
-             shared-library="libfarstream-0.2.so.2"
+             shared-library="libfarstream-0.2.so.2,libgstreamer-1.0.so.0,libgobject-2.0.so.0,libglib-2.0.so.0"
              c:identifier-prefixes="fs_,Fs"
              c:symbol-prefixes="fs_,fs">
     <constant name="CODEC_FORMAT"
@@ -1280,8 +1280,14 @@ codec preferences, one should try less strict codec preferences.</doc>
               glib:nick="video">
         <doc xml:space="preserve">A media type that encodes video.</doc>
       </member>
+      <member name="application"
+              value="2"
+              c:identifier="FS_MEDIA_TYPE_APPLICATION"
+              glib:nick="application">
+        <doc xml:space="preserve">A media type for application data.</doc>
+      </member>
       <member name="last"
-              value="1"
+              value="2"
               c:identifier="FS_MEDIA_TYPE_LAST"
               glib:nick="last">
         <doc xml:space="preserve">Largest valid #FsMediaType</doc>
@@ -1315,7 +1321,30 @@ codec preferences, one should try less strict codec preferences.</doc>
               value="1"
               c:identifier="FS_NETWORK_PROTOCOL_TCP"
               glib:nick="tcp">
-        <doc xml:space="preserve">A TCP based protocol</doc>
+        <doc xml:space="preserve">A TCP based protocol, will listen for
+incoming connections</doc>
+      </member>
+      <member name="tcp_passive"
+              value="1"
+              c:identifier="FS_NETWORK_PROTOCOL_TCP_PASSIVE"
+              glib:nick="tcp-passive">
+        <doc xml:space="preserve">A TCP based protocol, will listen for
+incoming connections</doc>
+      </member>
+      <member name="tcp_active"
+              value="2"
+              c:identifier="FS_NETWORK_PROTOCOL_TCP_ACTIVE"
+              glib:nick="tcp-active">
+        <doc xml:space="preserve">A TCP based protocol, will attempt to
+open an outbound connection</doc>
+      </member>
+      <member name="tcp_so"
+              value="3"
+              c:identifier="FS_NETWORK_PROTOCOL_TCP_SO"
+              glib:nick="tcp-so">
+        <doc xml:space="preserve">A TCP based protocol, will listen for
+incoming connections and attempt an outbound connection at the same time
+as the peer (Simultanuous-Open)</doc>
       </member>
     </enumeration>
     <class name="Participant"
@@ -1780,6 +1809,47 @@ be created for this participant</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="set_allowed_caps"
+                      invoker="set_allowed_caps"
+                      throws="1">
+        <doc xml:space="preserve">Sets the allowed caps for the sink and source pads for this #FsSession.
+Only codecs that can take the input specified by the @sink_caps and
+can produce output as specified by the @src_caps will be produced
+in the #FsSession:codecs property and so only those will be negotiated.
+
+If %NULL is passed to either @src_caps or @sink_caps, it is not changed.
+
+The default is "video/x-raw" for a video stream, "audio/x-raw" for an audio
+stream and "ANY" for an application stream.
+
+The values can be retrived using the #FsSession:allowed-src-caps and
+#FsSession:allowed-sink-caps properties.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the new filter caps were acceptable.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #FsSession</doc>
+            <type name="Session" c:type="FsSession*"/>
+          </instance-parameter>
+          <parameter name="sink_caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Caps for the sink pad or %NULL</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+          <parameter name="src_caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Caps for the src pad or %NULL</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="set_codec_preferences"
                       invoker="set_codec_preferences"
                       throws="1">
@@ -1815,6 +1885,31 @@ be returned.</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="Codec"/>
             </type>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="set_encryption_parameters"
+                      invoker="set_encryption_parameters"
+                      throws="1">
+        <doc xml:space="preserve">Sets encryption parameters. The exact parameters depend on the type of
+plugin being used.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the encryption parameters could be set, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #FsSession</doc>
+            <type name="Session" c:type="FsSession*"/>
+          </instance-parameter>
+          <parameter name="parameters"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstStructure containing the
+  encryption  parameters or %NULL to disable encryption</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -2157,6 +2252,47 @@ the @session parameters.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_allowed_caps"
+              c:identifier="fs_session_set_allowed_caps"
+              throws="1">
+        <doc xml:space="preserve">Sets the allowed caps for the sink and source pads for this #FsSession.
+Only codecs that can take the input specified by the @sink_caps and
+can produce output as specified by the @src_caps will be produced
+in the #FsSession:codecs property and so only those will be negotiated.
+
+If %NULL is passed to either @src_caps or @sink_caps, it is not changed.
+
+The default is "video/x-raw" for a video stream, "audio/x-raw" for an audio
+stream and "ANY" for an application stream.
+
+The values can be retrived using the #FsSession:allowed-src-caps and
+#FsSession:allowed-sink-caps properties.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the new filter caps were acceptable.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #FsSession</doc>
+            <type name="Session" c:type="FsSession*"/>
+          </instance-parameter>
+          <parameter name="sink_caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Caps for the sink pad or %NULL</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+          <parameter name="src_caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Caps for the src pad or %NULL</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_codec_preferences"
               c:identifier="fs_session_set_codec_preferences"
               throws="1">
@@ -2192,6 +2328,31 @@ be returned.</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="Codec"/>
             </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_encryption_parameters"
+              c:identifier="fs_session_set_encryption_parameters"
+              throws="1">
+        <doc xml:space="preserve">Sets encryption parameters. The exact parameters depend on the type of
+plugin being used.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the encryption parameters could be set, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #FsSession</doc>
+            <type name="Session" c:type="FsSession*"/>
+          </instance-parameter>
+          <parameter name="parameters"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstStructure containing the
+  encryption  parameters or %NULL to disable encryption</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
           </parameter>
         </parameters>
       </method>
@@ -2270,6 +2431,18 @@ does not support telephony events or if no telephony event is being sent</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="allowed-sink-caps" transfer-ownership="none">
+        <doc xml:space="preserve">These are the #GstCaps that can be fed into the session,
+they are used to filter the codecs to only those that can
+accepted those caps as input.</doc>
+        <type name="Gst.Caps"/>
+      </property>
+      <property name="allowed-src-caps" transfer-ownership="none">
+        <doc xml:space="preserve">These are the #GstCaps that the session can produce,
+they are used to filter the codecs to only those that can
+accepted those caps as output.</doc>
+        <type name="Gst.Caps"/>
+      </property>
       <property name="codec-preferences" transfer-ownership="full">
         <doc xml:space="preserve">This is the current preferences list for the local codecs. It is
 set by the user to specify the codec options and priorities. The user may
@@ -2344,6 +2517,10 @@ also be automatically changed by Farstream. This property is an
 The "farstream-send-codec-changed" message is emitted on the bus when
 the value of this property changes.</doc>
         <type name="Codec"/>
+      </property>
+      <property name="encryption-parameters" transfer-ownership="none">
+        <doc xml:space="preserve">Retrieves previously set encryption parameters</doc>
+        <type name="Gst.Structure"/>
       </property>
       <property name="id"
                 writable="1"
@@ -2592,8 +2769,58 @@ session. It should be freed with g_strfreev().</doc>
           </parameters>
         </callback>
       </field>
+      <field name="set_allowed_caps">
+        <callback name="set_allowed_caps" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the new filter caps were acceptable.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="session" transfer-ownership="none">
+              <doc xml:space="preserve">a #FsSession</doc>
+              <type name="Session" c:type="FsSession*"/>
+            </parameter>
+            <parameter name="sink_caps"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">Caps for the sink pad or %NULL</doc>
+              <type name="Gst.Caps" c:type="GstCaps*"/>
+            </parameter>
+            <parameter name="src_caps"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">Caps for the src pad or %NULL</doc>
+              <type name="Gst.Caps" c:type="GstCaps*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="set_encryption_parameters">
+        <callback name="set_encryption_parameters" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the encryption parameters could be set, %FALSE otherwise</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="session" transfer-ownership="none">
+              <doc xml:space="preserve">a #FsSession</doc>
+              <type name="Session" c:type="FsSession*"/>
+            </parameter>
+            <parameter name="parameters"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">a #GstStructure containing the
+  encryption  parameters or %NULL to disable encryption</doc>
+              <type name="Gst.Structure" c:type="GstStructure*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="7">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -2683,6 +2910,28 @@ one candidate per component.</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="Candidate"/>
             </type>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="set_decryption_parameters"
+                      invoker="set_decryption_parameters"
+                      throws="1">
+        <doc xml:space="preserve">Sets decryption parameters. The exact parameters depend on the type of
+plugin being used.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the decryption parameters could be set, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #FsStream</doc>
+            <type name="Stream" c:type="FsStream*"/>
+          </instance-parameter>
+          <parameter name="parameters" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStructure containing the decryption
+ parameters</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -3048,6 +3297,28 @@ the @stream parameters.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_decryption_parameters"
+              c:identifier="fs_stream_set_decryption_parameters"
+              throws="1">
+        <doc xml:space="preserve">Sets decryption parameters. The exact parameters depend on the type of
+plugin being used.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the decryption parameters could be set, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #FsStream</doc>
+            <type name="Stream" c:type="FsStream*"/>
+          </instance-parameter>
+          <parameter name="parameters" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStructure containing the decryption
+ parameters</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_remote_codecs"
               c:identifier="fs_stream_set_remote_codecs"
               throws="1">
@@ -3163,6 +3434,10 @@ will come to it is different.</doc>
         <type name="GLib.List">
           <type name="Codec"/>
         </type>
+      </property>
+      <property name="decryption-parameters" transfer-ownership="none">
+        <doc xml:space="preserve">Retrieves previously set decryption parameters</doc>
+        <type name="Gst.Structure"/>
       </property>
       <property name="direction"
                 writable="1"
@@ -3382,8 +3657,27 @@ If you have to negotiate codecs, then you must override set_remote_codecs too</d
           </parameters>
         </callback>
       </field>
+      <field name="set_decryption_parameters">
+        <callback name="set_decryption_parameters" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the decryption parameters could be set, %FALSE otherwise</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="stream" transfer-ownership="none">
+              <doc xml:space="preserve">a #FsStream</doc>
+              <type name="Stream" c:type="FsStream*"/>
+            </parameter>
+            <parameter name="parameters" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstStructure containing the decryption
+ parameters</doc>
+              <type name="Gst.Structure" c:type="GstStructure*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="7">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -3976,27 +4270,6 @@ only be called by subclasses.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_recvonly_filter"
-              c:identifier="fs_transmitter_get_recvonly_filter">
-        <doc xml:space="preserve">Get the filter to add on the send pipeline if sending is disabled.
-
-Only for use by subclasses.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a #GstElement to use as the filter or
-  %NULL</doc>
-          <type name="Gst.Element" c:type="GstElement*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="transmitter" transfer-ownership="none">
-            <doc xml:space="preserve">A #FsTransmitter object</doc>
-            <type name="Transmitter" c:type="FsTransmitter*"/>
-          </instance-parameter>
-          <parameter name="component" transfer-ownership="none">
-            <doc xml:space="preserve">The component to get the filter for</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_stream_transmitter_type"
               c:identifier="fs_transmitter_get_stream_transmitter_type">
         <doc xml:space="preserve">This function returns the GObject type for the stream transmitter.
@@ -4104,25 +4377,6 @@ These pads MUST be static pads.</doc>
           <parameter name="error_msg" transfer-ownership="none">
             <doc xml:space="preserve">Error message to be displayed to user</doc>
             <type name="utf8" c:type="gchar*"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
-      <glib:signal name="get-recvonly-filter" when="last">
-        <doc xml:space="preserve">This signal is emitted when the transmitter wants to get a filter for
-to use if sending is disabled. If you want to drop all buffers, just
-don't listen to the signal.
-
-This element should have a "sending" property that can be changed with the
-sending state of the stream. It should default to %TRUE.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the #GstElement to use as the
-filter, or %NULL to drop everything</doc>
-          <type name="Gst.Element"/>
-        </return-value>
-        <parameters>
-          <parameter name="component" transfer-ownership="none">
-            <doc xml:space="preserve">The component that the filter will be used for</doc>
-            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </glib:signal>

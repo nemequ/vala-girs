@@ -4942,8 +4942,8 @@ redraw of the gutter if something has changed and needs to be redrawn.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The x-padding.</doc>
-        <doc-deprecated xml:space="preserve">Use the #GtkSourceGutterRenderer:xpad property
-instead.</doc-deprecated>
+        <doc-deprecated xml:space="preserve">Use the #GtkSourceGutterRenderer's
+#GtkSourceGutterRenderer:xpad property instead.</doc-deprecated>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="ypad"
@@ -4953,8 +4953,8 @@ instead.</doc-deprecated>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The y-padding.</doc>
-        <doc-deprecated xml:space="preserve">Use the #GtkSourceGutterRenderer:ypad property
-instead.</doc-deprecated>
+        <doc-deprecated xml:space="preserve">Use the #GtkSourceGutterRenderer's
+#GtkSourceGutterRenderer:ypad property instead.</doc-deprecated>
         <type name="gint" c:type="gint"/>
       </property>
       <field name="parent">
@@ -10404,9 +10404,9 @@ if there are undo operations available.</doc>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Scrollable"/>
       <constructor name="new" c:identifier="gtk_source_view_new">
-        <doc xml:space="preserve">Creates a new #GtkSourceView. An empty default buffer will be
-created for you. If you want to specify your own buffer, consider
-gtk_source_view_new_with_buffer().</doc>
+        <doc xml:space="preserve">Creates a new #GtkSourceView. An empty default #GtkSourceBuffer will be
+created for you and can be retrieved with gtk_text_view_get_buffer(). If you
+want to specify your own buffer, consider gtk_source_view_new_with_buffer().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a new #GtkSourceView.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
@@ -10504,7 +10504,7 @@ gtk_source_view_new_with_buffer().</doc>
       </virtual-method>
       <method name="get_auto_indent"
               c:identifier="gtk_source_view_get_auto_indent">
-        <doc xml:space="preserve">Returns whether auto indentation of text is enabled.</doc>
+        <doc xml:space="preserve">Returns whether auto-indentation of text is enabled.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if auto indentation is enabled.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -10739,8 +10739,8 @@ how the cursor will move when HOME and END keys are pressed.</doc>
       </method>
       <method name="get_visual_column"
               c:identifier="gtk_source_view_get_visual_column">
-        <doc xml:space="preserve">Determines the visual column at @iter taking into
-consideration the indent width of @view.</doc>
+        <doc xml:space="preserve">Determines the visual column at @iter taking into consideration the
+#GtkSourceView:tab-width of @view.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the visual column at @iter.</doc>
           <type name="guint" c:type="guint"/>
@@ -10758,7 +10758,12 @@ consideration the indent width of @view.</doc>
       </method>
       <method name="set_auto_indent"
               c:identifier="gtk_source_view_set_auto_indent">
-        <doc xml:space="preserve">If %TRUE auto indentation of text is enabled.</doc>
+        <doc xml:space="preserve">If %TRUE auto-indentation of text is enabled.
+
+When Enter is pressed to create a new line, the auto-indentation inserts the
+same indentation as the previous line. This is &lt;emphasis&gt;not&lt;/emphasis&gt; a
+"smart indentation" where an indentation level is added or removed depending
+on the context.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10794,7 +10799,7 @@ be displayed</doc>
       </method>
       <method name="set_highlight_current_line"
               c:identifier="gtk_source_view_set_highlight_current_line">
-        <doc xml:space="preserve">If @hl is %TRUE the current line is highlighted.</doc>
+        <doc xml:space="preserve">If @highlight is %TRUE the current line will be highlighted.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10803,7 +10808,7 @@ be displayed</doc>
             <doc xml:space="preserve">a #GtkSourceView.</doc>
             <type name="View" c:type="GtkSourceView*"/>
           </instance-parameter>
-          <parameter name="hl" transfer-ownership="none">
+          <parameter name="highlight" transfer-ownership="none">
             <doc xml:space="preserve">whether to highlight the current line.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -10812,9 +10817,15 @@ be displayed</doc>
       <method name="set_indent_on_tab"
               c:identifier="gtk_source_view_set_indent_on_tab"
               version="1.8">
-        <doc xml:space="preserve">If %TRUE, when the tab key is pressed and there is a selection, the
-selected text is indented of one level instead of being replaced with
-the \t characters. Shift+Tab unindents the selection.</doc>
+        <doc xml:space="preserve">If %TRUE, when the tab key is pressed when several lines are selected, the
+selected lines are indented of one level instead of being replaced with a \t
+character. Shift+Tab unindents the selection.
+
+If the first or last line is not selected completely, it is also indented or
+unindented.
+
+When the selection doesn't span several lines, the tab key always replaces
+the selection with a normal \t character.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10831,9 +10842,26 @@ the \t characters. Shift+Tab unindents the selection.</doc>
       </method>
       <method name="set_indent_width"
               c:identifier="gtk_source_view_set_indent_width">
-        <doc xml:space="preserve">Sets the number of spaces to use for each step of indent.
-If @width is -1, the value of the #GtkSourceView:tab-width property
-will be used.</doc>
+        <doc xml:space="preserve">Sets the number of spaces to use for each step of indent when the tab key is
+pressed. If @width is -1, the value of the #GtkSourceView:tab-width property
+will be used.
+
+The #GtkSourceView:indent-width interacts with the
+#GtkSourceView:insert-spaces-instead-of-tabs property and
+#GtkSourceView:tab-width. An example will be clearer: if the
+#GtkSourceView:indent-width is 4 and
+#GtkSourceView:tab-width is 8 and
+#GtkSourceView:insert-spaces-instead-of-tabs is %FALSE, then pressing the tab
+key at the beginning of a line will insert 4 spaces. So far so good. Pressing
+the tab key a second time will remove the 4 spaces and insert a \t character
+instead (since #GtkSourceView:tab-width is 8). On the other hand, if
+#GtkSourceView:insert-spaces-instead-of-tabs is %TRUE, the second tab key
+pressed will insert 4 more spaces for a total of 8 spaces in the
+#GtkTextBuffer.
+
+The test-widget program (available in the GtkSourceView repository) may be
+useful to better understand the indentation settings (enable the space
+drawing!).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10850,8 +10878,9 @@ will be used.</doc>
       </method>
       <method name="set_insert_spaces_instead_of_tabs"
               c:identifier="gtk_source_view_set_insert_spaces_instead_of_tabs">
-        <doc xml:space="preserve">If %TRUE any tabulator character inserted is replaced by a group
-of space characters.</doc>
+        <doc xml:space="preserve">If %TRUE a tab key pressed is replaced by a group of space characters. Of
+course it is still possible to insert a real \t programmatically with the
+#GtkTextBuffer API.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10980,7 +11009,9 @@ are pressed.</doc>
       </method>
       <method name="set_tab_width"
               c:identifier="gtk_source_view_set_tab_width">
-        <doc xml:space="preserve">Sets the width of tabulation in characters.</doc>
+        <doc xml:space="preserve">Sets the width of tabulation in characters. The #GtkTextBuffer still contains
+\t characters, but they can take a different visual width in a #GtkSourceView
+widget.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
