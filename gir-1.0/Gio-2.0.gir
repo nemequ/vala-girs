@@ -27791,14 +27791,14 @@ by triggering the cancellable object from another thread. If the
 operation was cancelled, the error %G_IO_ERROR_CANCELLED will be
 returned.
 
-If you pass in a non-%NULL @etag value, then this value is
-compared to the current entity tag of the file, and if they differ
-an %G_IO_ERROR_WRONG_ETAG error is returned. This generally means
-that the file has been changed since you last read it. You can get
-the new etag from g_file_output_stream_get_etag() after you've
-finished writing and closed the #GFileOutputStream. When you load
-a new file you can use g_file_input_stream_query_info() to get
-the etag of the file.
+If you pass in a non-%NULL @etag value and @file already exists, then
+this value is compared to the current entity tag of the file, and if
+they differ an %G_IO_ERROR_WRONG_ETAG error is returned. This
+generally means that the file has been changed since you last read
+it. You can get the new etag from g_file_output_stream_get_etag()
+after you've finished writing and closed the #GFileOutputStream. When
+you load a new file you can use g_file_input_stream_query_info() to
+get the etag of the file.
 
 If @make_backup is %TRUE, this function will attempt to make a
 backup of the current file before overwriting it. If this fails
@@ -31866,14 +31866,14 @@ by triggering the cancellable object from another thread. If the
 operation was cancelled, the error %G_IO_ERROR_CANCELLED will be
 returned.
 
-If you pass in a non-%NULL @etag value, then this value is
-compared to the current entity tag of the file, and if they differ
-an %G_IO_ERROR_WRONG_ETAG error is returned. This generally means
-that the file has been changed since you last read it. You can get
-the new etag from g_file_output_stream_get_etag() after you've
-finished writing and closed the #GFileOutputStream. When you load
-a new file you can use g_file_input_stream_query_info() to get
-the etag of the file.
+If you pass in a non-%NULL @etag value and @file already exists, then
+this value is compared to the current entity tag of the file, and if
+they differ an %G_IO_ERROR_WRONG_ETAG error is returned. This
+generally means that the file has been changed since you last read
+it. You can get the new etag from g_file_output_stream_get_etag()
+after you've finished writing and closed the #GFileOutputStream. When
+you load a new file you can use g_file_input_stream_query_info() to
+get the etag of the file.
 
 If @make_backup is %TRUE, this function will attempt to make a
 backup of the current file before overwriting it. If this fails
@@ -41314,7 +41314,7 @@ closed.</doc>
 
 Note that this domain may be extended in future GLib releases. In
 general, new error codes either only apply to new APIs, or else
-replace #G_IO_ERROR_FAILED in cases that were not explicitly
+replace %G_IO_ERROR_FAILED in cases that were not explicitly
 distinguished before. You should therefore avoid writing code like
 |[&lt;!-- language="C" --&gt;
 if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED))
@@ -41603,6 +41603,16 @@ but should instead treat all unrecognized error codes the same as
               c:identifier="G_IO_ERROR_BROKEN_PIPE"
               glib:nick="broken-pipe">
         <doc xml:space="preserve">Broken pipe. Since 2.36</doc>
+      </member>
+      <member name="connection_closed"
+              value="44"
+              c:identifier="G_IO_ERROR_CONNECTION_CLOSED"
+              glib:nick="connection-closed">
+        <doc xml:space="preserve">Connection closed by peer. Note that this
+    is the same code as %G_IO_ERROR_BROKEN_PIPE; before 2.44 some
+    "connection closed" errors returned %G_IO_ERROR_BROKEN_PIPE, but others
+    returned %G_IO_ERROR_FAILED. Now they should all return the same
+    value, which has this more logical name. Since 2.44.</doc>
       </member>
     </enumeration>
     <record name="IOExtension" c:type="GIOExtension" disguised="1">
@@ -51469,6 +51479,18 @@ interface.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <function name="new_loopback"
+                c:identifier="g_network_address_new_loopback"
+                introspectable="0">
+        <return-value>
+          <type name="SocketConnectable" c:type="GSocketConnectable*"/>
+        </return-value>
+        <parameters>
+          <parameter name="port" transfer-ownership="none">
+            <type name="guint16" c:type="guint16"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="parse"
                 c:identifier="g_network_address_parse"
                 version="2.22"
@@ -59605,6 +59627,16 @@ values as #GVariant, and allows any #GVariantType for keys. Key names
 are restricted to lowercase characters, numbers and '-'. Furthermore,
 the names must begin with a lowercase character, must not end
 with a '-', and must not contain consecutive dashes.
+
+GSettings supports change notification.  The primary mechanism to
+watch for changes is to connect to the "changed" signal.  You can
+optionally watch for changes on only a single key by using a signal
+detail.  Signals are only guaranteed to be emitted for a given key
+after you have read the value of that key while a signal handler was
+connected for that key.  Signals may or may not be emitted in the
+case that the key "changed" to the value that you had previously
+read.  Signals may be reported in additional cases as well and the
+"changed" signal should really be treated as "may have changed".
 
 Similar to GConf, the default values in GSettings schemas can be
 localized, but the localized values are stored in gettext catalogs
@@ -73511,11 +73543,16 @@ virtual hosts.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If %TRUE, tells the connection to use SSL 3.0 rather than trying
-to negotiate the best version of TLS or SSL to use. This can be
-used when talking to servers that don't implement version
-negotiation correctly and therefore refuse to handshake at all with
-a "modern" TLS handshake.</doc>
+        <doc xml:space="preserve">If %TRUE, tells the connection to use a fallback version of TLS
+or SSL, rather than trying to negotiate the best version of TLS
+to use. This can be used when talking to servers that don't
+implement version negotiation correctly and therefore refuse to
+handshake at all with a "modern" TLS handshake.
+
+Despite the property name, the fallback version is not
+necessarily SSL 3.0; if SSL 3.0 has been disabled, the
+#GTlsClientConnection will use the next highest available version
+(normally TLS 1.0) as the fallback version.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="validation-flags"

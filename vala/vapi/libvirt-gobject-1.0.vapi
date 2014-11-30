@@ -70,6 +70,7 @@ namespace GVir {
 		public unowned string get_uuid ();
 		public bool open_console (GVir.Stream stream, string? devname, uint flags) throws GLib.Error;
 		public bool open_graphics (uint idx, int fd, uint flags) throws GLib.Error;
+		public int open_graphics_fd (uint idx, uint flags) throws GLib.Error;
 		public bool reboot (uint flags) throws GLib.Error;
 		public bool resume () throws GLib.Error;
 		public async bool resume_async (GLib.Cancellable? cancellable) throws GLib.Error;

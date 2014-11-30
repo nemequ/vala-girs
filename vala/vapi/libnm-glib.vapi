@@ -513,11 +513,11 @@ namespace NM {
 		public DeviceVlan (DBus.Connection connection, string path);
 		public bool get_carrier ();
 		public unowned string get_hw_address ();
+		public unowned NM.Device get_parent ();
 		public uint get_vlan_id ();
 		public bool carrier { get; }
 		public string hw_address { get; }
-		[NoAccessorMethod]
-		public NM.Device parent { owned get; }
+		public NM.Device parent { get; }
 		public uint vlan_id { get; }
 	}
 	[CCode (cheader_filename = "nm-device-wifi.h", type_id = "nm_device_wifi_get_type ()")]

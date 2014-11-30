@@ -318,6 +318,8 @@ namespace Gedit {
 	public static void commands_save_all_documents (Gedit.Window window);
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_save_document (Gedit.Window window, Gedit.Document document);
+	[CCode (cheader_filename = "gedit/gedit-commands.h")]
+	public static async bool commands_save_document_async (Gedit.Document document, Gedit.Window window, GLib.Cancellable? cancellable);
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
 	public static void debug (Gedit.DebugSection section, string file, int line, string function);
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
