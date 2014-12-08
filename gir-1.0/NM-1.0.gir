@@ -19999,6 +19999,20 @@ connection failed to validate</doc>
 nm_utils_hwaddr_len(), and nm_utils_hwaddr_aton().</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <callback name="UtilsFileSearchInPathsPredicate"
+              c:type="NMUtilsFileSearchInPathsPredicate">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <enumeration name="UtilsSecurityType"
                  glib:type-name="NMUtilsSecurityType"
                  glib:get-type="nm_utils_security_type_get_type"
@@ -21483,15 +21497,6 @@ underlying device driver.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="utils_deinit" c:identifier="nm_utils_deinit">
-      <doc xml:space="preserve">Frees all resources used internally by libnm.  This function is called
-from an atexit() handler, set up by nm_utils_init(), but is safe to be called
-more than once.  Subsequent calls have no effect until nm_utils_init() is
-called again.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-    </function>
     <function name="utils_escape_ssid" c:identifier="nm_utils_escape_ssid">
       <doc xml:space="preserve">This function does a quick printable character conversion of the SSID, simply
 replacing embedded NULLs and non-printable characters with the hexadecimal
@@ -21565,6 +21570,59 @@ recognized by NetworkManager.</doc>
                    transfer-ownership="full">
           <doc xml:space="preserve">on return, whether the file is encrypted</doc>
           <type name="gboolean" c:type="gboolean*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_file_search_in_paths"
+              c:identifier="nm_utils_file_search_in_paths"
+              throws="1">
+      <doc xml:space="preserve">Searches for a @progname file in a list of search @paths.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the full path to the helper, if found, or %NULL if not found.
+  The returned string is not owned by the caller, but later
+  invocations of the function might overwrite it.</doc>
+        <type name="utf8" c:type="const char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="progname" transfer-ownership="none">
+          <doc xml:space="preserve">the helper program name, like "iptables"
+  Must be a non-empty string, without path separator (/).</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="try_first"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a custom path to try first before searching.
+  It is silently ignored if it is empty or not an absolute path.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="paths"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a %NULL terminated list of search paths.
+  Can be empty or %NULL, in which case only @try_first is checked.</doc>
+          <type name="utf8" c:type="const char* const*"/>
+        </parameter>
+        <parameter name="file_test_flags" transfer-ownership="none">
+          <doc xml:space="preserve">the flags passed to g_file_test() when searching
+  for @progname. Set it to 0 to skip the g_file_test().</doc>
+          <type name="GLib.FileTest" c:type="GFileTest"/>
+        </parameter>
+        <parameter name="predicate"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="5">
+          <doc xml:space="preserve">if given, pass the file name to this function
+  for additional checks. This check is performed after the check for
+  @file_test_flags. You cannot omit both @file_test_flags and @predicate.</doc>
+          <type name="UtilsFileSearchInPathsPredicate"
+                c:type="NMUtilsFileSearchInPathsPredicate"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:space="preserve">(allow-none): user data for @predicate function.</doc>
+          <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </function>
@@ -21821,16 +21879,6 @@ function in net/core/dev.c.</doc>
           <type name="utf8" c:type="char*"/>
         </parameter>
       </parameters>
-    </function>
-    <function name="utils_init" c:identifier="nm_utils_init" throws="1">
-      <doc xml:space="preserve">Initializes libnm; should be called when starting and program that
-uses libnm.  Sets up an atexit() handler to ensure de-initialization
-is performed, but calling nm_utils_deinit() to explicitly deinitialize
-libnm can also be done.  This function can be called more than once.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE if the initialization was successful, %FALSE on failure.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
     </function>
     <function name="utils_ip4_addresses_from_variant"
               c:identifier="nm_utils_ip4_addresses_from_variant">
@@ -22264,92 +22312,6 @@ number of known SSID-cloaking methods.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="utils_rsa_key_encrypt"
-              c:identifier="nm_utils_rsa_key_encrypt"
-              throws="1">
-      <doc xml:space="preserve">Encrypts the given RSA private key data with the given password (or generates
-a password if no password was given) and converts the data to PEM format
-suitable for writing to a file. It uses Triple DES cipher for the encryption.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">on success, PEM-formatted data suitable for writing
-to a PEM-formatted certificate/private key file.</doc>
-        <array name="GLib.ByteArray" c:type="GByteArray*">
-          <type name="guint8" c:type="guint8"/>
-        </array>
-      </return-value>
-      <parameters>
-        <parameter name="data" transfer-ownership="none">
-          <doc xml:space="preserve">RSA private key data to be encrypted</doc>
-          <array length="1" zero-terminated="0" c:type="guint8*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
-        </parameter>
-        <parameter name="len" transfer-ownership="none">
-          <doc xml:space="preserve">length of @data</doc>
-          <type name="gsize" c:type="gsize"/>
-        </parameter>
-        <parameter name="in_password"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">existing password to use, if any</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-        <parameter name="out_password"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full"
-                   optional="1"
-                   allow-none="1">
-          <doc xml:space="preserve">if @in_password was %NULL, a random
- password will be generated and returned in this argument</doc>
-          <type name="utf8" c:type="char**"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="utils_rsa_key_encrypt_aes"
-              c:identifier="nm_utils_rsa_key_encrypt_aes"
-              throws="1">
-      <doc xml:space="preserve">Encrypts the given RSA private key data with the given password (or generates
-a password if no password was given) and converts the data to PEM format
-suitable for writing to a file.  It uses AES cipher for the encryption.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">on success, PEM-formatted data suitable for writing
-to a PEM-formatted certificate/private key file.</doc>
-        <array name="GLib.ByteArray" c:type="GByteArray*">
-          <type name="guint8" c:type="guint8"/>
-        </array>
-      </return-value>
-      <parameters>
-        <parameter name="data" transfer-ownership="none">
-          <doc xml:space="preserve">RSA private key data to be encrypted</doc>
-          <array length="1" zero-terminated="0" c:type="guint8*">
-            <type name="guint8" c:type="guint8"/>
-          </array>
-        </parameter>
-        <parameter name="len" transfer-ownership="none">
-          <doc xml:space="preserve">length of @data</doc>
-          <type name="gsize" c:type="gsize"/>
-        </parameter>
-        <parameter name="in_password"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">existing password to use, if any</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-        <parameter name="out_password"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full"
-                   optional="1"
-                   allow-none="1">
-          <doc xml:space="preserve">if @in_password was %NULL, a random
- password will be generated and returned in this argument</doc>
-          <type name="utf8" c:type="char**"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="utils_same_ssid" c:identifier="nm_utils_same_ssid">
       <doc xml:space="preserve">Earlier versions of the Linux kernel added a NULL byte to the end of the
 SSID to enable easy printing of the SSID on the console or in a terminal,
@@ -22485,21 +22447,6 @@ Returns %NULL on errors.</doc>
 object's #NMSettingConnection:id: property.  Should be freed with g_free()</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
-    </function>
-    <function name="utils_uuid_generate_from_string"
-              c:identifier="nm_utils_uuid_generate_from_string">
-      <doc xml:space="preserve">For a given @s, this function will always return the same UUID.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a newly allocated UUID suitable for use as the #NMSettingConnection
-object's #NMSettingConnection:id: property</doc>
-        <type name="utf8" c:type="char*"/>
-      </return-value>
-      <parameters>
-        <parameter name="s" transfer-ownership="none">
-          <doc xml:space="preserve">a string to use as the seed for the UUID</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-      </parameters>
     </function>
     <function name="utils_wep_key_valid" c:identifier="nm_utils_wep_key_valid">
       <doc xml:space="preserve">Checks if @key is a valid WEP key</doc>

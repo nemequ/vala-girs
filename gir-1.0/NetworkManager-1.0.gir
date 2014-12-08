@@ -15895,6 +15895,20 @@ encryption protocol</doc>
 nm_utils_hwaddr_len(), and nm_utils_hwaddr_aton().</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <callback name="UtilsFileSearchInPathsPredicate"
+              c:type="NMUtilsFileSearchInPathsPredicate">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <enumeration name="UtilsSecurityType"
                  glib:type-name="NMUtilsSecurityType"
                  glib:get-type="nm_utils_security_type_get_type"
@@ -16746,10 +16760,8 @@ underlying device driver.</doc>
       </parameters>
     </function>
     <function name="utils_deinit" c:identifier="nm_utils_deinit">
-      <doc xml:space="preserve">Frees all resources used internally by libnm-util.  This function is called
-from an atexit() handler, set up by nm_utils_init(), but is safe to be called
-more than once.  Subsequent calls have no effect until nm_utils_init() is
-called again.</doc>
+      <doc xml:space="preserve">No-op. Although this function still exists for ABI compatibility reasons, it
+does not have any effect, and does not ever need to be called.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -16786,6 +16798,59 @@ and will be overwritten by subsequent calls to this function</doc>
         <parameter name="filename" transfer-ownership="none">
           <doc xml:space="preserve">name of the file to test</doc>
           <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_file_search_in_paths"
+              c:identifier="nm_utils_file_search_in_paths"
+              throws="1">
+      <doc xml:space="preserve">Searches for a @progname file in a list of search @paths.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the full path to the helper, if found, or %NULL if not found.
+  The returned string is not owned by the caller, but later
+  invocations of the function might overwrite it.</doc>
+        <type name="utf8" c:type="const char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="progname" transfer-ownership="none">
+          <doc xml:space="preserve">the helper program name, like "iptables"
+  Must be a non-empty string, without path separator (/).</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="try_first"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a custom path to try first before searching.
+  It is silently ignored if it is empty or not an absolute path.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="paths"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a %NULL terminated list of search paths.
+  Can be empty or %NULL, in which case only @try_first is checked.</doc>
+          <type name="utf8" c:type="const char* const*"/>
+        </parameter>
+        <parameter name="file_test_flags" transfer-ownership="none">
+          <doc xml:space="preserve">the flags passed to g_file_test() when searching
+  for @progname. Set it to 0 to skip the g_file_test().</doc>
+          <type name="GLib.FileTest" c:type="GFileTest"/>
+        </parameter>
+        <parameter name="predicate"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="5">
+          <doc xml:space="preserve">if given, pass the file name to this function
+  for additional checks. This check is performed after the check for
+  @file_test_flags. You cannot omit both @file_test_flags and @predicate.</doc>
+          <type name="UtilsFileSearchInPathsPredicate"
+                c:type="NMUtilsFileSearchInPathsPredicate"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:space="preserve">(allow-none): user data for @predicate function.</doc>
+          <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </function>
@@ -17081,10 +17146,8 @@ function in net/core/dev.c.</doc>
       </parameters>
     </function>
     <function name="utils_init" c:identifier="nm_utils_init" throws="1">
-      <doc xml:space="preserve">Initializes libnm-util; should be called when starting and program that
-uses libnm-util.  Sets up an atexit() handler to ensure de-initialization
-is performed, but calling nm_utils_deinit() to explicitly deinitialize
-libnm-util can also be done.  This function can be called more than once.</doc>
+      <doc xml:space="preserve">Initializes libnm-util; should be called when starting any program that
+uses libnm-util.  This function can be called more than once.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the initialization was successful, %FALSE on failure.</doc>
         <type name="gboolean" c:type="gboolean"/>

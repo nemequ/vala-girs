@@ -369,7 +369,7 @@ namespace Grl {
 		public unowned Grl.Plugin lookup_plugin (string plugin_id);
 		public unowned Grl.Source lookup_source (string source_id);
 		public bool metadata_key_validate (Grl.KeyID key, GLib.Value value);
-		public Grl.KeyID register_metadata_key (GLib.ParamSpec param_spec) throws GLib.Error;
+		public Grl.KeyID register_metadata_key (owned GLib.ParamSpec param_spec) throws GLib.Error;
 		public void register_metadata_key_relation (Grl.KeyID key1, Grl.KeyID key2);
 		public Grl.KeyID register_metadata_key_system (GLib.ParamSpec param_spec, Grl.KeyID key) throws GLib.Error;
 		public bool register_source (Grl.Plugin plugin, owned Grl.Source source) throws GLib.Error;

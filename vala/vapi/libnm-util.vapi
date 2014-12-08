@@ -135,6 +135,8 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static bool file_is_pkcs12 (string filename);
 		[CCode (cheader_filename = "nm-utils.h")]
+		public static unowned string file_search_in_paths (string progname, string? try_first, string? paths, GLib.FileTest file_test_flags, NM.UtilsFileSearchInPathsPredicate predicate) throws GLib.Error;
+		[CCode (cheader_filename = "nm-utils.h")]
 		public static GLib.HashTable<weak string,weak GLib.Value?> gvalue_hash_dup (GLib.HashTable<void*,void*> hash);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static int hex2byte (string hex);
@@ -2351,6 +2353,8 @@ namespace NM {
 	public delegate bool SettingClearSecretsWithFlagsFn (NM.Setting setting, string secret, NM.SettingSecretFlags flags);
 	[CCode (cheader_filename = "nm-setting.h", instance_pos = 4.9)]
 	public delegate void SettingValueIterFn (NM.Setting setting, string key, GLib.Value value, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "NetworkManager-1.0.h", instance_pos = 1.9)]
+	public delegate bool UtilsFileSearchInPathsPredicate (string filename);
 	[CCode (cheader_filename = "nm-setting-vpn.h", instance_pos = 2.9)]
 	public delegate void VPNIterFunc (string key, string value);
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_CONNECTION_CHANGED")]
