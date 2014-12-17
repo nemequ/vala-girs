@@ -51665,7 +51665,7 @@ depending on what @addr was created with.</doc>
             disguised="1">
     </record>
     <enumeration name="NetworkConnectivity"
-                 version="2.42"
+                 version="2.44"
                  glib:type-name="GNetworkConnectivity"
                  glib:get-type="g_network_connectivity_get_type"
                  c:type="GNetworkConnectivity">
@@ -51953,7 +51953,7 @@ See g_network_monitor_can_reach_async().</doc>
       </method>
       <method name="get_connectivity"
               c:identifier="g_network_monitor_get_connectivity"
-              version="2.42">
+              version="2.44">
         <doc xml:space="preserve">Gets a more detailed networking state than
 g_network_monitor_get_network_available().
 
@@ -52002,7 +52002,7 @@ reachable. See #GNetworkMonitor:network-available for more details.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="connectivity" version="2.42" transfer-ownership="none">
+      <property name="connectivity" version="2.44" transfer-ownership="none">
         <doc xml:space="preserve">More detailed information about the host's network connectivity.
 See g_network_monitor_get_connectivity() and
 #GNetworkConnectivity for more details.</doc>
@@ -52697,6 +52697,43 @@ was sent on is activated.</doc>
   or emergency warnings)</doc>
       </member>
     </enumeration>
+    <record name="OutputMessage" c:type="GOutputMessage" version="2.44">
+      <doc xml:space="preserve">Structure used for scatter/gather data output when sending multiple
+messages or packets in one go. You generally pass in an array of
+#GOutputVectors and the operation will use all the buffers as if they
+were one buffer.
+
+If @address is %NULL then the message is sent to the default receiver
+(as previously set by g_socket_connect()).</doc>
+      <field name="address" writable="1">
+        <doc xml:space="preserve">a #GSocketAddress, or %NULL</doc>
+        <type name="SocketAddress" c:type="GSocketAddress*"/>
+      </field>
+      <field name="vectors" writable="1">
+        <doc xml:space="preserve">pointer to an array of output vectors</doc>
+        <type name="OutputVector" c:type="GOutputVector*"/>
+      </field>
+      <field name="num_vectors" writable="1">
+        <doc xml:space="preserve">the number of output vectors pointed to by @vectors.</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="bytes_sent" writable="1">
+        <doc xml:space="preserve">initialize to 0. Will be set to the number of bytes
+    that have been sent</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="control_messages" writable="1">
+        <doc xml:space="preserve">a pointer
+  to an array of #GSocketControlMessages, or %NULL.</doc>
+        <array length="5" zero-terminated="0" c:type="GSocketControlMessage**">
+          <type name="SocketControlMessage" c:type="GSocketControlMessage*"/>
+        </array>
+      </field>
+      <field name="num_control_messages" writable="1">
+        <doc xml:space="preserve">number of elements in @control_messages.</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+    </record>
     <class name="OutputStream"
            c:symbol-prefix="output_stream"
            c:type="GOutputStream"
@@ -65007,6 +65044,77 @@ on error</doc>
           <parameter name="num_messages" transfer-ownership="none">
             <doc xml:space="preserve">number of elements in @messages, or -1.</doc>
             <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">an int containing #GSocketMsgFlags flags</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a %GCancellable or %NULL</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_messages"
+              c:identifier="g_socket_send_messages"
+              version="2.44"
+              throws="1">
+        <doc xml:space="preserve">Send multiple data messages from @socket in one go.  This is the most
+complicated and fully-featured version of this call. For easier use, see
+g_socket_send(), g_socket_send_to(), and g_socket_send_message().
+
+@messages must point to an array of #GOutputMessage structs and
+@num_messages must be the length of this array. Each #GOutputMessage
+contains an address to send the data to, and a pointer to an array of
+#GOutputVector structs to describe the buffers that the data to be sent
+for each message will be gathered from. Using multiple #GOutputVectors is
+more memory-efficient than manually copying data from multiple sources
+into a single buffer, and more network-efficient than making multiple
+calls to g_socket_send(). Sending multiple messages in one go avoids the
+overhead of making a lot of syscalls in scenarios where a lot of data
+packets need to be sent (e.g. high-bandwidth video streaming over RTP/UDP),
+or where the same data needs to be sent to multiple recipients.
+
+@flags modify how the message is sent. The commonly available arguments
+for this are available in the #GSocketMsgFlags enum, but the
+values there are the same as the system values, and the flags
+are passed in as-is, so you can pass in system-specific flags too.
+
+If the socket is in blocking mode the call will block until there is
+space for all the data in the socket queue. If there is no space available
+and the socket is in non-blocking mode a %G_IO_ERROR_WOULD_BLOCK error
+will be returned if no data was written at all, otherwise the number of
+messages sent will be returned. To be notified when space is available,
+wait for the %G_IO_OUT condition. Note though that you may still receive
+%G_IO_ERROR_WOULD_BLOCK from g_socket_send() even if you were previously
+notified of a %G_IO_OUT condition. (On Windows in particular, this is
+very common due to the way the underlying APIs work.)
+
+On error -1 is returned and @error is set accordingly.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">number of messages sent, or -1 on error. Note that the number of
+    messages sent may be smaller than @num_messages if the socket is
+    non-blocking or if @num_messages was larger than UIO_MAXIOV (1024),
+    in which case the caller may re-try to send the remaining messages.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="socket" transfer-ownership="none">
+            <doc xml:space="preserve">a #GSocket</doc>
+            <type name="Socket" c:type="GSocket*"/>
+          </instance-parameter>
+          <parameter name="messages" transfer-ownership="none">
+            <doc xml:space="preserve">an array of #GOutputMessage structs</doc>
+            <array length="1" zero-terminated="0" c:type="GOutputMessage*">
+              <type name="OutputMessage" c:type="GOutputMessage"/>
+            </array>
+          </parameter>
+          <parameter name="num_messages" transfer-ownership="none">
+            <doc xml:space="preserve">the number of elements in @messages</doc>
+            <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve">an int containing #GSocketMsgFlags flags</doc>

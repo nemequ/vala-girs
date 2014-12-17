@@ -200,6 +200,7 @@ namespace Grl {
 		public unowned string get_mb_album_id ();
 		public unowned string get_mb_artist_id ();
 		public unowned string get_mb_artist_id_nth (uint index);
+		public unowned string get_mb_recording_id ();
 		public unowned string get_mb_track_id ();
 		public int get_track_number ();
 		public unowned string get_url_data (out unowned string mime, out int bitrate);
@@ -211,6 +212,7 @@ namespace Grl {
 		public void set_lyrics (string lyrics);
 		public void set_mb_album_id (string mb_album_id);
 		public void set_mb_artist_id (string mb_artist_id);
+		public void set_mb_recording_id (string mb_recording_id);
 		public void set_mb_track_id (string mb_track_id);
 		public void set_track_number (int track_number);
 		public void set_url_data (string url, string mime, int bitrate);
@@ -257,6 +259,7 @@ namespace Grl {
 		public unowned string get_director ();
 		public unowned string get_director_nth (uint index);
 		public int get_episode ();
+		public unowned string get_episode_title ();
 		public float get_framerate ();
 		public int get_height ();
 		public unowned string get_original_title ();
@@ -271,6 +274,7 @@ namespace Grl {
 		public int get_width ();
 		public void set_director (string director);
 		public void set_episode (int episode);
+		public void set_episode_title (string episode_title);
 		public void set_framerate (float framerate);
 		public void set_height (int height);
 		public void set_original_title (string original_title);
@@ -570,6 +574,8 @@ namespace Grl {
 		public static Grl.KeyID SEASON;
 		[CCode (cname = "GRL_METADATA_KEY_EPISODE")]
 		public static Grl.KeyID EPISODE;
+		[CCode (cname = "GRL_METADATA_KEY_EPISODE_TITLE")]
+		public static Grl.KeyID EPISODE_TITLE;
 		[CCode (cname = "GRL_METADATA_KEY_SHOW")]
 		public static Grl.KeyID SHOW;
 		[CCode (cname = "GRL_METADATA_KEY_CREATION_DATE")]
@@ -606,6 +612,8 @@ namespace Grl {
 		public static Grl.KeyID MB_TRACK_ID;
 		[CCode (cname = "GRL_METADATA_KEY_MB_ARTIST_ID")]
 		public static Grl.KeyID MB_ARTIST_ID;
+		[CCode (cname = "GRL_METADATA_KEY_MB_RECORDING_ID")]
+		public static Grl.KeyID MB_RECORDING_ID;
 		public static GLib.List list_new (Grl.KeyID p, ...);
 	}
 	[CCode (cheader_filename = "grilo.h", has_type_id = false)]
@@ -848,6 +856,8 @@ namespace Grl {
 	public const int METADATA_KEY_DURATION;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_EPISODE")]
 	public const int METADATA_KEY_EPISODE;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_EPISODE_TITLE")]
+	public const int METADATA_KEY_EPISODE_TITLE;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_EXPOSURE_TIME")]
 	public const int METADATA_KEY_EXPOSURE_TIME;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_EXTERNAL_PLAYER")]
@@ -884,6 +894,8 @@ namespace Grl {
 	public const int METADATA_KEY_MB_ALBUM_ID;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_ARTIST_ID")]
 	public const int METADATA_KEY_MB_ARTIST_ID;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_RECORDING_ID")]
+	public const int METADATA_KEY_MB_RECORDING_ID;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_TRACK_ID")]
 	public const int METADATA_KEY_MB_TRACK_ID;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MIME")]

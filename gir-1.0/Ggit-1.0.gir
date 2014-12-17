@@ -2026,12 +2026,24 @@ files need to be read from disk.</doc>
         <type name="ObjectClass" c:type="GgitObjectClass"/>
       </field>
     </record>
-    <record name="CommitParents"
-            c:type="GgitCommitParents"
-            glib:type-name="GgitCommitParents"
-            glib:get-type="ggit_commit_parents_get_type"
-            c:symbol-prefix="commit_parents">
+    <class name="CommitParents"
+           c:symbol-prefix="commit_parents"
+           c:type="GgitCommitParents"
+           parent="GObject.Object"
+           glib:type-name="GgitCommitParents"
+           glib:get-type="ggit_commit_parents_get_type"
+           glib:type-struct="CommitParentsClass">
       <doc xml:space="preserve">Represents the parents of a commit object.</doc>
+      <constructor name="new" c:identifier="ggit_commit_parents_new">
+        <return-value transfer-ownership="full">
+          <type name="CommitParents" c:type="GgitCommitParents*"/>
+        </return-value>
+        <parameters>
+          <parameter name="commit" transfer-ownership="none">
+            <type name="Commit" c:type="GgitCommit*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <method name="get" c:identifier="ggit_commit_parents_get">
         <doc xml:space="preserve">Get the #GgitCommit of a parent.</doc>
         <return-value transfer-ownership="full">
@@ -2066,21 +2078,7 @@ files need to be read from disk.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="ref" c:identifier="ggit_commit_parents_ref">
-        <doc xml:space="preserve">Atomically increments the reference count of @parents by one.
-This function is MT-safe and may be called from any thread.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a #GgitCommitParents.</doc>
-          <type name="CommitParents" c:type="GgitCommitParents*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="parents" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitCommitParents.</doc>
-            <type name="CommitParents" c:type="GgitCommitParents*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="size" c:identifier="ggit_commit_parents_size">
+      <method name="get_size" c:identifier="ggit_commit_parents_get_size">
         <doc xml:space="preserve">Get the number of parents in the parents collection.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of parents.</doc>
@@ -2093,19 +2091,34 @@ This function is MT-safe and may be called from any thread.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="unref" c:identifier="ggit_commit_parents_unref">
-        <doc xml:space="preserve">Atomically decrements the reference count of @parents by one.
-If the reference count drops to 0, @parents is freed.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="parents" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitCommitParents.</doc>
-            <type name="CommitParents" c:type="GgitCommitParents*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
+      <property name="commit"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Commit"/>
+      </property>
+      <property name="size" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="CommitParentsPrivate" c:type="GgitCommitParentsPrivate*"/>
+      </field>
+    </class>
+    <record name="CommitParentsClass"
+            c:type="GgitCommitParentsClass"
+            glib:is-gtype-struct-for="CommitParents">
+      <doc xml:space="preserve">The class structure for #GgitCommitParentClass.</doc>
+      <field name="parent_class" readable="0" private="1">
+        <doc xml:space="preserve">The parent class.</doc>
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="CommitParentsPrivate"
+            c:type="GgitCommitParentsPrivate"
+            disguised="1">
     </record>
     <record name="CommitPrivate" c:type="GgitCommitPrivate" disguised="1">
     </record>
@@ -5631,6 +5644,24 @@ This function is MT-safe and may be called from any thread.</doc>
             <doc xml:space="preserve">a #GgitIndexEntry.</doc>
             <type name="IndexEntry" c:type="GgitIndexEntry*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_commit" c:identifier="ggit_index_entry_set_commit">
+        <doc xml:space="preserve">Set the index entry to point to a given commit. This sets the index entry
+id to the commit id, changes the mode to #GGIT_FILE_MODE_COMMIT and updates
+the timestamps to when the commit was made.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitIndexEntry.</doc>
+            <type name="IndexEntry" c:type="GgitIndexEntry*"/>
+          </instance-parameter>
+          <parameter name="commit" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitCommit.</doc>
+            <type name="Commit" c:type="GgitCommit*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_dev" c:identifier="ggit_index_entry_set_dev">
@@ -11017,6 +11048,22 @@ is written to the config, overriding what is in .gitmodules.</doc>
             <doc xml:space="preserve">forces existing entries to be updated.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="open" c:identifier="ggit_submodule_open" throws="1">
+        <doc xml:space="preserve">Open the repository for a submodule. Multiple calls to this function
+will return distinct #GgitRepository objects. Only submodules which are
+checked out in the working directory can be opened.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the opened #GgitRepository or %NULL in case of an
+                          error.</doc>
+          <type name="Repository" c:type="GgitRepository*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="submodule" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmodule.</doc>
+            <type name="Submodule" c:type="GgitSubmodule*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="ref" c:identifier="ggit_submodule_ref">

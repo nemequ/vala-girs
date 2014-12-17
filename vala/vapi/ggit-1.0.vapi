@@ -169,14 +169,16 @@ namespace Ggit {
 		public Ggit.Tree get_tree ();
 		public Ggit.OId get_tree_id ();
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_commit_parents_ref", type_id = "ggit_commit_parents_get_type ()", unref_function = "ggit_commit_parents_unref")]
-	[Compact]
-	public class CommitParents {
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_commit_parents_get_type ()")]
+	public class CommitParents : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public CommitParents (Ggit.Commit commit);
 		public Ggit.Commit @get (uint idx);
 		public Ggit.OId get_id (uint idx);
-		public Ggit.CommitParents @ref ();
-		public uint size ();
-		public void unref ();
+		public uint get_size ();
+		[NoAccessorMethod]
+		public Ggit.Commit commit { owned get; construct; }
+		public uint size { get; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_config_get_type ()")]
 	public class Config : Ggit.Native {
@@ -435,6 +437,7 @@ namespace Ggit {
 		public unowned string get_path ();
 		public uint get_uid ();
 		public unowned Ggit.IndexEntry @ref ();
+		public void set_commit (Ggit.Commit commit);
 		public void set_dev (uint dev);
 		public void set_file_size (int64 file_size);
 		public void set_flags (uint flags);
@@ -791,6 +794,7 @@ namespace Ggit {
 		public unowned string get_url ();
 		public Ggit.OId get_workdir_id ();
 		public void init (bool overwrite) throws GLib.Error;
+		public Ggit.Repository open () throws GLib.Error;
 		public unowned Ggit.Submodule @ref ();
 		public void reload (bool force) throws GLib.Error;
 		public void save () throws GLib.Error;

@@ -1352,7 +1352,7 @@ The implementation of this function is equivalent to:
                                           &amp;natural_height);
       height = CLAMP (natural_height, min_height, available_height);
     }
-  else
+  else if (request_mode == CLUTTER_REQUEST_WIDTH_FOR_HEIGHT)
     {
       clutter_actor_get_preferred_height (self, available_width,
                                           &amp;min_height,
@@ -1363,6 +1363,13 @@ The implementation of this function is equivalent to:
                                          &amp;min_width,
                                          &amp;natural_width);
       width = CLAMP (natural_width, min_width, available_width);
+    }
+  else if (request_mode == CLUTTER_REQUEST_CONTENT_SIZE)
+    {
+      clutter_content_get_preferred_size (content, &amp;natural_width, &amp;natural_height);
+
+      width = CLAMP (natural_width, 0, available_width);
+      height = CLAMP (natural_height, 0, available_height);
     }
 
   box.x1 = x; box.y1 = y;
@@ -7797,7 +7804,7 @@ For instance:
                                           &amp;min_height,
                                           &amp;natural_height);
     }
-  else
+  else if (mode == CLUTTER_REQUEST_WIDTH_FOR_HEIGHT)
     {
       clutter_actor_get_preferred_height (child, -1,
                                           &amp;min_height,
@@ -7805,6 +7812,16 @@ For instance:
       clutter_actor_get_preferred_width (child, natural_height,
                                          &amp;min_width,
                                          &amp;natural_width);
+    }
+  else if (mode == CLUTTER_REQUEST_CONTENT_SIZE)
+    {
+      ClutterContent *content = clutter_actor_get_content (child);
+
+      min_width, min_height = 0;
+      natural_width = natural_height = 0;
+
+      if (content != NULL)
+        clutter_content_get_preferred_size (content, &amp;natural_width, &amp;natural_height);
     }
 ]|
 
@@ -10347,6 +10364,8 @@ and to the clutter_actor_allocate() function.</doc>
            c:symbol-prefix="alpha"
            c:type="ClutterAlpha"
            version="0.2"
+           deprecated="1"
+           deprecated-version="1.12"
            parent="GObject.InitiallyUnowned"
            glib:type-name="ClutterAlpha"
            glib:get-type="clutter_alpha_get_type"
@@ -10354,6 +10373,7 @@ and to the clutter_actor_allocate() function.</doc>
       <doc xml:space="preserve">#ClutterAlpha combines a #ClutterTimeline and a function.
 The contents of the #ClutterAlpha structure are private and should
 only be accessed using the provided API.</doc>
+      <doc-deprecated xml:space="preserve">Use #ClutterTimeline instead</doc-deprecated>
       <implements name="Scriptable"/>
       <constructor name="new"
                    c:identifier="clutter_alpha_new"
@@ -10678,8 +10698,11 @@ will be used.</doc>
     <record name="AlphaClass"
             c:type="ClutterAlphaClass"
             glib:is-gtype-struct-for="Alpha"
-            version="0.2">
+            version="0.2"
+            deprecated="1"
+            deprecated-version="1.12">
       <doc xml:space="preserve">Base class for #ClutterAlpha</doc>
+      <doc-deprecated xml:space="preserve">Use #ClutterTimeline instead</doc-deprecated>
       <field name="parent_class" readable="0" private="1">
         <type name="GObject.InitiallyUnownedClass"
               c:type="GInitiallyUnownedClass"/>
@@ -10720,9 +10743,14 @@ will be used.</doc>
         </callback>
       </field>
     </record>
-    <callback name="AlphaFunc" c:type="ClutterAlphaFunc" version="0.2">
+    <callback name="AlphaFunc"
+              c:type="ClutterAlphaFunc"
+              version="0.2"
+              deprecated="1"
+              deprecated-version="1.12">
       <doc xml:space="preserve">A function returning a value depending on the position of
 the #ClutterTimeline bound to @alpha.</doc>
+      <doc-deprecated xml:space="preserve">Use #ClutterTimelineProgressFunc instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">a floating point value</doc>
         <type name="gdouble" c:type="gdouble"/>
@@ -11229,12 +11257,15 @@ a #ClutterAnimation.</doc>
            c:symbol-prefix="animation"
            c:type="ClutterAnimation"
            version="1.0"
+           deprecated="1"
+           deprecated-version="1.12"
            parent="GObject.Object"
            glib:type-name="ClutterAnimation"
            glib:get-type="clutter_animation_get_type"
            glib:type-struct="AnimationClass">
       <doc xml:space="preserve">The #ClutterAnimation structure contains only private data and should
 be accessed using the provided functions.</doc>
+      <doc-deprecated xml:space="preserve">Use the implicit animation on #ClutterActor</doc-deprecated>
       <implements name="Scriptable"/>
       <constructor name="new"
                    c:identifier="clutter_animation_new"
@@ -11863,9 +11894,12 @@ started</doc>
     <record name="AnimationClass"
             c:type="ClutterAnimationClass"
             glib:is-gtype-struct-for="Animation"
-            version="1.0">
+            version="1.0"
+            deprecated="1"
+            deprecated-version="1.12">
       <doc xml:space="preserve">The #ClutterAnimationClass structure contains only private data and
 should be accessed using the provided functions.</doc>
+      <doc-deprecated xml:space="preserve">Use the implicit animation on #ClutterActor</doc-deprecated>
       <field name="parent_class" readable="0" private="1">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -12743,6 +12777,8 @@ animation</doc>
     <record name="AnimatorKey"
             c:type="ClutterAnimatorKey"
             version="1.2"
+            deprecated="1"
+            deprecated-version="1.12"
             glib:type-name="ClutterAnimatorKey"
             glib:get-type="clutter_animator_key_get_type"
             c:symbol-prefix="animator_key">
@@ -20309,6 +20345,31 @@ private data and should be accessed using the provided API</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="update_preferred_size">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="constraint" transfer-ownership="none">
+            <type name="Constraint" c:type="ClutterConstraint*"/>
+          </instance-parameter>
+          <parameter name="actor" transfer-ownership="none">
+            <type name="Actor" c:type="ClutterActor*"/>
+          </parameter>
+          <parameter name="direction" transfer-ownership="none">
+            <type name="Orientation" c:type="ClutterOrientation"/>
+          </parameter>
+          <parameter name="for_size" transfer-ownership="none">
+            <type name="gfloat" c:type="float"/>
+          </parameter>
+          <parameter name="minimum_size" transfer-ownership="none">
+            <type name="gfloat" c:type="float*"/>
+          </parameter>
+          <parameter name="natural_size" transfer-ownership="none">
+            <type name="gfloat" c:type="float*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <field name="parent_instance" readable="0" private="1">
         <type name="ActorMeta" c:type="ClutterActorMeta"/>
       </field>
@@ -20336,6 +20397,33 @@ only private data</doc>
             </parameter>
             <parameter name="allocation" transfer-ownership="none">
               <type name="ActorBox" c:type="ClutterActorBox*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="update_preferred_size">
+        <callback name="update_preferred_size">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="constraint" transfer-ownership="none">
+              <type name="Constraint" c:type="ClutterConstraint*"/>
+            </parameter>
+            <parameter name="actor" transfer-ownership="none">
+              <type name="Actor" c:type="ClutterActor*"/>
+            </parameter>
+            <parameter name="direction" transfer-ownership="none">
+              <type name="Orientation" c:type="ClutterOrientation"/>
+            </parameter>
+            <parameter name="for_size" transfer-ownership="none">
+              <type name="gfloat" c:type="float"/>
+            </parameter>
+            <parameter name="minimum_size" transfer-ownership="none">
+              <type name="gfloat" c:type="float*"/>
+            </parameter>
+            <parameter name="natural_size" transfer-ownership="none">
+              <type name="gfloat" c:type="float*"/>
             </parameter>
           </parameters>
         </callback>
@@ -20384,13 +20472,6 @@ only private data</doc>
       </field>
       <field name="_clutter_constraint7" introspectable="0">
         <callback name="_clutter_constraint7">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_clutter_constraint8" introspectable="0">
-        <callback name="_clutter_constraint8">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -42950,11 +43031,11 @@ useful for language bindings.</doc>
       <doc xml:space="preserve">The major version of the Clutter library (1, if %CLUTTER_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="1" c:type="CLUTTER_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="CLUTTER_MICRO_VERSION">
       <doc xml:space="preserve">The micro version of the Clutter library (3, if %CLUTTER_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="20" c:type="CLUTTER_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="21" c:type="CLUTTER_MINOR_VERSION">
       <doc xml:space="preserve">The minor version of the Clutter library (2, if %CLUTTER_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -49691,6 +49772,13 @@ A @width of 0 will unset the border.</doc>
               glib:nick="width-for-height">
         <doc xml:space="preserve">Width for height requests</doc>
       </member>
+      <member name="content_size"
+              value="2"
+              c:identifier="CLUTTER_REQUEST_CONTENT_SIZE"
+              glib:nick="content-size">
+        <doc xml:space="preserve">Use the preferred size of the
+  #ClutterContent, if it has any (available since 1.22)</doc>
+      </member>
     </enumeration>
     <constant name="Return" value="65293" c:type="CLUTTER_Return">
       <type name="gint" c:type="gint"/>
@@ -51984,11 +52072,6 @@ and should be accessed using the provided API</doc>
           <type name="Shader" c:type="ClutterShader*"/>
         </return-value>
       </constructor>
-      <function name="error_quark" c:identifier="clutter_shader_error_quark">
-        <return-value transfer-ownership="none">
-          <type name="GLib.Quark" c:type="GQuark"/>
-        </return-value>
-      </function>
       <method name="compile"
               c:identifier="clutter_shader_compile"
               version="0.8"
@@ -52621,23 +52704,34 @@ only private data</doc>
                  version="0.6"
                  deprecated="1"
                  deprecated-version="1.8"
-                 c:type="ClutterShaderError">
+                 glib:type-name="ClutterShaderError"
+                 glib:get-type="clutter_shader_error_get_type"
+                 c:type="ClutterShaderError"
+                 glib:error-domain="clutter-shader-error">
       <doc xml:space="preserve">#ClutterShader error enumeration</doc>
       <member name="no_asm"
               value="0"
-              c:identifier="CLUTTER_SHADER_ERROR_NO_ASM">
+              c:identifier="CLUTTER_SHADER_ERROR_NO_ASM"
+              glib:nick="no-asm">
         <doc xml:space="preserve">No ASM shaders support</doc>
       </member>
       <member name="no_glsl"
               value="1"
-              c:identifier="CLUTTER_SHADER_ERROR_NO_GLSL">
+              c:identifier="CLUTTER_SHADER_ERROR_NO_GLSL"
+              glib:nick="no-glsl">
         <doc xml:space="preserve">No GLSL shaders support</doc>
       </member>
       <member name="compile"
               value="2"
-              c:identifier="CLUTTER_SHADER_ERROR_COMPILE">
+              c:identifier="CLUTTER_SHADER_ERROR_COMPILE"
+              glib:nick="compile">
         <doc xml:space="preserve">Compilation error</doc>
       </member>
+      <function name="quark" c:identifier="clutter_shader_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
     </enumeration>
     <class name="ShaderFloat"
            c:symbol-prefix="shader_float"
@@ -63813,7 +63907,7 @@ If no unit is specified, pixels are assumed.</doc>
     <constant name="V" value="86" c:type="CLUTTER_V">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION" value="1.200000" c:type="CLUTTER_VERSION">
+    <constant name="VERSION" value="1.210000" c:type="CLUTTER_VERSION">
       <doc xml:space="preserve">The full version of the Clutter library, like 1.2.3</doc>
       <type name="gdouble" c:type="gdouble"/>
     </constant>
@@ -63821,7 +63915,7 @@ If no unit is specified, pixels are assumed.</doc>
       <doc xml:space="preserve">Numerically encoded version of the Clutter library, like 0x010203</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_S" value="1.20.1" c:type="CLUTTER_VERSION_S">
+    <constant name="VERSION_S" value="1.21.3" c:type="CLUTTER_VERSION_S">
       <doc xml:space="preserve">The full version of the Clutter library, in string form (suited for
 string concatenation)</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -68956,6 +69050,13 @@ clutter_get_option_context()</doc>
               c:type="CLUTTER_sevensuperior">
       <type name="gint" c:type="gint"/>
     </constant>
+    <function name="shader_error_quark"
+              c:identifier="clutter_shader_error_quark"
+              moved-to="ShaderError.quark">
+      <return-value transfer-ownership="none">
+        <type name="GLib.Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
     <constant name="signaturemark" value="2762" c:type="CLUTTER_signaturemark">
       <type name="gint" c:type="gint"/>
     </constant>
@@ -69021,7 +69122,11 @@ clutter_get_option_context()</doc>
     </constant>
     <function name="test_add"
               c:identifier="clutter_test_add"
+              version="1.18"
               introspectable="0">
+      <doc xml:space="preserve">Adds a test unit to the Clutter test environment.
+
+See also: g_test_add()</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -69036,7 +69141,11 @@ clutter_get_option_context()</doc>
     </function>
     <function name="test_add_data"
               c:identifier="clutter_test_add_data"
+              version="1.18"
               introspectable="0">
+      <doc xml:space="preserve">Adds a test unit to the Clutter test environment.
+
+See also: g_test_add_data_func()</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -69053,7 +69162,11 @@ clutter_get_option_context()</doc>
       </parameters>
     </function>
     <function name="test_add_data_full"
-              c:identifier="clutter_test_add_data_full">
+              c:identifier="clutter_test_add_data_full"
+              version="1.18">
+      <doc xml:space="preserve">Adds a test unit to the Clutter test environment.
+
+See also: g_test_add_data_func_full()</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -69077,49 +69190,75 @@ clutter_get_option_context()</doc>
       </parameters>
     </function>
     <function name="test_check_actor_at_point"
-              c:identifier="clutter_test_check_actor_at_point">
+              c:identifier="clutter_test_check_actor_at_point"
+              version="1.18">
+      <doc xml:space="preserve">Checks the given coordinates of the @stage and compares the
+actor found there with the given @actor.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the actor at the given coordinates matches</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="stage" transfer-ownership="none">
+          <doc xml:space="preserve">a #ClutterStage</doc>
           <type name="Actor" c:type="ClutterActor*"/>
         </parameter>
         <parameter name="point" transfer-ownership="none">
+          <doc xml:space="preserve">coordinates to check</doc>
           <type name="Point" c:type="const ClutterPoint*"/>
         </parameter>
         <parameter name="actor" transfer-ownership="none">
+          <doc xml:space="preserve">the expected actor at the given coordinates</doc>
           <type name="Actor" c:type="ClutterActor*"/>
         </parameter>
-        <parameter name="result" transfer-ownership="none">
+        <parameter name="result"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   nullable="1">
+          <doc xml:space="preserve">actor at the coordinates</doc>
           <type name="Actor" c:type="ClutterActor**"/>
         </parameter>
       </parameters>
     </function>
     <function name="test_check_color_at_point"
-              c:identifier="clutter_test_check_color_at_point">
+              c:identifier="clutter_test_check_color_at_point"
+              version="1.18">
+      <doc xml:space="preserve">Checks the color at the given coordinates on @stage, and matches
+it with the red, green, and blue channels of @color. The alpha
+component of @color and @result is ignored.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the colors match</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="stage" transfer-ownership="none">
+          <doc xml:space="preserve">a #ClutterStage</doc>
           <type name="Actor" c:type="ClutterActor*"/>
         </parameter>
         <parameter name="point" transfer-ownership="none">
+          <doc xml:space="preserve">coordinates to check</doc>
           <type name="Point" c:type="const ClutterPoint*"/>
         </parameter>
         <parameter name="color" transfer-ownership="none">
+          <doc xml:space="preserve">expected color</doc>
           <type name="Color" c:type="const ClutterColor*"/>
         </parameter>
-        <parameter name="result" transfer-ownership="none">
+        <parameter name="result"
+                   direction="out"
+                   caller-allocates="1"
+                   transfer-ownership="none">
+          <doc xml:space="preserve">color at the given coordinates</doc>
           <type name="Color" c:type="ClutterColor*"/>
         </parameter>
       </parameters>
     </function>
     <function name="test_get_stage"
               c:identifier="clutter_test_get_stage"
-              introspectable="0">
-      <return-value>
+              version="1.18">
+      <doc xml:space="preserve">Retrieves the #ClutterStage used for testing.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the stage used for testing</doc>
         <type name="Actor" c:type="ClutterActor*"/>
       </return-value>
     </function>
@@ -69136,8 +69275,34 @@ clutter_get_option_context()</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="test_run" c:identifier="clutter_test_run">
+    <function name="test_run" c:identifier="clutter_test_run" version="1.18">
+      <doc xml:space="preserve">Runs the test suite using the units added by calling
+clutter_test_add().
+
+The typical test suite is composed of a list of functions
+called by clutter_test_run(), for instance:
+
+|[
+static void unit_foo (void) { ... }
+
+static void unit_bar (void) { ... }
+
+static void unit_baz (void) { ... }
+
+int
+main (int argc, char *argv[])
+{
+  clutter_test_init (&amp;argc, &amp;argv);
+
+  clutter_test_add ("/unit/foo", unit_foo);
+  clutter_test_add ("/unit/bar", unit_bar);
+  clutter_test_add ("/unit/baz", unit_baz);
+
+  return clutter_test_run ();
+}
+]|</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the exit code for the test suite</doc>
         <type name="gint" c:type="int"/>
       </return-value>
     </function>

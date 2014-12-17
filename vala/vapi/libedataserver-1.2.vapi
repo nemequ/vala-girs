@@ -738,6 +738,12 @@ namespace E {
 		public weak string name;
 		public int err_code;
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
+	public struct FreeFormExpSymbol {
+		public weak string names;
+		public weak string hint;
+		public weak E.FreeFormExpBuildSexpFunc build_sexp;
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {
 		INVALID_ARG,
@@ -814,6 +820,8 @@ namespace E {
 		INVALID_LOCALE;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
+	public delegate string FreeFormExpBuildSexpFunc (string word, string options, string hint);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
 	public delegate void SourceRefreshFunc (E.Source source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
@@ -944,6 +952,8 @@ namespace E {
 	public static void filename_make_safe (string string);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string filename_mkdir_encoded (string basepath, string fileprefix, string filename, int fileindex);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static string free_form_exp_to_sexp (string free_form_exp, E.FreeFormExpSymbol symbols);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string get_user_cache_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
