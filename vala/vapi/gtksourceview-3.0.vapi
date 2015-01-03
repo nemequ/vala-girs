@@ -619,6 +619,18 @@ namespace Gtk {
 		public string id { get; construct; }
 		public string name { get; }
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_chooser_button_get_type ()")]
+	[GIR (name = "StyleSchemeChooserButton")]
+	public class SourceStyleSchemeChooserButton : Gtk.Button, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable, Gtk.SourceStyleSchemeChooser {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SourceStyleSchemeChooserButton ();
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_chooser_widget_get_type ()")]
+	[GIR (name = "StyleSchemeChooserWidget")]
+	public class SourceStyleSchemeChooserWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable, Gtk.SourceStyleSchemeChooser {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SourceStyleSchemeChooserWidget ();
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_manager_get_type ()")]
 	[GIR (name = "StyleSchemeManager")]
 	public class SourceStyleSchemeManager : GLib.Object {
@@ -722,6 +734,13 @@ namespace Gtk {
 		public virtual bool match (Gtk.SourceCompletionContext context);
 		public virtual void populate (Gtk.SourceCompletionContext context);
 		public virtual void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info);
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_chooser_get_type ()")]
+	[GIR (name = "StyleSchemeChooser")]
+	public interface SourceStyleSchemeChooser : GLib.Object {
+		public abstract unowned Gtk.SourceStyleScheme get_style_scheme ();
+		public abstract void set_style_scheme (Gtk.SourceStyleScheme scheme);
+		public abstract Gtk.SourceStyleScheme style_scheme { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_undo_manager_get_type ()")]
 	[GIR (name = "UndoManager")]

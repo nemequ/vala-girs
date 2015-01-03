@@ -136,6 +136,19 @@ a result string, then switch output echo back on.</doc>
         </parameters>
       </method>
     </class>
+    <record name="DirFdIterator" c:type="GSDirFdIterator">
+      <field name="initialized" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="fd" writable="1">
+        <type name="gint" c:type="int"/>
+      </field>
+      <field name="padding_data" writable="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <class name="Subprocess"
            c:symbol-prefix="subprocess"
            c:type="GSSubprocess"
@@ -990,6 +1003,53 @@ directory @dfd.</doc>
                    nullable="1"
                    allow-none="1">
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="dirfd_iterator_clear"
+              c:identifier="gs_dirfd_iterator_clear">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="dfd_iter" transfer-ownership="none">
+          <type name="DirFdIterator" c:type="GSDirFdIterator*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="dirfd_iterator_init_at"
+              c:identifier="gs_dirfd_iterator_init_at"
+              throws="1">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="dfd" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="path" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="follow" transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+        <parameter name="dfd_iter" transfer-ownership="none">
+          <type name="DirFdIterator" c:type="GSDirFdIterator*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="dirfd_iterator_init_take_fd"
+              c:identifier="gs_dirfd_iterator_init_take_fd"
+              throws="1">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="dfd" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="dfd_iter" transfer-ownership="none">
+          <type name="DirFdIterator" c:type="GSDirFdIterator*"/>
         </parameter>
       </parameters>
     </function>
@@ -1886,6 +1946,102 @@ This function otherwise acts as gs_log_structured_print(), taking
         </parameter>
       </parameters>
     </function>
+    <function name="opendirat" c:identifier="gs_opendirat" throws="1">
+      <doc xml:space="preserve">Use openat() to open a directory, using a standard set of flags.</doc>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="dfd" transfer-ownership="none">
+          <doc xml:space="preserve">File descriptor for origin directory</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:space="preserve">Pathname, relative to @dfd</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="follow" transfer-ownership="none">
+          <doc xml:space="preserve">Whether or not to follow symbolic links</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+        <parameter name="out_fd" transfer-ownership="none">
+          <type name="gint" c:type="int*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="opendirat_with_errno"
+              c:identifier="gs_opendirat_with_errno">
+      <doc xml:space="preserve">Use openat() to open a directory, using a standard set of flags.
+This function sets errno.</doc>
+      <return-value transfer-ownership="none">
+        <type name="gint" c:type="int"/>
+      </return-value>
+      <parameters>
+        <parameter name="dfd" transfer-ownership="none">
+          <doc xml:space="preserve">File descriptor for origin directory</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="path" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="follow" transfer-ownership="none">
+          <doc xml:space="preserve">Whether or not to follow symbolic links</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="set_error_from_errno"
+              c:identifier="gs_set_error_from_errno">
+      <doc xml:space="preserve">Set @error to an error with domain %G_IO_ERROR, and code based on
+the value of @saved_errno.  The error message is set using a
+literal return from g_strerror().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="error"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">Error</doc>
+          <type name="GLib.Error" c:type="GError**"/>
+        </parameter>
+        <parameter name="saved_errno" transfer-ownership="none">
+          <doc xml:space="preserve">errno value</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="set_prefix_error_from_errno"
+              c:identifier="gs_set_prefix_error_from_errno"
+              introspectable="0">
+      <doc xml:space="preserve">Set @error to an error with domain %G_IO_ERROR, and code based on
+the value of @saved_errno.  The error message is prefixed with the
+result of @format, a colon and space, then the result of
+g_strerror().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="error"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">Error</doc>
+          <type name="GLib.Error" c:type="GError**"/>
+        </parameter>
+        <parameter name="errsv" transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">Format string for printf</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="shutil_cp_a" c:identifier="gs_shutil_cp_a" throws="1">
       <doc xml:space="preserve">Recursively copy path @src (which must be a directory) to the
 target @dest.  Any existing files are overwritten.</doc>
@@ -1953,6 +2109,32 @@ file or directory.  No error is thrown if @path does not exist.</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="shutil_rm_rf_at"
+              c:identifier="gs_shutil_rm_rf_at"
+              throws="1">
+      <doc xml:space="preserve">Recursively delete the filename referenced by the combination of
+the directory fd@dfd and @path; it may be a file or directory.  No
+error is thrown if @path does not exist.</doc>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="fd" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:space="preserve">Path</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">Cancellable</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
       </parameters>

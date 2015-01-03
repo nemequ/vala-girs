@@ -325,6 +325,7 @@ namespace Ggit {
 		public void set_summary (string? summary);
 		public void set_total_patches (size_t patches);
 		public Ggit.Signature author { get; set; }
+		public Ggit.DiffFormatEmailFlags flags { get; set; }
 		public Ggit.OId id { get; set; }
 		public uint64 patch_number { get; set; }
 		public string summary { get; set; }
@@ -494,6 +495,7 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		public OId.from_string (string str);
 		public uint hash ();
+		public bool is_zero ();
 		public string to_string ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_object_get_type ()")]
@@ -539,10 +541,25 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		public Push (Ggit.Remote remote) throws GLib.Error;
 		public void add_refspec (string refspec) throws GLib.Error;
-		public bool finish (Ggit.PushProgress? progress) throws GLib.Error;
+		public bool finish () throws GLib.Error;
+		public unowned Ggit.PushOptions get_options ();
 		public bool is_unpack_ok ();
+		public void set_options (Ggit.PushOptions? options);
+		public bool update_tips (Ggit.Signature signature, string? message) throws GLib.Error;
+		[NoAccessorMethod]
+		public Ggit.PushOptions optionse { owned get; set construct; }
 		[NoAccessorMethod]
 		public Ggit.Remote remote { owned get; construct; }
+		public virtual signal void packbuilder_progress (Ggit.PackbuilderStage stage, uint current, uint total);
+		public virtual signal void transfer_progress (uint current, uint total, uint bytes);
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_push_options_get_type ()")]
+	public class PushOptions : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public PushOptions ();
+		public int get_parallelism ();
+		public void set_parallelism (int parallelism);
+		public int parallelism { get; set construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_ref_get_type ()")]
 	public class Ref : Ggit.Native {
@@ -606,31 +623,44 @@ namespace Ggit {
 		public Remote (Ggit.Repository repository, string name, string url) throws GLib.Error;
 		public void add_fetch_spec (string fetch_spec) throws GLib.Error;
 		public void add_push_spec (string push_spec) throws GLib.Error;
-		public void connect (bool direction) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public Remote.anonymous (Ggit.Repository repository, string url, string fetch) throws GLib.Error;
+		public void connect (Ggit.Direction direction) throws GLib.Error;
 		public void disconnect ();
+		public bool download () throws GLib.Error;
+		public unowned Ggit.RemoteCallbacks get_callbacks ();
 		public bool get_connected ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_fetch_specs () throws GLib.Error;
 		public unowned string get_name ();
+		public Ggit.Repository get_owner ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_push_specs () throws GLib.Error;
 		public unowned string get_url ();
 		public static bool is_supported_url (string url);
 		public static bool is_valid_url (string url);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public Ggit.RemoteHead[] list () throws GLib.Error;
 		public void save () throws GLib.Error;
+		public void set_callbacks (Ggit.RemoteCallbacks? callbacks);
+		public bool set_fetch_specs ([CCode (array_length = false, array_null_terminated = true)] string[]? specs) throws GLib.Error;
+		public bool set_push_specs ([CCode (array_length = false, array_null_terminated = true)] string[]? specs) throws GLib.Error;
+		public bool update_tips (Ggit.Signature signature, string? message) throws GLib.Error;
+		public Ggit.RemoteCallbacks callbacks { get; set construct; }
+		[NoAccessorMethod]
+		public double transfer_progress { get; }
+		public virtual signal void tip_updated (string refname, Ggit.OId a, Ggit.OId b);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_remote_callbacks_get_type ()")]
 	public class RemoteCallbacks : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected RemoteCallbacks ();
 		[NoWrapper]
-		public virtual bool completion (Ggit.RemoteCompletionType type) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool credentials (string url, string username_from_url, uint allowed_types, out Ggit.Cred cred) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool progress (string str, int len) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool transfer_progress (Ggit.TransferProgress stats) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool update_tips (string refname, Ggit.OId a, Ggit.OId b) throws GLib.Error;
+		public virtual Ggit.Cred? credentials (string url, string? username_from_url, Ggit.Credtype allowed_types) throws GLib.Error;
+		public virtual signal void completion (Ggit.RemoteCompletionType type);
+		public virtual signal void progress (string message);
+		public virtual signal void transfer_progress (Ggit.TransferProgress stats);
+		public virtual signal void update_tips (string refname, Ggit.OId a, Ggit.OId b);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_remote_head_ref", type_id = "ggit_remote_head_get_type ()", unref_function = "ggit_remote_head_unref")]
 	[Compact]
@@ -708,7 +738,7 @@ namespace Ggit {
 		public bool references_foreach_name (Ggit.ReferencesNameCallback callback) throws GLib.Error;
 		public bool remove_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id) throws GLib.Error;
 		public void reset (Ggit.Object target, Ggit.ResetType reset_type, Ggit.Signature signature, string log_message) throws GLib.Error;
-		public void reset_default (Ggit.Object? target, string pathspecs) throws GLib.Error;
+		public void reset_default (Ggit.Object? target, [CCode (array_length = false, array_null_terminated = true)] string[] pathspecs) throws GLib.Error;
 		public bool revert (Ggit.Commit commit, Ggit.RevertOptions options) throws GLib.Error;
 		public Ggit.Object revparse (string spec) throws GLib.Error;
 		public Ggit.OId save_stash (Ggit.Signature stasher, string message, Ggit.StashFlags flags) throws GLib.Error;
@@ -858,12 +888,7 @@ namespace Ggit {
 		public unowned Ggit.TreeEntry @ref ();
 		public void unref ();
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_cname = "GgitPushProgressInterface", type_id = "ggit_push_progress_get_type ()")]
-	public interface PushProgress : GLib.Object {
-		public abstract bool packbuilder_progress (Ggit.PackbuilderStage stage, uint current, uint total) throws GLib.Error;
-		public abstract bool transfer_progress (uint current, uint total, size_t bytes) throws GLib.Error;
-	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_ATTRIBUTE_CHECK_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_ATTRIBUTE_CHECK_", type_id = "ggit_attribute_check_flags_get_type ()")]
 	[Flags]
 	public enum AttributeCheckFlags {
 		FILE_THEN_INDEX,
@@ -871,18 +896,18 @@ namespace Ggit {
 		INDEX_ONLY,
 		NO_SYSTEM
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_BLAME_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_BLAME_", type_id = "ggit_blame_flags_get_type ()")]
 	[Flags]
 	public enum BlameFlags {
 		NORMAL,
 		TRACK_COPIES_SAME_FILE
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_BRANCH_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_BRANCH_", type_id = "ggit_branch_type_get_type ()")]
 	public enum BranchType {
 		LOCAL,
 		REMOTE
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CHECKOUT_NOTIFY_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CHECKOUT_NOTIFY_", type_id = "ggit_checkout_notify_flags_get_type ()")]
 	[Flags]
 	public enum CheckoutNotifyFlags {
 		NONE,
@@ -893,7 +918,7 @@ namespace Ggit {
 		IGNORED,
 		ALL
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CHECKOUT_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CHECKOUT_", type_id = "ggit_checkout_strategy_get_type ()")]
 	[Flags]
 	public enum CheckoutStrategy {
 		NONE,
@@ -915,7 +940,7 @@ namespace Ggit {
 		CONFLICT_STYLE_MERGE,
 		CONFLICT_STYLE_DIFF3
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CONFIG_LEVEL_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CONFIG_LEVEL_", type_id = "ggit_config_level_get_type ()")]
 	public enum ConfigLevel {
 		SYSTEM,
 		XDG,
@@ -923,13 +948,22 @@ namespace Ggit {
 		LOCAL,
 		HIGHEST
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CREATE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CREATE_", type_id = "ggit_create_flags_get_type ()")]
 	[Flags]
 	public enum CreateFlags {
 		NONE,
 		FORCE
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DELTA_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CREDTYPE_", type_id = "ggit_credtype_get_type ()")]
+	[Flags]
+	public enum Credtype {
+		USERPASS_PLAINTEXT,
+		SSH_KEY,
+		SSH_CUSTOM,
+		DEFAULT,
+		SSH_INTERACTIVE
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DELTA_", type_id = "ggit_delta_type_get_type ()")]
 	public enum DeltaType {
 		UNMODIFIED,
 		ADDED,
@@ -940,7 +974,7 @@ namespace Ggit {
 		IGNORED,
 		UNTRACKED
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_", type_id = "ggit_diff_find_flags_get_type ()")]
 	[Flags]
 	public enum DiffFindFlags {
 		FIND_BY_CONFIG,
@@ -960,20 +994,20 @@ namespace Ggit {
 		BREAK_REWRITES_FOR_RENAMES_ONLY,
 		FIND_REMOVE_UNMODIFIED
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_FLAG_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_FLAG_", type_id = "ggit_diff_flag_get_type ()")]
 	[Flags]
 	public enum DiffFlag {
 		BINARY,
 		NOT_BINARY,
 		VALID_ID
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_FORMAT_EMAIL_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_FORMAT_EMAIL_", type_id = "ggit_diff_format_email_flags_get_type ()")]
 	[Flags]
 	public enum DiffFormatEmailFlags {
 		NONE,
 		EXCLUDE_SUBJECT_PATCH_MARKER
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_FORMAT_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_FORMAT_", type_id = "ggit_diff_format_type_get_type ()")]
 	public enum DiffFormatType {
 		PATCH,
 		PATCH_HEADER,
@@ -981,7 +1015,7 @@ namespace Ggit {
 		NAME_ONLY,
 		NAME_STATUS
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_LINE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_LINE_", type_id = "ggit_diff_line_type_get_type ()")]
 	public enum DiffLineType {
 		CONTEXT,
 		ADDITION,
@@ -993,7 +1027,7 @@ namespace Ggit {
 		HUNK_HDR,
 		BINARY
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_", type_id = "ggit_diff_option_get_type ()")]
 	[Flags]
 	public enum DiffOption {
 		NORMAL,
@@ -1021,14 +1055,19 @@ namespace Ggit {
 		PATIENCE,
 		MINIMAL
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_FEATURE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIRECTION_", type_id = "ggit_direction_get_type ()")]
+	public enum Direction {
+		FETCH,
+		PUSH
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_FEATURE_", type_id = "ggit_feature_flags_get_type ()")]
 	[Flags]
 	public enum FeatureFlags {
 		THREADS,
 		HTTPS,
 		SSH
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_FILE_MODE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_FILE_MODE_", type_id = "ggit_file_mode_get_type ()")]
 	public enum FileMode {
 		NEW,
 		TREE,
@@ -1037,50 +1076,49 @@ namespace Ggit {
 		LINK,
 		COMMIT
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_MERGE_FILE_FAVOR_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_MERGE_FILE_FAVOR_", type_id = "ggit_merge_file_favor_get_type ()")]
 	public enum MergeFileFavor {
 		NORMAL,
 		OURS,
 		THEIRS,
 		UNION
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_MERGE_TREE_FIND_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_MERGE_TREE_FIND_", type_id = "ggit_merge_tree_flags_get_type ()")]
 	[Flags]
 	public enum MergeTreeFlags {
-		[CCode (cname = "GGIT_MERGE_TREE_FIND_RENAMES")]
-		MERGE_TREE_FIND_RENAMES
+		RENAMES
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_PACKBUILDER_STAGE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_PACKBUILDER_STAGE_", type_id = "ggit_packbuilder_stage_get_type ()")]
 	public enum PackbuilderStage {
 		ADDING_OBJECTS,
 		DELTAFICATION
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REF_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REF_", type_id = "ggit_ref_type_get_type ()")]
 	public enum RefType {
 		INVALID,
 		OID,
 		SYMBOLIC,
 		LISTALL
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REMOTE_COMPLETION_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REMOTE_COMPLETION_", type_id = "ggit_remote_completion_type_get_type ()")]
 	public enum RemoteCompletionType {
 		DOWNLOAD,
 		INDEXING,
 		ERROR
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REMOTE_DOWNLOAD_TAGS_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REMOTE_DOWNLOAD_TAGS_", type_id = "ggit_remote_download_tags_type_get_type ()")]
 	public enum RemoteDownloadTagsType {
 		AUTO,
 		NONE,
 		ALL
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_RESET_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_RESET_", type_id = "ggit_reset_type_get_type ()")]
 	public enum ResetType {
 		SOFT,
 		MIXED,
 		HARD
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SORT_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SORT_", type_id = "ggit_sort_mode_get_type ()")]
 	[Flags]
 	public enum SortMode {
 		NONE,
@@ -1088,7 +1126,7 @@ namespace Ggit {
 		TIME,
 		REVERSE
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STASH_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STASH_", type_id = "ggit_stash_flags_get_type ()")]
 	[Flags]
 	public enum StashFlags {
 		DEFAULT,
@@ -1096,7 +1134,7 @@ namespace Ggit {
 		INCLUDE_UNTRACKED,
 		INCLUDE_IGNORED
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_", type_id = "ggit_status_flags_get_type ()")]
 	[Flags]
 	public enum StatusFlags {
 		CURRENT,
@@ -1111,7 +1149,7 @@ namespace Ggit {
 		WORKING_TREE_TYPECHANGE,
 		IGNORED
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_OPTION_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_OPTION_", type_id = "ggit_status_option_get_type ()")]
 	[Flags]
 	public enum StatusOption {
 		INCLUDE_UNTRACKED,
@@ -1127,13 +1165,13 @@ namespace Ggit {
 		SORT_CASE_INSENSITIVELY,
 		DEFAULT
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_SHOW_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_SHOW_", type_id = "ggit_status_show_get_type ()")]
 	public enum StatusShow {
 		INDEX_AND_WORKDIR,
 		INDEX_ONLY,
 		WORKDIR_ONLY
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SUBMODULE_IGNORE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SUBMODULE_IGNORE_", type_id = "ggit_submodule_ignore_get_type ()")]
 	public enum SubmoduleIgnore {
 		RESET,
 		NONE,
@@ -1141,7 +1179,7 @@ namespace Ggit {
 		DIRTY,
 		ALL
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SUBMODULE_STATUS_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SUBMODULE_STATUS_", type_id = "ggit_submodule_status_get_type ()")]
 	[Flags]
 	public enum SubmoduleStatus {
 		IN_HEAD,
@@ -1159,7 +1197,7 @@ namespace Ggit {
 		WD_WD_MODIFIED,
 		WD_UNTRACKED
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SUBMODULE_UPDATE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_SUBMODULE_UPDATE_", type_id = "ggit_submodule_update_get_type ()")]
 	public enum SubmoduleUpdate {
 		RESET,
 		CHECKOUT,
@@ -1167,7 +1205,7 @@ namespace Ggit {
 		MERGE,
 		NONE
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_TREE_WALK_MODE_", has_type_id = false)]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_TREE_WALK_MODE_", type_id = "ggit_tree_walk_mode_get_type ()")]
 	public enum TreeWalkMode {
 		PRE,
 		POST

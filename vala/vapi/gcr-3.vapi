@@ -244,8 +244,8 @@ namespace Gcr {
 		public void set_interaction (GLib.TlsInteraction interaction);
 		[NoAccessorMethod]
 		public abstract GLib.Icon icon { owned get; }
-		[NoAccessorMethod]
-		public abstract GLib.TlsInteraction interaction { owned get; set; }
+		[ConcreteAccessor]
+		public abstract GLib.TlsInteraction interaction { get; set; }
 		[NoAccessorMethod]
 		public abstract string label { owned get; }
 		[NoAccessorMethod]
@@ -286,27 +286,27 @@ namespace Gcr {
 		public void set_password_new (bool new_password);
 		public void set_title (string title);
 		public void set_warning (string? warning);
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string caller_window { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string cancel_label { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract bool choice_chosen { get; set; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string choice_label { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string continue_label { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string description { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string message { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract bool password_new { get; set; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract int password_strength { get; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string title { owned get; set construct; }
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract string warning { owned get; set construct; }
 		public virtual signal void prompt_close ();
 	}

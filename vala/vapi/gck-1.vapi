@@ -354,7 +354,7 @@ namespace Gck {
 		public void set_attributes (Gck.Attributes? attrs);
 		public bool update ([CCode (array_length_cname = "n_attr_types", array_length_pos = 1.5)] ulong[] attr_types, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool update_async ([CCode (array_length_cname = "n_attr_types", array_length_pos = 1.5)] ulong[] attr_types, GLib.Cancellable? cancellable) throws GLib.Error;
-		[NoAccessorMethod]
+		[ConcreteAccessor]
 		public abstract Gck.Attributes attributes { owned get; set; }
 	}
 	[CCode (cheader_filename = "gck/gck.h", has_type_id = false)]

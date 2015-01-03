@@ -162,8 +162,8 @@ namespace Gcr {
 		public static void register_well_known ();
 		public abstract void render_view (Gcr.Viewer viewer);
 		public void set_attributes (Gck.Attributes? attrs);
-		[NoAccessorMethod]
-		public abstract Gck.Attributes attributes { owned get; set; }
+		[ConcreteAccessor]
+		public abstract Gck.Attributes attributes { get; set; }
 		[NoAccessorMethod]
 		public abstract string label { owned get; set; }
 		public virtual signal void data_changed ();
