@@ -494,6 +494,7 @@ namespace Ggit {
 		public OId.from_raw (uint8 raw);
 		[CCode (has_construct_function = false)]
 		public OId.from_string (string str);
+		public bool has_prefix (string prefix);
 		public uint hash ();
 		public bool is_zero ();
 		public string to_string ();

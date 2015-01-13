@@ -1073,7 +1073,7 @@ those parameters.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="loaded" when="last">
+      <glib:signal name="loaded" when="first">
         <doc xml:space="preserve">The "loaded" signal is emitted at the end of a successful file
 loading.
 
@@ -1094,12 +1094,14 @@ those parameters.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="saved" when="last">
+      <glib:signal name="saved" when="first">
         <doc xml:space="preserve">The "saved" signal is emitted at the end of a successful file saving.
 
 Before gedit 3.14 this signal contained a #GError parameter, and the
-signal was also emitted if an error occurred. Plugins should not need
-the error parameter.</doc>
+signal was also emitted if an error occurred. To save a document, a
+plugin can use the gedit_commands_save_document_async() function and
+get the result of the operation with
+gedit_commands_save_document_finish().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3745,7 +3747,7 @@ state changes in the window, due to some event or user action.</doc>
     </bitfield>
     <function name="commands_load_location"
               c:identifier="gedit_commands_load_location">
-      <doc xml:space="preserve">Loads @location. Ignores non-existing locations</doc>
+      <doc xml:space="preserve">Loads @location. Ignores non-existing locations.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -3755,7 +3757,7 @@ state changes in the window, due to some event or user action.</doc>
           <type name="Window" c:type="GeditWindow*"/>
         </parameter>
         <parameter name="location" transfer-ownership="none">
-          <doc xml:space="preserve">a #GFile to be loaded</doc>
+          <doc xml:space="preserve">a #GFile to load</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </parameter>
         <parameter name="encoding"
@@ -3766,20 +3768,21 @@ state changes in the window, due to some event or user action.</doc>
           <type name="GtkSource.Encoding" c:type="const GtkSourceEncoding*"/>
         </parameter>
         <parameter name="line_pos" transfer-ownership="none">
-          <doc xml:space="preserve">the line position to place the cursor when @location is loaded</doc>
+          <doc xml:space="preserve">the line position to place the cursor</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
         <parameter name="column_pos" transfer-ownership="none">
-          <doc xml:space="preserve">the line column to place the cursor when @location is loaded</doc>
+          <doc xml:space="preserve">the line column to place the cursor</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>
     </function>
     <function name="commands_load_locations"
               c:identifier="gedit_commands_load_locations">
-      <doc xml:space="preserve">Loads @locations. Ignore non-existing locations</doc>
+      <doc xml:space="preserve">Loads @locations. Ignore non-existing locations.</doc>
       <return-value transfer-ownership="container">
-        <doc xml:space="preserve">the locations that were loaded</doc>
+        <doc xml:space="preserve">the locations
+that were loaded.</doc>
         <type name="GLib.SList" c:type="GSList*">
           <type name="Document"/>
         </type>
@@ -3790,7 +3793,7 @@ state changes in the window, due to some event or user action.</doc>
           <type name="Window" c:type="GeditWindow*"/>
         </parameter>
         <parameter name="locations" transfer-ownership="none">
-          <doc xml:space="preserve">the locations to be loaded</doc>
+          <doc xml:space="preserve">the locations to load</doc>
           <type name="GLib.SList" c:type="const GSList*">
             <type name="Gio.File"/>
           </type>
@@ -3799,41 +3802,116 @@ state changes in the window, due to some event or user action.</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
-          <doc xml:space="preserve">the #GtkSourceEncoding of @location</doc>
+          <doc xml:space="preserve">the #GtkSourceEncoding</doc>
           <type name="GtkSource.Encoding" c:type="const GtkSourceEncoding*"/>
         </parameter>
         <parameter name="line_pos" transfer-ownership="none">
-          <doc xml:space="preserve">the line position to place the cursor when @location is loaded</doc>
+          <doc xml:space="preserve">the line position to place the cursor</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
         <parameter name="column_pos" transfer-ownership="none">
-          <doc xml:space="preserve">the line column to place the cursor when @location is loaded</doc>
+          <doc xml:space="preserve">the line column to place the cursor</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>
     </function>
     <function name="commands_save_all_documents"
               c:identifier="gedit_commands_save_all_documents">
+      <doc xml:space="preserve">Asynchronously save all documents belonging to @window. The result of the
+operation is not available, so it's difficult to know whether all the
+documents are correctly saved.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
         <parameter name="window" transfer-ownership="none">
+          <doc xml:space="preserve">a #GeditWindow.</doc>
           <type name="Window" c:type="GeditWindow*"/>
         </parameter>
       </parameters>
     </function>
     <function name="commands_save_document"
               c:identifier="gedit_commands_save_document">
+      <doc xml:space="preserve">Asynchronously save @document. @document must belong to @window. If you need
+the result of the operation, use gedit_commands_save_document_async().</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
         <parameter name="window" transfer-ownership="none">
+          <doc xml:space="preserve">a #GeditWindow.</doc>
           <type name="Window" c:type="GeditWindow*"/>
         </parameter>
         <parameter name="document" transfer-ownership="none">
+          <doc xml:space="preserve">the #GeditDocument to save.</doc>
           <type name="Document" c:type="GeditDocument*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="commands_save_document_async"
+              c:identifier="gedit_commands_save_document_async"
+              version="3.14">
+      <doc xml:space="preserve">Asynchronously save the @document. @document must belong to @window. The
+source object of the async task is @document (which will be the first
+parameter of the #GAsyncReadyCallback).
+
+When the operation is finished, @callback will be called. You can then call
+gedit_commands_save_document_finish() to get the result of the operation.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="document" transfer-ownership="none">
+          <doc xml:space="preserve">the #GeditDocument to save.</doc>
+          <type name="Document" c:type="GeditDocument*"/>
+        </parameter>
+        <parameter name="window" transfer-ownership="none">
+          <doc xml:space="preserve">a #GeditWindow.</doc>
+          <type name="Window" c:type="GeditWindow*"/>
+        </parameter>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="async"
+                   closure="4">
+          <doc xml:space="preserve">a #GAsyncReadyCallback to call when the operation
+  is finished.</doc>
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:space="preserve">the data to pass to the @callback function.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="commands_save_document_finish"
+              c:identifier="gedit_commands_save_document_finish"
+              version="3.14">
+      <doc xml:space="preserve">Finishes an asynchronous document saving operation started with
+gedit_commands_save_document_async().
+
+Note that there is no error parameter because the errors are already handled
+by gedit.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the document has been correctly saved, %FALSE otherwise.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="document" transfer-ownership="none">
+          <doc xml:space="preserve">a #GeditDocument.</doc>
+          <type name="Document" c:type="GeditDocument*"/>
+        </parameter>
+        <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve">a #GAsyncResult.</doc>
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
         </parameter>
       </parameters>
     </function>

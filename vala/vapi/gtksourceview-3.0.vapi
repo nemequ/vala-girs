@@ -730,7 +730,7 @@ namespace Gtk {
 		public virtual int get_interactive_delay ();
 		public virtual string get_name ();
 		public virtual int get_priority ();
-		public virtual bool get_start_iter (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal, Gtk.TextIter iter);
+		public virtual bool get_start_iter (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal, out Gtk.TextIter iter);
 		public virtual bool match (Gtk.SourceCompletionContext context);
 		public virtual void populate (Gtk.SourceCompletionContext context);
 		public virtual void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info);
