@@ -1873,6 +1873,23 @@ unless there is an ongoing grab on them. See gdk_device_grab().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_product_id"
+              c:identifier="gdk_device_get_product_id"
+              version="3.16">
+        <doc xml:space="preserve">Returns the product ID of this device, or %NULL if this information couldn't
+be obtained. This ID is retrieved from the device, and is thus constant for
+it. See gdk_device_get_vendor_id() for more information.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the product ID, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a slave #GdkDevice</doc>
+            <type name="Device" c:type="GdkDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_source"
               c:identifier="gdk_device_get_source"
               version="2.20">
@@ -1926,6 +1943,46 @@ the axes of @device in, or %NULL.</doc>
             <doc xml:space="preserve">location to store the modifiers, or %NULL.</doc>
             <type name="ModifierType" c:type="GdkModifierType*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_vendor_id"
+              c:identifier="gdk_device_get_vendor_id"
+              version="3.16">
+        <doc xml:space="preserve">Returns the vendor ID of this device, or %NULL if this information couldn't
+be obtained. This ID is retrieved from the device, and is thus constant for
+it.
+
+This function, together with gdk_device_get_product_id(), can be used to eg.
+compose #GSettings paths to store settings for this device.
+
+|[&lt;!-- language="C" --&gt;
+ static GSettings *
+ get_device_settings (GdkDevice *device)
+ {
+   const gchar *vendor, *product;
+   GSettings *settings;
+   GdkDevice *device;
+   gchar *path;
+
+   vendor = gdk_device_get_vendor_id (device);
+   product = gdk_device_get_product_id (device);
+
+   path = g_strdup_printf ("/org/example/app/devices/%s:%s/", vendor, product);
+   settings = g_settings_new_with_path (DEVICE_SCHEMA, path);
+   g_free (path);
+
+   return settings;
+ }
+]|</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the vendor ID, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a slave #GdkDevice</doc>
+            <type name="Device" c:type="GdkDevice*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_window_at_position"
@@ -2302,6 +2359,14 @@ always come in keyboard/pointer pairs. Other device types will have a %NULL asso
         <doc xml:space="preserve">The device name.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <property name="product-id"
+                version="3.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Product ID of this device, see gdk_device_get_product_id().</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="type"
                 version="3.0"
                 writable="1"
@@ -2309,6 +2374,14 @@ always come in keyboard/pointer pairs. Other device types will have a %NULL asso
                 transfer-ownership="none">
         <doc xml:space="preserve">Device role in the device manager.</doc>
         <type name="DeviceType"/>
+      </property>
+      <property name="vendor-id"
+                version="3.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Vendor ID of this device, see gdk_device_get_vendor_id().</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <glib:signal name="changed" when="last">
         <doc xml:space="preserve">The ::changed signal is emitted either when the #GdkDevice
@@ -20175,7 +20248,7 @@ The position coordinates are relative to the window’s parent window.</doc>
               version="2.18">
         <doc xml:space="preserve">Obtains the position of a window position in root
 window coordinates. This is similar to
-gdk_window_get_origin() but allows you go pass
+gdk_window_get_origin() but allows you to pass
 in any position in the window, not just the origin.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -21167,10 +21240,12 @@ hint. ICCCM-compliant window manager usually respect it.</doc>
               c:identifier="gdk_window_set_background"
               deprecated="1"
               deprecated-version="3.4">
-        <doc xml:space="preserve">Sets the background color of @window. (However, when using GTK+,
-set the background of a widget with gtk_widget_modify_bg() - if
-you’re an application - or gtk_style_set_background() - if you're
-implementing a custom widget.)
+        <doc xml:space="preserve">Sets the background color of @window.
+
+However, when using GTK+, influence the background of a widget
+using a style class or CSS — if you’re an application — or with
+gtk_style_context_set_background() — if you're implementing a
+custom widget.
 
 See also gdk_window_set_background_pattern().</doc>
         <doc-deprecated xml:space="preserve">Use gdk_window_set_background_rgba() instead.</doc-deprecated>

@@ -3778,7 +3778,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="4" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -7761,6 +7761,13 @@ from a #WebKitWebView.</doc>
         <doc xml:space="preserve">Whether to include in the
 snapshot the highlight of the selected content.</doc>
       </member>
+      <member name="transparent_background"
+              value="2"
+              c:identifier="WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND"
+              glib:nick="transparent-background">
+        <doc xml:space="preserve">Do not fill the background with white before
+rendering the snapshot. Since 2.8</doc>
+      </member>
     </bitfield>
     <enumeration name="SnapshotRegion"
                  glib:type-name="WebKitSnapshotRegion"
@@ -10642,6 +10649,29 @@ it's possible to execute the command.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_background_color"
+              c:identifier="webkit_web_view_get_background_color"
+              version="2.8">
+        <doc xml:space="preserve">Gets the color that is used to draw the @web_view background before
+the actual contents are rendered.
+For more information see also webkit_web_view_set_background_color()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+          <parameter name="rgba"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkRGBA to fill in with the background color</doc>
+            <type name="Gdk.RGBA" c:type="GdkRGBA*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_context" c:identifier="webkit_web_view_get_context">
         <doc xml:space="preserve">Gets the web context of @web_view.</doc>
         <return-value transfer-ownership="none">
@@ -11082,6 +11112,16 @@ You can monitor the load operation by connecting to
           </parameter>
         </parameters>
       </method>
+      <method name="is_editable" c:identifier="webkit_web_view_is_editable">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="is_loading" c:identifier="webkit_web_view_is_loading">
         <doc xml:space="preserve">Gets the value of the #WebKitWebView:is-loading property.
 You can monitor when a #WebKitWebView is loading a page by connecting to
@@ -11091,6 +11131,25 @@ details about the status of the load operation, for example to start a spinner
 when the view is loading a page and stop it when it finishes.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @web_view is loading a page or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_playing_audio"
+              c:identifier="webkit_web_view_is_playing_audio"
+              version="2.8">
+        <doc xml:space="preserve">Gets the value of the #WebKitWebView::is-playing-audio property.
+You can monitor when a page in a #WebKitWebView is playing audio by
+connecting to the notify::is-playing-audio signal of @web_view. This
+is useful when the application wants to provide visual feedback when a
+page is producing sound.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if a page in @web_view is playing audio or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -11617,6 +11676,51 @@ operation.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_background_color"
+              c:identifier="webkit_web_view_set_background_color"
+              version="2.8">
+        <doc xml:space="preserve">Sets the color that will be used to draw the @web_view background before
+the actual contents are rendered. Note that if the web page loaded in @web_view
+specifies a background color, it will take precedence over the @rgba color.
+By default the @web_view background color is opaque white.
+If the @rgba color is not fully opaque, the parent window must have a RGBA visual and
+#GtkWidget:app-paintable property set to %TRUE, for the transparencies to work.
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+static void browser_window_set_background_color (BrowserWindow *window,
+                                                 const GdkRGBA *rgba)
+{
+    WebKitWebView *web_view;
+
+    if (rgba-&gt;alpha &lt; 1) {
+        GdkScreen *screen = gtk_window_get_screen (GTK_WINDOW (window));
+        GdkVisual *rgba_visual = gdk_screen_get_rgba_visual (screen);
+
+        if (!rgba_visual)
+             return;
+
+        gtk_widget_set_visual (GTK_WIDGET (window), rgba_visual);
+        gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
+    }
+
+    web_view = browser_window_get_web_view (window);
+    webkit_web_view_set_background_color (web_view, rgba);
+}
+&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+          <parameter name="rgba" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkRGBA</doc>
+            <type name="Gdk.RGBA" c:type="const GdkRGBA*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_custom_charset"
               c:identifier="webkit_web_view_set_custom_charset">
         <doc xml:space="preserve">Sets the current custom character encoding override of @web_view. The custom
@@ -11638,6 +11742,33 @@ encoding override.</doc>
                      allow-none="1">
             <doc xml:space="preserve">a character encoding name or %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_editable"
+              c:identifier="webkit_web_view_set_editable"
+              version="2.8">
+        <doc xml:space="preserve">Sets whether the user is allowed to edit the HTML document.
+
+If @editable is %TRUE, @web_view allows the user to edit the HTML document. If
+@editable is %FALSE, an element in @web_view's document can only be edited if the
+CONTENTEDITABLE attribute has been set on the element or one of its parent
+elements. By default a #WebKitWebView is not editable.
+
+Normally, a HTML document is not editable unless the elements within the
+document are editable. This function provides a way to make the contents
+of a #WebKitWebView editable without altering the document or DOM structure.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+          <parameter name="editable" transfer-ownership="none">
+            <doc xml:space="preserve">a #gboolean indicating the editable state</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -11695,6 +11826,14 @@ If there is a loading operation in progress, it will be cancelled and
           </instance-parameter>
         </parameters>
       </method>
+      <property name="editable"
+                version="2.8"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the pages loaded inside #WebKitWebView are editable. For more
+information see webkit_web_view_set_editable().</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="estimated-load-progress" transfer-ownership="none">
         <doc xml:space="preserve">An estimate of the percent completion for the current loading operation.
 This value will range from 0.0 to 1.0 and, once a load completes,
@@ -11717,6 +11856,9 @@ See webkit_web_view_get_favicon() for more details.</doc>
 at that point the active URI is the requested one.
 When the load operation finishes the property is set to %FALSE before
 #WebKitWebView::load-changed is emitted with %WEBKIT_LOAD_FINISHED.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="is-playing-audio" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="related-view"

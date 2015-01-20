@@ -1692,6 +1692,9 @@ will be checked out.</doc>
       <property name="mainline" writable="1" transfer-ownership="none">
         <type name="guint" c:type="guint"/>
       </property>
+      <property name="merge-options" writable="1" transfer-ownership="none">
+        <type name="MergeOptions"/>
+      </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
@@ -1790,20 +1793,6 @@ will be checked out.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_remote_name"
-              c:identifier="ggit_clone_options_get_remote_name">
-        <doc xml:space="preserve">Gets the name given to the "origin" remote.  The default is "origin".</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the name given to the "origin" remote.  The default is "origin".</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitCloneOptions.</doc>
-            <type name="CloneOptions" c:type="GgitCloneOptions*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="set_checkout_branch"
               c:identifier="ggit_clone_options_set_checkout_branch">
         <doc xml:space="preserve">Gives the name of the branch to checkout. %NULL means
@@ -1858,26 +1847,6 @@ use the remote's HEAD.</doc>
                      allow-none="1">
             <doc xml:space="preserve">a #GgitRemoteCallbacks or %NULL.</doc>
             <type name="RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_remote_name"
-              c:identifier="ggit_clone_options_set_remote_name">
-        <doc xml:space="preserve">Sets the name given to the "origin" remote.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitCloneOptions.</doc>
-            <type name="CloneOptions" c:type="GgitCloneOptions*"/>
-          </instance-parameter>
-          <parameter name="remote_name"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the name given to the "origin" remote.</doc>
-            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -2468,23 +2437,6 @@ contain the match information if the return value is not %NULL, otherwise
           </parameter>
         </parameters>
       </method>
-      <method name="refresh" c:identifier="ggit_config_refresh" throws="1">
-        <doc xml:space="preserve">Reloads changed config files.
-
-A config file may be changed on disk out from under the in-memory
-config object. This function causes us to look for files that have
-been modified since we last loaded them and refresh the config with
-the latest information.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="config" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitConfig.</doc>
-            <type name="Config" c:type="GgitConfig*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="set_bool" c:identifier="ggit_config_set_bool" throws="1">
         <doc xml:space="preserve">Set a boolean value.</doc>
         <return-value transfer-ownership="none">
@@ -2888,20 +2840,304 @@ using a regular expression. See ggit_config_match_foreach().</doc>
             c:type="GgitCredPlaintextPrivate"
             disguised="1">
     </record>
-    <record name="CredSshInteractive"
-            c:type="GgitCredSshInteractive"
-            disguised="1">
+    <class name="CredSshInteractive"
+           c:symbol-prefix="cred_ssh_interactive"
+           c:type="GgitCredSshInteractive"
+           parent="Cred"
+           glib:type-name="GgitCredSshInteractive"
+           glib:get-type="ggit_cred_ssh_interactive_get_type"
+           glib:type-struct="CredSshInteractiveClass">
       <doc xml:space="preserve">Represents a ssh interactive credential.</doc>
+      <implements name="Gio.Initable"/>
+      <constructor name="new"
+                   c:identifier="ggit_cred_ssh_interactive_new"
+                   throws="1">
+        <return-value transfer-ownership="full">
+          <type name="CredSshInteractive" c:type="GgitCredSshInteractive*"/>
+        </return-value>
+        <parameters>
+          <parameter name="username" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="prompt">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cred" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitCredSshInteractive</doc>
+            <type name="CredSshInteractive" c:type="GgitCredSshInteractive*"/>
+          </instance-parameter>
+          <parameter name="prompts" transfer-ownership="none">
+            <doc xml:space="preserve">a list of prompts.</doc>
+            <array length="1"
+                   zero-terminated="0"
+                   c:type="GgitCredSshInteractivePrompt**">
+              <type name="CredSshInteractivePrompt"
+                    c:type="GgitCredSshInteractivePrompt*"/>
+            </array>
+          </parameter>
+          <parameter name="num_prompts" transfer-ownership="none">
+            <doc xml:space="preserve">number of prompts.</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_username"
+              c:identifier="ggit_cred_ssh_interactive_get_username">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cred" transfer-ownership="none">
+            <type name="CredSshInteractive" c:type="GgitCredSshInteractive*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="username"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="Cred" c:type="GgitCred"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="CredSshInteractivePrivate"
+              c:type="GgitCredSshInteractivePrivate*"/>
+      </field>
+    </class>
+    <record name="CredSshInteractiveClass"
+            c:type="GgitCredSshInteractiveClass"
+            glib:is-gtype-struct-for="CredSshInteractive">
+      <field name="parent_class" readable="0" private="1">
+        <type name="CredClass" c:type="GgitCredClass"/>
+      </field>
+      <field name="prompt">
+        <callback name="prompt">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="cred" transfer-ownership="none">
+              <doc xml:space="preserve">a #GgitCredSshInteractive</doc>
+              <type name="CredSshInteractive"
+                    c:type="GgitCredSshInteractive*"/>
+            </parameter>
+            <parameter name="prompts" transfer-ownership="none">
+              <doc xml:space="preserve">a list of prompts.</doc>
+              <array length="2"
+                     zero-terminated="0"
+                     c:type="GgitCredSshInteractivePrompt**">
+                <type name="CredSshInteractivePrompt"
+                      c:type="GgitCredSshInteractivePrompt*"/>
+              </array>
+            </parameter>
+            <parameter name="num_prompts" transfer-ownership="none">
+              <doc xml:space="preserve">number of prompts.</doc>
+              <type name="gsize" c:type="gsize"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <record name="CredSshInteractivePrivate"
+            c:type="GgitCredSshInteractivePrivate"
+            disguised="1">
     </record>
     <record name="CredSshInteractivePrompt"
             c:type="GgitCredSshInteractivePrompt"
-            disguised="1">
+            glib:type-name="GgitCredSshInteractivePrompt"
+            glib:get-type="ggit_cred_ssh_interactive_prompt_get_type"
+            c:symbol-prefix="cred_ssh_interactive_prompt">
       <doc xml:space="preserve">Represents a ssh interactive prompt.</doc>
+      <constructor name="new"
+                   c:identifier="ggit_cred_ssh_interactive_prompt_new">
+        <return-value transfer-ownership="full">
+          <type name="CredSshInteractivePrompt"
+                c:type="GgitCredSshInteractivePrompt*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="instruction" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="text" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="is_masked" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_instruction"
+              c:identifier="ggit_cred_ssh_interactive_prompt_get_instruction">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_name"
+              c:identifier="ggit_cred_ssh_interactive_prompt_get_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_response"
+              c:identifier="ggit_cred_ssh_interactive_prompt_get_response">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_text"
+              c:identifier="ggit_cred_ssh_interactive_prompt_get_text">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_masked"
+              c:identifier="ggit_cred_ssh_interactive_prompt_is_masked">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="ggit_cred_ssh_interactive_prompt_ref">
+        <return-value transfer-ownership="full">
+          <type name="CredSshInteractivePrompt"
+                c:type="GgitCredSshInteractivePrompt*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_response"
+              c:identifier="ggit_cred_ssh_interactive_prompt_set_response">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+          <parameter name="response" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unref"
+              c:identifier="ggit_cred_ssh_interactive_prompt_unref">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prompt" transfer-ownership="none">
+            <type name="CredSshInteractivePrompt"
+                  c:type="GgitCredSshInteractivePrompt*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </record>
-    <record name="CredSshKeyFromAgent"
-            c:type="GgitCredSshKeyFromAgent"
-            disguised="1">
+    <class name="CredSshKeyFromAgent"
+           c:symbol-prefix="cred_ssh_key_from_agent"
+           c:type="GgitCredSshKeyFromAgent"
+           parent="Cred"
+           glib:type-name="GgitCredSshKeyFromAgent"
+           glib:get-type="ggit_cred_ssh_key_from_agent_get_type"
+           glib:type-struct="CredSshKeyFromAgentClass">
       <doc xml:space="preserve">Represents a ssh key agent credential.</doc>
+      <implements name="Gio.Initable"/>
+      <constructor name="new"
+                   c:identifier="ggit_cred_ssh_key_from_agent_new"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new #GgitCredSshKeyFromAgent.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GgitCredSshKeyFromAgent or %NULL if there was an error.</doc>
+          <type name="CredSshKeyFromAgent" c:type="GgitCredSshKeyFromAgent*"/>
+        </return-value>
+        <parameters>
+          <parameter name="username" transfer-ownership="none">
+            <doc xml:space="preserve">the username.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_username"
+              c:identifier="ggit_cred_ssh_key_from_agent_get_username">
+        <doc xml:space="preserve">Gets the username for the credential.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the username.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cred" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitCredSshKeyFromAgent.</doc>
+            <type name="CredSshKeyFromAgent"
+                  c:type="GgitCredSshKeyFromAgent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="username"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="Cred" c:type="GgitCred"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="CredSshKeyFromAgentPrivate"
+              c:type="GgitCredSshKeyFromAgentPrivate*"/>
+      </field>
+    </class>
+    <record name="CredSshKeyFromAgentClass"
+            c:type="GgitCredSshKeyFromAgentClass"
+            glib:is-gtype-struct-for="CredSshKeyFromAgent">
+      <field name="parent_class" readable="0" private="1">
+        <type name="CredClass" c:type="GgitCredClass"/>
+      </field>
+    </record>
+    <record name="CredSshKeyFromAgentPrivate"
+            c:type="GgitCredSshKeyFromAgentPrivate"
+            disguised="1">
     </record>
     <bitfield name="Credtype"
               glib:type-name="GgitCredtype"
@@ -5354,10 +5590,10 @@ See #GError for information on error domains.</doc>
                  glib:type-name="GgitFileMode"
                  glib:get-type="ggit_file_mode_get_type"
                  c:type="GgitFileMode">
-      <member name="new"
+      <member name="unreadable"
               value="0"
-              c:identifier="GGIT_FILE_MODE_NEW"
-              glib:nick="new">
+              c:identifier="GGIT_FILE_MODE_UNREADABLE"
+              glib:nick="unreadable">
       </member>
       <member name="tree"
               value="16384"
@@ -7088,270 +7324,6 @@ If the reference count drops to 0, @patch is freed.</doc>
         </parameters>
       </method>
     </record>
-    <class name="Push"
-           c:symbol-prefix="push"
-           c:type="GgitPush"
-           parent="Native"
-           glib:type-name="GgitPush"
-           glib:get-type="ggit_push_get_type"
-           glib:type-struct="PushClass">
-      <doc xml:space="preserve">Represents a git push.</doc>
-      <implements name="Gio.Initable"/>
-      <constructor name="new" c:identifier="ggit_push_new" throws="1">
-        <doc xml:space="preserve">Creates a new #GgitPush for @remote.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly created #GgitPush.</doc>
-          <type name="Push" c:type="GgitPush*"/>
-        </return-value>
-        <parameters>
-          <parameter name="remote" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitRemote.</doc>
-            <type name="Remote" c:type="GgitRemote*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <virtual-method name="packbuilder_progress">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-          <parameter name="stage" transfer-ownership="none">
-            <type name="PackbuilderStage" c:type="GgitPackbuilderStage"/>
-          </parameter>
-          <parameter name="current" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="total" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="transfer_progress">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-          <parameter name="current" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="total" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="bytes" transfer-ownership="none">
-            <type name="gsize" c:type="gsize"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <method name="add_refspec"
-              c:identifier="ggit_push_add_refspec"
-              throws="1">
-        <doc xml:space="preserve">Adds a refspec to be pushed.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitPush.</doc>
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-          <parameter name="refspec" transfer-ownership="none">
-            <doc xml:space="preserve">Refspec string.</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="finish" c:identifier="ggit_push_finish" throws="1">
-        <doc xml:space="preserve">Actually push all the refspecs added to the push object.</doc>
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitPush.</doc>
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_options" c:identifier="ggit_push_get_options">
-        <doc xml:space="preserve">Get the push options. Changes made to the returned options will be used
-for the next push.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the push options.</doc>
-          <type name="PushOptions" c:type="GgitPushOptions*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitPush.</doc>
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="is_unpack_ok" c:identifier="ggit_push_is_unpack_ok">
-        <doc xml:space="preserve">Checks if the remote side is successfully unpacked.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">if the remote side is successfully unpacked.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitPush.</doc>
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_options" c:identifier="ggit_push_set_options">
-        <doc xml:space="preserve">Set the options used for the push. Providing %NULL for @options will reset
-the push options to the default.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitPush.</doc>
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-          <parameter name="options"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the push options or %NULL for default options.</doc>
-            <type name="PushOptions" c:type="GgitPushOptions*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="update_tips"
-              c:identifier="ggit_push_update_tips"
-              throws="1">
-        <doc xml:space="preserve">Update remote tips to the new state after a push.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if successful, %FALSE otherwise.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="push" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitPush.</doc>
-            <type name="Push" c:type="GgitPush*"/>
-          </instance-parameter>
-          <parameter name="signature" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitSignature with which to add to the reflog.</doc>
-            <type name="Signature" c:type="GgitSignature*"/>
-          </parameter>
-          <parameter name="message"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the message to add to the reflog, or %NULL for the
-                        "update by push" message.</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="optionse"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <type name="PushOptions"/>
-      </property>
-      <property name="remote"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Remote"/>
-      </property>
-      <field name="parent" readable="0" private="1">
-        <type name="Native" c:type="GgitNative"/>
-      </field>
-      <field name="priv" readable="0" private="1">
-        <type name="PushPrivate" c:type="GgitPushPrivate*"/>
-      </field>
-      <glib:signal name="packbuilder-progress" when="last">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="object" transfer-ownership="none">
-            <type name="PackbuilderStage"/>
-          </parameter>
-          <parameter name="p0" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="p1" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
-      <glib:signal name="transfer-progress" when="last">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="object" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="p0" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="p1" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
-    </class>
-    <record name="PushClass"
-            c:type="GgitPushClass"
-            glib:is-gtype-struct-for="Push">
-      <field name="parent_class" readable="0" private="1">
-        <type name="NativeClass" c:type="GgitNativeClass"/>
-      </field>
-      <field name="packbuilder_progress">
-        <callback name="packbuilder_progress">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="push" transfer-ownership="none">
-              <type name="Push" c:type="GgitPush*"/>
-            </parameter>
-            <parameter name="stage" transfer-ownership="none">
-              <type name="PackbuilderStage" c:type="GgitPackbuilderStage"/>
-            </parameter>
-            <parameter name="current" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
-            </parameter>
-            <parameter name="total" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="transfer_progress">
-        <callback name="transfer_progress">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="push" transfer-ownership="none">
-              <type name="Push" c:type="GgitPush*"/>
-            </parameter>
-            <parameter name="current" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
-            </parameter>
-            <parameter name="total" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
-            </parameter>
-            <parameter name="bytes" transfer-ownership="none">
-              <type name="gsize" c:type="gsize"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-    </record>
     <class name="PushOptions"
            c:symbol-prefix="push_options"
            c:type="GgitPushOptions"
@@ -7425,8 +7397,6 @@ the number of threads will be automatically detected.</doc>
     <record name="PushOptionsPrivate"
             c:type="GgitPushOptionsPrivate"
             disguised="1">
-    </record>
-    <record name="PushPrivate" c:type="GgitPushPrivate" disguised="1">
     </record>
     <class name="Ref"
            c:symbol-prefix="ref"
@@ -8200,33 +8170,6 @@ this when you have a URL instead of a remote's name.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <function name="is_supported_url"
-                c:identifier="ggit_remote_is_supported_url">
-        <doc xml:space="preserve">Checks if @url is a supported remote URL.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">whether a string is a supported remote URL.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="url" transfer-ownership="none">
-            <doc xml:space="preserve">a url string.</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="is_valid_url" c:identifier="ggit_remote_is_valid_url">
-        <doc xml:space="preserve">Checks if @url is a valid remote URL.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">whether a string is a valid remote URL.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="url" transfer-ownership="none">
-            <doc xml:space="preserve">a url string.</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </function>
       <virtual-method name="tip_updated">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -8327,6 +8270,15 @@ its index.</doc>
             <doc xml:space="preserve">a #GgitRemote.</doc>
             <type name="Remote" c:type="GgitRemote*"/>
           </instance-parameter>
+          <parameter name="specs"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the ref specs.</doc>
+            <array c:type="gchar**">
+              <type name="utf8" c:type="gchar*"/>
+            </array>
+          </parameter>
         </parameters>
       </method>
       <method name="get_callbacks" c:identifier="ggit_remote_get_callbacks">
@@ -9626,6 +9578,13 @@ or a tree (for a directory).</doc>
             <doc xml:space="preserve">a #GgitRepository.</doc>
             <type name="Repository" c:type="GgitRepository*"/>
           </instance-parameter>
+          <parameter name="notes_ref"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">canonical name of the reference to use, or %NULL to use the default ref.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
           <parameter name="author" transfer-ownership="none">
             <doc xml:space="preserve">author signature.</doc>
             <type name="Signature" c:type="GgitSignature*"/>
@@ -9633,13 +9592,6 @@ or a tree (for a directory).</doc>
           <parameter name="committer" transfer-ownership="none">
             <doc xml:space="preserve">committer signature.</doc>
             <type name="Signature" c:type="GgitSignature*"/>
-          </parameter>
-          <parameter name="notes_ref"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">canonical name of the reference to use, or %NULL to use the default ref.</doc>
-            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="id" transfer-ownership="none">
             <doc xml:space="preserve">OID of the git object to decorate.</doc>
@@ -9868,10 +9820,11 @@ be correctly formatted.</doc>
         </parameters>
       </method>
       <method name="create_tree_builder"
-              c:identifier="ggit_repository_create_tree_builder">
+              c:identifier="ggit_repository_create_tree_builder"
+              throws="1">
         <doc xml:space="preserve">Create a new tree builder.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a #GgitTreeBuilder.</doc>
+          <doc xml:space="preserve">a new #GgitTreeBuilder, or %NULL if there was an error.</doc>
           <type name="TreeBuilder" c:type="GgitTreeBuilder*"/>
         </return-value>
         <parameters>
@@ -10180,25 +10133,6 @@ instead.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_remote"
-              c:identifier="ggit_repository_get_remote"
-              throws="1">
-        <doc xml:space="preserve">Gets the remote called @name.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GgitRemote or %NULL if there is an error.</doc>
-          <type name="Remote" c:type="GgitRemote*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="repository" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitRepository.</doc>
-            <type name="Repository" c:type="GgitRepository*"/>
-          </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:space="preserve">the remote's name.</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_workdir" c:identifier="ggit_repository_get_workdir">
         <doc xml:space="preserve">Gets the working directory of the repository.</doc>
         <return-value transfer-ownership="full">
@@ -10409,6 +10343,25 @@ be freed with g_object_unref().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="lookup_remote"
+              c:identifier="ggit_repository_lookup_remote"
+              throws="1">
+        <doc xml:space="preserve">Gets the remote called @name.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GgitRemote or %NULL if there is an error.</doc>
+          <type name="Remote" c:type="GgitRemote*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the remote's name.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="lookup_submodule"
               c:identifier="ggit_repository_lookup_submodule"
               throws="1">
@@ -10573,6 +10526,10 @@ or @error will be set.</doc>
           <parameter name="reset_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GgitResetType to perform.</doc>
             <type name="ResetType" c:type="GgitResetType"/>
+          </parameter>
+          <parameter name="checkout_options" transfer-ownership="none">
+            <doc xml:space="preserve">the #GgitCheckoutOptions to be used for a HARD reset.</doc>
+            <type name="CheckoutOptions" c:type="GgitCheckoutOptions*"/>
           </parameter>
           <parameter name="signature" transfer-ownership="none">
             <doc xml:space="preserve">a #GgitSignature that will used to populate the reflog entry.</doc>
@@ -12281,6 +12238,199 @@ in a #GgitRepository. See ggit_repository_submodule_foreach().</doc>
         <doc xml:space="preserve">do not update this submodule.</doc>
       </member>
     </enumeration>
+    <class name="SubmoduleUpdateOptions"
+           c:symbol-prefix="submodule_update_options"
+           c:type="GgitSubmoduleUpdateOptions"
+           parent="GObject.Object"
+           glib:type-name="GgitSubmoduleUpdateOptions"
+           glib:get-type="ggit_submodule_update_options_get_type"
+           glib:type-struct="SubmoduleUpdateOptionsClass">
+      <doc xml:space="preserve">Represents options for a submodule update.</doc>
+      <constructor name="new" c:identifier="ggit_submodule_update_options_new">
+        <doc xml:space="preserve">Creates a new submodule options object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+          <type name="SubmoduleUpdateOptions"
+                c:type="GgitSubmoduleUpdateOptions*"/>
+        </return-value>
+      </constructor>
+      <method name="get_checkout_options"
+              c:identifier="ggit_submodule_update_options_get_checkout_options">
+        <doc xml:space="preserve">Get the checkout options.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GgitCheckoutOptions.</doc>
+          <type name="CheckoutOptions" c:type="GgitCheckoutOptions*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_clone_checkout_strategy"
+              c:identifier="ggit_submodule_update_options_get_clone_checkout_strategy">
+        <doc xml:space="preserve">Gets the clone checkout strategy.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the clone checkout strategy.</doc>
+          <type name="CheckoutStrategy" c:type="GgitCheckoutStrategy"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_remote_callbacks"
+              c:identifier="ggit_submodule_update_options_get_remote_callbacks">
+        <doc xml:space="preserve">Gets the remote callbacks.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GgitRemoteCallbacks.</doc>
+          <type name="RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_signature"
+              c:identifier="ggit_submodule_update_options_get_signature">
+        <doc xml:space="preserve">Gets the identity used when updating the reflog or %NULL to
+use the default signature using the config.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GgitSignature or %NULL.</doc>
+          <type name="Signature" c:type="GgitSignature*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_checkout_options"
+              c:identifier="ggit_submodule_update_options_set_checkout_options">
+        <doc xml:space="preserve">Set the checkout options.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+          <parameter name="checkout_options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GgitCheckoutOptions.</doc>
+            <type name="CheckoutOptions" c:type="GgitCheckoutOptions*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_clone_checkout_strategy"
+              c:identifier="ggit_submodule_update_options_set_clone_checkout_strategy">
+        <doc xml:space="preserve">Sets the clone checkout strategy. Use %GGIT_CHECKOUT_SAFE_CREATE to create
+all files in the working directory for the newly cloned repository.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+          <parameter name="checkout_strategy" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitCheckoutStrategy.</doc>
+            <type name="CheckoutStrategy" c:type="GgitCheckoutStrategy"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_remote_callbacks"
+              c:identifier="ggit_submodule_update_options_set_remote_callbacks">
+        <doc xml:space="preserve">Set the remote callbacks.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+          <parameter name="remote_callbacks"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GgitRemoteCallbacks.</doc>
+            <type name="RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_signature"
+              c:identifier="ggit_submodule_update_options_set_signature">
+        <doc xml:space="preserve">Sets the identity used when updating the reflog. Use %NULL to
+use the default signature using the config.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSubmoduleUpdateOptions.</doc>
+            <type name="SubmoduleUpdateOptions"
+                  c:type="GgitSubmoduleUpdateOptions*"/>
+          </instance-parameter>
+          <parameter name="signature"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GgitSignature.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="checkout-options" writable="1" transfer-ownership="none">
+        <type name="CheckoutOptions"/>
+      </property>
+      <property name="clone-checkout-strategy"
+                writable="1"
+                transfer-ownership="none">
+        <type name="CheckoutStrategy"/>
+      </property>
+      <property name="remote-callbacks" writable="1" transfer-ownership="none">
+        <type name="RemoteCallbacks"/>
+      </property>
+      <property name="signature" writable="1" transfer-ownership="none">
+        <type name="Signature"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="SubmoduleUpdateOptionsPrivate"
+              c:type="GgitSubmoduleUpdateOptionsPrivate*"/>
+      </field>
+    </class>
+    <record name="SubmoduleUpdateOptionsClass"
+            c:type="GgitSubmoduleUpdateOptionsClass"
+            glib:is-gtype-struct-for="SubmoduleUpdateOptions">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="SubmoduleUpdateOptionsPrivate"
+            c:type="GgitSubmoduleUpdateOptionsPrivate"
+            disguised="1">
+    </record>
     <class name="Tag"
            c:symbol-prefix="tag"
            c:type="GgitTag"

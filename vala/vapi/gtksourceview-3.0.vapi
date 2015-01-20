@@ -34,6 +34,7 @@ namespace Gtk {
 		public bool iter_backward_to_context_class_toggle (ref Gtk.TextIter iter, string context_class);
 		public bool iter_forward_to_context_class_toggle (ref Gtk.TextIter iter, string context_class);
 		public bool iter_has_context_class (Gtk.TextIter iter, string context_class);
+		public void join_lines (Gtk.TextIter start, Gtk.TextIter end);
 		public void remove_source_marks (Gtk.TextIter start, Gtk.TextIter end, string? category);
 		public void set_highlight_matching_brackets (bool highlight);
 		public void set_highlight_syntax (bool highlight);
@@ -672,6 +673,7 @@ namespace Gtk {
 		public Gtk.SourceSmartHomeEndType get_smart_home_end ();
 		public uint get_tab_width ();
 		public uint get_visual_column (Gtk.TextIter iter);
+		public void indent_lines (Gtk.TextIter start, Gtk.TextIter end);
 		public void set_auto_indent (bool enable);
 		public void set_draw_spaces (Gtk.SourceDrawSpacesFlags flags);
 		public void set_highlight_current_line (bool highlight);
@@ -685,6 +687,7 @@ namespace Gtk {
 		public void set_show_right_margin (bool show);
 		public void set_smart_home_end (Gtk.SourceSmartHomeEndType smart_he);
 		public void set_tab_width (uint width);
+		public void unindent_lines (Gtk.TextIter start, Gtk.TextIter end);
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SourceView.with_buffer (Gtk.SourceBuffer buffer);
 		public bool auto_indent { get; set; }
@@ -702,6 +705,7 @@ namespace Gtk {
 		public uint tab_width { get; set; }
 		public virtual signal void line_mark_activated (Gtk.TextIter iter, Gdk.Event event);
 		public virtual signal void move_lines (bool copy, int step);
+		public signal void move_to_matching_bracket (bool extend_selection);
 		public virtual signal void move_words (int step);
 		public virtual signal void redo ();
 		public virtual signal void show_completion ();
