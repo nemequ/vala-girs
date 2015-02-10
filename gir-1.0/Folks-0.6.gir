@@ -62,6 +62,7 @@
 		<member name="call_interaction_count" c:identifier="FOLKS_PERSONA_DETAIL_CALL_INTERACTION_COUNT" value="20"/>
 		<member name="last_call_interaction_datetime" c:identifier="FOLKS_PERSONA_DETAIL_LAST_CALL_INTERACTION_DATETIME" value="21"/>
 		<member name="anti_links" c:identifier="FOLKS_PERSONA_DETAIL_ANTI_LINKS" value="22"/>
+		<member name="extended_info" c:identifier="FOLKS_PERSONA_DETAIL_EXTENDED_INFO" value="23"/>
 	</enumeration>
 	<enumeration name="MaybeBool" c:type="FolksMaybeBool" glib:type-name="FolksMaybeBool" glib:get-type="folks_maybe_bool_get_type">
 		<member name="unset" c:identifier="FOLKS_MAYBE_BOOL_UNSET" value="0"/>
@@ -1054,6 +1055,36 @@
 		</field>
 	</record>
 	<record name="EmailFieldDetailsPrivate" c:type="FolksEmailFieldDetailsPrivate" disguised="1"/>
+	<class name="ExtendedFieldDetails" c:type="FolksExtendedFieldDetails" glib:type-name="FolksExtendedFieldDetails" glib:get-type="folks_extended_field_details_get_type" glib:type-struct="ExtendedFieldDetailsClass" parent="Folks.AbstractFieldDetails">
+		<field name="parent_instance">
+			<type name="Folks.AbstractFieldDetails" c:type="FolksAbstractFieldDetails"/>
+		</field>
+		<field name="priv">
+			<type name="ExtendedFieldDetailsPrivate" c:type="FolksExtendedFieldDetailsPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="folks_extended_field_details_new">
+			<return-value transfer-ownership="full">
+				<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="parameters" transfer-ownership="none" allow-none="1">
+					<type name="Gee.MultiMap" c:type="GeeMultiMap*">
+						<type name="utf8" c:type="gchar*"/>
+						<type name="utf8" c:type="gchar*"/>
+					</type>
+				</parameter>
+			</parameters>
+		</constructor>
+	</class>
+	<record name="ExtendedFieldDetailsClass" c:type="FolksExtendedFieldDetailsClass" glib:is-gtype-struct-for="ExtendedFieldDetails">
+		<field name="parent_class">
+			<type name="Folks.AbstractFieldDetailsClass" c:type="FolksAbstractFieldDetailsClass"/>
+		</field>
+	</record>
+	<record name="ExtendedFieldDetailsPrivate" c:type="FolksExtendedFieldDetailsPrivate" disguised="1"/>
 	<class name="WebServiceFieldDetails" c:type="FolksWebServiceFieldDetails" glib:type-name="FolksWebServiceFieldDetails" glib:get-type="folks_web_service_field_details_get_type" glib:type-struct="WebServiceFieldDetailsClass" parent="Folks.AbstractFieldDetails">
 		<field name="parent_instance">
 			<type name="Folks.AbstractFieldDetails" c:type="FolksAbstractFieldDetails"/>
@@ -1903,6 +1934,7 @@
 		<implements name="Folks.AvatarDetails"/>
 		<implements name="Folks.BirthdayDetails"/>
 		<implements name="Folks.EmailDetails"/>
+		<implements name="Folks.ExtendedInfo"/>
 		<implements name="Folks.FavouriteDetails"/>
 		<implements name="Folks.GenderDetails"/>
 		<implements name="Folks.GroupDetails"/>
@@ -2528,13 +2560,13 @@
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
 				<parameter name="backend_name" direction="out" transfer-ownership="full">
-					<type name="utf8" c:type="gchar*"/>
+					<type name="utf8" c:type="gchar**"/>
 				</parameter>
 				<parameter name="persona_store_id" direction="out" transfer-ownership="full">
-					<type name="utf8" c:type="gchar*"/>
+					<type name="utf8" c:type="gchar**"/>
 				</parameter>
 				<parameter name="persona_id" direction="out" transfer-ownership="full">
-					<type name="utf8" c:type="gchar*"/>
+					<type name="utf8" c:type="gchar**"/>
 				</parameter>
 			</parameters>
 		</function>
@@ -2599,7 +2631,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -2611,7 +2643,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -2628,7 +2660,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -2640,7 +2672,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -3114,7 +3146,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -3126,7 +3158,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -4695,6 +4727,234 @@
 						<type name="Gee.Set" c:type="GeeSet*">
 							<type name="Folks.EmailFieldDetails" c:type="FolksEmailFieldDetails*"/>
 						</type>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+	</record>
+	<interface name="ExtendedInfo" c:type="FolksExtendedInfo" glib:type-name="FolksExtendedInfo" glib:get-type="folks_extended_info_get_type" glib:type-struct="ExtendedInfoIface">
+		<prerequisite name="GObject.Object"/>
+		<method name="get_extended_field" c:identifier="folks_extended_info_get_extended_field">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="get_extended_field" invoker="get_extended_field">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="change_extended_field" c:identifier="folks_extended_info_change_extended_field">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="value" transfer-ownership="none">
+					<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="change_extended_field_finish" c:identifier="folks_extended_info_change_extended_field_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="change_extended_field" invoker="change_extended_field">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="value" transfer-ownership="none">
+					<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="change_extended_field_finish" invoker="change_extended_field_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="remove_extended_field" c:identifier="folks_extended_info_remove_extended_field">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="remove_extended_field_finish" c:identifier="folks_extended_info_remove_extended_field_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="remove_extended_field" invoker="remove_extended_field">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="remove_extended_field_finish" invoker="remove_extended_field_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+	</interface>
+	<record name="ExtendedInfoIface" c:type="FolksExtendedInfoIface" glib:is-gtype-struct-for="ExtendedInfo">
+		<field name="parent_iface">
+			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+		</field>
+		<field name="get_extended_field">
+			<callback name="get_extended_field" c:type="get_extended_field">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Folks.ExtendedInfo" c:type="FolksExtendedInfo*"/>
+					</parameter>
+					<parameter name="name" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="change_extended_field">
+			<callback name="change_extended_field" c:type="change_extended_field">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Folks.ExtendedInfo" c:type="FolksExtendedInfo*"/>
+					</parameter>
+					<parameter name="name" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="value" transfer-ownership="none">
+						<type name="Folks.ExtendedFieldDetails" c:type="FolksExtendedFieldDetails*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="4" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="change_extended_field_finish">
+			<callback name="change_extended_field_finish" c:type="change_extended_field_finish" throws="1">
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Folks.ExtendedInfo" c:type="FolksExtendedInfo*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="remove_extended_field">
+			<callback name="remove_extended_field" c:type="remove_extended_field">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Folks.ExtendedInfo" c:type="FolksExtendedInfo*"/>
+					</parameter>
+					<parameter name="name" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="remove_extended_field_finish">
+			<callback name="remove_extended_field_finish" c:type="remove_extended_field_finish" throws="1">
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Folks.ExtendedInfo" c:type="FolksExtendedInfo*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -7226,7 +7486,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -7238,7 +7498,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="result_length1" direction="out" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
+					<type name="gint" c:type="gint*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -7376,7 +7636,7 @@
 						<type name="Folks.PresenceDetails" c:type="FolksPresenceDetails*"/>
 					</parameter>
 					<parameter name="result_length1" direction="out" transfer-ownership="none">
-						<type name="gint" c:type="gint"/>
+						<type name="gint" c:type="gint*"/>
 					</parameter>
 				</parameters>
 			</callback>

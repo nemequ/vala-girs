@@ -6684,6 +6684,14 @@ In order to create a new #GdkGLContext instance you need a
 #GdkWindow, which you typically get during the realize call
 of a widget.
 
+A #GdkGLContext is not realized until either gdk_gl_context_make_current(),
+or until it is realized using gdk_gl_context_realize(). It is possible to
+specify details of the GL context like the OpenGL version to be used, or
+whether the GL context should have extra state validation enabled after
+calling gdk_window_create_gl_context() by calling gdk_gl_context_realize().
+If the realization fails you have the option to change the settings of the
+#GdkGLContext and try again.
+
 ## Using a GdkGLContext ##
 
 You will need to make the #GdkGLContext the current context
@@ -6721,6 +6729,21 @@ until gdk_gl_context_make_current() is called.</doc>
           <type name="GLContext" c:type="GdkGLContext*"/>
         </return-value>
       </function>
+      <method name="get_debug_enabled"
+              c:identifier="gdk_gl_context_get_debug_enabled"
+              version="3.16">
+        <doc xml:space="preserve">Retrieves the value set using gdk_gl_context_set_debug_enabled().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if debugging is enabled</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_display"
               c:identifier="gdk_gl_context_get_display"
               version="3.16">
@@ -6736,6 +6759,21 @@ until gdk_gl_context_make_current() is called.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_forward_compatible"
+              c:identifier="gdk_gl_context_get_forward_compatible"
+              version="3.16">
+        <doc xml:space="preserve">Retrieves the value set using gdk_gl_context_set_forward_compatible().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the context should be forward compatible</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_profile"
               c:identifier="gdk_gl_context_get_profile"
               version="3.16">
@@ -6743,6 +6781,52 @@ until gdk_gl_context_make_current() is called.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #GdkGLProfile</doc>
           <type name="GLProfile" c:type="GdkGLProfile"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_required_version"
+              c:identifier="gdk_gl_context_get_required_version"
+              version="3.16">
+        <doc xml:space="preserve">Retrieves the major and minor version requested by calling
+gdk_gl_context_set_required_version().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+          <parameter name="major"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">return location for the major version to request</doc>
+            <type name="gint" c:type="int*"/>
+          </parameter>
+          <parameter name="minor"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">return location for the minor version to request</doc>
+            <type name="gint" c:type="int*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_shared_context"
+              c:identifier="gdk_gl_context_get_shared_context"
+              version="3.16">
+        <doc xml:space="preserve">Retrieves the #GdkGLContext that this @context share data with.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkGLContext or %NULL</doc>
+          <type name="GLContext" c:type="GdkGLContext*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
@@ -6780,6 +6864,100 @@ until gdk_gl_context_make_current() is called.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="realize"
+              c:identifier="gdk_gl_context_realize"
+              version="3.16"
+              throws="1">
+        <doc xml:space="preserve">Realizes the given #GdkGLContext.
+
+It is safe to call this function on a realized #GdkGLContext.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the context is realized</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_debug_enabled"
+              c:identifier="gdk_gl_context_set_debug_enabled"
+              version="3.16">
+        <doc xml:space="preserve">Sets whether the #GdkGLContext should perform extra validations and
+run time checking. This is useful during development, but has
+additional overhead.
+
+The #GdkGLContext must not be realized or made current prior to
+calling this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">whether to enable debugging in the context</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_forward_compatible"
+              c:identifier="gdk_gl_context_set_forward_compatible"
+              version="3.16">
+        <doc xml:space="preserve">Sets whether the #GdkGLContext should be forward compatible.
+
+Forward compatibile contexts must not support OpenGL functionality that
+has been marked as deprecated in the requested version; non-forward
+compatible contexts, on the other hand, must support both deprecated and
+non deprecated functionality.
+
+The #GdkGLContext must not be realized or made current prior to calling
+this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+          <parameter name="compatible" transfer-ownership="none">
+            <doc xml:space="preserve">whether the context should be forward compatible</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_required_version"
+              c:identifier="gdk_gl_context_set_required_version"
+              version="3.16">
+        <doc xml:space="preserve">Sets the major and minor version of OpenGL to request.
+
+Setting @major and @minor to zero will use the default values.
+
+The #GdkGLContext must not be realized or made current prior to calling
+this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+          <parameter name="major" transfer-ownership="none">
+            <doc xml:space="preserve">the major version to request</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="minor" transfer-ownership="none">
+            <doc xml:space="preserve">the minor version to request</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="display"
                 version="3.16"
                 writable="1"
@@ -6814,24 +6992,29 @@ until gdk_gl_context_make_current() is called.</doc>
       </property>
     </class>
     <enumeration name="GLError"
+                 version="3.16"
                  glib:type-name="GdkGLError"
                  glib:get-type="gdk_gl_error_get_type"
                  c:type="GdkGLError"
                  glib:error-domain="gdk-gl-error-quark">
+      <doc xml:space="preserve">Error enumeration for #GdkGLContext.</doc>
       <member name="not_available"
               value="0"
               c:identifier="GDK_GL_ERROR_NOT_AVAILABLE"
               glib:nick="not-available">
+        <doc xml:space="preserve">OpenGL support is not available</doc>
       </member>
       <member name="unsupported_format"
               value="1"
               c:identifier="GDK_GL_ERROR_UNSUPPORTED_FORMAT"
               glib:nick="unsupported-format">
+        <doc xml:space="preserve">The requested visual format is not supported</doc>
       </member>
       <member name="unsupported_profile"
               value="2"
               c:identifier="GDK_GL_ERROR_UNSUPPORTED_PROFILE"
               glib:nick="unsupported-profile">
+        <doc xml:space="preserve">The requested profile is not supported</doc>
       </member>
       <function name="quark" c:identifier="gdk_gl_error_quark">
         <return-value transfer-ownership="none">
@@ -6840,27 +7023,22 @@ until gdk_gl_context_make_current() is called.</doc>
       </function>
     </enumeration>
     <enumeration name="GLProfile"
+                 version="3.16"
                  glib:type-name="GdkGLProfile"
                  glib:get-type="gdk_gl_profile_get_type"
                  c:type="GdkGLProfile">
-      <doc xml:space="preserve">...</doc>
+      <doc xml:space="preserve">The profile to be used when creating a #GdkGLContext.</doc>
       <member name="default"
               value="0"
               c:identifier="GDK_GL_PROFILE_DEFAULT"
               glib:nick="default">
-        <doc xml:space="preserve">...</doc>
-      </member>
-      <member name="legacy"
-              value="1"
-              c:identifier="GDK_GL_PROFILE_LEGACY"
-              glib:nick="legacy">
-        <doc xml:space="preserve">...</doc>
+        <doc xml:space="preserve">The default profile.</doc>
       </member>
       <member name="3_2_core"
-              value="2"
+              value="1"
               c:identifier="GDK_GL_PROFILE_3_2_CORE"
               glib:nick="3-2-core">
-        <doc xml:space="preserve">...</doc>
+        <doc xml:space="preserve">Use core 3.2 GL profiles</doc>
       </member>
     </enumeration>
     <record name="Geometry" c:type="GdkGeometry">
@@ -19171,7 +19349,10 @@ in parent’s coordinate system, or %NULL</doc>
 framebuffer format to the visual of the #GdkWindow. The context
 is disconnected from any particular window or surface.
 
-If the creation of the #GdkGLContext failed, @error will be set.</doc>
+If the creation of the #GdkGLContext failed, @error will be set.
+
+Before using the returned #GdkGLContext, you will need to
+call gdk_gl_context_make_current().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the newly created #GdkGLContext, or
 %NULL on error</doc>

@@ -761,8 +761,34 @@ namespace NM {
 		[NoAccessorMethod]
 		public string interface_name { owned get; set; }
 	}
-	[CCode (cheader_filename = "NetworkManager-1.0.h", type_id = "nm_setting_bridge_get_type ()")]
+	[CCode (cheader_filename = "nm-setting-bridge.h", type_id = "nm_setting_bridge_get_type ()")]
 	public class SettingBridge : NM.Setting {
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_AGEING_TIME")]
+		public const string AGEING_TIME;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]
+		public const string FORWARD_DELAY;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_HELLO_TIME")]
+		public const string HELLO_TIME;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_INTERFACE_NAME")]
+		public const string INTERFACE_NAME;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_MAC_ADDRESS")]
+		public const string MAC_ADDRESS;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_MAX_AGE")]
+		public const string MAX_AGE;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]
+		public const string PORT_HAIRPIN_MODE;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_PORT_PATH_COST")]
+		public const string PORT_PATH_COST;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_PORT_PRIORITY")]
+		public const string PORT_PRIORITY;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_PORT_SETTING_NAME")]
+		public const string PORT_SETTING_NAME;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_PRIORITY")]
+		public const string PRIORITY;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_STP")]
+		public const string STP;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBridge ();
 		public uint32 get_ageing_time ();
@@ -951,8 +977,10 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint priority_group_flags { get; set; }
 	}
-	[CCode (cheader_filename = "NetworkManager-1.0.h", type_id = "nm_setting_generic_get_type ()")]
+	[CCode (cheader_filename = "nm-setting-generic.h", type_id = "nm_setting_generic_get_type ()")]
 	public class SettingGeneric : NM.Setting {
+		[CCode (cheader_filename = "nm-setting-generic.h", cname = "NM_SETTING_GENERIC_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingGeneric ();
 	}
@@ -1330,8 +1358,18 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint stopbits { get; set construct; }
 	}
-	[CCode (cheader_filename = "NetworkManager-1.0.h", type_id = "nm_setting_team_get_type ()")]
+	[CCode (cheader_filename = "nm-setting-team.h", type_id = "nm_setting_team_get_type ()")]
 	public class SettingTeam : NM.Setting {
+		[CCode (cheader_filename = "nm-setting-team.h", cname = "NM_SETTING_TEAM_CONFIG")]
+		public const string CONFIG;
+		[CCode (cheader_filename = "nm-setting-team.h", cname = "NM_SETTING_TEAM_INTERFACE_NAME")]
+		public const string INTERFACE_NAME;
+		[CCode (cheader_filename = "nm-setting-team.h", cname = "NM_SETTING_TEAM_PORT_CONFIG")]
+		public const string PORT_CONFIG;
+		[CCode (cheader_filename = "nm-setting-team.h", cname = "NM_SETTING_TEAM_PORT_SETTING_NAME")]
+		public const string PORT_SETTING_NAME;
+		[CCode (cheader_filename = "nm-setting-team.h", cname = "NM_SETTING_TEAM_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeam ();
 		public unowned string get_config ();
@@ -1517,6 +1555,8 @@ namespace NM {
 		public const string MODE_INFRA;
 		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_MTU")]
 		public const string MTU;
+		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_POWERSAVE")]
+		public const string POWERSAVE;
 		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_RATE")]
 		public const string RATE;
 		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_SEC")]
@@ -1547,6 +1587,7 @@ namespace NM {
 		public uint32 get_mtu ();
 		public uint32 get_num_mac_blacklist_items ();
 		public uint32 get_num_seen_bssids ();
+		public uint32 get_powersave ();
 		public uint32 get_rate ();
 		[Deprecated (since = "0.9.10")]
 		public unowned string get_security ();
@@ -1565,6 +1606,8 @@ namespace NM {
 		public string mode { owned get; set; }
 		[NoAccessorMethod]
 		public uint mtu { get; set construct; }
+		[NoAccessorMethod]
+		public uint powersave { get; set; }
 		[NoAccessorMethod]
 		public uint rate { get; set construct; }
 		[Deprecated (since = "0.9.10")]
@@ -2069,7 +2112,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-bond.h")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_BRIDGE_ERROR_")]
+	[CCode (cheader_filename = "nm-setting-bridge.h", cprefix = "NM_SETTING_BRIDGE_ERROR_")]
 	public errordomain SettingBridgeError {
 		[CCode (cname = "NM_SETTING_BRIDGE_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -2077,6 +2120,7 @@ namespace NM {
 		INVALIDPROPERTY,
 		[CCode (cname = "NM_SETTING_BRIDGE_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
+		[CCode (cheader_filename = "nm-setting-bridge.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_BRIDGE_PORT_ERROR_")]
@@ -2140,7 +2184,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting.h")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_GENERIC_ERROR_")]
+	[CCode (cheader_filename = "nm-setting-generic.h", cprefix = "NM_SETTING_GENERIC_ERROR_")]
 	public errordomain SettingGenericError {
 		[CCode (cname = "NM_SETTING_GENERIC_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -2148,6 +2192,7 @@ namespace NM {
 		INVALIDPROPERTY,
 		[CCode (cname = "NM_SETTING_GENERIC_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
+		[CCode (cheader_filename = "nm-setting-generic.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-setting-gsm.h", cprefix = "NM_SETTING_GSM_ERROR_")]
@@ -2250,7 +2295,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-serial.h")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_TEAM_ERROR_")]
+	[CCode (cheader_filename = "nm-setting-team.h", cprefix = "NM_SETTING_TEAM_ERROR_")]
 	public errordomain SettingTeamError {
 		[CCode (cname = "NM_SETTING_TEAM_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -2258,6 +2303,7 @@ namespace NM {
 		INVALIDPROPERTY,
 		[CCode (cname = "NM_SETTING_TEAM_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
+		[CCode (cheader_filename = "nm-setting-team.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_TEAM_PORT_ERROR_")]
@@ -2439,32 +2485,6 @@ namespace NM {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_MINOR_VERSION")]
 	public const int MINOR_VERSION;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_AGEING_TIME")]
-	public const string SETTING_BRIDGE_AGEING_TIME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]
-	public const string SETTING_BRIDGE_FORWARD_DELAY;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_HELLO_TIME")]
-	public const string SETTING_BRIDGE_HELLO_TIME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_INTERFACE_NAME")]
-	public const string SETTING_BRIDGE_INTERFACE_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_MAC_ADDRESS")]
-	public const string SETTING_BRIDGE_MAC_ADDRESS;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_MAX_AGE")]
-	public const string SETTING_BRIDGE_MAX_AGE;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]
-	public const string SETTING_BRIDGE_PORT_HAIRPIN_MODE;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_PORT_PATH_COST")]
-	public const string SETTING_BRIDGE_PORT_PATH_COST;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_PORT_PRIORITY")]
-	public const string SETTING_BRIDGE_PORT_PRIORITY;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_PORT_SETTING_NAME")]
-	public const string SETTING_BRIDGE_PORT_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_PRIORITY")]
-	public const string SETTING_BRIDGE_PRIORITY;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_SETTING_NAME")]
-	public const string SETTING_BRIDGE_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_BRIDGE_STP")]
-	public const string SETTING_BRIDGE_STP;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_APP_FCOE_FLAGS")]
 	public const string SETTING_DCB_APP_FCOE_FLAGS;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_APP_FCOE_MODE")]
@@ -2501,18 +2521,6 @@ namespace NM {
 	public const string SETTING_DCB_PRIORITY_TRAFFIC_CLASS;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_SETTING_NAME")]
 	public const string SETTING_DCB_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_GENERIC_SETTING_NAME")]
-	public const string SETTING_GENERIC_SETTING_NAME;
 	[CCode (cheader_filename = "nm-setting.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_TEAM_CONFIG")]
-	public const string SETTING_TEAM_CONFIG;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_TEAM_INTERFACE_NAME")]
-	public const string SETTING_TEAM_INTERFACE_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_TEAM_PORT_CONFIG")]
-	public const string SETTING_TEAM_PORT_CONFIG;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_TEAM_PORT_SETTING_NAME")]
-	public const string SETTING_TEAM_PORT_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_TEAM_SETTING_NAME")]
-	public const string SETTING_TEAM_SETTING_NAME;
 }

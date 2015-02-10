@@ -11,10 +11,10 @@ namespace E {
 		public bool add_contact_sync (E.Contact contact, out string out_added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool add_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
 		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static async E.BookClient connect (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static async E.BookClient connect_direct (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static E.BookClient connect_direct_sync (E.SourceRegistry registry, E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static E.BookClient connect_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static async E.BookClient connect (E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static async E.BookClient connect_direct (E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static E.BookClient connect_direct_sync (E.SourceRegistry registry, E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static E.BookClient connect_sync (E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contact (string uid, GLib.Cancellable? cancellable, out E.Contact out_contact) throws GLib.Error;
 		public bool get_contact_sync (string uid, out E.Contact out_contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contacts (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.Contact> out_contacts) throws GLib.Error;

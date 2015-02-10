@@ -45,6 +45,8 @@ namespace E {
 		public virtual async bool retrieve_capabilities (GLib.Cancellable? cancellable, out string capabilities) throws GLib.Error;
 		[Deprecated (since = "3.8")]
 		public virtual bool retrieve_capabilities_sync (out string capabilities, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool retrieve_properties (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual bool retrieve_properties_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Deprecated (since = "3.8")]
 		public virtual async bool set_backend_property (string prop_name, string prop_value, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Deprecated (since = "3.8")]
@@ -68,6 +70,8 @@ namespace E {
 		public static GLib.SList<string> util_strv_to_slist (string strv);
 		[Deprecated (since = "3.8")]
 		public static bool util_unwrap_dbus_error (GLib.Error dbus_error, out GLib.Error client_error, E.ClientErrorsList known_errors, uint known_errors_count, GLib.Quark known_errors_domain, bool fail_when_none_matched);
+		public async bool wait_for_connected (uint32 timeout_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool wait_for_connected_sync (uint32 timeout_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void* capabilities { get; }
 		[NoAccessorMethod]
 		public GLib.MainContext main_context { owned get; }
@@ -99,6 +103,13 @@ namespace E {
 		public E.Collator @ref ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_extension_get_type ()")]
+	public abstract class Extension : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Extension ();
+		[NoAccessorMethod]
+		public E.Extensible extensible { owned get; construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
 	public class Flag {
@@ -115,6 +126,13 @@ namespace E {
 	[Compact]
 	public class MemChunk {
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_module_get_type ()")]
+	public class Module : GLib.TypeModule, GLib.TypePlugin {
+		[CCode (has_construct_function = false)]
+		public Module (string filename);
+		public unowned string get_filename ();
+		public string filename { get; construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_named_parameters_get_type ()")]
 	[Compact]
 	public class NamedParameters {
@@ -124,6 +142,7 @@ namespace E {
 		public void clear ();
 		public void free ();
 		public unowned string @get (string name);
+		public E.NamedParameters new_clone ();
 		public void @set (string name, string? value);
 		[CCode (has_construct_function = false)]
 		public NamedParameters.strv (string strv);
@@ -143,8 +162,6 @@ namespace E {
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
-		public async bool allow_auth_prompt (GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool allow_auth_prompt_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int compare_by_display_name (E.Source source2);
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_password_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -152,10 +169,14 @@ namespace E {
 		public string dup_parent ();
 		public string dup_secret_label ();
 		public string dup_uid ();
+		public void emit_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 		public bool equal (E.Source source2);
+		public E.SourceConnectionStatus get_connection_status ();
 		public unowned string get_display_name ();
 		public bool get_enabled ();
 		public unowned E.SourceExtension get_extension (string extension_name);
+		public async bool get_last_credentials_required_arguments (GLib.Cancellable? cancellable, out E.SourceCredentialsReason out_reason, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.Error out_op_error) throws GLib.Error;
+		public bool get_last_credentials_required_arguments_sync (out E.SourceCredentialsReason out_reason, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.Error out_op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool get_oauth2_access_token (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
 		public virtual bool get_oauth2_access_token_sync (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
 		public unowned string get_parent ();
@@ -166,6 +187,14 @@ namespace E {
 		public bool get_writable ();
 		public bool has_extension (string extension_name);
 		public uint hash ();
+		public async bool invoke_authenticate (E.NamedParameters credentials, GLib.Cancellable? cancellable) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool invoke_authenticate_impl (void* dbus_source, string arg_credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool invoke_authenticate_sync (E.NamedParameters credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool invoke_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error, GLib.Cancellable? cancellable) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool invoke_credentials_required_impl (void* dbus_source, string arg_reason, string arg_certificate_pem, string arg_certificate_errors, string arg_dbus_error_name, string arg_dbus_error_message, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool invoke_credentials_required_sync (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool lookup_password (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
 		public bool lookup_password_sync (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
 		public async bool mail_signature_load (int io_priority, GLib.Cancellable? cancellable, out string contents, out size_t length) throws GLib.Error;
@@ -188,6 +217,7 @@ namespace E {
 		public virtual bool remote_delete_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool remove (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool remove_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void set_connection_status (E.SourceConnectionStatus connection_status);
 		public void set_display_name (string display_name);
 		public void set_enabled (bool enabled);
 		public void set_parent (string? parent);
@@ -198,6 +228,7 @@ namespace E {
 		public Source.with_uid (string uid, GLib.MainContext? main_context) throws GLib.Error;
 		public virtual async bool write (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool write_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public E.SourceConnectionStatus connection_status { get; }
 		public string display_name { get; set construct; }
 		public bool enabled { get; set construct; }
 		[NoAccessorMethod]
@@ -208,8 +239,10 @@ namespace E {
 		public bool removable { get; }
 		public string uid { get; construct; }
 		public bool writable { get; }
+		public virtual signal void authenticate (E.NamedParameters credentials);
 		[HasEmitter]
 		public virtual signal void changed ();
+		public virtual signal void credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_address_book_get_type ()")]
 	public class SourceAddressBook : E.SourceBackend {
@@ -232,10 +265,12 @@ namespace E {
 	public class SourceAuthentication : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceAuthentication ();
+		public string dup_credential_name ();
 		public string dup_host ();
 		public string dup_method ();
 		public string dup_proxy_uid ();
 		public string dup_user ();
+		public unowned string get_credential_name ();
 		public unowned string get_host ();
 		public unowned string get_method ();
 		public uint16 get_port ();
@@ -244,6 +279,7 @@ namespace E {
 		public unowned string get_user ();
 		public GLib.SocketConnectable ref_connectable ();
 		public bool required ();
+		public void set_credential_name (string? credential_name);
 		public void set_host (string? host);
 		public void set_method (string? method);
 		public void set_port (uint16 port);
@@ -252,6 +288,7 @@ namespace E {
 		public void set_user (string? user);
 		[NoAccessorMethod]
 		public GLib.SocketConnectable connectable { owned get; }
+		public string credential_name { get; set construct; }
 		public string host { get; set construct; }
 		public string method { get; set construct; }
 		public uint port { get; set construct; }
@@ -307,6 +344,40 @@ namespace E {
 		public bool contacts_enabled { get; set construct; }
 		public string identity { get; set construct; }
 		public bool mail_enabled { get; set construct; }
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_get_type ()")]
+	public class SourceCredentialsProvider : GLib.Object, E.Extensible {
+		[CCode (has_construct_function = false)]
+		public SourceCredentialsProvider (E.SourceRegistry registry);
+		public bool can_prompt (E.Source source);
+		public bool can_store (E.Source source);
+		public async bool @delete (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool delete_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool lookup (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
+		public bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
+		public virtual E.Source ref_source (string uid);
+		public bool register_impl (E.SourceCredentialsProviderImpl provider_impl);
+		public async bool store (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void unregister_impl (E.SourceCredentialsProviderImpl provider_impl);
+		[NoAccessorMethod]
+		public GLib.Object registry { owned get; construct; }
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_get_type ()")]
+	public abstract class SourceCredentialsProviderImpl : E.Extension {
+		[CCode (has_construct_function = false)]
+		protected SourceCredentialsProviderImpl ();
+		public virtual bool can_process (E.Source source);
+		public virtual bool can_prompt ();
+		public virtual bool can_store ();
+		public virtual bool delete_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, E.NamedParameters out_credentials) throws GLib.Error;
+		public virtual bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_password_get_type ()")]
+	public class SourceCredentialsProviderImplPassword : E.SourceCredentialsProviderImpl {
+		[CCode (has_construct_function = false)]
+		protected SourceCredentialsProviderImplPassword ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_extension_get_type ()")]
 	public abstract class SourceExtension : GLib.Object {
@@ -549,8 +620,6 @@ namespace E {
 	public class SourceRegistry : GLib.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cname = "e_source_registry_new", has_construct_function = false)]
 		public async SourceRegistry (GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool authenticate (E.Source source, E.SourceAuthenticator auth, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool authenticate_sync (E.Source source, E.SourceAuthenticator auth, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool check_enabled (E.Source source);
 		public async bool commit_source (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool commit_source_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -598,6 +667,7 @@ namespace E {
 		public E.Source default_memo_list { owned get; set; }
 		[NoAccessorMethod]
 		public E.Source default_task_list { owned get; set; }
+		public virtual signal void credentials_required (E.Source source, E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 		public virtual signal void source_added (E.Source source);
 		public virtual signal void source_changed (E.Source source);
 		public virtual signal void source_disabled (E.Source source);
@@ -697,8 +767,6 @@ namespace E {
 		public bool get_calendar_auto_schedule ();
 		public unowned string get_display_name ();
 		public unowned string get_email_address ();
-		[Deprecated (since = "3.8")]
-		public bool get_ignore_invalid_cert ();
 		public unowned string get_resource_path ();
 		public unowned string get_resource_query ();
 		public unowned string get_ssl_trust ();
@@ -706,17 +774,16 @@ namespace E {
 		public void set_calendar_auto_schedule (bool calendar_auto_schedule);
 		public void set_display_name (string? display_name);
 		public void set_email_address (string? email_address);
-		[Deprecated (since = "3.8")]
-		public void set_ignore_invalid_cert (bool ignore_invalid_cert);
 		public void set_resource_path (string? resource_path);
 		public void set_resource_query (string? resource_query);
 		public void set_ssl_trust (string? ssl_trust);
 		public void unset_temporary_ssl_trust ();
+		public void update_ssl_trust (string host, GLib.TlsCertificate cert, E.TrustPromptResponse response);
+		public E.TrustPromptResponse verify_ssl_trust (string host, GLib.TlsCertificate cert, GLib.TlsCertificateFlags cert_errors);
 		public bool avoid_ifmatch { get; set construct; }
 		public bool calendar_auto_schedule { get; set construct; }
 		public string display_name { get; set construct; }
 		public string email_address { get; set construct; }
-		public bool ignore_invalid_cert { get; set construct; }
 		public string resource_path { get; set construct; }
 		public string resource_query { get; set construct; }
 		public string ssl_trust { get; set construct; }
@@ -725,12 +792,9 @@ namespace E {
 	[Compact]
 	public class XmlHash {
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "ESourceAuthenticatorInterface", type_id = "e_source_authenticator_get_type ()")]
-	public interface SourceAuthenticator : GLib.Object {
-		public abstract void get_prompt_strings (E.Source source, out string prompt_title, out string prompt_message, out string prompt_description);
-		public abstract bool get_without_password ();
-		public abstract async E.SourceAuthenticationResult try_password (GLib.StringBuilder password, GLib.Cancellable? cancellable) throws GLib.Error;
-		public abstract E.SourceAuthenticationResult try_password_sync (GLib.StringBuilder password, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EExtensibleInterface", type_id = "e_extensible_get_type ()")]
+	public interface Extensible : GLib.Object {
+		public void load_extensions ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Deprecated (since = "3.8")]
@@ -785,8 +849,26 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_AUTHENTICATION_", type_id = "e_source_authentication_result_get_type ()")]
 	public enum SourceAuthenticationResult {
 		ERROR,
+		ERROR_SSL_FAILED,
 		ACCEPTED,
-		REJECTED
+		REJECTED,
+		REQUIRED
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CONNECTION_STATUS_", type_id = "e_source_connection_status_get_type ()")]
+	public enum SourceConnectionStatus {
+		DISCONNECTED,
+		AWAITING_CREDENTIALS,
+		SSL_FAILED,
+		CONNECTING,
+		CONNECTED
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CREDENTIALS_REASON_", type_id = "e_source_credentials_reason_get_type ()")]
+	public enum SourceCredentialsReason {
+		UNKNOWN,
+		REQUIRED,
+		REJECTED,
+		SSL_FAILED,
+		ERROR
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TIME_PARSE_", has_type_id = false)]
 	public enum TimeParseStatus {
@@ -824,6 +906,8 @@ namespace E {
 	public delegate string FreeFormExpBuildSexpFunc (string word, string options, string hint);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
 	public delegate void SourceRefreshFunc (E.Source source);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
+	public delegate void TypeFunc (GLib.Type type);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
 	public delegate void XmlHashFunc (string key, string value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
@@ -834,6 +918,12 @@ namespace E {
 	public const string DEBUG_LOG_DOMAIN_GLOG;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_USER")]
 	public const string DEBUG_LOG_DOMAIN_USER;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_PASSWORD")]
+	public const string SOURCE_CREDENTIAL_PASSWORD;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_SSL_TRUST")]
+	public const string SOURCE_CREDENTIAL_SSL_TRUST;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_USERNAME")]
+	public const string SOURCE_CREDENTIAL_USERNAME;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_ADDRESS_BOOK")]
 	public const string SOURCE_EXTENSION_ADDRESS_BOOK;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_ALARMS")]
@@ -1022,6 +1112,8 @@ namespace E {
 	public static void util_free_string_slist (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static void util_safe_free_string (string str);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
 	public static string[] util_slist_to_strv (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

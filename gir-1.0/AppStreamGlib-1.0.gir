@@ -133,6 +133,24 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_bundle"
+              c:identifier="as_app_add_bundle"
+              version="0.3.5">
+        <doc xml:space="preserve">Adds a bundle to an application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="bundle" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsBundle instance.</doc>
+            <type name="Bundle" c:type="AsBundle*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_category"
               c:identifier="as_app_add_category"
               version="0.1.0">
@@ -354,6 +372,28 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_permission"
+              c:identifier="as_app_add_permission"
+              version="0.3.5">
+        <doc xml:space="preserve">Add a permission the application has obtained.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="permission" transfer-ownership="none">
+            <doc xml:space="preserve">the permission.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="permission_len" transfer-ownership="none">
+            <doc xml:space="preserve">the size of @permission, or -1 if %NULL-terminated.</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_pkgname"
               c:identifier="as_app_add_pkgname"
               version="0.1.0">
@@ -523,6 +563,38 @@ if all architectures are supported.</doc>
           <doc xml:space="preserve">an array</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
             <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_bundle_default"
+              c:identifier="as_app_get_bundle_default"
+              version="0.3.5">
+        <doc xml:space="preserve">Finds the default bundle.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #AsBundle, or %NULL</doc>
+          <type name="Bundle" c:type="AsBundle*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">A #AsApp</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_bundles"
+              c:identifier="as_app_get_bundles"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets any bundles the application has defined.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Bundle"/>
           </array>
         </return-value>
         <parameters>
@@ -995,6 +1067,23 @@ becomes "gimp" and is used for cache directories.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_permissions"
+              c:identifier="as_app_get_permissions"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets any permissions the application has obtained.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_pkgname_default"
               c:identifier="as_app_get_pkgname_default"
               version="0.2.0">
@@ -1317,6 +1406,25 @@ entry set.</doc>
           <parameter name="kudo" transfer-ownership="none">
             <doc xml:space="preserve">a #AsKudoKind, e.g. %AS_KUDO_KIND_SEARCH_PROVIDER</doc>
             <type name="KudoKind" c:type="AsKudoKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="has_permission"
+              c:identifier="as_app_has_permission"
+              version="0.3.5">
+        <doc xml:space="preserve">Searches the permission list for a specific item.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the application has got the specified permission</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="permission" transfer-ownership="none">
+            <doc xml:space="preserve">a permission string, e.g. "Network"</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -2107,6 +2215,195 @@ trusted input.</doc>
               value="8"
               c:identifier="AS_APP_VALIDATE_FLAG_ALL_APPS">
         <doc xml:space="preserve">Check all applications in a store</doc>
+      </member>
+    </enumeration>
+    <class name="Bundle"
+           c:symbol-prefix="bundle"
+           c:type="AsBundle"
+           parent="GObject.Object"
+           glib:type-name="AsBundle"
+           glib:get-type="as_bundle_get_type"
+           glib:type-struct="BundleClass">
+      <constructor name="new" c:identifier="as_bundle_new" version="0.3.5">
+        <doc xml:space="preserve">Creates a new #AsBundle.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsBundle</doc>
+          <type name="Bundle" c:type="AsBundle*"/>
+        </return-value>
+      </constructor>
+      <function name="kind_from_string"
+                c:identifier="as_bundle_kind_from_string"
+                version="0.3.5">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsBundleKind, or %AS_BUNDLE_KIND_UNKNOWN for unknown.</doc>
+          <type name="BundleKind" c:type="AsBundleKind"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="kind_to_string"
+                c:identifier="as_bundle_kind_to_string"
+                version="0.3.5">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @kind</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsBundleKind.</doc>
+            <type name="BundleKind" c:type="AsBundleKind"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_id" c:identifier="as_bundle_get_id" version="0.3.5">
+        <doc xml:space="preserve">Gets the ID for this bundle.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">ID, e.g. "foobar-1.0.2"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bundle" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsBundle instance.</doc>
+            <type name="Bundle" c:type="AsBundle*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="as_bundle_get_kind"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets the bundle kind.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #AsBundleKind</doc>
+          <type name="BundleKind" c:type="AsBundleKind"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bundle" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsBundle instance.</doc>
+            <type name="Bundle" c:type="AsBundle*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_id" c:identifier="as_bundle_set_id" version="0.3.5">
+        <doc xml:space="preserve">Sets the ID for this bundle.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bundle" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsBundle instance.</doc>
+            <type name="Bundle" c:type="AsBundle*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">the URL.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="id_len" transfer-ownership="none">
+            <doc xml:space="preserve">the size of @id, or -1 if %NULL-terminated.</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_kind"
+              c:identifier="as_bundle_set_kind"
+              version="0.3.5">
+        <doc xml:space="preserve">Sets the bundle kind.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bundle" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsBundle instance.</doc>
+            <type name="Bundle" c:type="AsBundle*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsBundleKind, e.g. %AS_BUNDLE_KIND_THUMBNAIL.</doc>
+            <type name="BundleKind" c:type="AsBundleKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="BundleClass"
+            c:type="AsBundleClass"
+            glib:is-gtype-struct-for="Bundle">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="_as_reserved1" introspectable="0">
+        <callback name="_as_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved2" introspectable="0">
+        <callback name="_as_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved3" introspectable="0">
+        <callback name="_as_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved4" introspectable="0">
+        <callback name="_as_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved5" introspectable="0">
+        <callback name="_as_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved6" introspectable="0">
+        <callback name="_as_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved7" introspectable="0">
+        <callback name="_as_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved8" introspectable="0">
+        <callback name="_as_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <enumeration name="BundleKind" c:type="AsBundleKind">
+      <doc xml:space="preserve">The bundle type.</doc>
+      <member name="unknown" value="0" c:identifier="AS_BUNDLE_KIND_UNKNOWN">
+        <doc xml:space="preserve">Type invalid or not known</doc>
+      </member>
+      <member name="limba" value="1" c:identifier="AS_BUNDLE_KIND_LIMBA">
+        <doc xml:space="preserve">Limba application bundle</doc>
+      </member>
+      <member name="xdg_app" value="2" c:identifier="AS_BUNDLE_KIND_XDG_APP">
+        <doc xml:space="preserve">Desktop application deployment</doc>
       </member>
     </enumeration>
     <constant name="IMAGE_LARGE_HEIGHT"
@@ -3149,6 +3446,19 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MINOR_VERSION" value="3" c:type="AS_MINOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
+    <enumeration name="MarkupConvertFormat" c:type="AsMarkupConvertFormat">
+      <doc xml:space="preserve">@AS_MARKUP_CONVERT_FORMAT_SIMPLE		UTF-8 text
+The output format used when converting AppStream descriptions.</doc>
+      <member name="simple"
+              value="0"
+              c:identifier="AS_MARKUP_CONVERT_FORMAT_SIMPLE">
+      </member>
+      <member name="markdown"
+              value="1"
+              c:identifier="AS_MARKUP_CONVERT_FORMAT_MARKDOWN">
+        <doc xml:space="preserve">Markdown format</doc>
+      </member>
+    </enumeration>
     <enumeration name="NodeError"
                  c:type="AsNodeError"
                  glib:error-domain="AsNodeError">
@@ -5124,6 +5434,15 @@ have changed.</doc>
       <member name="veto" value="41" c:identifier="AS_TAG_VETO">
         <doc xml:space="preserve">`veto`</doc>
       </member>
+      <member name="bundle" value="42" c:identifier="AS_TAG_BUNDLE">
+        <doc xml:space="preserve">`bundle`</doc>
+      </member>
+      <member name="permissions" value="43" c:identifier="AS_TAG_PERMISSIONS">
+        <doc xml:space="preserve">`permissions`</doc>
+      </member>
+      <member name="permission" value="44" c:identifier="AS_TAG_PERMISSION">
+        <doc xml:space="preserve">`permission`</doc>
+      </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">
       <doc xml:space="preserve">The flags to use when matching %AsTag's.</doc>
@@ -5261,6 +5580,30 @@ have changed.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="markup_convert"
+              c:identifier="as_markup_convert"
+              version="0.3.5"
+              throws="1">
+      <doc xml:space="preserve">Converts an XML description into a printable form.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated %NULL terminated string</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="markup" transfer-ownership="none">
+          <doc xml:space="preserve">the text to copy.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="markup_len" transfer-ownership="none">
+          <doc xml:space="preserve">the length of @markup, or -1 if @markup is NULL terminated.</doc>
+          <type name="gssize" c:type="gssize"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">the #AsMarkupConvertFormat, e.g. %AS_MARKUP_CONVERT_FORMAT_MARKDOWN</doc>
+          <type name="MarkupConvertFormat" c:type="AsMarkupConvertFormat"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="markup_convert_simple"
               c:identifier="as_markup_convert_simple"
               version="0.1.0"
@@ -5278,6 +5621,28 @@ have changed.</doc>
         <parameter name="markup_len" transfer-ownership="none">
           <doc xml:space="preserve">the length of @markup, or -1 if @markup is NULL terminated.</doc>
           <type name="gssize" c:type="gssize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="markup_strsplit_words"
+              c:identifier="as_markup_strsplit_words"
+              version="0.3.5">
+      <doc xml:space="preserve">Splits up a long line into an array of smaller strings, each being no longer
+than @line_len. Words are not split.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">lines, or %NULL in event of an error</doc>
+        <array c:type="gchar**">
+          <type name="utf8"/>
+        </array>
+      </return-value>
+      <parameters>
+        <parameter name="text" transfer-ownership="none">
+          <doc xml:space="preserve">the text to split.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="line_len" transfer-ownership="none">
+          <doc xml:space="preserve">the maximum length of the output line</doc>
+          <type name="guint" c:type="guint"/>
         </parameter>
       </parameters>
     </function>

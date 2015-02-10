@@ -239,12 +239,6 @@ namespace NM {
 		public const string AUTOCONNECT;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_AVAILABLE_CONNECTIONS")]
 		public const string AVAILABLE_CONNECTIONS;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_BRIDGE_CARRIER")]
-		public const string BRIDGE_CARRIER;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_BRIDGE_HW_ADDRESS")]
-		public const string BRIDGE_HW_ADDRESS;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_BRIDGE_SLAVES")]
-		public const string BRIDGE_SLAVES;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_CAPABILITIES")]
 		public const string CAPABILITIES;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_DEVICE_TYPE")]
@@ -261,10 +255,6 @@ namespace NM {
 		public const string FIRMWARE_MISSING;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_FIRMWARE_VERSION")]
 		public const string FIRMWARE_VERSION;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_GENERIC_HW_ADDRESS")]
-		public const string GENERIC_HW_ADDRESS;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_GENERIC_TYPE_DESCRIPTION")]
-		public const string GENERIC_TYPE_DESCRIPTION;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_INTERFACE")]
 		public const string INTERFACE;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_IP4_CONFIG")]
@@ -285,12 +275,6 @@ namespace NM {
 		public const string STATE;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_STATE_REASON")]
 		public const string STATE_REASON;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_TEAM_CARRIER")]
-		public const string TEAM_CARRIER;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_TEAM_HW_ADDRESS")]
-		public const string TEAM_HW_ADDRESS;
-		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_TEAM_SLAVES")]
-		public const string TEAM_SLAVES;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_UDI")]
 		public const string UDI;
 		[CCode (cheader_filename = "nm-device.h", cname = "NM_DEVICE_VENDOR")]
@@ -385,8 +369,14 @@ namespace NM {
 		public string hw_address { get; }
 		public NM.ObjectArray slaves { get; }
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", type_id = "nm_device_bridge_get_type ()")]
+	[CCode (cheader_filename = "nm-device-bridge.h", type_id = "nm_device_bridge_get_type ()")]
 	public class DeviceBridge : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cheader_filename = "nm-device-bridge.h", cname = "NM_DEVICE_BRIDGE_CARRIER")]
+		public const string CARRIER;
+		[CCode (cheader_filename = "nm-device-bridge.h", cname = "NM_DEVICE_BRIDGE_HW_ADDRESS")]
+		public const string HW_ADDRESS;
+		[CCode (cheader_filename = "nm-device-bridge.h", cname = "NM_DEVICE_BRIDGE_SLAVES")]
+		public const string SLAVES;
 		[CCode (has_construct_function = false, type = "GObject*")]
 		public DeviceBridge (DBus.Connection connection, string path);
 		public bool get_carrier ();
@@ -436,8 +426,12 @@ namespace NM {
 		public string perm_hw_address { owned get; }
 		public uint speed { get; }
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", type_id = "nm_device_generic_get_type ()")]
+	[CCode (cheader_filename = "nm-device-generic.h", type_id = "nm_device_generic_get_type ()")]
 	public class DeviceGeneric : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cheader_filename = "nm-device-generic.h", cname = "NM_DEVICE_GENERIC_HW_ADDRESS")]
+		public const string HW_ADDRESS;
+		[CCode (cheader_filename = "nm-device-generic.h", cname = "NM_DEVICE_GENERIC_TYPE_DESCRIPTION")]
+		public const string TYPE_DESCRIPTION;
 		[CCode (has_construct_function = false, type = "GObject*")]
 		public DeviceGeneric (DBus.Connection connection, string path);
 		public unowned string get_hw_address ();
@@ -488,8 +482,14 @@ namespace NM {
 		public NM.DeviceWifi companion { get; }
 		public string hw_address { get; }
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", type_id = "nm_device_team_get_type ()")]
+	[CCode (cheader_filename = "nm-device-team.h", type_id = "nm_device_team_get_type ()")]
 	public class DeviceTeam : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cheader_filename = "nm-device-team.h", cname = "NM_DEVICE_TEAM_CARRIER")]
+		public const string CARRIER;
+		[CCode (cheader_filename = "nm-device-team.h", cname = "NM_DEVICE_TEAM_HW_ADDRESS")]
+		public const string HW_ADDRESS;
+		[CCode (cheader_filename = "nm-device-team.h", cname = "NM_DEVICE_TEAM_SLAVES")]
+		public const string SLAVES;
 		[CCode (has_construct_function = false, type = "GObject*")]
 		public DeviceTeam (DBus.Connection connection, string path);
 		public bool get_carrier ();
@@ -904,7 +904,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-device-bond.h")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", cprefix = "NM_DEVICE_BRIDGE_ERROR_")]
+	[CCode (cheader_filename = "nm-device-bridge.h", cprefix = "NM_DEVICE_BRIDGE_ERROR_")]
 	public errordomain DeviceBridgeError {
 		[CCode (cname = "NM_DEVICE_BRIDGE_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -914,6 +914,7 @@ namespace NM {
 		INVALIDBRIDGECONNECTION,
 		[CCode (cname = "NM_DEVICE_BRIDGE_ERROR_INTERFACE_MISMATCH")]
 		INTERFACEMISMATCH;
+		[CCode (cheader_filename = "nm-device-bridge.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-device-bt.h", cprefix = "NM_DEVICE_BT_ERROR_")]
@@ -956,7 +957,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-device-ethernet.h")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", cprefix = "NM_DEVICE_GENERIC_ERROR_")]
+	[CCode (cheader_filename = "nm-device-generic.h", cprefix = "NM_DEVICE_GENERIC_ERROR_")]
 	public errordomain DeviceGenericError {
 		[CCode (cname = "NM_DEVICE_GENERIC_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -964,6 +965,7 @@ namespace NM {
 		NOTGENERICCONNECTION,
 		[CCode (cname = "NM_DEVICE_GENERIC_ERROR_MISSING_INTERFACE_NAME")]
 		MISSINGINTERFACENAME;
+		[CCode (cheader_filename = "nm-device-generic.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-device-infiniband.h", cprefix = "NM_DEVICE_INFINIBAND_ERROR_")]
@@ -1005,7 +1007,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-device-olpc-mesh.h")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", cprefix = "NM_DEVICE_TEAM_ERROR_")]
+	[CCode (cheader_filename = "nm-device-team.h", cprefix = "NM_DEVICE_TEAM_ERROR_")]
 	public errordomain DeviceTeamError {
 		[CCode (cname = "NM_DEVICE_TEAM_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -1015,7 +1017,8 @@ namespace NM {
 		INVALIDTEAMCONNECTION,
 		[CCode (cname = "NM_DEVICE_TEAM_ERROR_INTERFACE_MISMATCH")]
 		INTERFACEMISMATCH;
-		public static GLib.Quark quark ();
+		[CCode (cheader_filename = "nm-device-team.h", cname = "nm_device_team_error_quark")]
+		public static GLib.Quark _quark ();
 	}
 	[CCode (cheader_filename = "nm-device-vlan.h", cprefix = "NM_DEVICE_VLAN_ERROR_")]
 	public errordomain DeviceVlanError {

@@ -16,7 +16,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libebook/libebook.h"/>
   <namespace name="EBook"
              version="1.2"
-             shared-library="libebook-contacts-1.2.so.0,libedata-book-1.2.so.24,libebook-1.2.so.15,libedataserver-1.2.so.19"
+             shared-library="libebook-contacts-1.2.so.1,libedata-book-1.2.so.25,libebook-1.2.so.16,libedataserver-1.2.so.20"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <class name="BookClient"
@@ -60,6 +60,15 @@ e_client_open(), and e_client_remove().</doc>
                 version="3.8">
         <doc xml:space="preserve">Asynchronously creates a new #EBookClient for @source.
 
+The @wait_for_connected_seconds argument had been added since 3.14,
+to let the caller decide how long to wait for the backend to fully
+connect to its (possibly remote) data store. This is required due
+to a change in the authentication process, which is fully asynchronous
+and done on the client side, while not every client is supposed to
+response to authentication requests. In case the backend will not connect
+within the set interval, then it is opened in an offline mode. A special
+value -1 can be used to not wait for the connected state at all.
+
 Unlike with e_book_client_new(), there is no need to call e_client_open()
 after obtaining the #EBookClient.
 
@@ -73,6 +82,11 @@ call e_book_client_connect_finish() to get the result of the operation.</doc>
             <doc xml:space="preserve">an #ESource</doc>
             <type name="EDataServer.Source" c:type="ESource*"/>
           </parameter>
+          <parameter name="wait_for_connected_seconds"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">timeout, in seconds, to wait for the backend to be fully connected</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -85,7 +99,7 @@ call e_book_client_connect_finish() to get the result of the operation.</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="3">
+                     closure="4">
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request
            is satisfied</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
@@ -112,6 +126,11 @@ call e_book_client_connect_direct_finish() to get the result of the operation.</
             <doc xml:space="preserve">an #ESource</doc>
             <type name="EDataServer.Source" c:type="ESource*"/>
           </parameter>
+          <parameter name="wait_for_connected_seconds"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">timeout, in seconds, to wait for the backend to be fully connected</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -124,7 +143,7 @@ call e_book_client_connect_direct_finish() to get the result of the operation.</
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="3">
+                     closure="4">
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request
            is satisfied</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
@@ -176,6 +195,11 @@ direct read access to the underlying addressbook.</doc>
             <doc xml:space="preserve">an #ESource</doc>
             <type name="EDataServer.Source" c:type="ESource*"/>
           </parameter>
+          <parameter name="wait_for_connected_seconds"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">timeout, in seconds, to wait for the backend to be fully connected</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -217,6 +241,15 @@ will set @error and return %FALSE.
 Unlike with e_book_client_new(), there is no need to call
 e_client_open_sync() after obtaining the #EBookClient.
 
+The @wait_for_connected_seconds argument had been added since 3.14,
+to let the caller decide how long to wait for the backend to fully
+connect to its (possibly remote) data store. This is required due
+to a change in the authentication process, which is fully asynchronous
+and done on the client side, while not every client is supposed to
+response to authentication requests. In case the backend will not connect
+within the set interval, then it is opened in an offline mode. A special
+value -1 can be used to not wait for the connected state at all.
+
 For error handling convenience, any error message returned by this
 function will have a descriptive prefix that includes the display
 name of @source.</doc>
@@ -228,6 +261,11 @@ name of @source.</doc>
           <parameter name="source" transfer-ownership="none">
             <doc xml:space="preserve">an #ESource</doc>
             <type name="EDataServer.Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="wait_for_connected_seconds"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">timeout, in seconds, to wait for the backend to be fully connected</doc>
+            <type name="guint32" c:type="guint32"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"

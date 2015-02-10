@@ -54,6 +54,7 @@ namespace Vte {
 		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public string get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public unowned string get_window_title ();
+		public unowned string get_word_char_exceptions ();
 		public int match_add_gregex (GLib.Regex regex, GLib.RegexMatchFlags flags);
 		public string match_check (long column, long row, out int tag);
 		public string match_check_event (Gdk.Event event, out int tag);
@@ -100,6 +101,7 @@ namespace Vte {
 		public void set_scroll_on_output (bool scroll);
 		public void set_scrollback_lines (long lines);
 		public void set_size (long columns, long rows);
+		public void set_word_char_exceptions (string word_char_exceptions);
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void unselect_all ();
 		public void watch_child (GLib.Pid child_pid);
@@ -133,6 +135,7 @@ namespace Vte {
 		[NoAccessorMethod]
 		public uint scrollback_lines { get; set; }
 		public string window_title { get; }
+		public string word_char_exceptions { get; }
 		public virtual signal void bell ();
 		public virtual signal void char_size_changed (uint char_width, uint char_height);
 		public virtual signal void child_exited (int status);
@@ -219,6 +222,8 @@ namespace Vte {
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
+	[CCode (cheader_filename = "vte/vte.h")]
+	public static unowned string get_features ();
 	[CCode (cheader_filename = "vte/vte.h")]
 	public static uint get_major_version ();
 	[CCode (cheader_filename = "vte/vte.h")]

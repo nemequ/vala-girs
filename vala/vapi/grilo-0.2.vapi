@@ -325,12 +325,14 @@ namespace Grl {
 		public GLib.List<weak Grl.Source> get_sources ();
 		public unowned string get_version ();
 		public bool load (GLib.List<Grl.Config> configurations);
+		public void register_keys ();
 		public void set_filename (string filename);
 		public void set_id (string id);
 		public void set_info (string key, string value);
 		public void set_load_func (void* load_function);
 		public void set_module (GLib.Module module);
 		public void set_optional_info (GLib.HashTable<void*,void*> info);
+		public void set_register_keys_func (void* register_keys_function);
 		public void set_unload_func (void* unload_function);
 		public void unload ();
 		[NoAccessorMethod]
@@ -614,6 +616,10 @@ namespace Grl {
 		public static Grl.KeyID MB_ARTIST_ID;
 		[CCode (cname = "GRL_METADATA_KEY_MB_RECORDING_ID")]
 		public static Grl.KeyID MB_RECORDING_ID;
+		[CCode (cname = "GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN")]
+		public static uint CHILDCOUNT_UNKNOWN;
+		[CCode (cname = "GRL_SOURCE_REMAINING_UNKNOWN")]
+		public static uint REMAINING_UNKNOWN;
 		public static GLib.List list_new (Grl.KeyID p, ...);
 	}
 	[CCode (cheader_filename = "grilo.h", has_type_id = false)]
@@ -997,7 +1003,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public static GLib.Value? g_value_new (GLib.Type g_type);
 	[CCode (cheader_filename = "grilo.h")]
-	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv);
+	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "grilo.h")]
 	public static void log_configure (string config);
 	[CCode (cheader_filename = "grilo.h")]
