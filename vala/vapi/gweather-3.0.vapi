@@ -64,6 +64,8 @@ namespace GWeather {
 	[Compact]
 	public class Location {
 		public GWeather.Location deserialize (GLib.Variant serialized);
+		[CCode (has_construct_function = false)]
+		public Location.detached (string name, string? icao, double latitude, double longitude);
 		public async GWeather.Location detect_nearest_city (double lat, double lon, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool equal (GWeather.Location two);
 		public GWeather.Location find_by_station_code (string station_code);

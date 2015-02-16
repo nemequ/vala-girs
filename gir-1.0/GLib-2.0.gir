@@ -12112,7 +12112,8 @@ with g_list_sort().</doc>
 
 This function iterates over the whole list to count its elements.
 Use a #GQueue instead of a GList if you regularly need the number
-of items.</doc>
+of items. To check whether the list is non-empty, it is faster to check
+@list against %NULL.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of elements in the #GList</doc>
           <type name="guint" c:type="guint"/>
@@ -15668,10 +15669,8 @@ fields and should not be directly accessed.</doc>
               c:identifier="g_option_context_add_group"
               version="2.6">
         <doc xml:space="preserve">Adds a #GOptionGroup to the @context, so that parsing with @context
-will recognize the options in the group. Note that the group will
-be freed together with the context when g_option_context_free() is
-called, so you must not free the group yourself after adding it
-to a context.</doc>
+will recognize the options in the group. Note that this will take
+ownership of the @group and thus the @group should not be freed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -15680,7 +15679,7 @@ to a context.</doc>
             <doc xml:space="preserve">a #GOptionContext</doc>
             <type name="OptionContext" c:type="GOptionContext*"/>
           </instance-parameter>
-          <parameter name="group" transfer-ownership="none">
+          <parameter name="group" transfer-ownership="full">
             <doc xml:space="preserve">the group to add</doc>
             <type name="OptionGroup" c:type="GOptionGroup*"/>
           </parameter>
@@ -15811,13 +15810,12 @@ g_option_context_set_ignore_unknown_options().</doc>
       </method>
       <method name="get_main_group"
               c:identifier="g_option_context_get_main_group"
-              version="2.6"
-              introspectable="0">
+              version="2.6">
         <doc xml:space="preserve">Returns a pointer to the main group of @context.</doc>
-        <return-value>
-          <doc xml:space="preserve">the main group of @context, or %NULL if @context doesn't
- have a main group. Note that group belongs to @context and should
- not be modified or freed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the main group of @context, or %NULL if
+ @context doesn't have a main group. Note that group belongs to
+ @context and should not be modified or freed.</doc>
           <type name="OptionGroup" c:type="GOptionGroup*"/>
         </return-value>
         <parameters>
@@ -16045,7 +16043,7 @@ treated differently when generating `--help` output.</doc>
             <doc xml:space="preserve">a #GOptionContext</doc>
             <type name="OptionContext" c:type="GOptionContext*"/>
           </instance-parameter>
-          <parameter name="group" transfer-ownership="none">
+          <parameter name="group" transfer-ownership="full">
             <doc xml:space="preserve">the group to set as main group</doc>
             <type name="OptionGroup" c:type="GOptionGroup*"/>
           </parameter>
@@ -16373,7 +16371,11 @@ or g_option_group_add_entries().</doc>
     your direct control. Since 2.8.</doc>
       </member>
     </bitfield>
-    <record name="OptionGroup" c:type="GOptionGroup" disguised="1">
+    <record name="OptionGroup"
+            c:type="GOptionGroup"
+            glib:type-name="GOptionGroup"
+            glib:get-type="g_option_group_get_type"
+            c:symbol-prefix="option_group">
       <doc xml:space="preserve">A `GOptionGroup` struct defines the options in a single
 group. The struct has only private fields and should not be directly accessed.
 
@@ -16381,6 +16383,49 @@ All options in a group share the same translation function. Libraries which
 need to parse commandline options are expected to provide a function for
 getting a `GOptionGroup` holding their options, which
 the application can then add to its #GOptionContext.</doc>
+      <constructor name="new" c:identifier="g_option_group_new" version="2.6">
+        <doc xml:space="preserve">Creates a new #GOptionGroup.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly created option group. It should be added
+  to a #GOptionContext or freed with g_option_group_unref().</doc>
+          <type name="OptionGroup" c:type="GOptionGroup*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the name for the option group, this is used to provide
+  help for the options in this group with `--help-`@name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="description" transfer-ownership="none">
+            <doc xml:space="preserve">a description for this group to be shown in
+  `--help`. This string is translated using the translation
+  domain or translation function of the group</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="help_description" transfer-ownership="none">
+            <doc xml:space="preserve">a description for the `--help-`@name option.
+  This string is translated using the translation domain or translation function
+  of the group</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data that will be passed to the pre- and post-parse hooks,
+  the error hook and to callbacks of %G_OPTION_ARG_CALLBACK options, or %NULL</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">a function that will be called to free @user_data, or %NULL</doc>
+            <type name="DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <method name="add_entries"
               c:identifier="g_option_group_add_entries"
               version="2.6">
@@ -16399,11 +16444,29 @@ the application can then add to its #GOptionContext.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="free" c:identifier="g_option_group_free" version="2.6">
+      <method name="free"
+              c:identifier="g_option_group_free"
+              version="2.6"
+              deprecated="1"
+              deprecated-version="2.44">
         <doc xml:space="preserve">Frees a #GOptionGroup. Note that you must not free groups
 which have been added to a #GOptionContext.</doc>
+        <doc-deprecated xml:space="preserve">Use g_option_group_unref() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="group" transfer-ownership="none">
+            <doc xml:space="preserve">a #GOptionGroup</doc>
+            <type name="OptionGroup" c:type="GOptionGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="g_option_group_ref" version="2.44">
+        <doc xml:space="preserve">Increments the reference count of @group by one.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GoptionGroup</doc>
+          <type name="OptionGroup" c:type="GOptionGroup*"/>
         </return-value>
         <parameters>
           <instance-parameter name="group" transfer-ownership="none">
@@ -16533,52 +16596,20 @@ user-visible strings.</doc>
           </parameter>
         </parameters>
       </method>
-      <function name="new"
-                c:identifier="g_option_group_new"
-                version="2.6"
-                introspectable="0">
-        <doc xml:space="preserve">Creates a new #GOptionGroup.</doc>
-        <return-value>
-          <doc xml:space="preserve">a newly created option group. It should be added
-  to a #GOptionContext or freed with g_option_group_free().</doc>
-          <type name="OptionGroup" c:type="GOptionGroup*"/>
+      <method name="unref" c:identifier="g_option_group_unref" version="2.44">
+        <doc xml:space="preserve">Decrements the reference count of @group by one.
+If the reference count drops to 0, the @group will be freed.
+and all memory allocated by the @group is released.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:space="preserve">the name for the option group, this is used to provide
-  help for the options in this group with `--help-`@name</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="description" transfer-ownership="none">
-            <doc xml:space="preserve">a description for this group to be shown in
-  `--help`. This string is translated using the translation
-  domain or translation function of the group</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="help_description" transfer-ownership="none">
-            <doc xml:space="preserve">a description for the `--help-`@name option.
-  This string is translated using the translation domain or translation function
-  of the group</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="user_data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">user data that will be passed to the pre- and post-parse hooks,
-  the error hook and to callbacks of %G_OPTION_ARG_CALLBACK options, or %NULL</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-          <parameter name="destroy"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async">
-            <doc xml:space="preserve">a function that will be called to free @user_data, or %NULL</doc>
-            <type name="DestroyNotify" c:type="GDestroyNotify"/>
-          </parameter>
+          <instance-parameter name="group" transfer-ownership="none">
+            <doc xml:space="preserve">a #GOptionGroup</doc>
+            <type name="OptionGroup" c:type="GOptionGroup*"/>
+          </instance-parameter>
         </parameters>
-      </function>
+      </method>
     </record>
     <callback name="OptionParseFunc" c:type="GOptionParseFunc" throws="1">
       <doc xml:space="preserve">The type of function that can be called before and after parsing.</doc>
@@ -20846,7 +20877,8 @@ This function iterates over the whole list.</doc>
         <doc xml:space="preserve">Gets the number of elements in a #GSList.
 
 This function iterates over the whole list to
-count its elements.</doc>
+count its elements. To check whether the list is non-empty, it is faster to
+check @list against %NULL.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of elements in the #GSList</doc>
           <type name="guint" c:type="guint"/>
@@ -36723,8 +36755,14 @@ freed.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
-        <parameter name="charset" transfer-ownership="none">
-          <doc xml:space="preserve">return location for character set name</doc>
+        <parameter name="charset"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="none"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for character set
+  name, or %NULL.</doc>
           <type name="utf8" c:type="const char**"/>
         </parameter>
       </parameters>
@@ -42717,8 +42755,7 @@ string array @str_array.</doc>
     </function>
     <function name="test_add_data_func"
               c:identifier="g_test_add_data_func"
-              version="2.16"
-              introspectable="0">
+              version="2.16">
       <doc xml:space="preserve">Create a new test case, similar to g_test_create_case(). However
 the test is assumed to use no fixture, and test suites are automatically
 created on the fly and added to the root fixture, based on the
@@ -42740,7 +42777,7 @@ required via the `-p` command-line option or g_test_trap_subprocess().</doc>
           <doc xml:space="preserve">Test data argument for the test function.</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
-        <parameter name="test_func" transfer-ownership="none">
+        <parameter name="test_func" transfer-ownership="none" scope="async">
           <doc xml:space="preserve">The test function to invoke for this test.</doc>
           <type name="TestDataFunc" c:type="GTestDataFunc"/>
         </parameter>
@@ -42780,8 +42817,7 @@ required via the `-p` command-line option or g_test_trap_subprocess().</doc>
     </function>
     <function name="test_add_func"
               c:identifier="g_test_add_func"
-              version="2.16"
-              introspectable="0">
+              version="2.16">
       <doc xml:space="preserve">Create a new test case, similar to g_test_create_case(). However
 the test is assumed to use no fixture, and test suites are automatically
 created on the fly and added to the root fixture, based on the
@@ -42798,7 +42834,7 @@ required via the `-p` command-line option or g_test_trap_subprocess().</doc>
           <doc xml:space="preserve">/-separated test case path name for the test.</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="test_func" transfer-ownership="none">
+        <parameter name="test_func" transfer-ownership="none" scope="async">
           <doc xml:space="preserve">The test function to invoke for this test.</doc>
           <type name="TestFunc" c:type="GTestFunc"/>
         </parameter>
@@ -42970,15 +43006,17 @@ called with the same fixture, but varying @test_name and
           <doc xml:space="preserve">test data argument for the test functions</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
-        <parameter name="data_setup" transfer-ownership="none">
+        <parameter name="data_setup" transfer-ownership="none" scope="async">
           <doc xml:space="preserve">the function to set up the fixture data</doc>
           <type name="TestFixtureFunc" c:type="GTestFixtureFunc"/>
         </parameter>
-        <parameter name="data_test" transfer-ownership="none">
+        <parameter name="data_test" transfer-ownership="none" scope="async">
           <doc xml:space="preserve">the actual test function</doc>
           <type name="TestFixtureFunc" c:type="GTestFixtureFunc"/>
         </parameter>
-        <parameter name="data_teardown" transfer-ownership="none">
+        <parameter name="data_teardown"
+                   transfer-ownership="none"
+                   scope="async">
           <doc xml:space="preserve">the function to teardown the fixture data</doc>
           <type name="TestFixtureFunc" c:type="GTestFixtureFunc"/>
         </parameter>

@@ -1005,6 +1005,8 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "grilo.h")]
+	public static GLib.OptionGroup init_get_option_group ();
+	[CCode (cheader_filename = "grilo.h")]
 	public static void log_configure (string config);
 	[CCode (cheader_filename = "grilo.h")]
 	public static void marshal_VOID__BOXED_ENUM_BOOLEAN (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);

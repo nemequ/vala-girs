@@ -3,8 +3,8 @@
 <include name="GObject" version="2.0"/>
 <include name="Gio" version="2.0"/>
 <include name="Gee" version="0.8"/>
-<include name="GLib" version="2.0"/>
 <include name="GUPnPAV" version="1.0"/>
+<include name="GLib" version="2.0"/>
 <include name="Soup" version="2.4"/>
 <include name="GUPnP" version="1.0"/>
 <include name="RygelCore" version="2.6"/>
@@ -45,9 +45,15 @@
 		<member name="general" c:identifier="RYGEL_DATA_SOURCE_ERROR_GENERAL" value="0"/>
 		<member name="seek_failed" c:identifier="RYGEL_DATA_SOURCE_ERROR_SEEK_FAILED" value="1"/>
 	</enumeration>
-	<class name="AudioItem" c:type="RygelAudioItem" glib:type-name="RygelAudioItem" glib:get-type="rygel_audio_item_get_type" glib:type-struct="AudioItemClass" parent="RygelServer.MediaItem">
+	<enumeration name="HTTPRequestError" c:type="RygelHTTPRequestError" glib:error-domain="rygel_http_request_error-quark">
+		<member name="unacceptable" c:identifier="RYGEL_HTTP_REQUEST_ERROR_UNACCEPTABLE" value="(null)"/>
+		<member name="bad_request" c:identifier="RYGEL_HTTP_REQUEST_ERROR_BAD_REQUEST" value="(null)"/>
+		<member name="not_found" c:identifier="RYGEL_HTTP_REQUEST_ERROR_NOT_FOUND" value="(null)"/>
+		<member name="internal_server_error" c:identifier="RYGEL_HTTP_REQUEST_ERROR_INTERNAL_SERVER_ERROR" value="(null)"/>
+	</enumeration>
+	<class name="AudioItem" c:type="RygelAudioItem" glib:type-name="RygelAudioItem" glib:get-type="rygel_audio_item_get_type" glib:type-struct="AudioItemClass" parent="RygelServer.MediaFileItem">
 		<field name="parent_instance">
-			<type name="RygelServer.MediaItem" c:type="RygelMediaItem"/>
+			<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem"/>
 		</field>
 		<field name="priv">
 			<type name="AudioItemPrivate" c:type="RygelAudioItemPrivate*"/>
@@ -185,14 +191,14 @@
 	</class>
 	<record name="AudioItemClass" c:type="RygelAudioItemClass" glib:is-gtype-struct-for="AudioItem">
 		<field name="parent_class">
-			<type name="RygelServer.MediaItemClass" c:type="RygelMediaItemClass"/>
+			<type name="RygelServer.MediaFileItemClass" c:type="RygelMediaFileItemClass"/>
 		</field>
 	</record>
 	<record name="AudioItemPrivate" c:type="RygelAudioItemPrivate" disguised="1"/>
-	<class name="ImageItem" c:type="RygelImageItem" glib:type-name="RygelImageItem" glib:get-type="rygel_image_item_get_type" glib:type-struct="ImageItemClass" parent="RygelServer.MediaItem">
+	<class name="ImageItem" c:type="RygelImageItem" glib:type-name="RygelImageItem" glib:get-type="rygel_image_item_get_type" glib:type-struct="ImageItemClass" parent="RygelServer.MediaFileItem">
 		<implements name="RygelServer.VisualItem"/>
 		<field name="parent_instance">
-			<type name="RygelServer.MediaItem" c:type="RygelMediaItem"/>
+			<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem"/>
 		</field>
 		<field name="priv">
 			<type name="ImageItemPrivate" c:type="RygelImageItemPrivate*"/>
@@ -222,7 +228,7 @@
 	</class>
 	<record name="ImageItemClass" c:type="RygelImageItemClass" glib:is-gtype-struct-for="ImageItem">
 		<field name="parent_class">
-			<type name="RygelServer.MediaItemClass" c:type="RygelMediaItemClass"/>
+			<type name="RygelServer.MediaFileItemClass" c:type="RygelMediaFileItemClass"/>
 		</field>
 	</record>
 	<record name="ImageItemPrivate" c:type="RygelImageItemPrivate" disguised="1"/>
@@ -742,6 +748,19 @@
 		<constant name="ALBUM_SORT_CRITERIA" c:identifier="RYGEL_MEDIA_CONTAINER_ALBUM_SORT_CRITERIA" value="(null)">
 			<type name="utf8" c:type="const gchar*"/>
 		</constant>
+		<function name="equal_func" c:identifier="rygel_media_container_equal_func">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+			<parameters>
+				<parameter name="a" transfer-ownership="none">
+					<type name="RygelServer.MediaContainer" c:type="RygelMediaContainer*"/>
+				</parameter>
+				<parameter name="b" transfer-ownership="none">
+					<type name="RygelServer.MediaContainer" c:type="RygelMediaContainer*"/>
+				</parameter>
+			</parameters>
+		</function>
 		<method name="get_children" c:identifier="rygel_media_container_get_children">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
@@ -1093,44 +1112,6 @@
 		<field name="priv">
 			<type name="MediaItemPrivate" c:type="RygelMediaItemPrivate*"/>
 		</field>
-		<field name="rygel_media_item_address_regex">
-			<type name="GLib.Regex" c:type="GRegex*"/>
-		</field>
-		<method name="create_stream_source" c:identifier="rygel_media_item_create_stream_source">
-			<return-value transfer-ownership="full" allow-none="1">
-				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
-			</return-value>
-			<parameters>
-				<parameter name="host_ip" transfer-ownership="none" allow-none="1">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<virtual-method name="create_stream_source" invoker="create_stream_source">
-			<return-value transfer-ownership="full" allow-none="1">
-				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
-			</return-value>
-			<parameters>
-				<parameter name="host_ip" transfer-ownership="none" allow-none="1">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</virtual-method>
-		<method name="is_live_stream" c:identifier="rygel_media_item_is_live_stream">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="streamable" c:identifier="rygel_media_item_streamable">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<virtual-method name="streamable" invoker="streamable">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</virtual-method>
 		<method name="get_protocol_info" c:identifier="rygel_media_item_get_protocol_info">
 			<return-value transfer-ownership="full">
 				<type name="GUPnPAV.ProtocolInfo" c:type="GUPnPProtocolInfo*"/>
@@ -1157,7 +1138,131 @@
 				</parameter>
 			</parameters>
 		</virtual-method>
-		<method name="add_resources" c:identifier="rygel_media_item_add_resources" throws="1">
+		<property name="description" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_description" c:identifier="rygel_media_item_get_description">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_description" c:identifier="rygel_media_item_set_description">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+	</class>
+	<record name="MediaItemClass" c:type="RygelMediaItemClass" glib:is-gtype-struct-for="MediaItem">
+		<field name="parent_class">
+			<type name="RygelServer.MediaObjectClass" c:type="RygelMediaObjectClass"/>
+		</field>
+				<field name="get_protocol_info">
+			<callback name="get_protocol_info" c:type="get_protocol_info">
+				<return-value transfer-ownership="full">
+					<type name="GUPnPAV.ProtocolInfo" c:type="GUPnPProtocolInfo*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					</parameter>
+					<parameter name="uri" transfer-ownership="none" allow-none="1">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="protocol" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+	</record>
+	<record name="MediaItemPrivate" c:type="RygelMediaItemPrivate" disguised="1"/>
+	<class name="MediaFileItem" c:type="RygelMediaFileItem" glib:type-name="RygelMediaFileItem" glib:get-type="rygel_media_file_item_get_type" glib:type-struct="MediaFileItemClass" parent="RygelServer.MediaItem" abstract="1">
+		<field name="parent_instance">
+			<type name="RygelServer.MediaItem" c:type="RygelMediaItem"/>
+		</field>
+		<field name="priv">
+			<type name="MediaFileItemPrivate" c:type="RygelMediaFileItemPrivate*"/>
+		</field>
+		<field name="rygel_media_file_item_address_regex">
+			<type name="GLib.Regex" c:type="GRegex*"/>
+		</field>
+		<field name="rygel_media_file_item_mime_to_ext">
+			<type name="Gee.HashMap" c:type="GeeHashMap*">
+				<type name="utf8" c:type="gchar*"/>
+				<type name="utf8" c:type="gchar*"/>
+			</type>
+		</field>
+		<method name="create_stream_source" c:identifier="rygel_media_file_item_create_stream_source">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="host_ip" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="create_stream_source" invoker="create_stream_source">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="host_ip" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="is_live_stream" c:identifier="rygel_media_file_item_is_live_stream">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="streamable" c:identifier="rygel_media_file_item_streamable">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<virtual-method name="streamable" invoker="streamable">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</virtual-method>
+		<method name="get_primary_resource" c:identifier="rygel_media_file_item_get_primary_resource">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+			</return-value>
+		</method>
+		<virtual-method name="get_primary_resource" invoker="get_primary_resource">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+			</return-value>
+		</virtual-method>
+		<method name="get_extension" c:identifier="rygel_media_file_item_get_extension">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<virtual-method name="get_extension" invoker="get_extension">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</virtual-method>
+		<method name="ext_from_mime_type" c:identifier="rygel_media_file_item_ext_from_mime_type">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+			<parameters>
+				<parameter name="mime_type" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="add_resources" c:identifier="rygel_media_file_item_add_resources" throws="1">
 			<return-value transfer-ownership="full">
 				<type name="none"/>
 			</return-value>
@@ -1186,12 +1291,12 @@
 		<property name="mime-type" writable="1">
 			<type name="utf8" c:type="gchar*"/>
 		</property>
-		<method name="get_mime_type" c:identifier="rygel_media_item_get_mime_type">
+		<method name="get_mime_type" c:identifier="rygel_media_file_item_get_mime_type">
 			<return-value transfer-ownership="none">
 				<type name="utf8" c:type="const gchar*"/>
 			</return-value>
 		</method>
-		<method name="set_mime_type" c:identifier="rygel_media_item_set_mime_type">
+		<method name="set_mime_type" c:identifier="rygel_media_file_item_set_mime_type">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
 			</return-value>
@@ -1204,12 +1309,12 @@
 		<property name="dlna-profile" writable="1">
 			<type name="utf8" c:type="gchar*"/>
 		</property>
-		<method name="get_dlna_profile" c:identifier="rygel_media_item_get_dlna_profile">
+		<method name="get_dlna_profile" c:identifier="rygel_media_file_item_get_dlna_profile">
 			<return-value transfer-ownership="none">
 				<type name="utf8" c:type="const gchar*"/>
 			</return-value>
 		</method>
-		<method name="set_dlna_profile" c:identifier="rygel_media_item_set_dlna_profile">
+		<method name="set_dlna_profile" c:identifier="rygel_media_file_item_set_dlna_profile">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
 			</return-value>
@@ -1222,12 +1327,12 @@
 		<property name="size" writable="1">
 			<type name="gint64" c:type="gint64"/>
 		</property>
-		<method name="get_size" c:identifier="rygel_media_item_get_size">
+		<method name="get_size" c:identifier="rygel_media_file_item_get_size">
 			<return-value transfer-ownership="none">
 				<type name="gint64" c:type="gint64"/>
 			</return-value>
 		</method>
-		<method name="set_size" c:identifier="rygel_media_item_set_size">
+		<method name="set_size" c:identifier="rygel_media_file_item_set_size">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
 			</return-value>
@@ -1240,12 +1345,12 @@
 		<property name="place-holder" writable="1">
 			<type name="gboolean" c:type="gboolean"/>
 		</property>
-		<method name="get_place_holder" c:identifier="rygel_media_item_get_place_holder">
+		<method name="get_place_holder" c:identifier="rygel_media_file_item_get_place_holder">
 			<return-value transfer-ownership="none">
 				<type name="gboolean" c:type="gboolean"/>
 			</return-value>
 		</method>
-		<method name="set_place_holder" c:identifier="rygel_media_item_set_place_holder">
+		<method name="set_place_holder" c:identifier="rygel_media_file_item_set_place_holder">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
 			</return-value>
@@ -1255,28 +1360,10 @@
 				</parameter>
 			</parameters>
 		</method>
-		<property name="description" writable="1">
-			<type name="utf8" c:type="gchar*"/>
-		</property>
-		<method name="get_description" c:identifier="rygel_media_item_get_description">
-			<return-value transfer-ownership="none">
-				<type name="utf8" c:type="const gchar*"/>
-			</return-value>
-		</method>
-		<method name="set_description" c:identifier="rygel_media_item_set_description">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
 	</class>
-	<record name="MediaItemClass" c:type="RygelMediaItemClass" glib:is-gtype-struct-for="MediaItem">
+	<record name="MediaFileItemClass" c:type="RygelMediaFileItemClass" glib:is-gtype-struct-for="MediaFileItem">
 		<field name="parent_class">
-			<type name="RygelServer.MediaObjectClass" c:type="RygelMediaObjectClass"/>
+			<type name="RygelServer.MediaItemClass" c:type="RygelMediaItemClass"/>
 		</field>
 				<field name="create_stream_source">
 			<callback name="create_stream_source" c:type="create_stream_source">
@@ -1285,7 +1372,7 @@
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 					</parameter>
 					<parameter name="host_ip" transfer-ownership="none" allow-none="1">
 						<type name="utf8" c:type="const gchar*"/>
@@ -1300,7 +1387,31 @@
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+				<field name="get_primary_resource">
+			<callback name="get_primary_resource" c:type="get_primary_resource">
+				<return-value transfer-ownership="full">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+				<field name="get_extension">
+			<callback name="get_extension" c:type="get_extension">
+				<return-value transfer-ownership="full">
+					<type name="utf8" c:type="gchar*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -1312,31 +1423,13 @@
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 					</parameter>
 					<parameter name="server" transfer-ownership="none">
 						<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
 					</parameter>
 					<parameter name="didl_item" transfer-ownership="none">
 						<type name="GUPnPAV.DIDLLiteItem" c:type="GUPnPDIDLLiteItem*"/>
-					</parameter>
-				</parameters>
-			</callback>
-		</field>
-				<field name="get_protocol_info">
-			<callback name="get_protocol_info" c:type="get_protocol_info">
-				<return-value transfer-ownership="full">
-					<type name="GUPnPAV.ProtocolInfo" c:type="GUPnPProtocolInfo*"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
-					</parameter>
-					<parameter name="uri" transfer-ownership="none" allow-none="1">
-						<type name="utf8" c:type="const gchar*"/>
-					</parameter>
-					<parameter name="protocol" transfer-ownership="none">
-						<type name="utf8" c:type="const gchar*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -1348,7 +1441,7 @@
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 					</parameter>
 					<parameter name="didl_item" transfer-ownership="none">
 						<type name="GUPnPAV.DIDLLiteItem" c:type="GUPnPDIDLLiteItem*"/>
@@ -1359,8 +1452,23 @@
 				</parameters>
 			</callback>
 		</field>
+				<field name="add_additional_resources">
+			<callback name="add_additional_resources" c:type="add_additional_resources">
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
+					</parameter>
+					<parameter name="server" transfer-ownership="none">
+						<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
 	</record>
-	<record name="MediaItemPrivate" c:type="RygelMediaItemPrivate" disguised="1"/>
+	<record name="MediaFileItemPrivate" c:type="RygelMediaFileItemPrivate" disguised="1"/>
 	<class name="MediaObject" c:type="RygelMediaObject" glib:type-name="RygelMediaObject" glib:get-type="rygel_media_object_get_type" glib:type-struct="MediaObjectClass" parent="GObject.Object" abstract="1">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>
@@ -1457,6 +1565,23 @@
 				</parameter>
 			</parameters>
 		</method>
+		<method name="get_resource_list" c:identifier="rygel_media_object_get_resource_list">
+			<return-value transfer-ownership="full">
+				<type name="Gee.List" c:type="GeeList*">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</type>
+			</return-value>
+		</method>
+		<method name="get_resource_by_name" c:identifier="rygel_media_object_get_resource_by_name">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="resource_name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
 		<method name="serialize" c:identifier="rygel_media_object_serialize" throws="1">
 			<return-value transfer-ownership="full" allow-none="1">
 				<type name="GUPnPAV.DIDLLiteObject" c:type="GUPnPDIDLLiteObject*"/>
@@ -1480,6 +1605,45 @@
 				</parameter>
 				<parameter name="http_server" transfer-ownership="none">
 					<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="serialize_resource_list" c:identifier="rygel_media_object_serialize_resource_list" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="didl_object" transfer-ownership="none">
+					<type name="GUPnPAV.DIDLLiteObject" c:type="GUPnPDIDLLiteObject*"/>
+				</parameter>
+				<parameter name="http_server" transfer-ownership="none">
+					<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="create_stream_source_for_resource" c:identifier="rygel_media_object_create_stream_source_for_resource" throws="1">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="request" transfer-ownership="none">
+					<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+				</parameter>
+				<parameter name="resource" transfer-ownership="none">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="create_stream_source_for_resource" invoker="create_stream_source_for_resource" throws="1">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="request" transfer-ownership="none">
+					<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+				</parameter>
+				<parameter name="resource" transfer-ownership="none">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -1776,6 +1940,24 @@
 				</parameters>
 			</callback>
 		</field>
+				<field name="create_stream_source_for_resource">
+			<callback name="create_stream_source_for_resource" c:type="create_stream_source_for_resource" throws="1">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+					</parameter>
+					<parameter name="request" transfer-ownership="none">
+						<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+					</parameter>
+					<parameter name="resource" transfer-ownership="none">
+						<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
 				<field name="apply_didl_lite">
 			<callback name="apply_didl_lite" c:type="apply_didl_lite">
 				<return-value transfer-ownership="full">
@@ -1835,6 +2017,596 @@
 		</field>
 	</record>
 	<record name="MediaObjectPrivate" c:type="RygelMediaObjectPrivate" disguised="1"/>
+	<class name="MediaResource" c:type="RygelMediaResource" glib:type-name="RygelMediaResource" glib:get-type="rygel_media_resource_get_type" glib:type-struct="MediaResourceClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="MediaResourcePrivate" c:type="RygelMediaResourcePrivate*"/>
+		</field>
+		<field name="play_speeds">
+			<array>
+				<type name="utf8" c:type="gchar*"/>
+			</array>
+		</field>
+		<constructor name="new" c:identifier="rygel_media_resource_new">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<constructor name="from_resource" c:identifier="rygel_media_resource_new_from_resource">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="that" transfer-ownership="none">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<function name="copy_speeds" c:identifier="rygel_media_resource_copy_speeds">
+			<return-value transfer-ownership="full" allow-none="1">
+				<array length="2">
+					<type name="utf8" c:type="gchar*"/>
+				</array>
+			</return-value>
+			<parameters>
+				<parameter name="src" transfer-ownership="none">
+					<array length="1">
+						<type name="utf8" c:type="gchar*"/>
+					</array>
+				</parameter>
+				<parameter name="src_length1" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint*"/>
+				</parameter>
+			</parameters>
+		</function>
+		<method name="dup" c:identifier="rygel_media_resource_dup">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+			</return-value>
+		</method>
+		<method name="get_name" c:identifier="rygel_media_resource_get_name">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_custom_property" c:identifier="rygel_media_resource_set_custom_property">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="get_custom_property" c:identifier="rygel_media_resource_get_custom_property">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+			<parameters>
+				<parameter name="name" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="get_custom_property_names" c:identifier="rygel_media_resource_get_custom_property_names">
+			<return-value transfer-ownership="full">
+				<type name="Gee.Set" c:type="GeeSet*"/>
+			</return-value>
+		</method>
+		<method name="apply_didl_lite" c:identifier="rygel_media_resource_apply_didl_lite">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="didl_resource" transfer-ownership="none">
+					<type name="GUPnPAV.DIDLLiteResource" c:type="GUPnPDIDLLiteResource*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="serialize" c:identifier="rygel_media_resource_serialize">
+			<return-value transfer-ownership="full">
+				<type name="GUPnPAV.DIDLLiteResource" c:type="GUPnPDIDLLiteResource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="didl_resource" transfer-ownership="none">
+					<type name="GUPnPAV.DIDLLiteResource" c:type="GUPnPDIDLLiteResource*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="set_protocol_info" c:identifier="rygel_media_resource_set_protocol_info">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="pi" transfer-ownership="none">
+					<type name="GUPnPAV.ProtocolInfo" c:type="GUPnPProtocolInfo*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="get_protocol_info" c:identifier="rygel_media_resource_get_protocol_info">
+			<return-value transfer-ownership="full">
+				<type name="GUPnPAV.ProtocolInfo" c:type="GUPnPProtocolInfo*"/>
+			</return-value>
+		</method>
+		<method name="supports_arbitrary_byte_seek" c:identifier="rygel_media_resource_supports_arbitrary_byte_seek">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="supports_arbitrary_time_seek" c:identifier="rygel_media_resource_supports_arbitrary_time_seek">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="supports_limited_byte_seek" c:identifier="rygel_media_resource_supports_limited_byte_seek">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="supports_limited_time_seek" c:identifier="rygel_media_resource_supports_limited_time_seek">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="supports_limited_cleartext_byte_seek" c:identifier="rygel_media_resource_supports_limited_cleartext_byte_seek">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="supports_full_cleartext_byte_seek" c:identifier="rygel_media_resource_supports_full_cleartext_byte_seek">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="is_link_protection_enabled" c:identifier="rygel_media_resource_is_link_protection_enabled">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="is_dlna_content" c:identifier="rygel_media_resource_is_dlna_content">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="get_default_transfer_mode" c:identifier="rygel_media_resource_get_default_transfer_mode">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="supports_transfer_mode" c:identifier="rygel_media_resource_supports_transfer_mode">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+			<parameters>
+				<parameter name="transfer_mode" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="is_streamable" c:identifier="rygel_media_resource_is_streamable">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="is_cleartext_range_support_enabled" c:identifier="rygel_media_resource_is_cleartext_range_support_enabled">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="supports_playspeed" c:identifier="rygel_media_resource_supports_playspeed">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="is_dlna_protocol_flag_set" c:identifier="rygel_media_resource_is_dlna_protocol_flag_set">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+			<parameters>
+				<parameter name="flags" transfer-ownership="none">
+					<type name="glong" c:type="glong"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="is_dlna_operation_mode_set" c:identifier="rygel_media_resource_is_dlna_operation_mode_set">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+			<parameters>
+				<parameter name="flags" transfer-ownership="none">
+					<type name="glong" c:type="glong"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="to_string" c:identifier="rygel_media_resource_to_string">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<property name="uri" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_uri" c:identifier="rygel_media_resource_get_uri">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_uri" c:identifier="rygel_media_resource_set_uri">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="import-uri" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_import_uri" c:identifier="rygel_media_resource_get_import_uri">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_import_uri" c:identifier="rygel_media_resource_set_import_uri">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="extension" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_extension" c:identifier="rygel_media_resource_get_extension">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_extension" c:identifier="rygel_media_resource_set_extension">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="size" writable="1">
+			<type name="gint64" c:type="gint64"/>
+		</property>
+		<method name="get_size" c:identifier="rygel_media_resource_get_size">
+			<return-value transfer-ownership="none">
+				<type name="gint64" c:type="gint64"/>
+			</return-value>
+		</method>
+		<method name="set_size" c:identifier="rygel_media_resource_set_size">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint64" c:type="gint64"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="cleartext-size" writable="1">
+			<type name="gint64" c:type="gint64"/>
+		</property>
+		<method name="get_cleartext_size" c:identifier="rygel_media_resource_get_cleartext_size">
+			<return-value transfer-ownership="none">
+				<type name="gint64" c:type="gint64"/>
+			</return-value>
+		</method>
+		<method name="set_cleartext_size" c:identifier="rygel_media_resource_set_cleartext_size">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint64" c:type="gint64"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="duration" writable="1">
+			<type name="glong" c:type="glong"/>
+		</property>
+		<method name="get_duration" c:identifier="rygel_media_resource_get_duration">
+			<return-value transfer-ownership="none">
+				<type name="glong" c:type="glong"/>
+			</return-value>
+		</method>
+		<method name="set_duration" c:identifier="rygel_media_resource_set_duration">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="glong" c:type="glong"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="bitrate" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_bitrate" c:identifier="rygel_media_resource_get_bitrate">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_bitrate" c:identifier="rygel_media_resource_set_bitrate">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="bits-per-sample" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_bits_per_sample" c:identifier="rygel_media_resource_get_bits_per_sample">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_bits_per_sample" c:identifier="rygel_media_resource_set_bits_per_sample">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="color-depth" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_color_depth" c:identifier="rygel_media_resource_get_color_depth">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_color_depth" c:identifier="rygel_media_resource_set_color_depth">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="width" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_width" c:identifier="rygel_media_resource_get_width">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_width" c:identifier="rygel_media_resource_set_width">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="height" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_height" c:identifier="rygel_media_resource_get_height">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_height" c:identifier="rygel_media_resource_set_height">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="audio-channels" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_audio_channels" c:identifier="rygel_media_resource_get_audio_channels">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_audio_channels" c:identifier="rygel_media_resource_set_audio_channels">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="sample-freq" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_sample_freq" c:identifier="rygel_media_resource_get_sample_freq">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_sample_freq" c:identifier="rygel_media_resource_set_sample_freq">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="protocol" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_protocol" c:identifier="rygel_media_resource_get_protocol">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_protocol" c:identifier="rygel_media_resource_set_protocol">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="mime-type" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_mime_type" c:identifier="rygel_media_resource_get_mime_type">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_mime_type" c:identifier="rygel_media_resource_set_mime_type">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="dlna-profile" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_dlna_profile" c:identifier="rygel_media_resource_get_dlna_profile">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_dlna_profile" c:identifier="rygel_media_resource_set_dlna_profile">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="network" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_network" c:identifier="rygel_media_resource_get_network">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_network" c:identifier="rygel_media_resource_set_network">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="dlna-conversion" writable="1">
+			<type name="GUPnPAV.DLNAConversion" c:type="GUPnPDLNAConversion"/>
+		</property>
+		<method name="get_dlna_conversion" c:identifier="rygel_media_resource_get_dlna_conversion">
+			<return-value transfer-ownership="none">
+				<type name="GUPnPAV.DLNAConversion" c:type="GUPnPDLNAConversion"/>
+			</return-value>
+		</method>
+		<method name="set_dlna_conversion" c:identifier="rygel_media_resource_set_dlna_conversion">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="GUPnPAV.DLNAConversion" c:type="GUPnPDLNAConversion"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="dlna-flags" writable="1">
+			<type name="GUPnPAV.DLNAFlags" c:type="GUPnPDLNAFlags"/>
+		</property>
+		<method name="get_dlna_flags" c:identifier="rygel_media_resource_get_dlna_flags">
+			<return-value transfer-ownership="none">
+				<type name="GUPnPAV.DLNAFlags" c:type="GUPnPDLNAFlags"/>
+			</return-value>
+		</method>
+		<method name="set_dlna_flags" c:identifier="rygel_media_resource_set_dlna_flags">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="GUPnPAV.DLNAFlags" c:type="GUPnPDLNAFlags"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="dlna-operation" writable="1">
+			<type name="GUPnPAV.DLNAOperation" c:type="GUPnPDLNAOperation"/>
+		</property>
+		<method name="get_dlna_operation" c:identifier="rygel_media_resource_get_dlna_operation">
+			<return-value transfer-ownership="none">
+				<type name="GUPnPAV.DLNAOperation" c:type="GUPnPDLNAOperation"/>
+			</return-value>
+		</method>
+		<method name="set_dlna_operation" c:identifier="rygel_media_resource_set_dlna_operation">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="GUPnPAV.DLNAOperation" c:type="GUPnPDLNAOperation"/>
+				</parameter>
+			</parameters>
+		</method>
+	</class>
+	<record name="MediaResourceClass" c:type="RygelMediaResourceClass" glib:is-gtype-struct-for="MediaResource">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="MediaResourcePrivate" c:type="RygelMediaResourcePrivate" disguised="1"/>
 	<class name="MediaServerPlugin" c:type="RygelMediaServerPlugin" glib:type-name="RygelMediaServerPlugin" glib:get-type="rygel_media_server_plugin_get_type" glib:type-struct="MediaServerPluginClass" parent="RygelCore.Plugin" abstract="1">
 		<field name="parent_instance">
 			<type name="RygelCore.Plugin" c:type="RygelPlugin"/>
@@ -1966,13 +2738,13 @@
 		<field name="priv">
 			<type name="TranscodeManagerPrivate" c:type="RygelTranscodeManagerPrivate*"/>
 		</field>
-		<method name="create_uri_for_item" c:identifier="rygel_transcode_manager_create_uri_for_item">
+		<method name="create_uri_for_object" c:identifier="rygel_transcode_manager_create_uri_for_object">
 			<return-value transfer-ownership="full">
 				<type name="utf8" c:type="gchar*"/>
 			</return-value>
 			<parameters>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
 				</parameter>
 				<parameter name="thumbnail_index" transfer-ownership="none">
 					<type name="gint" c:type="gint"/>
@@ -1983,18 +2755,18 @@
 				<parameter name="transcode_target" transfer-ownership="none" allow-none="1">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
-				<parameter name="playlist_target" transfer-ownership="none" allow-none="1">
+				<parameter name="resource_name" transfer-ownership="none" allow-none="1">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
 			</parameters>
 		</method>
-		<virtual-method name="create_uri_for_item" invoker="create_uri_for_item">
+		<virtual-method name="create_uri_for_object" invoker="create_uri_for_object">
 			<return-value transfer-ownership="full">
 				<type name="utf8" c:type="gchar*"/>
 			</return-value>
 			<parameters>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
 				</parameter>
 				<parameter name="thumbnail_index" transfer-ownership="none">
 					<type name="gint" c:type="gint"/>
@@ -2005,7 +2777,7 @@
 				<parameter name="transcode_target" transfer-ownership="none" allow-none="1">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
-				<parameter name="playlist_target" transfer-ownership="none" allow-none="1">
+				<parameter name="resource_name" transfer-ownership="none" allow-none="1">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
 			</parameters>
@@ -2019,7 +2791,7 @@
 					<type name="GUPnPAV.DIDLLiteItem" c:type="GUPnPDIDLLiteItem*"/>
 				</parameter>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -2038,8 +2810,8 @@
 		<field name="parent_class">
 			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
 		</field>
-				<field name="create_uri_for_item">
-			<callback name="create_uri_for_item" c:type="create_uri_for_item">
+				<field name="create_uri_for_object">
+			<callback name="create_uri_for_object" c:type="create_uri_for_object">
 				<return-value transfer-ownership="full">
 					<type name="utf8" c:type="gchar*"/>
 				</return-value>
@@ -2048,7 +2820,7 @@
 						<type name="RygelServer.TranscodeManager" c:type="RygelTranscodeManager*"/>
 					</parameter>
 					<parameter name="item" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
 					</parameter>
 					<parameter name="thumbnail_index" transfer-ownership="none">
 						<type name="gint" c:type="gint"/>
@@ -2059,7 +2831,7 @@
 					<parameter name="transcode_target" transfer-ownership="none" allow-none="1">
 						<type name="utf8" c:type="const gchar*"/>
 					</parameter>
-					<parameter name="playlist_target" transfer-ownership="none" allow-none="1">
+					<parameter name="resource_name" transfer-ownership="none" allow-none="1">
 						<type name="utf8" c:type="const gchar*"/>
 					</parameter>
 				</parameters>
@@ -2135,7 +2907,7 @@
 					<type name="GUPnPAV.DIDLLiteItem" c:type="GUPnPDIDLLiteItem*"/>
 				</parameter>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 				</parameter>
 				<parameter name="manager" transfer-ownership="none">
 					<type name="RygelServer.TranscodeManager" c:type="RygelTranscodeManager*"/>
@@ -2151,7 +2923,7 @@
 					<type name="GUPnPAV.DIDLLiteItem" c:type="GUPnPDIDLLiteItem*"/>
 				</parameter>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 				</parameter>
 				<parameter name="manager" transfer-ownership="none">
 					<type name="RygelServer.TranscodeManager" c:type="RygelTranscodeManager*"/>
@@ -2261,7 +3033,7 @@
 						<type name="GUPnPAV.DIDLLiteItem" c:type="GUPnPDIDLLiteItem*"/>
 					</parameter>
 					<parameter name="item" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 					</parameter>
 					<parameter name="manager" transfer-ownership="none">
 						<type name="RygelServer.TranscodeManager" c:type="RygelTranscodeManager*"/>
@@ -2350,6 +3122,62 @@
 				</type>
 			</return-value>
 		</virtual-method>
+		<method name="get_resources_for_item" c:identifier="rygel_media_engine_get_resources_for_item">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="item" transfer-ownership="none">
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="get_resources_for_item_finish" c:identifier="rygel_media_engine_get_resources_for_item_finish">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gee.List" c:type="GeeList*">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</type>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="get_resources_for_item" invoker="get_resources_for_item">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="item" transfer-ownership="none">
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="get_resources_for_item_finish" invoker="get_resources_for_item_finish">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gee.List" c:type="GeeList*">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</type>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
 		<method name="get_transcoders" c:identifier="rygel_media_engine_get_transcoders">
 			<return-value transfer-ownership="none" allow-none="1">
 				<type name="GLib.List" c:type="GList*">
@@ -2363,6 +3191,32 @@
 					<type name="RygelServer.Transcoder" c:type="RygelTranscoder*"/>
 				</type>
 			</return-value>
+		</virtual-method>
+		<method name="create_data_source_for_resource" c:identifier="rygel_media_engine_create_data_source_for_resource" throws="1">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="item" transfer-ownership="none">
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+				</parameter>
+				<parameter name="resource" transfer-ownership="none">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="create_data_source_for_resource" invoker="create_data_source_for_resource" throws="1">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+			</return-value>
+			<parameters>
+				<parameter name="item" transfer-ownership="none">
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+				</parameter>
+				<parameter name="resource" transfer-ownership="none">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</parameter>
+			</parameters>
 		</virtual-method>
 		<method name="create_data_source" c:identifier="rygel_media_engine_create_data_source">
 			<return-value transfer-ownership="full" allow-none="1">
@@ -2403,6 +3257,44 @@
 				</parameters>
 			</callback>
 		</field>
+				<field name="get_resources_for_item">
+			<callback name="get_resources_for_item" c:type="get_resources_for_item">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaEngine" c:type="RygelMediaEngine*"/>
+					</parameter>
+					<parameter name="item" transfer-ownership="none">
+						<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="get_resources_for_item_finish">
+			<callback name="get_resources_for_item_finish" c:type="get_resources_for_item_finish">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="Gee.List" c:type="GeeList*">
+						<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+					</type>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaEngine" c:type="RygelMediaEngine*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
 				<field name="get_transcoders">
 			<callback name="get_transcoders" c:type="get_transcoders">
 				<return-value transfer-ownership="none" allow-none="1">
@@ -2413,6 +3305,24 @@
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
 						<type name="RygelServer.MediaEngine" c:type="RygelMediaEngine*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+				<field name="create_data_source_for_resource">
+			<callback name="create_data_source_for_resource" c:type="create_data_source_for_resource" throws="1">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="RygelServer.DataSource" c:type="RygelDataSource*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.MediaEngine" c:type="RygelMediaEngine*"/>
+					</parameter>
+					<parameter name="item" transfer-ownership="none">
+						<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+					</parameter>
+					<parameter name="resource" transfer-ownership="none">
+						<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -2536,9 +3446,9 @@
 		</field>
 	</record>
 	<record name="HTTPSeekPrivate" c:type="RygelHTTPSeekPrivate" disguised="1"/>
-	<class name="PlaylistItem" c:type="RygelPlaylistItem" glib:type-name="RygelPlaylistItem" glib:get-type="rygel_playlist_item_get_type" glib:type-struct="PlaylistItemClass" parent="RygelServer.MediaItem">
+	<class name="PlaylistItem" c:type="RygelPlaylistItem" glib:type-name="RygelPlaylistItem" glib:get-type="rygel_playlist_item_get_type" glib:type-struct="PlaylistItemClass" parent="RygelServer.MediaFileItem">
 		<field name="parent_instance">
-			<type name="RygelServer.MediaItem" c:type="RygelMediaItem"/>
+			<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem"/>
 		</field>
 		<field name="priv">
 			<type name="PlaylistItemPrivate" c:type="RygelPlaylistItemPrivate*"/>
@@ -2568,7 +3478,7 @@
 	</class>
 	<record name="PlaylistItemClass" c:type="RygelPlaylistItemClass" glib:is-gtype-struct-for="PlaylistItem">
 		<field name="parent_class">
-			<type name="RygelServer.MediaItemClass" c:type="RygelMediaItemClass"/>
+			<type name="RygelServer.MediaFileItemClass" c:type="RygelMediaFileItemClass"/>
 		</field>
 	</record>
 	<record name="PlaylistItemPrivate" c:type="RygelPlaylistItemPrivate" disguised="1"/>
@@ -2615,6 +3525,403 @@
 		</field>
 	</record>
 	<record name="ContentDirectoryPrivate" c:type="RygelContentDirectoryPrivate" disguised="1"/>
+	<class name="HTTPItemURI" c:type="RygelHTTPItemURI" glib:type-name="RygelHTTPItemURI" glib:get-type="rygel_http_item_uri_get_type" glib:type-struct="HTTPItemURIClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="HTTPItemURIPrivate" c:type="RygelHTTPItemURIPrivate*"/>
+		</field>
+		<field name="rygel_http_item_uri_mime_to_ext">
+			<type name="Gee.HashMap" c:type="GeeHashMap*">
+				<type name="utf8" c:type="gchar*"/>
+				<type name="utf8" c:type="gchar*"/>
+			</type>
+		</field>
+		<constructor name="new" c:identifier="rygel_http_item_uri_new">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.HTTPItemURI" c:type="RygelHTTPItemURI*"/>
+			</return-value>
+			<parameters>
+				<parameter name="object" transfer-ownership="none">
+					<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+				</parameter>
+				<parameter name="http_server" transfer-ownership="none">
+					<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+				</parameter>
+				<parameter name="thumbnail_index" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+				<parameter name="subtitle_index" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+				<parameter name="transcode_target" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="resource_name" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<constructor name="from_string" c:identifier="rygel_http_item_uri_new_from_string" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="RygelServer.HTTPItemURI" c:type="RygelHTTPItemURI*"/>
+			</return-value>
+			<parameters>
+				<parameter name="uri" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="http_server" transfer-ownership="none">
+					<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<method name="to_string" c:identifier="rygel_http_item_uri_to_string">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<property name="item-id" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_item_id" c:identifier="rygel_http_item_uri_get_item_id">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_item_id" c:identifier="rygel_http_item_uri_set_item_id">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="thumbnail-index" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_thumbnail_index" c:identifier="rygel_http_item_uri_get_thumbnail_index">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_thumbnail_index" c:identifier="rygel_http_item_uri_set_thumbnail_index">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="subtitle-index" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_subtitle_index" c:identifier="rygel_http_item_uri_get_subtitle_index">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_subtitle_index" c:identifier="rygel_http_item_uri_set_subtitle_index">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="transcode-target" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_transcode_target" c:identifier="rygel_http_item_uri_get_transcode_target">
+			<return-value transfer-ownership="none" allow-none="1">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_transcode_target" c:identifier="rygel_http_item_uri_set_transcode_target">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="resource-name" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_resource_name" c:identifier="rygel_http_item_uri_get_resource_name">
+			<return-value transfer-ownership="none" allow-none="1">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_resource_name" c:identifier="rygel_http_item_uri_set_resource_name">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="http-server" writable="1">
+			<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+		</property>
+		<method name="get_http_server" c:identifier="rygel_http_item_uri_get_http_server">
+			<return-value transfer-ownership="none">
+				<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+			</return-value>
+		</method>
+		<method name="set_http_server" c:identifier="rygel_http_item_uri_set_http_server">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="extension" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_extension" c:identifier="rygel_http_item_uri_get_extension">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_extension" c:identifier="rygel_http_item_uri_set_extension">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
+	</class>
+	<record name="HTTPItemURIClass" c:type="RygelHTTPItemURIClass" glib:is-gtype-struct-for="HTTPItemURI">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="HTTPItemURIPrivate" c:type="RygelHTTPItemURIPrivate" disguised="1"/>
+	<class name="HTTPRequest" c:type="RygelHTTPRequest" glib:type-name="RygelHTTPRequest" glib:get-type="rygel_http_request_get_type" glib:type-struct="HTTPRequestClass" parent="GObject.Object" abstract="1">
+		<implements name="RygelServer.StateMachine"/>
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="HTTPRequestPrivate" c:type="RygelHTTPRequestPrivate*"/>
+		</field>
+		<field name="http_server">
+			<type name="RygelServer.HTTPServer" c:type="RygelHTTPServer*"/>
+		</field>
+		<field name="server">
+			<type name="Soup.Server" c:type="SoupServer*"/>
+		</field>
+		<field name="msg">
+			<type name="Soup.Message" c:type="SoupMessage*"/>
+		</field>
+		<field name="uri">
+			<type name="RygelServer.HTTPItemURI" c:type="RygelHTTPItemURI*"/>
+		</field>
+		<field name="object">
+			<type name="RygelServer.MediaObject" c:type="RygelMediaObject*"/>
+		</field>
+		<method name="handle" c:identifier="rygel_http_request_handle">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="1" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="handle_finish" c:identifier="rygel_http_request_handle_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="handle" invoker="handle">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="1" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="handle_finish" invoker="handle_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="find_item" c:identifier="rygel_http_request_find_item">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="1" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="find_item_finish" c:identifier="rygel_http_request_find_item_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="find_item" invoker="find_item">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="1" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="find_item_finish" invoker="find_item_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="handle_error" c:identifier="rygel_http_request_handle_error">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="error" transfer-ownership="none">
+					<type name="GLib.Error"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="end" c:identifier="rygel_http_request_end">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="status" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+		</method>
+	</class>
+	<record name="HTTPRequestClass" c:type="RygelHTTPRequestClass" glib:is-gtype-struct-for="HTTPRequest">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+				<field name="handle">
+			<callback name="handle" c:type="handle">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="handle_finish">
+			<callback name="handle_finish" c:type="handle_finish" throws="1">
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+				<field name="find_item">
+			<callback name="find_item" c:type="find_item">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="find_item_finish">
+			<callback name="find_item_finish" c:type="find_item_finish" throws="1">
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelServer.HTTPRequest" c:type="RygelHTTPRequest*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+	</record>
+	<record name="HTTPRequestPrivate" c:type="RygelHTTPRequestPrivate" disguised="1"/>
 	<class name="HTTPServer" c:type="RygelHTTPServer" glib:type-name="RygelHTTPServer" glib:get-type="rygel_http_server_get_type" glib:type-struct="HTTPServerClass" parent="RygelServer.TranscodeManager">
 		<implements name="RygelServer.StateMachine"/>
 		<field name="parent_instance">
@@ -2642,6 +3949,16 @@
 				</parameter>
 			</parameters>
 		</constructor>
+		<method name="set_resource_delivery_options" c:identifier="rygel_http_server_set_resource_delivery_options">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="res" transfer-ownership="none">
+					<type name="RygelServer.MediaResource" c:type="RygelMediaResource*"/>
+				</parameter>
+			</parameters>
+		</method>
 		<method name="need_proxy" c:identifier="rygel_http_server_need_proxy">
 			<return-value transfer-ownership="full">
 				<type name="gboolean" c:type="gboolean"/>
@@ -2763,7 +4080,7 @@
 					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 				</parameter>
 				<parameter name="total_matches" direction="out" transfer-ownership="full">
-					<type name="guint" c:type="guint"/>
+					<type name="guint" c:type="guint*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -2804,7 +4121,7 @@
 					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 				</parameter>
 				<parameter name="total_matches" direction="out" transfer-ownership="full">
-					<type name="guint" c:type="guint"/>
+					<type name="guint" c:type="guint*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -2845,7 +4162,7 @@
 					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 				</parameter>
 				<parameter name="total_matches" direction="out" transfer-ownership="full">
-					<type name="guint" c:type="guint"/>
+					<type name="guint" c:type="guint*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -2972,7 +4289,7 @@
 						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 					</parameter>
 					<parameter name="total_matches" direction="out" transfer-ownership="full">
-						<type name="guint" c:type="guint"/>
+						<type name="guint" c:type="guint*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -3381,7 +4698,7 @@
 		</field>
 	</record>
 	<interface name="VisualItem" c:type="RygelVisualItem" glib:type-name="RygelVisualItem" glib:get-type="rygel_visual_item_get_type" glib:type-struct="VisualItemIface">
-		<prerequisite name="RygelServer.MediaItem"/>
+		<prerequisite name="RygelServer.MediaFileItem"/>
 		<property name="width" writable="1">
 			<type name="gint" c:type="gint"/>
 		</property>
@@ -3660,7 +4977,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 				</parameter>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
 					<type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -3689,7 +5006,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="item" transfer-ownership="none">
-					<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+					<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 				</parameter>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
 					<type name="Gio.Cancellable" c:type="GCancellable*"/>
@@ -4005,7 +5322,7 @@
 						<type name="RygelServer.WritableContainer" c:type="RygelWritableContainer*"/>
 					</parameter>
 					<parameter name="item" transfer-ownership="none">
-						<type name="RygelServer.MediaItem" c:type="RygelMediaItem*"/>
+						<type name="RygelServer.MediaFileItem" c:type="RygelMediaFileItem*"/>
 					</parameter>
 					<parameter name="cancellable" transfer-ownership="none" allow-none="1">
 						<type name="Gio.Cancellable" c:type="GCancellable*"/>
