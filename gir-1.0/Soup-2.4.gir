@@ -2951,9 +2951,10 @@ requests are made on the same connection).</doc>
 of a connection.</doc>
         <doc-deprecated xml:space="preserve">Use soup_client_context_get_remote_address(), which returns
 a #GSocketAddress.</doc-deprecated>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #SoupAddress associated with the
-remote end of a connection.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the #SoupAddress
+associated with the remote end of a connection, it may be
+%NULL if you used soup_server_accept_iostream().</doc>
           <type name="Address" c:type="SoupAddress*"/>
         </return-value>
         <parameters>
@@ -3008,9 +3009,9 @@ test program does), you will need to pay attention to socket
 destruction as well (eg, by using weak references), so that you do
 not get fooled when the allocator reuses the memory address of a
 previously-destroyed socket to represent a new socket.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #GSocket that @client is
-associated with.</doc>
+associated with, %NULL if you used soup_server_accept_iostream().</doc>
           <type name="Gio.Socket" c:type="GSocket*"/>
         </return-value>
         <parameters>
@@ -3023,9 +3024,10 @@ associated with.</doc>
       <method name="get_host" c:identifier="soup_client_context_get_host">
         <doc xml:space="preserve">Retrieves the IP address associated with the remote end of a
 connection.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the IP address associated with the remote end of a
-connection.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the IP address associated with the remote
+end of a connection, it may be %NULL if you used
+soup_server_accept_iostream().</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -3040,9 +3042,10 @@ connection.</doc>
               version="2.48">
         <doc xml:space="preserve">Retrieves the #GSocketAddress associated with the local end
 of a connection.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GSocketAddress associated with
-the local end of a connection.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the #GSocketAddress
+associated with the local end of a connection, it may be
+%NULL if you used soup_server_accept_iostream().</doc>
           <type name="Gio.SocketAddress" c:type="GSocketAddress*"/>
         </return-value>
         <parameters>
@@ -3057,9 +3060,10 @@ the local end of a connection.</doc>
               version="2.48">
         <doc xml:space="preserve">Retrieves the #GSocketAddress associated with the remote end
 of a connection.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GSocketAddress associated with
-the remote end of a connection.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the #GSocketAddress
+associated with the remote end of a connection, it may be
+%NULL if you used soup_server_accept_iostream().</doc>
           <type name="Gio.SocketAddress" c:type="GSocketAddress*"/>
         </return-value>
         <parameters>
@@ -10711,6 +10715,42 @@ occurs.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="accept_iostream"
+              c:identifier="soup_server_accept_iostream"
+              version="2.50"
+              throws="1">
+        <doc xml:space="preserve">Add a new client stream to the @server.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE if the stream could not be
+accepted or any other error occurred (in which case @error will be
+set).</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="server" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupServer</doc>
+            <type name="Server" c:type="SoupServer*"/>
+          </instance-parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GIOStream</doc>
+            <type name="Gio.IOStream" c:type="GIOStream*"/>
+          </parameter>
+          <parameter name="local_addr"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the local #GSocketAddress associated with the @stream</doc>
+            <type name="Gio.SocketAddress" c:type="GSocketAddress*"/>
+          </parameter>
+          <parameter name="remote_addr"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the remote #GSocketAddress associated with the @stream</doc>
+            <type name="Gio.SocketAddress" c:type="GSocketAddress*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_auth_domain"
               c:identifier="soup_server_add_auth_domain">
         <doc xml:space="preserve">Adds an authentication domain to @server. Each auth domain will
@@ -14496,6 +14536,13 @@ return value is %SOUP_SOCKET_ERROR.)</doc>
                 construct-only="1"
                 transfer-ownership="none">
         <type name="Gio.Socket"/>
+      </property>
+      <property name="iostream"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Gio.IOStream"/>
       </property>
       <property name="ipv6-only" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>

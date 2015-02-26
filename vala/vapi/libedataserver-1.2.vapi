@@ -991,10 +991,10 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_exist (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.14")]
+	[Deprecated (since = "3.16")]
 	public static unowned string categories_get_icon_file_for (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.14")]
+	[Deprecated (since = "3.16")]
 	public static GLib.List<weak string> categories_get_list ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_is_searchable (string category);

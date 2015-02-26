@@ -5385,10 +5385,6 @@ new functionality whereby unrecognised options are rejected even if
         <doc xml:space="preserve">Marks @application as busy (see g_application_mark_busy()) while
 @property on @object is %TRUE.
 
-Multiple such bindings can exist, but only one property can be bound
-per object. Calling this function again for the same object replaces
-a previous binding. If @property is %NULL, the binding is destroyed.
-
 The binding holds a reference to @application while it is active, but
 not to @object. Instead, the binding is destroyed when @object is
 finalized.</doc>
@@ -5404,10 +5400,7 @@ finalized.</doc>
             <doc xml:space="preserve">a #GObject</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
-          <parameter name="property"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="property" transfer-ownership="none">
             <doc xml:space="preserve">the name of a boolean property of @object</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -5510,6 +5503,22 @@ g_application_release() before the application stops running.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the timeout, in milliseconds</doc>
           <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="application" transfer-ownership="none">
+            <doc xml:space="preserve">a #GApplication</doc>
+            <type name="Application" c:type="GApplication*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_is_busy"
+              c:identifier="g_application_get_is_busy"
+              version="2.44">
+        <doc xml:space="preserve">Gets the application's current busy state, as set through
+g_application_mark_busy() or g_application_bind_busy_property().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @application is currenty marked as busy</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="application" transfer-ownership="none">
@@ -5801,11 +5810,7 @@ except in the case that g_application_set_inactivity_timeout() is in
 use.
 
 This function sets the prgname (g_set_prgname()), if not already set,
-to the basename of argv[0].  Since 2.38, if %G_APPLICATION_IS_SERVICE
-is specified, the prgname is set to the application ID.  The main
-impact of this is is that the wmclass of windows created by Gtk+ will
-be set accordingly, which helps the window manager determine which
-application is showing the window.
+to the basename of argv[0].
 
 Since 2.40, applications that are not explicitly flagged as services
 or launchers (ie: neither %G_APPLICATION_IS_SERVICE or
@@ -6071,6 +6076,30 @@ for forming paths for various purposes is unspecified.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="unbind_busy_property"
+              c:identifier="g_application_unbind_busy_property"
+              version="2.44">
+        <doc xml:space="preserve">Destroys a binding between @property and the busy state of
+@application that was previously created with
+g_application_bind_busy_property().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="application" transfer-ownership="none">
+            <doc xml:space="preserve">a #GApplication</doc>
+            <type name="Application" c:type="GApplication*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GObject</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="property" transfer-ownership="none">
+            <doc xml:space="preserve">the name of a boolean property of @object</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="unmark_busy"
               c:identifier="g_application_unmark_busy"
               version="2.38">
@@ -6140,6 +6169,11 @@ there is no need to explicitly withdraw the notification in that case.</doc>
                 writable="1"
                 transfer-ownership="none">
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="is-busy" version="2.44" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the application is currently marked as busy through
+g_application_mark_busy() or g_application_bind_busy_property().</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="is-registered" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
@@ -7843,10 +7877,7 @@ operation within GIO has been completed.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="source_object"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
+        <parameter name="source_object" transfer-ownership="none">
           <doc xml:space="preserve">the object the asynchronous operation was started with.</doc>
           <type name="GObject.Object" c:type="GObject*"/>
         </parameter>
@@ -9149,7 +9180,9 @@ This function is thread-safe. In other words, you can safely call
 it from a thread other than the one running the operation that was
 passed the @cancellable.
 
-The convention within gio is that cancelling an asynchronous
+If @cancellable is %NULL, this function returns immediately for convenience.
+
+The convention within GIO is that cancelling an asynchronous
 operation causes it to complete asynchronously. That is, if you
 cancel the operation from the same thread in which it is running,
 then the operation's #GAsyncReadyCallback will not be invoked until
@@ -34817,6 +34850,83 @@ This is a convenience method that's equivalent to:
           </instance-parameter>
         </parameters>
       </method>
+      <method name="iterate"
+              c:identifier="g_file_enumerator_iterate"
+              version="2.44"
+              throws="1">
+        <doc xml:space="preserve">This is a version of g_file_enumerator_next_file() that's easier to
+use correctly from C programs.  With g_file_enumerator_next_file(),
+the gboolean return value signifies "end of iteration or error", which
+requires allocation of a temporary #GError.
+
+In contrast, with this function, a %FALSE return from
+gs_file_enumerator_iterate() *always* means
+"error".  End of iteration is signaled by @out_info or @out_child being %NULL.
+
+Another crucial difference is that the references for @out_info and
+@out_child are owned by @direnum (they are cached as hidden
+properties).  You must not unref them in your own code.  This makes
+memory management significantly easier for C code in combination
+with loops.
+
+Finally, this function optionally allows retrieving a #GFile as
+well.
+
+You must specify at least one of @out_info or @out_child.
+
+The code pattern for correctly using g_file_enumerator_iterate() from C
+is:
+
+|[
+direnum = g_file_enumerate_children (file, ...);
+while (TRUE)
+  {
+    GFileInfo *info;
+    if (!g_file_enumerator_iterate (direnum, &amp;info, NULL, cancellable, error))
+      goto out;
+    if (!info)
+      break;
+    ... do stuff with "info"; do not unref it! ...
+  }
+
+out:
+  g_object_unref (direnum); // Note: frees the last @info
+]|</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="direnum" transfer-ownership="none">
+            <doc xml:space="preserve">an open #GFileEnumerator</doc>
+            <type name="FileEnumerator" c:type="GFileEnumerator*"/>
+          </instance-parameter>
+          <parameter name="out_info"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Output location for the next #GFileInfo, or %NULL</doc>
+            <type name="FileInfo" c:type="GFileInfo**"/>
+          </parameter>
+          <parameter name="out_child"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Output location for the next #GFile, or %NULL</doc>
+            <type name="File" c:type="GFile**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable</doc>
+            <type name="Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="next_file"
               c:identifier="g_file_enumerator_next_file"
               throws="1">
@@ -46453,9 +46563,11 @@ This function takes a ref on @item.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="compare_func" transfer-ownership="none" closure="2">
+            <doc xml:space="preserve">pairwise comparison function for sorting</doc>
             <type name="GLib.CompareDataFunc" c:type="GCompareDataFunc"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for @compare_func</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -64531,6 +64643,56 @@ checks for cancellation.</doc>
         </parameter>
       </parameters>
     </callback>
+    <class name="SimpleIOStream"
+           c:symbol-prefix="simple_io_stream"
+           c:type="GSimpleIOStream"
+           version="2.44"
+           parent="IOStream"
+           glib:type-name="GSimpleIOStream"
+           glib:get-type="g_simple_io_stream_get_type">
+      <doc xml:space="preserve">GSimpleIOStream creates a #GIOStream from an arbitrary #GInputStream and
+#GOutputStream. This allows any pair of input and output streams to be used
+with #GIOStream methods.
+
+This is useful when you obtained a #GInputStream and a #GOutputStream
+by other means, for instance creating them with platform specific methods as
+g_unix_input_stream_new() or g_win32_input_stream_new(), and you want
+to take advantage of the methods provided by #GIOStream.</doc>
+      <constructor name="new"
+                   c:identifier="g_simple_io_stream_new"
+                   version="2.44">
+        <doc xml:space="preserve">Creates a new #GSimpleIOStream wrapping @input_stream and @output_stream.
+See also #GIOStream.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GSimpleIOStream instance.</doc>
+          <type name="IOStream" c:type="GIOStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="input_stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GInputStream.</doc>
+            <type name="InputStream" c:type="GInputStream*"/>
+          </parameter>
+          <parameter name="output_stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GOutputStream.</doc>
+            <type name="OutputStream" c:type="GOutputStream*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <property name="input-stream"
+                version="2.44"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="InputStream"/>
+      </property>
+      <property name="output-stream"
+                version="2.44"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="OutputStream"/>
+      </property>
+    </class>
     <class name="SimplePermission"
            c:symbol-prefix="simple_permission"
            c:type="GSimplePermission"

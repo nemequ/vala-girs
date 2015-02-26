@@ -23,6 +23,7 @@ namespace Vnc {
 		public bool get_keyboard_grab ();
 		public bool get_lossy_encoding ();
 		public static unowned GLib.OptionEntry? get_option_entries ();
+		public static GLib.OptionGroup get_option_group ();
 		public Gdk.Pixbuf get_pixbuf ();
 		public bool get_pointer_grab ();
 		public bool get_pointer_local ();

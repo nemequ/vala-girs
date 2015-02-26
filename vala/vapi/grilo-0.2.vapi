@@ -292,20 +292,24 @@ namespace Grl {
 		public OperationOptions (Grl.Caps? caps);
 		public Grl.OperationOptions copy ();
 		public int get_count ();
+		[Deprecated (since = "0.2.12")]
 		public Grl.ResolutionFlags get_flags ();
 		public unowned GLib.Value? get_key_filter (Grl.KeyID key);
 		public GLib.List<weak Grl.KeyID> get_key_filter_list ();
 		public void get_key_range_filter (Grl.KeyID key, out GLib.Value min_value, out GLib.Value max_value);
 		public GLib.List<weak Grl.KeyID> get_key_range_filter_list ();
+		public Grl.ResolutionFlags get_resolution_flags ();
 		public uint get_skip ();
 		public Grl.TypeFilter get_type_filter ();
 		public bool key_is_set (string key);
 		public bool obey_caps (Grl.Caps caps, out Grl.OperationOptions supported_options, out Grl.OperationOptions unsupported_options);
 		public bool set_count (int count);
+		[Deprecated (since = "0.2.12")]
 		public bool set_flags (Grl.ResolutionFlags flags);
 		public bool set_key_filter_dictionary (GLib.HashTable<Grl.KeyID,GLib.Value?> filters);
 		public bool set_key_filter_value (Grl.KeyID key, GLib.Value value);
 		public bool set_key_range_filter_value (Grl.KeyID key, GLib.Value? min_value, GLib.Value? max_value);
+		public bool set_resolution_flags (Grl.ResolutionFlags flags);
 		public bool set_skip (uint skip);
 		public bool set_type_filter (Grl.TypeFilter filter);
 	}
@@ -616,6 +620,8 @@ namespace Grl {
 		public static Grl.KeyID MB_ARTIST_ID;
 		[CCode (cname = "GRL_METADATA_KEY_MB_RECORDING_ID")]
 		public static Grl.KeyID MB_RECORDING_ID;
+		[CCode (cname = "GRL_METADATA_KEY_AUDIO_TRACK")]
+		public static Grl.KeyID AUDIO_TRACK;
 		[CCode (cname = "GRL_METADATA_KEY_CHILDCOUNT_UNKNOWN")]
 		public static uint CHILDCOUNT_UNKNOWN;
 		[CCode (cname = "GRL_SOURCE_REMAINING_UNKNOWN")]
@@ -840,6 +846,8 @@ namespace Grl {
 	public const int METADATA_KEY_ALBUM;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_ARTIST")]
 	public const int METADATA_KEY_ARTIST;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_AUDIO_TRACK")]
+	public const int METADATA_KEY_AUDIO_TRACK;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_AUTHOR")]
 	public const int METADATA_KEY_AUTHOR;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_BITRATE")]
@@ -954,12 +962,12 @@ namespace Grl {
 	public const int METADATA_KEY_WIDTH;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_COUNT")]
 	public const string OPERATION_OPTION_COUNT;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_FLAGS")]
-	public const string OPERATION_OPTION_FLAGS;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_KEY_EQUAL_FILTER")]
 	public const string OPERATION_OPTION_KEY_EQUAL_FILTER;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_KEY_RANGE_FILTER")]
 	public const string OPERATION_OPTION_KEY_RANGE_FILTER;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_RESOLUTION_FLAGS")]
+	public const string OPERATION_OPTION_RESOLUTION_FLAGS;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_SKIP")]
 	public const string OPERATION_OPTION_SKIP;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_TYPE_FILTER")]
