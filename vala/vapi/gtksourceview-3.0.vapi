@@ -706,7 +706,9 @@ namespace Gtk {
 		public bool show_right_margin { get; set; }
 		public Gtk.SourceSmartHomeEndType smart_home_end { get; set; }
 		public uint tab_width { get; set; }
+		public signal void change_case (Gtk.SourceChangeCaseType case_type);
 		public signal void change_number (int count);
+		public signal void join_lines ();
 		public virtual signal void line_mark_activated (Gtk.TextIter iter, Gdk.Event event);
 		public virtual signal void move_lines (bool copy, int step);
 		public signal void move_to_matching_bracket (bool extend_selection);

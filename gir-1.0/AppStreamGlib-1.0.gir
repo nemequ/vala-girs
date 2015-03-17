@@ -1178,6 +1178,40 @@ becomes "gimp" and is used for cache directories.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_release"
+              c:identifier="as_app_get_release"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets a specific release from the application.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a release, or %NULL</doc>
+          <type name="Release" c:type="AsRelease*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="version" transfer-ownership="none">
+            <doc xml:space="preserve">a version string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_release_default"
+              c:identifier="as_app_get_release_default"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets the default (newest) release from the application.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a release, or %NULL</doc>
+          <type name="Release" c:type="AsRelease*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_releases"
               c:identifier="as_app_get_releases"
               version="0.1.0">
@@ -2115,6 +2149,9 @@ trusted input.</doc>
               c:identifier="AS_APP_SOURCE_KIND_METAINFO">
         <doc xml:space="preserve">Sourced from a MetaInfo file</doc>
       </member>
+      <member name="inf" value="5" c:identifier="AS_APP_SOURCE_KIND_INF">
+        <doc xml:space="preserve">Sourced from a inf file</doc>
+      </member>
     </enumeration>
     <enumeration name="AppState" c:type="AsAppState">
       <doc xml:space="preserve">The application state.</doc>
@@ -2919,6 +2956,9 @@ NOTE: This is only set for icons of type %AS_ICON_KIND_REMOTE</doc>
       <member name="addon" value="7" c:identifier="AS_ID_KIND_ADDON">
         <doc xml:space="preserve">An addon, e.g. a plugin</doc>
       </member>
+      <member name="firmware" value="8" c:identifier="AS_ID_KIND_FIRMWARE">
+        <doc xml:space="preserve">A firmware update</doc>
+      </member>
     </enumeration>
     <class name="Image"
            c:symbol-prefix="image"
@@ -3400,6 +3440,33 @@ using as_image_get_basename(). This can be overridden if required.</doc>
       <member name="blur" value="4" c:identifier="AS_IMAGE_SAVE_FLAG_BLUR">
       </member>
     </enumeration>
+    <enumeration name="InfError"
+                 c:type="AsInfError"
+                 glib:error-domain="AsInfError">
+      <doc xml:space="preserve">The error type.</doc>
+      <member name="failed" value="0" c:identifier="AS_INF_ERROR_FAILED">
+        <doc xml:space="preserve">Generic failure</doc>
+      </member>
+      <member name="invalid_type"
+              value="1"
+              c:identifier="AS_INF_ERROR_INVALID_TYPE">
+        <doc xml:space="preserve">Invalid type</doc>
+      </member>
+    </enumeration>
+    <bitfield name="InfLoadFlags" c:type="AsInfLoadFlags">
+      <doc xml:space="preserve">The flags used when loading INF files.</doc>
+      <member name="none" value="0" c:identifier="AS_INF_LOAD_FLAG_NONE">
+        <doc xml:space="preserve">No flags set</doc>
+      </member>
+      <member name="strict" value="1" c:identifier="AS_INF_LOAD_FLAG_STRICT">
+        <doc xml:space="preserve">Be strict when loading the file</doc>
+      </member>
+      <member name="case_insensitive"
+              value="2"
+              c:identifier="AS_INF_LOAD_FLAG_CASE_INSENSITIVE">
+        <doc xml:space="preserve">Load keys and groups case insensitive</doc>
+      </member>
+    </bitfield>
     <enumeration name="KudoKind" c:type="AsKudoKind">
       <doc xml:space="preserve">The kudo type.</doc>
       <member name="unknown" value="0" c:identifier="AS_KUDO_KIND_UNKNOWN">
@@ -3440,7 +3507,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="5" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="6" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="3" c:type="AS_MINOR_VERSION">
@@ -4065,6 +4132,46 @@ The output format used when converting AppStream descriptions.</doc>
           <type name="Release" c:type="AsRelease*"/>
         </return-value>
       </constructor>
+      <method name="add_location"
+              c:identifier="as_release_add_location"
+              version="0.3.5">
+        <doc xml:space="preserve">Adds a release location.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+          <parameter name="location" transfer-ownership="none">
+            <doc xml:space="preserve">the location string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="location_len" transfer-ownership="none">
+            <doc xml:space="preserve">the size of @location, or -1 if %NULL-terminated.</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_checksum"
+              c:identifier="as_release_get_checksum"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets the release checksum, typically a SHA1 hash.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string, or %NULL for not set or invalid</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+          <parameter name="checksum_type" transfer-ownership="none">
+            <type name="GLib.ChecksumType" c:type="GChecksumType"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_description"
               c:identifier="as_release_get_description"
               version="0.1.0">
@@ -4082,6 +4189,38 @@ The output format used when converting AppStream descriptions.</doc>
             <doc xml:space="preserve">the locale, or %NULL. e.g. "en_GB"</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_location_default"
+              c:identifier="as_release_get_location_default"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets the default release location, typically a URL.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string, or %NULL for not set or invalid</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_locations"
+              c:identifier="as_release_get_locations"
+              version="0.3.5">
+        <doc xml:space="preserve">Gets the release locations, typically URLs.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">list of locations</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_timestamp"
@@ -4112,6 +4251,32 @@ The output format used when converting AppStream descriptions.</doc>
             <doc xml:space="preserve">a #AsRelease instance.</doc>
             <type name="Release" c:type="AsRelease*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_checksum"
+              c:identifier="as_release_set_checksum"
+              version="0.3.5">
+        <doc xml:space="preserve">Sets the release checksum.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+          <parameter name="checksum_type" transfer-ownership="none">
+            <doc xml:space="preserve">a #GChecksumType, e.g. %G_CHECKSUM_SHA1</doc>
+            <type name="GLib.ChecksumType" c:type="GChecksumType"/>
+          </parameter>
+          <parameter name="checksum" transfer-ownership="none">
+            <doc xml:space="preserve">the checksum string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="checksum_len" transfer-ownership="none">
+            <doc xml:space="preserve">the size of @checksum, or -1 if %NULL-terminated.</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_description"
@@ -4612,6 +4777,29 @@ Additionally only applications where the kind is known will be added.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="add_filter"
+              c:identifier="as_store_add_filter"
+              version="0.3.5">
+        <doc xml:space="preserve">Adds a filter to the store so that only components of this type are
+loaded into the store. This may be useful if the client is only interested
+in certain types of component, or not interested in loading components
+it cannot process.
+
+If no filter is set then all types of components are loaded.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsIdKind, e.g. %AS_ID_KIND_FIRMWARE</doc>
+            <type name="IdKind" c:type="AsIdKind"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_metadata_index"
               c:identifier="as_store_add_metadata_index"
               version="0.3.0">
@@ -4990,6 +5178,28 @@ taken place.</doc>
           <parameter name="id" transfer-ownership="none">
             <doc xml:space="preserve">an application id</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_filter"
+              c:identifier="as_store_remove_filter"
+              version="0.3.5">
+        <doc xml:space="preserve">Removed a filter from the store so that components of this type are no longer
+loaded into the store. This may be useful if the client is only interested
+in certain types of component.
+
+If all filters are removed then all types of components are loaded.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsIdKind, e.g. %AS_ID_KIND_FIRMWARE</doc>
+            <type name="IdKind" c:type="AsIdKind"/>
           </parameter>
         </parameters>
       </method>
@@ -5443,6 +5653,12 @@ have changed.</doc>
       <member name="permission" value="44" c:identifier="AS_TAG_PERMISSION">
         <doc xml:space="preserve">`permission`</doc>
       </member>
+      <member name="location" value="45" c:identifier="AS_TAG_LOCATION">
+        <doc xml:space="preserve">`location`</doc>
+      </member>
+      <member name="checksum" value="46" c:identifier="AS_TAG_CHECKSUM">
+        <doc xml:space="preserve">`checksum`</doc>
+      </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">
       <doc xml:space="preserve">The flags to use when matching %AsTag's.</doc>
@@ -5547,6 +5763,86 @@ have changed.</doc>
         <parameter name="id_kind" transfer-ownership="none">
           <doc xml:space="preserve">the #AsIdKind.</doc>
           <type name="IdKind" c:type="AsIdKind"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="inf_error_quark"
+              c:identifier="as_inf_error_quark"
+              version="0.3.7">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">An error quark.</doc>
+        <type name="GLib.Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
+    <function name="inf_get_driver_version"
+              c:identifier="as_inf_get_driver_version"
+              version="0.3.5"
+              throws="1">
+      <doc xml:space="preserve">Parses the DriverVer string into a recognisable version and timestamp;</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the version string, or %NULL for error.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="keyfile" transfer-ownership="none">
+          <doc xml:space="preserve">a #GKeyFile</doc>
+          <type name="GLib.KeyFile" c:type="GKeyFile*"/>
+        </parameter>
+        <parameter name="timestamp" transfer-ownership="none">
+          <doc xml:space="preserve">the returned driverver timestamp, or %NULL</doc>
+          <type name="guint64" c:type="guint64*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="inf_load_data"
+              c:identifier="as_inf_load_data"
+              version="0.3.5"
+              throws="1">
+      <doc xml:space="preserve">Repairs .inf file data and opens it as a keyfile.
+
+Important: The group and keynames are all forced to lower case as INF files
+are specified as case insensitve and GKeyFile *is* case sensitive.
+Any backslashes or spaces in the key name are also converted to '_'.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE for success</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="keyfile" transfer-ownership="none">
+          <doc xml:space="preserve">a #GKeyFile</doc>
+          <type name="GLib.KeyFile" c:type="GKeyFile*"/>
+        </parameter>
+        <parameter name="data" transfer-ownership="none">
+          <doc xml:space="preserve">the .inf file date to parse</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">#AsInfLoadFlags, e.g. %AS_INF_LOAD_FLAG_NONE</doc>
+          <type name="InfLoadFlags" c:type="AsInfLoadFlags"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="inf_load_file"
+              c:identifier="as_inf_load_file"
+              version="0.3.5"
+              throws="1">
+      <doc xml:space="preserve">Repairs an .inf file and opens it as a keyfile.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE for success</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="keyfile" transfer-ownership="none">
+          <doc xml:space="preserve">a #GKeyFile</doc>
+          <type name="GLib.KeyFile" c:type="GKeyFile*"/>
+        </parameter>
+        <parameter name="filename" transfer-ownership="none">
+          <doc xml:space="preserve">the .inf file to open</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">#AsInfLoadFlags, e.g. %AS_INF_LOAD_FLAG_NONE</doc>
+          <type name="InfLoadFlags" c:type="AsInfLoadFlags"/>
         </parameter>
       </parameters>
     </function>
@@ -6592,6 +6888,26 @@ appended into single tokens where possible.</doc>
       <parameters>
         <parameter name="license" transfer-ownership="none">
           <doc xml:space="preserve">a license string, e.g. "LGPLv2+ and (QPL or GPLv2) and MIT"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_vercmp"
+              c:identifier="as_utils_vercmp"
+              version="0.3.5">
+      <doc xml:space="preserve">Compares version numbers for sorting. This function cannot deal with version
+strings that do not contain numbers, for instance "rev2706" or "1.2_alpha".</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">-1 if a &lt; b, +1 if a &gt; b, 0 if they are equal, and %G_MAXINT on error</doc>
+        <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="version_a" transfer-ownership="none">
+          <doc xml:space="preserve">the release version, e.g. 1.2.3</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="version_b" transfer-ownership="none">
+          <doc xml:space="preserve">the release version, e.g. 1.2.3.1</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

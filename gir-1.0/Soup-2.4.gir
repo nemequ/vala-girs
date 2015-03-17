@@ -3099,6 +3099,34 @@ associated with.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="steal_connection"
+              c:identifier="soup_client_context_steal_connection"
+              version="2.50">
+        <doc xml:space="preserve">"Steals" the HTTP connection associated with @client from its
+#SoupServer. This happens immediately, regardless of the current
+state of the connection; if the response to the current
+#SoupMessage has not yet finished being sent, then it will be
+discarded; you can steal the connection from a
+#SoupMessage:wrote-informational or #SoupMessage:wrote-body signal
+handler if you need to wait for part or all of the response to be
+sent.
+
+Note that when calling this function from C, @client will most
+likely be freed as a side effect.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the #GIOStream formerly associated
+  with @client (or %NULL if @client was no longer associated with a
+  connection). No guarantees are made about what kind of #GIOStream
+  is returned.</doc>
+          <type name="Gio.IOStream" c:type="GIOStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupClientContext</doc>
+            <type name="ClientContext" c:type="SoupClientContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </record>
     <record name="Connection" c:type="SoupConnection" disguised="1">
     </record>
@@ -6060,6 +6088,16 @@ could not be parsed).</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="starting" invoker="starting">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <type name="Message" c:type="SoupMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="wrote_body" invoker="wrote_body">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -6750,6 +6788,16 @@ soup_session_requeue_message().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="starting" c:identifier="soup_message_starting">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <type name="Message" c:type="SoupMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="wrote_body" c:identifier="soup_message_wrote_body">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -7055,6 +7103,12 @@ the different values of @event correspond to, and what
 being sent again (eg, because the first attempt received a
 redirection response, or because we needed to use
 authentication).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="starting" when="first" version="2.50">
+        <doc xml:space="preserve">Emitted just before a message is sent.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7553,6 +7607,18 @@ documented here.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="starting">
+        <callback name="starting">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="msg" transfer-ownership="none">
+              <type name="Message" c:type="SoupMessage*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_libsoup_reserved1" introspectable="0">
         <callback name="_libsoup_reserved1">
           <return-value transfer-ownership="none">
@@ -7569,13 +7635,6 @@ documented here.</doc>
       </field>
       <field name="_libsoup_reserved3" introspectable="0">
         <callback name="_libsoup_reserved3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_libsoup_reserved4" introspectable="0">
-        <callback name="_libsoup_reserved4">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -7647,6 +7706,17 @@ behavior.</doc>
   regardless its #SoupMessage:method, and allows reuse of existing
   idle connections, instead of always requiring a new one, unless
   #SOUP_MESSAGE_NEW_CONNECTION is set.</doc>
+      </member>
+      <member name="ignore_connection_limits"
+              value="256"
+              c:identifier="SOUP_MESSAGE_IGNORE_CONNECTION_LIMITS"
+              glib:nick="ignore-connection-limits">
+        <doc xml:space="preserve">Request that a new connection is
+  created for the message if there aren't idle connections available
+  and it's not possible to create new connections due to any of the
+  connection limits has been reached. If a dedicated connection is
+  eventually created for this message, it will be dropped when the
+  message finishes. Since 2.50</doc>
       </member>
     </bitfield>
     <record name="MessageHeaders"
@@ -7981,6 +8051,21 @@ Currently this will either be %SOUP_EXPECTATION_CONTINUE or
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_headers_type"
+              c:identifier="soup_message_headers_get_headers_type"
+              version="2.50">
+        <doc xml:space="preserve">Gets the type of headers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the header's type.</doc>
+          <type name="MessageHeadersType" c:type="SoupMessageHeadersType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="hdrs" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupMessageHeaders</doc>
+            <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_list"
               c:identifier="soup_message_headers_get_list"
               version="2.28">
@@ -8101,6 +8186,59 @@ of #SoupRange</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve">the length of the returned array</doc>
             <type name="gint" c:type="int*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="header_contains"
+              c:identifier="soup_message_headers_header_contains"
+              version="2.50">
+        <doc xml:space="preserve">Checks whether the list-valued header @name is present in @hdrs,
+and contains a case-insensitive match for @token.
+
+(If @name is present in @hdrs, then this is equivalent to calling
+soup_header_contains() on its value.)</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the header is present and contains @token,
+  %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="hdrs" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupMessageHeaders</doc>
+            <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">header name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="token" transfer-ownership="none">
+            <doc xml:space="preserve">token to look for</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="header_equals"
+              c:identifier="soup_message_headers_header_equals"
+              version="2.50">
+        <doc xml:space="preserve">Checks whether the header @name is present in @hdrs and is
+(case-insensitively) equal to @value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the header is present and its value is
+  @value, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="hdrs" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupMessageHeaders</doc>
+            <type name="MessageHeaders" c:type="SoupMessageHeaders*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">header name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">expected value</doc>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -10286,7 +10424,9 @@ rather than having an explicitly-specified one.</doc-deprecated>
     </constant>
     <constant name="SERVER_HTTP_ALIASES"
               value="http-aliases"
-              c:type="SOUP_SERVER_HTTP_ALIASES">
+              c:type="SOUP_SERVER_HTTP_ALIASES"
+              version="2.44">
+      <doc xml:space="preserve">Alias for the #SoupServer:http-aliases property, qv.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SERVER_INTERFACE"
@@ -10778,16 +10918,36 @@ request body is sent.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="add_handler" c:identifier="soup_server_add_handler">
-        <doc xml:space="preserve">Adds a handler to @server for requests under @path. See the
-documentation for #SoupServerCallback for information about
-how callbacks should behave.
+      <method name="add_early_handler"
+              c:identifier="soup_server_add_early_handler"
+              version="2.50">
+        <doc xml:space="preserve">Adds an "early" handler to @server for requests under @path. Note
+that "normal" and "early" handlers are matched up together, so if
+you add a normal handler for "/foo" and an early handler for
+"/foo/bar", then a request to "/foo/bar" (or any path below it)
+will run only the early handler. (But if you add both handlers at
+the same path, then both will get run.)
 
-If @path is %NULL or "/", then this will be the default handler for
-all requests that don't have a more specific handler. Note though
-that if you want to handle requests to the special "*" URI, you
-must explicitly register a handler for "*"; the default handler
-will not be used for that case.</doc>
+For requests under @path (that have not already been assigned a
+status code by a #SoupAuthDomain or a signal handler), @callback
+will be invoked after receiving the request headers, but before
+receiving the request body; the message's #SoupMessage:method and
+#SoupMessage:request-headers fields will be filled in.
+
+Early handlers are generally used for processing requests with
+request bodies in a streaming fashion. If you determine that the
+request will contain a message body, normally you would call
+soup_message_body_set_accumulate() on the message's
+#SoupMessage:request-body to turn off request-body accumulation,
+and connect to the message's #SoupMessage::got-chunk signal to
+process each chunk as it comes in.
+
+To complete the message processing after the full message body has
+been read, you can either also connect to #SoupMessage::got-body,
+or else you can register a non-early handler for @path as well. As
+long as you have not set the #SoupMessage:status-code by the time
+#SoupMessage::got-body is emitted, the non-early handler will be
+run as well.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10810,6 +10970,148 @@ will not be used for that case.</doc>
                      destroy="3">
             <doc xml:space="preserve">callback to invoke for requests under @path</doc>
             <type name="ServerCallback" c:type="SoupServerCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data for @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">destroy notifier to free @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_handler" c:identifier="soup_server_add_handler">
+        <doc xml:space="preserve">Adds a handler to @server for requests under @path. If @path is
+%NULL or "/", then this will be the default handler for all
+requests that don't have a more specific handler. (Note though that
+if you want to handle requests to the special "*" URI, you must
+explicitly register a handler for "*"; the default handler will not
+be used for that case.)
+
+For requests under @path (that have not already been assigned a
+status code by a #SoupAuthDomain, an early #SoupServerHandler, or a
+signal handler), @callback will be invoked after receiving the
+request body; the message's #SoupMessage:method,
+#SoupMessage:request-headers, and #SoupMessage:request-body fields
+will be filled in.
+
+After determining what to do with the request, the callback must at
+a minimum call soup_message_set_status() (or
+soup_message_set_status_full()) on the message to set the response
+status code. Additionally, it may set response headers and/or fill
+in the response body.
+
+If the callback cannot fully fill in the response before returning
+(eg, if it needs to wait for information from a database, or
+another network server), it should call soup_server_pause_message()
+to tell @server to not send the response right away. When the
+response is ready, call soup_server_unpause_message() to cause it
+to be sent.
+
+To send the response body a bit at a time using "chunked" encoding,
+first call soup_message_headers_set_encoding() to set
+%SOUP_ENCODING_CHUNKED on the #SoupMessage:response-headers. Then call
+soup_message_body_append() (or soup_message_body_append_buffer())
+to append each chunk as it becomes ready, and
+soup_server_unpause_message() to make sure it's running. (The
+server will automatically pause the message if it is using chunked
+encoding but no more chunks are available.) When you are done, call
+soup_message_body_complete() to indicate that no more chunks are
+coming.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="server" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupServer</doc>
+            <type name="Server" c:type="SoupServer*"/>
+          </instance-parameter>
+          <parameter name="path"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the toplevel path for the handler</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="2"
+                     destroy="3">
+            <doc xml:space="preserve">callback to invoke for requests under @path</doc>
+            <type name="ServerCallback" c:type="SoupServerCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data for @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">destroy notifier to free @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_websocket_handler"
+              c:identifier="soup_server_add_websocket_handler">
+        <doc xml:space="preserve">Adds a WebSocket handler to @server for requests under @path. (If
+@path is %NULL or "/", then this will be the default handler for
+all requests that don't have a more specific handler.)
+
+When a path has a WebSocket handler registered, @server will check
+incoming requests for WebSocket handshakes after all other handlers
+have run (unless some earlier handler has already set a status code
+on the message), and update the request's status, response headers,
+and response body accordingly.
+
+If @origin is non-%NULL, then only requests containing a matching
+"Origin" header will be accepted. If @protocols is non-%NULL, then
+only requests containing a compatible "Sec-WebSocket-Protocols"
+header will be accepted. More complicated requirements can be
+handled by adding a normal handler to @path, and having it perform
+whatever checks are needed (possibly calling
+soup_server_check_websocket_handshake() one or more times), and
+setting a failure status code if the handshake should be rejected.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="server" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupServer</doc>
+            <type name="Server" c:type="SoupServer*"/>
+          </instance-parameter>
+          <parameter name="path"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the toplevel path for the handler</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="origin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the origin of the connection</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="protocols"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the protocols
+  supported by this handler</doc>
+            <array c:type="char**">
+              <type name="utf8" c:type="char*"/>
+            </array>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="4"
+                     destroy="5">
+            <doc xml:space="preserve">callback to invoke for successful WebSocket requests under @path</doc>
+            <type name="ServerWebsocketCallback"
+                  c:type="SoupServerWebsocketCallback"/>
           </parameter>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">data for @callback</doc>
@@ -11212,7 +11514,7 @@ thread-default #GMainContext is running.</doc-deprecated>
         </parameters>
       </method>
       <method name="remove_handler" c:identifier="soup_server_remove_handler">
-        <doc xml:space="preserve">Removes the handler registered at @path.</doc>
+        <doc xml:space="preserve">Removes all handlers (early and normal) registered at @path.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11533,9 +11835,9 @@ a request.</doc>
 @message will have all of its request-side information
 filled in, and if the message was authenticated, @client
 will have information about that. This signal is emitted
-before any handlers are called for the message, and if it
-sets the message's #status_code, then normal handler
-processing will be skipped.</doc>
+before any (non-early) handlers are called for the message,
+and if it sets the message's #status_code, then normal
+handler processing will be skipped.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11578,10 +11880,7 @@ occurs, the processing will instead end with
       </glib:signal>
     </class>
     <callback name="ServerCallback" c:type="SoupServerCallback">
-      <doc xml:space="preserve">A callback used to handle requests to a #SoupServer. The callback
-will be invoked after receiving the request body; @msg's
-#SoupMessage:method, #SoupMessage:request_headers, and
-#SoupMessage:request_body fields will be filled in.
+      <doc xml:space="preserve">A callback used to handle requests to a #SoupServer.
 
 @path and @query contain the likewise-named components of the
 Request-URI, subject to certain assumptions. By default,
@@ -11602,29 +11901,8 @@ server needs to use some other format, you can just ignore @query,
 and call soup_message_get_uri() and parse the URI's query field
 yourself.
 
-After determining what to do with the request, the callback must at
-a minimum call soup_message_set_status() (or
-soup_message_set_status_full()) on @msg to set the response status
-code. Additionally, it may set response headers and/or fill in the
-response body.
-
-If the callback cannot fully fill in the response before returning
-(eg, if it needs to wait for information from a database, or
-another network server), it should call soup_server_pause_message()
-to tell #SoupServer to not send the response right away. When the
-response is ready, call soup_server_unpause_message() to cause it
-to be sent.
-
-To send the response body a bit at a time using "chunked" encoding,
-first call soup_message_headers_set_encoding() to set
-%SOUP_ENCODING_CHUNKED on the #SoupMessage:response_headers. Then call
-soup_message_body_append() (or soup_message_body_append_buffer())
-to append each chunk as it becomes ready, and
-soup_server_unpause_message() to make sure it's running. (The
-server will automatically pause the message if it is using chunked
-encoding but no more chunks are available.) When you are done, call
-soup_message_body_complete() to indicate that no more chunks are
-coming.</doc>
+See soup_server_add_handler() and soup_server_add_early_handler()
+for details of what handlers can/should do.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -11646,7 +11924,7 @@ coming.</doc>
                    nullable="1"
                    allow-none="1">
           <doc xml:space="preserve">the parsed query
-        component of @msg's Request-URI</doc>
+  component of @msg's Request-URI</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
             <type name="utf8"/>
             <type name="utf8"/>
@@ -11657,7 +11935,8 @@ coming.</doc>
           <type name="ClientContext" c:type="SoupClientContext*"/>
         </parameter>
         <parameter name="user_data" transfer-ownership="none" closure="5">
-          <doc xml:space="preserve">the data passed to @soup_server_add_handler</doc>
+          <doc xml:space="preserve">the data passed to soup_server_add_handler() or
+  soup_server_add_early_handler().</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -11801,6 +12080,41 @@ cannot specify both of them in a single call.</doc>
         <doc xml:space="preserve">Only listen on IPv6 interfaces.</doc>
       </member>
     </bitfield>
+    <callback name="ServerWebsocketCallback"
+              c:type="SoupServerWebsocketCallback">
+      <doc xml:space="preserve">A callback used to handle WebSocket requests to a #SoupServer. The
+callback will be invoked after sending the handshake response back
+to the client (and is only invoked if the handshake was
+successful).
+
+@path contains the path of the Request-URI, subject to the same
+rules as #SoupServerCallback (qv).</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="server" transfer-ownership="none">
+          <doc xml:space="preserve">the #SoupServer</doc>
+          <type name="Server" c:type="SoupServer*"/>
+        </parameter>
+        <parameter name="connection" transfer-ownership="none">
+          <doc xml:space="preserve">the newly created WebSocket connection</doc>
+          <type name="WebsocketConnection" c:type="SoupWebsocketConnection*"/>
+        </parameter>
+        <parameter name="path" transfer-ownership="none">
+          <doc xml:space="preserve">the path component of @msg's Request-URI</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="client" transfer-ownership="none">
+          <doc xml:space="preserve">additional contextual information about the client</doc>
+          <type name="ClientContext" c:type="SoupClientContext*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="4">
+          <doc xml:space="preserve">the data passed to @soup_server_add_handler</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="Session"
            c:symbol-prefix="session"
            c:type="SoupSession"
@@ -12774,6 +13088,35 @@ response body, and allows you to read the response via a
           </parameter>
         </parameters>
       </method>
+      <method name="steal_connection"
+              c:identifier="soup_session_steal_connection"
+              version="2.50">
+        <doc xml:space="preserve">"Steals" the HTTP connection associated with @msg from @session.
+This happens immediately, regardless of the current state of the
+connection, and @msg's callback will not be called. You can steal
+the connection from a #SoupMessage signal handler if you need to
+wait for part or all of the response to be received first.
+
+Calling this function may cause @msg to be freed if you are not
+holding any other reference to it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the #GIOStream formerly associated
+  with @msg (or %NULL if @msg was no longer associated with a
+  connection). No guarantees are made about what kind of #GIOStream
+  is returned.</doc>
+          <type name="Gio.IOStream" c:type="GIOStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupSession</doc>
+            <type name="Session" c:type="SoupSession*"/>
+          </instance-parameter>
+          <parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">the message whose connection is to be stolen</doc>
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="unpause_message"
               c:identifier="soup_session_unpause_message">
         <doc xml:space="preserve">Resumes HTTP I/O on @msg. Use this to resume after calling
@@ -12796,6 +13139,102 @@ This may only be called for asynchronous messages (those sent on a
           <parameter name="msg" transfer-ownership="none">
             <doc xml:space="preserve">a #SoupMessage currently running on @session</doc>
             <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="websocket_connect_async"
+              c:identifier="soup_session_websocket_connect_async"
+              version="2.50">
+        <doc xml:space="preserve">Asynchronously creates a #SoupWebsocketConnection to communicate
+with a remote server.
+
+All necessary WebSocket-related headers will be added to @msg, and
+it will then be sent and asynchronously processed normally
+(including handling of redirection and HTTP authentication).
+
+If the server returns "101 Switching Protocols", then @msg's status
+code and response headers will be updated, and then the WebSocket
+handshake will be completed. On success,
+soup_websocket_connect_finish() will return a new
+#SoupWebsocketConnection. On failure it will return a #GError.
+
+If the server returns a status other than "101 Switching
+Protocols", then @msg will contain the complete response headers
+and body from the server's response, and
+soup_websocket_connect_finish() will return
+%SOUP_WEBSOCKET_ERROR_NOT_WEBSOCKET.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupSession</doc>
+            <type name="Session" c:type="SoupSession*"/>
+          </instance-parameter>
+          <parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">#SoupMessage indicating the WebSocket server to connect to</doc>
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+          <parameter name="origin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">origin of the connection</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="protocols"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a
+  %NULL-terminated array of protocols supported</doc>
+            <array c:type="char**">
+              <type name="utf8" c:type="char*"/>
+            </array>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">the callback to invoke</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">data for @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="websocket_connect_finish"
+              c:identifier="soup_session_websocket_connect_finish"
+              version="2.50"
+              throws="1">
+        <doc xml:space="preserve">Gets the #SoupWebsocketConnection response to a
+soup_session_websocket_connect_async() call and (if successful),
+returns a #SoupWebsockConnection that can be used to communicate
+with the server.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #SoupWebsocketConnection, or
+  %NULL on error.</doc>
+          <type name="WebsocketConnection" c:type="SoupWebsocketConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupSession</doc>
+            <type name="Session" c:type="SoupSession*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the #GAsyncResult passed to your callback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -13261,10 +13700,14 @@ signals) may be invoked multiple times for a given message.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="request-started" when="first">
+      <glib:signal name="request-started"
+                   when="first"
+                   deprecated="1"
+                   deprecated-version="2.50.">
         <doc xml:space="preserve">Emitted just before a request is sent. See
 #SoupSession::request_queued for a detailed description of
 the message lifecycle within a session.</doc>
+        <doc-deprecated xml:space="preserve">Use #SoupMessage::starting instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -14517,12 +14960,6 @@ return value is %SOUP_SOCKET_ERROR.)</doc>
                 construct-only="1"
                 transfer-ownership="none">
         <type name="gpointer" c:type="gpointer"/>
-      </property>
-      <property name="close-on-dispose"
-                writable="1"
-                construct="1"
-                transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="fd"
                 writable="1"
@@ -15961,6 +16398,718 @@ soup_uri_new() already did).</doc>
     <constant name="VALUE_UTILS_H" value="1" c:type="SOUP_VALUE_UTILS_H">
       <type name="gint" c:type="gint"/>
     </constant>
+    <enumeration name="WebsocketCloseCode"
+                 version="2.50"
+                 glib:type-name="SoupWebsocketCloseCode"
+                 glib:get-type="soup_websocket_close_code_get_type"
+                 c:type="SoupWebsocketCloseCode">
+      <doc xml:space="preserve">Pre-defined close codes that can be passed to
+soup_websocket_connection_close() or received from
+soup_websocket_connection_get_close_code(). (However, other codes
+are also allowed.)</doc>
+      <member name="normal"
+              value="1000"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_NORMAL"
+              glib:nick="normal">
+        <doc xml:space="preserve">a normal, non-error close</doc>
+      </member>
+      <member name="going_away"
+              value="1001"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_GOING_AWAY"
+              glib:nick="going-away">
+        <doc xml:space="preserve">the client/server is going away</doc>
+      </member>
+      <member name="protocol_error"
+              value="1002"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_PROTOCOL_ERROR"
+              glib:nick="protocol-error">
+        <doc xml:space="preserve">a protocol error occurred</doc>
+      </member>
+      <member name="unsupported_data"
+              value="1003"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_UNSUPPORTED_DATA"
+              glib:nick="unsupported-data">
+        <doc xml:space="preserve">the endpoint received data
+  of a type that it does not support.</doc>
+      </member>
+      <member name="no_status"
+              value="1005"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_NO_STATUS"
+              glib:nick="no-status">
+        <doc xml:space="preserve">reserved value indicating that
+  no close code was present; must not be sent.</doc>
+      </member>
+      <member name="abnormal"
+              value="1006"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_ABNORMAL"
+              glib:nick="abnormal">
+        <doc xml:space="preserve">reserved value indicating that
+  the connection was closed abnormally; must not be sent.</doc>
+      </member>
+      <member name="bad_data"
+              value="1007"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_BAD_DATA"
+              glib:nick="bad-data">
+        <doc xml:space="preserve">the endpoint received data that
+  was invalid (eg, non-UTF-8 data in a text message).</doc>
+      </member>
+      <member name="policy_violation"
+              value="1008"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_POLICY_VIOLATION"
+              glib:nick="policy-violation">
+        <doc xml:space="preserve">generic error code
+  indicating some sort of policy violation.</doc>
+      </member>
+      <member name="too_big"
+              value="1009"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_TOO_BIG"
+              glib:nick="too-big">
+        <doc xml:space="preserve">the endpoint received a message
+  that is too big to process.</doc>
+      </member>
+      <member name="no_extension"
+              value="1010"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_NO_EXTENSION"
+              glib:nick="no-extension">
+        <doc xml:space="preserve">the client is closing the
+  connection because the server failed to negotiate a required
+  extension.</doc>
+      </member>
+      <member name="server_error"
+              value="1011"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_SERVER_ERROR"
+              glib:nick="server-error">
+        <doc xml:space="preserve">the server is closing the
+  connection because it was unable to fulfill the request.</doc>
+      </member>
+      <member name="tls_handshake"
+              value="1015"
+              c:identifier="SOUP_WEBSOCKET_CLOSE_TLS_HANDSHAKE"
+              glib:nick="tls-handshake">
+        <doc xml:space="preserve">reserved value indicating that
+  the TLS handshake failed; must not be sent.</doc>
+      </member>
+    </enumeration>
+    <class name="WebsocketConnection"
+           c:symbol-prefix="websocket_connection"
+           c:type="SoupWebsocketConnection"
+           version="2.50"
+           parent="GObject.Object"
+           glib:type-name="SoupWebsocketConnection"
+           glib:get-type="soup_websocket_connection_get_type"
+           glib:type-struct="WebsocketConnectionClass">
+      <doc xml:space="preserve">A class representing a WebSocket connection.</doc>
+      <constructor name="new"
+                   c:identifier="soup_websocket_connection_new"
+                   version="2.50">
+        <doc xml:space="preserve">Creates a #SoupWebsocketConnection on @stream. This should be
+called after completing the handshake to begin using the WebSocket
+protocol.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #SoupWebsocketConnection</doc>
+          <type name="WebsocketConnection" c:type="SoupWebsocketConnection*"/>
+        </return-value>
+        <parameters>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GIOStream connected to the WebSocket server</doc>
+            <type name="Gio.IOStream" c:type="GIOStream*"/>
+          </parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">the URI of the connection</doc>
+            <type name="URI" c:type="SoupURI*"/>
+          </parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">the type of connection (client/side)</doc>
+            <type name="WebsocketConnectionType"
+                  c:type="SoupWebsocketConnectionType"/>
+          </parameter>
+          <parameter name="origin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the Origin of the client</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="protocol"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the subprotocol in use</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="closed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="closing">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="error">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+          <parameter name="error" transfer-ownership="none">
+            <type name="GLib.Error" c:type="GError*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="message">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <type name="WebsocketDataType" c:type="SoupWebsocketDataType"/>
+          </parameter>
+          <parameter name="message" transfer-ownership="none">
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="close"
+              c:identifier="soup_websocket_connection_close"
+              version="2.50">
+        <doc xml:space="preserve">Close the connection in an orderly fashion.
+
+Note that until the #SoupWebsocketConnection::closed signal fires, the connection
+is not yet completely closed. The close message is not even sent until the
+main loop runs.
+
+The @code and @data are sent to the peer along with the close request.
+Note that the @data must be UTF-8 valid.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+          <parameter name="code" transfer-ownership="none">
+            <doc xml:space="preserve">close code</doc>
+            <type name="gushort" c:type="gushort"/>
+          </parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">close data</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_close_code"
+              c:identifier="soup_websocket_connection_get_close_code"
+              version="2.50">
+        <doc xml:space="preserve">Get the close code received from the WebSocket peer.
+
+This only becomes valid once the WebSocket is in the
+%SOUP_WEBSOCKET_STATE_CLOSED state. The value will often be in the
+#SoupWebsocketCloseCode enumeration, but may also be an application
+defined close code.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the close code or zero.</doc>
+          <type name="gushort" c:type="gushort"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_close_data"
+              c:identifier="soup_websocket_connection_get_close_data"
+              version="2.50">
+        <doc xml:space="preserve">Get the close data received from the WebSocket peer.
+
+This only becomes valid once the WebSocket is in the
+%SOUP_WEBSOCKET_STATE_CLOSED state. The data may be freed once
+the main loop is run, so copy it if you need to keep it around.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the close data or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_connection_type"
+              c:identifier="soup_websocket_connection_get_connection_type"
+              version="2.50">
+        <doc xml:space="preserve">Get the connection type (client/server) of the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the connection type</doc>
+          <type name="WebsocketConnectionType"
+                c:type="SoupWebsocketConnectionType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_io_stream"
+              c:identifier="soup_websocket_connection_get_io_stream"
+              version="2.50">
+        <doc xml:space="preserve">Get the I/O stream the WebSocket is communicating over.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the WebSocket's I/O stream.</doc>
+          <type name="Gio.IOStream" c:type="GIOStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_origin"
+              c:identifier="soup_websocket_connection_get_origin"
+              version="2.50">
+        <doc xml:space="preserve">Get the origin of the WebSocket.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the origin, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_protocol"
+              c:identifier="soup_websocket_connection_get_protocol"
+              version="2.50">
+        <doc xml:space="preserve">Get the protocol chosen via negotiation with the peer.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the chosen protocol, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_state"
+              c:identifier="soup_websocket_connection_get_state"
+              version="2.50">
+        <doc xml:space="preserve">Get the current state of the WebSocket.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the state</doc>
+          <type name="WebsocketState" c:type="SoupWebsocketState"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_uri"
+              c:identifier="soup_websocket_connection_get_uri"
+              version="2.50">
+        <doc xml:space="preserve">Get the URI of the WebSocket.
+
+For servers this represents the address of the WebSocket, and
+for clients it is the address connected to.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the URI</doc>
+          <type name="URI" c:type="SoupURI*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="send_binary"
+              c:identifier="soup_websocket_connection_send_binary"
+              version="2.50">
+        <doc xml:space="preserve">Send a binary message to the peer.
+
+The message is queued to be sent and will be sent when the main loop
+is run.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">the message contents</doc>
+            <array length="1" zero-terminated="0" c:type="gconstpointer">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:space="preserve">the length of @data</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_text"
+              c:identifier="soup_websocket_connection_send_text"
+              version="2.50">
+        <doc xml:space="preserve">Send a text (UTF-8) message to the peer.
+
+The message is queued to be sent and will be sent when the main loop
+is run.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the WebSocket</doc>
+            <type name="WebsocketConnection"
+                  c:type="SoupWebsocketConnection*"/>
+          </instance-parameter>
+          <parameter name="text" transfer-ownership="none">
+            <doc xml:space="preserve">the message contents</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="connection-type"
+                version="2.50"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The type of connection (client/server).</doc>
+        <type name="WebsocketConnectionType"/>
+      </property>
+      <property name="io-stream"
+                version="2.50"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The underlying IO stream the WebSocket is communicating
+over.
+
+The input and output streams must be pollable streams.</doc>
+        <type name="Gio.IOStream"/>
+      </property>
+      <property name="origin"
+                version="2.50"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The client's Origin.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="protocol"
+                version="2.50"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The chosen protocol, or %NULL if a protocol was not agreed
+upon.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="state" version="2.50" transfer-ownership="none">
+        <doc xml:space="preserve">The current state of the WebSocket.</doc>
+        <type name="WebsocketState"/>
+      </property>
+      <property name="uri"
+                version="2.50"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The URI of the WebSocket.
+
+For servers this represents the address of the WebSocket,
+and for clients it is the address connected to.</doc>
+        <type name="URI"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="pv" readable="0" private="1">
+        <type name="WebsocketConnectionPrivate"
+              c:type="SoupWebsocketConnectionPrivate*"/>
+      </field>
+      <glib:signal name="closed" when="first" version="2.50">
+        <doc xml:space="preserve">Emitted when the connection has completely closed, either
+due to an orderly close from the peer, one initiated via
+soup_websocket_connection_close() or a fatal error
+condition that caused a close.
+
+This signal will be emitted once.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="closing" when="last" version="2.50">
+        <doc xml:space="preserve">This signal will be emitted during an orderly close.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="error" when="first" version="2.50">
+        <doc xml:space="preserve">Emitted when an error occurred on the WebSocket. This may
+be fired multiple times. Fatal errors will be followed by
+the #SoupWebsocketConnection::closed signal being emitted.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">the error that occured</doc>
+            <type name="GLib.Error"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="message" when="first" version="2.50">
+        <doc xml:space="preserve">Emitted when we receive a message from the peer.
+
+As a convenience, the @message data will always be
+NUL-terminated, but the NUL byte will not be included in
+the length count.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">the type of message contents</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">the message data</doc>
+            <type name="GLib.Bytes"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="WebsocketConnectionClass"
+            c:type="SoupWebsocketConnectionClass"
+            glib:is-gtype-struct-for="WebsocketConnection"
+            version="2.50">
+      <doc xml:space="preserve">The abstract base class for #SoupWebsocketConnection</doc>
+      <field name="parent">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="message">
+        <callback name="message">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="WebsocketConnection"
+                    c:type="SoupWebsocketConnection*"/>
+            </parameter>
+            <parameter name="type" transfer-ownership="none">
+              <type name="WebsocketDataType" c:type="SoupWebsocketDataType"/>
+            </parameter>
+            <parameter name="message" transfer-ownership="none">
+              <type name="GLib.Bytes" c:type="GBytes*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="error">
+        <callback name="error">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="WebsocketConnection"
+                    c:type="SoupWebsocketConnection*"/>
+            </parameter>
+            <parameter name="error" transfer-ownership="none">
+              <type name="GLib.Error" c:type="GError*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="closing">
+        <callback name="closing">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="WebsocketConnection"
+                    c:type="SoupWebsocketConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="closed">
+        <callback name="closed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="WebsocketConnection"
+                    c:type="SoupWebsocketConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <record name="WebsocketConnectionPrivate"
+            c:type="SoupWebsocketConnectionPrivate"
+            disguised="1">
+    </record>
+    <enumeration name="WebsocketConnectionType"
+                 version="2.50"
+                 glib:type-name="SoupWebsocketConnectionType"
+                 glib:get-type="soup_websocket_connection_type_get_type"
+                 c:type="SoupWebsocketConnectionType">
+      <doc xml:space="preserve">The type of a #SoupWebsocketConnection.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="SOUP_WEBSOCKET_CONNECTION_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">unknown/invalid connection</doc>
+      </member>
+      <member name="client"
+              value="1"
+              c:identifier="SOUP_WEBSOCKET_CONNECTION_CLIENT"
+              glib:nick="client">
+        <doc xml:space="preserve">a client-side connection</doc>
+      </member>
+      <member name="server"
+              value="2"
+              c:identifier="SOUP_WEBSOCKET_CONNECTION_SERVER"
+              glib:nick="server">
+        <doc xml:space="preserve">a server-side connection</doc>
+      </member>
+    </enumeration>
+    <enumeration name="WebsocketDataType"
+                 version="2.50"
+                 glib:type-name="SoupWebsocketDataType"
+                 glib:get-type="soup_websocket_data_type_get_type"
+                 c:type="SoupWebsocketDataType">
+      <doc xml:space="preserve">The type of data contained in a #SoupWebsocketConnection::message
+signal.</doc>
+      <member name="text"
+              value="1"
+              c:identifier="SOUP_WEBSOCKET_DATA_TEXT"
+              glib:nick="text">
+        <doc xml:space="preserve">UTF-8 text</doc>
+      </member>
+      <member name="binary"
+              value="2"
+              c:identifier="SOUP_WEBSOCKET_DATA_BINARY"
+              glib:nick="binary">
+        <doc xml:space="preserve">binary data</doc>
+      </member>
+    </enumeration>
+    <enumeration name="WebsocketError"
+                 version="2.50"
+                 glib:type-name="SoupWebsocketError"
+                 glib:get-type="soup_websocket_error_get_type"
+                 c:type="SoupWebsocketError">
+      <doc xml:space="preserve">WebSocket-related errors.</doc>
+      <member name="failed"
+              value="0"
+              c:identifier="SOUP_WEBSOCKET_ERROR_FAILED"
+              glib:nick="failed">
+        <doc xml:space="preserve">a generic error</doc>
+      </member>
+      <member name="not_websocket"
+              value="1"
+              c:identifier="SOUP_WEBSOCKET_ERROR_NOT_WEBSOCKET"
+              glib:nick="not-websocket">
+        <doc xml:space="preserve">attempted to handshake with a
+  server that does not appear to understand WebSockets.</doc>
+      </member>
+      <member name="bad_handshake"
+              value="2"
+              c:identifier="SOUP_WEBSOCKET_ERROR_BAD_HANDSHAKE"
+              glib:nick="bad-handshake">
+        <doc xml:space="preserve">the WebSocket handshake failed
+  because some detail was invalid (eg, incorrect accept key).</doc>
+      </member>
+      <member name="bad_origin"
+              value="3"
+              c:identifier="SOUP_WEBSOCKET_ERROR_BAD_ORIGIN"
+              glib:nick="bad-origin">
+        <doc xml:space="preserve">the WebSocket handshake failed
+  because the "Origin" header was not an allowed value.</doc>
+      </member>
+      <function name="get_quark" c:identifier="soup_websocket_error_get_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
+    </enumeration>
+    <enumeration name="WebsocketState"
+                 version="2.50"
+                 glib:type-name="SoupWebsocketState"
+                 glib:get-type="soup_websocket_state_get_type"
+                 c:type="SoupWebsocketState">
+      <doc xml:space="preserve">The state of the WebSocket connection.</doc>
+      <member name="open"
+              value="1"
+              c:identifier="SOUP_WEBSOCKET_STATE_OPEN"
+              glib:nick="open">
+        <doc xml:space="preserve">the connection is ready to send messages</doc>
+      </member>
+      <member name="closing"
+              value="2"
+              c:identifier="SOUP_WEBSOCKET_STATE_CLOSING"
+              glib:nick="closing">
+        <doc xml:space="preserve">the connection is in the process of
+  closing down; messages may be received, but not sent</doc>
+      </member>
+      <member name="closed"
+              value="3"
+              c:identifier="SOUP_WEBSOCKET_STATE_CLOSED"
+              glib:nick="closed">
+        <doc xml:space="preserve">the connection is completely closed down</doc>
+      </member>
+    </enumeration>
     <enumeration name="XMLRPCError"
                  glib:type-name="SoupXMLRPCError"
                  glib:get-type="soup_xmlrpc_error_get_type"
@@ -17664,6 +18813,166 @@ rather than being inserted directly.</doc>
           <doc xml:space="preserve">the type of @first_key, followed by the value, followed
 by additional key/type/value triplets, terminated by %NULL</doc>
           <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="websocket_client_prepare_handshake"
+              c:identifier="soup_websocket_client_prepare_handshake"
+              version="2.50">
+      <doc xml:space="preserve">Adds the necessary headers to @msg to request a WebSocket
+handshake. The message body and non-WebSocket-related headers are
+not modified.
+
+This is a low-level function; if you use
+soup_session_websocket_connect_async() to create a WebSocket
+connection, it will call this for you.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none">
+          <doc xml:space="preserve">a #SoupMessage</doc>
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="origin"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the "Origin" header to set</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="protocols"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">list of
+  protocols to offer</doc>
+          <array c:type="char**">
+            <type name="utf8" c:type="char*"/>
+          </array>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="websocket_client_verify_handshake"
+              c:identifier="soup_websocket_client_verify_handshake"
+              version="2.50"
+              throws="1">
+      <doc xml:space="preserve">Looks at the response status code and headers in @msg and
+determines if they contain a valid WebSocket handshake response
+(given the handshake request in @msg's request headers).
+
+This is a low-level function; if you use
+soup_session_websocket_connect_async() to create a WebSocket
+connection, it will call this for you.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @msg contains a completed valid WebSocket
+  handshake, %FALSE and an error if not.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none">
+          <doc xml:space="preserve">#SoupMessage containing both client and server sides of a
+  WebSocket handshake</doc>
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="websocket_error_get_quark"
+              c:identifier="soup_websocket_error_get_quark"
+              moved-to="WebsocketError.get_quark">
+      <return-value transfer-ownership="none">
+        <type name="GLib.Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
+    <function name="websocket_server_check_handshake"
+              c:identifier="soup_websocket_server_check_handshake"
+              version="2.50"
+              throws="1">
+      <doc xml:space="preserve">Examines the method and request headers in @msg and determines
+whether @msg contains a valid handshake request.
+
+If @origin is non-%NULL, then only requests containing a matching
+"Origin" header will be accepted. If @protocols is non-%NULL, then
+only requests containing a compatible "Sec-WebSocket-Protocols"
+header will be accepted.
+
+Normally soup_websocket_server_process_handshake() will take care
+of this for you, and if you use soup_server_add_websocket_handler()
+to handle accepting WebSocket connections, it will call that for
+you. However, this function may be useful if you need to perform
+more complicated validation; eg, accepting multiple different Origins,
+or handling different protocols depending on the path.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @msg contained a valid WebSocket handshake,
+  %FALSE and an error if not.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none">
+          <doc xml:space="preserve">#SoupMessage containing the client side of a WebSocket handshake</doc>
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="origin"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">expected Origin header</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="protocols"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">allowed WebSocket
+  protocols.</doc>
+          <array c:type="char**">
+            <type name="utf8" c:type="char*"/>
+          </array>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="websocket_server_process_handshake"
+              c:identifier="soup_websocket_server_process_handshake"
+              version="2.50">
+      <doc xml:space="preserve">Examines the method and request headers in @msg and (assuming @msg
+contains a valid handshake request), fills in the handshake
+response.
+
+If @origin is non-%NULL, then only requests containing a matching
+"Origin" header will be accepted. If @protocols is non-%NULL, then
+only requests containing a compatible "Sec-WebSocket-Protocols"
+header will be accepted.
+
+This is a low-level function; if you use
+soup_server_add_websocket_handler() to handle accepting WebSocket
+connections, it will call this for you.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @msg contained a valid WebSocket handshake
+  request and was updated to contain a handshake response. %FALSE
+  and an error if not.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none">
+          <doc xml:space="preserve">#SoupMessage containing the client side of a WebSocket handshake</doc>
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="origin"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">expected Origin header</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="protocols"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">allowed WebSocket
+  protocols.</doc>
+          <array c:type="char**">
+            <type name="utf8" c:type="char*"/>
+          </array>
         </parameter>
       </parameters>
     </function>

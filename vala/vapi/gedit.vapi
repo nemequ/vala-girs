@@ -178,7 +178,6 @@ namespace Gedit {
 		public void scroll_to_cursor ();
 		public void select_all ();
 		public void set_font (bool def, string font_name);
-		public virtual signal void change_case (Gtk.SourceChangeCaseType case_type);
 		public virtual signal void drop_uris ([CCode (array_length = false, array_null_terminated = true)] string[] uri_list);
 	}
 	[CCode (cheader_filename = "gedit/gedit-window.h", type_id = "gedit_window_get_type ()")]

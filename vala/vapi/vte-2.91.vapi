@@ -101,7 +101,7 @@ namespace Vte {
 		public void set_scroll_on_output (bool scroll);
 		public void set_scrollback_lines (long lines);
 		public void set_size (long columns, long rows);
-		public void set_word_char_exceptions (string word_char_exceptions);
+		public void set_word_char_exceptions (string exceptions);
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void unselect_all ();
 		public void watch_child (GLib.Pid child_pid);

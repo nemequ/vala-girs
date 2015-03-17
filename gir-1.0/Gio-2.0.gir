@@ -110,6 +110,9 @@ and/or use gtk-doc annotations.  -->
            c:type="GDBusMethodInvocation_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
+    <alias name="DBusNodeInfo_autoptr" c:type="GDBusNodeInfo_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
     <alias name="DBusObjectManagerClient_autoptr"
            c:type="GDBusObjectManagerClient_autoptr">
       <type name="gpointer" c:type="gpointer"/>
@@ -317,6 +320,9 @@ and/or use gtk-doc annotations.  -->
       <type name="gpointer" c:type="gpointer"/>
     </alias>
     <alias name="SettingsBackend_autoptr" c:type="GSettingsBackend_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
+    <alias name="SettingsSchema_autoptr" c:type="GSettingsSchema_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
     <alias name="Settings_autoptr" c:type="GSettings_autoptr">
@@ -25595,9 +25601,15 @@ I/O functions call a #GAsyncReadyCallback which is then used to finalize
 the operation, producing a GAsyncResult which is then passed to the
 function's matching _finish() operation.
 
-Some #GFile operations do not have synchronous analogs, as they may
-take a very long time to finish, and blocking may leave an application
-unusable. Notable cases include:
+It is highly recommended to use asynchronous calls when running within a
+shared main loop, such as in the main thread of an application. This avoids
+I/O operations blocking other sources on the main loop from being dispatched.
+Synchronous I/O operations should be performed from worker threads. See the
+[introduction to asynchronous programming section][async-programming] for
+more.
+
+Some #GFile operations almost always take a noticeable amount of time, and
+so do not have synchronous analogs. Notable cases include:
 - g_file_mount_mountable() to mount a mountable file.
 - g_file_unmount_mountable_with_operation() to unmount a mountable file.
 - g_file_eject_mountable_with_operation() to eject a mountable file.
@@ -70526,19 +70538,19 @@ RFC 2782.</doc>
     <record name="StaticResource" c:type="GStaticResource">
       <doc xml:space="preserve">#GStaticResource is an opaque data structure and can only be accessed
 using the following functions.</doc>
-      <field name="data" writable="1">
+      <field name="data" readable="0" private="1">
         <type name="guint8" c:type="const guint8*"/>
       </field>
-      <field name="data_len" writable="1">
+      <field name="data_len" readable="0" private="1">
         <type name="gsize" c:type="gsize"/>
       </field>
-      <field name="resource" writable="1">
+      <field name="resource" readable="0" private="1">
         <type name="Resource" c:type="GResource*"/>
       </field>
-      <field name="next" writable="1">
+      <field name="next" readable="0" private="1">
         <type name="StaticResource" c:type="GStaticResource*"/>
       </field>
-      <field name="padding" writable="1">
+      <field name="padding" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
       <method name="fini" c:identifier="g_static_resource_fini" version="2.32">
@@ -72782,6 +72794,23 @@ g_task_set_check_cancellable() for more details.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_completed"
+              c:identifier="g_task_get_completed"
+              version="2.44">
+        <doc xml:space="preserve">Gets the value of #GTask:completed. This changes from %FALSE to %TRUE after
+the task’s callback is invoked, and will return %FALSE if called from inside
+the callback.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the task has completed, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="task" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTask.</doc>
+            <type name="Task" c:type="GTask*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_context"
               c:identifier="g_task_get_context"
               version="2.36">
@@ -73164,7 +73193,8 @@ See #GTaskThreadFunc for more details about how @task_func is handled.
 
 Normally this is used with tasks created with a %NULL
 `callback`, but note that even if the task does
-have a callback, it will not be invoked when @task_func returns.</doc>
+have a callback, it will not be invoked when @task_func returns.
+#GTask:completed will be set to %TRUE just before this function returns.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -73336,6 +73366,18 @@ particular place.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="completed" version="2.44" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the task has completed, meaning its callback (if set) has been
+invoked. This can only happen after g_task_return_pointer(),
+g_task_return_error() or one of the other return functions have been called
+on the task.
+
+This property is guaranteed to change from %FALSE to %TRUE exactly once.
+
+The #GObject::notify signal for this change is emitted in the same main
+context as the task’s callback, immediately after that callback is invoked.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
     </class>
     <record name="TaskClass"
             c:type="GTaskClass"
@@ -80049,21 +80091,50 @@ This corresponds roughly to a mtab entry.</doc>
            glib:get-type="g_unix_mount_monitor_get_type"
            glib:type-struct="UnixMountMonitorClass">
       <doc xml:space="preserve">Watches #GUnixMounts for changes.</doc>
-      <constructor name="new" c:identifier="g_unix_mount_monitor_new">
-        <doc xml:space="preserve">Gets a new #GUnixMountMonitor. The default rate limit for which the
-monitor will report consecutive changes for the mount and mount
-point entry files is the default for a #GFileMonitor. Use
-g_unix_mount_monitor_set_rate_limit() to change this.</doc>
+      <constructor name="new"
+                   c:identifier="g_unix_mount_monitor_new"
+                   deprecated="1"
+                   deprecated-version="2.44">
+        <doc xml:space="preserve">Deprecated alias for g_unix_mount_monitor_get().
+
+This function was never a true constructor, which is why it was
+renamed.</doc>
+        <doc-deprecated xml:space="preserve">Use g_unix_mount_monitor_get() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GUnixMountMonitor.</doc>
           <type name="UnixMountMonitor" c:type="GUnixMountMonitor*"/>
         </return-value>
       </constructor>
+      <function name="get"
+                c:identifier="g_unix_mount_monitor_get"
+                version="2.44">
+        <doc xml:space="preserve">Gets the #GUnixMountMonitor for the current thread-default main
+context.
+
+The mount monitor can be used to monitor for changes to the list of
+mounted filesystems as well as the list of mount points (ie: fstab
+entries).
+
+You must only call g_object_unref() on the return value from under
+the same main context as you called this function.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the #GUnixMountMonitor.</doc>
+          <type name="UnixMountMonitor" c:type="GUnixMountMonitor*"/>
+        </return-value>
+      </function>
       <method name="set_rate_limit"
               c:identifier="g_unix_mount_monitor_set_rate_limit"
-              version="2.18">
-        <doc xml:space="preserve">Sets the rate limit to which the @mount_monitor will report
-consecutive change events to the mount and mount point entry files.</doc>
+              version="2.18"
+              deprecated="1"
+              deprecated-version="2.44">
+        <doc xml:space="preserve">This function does nothing.
+
+Before 2.44, this was a partially-effective way of controlling the
+rate at which events would be reported under some uncommon
+circumstances.  Since @mount_monitor is a singleton, it also meant
+that calling this function would have side effects for other users of
+the monitor.</doc>
+        <doc-deprecated xml:space="preserve">This function does nothing.  Don't call it.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
