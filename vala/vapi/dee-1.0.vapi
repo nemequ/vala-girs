@@ -184,9 +184,7 @@ namespace Dee {
 		public unowned string @get (uint index);
 		public virtual unowned string get_term (uint n);
 		public virtual uint num_terms ();
-		public uint size {
-		[CCode (cname = "dee_term_list_num_terms")]
- get; }
+		public uint size {[CCode (cname = "dee_term_list_num_terms")]  get; }
 	}
 	[CCode (cheader_filename = "dee.h", type_id = "dee_text_analyzer_get_type ()")]
 	public class TextAnalyzer : Dee.Analyzer {

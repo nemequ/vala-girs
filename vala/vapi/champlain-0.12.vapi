@@ -113,6 +113,7 @@ namespace Champlain {
 		public Pango.AttrList get_attributes ();
 		public Clutter.Color? get_color ();
 		public bool get_draw_background ();
+		public bool get_draw_shadow ();
 		public Pango.EllipsizeMode get_ellipsize ();
 		public unowned string get_font_name ();
 		public unowned Clutter.Actor get_image ();
@@ -126,6 +127,7 @@ namespace Champlain {
 		public void set_attributes (Pango.AttrList list);
 		public void set_color (Clutter.Color? color);
 		public void set_draw_background (bool background);
+		public void set_draw_shadow (bool shadow);
 		public void set_ellipsize (Pango.EllipsizeMode mode);
 		public void set_font_name (string? font_name);
 		public void set_image (Clutter.Actor? image);
@@ -142,6 +144,7 @@ namespace Champlain {
 		public Pango.Alignment alignment { get; set; }
 		public Clutter.Color color { get; set; }
 		public bool draw_background { get; set; }
+		public bool draw_shadow { get; set; }
 		public Pango.EllipsizeMode ellipsize { get; set; }
 		public string font_name { get; set; }
 		public Clutter.Actor image { get; set; }

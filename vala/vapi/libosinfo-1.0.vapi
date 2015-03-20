@@ -372,6 +372,7 @@ namespace Osinfo {
 		public unowned string get_system_id ();
 		public unowned string get_url ();
 		public unowned string get_volume_id ();
+		public int64 get_volume_size ();
 		public void set_languages (GLib.List<string> languages);
 		public void set_os (Osinfo.Os os);
 		[NoAccessorMethod]
@@ -398,6 +399,8 @@ namespace Osinfo {
 		public string url { owned get; set; }
 		[NoAccessorMethod]
 		public string volume_id { owned get; set; }
+		[NoAccessorMethod]
+		public int64 volume_size { get; set; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "medialist", type_id = "osinfo_medialist_get_type ()")]
 	public class MediaList : Osinfo.List {
@@ -832,6 +835,8 @@ namespace Osinfo {
 	public const string MEDIA_PROP_VARIANT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_VOLUME_ID")]
 	public const string MEDIA_PROP_VOLUME_ID;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_VOLUME_SIZE")]
+	public const string MEDIA_PROP_VOLUME_SIZE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEGAHERTZ")]
 	public const int MEGAHERTZ;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MICRO_VERSION")]
