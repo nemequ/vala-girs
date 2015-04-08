@@ -7,7 +7,6 @@ namespace Vte {
 		[CCode (has_construct_function = false)]
 		protected Pty ();
 		public void child_setup ();
-		public void close ();
 		[CCode (has_construct_function = false)]
 		public Pty.foreign_sync (owned int fd, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int get_fd ();
@@ -60,8 +59,6 @@ namespace Vte {
 		public string match_check_event (Gdk.Event event, out int tag);
 		public void match_remove (int tag);
 		public void match_remove_all ();
-		[Deprecated (since = "0.40")]
-		public void match_set_cursor (int tag, Gdk.Cursor? cursor);
 		public void match_set_cursor_name (int tag, string cursor_name);
 		public void match_set_cursor_type (int tag, Gdk.CursorType cursor_type);
 		public void paste_primary ();
