@@ -4489,6 +4489,11 @@ and some #NMSetting8021x operations.</doc>
     <constant name="DEVICE_MTU" value="mtu" c:type="NM_DEVICE_MTU">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_NM_PLUGIN_MISSING"
+              value="nm-plugin-missing"
+              c:type="NM_DEVICE_NM_PLUGIN_MISSING">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_OLPC_MESH_ACTIVE_CHANNEL"
               value="active-channel"
               c:type="NM_DEVICE_OLPC_MESH_ACTIVE_CHANNEL">
@@ -5294,6 +5299,21 @@ used by the device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_nm_plugin_missing"
+              c:identifier="nm_device_get_nm_plugin_missing"
+              version="1.2">
+        <doc xml:space="preserve">Indicates that the NetworkManager plugin for the device is not installed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the device plugin not installed.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_physical_port_id"
               c:identifier="nm_device_get_physical_port_id">
         <doc xml:space="preserve">Gets the physical port ID of the #NMDevice. If non-%NULL, this is
@@ -5516,6 +5536,13 @@ operations like addressing and routing.</doc>
       <property name="mtu" transfer-ownership="none">
         <doc xml:space="preserve">The MTU of the device.</doc>
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="nm-plugin-missing"
+                version="1.2"
+                transfer-ownership="none">
+        <doc xml:space="preserve">When %TRUE indicates that the NetworkManager plugin for the device
+is not installed.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="physical-port-id" transfer-ownership="none">
         <doc xml:space="preserve">The physical port ID of the device. (See
@@ -6937,6 +6964,12 @@ device, and must not be modified.</doc>
               glib:nick="sim-pin-incorrect">
         <doc xml:space="preserve">SIM PIN was incorrect</doc>
       </member>
+      <member name="new_activation"
+              value="60"
+              c:identifier="NM_DEVICE_STATE_REASON_NEW_ACTIVATION"
+              glib:nick="new-activation">
+        <doc xml:space="preserve">New connection activation was enqueued</doc>
+      </member>
     </enumeration>
     <class name="DeviceTeam"
            c:symbol-prefix="device_team"
@@ -7580,6 +7613,24 @@ Element-type: NMAccessPoint</doc>
               glib:nick="adhoc">
         <doc xml:space="preserve">device supports Ad-Hoc mode</doc>
       </member>
+      <member name="freq_valid"
+              value="256"
+              c:identifier="NM_WIFI_DEVICE_CAP_FREQ_VALID"
+              glib:nick="freq-valid">
+        <doc xml:space="preserve">device reports frequency capabilities</doc>
+      </member>
+      <member name="freq_2ghz"
+              value="512"
+              c:identifier="NM_WIFI_DEVICE_CAP_FREQ_2GHZ"
+              glib:nick="freq-2ghz">
+        <doc xml:space="preserve">device supports 2.4GHz frequencies</doc>
+      </member>
+      <member name="freq_5ghz"
+              value="1024"
+              c:identifier="NM_WIFI_DEVICE_CAP_FREQ_5GHZ"
+              glib:nick="freq-5ghz">
+        <doc xml:space="preserve">device supports 5GHz frequencies</doc>
+      </member>
     </bitfield>
     <record name="DeviceWifiClass"
             c:type="NMDeviceWifiClass"
@@ -7659,8 +7710,11 @@ Element-type: NMAccessPoint</doc>
         </parameters>
       </virtual-method>
       <method name="get_active_nsp"
-              c:identifier="nm_device_wimax_get_active_nsp">
+              c:identifier="nm_device_wimax_get_active_nsp"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets the active #NMWimaxNsp.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the access point or %NULL if none is active</doc>
           <type name="WimaxNsp" c:type="NMWimaxNsp*"/>
@@ -7672,8 +7726,12 @@ Element-type: NMAccessPoint</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_bsid" c:identifier="nm_device_wimax_get_bsid">
+      <method name="get_bsid"
+              c:identifier="nm_device_wimax_get_bsid"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets the ID of the serving Base Station when the device is connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ID of the serving Base Station, or %NULL</doc>
           <type name="utf8" c:type="const char*"/>
@@ -7686,10 +7744,13 @@ Element-type: NMAccessPoint</doc>
         </parameters>
       </method>
       <method name="get_center_frequency"
-              c:identifier="nm_device_wimax_get_center_frequency">
+              c:identifier="nm_device_wimax_get_center_frequency"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets the center frequency (in KHz) of the radio channel the device is using
 to communicate with the network when connected.  Has no meaning when the
 device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the center frequency in KHz, or 0</doc>
           <type name="guint" c:type="guint"/>
@@ -7701,10 +7762,14 @@ device is not connected.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_cinr" c:identifier="nm_device_wimax_get_cinr">
+      <method name="get_cinr"
+              c:identifier="nm_device_wimax_get_cinr"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets the CINR (Carrier to Interference + Noise Ratio) of the current radio
 link in dB.  CINR is a more accurate measure of radio link quality.  Has no
 meaning when the device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the CINR in dB, or 0</doc>
           <type name="gint" c:type="gint"/>
@@ -7717,8 +7782,11 @@ meaning when the device is not connected.</doc>
         </parameters>
       </method>
       <method name="get_hw_address"
-              c:identifier="nm_device_wimax_get_hw_address">
+              c:identifier="nm_device_wimax_get_hw_address"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets the hardware (MAC) address of the #NMDeviceWimax</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the hardware address. This is the internal string used by the
          device, and must not be modified.</doc>
@@ -7732,8 +7800,11 @@ meaning when the device is not connected.</doc>
         </parameters>
       </method>
       <method name="get_nsp_by_path"
-              c:identifier="nm_device_wimax_get_nsp_by_path">
+              c:identifier="nm_device_wimax_get_nsp_by_path"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets a #NMWimaxNsp by path.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the access point or %NULL if none is found.</doc>
           <type name="WimaxNsp" c:type="NMWimaxNsp*"/>
@@ -7749,8 +7820,12 @@ meaning when the device is not connected.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_nsps" c:identifier="nm_device_wimax_get_nsps">
+      <method name="get_nsps"
+              c:identifier="nm_device_wimax_get_nsps"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets all the scanned NSPs of the #NMDeviceWimax.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #GPtrArray containing
          all the scanned #NMWimaxNsps.
@@ -7766,11 +7841,15 @@ The returned array is owned by the client and should not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_rssi" c:identifier="nm_device_wimax_get_rssi">
+      <method name="get_rssi"
+              c:identifier="nm_device_wimax_get_rssi"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Gets the RSSI of the current radio link in dBm.  This value indicates how
 strong the raw received RF signal from the base station is, but does not
 indicate the overall quality of the radio link.  Has no meaning when the
 device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the RSSI in dBm, or 0</doc>
           <type name="gint" c:type="gint"/>
@@ -7782,10 +7861,14 @@ device is not connected.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_tx_power" c:identifier="nm_device_wimax_get_tx_power">
+      <method name="get_tx_power"
+              c:identifier="nm_device_wimax_get_tx_power"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Average power of the last burst transmitted by the device, in units of
 0.5 dBm.  i.e. a TxPower of -11 represents an actual device TX power of
 -5.5 dBm.  Has no meaning when the device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the TX power in dBm, or 0</doc>
           <type name="gint" c:type="gint"/>
@@ -7797,29 +7880,49 @@ device is not connected.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="active-nsp" transfer-ownership="none">
+      <property name="active-nsp"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">The active #NMWimaxNsp of the device.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="WimaxNsp"/>
       </property>
-      <property name="bsid" transfer-ownership="none">
+      <property name="bsid"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">The ID of the serving base station as received from the network.  Has
 no meaning when the device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="center-frequency" transfer-ownership="none">
+      <property name="center-frequency"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">The center frequency (in KHz) of the radio channel the device is using to
 communicate with the network when connected.  Has no meaning when the
 device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="cinr" transfer-ownership="none">
+      <property name="cinr"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">CINR (Carrier to Interference + Noise Ratio) of the current radio link
 in dB.  CINR is a more accurate measure of radio link quality.  Has no
 meaning when the device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="gint" c:type="gint"/>
       </property>
-      <property name="hw-address" transfer-ownership="none">
+      <property name="hw-address"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">The hardware (MAC) address of the device.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="nsps" transfer-ownership="none">
@@ -7830,24 +7933,36 @@ Element-type: NMWimaxNsp</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </property>
-      <property name="rssi" transfer-ownership="none">
+      <property name="rssi"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">RSSI of the current radio link in dBm.  This value indicates how strong
 the raw received RF signal from the base station is, but does not
 indicate the overall quality of the radio link.  Has no meaning when the
 device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="gint" c:type="gint"/>
       </property>
-      <property name="tx-power" transfer-ownership="none">
+      <property name="tx-power"
+                deprecated="1"
+                deprecated-version="1.2"
+                transfer-ownership="none">
         <doc xml:space="preserve">Average power of the last burst transmitted by the device, in units of
 0.5 dBm.  i.e. a TxPower of -11 represents an actual device TX power of
 -5.5 dBm.  Has no meaning when the device is not connected.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="gint" c:type="gint"/>
       </property>
       <field name="parent">
         <type name="Device" c:type="NMDevice"/>
       </field>
-      <glib:signal name="nsp-added" when="first">
+      <glib:signal name="nsp-added"
+                   when="first"
+                   deprecated="1"
+                   deprecated-version="1.2">
         <doc xml:space="preserve">Notifies that a #NMWimaxNsp is added to the wimax device.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7858,8 +7973,12 @@ device is not connected.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="nsp-removed" when="first">
+      <glib:signal name="nsp-removed"
+                   when="first"
+                   deprecated="1"
+                   deprecated-version="1.2">
         <doc xml:space="preserve">Notifies that a #NMWimaxNsp is removed from the wimax device.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -18188,17 +18307,24 @@ VPN connection.</doc>
            glib:type-name="NMSettingWimax"
            glib:get-type="nm_setting_wimax_get_type"
            glib:type-struct="SettingWimaxClass">
-      <constructor name="new" c:identifier="nm_setting_wimax_new">
+      <constructor name="new"
+                   c:identifier="nm_setting_wimax_new"
+                   deprecated="1"
+                   deprecated-version="1.2">
         <doc xml:space="preserve">Creates a new #NMSettingWimax object with default values.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new empty #NMSettingWimax object</doc>
           <type name="Setting" c:type="NMSetting*"/>
         </return-value>
       </constructor>
       <method name="get_mac_address"
-              c:identifier="nm_setting_wimax_get_mac_address">
+              c:identifier="nm_setting_wimax_get_mac_address"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Returns the MAC address of a WiMAX device which this connection is locked
 to.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the MAC address</doc>
           <type name="utf8" c:type="const char*"/>
@@ -18211,9 +18337,12 @@ to.</doc>
         </parameters>
       </method>
       <method name="get_network_name"
-              c:identifier="nm_setting_wimax_get_network_name">
+              c:identifier="nm_setting_wimax_get_network_name"
+              deprecated="1"
+              deprecated-version="1.2">
         <doc xml:space="preserve">Returns the WiMAX NSP name (ex "Sprint" or "CLEAR") which identifies the
 specific WiMAX network this setting describes a connection to.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the WiMAX NSP name</doc>
           <type name="utf8" c:type="const char*"/>
@@ -18225,15 +18354,25 @@ specific WiMAX network this setting describes a connection to.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="mac-address" writable="1" transfer-ownership="none">
+      <property name="mac-address"
+                deprecated="1"
+                deprecated-version="1.2"
+                writable="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will only apply to the WiMAX device whose
 MAC address matches. This property does not change the MAC address of the
 device (known as MAC spoofing).</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="network-name" writable="1" transfer-ownership="none">
+      <property name="network-name"
+                deprecated="1"
+                deprecated-version="1.2"
+                writable="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">Network Service Provider (NSP) name of the WiMAX network this connection
 should use.</doc>
+        <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">

@@ -158,6 +158,12 @@ namespace E {
 		public void release_opid (uint32 opid);
 		public uint32 reserve_opid ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_soup_auth_bearer_get_type ()")]
+	public class SoupAuthBearer : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected SoupAuthBearer ();
+		public void set_access_token (string access_token, int expires_in_seconds);
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_get_type ()")]
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false)]
@@ -345,6 +351,14 @@ namespace E {
 		public string identity { get; set construct; }
 		public bool mail_enabled { get; set construct; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_contacts_get_type ()")]
+	public class SourceContacts : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceContacts ();
+		public bool get_include_me ();
+		public void set_include_me (bool include_me);
+		public bool include_me { get; set; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_get_type ()")]
 	public class SourceCredentialsProvider : GLib.Object, E.Extensible {
 		[CCode (has_construct_function = false)]
@@ -385,6 +399,8 @@ namespace E {
 		protected SourceExtension ();
 		[Deprecated (since = "3.8")]
 		public unowned E.Source get_source ();
+		public void property_lock ();
+		public void property_unlock ();
 		public E.Source source { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_goa_get_type ()")]
@@ -403,6 +419,42 @@ namespace E {
 		public string account_id { get; set construct; }
 		public string calendar_url { get; set construct; }
 		public string contacts_url { get; set construct; }
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_ldap_get_type ()")]
+	public class SourceLDAP : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceLDAP ();
+		public string dup_filter ();
+		public string dup_root_dn ();
+		public E.SourceLDAPAuthentication get_authentication ();
+		public bool get_can_browse ();
+		public unowned string get_filter ();
+		public uint get_limit ();
+		public unowned string get_root_dn ();
+		public E.SourceLDAPScope get_scope ();
+		public E.SourceLDAPSecurity get_security ();
+		public void set_authentication (E.SourceLDAPAuthentication authentication);
+		public void set_can_browse (bool can_browse);
+		public void set_filter (string filter);
+		public void set_limit (uint limit);
+		public void set_root_dn (string root_dn);
+		public void set_scope (E.SourceLDAPScope scope);
+		public void set_security (E.SourceLDAPSecurity security);
+		public E.SourceLDAPAuthentication authentication { get; set; }
+		public bool can_browse { get; set construct; }
+		public string filter { get; set construct; }
+		public uint limit { get; set construct; }
+		public string root_dn { get; set construct; }
+		public E.SourceLDAPScope scope { get; set construct; }
+		public E.SourceLDAPSecurity security { get; set; }
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_local_get_type ()")]
+	public class SourceLocal : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceLocal ();
+		public void set_custom_file (GLib.File custom_file);
+		[NoAccessorMethod]
+		public GLib.File custom_file { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mdn_get_type ()")]
 	public class SourceMDN : E.SourceExtension {
@@ -754,6 +806,18 @@ namespace E {
 		public void set_account_id (uint account_id);
 		public uint account_id { get; set construct; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_weather_get_type ()")]
+	public class SourceWeather : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceWeather ();
+		public string dup_location ();
+		public unowned string get_location ();
+		public E.SourceWeatherUnits get_units ();
+		public void set_location (string location);
+		public void set_units (E.SourceWeatherUnits units);
+		public string location { get; set construct; }
+		public E.SourceWeatherUnits units { get; set construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_webdav_get_type ()")]
 	public class SourceWebdav : E.SourceExtension {
 		[CCode (has_construct_function = false)]
@@ -807,6 +871,14 @@ namespace E {
 		public weak string names;
 		public weak string hint;
 		public weak E.FreeFormExpBuildSexpFunc build_sexp;
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
+	public struct WebDAVDiscoveredSource {
+		public weak string href;
+		public uint32 supports;
+		public weak string display_name;
+		public weak string description;
+		public weak string color;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {
@@ -870,6 +942,29 @@ namespace E {
 		SSL_FAILED,
 		ERROR
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_AUTHENTICATION_", type_id = "e_source_ldap_authentication_get_type ()")]
+	public enum SourceLDAPAuthentication {
+		NONE,
+		EMAIL,
+		BINDDN
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SCOPE_", type_id = "e_source_ldap_scope_get_type ()")]
+	public enum SourceLDAPScope {
+		ONELEVEL,
+		SUBTREE
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SECURITY_", type_id = "e_source_ldap_security_get_type ()")]
+	public enum SourceLDAPSecurity {
+		NONE,
+		LDAPS,
+		STARTTLS
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_WEATHER_UNITS_", type_id = "e_source_weather_units_get_type ()")]
+	public enum SourceWeatherUnits {
+		FAHRENHEIT,
+		CENTIGRADE,
+		KELVIN
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TIME_PARSE_", has_type_id = false)]
 	public enum TimeParseStatus {
 		OK,
@@ -883,6 +978,15 @@ namespace E {
 		ACCEPT,
 		ACCEPT_TEMPORARILY,
 		REJECT_TEMPORARILY
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_DISCOVER_SUPPORTS_", has_type_id = false)]
+	[Flags]
+	public enum WebDAVDiscoverSupports {
+		NONE,
+		CONTACTS,
+		EVENTS,
+		MEMOS,
+		TASKS
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_XMLHASH_STATUS_", has_type_id = false)]
 	public enum XmlHashStatus {
@@ -936,8 +1040,14 @@ namespace E {
 	public const string SOURCE_EXTENSION_CALENDAR;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_COLLECTION")]
 	public const string SOURCE_EXTENSION_COLLECTION;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_CONTACTS_BACKEND")]
+	public const string SOURCE_EXTENSION_CONTACTS_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_GOA")]
 	public const string SOURCE_EXTENSION_GOA;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_LDAP_BACKEND")]
+	public const string SOURCE_EXTENSION_LDAP_BACKEND;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_LOCAL_BACKEND")]
+	public const string SOURCE_EXTENSION_LOCAL_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_ACCOUNT")]
 	public const string SOURCE_EXTENSION_MAIL_ACCOUNT;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_COMPOSITION")]
@@ -974,6 +1084,8 @@ namespace E {
 	public const string SOURCE_EXTENSION_TASK_LIST;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_UOA")]
 	public const string SOURCE_EXTENSION_UOA;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEATHER_BACKEND")]
+	public const string SOURCE_EXTENSION_WEATHER_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEBDAV_BACKEND")]
 	public const string SOURCE_EXTENSION_WEBDAV_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_PARAM_SETTING")]
@@ -1142,6 +1254,8 @@ namespace E {
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void weak_ref_free (GLib.WeakRef weak_ref);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static async void webdav_discover_sources (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

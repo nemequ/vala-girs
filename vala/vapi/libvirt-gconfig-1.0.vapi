@@ -835,6 +835,7 @@ namespace GVirConfig {
 		public StorageVolTarget ();
 		[CCode (has_construct_function = false)]
 		public StorageVolTarget.from_xml (string xml) throws GLib.Error;
+		public void set_compat (string? compat);
 		public void set_format (string format);
 		public void set_permissions (GVirConfig.StoragePermissions? perms);
 	}

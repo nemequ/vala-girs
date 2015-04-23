@@ -13,7 +13,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libedataserver/libedataserver.h"/>
   <namespace name="EDataServer"
              version="1.2"
-             shared-library="libedataserver-1.2.so.20,libcamel-1.2.so.52"
+             shared-library="libedataserver-1.2.so.21,libcamel-1.2.so.53"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <record name="AsyncClosure"
@@ -3980,12 +3980,27 @@ different authentication methods can use different names.</doc>
 #ESourceCollection.  This is also used as a group name in key files.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SOURCE_EXTENSION_CONTACTS_BACKEND"
+              value="Contacts Backend"
+              c:type="E_SOURCE_EXTENSION_CONTACTS_BACKEND">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SOURCE_EXTENSION_GOA"
               value="GNOME Online Accounts"
               c:type="E_SOURCE_EXTENSION_GOA"
               version="3.6">
       <doc xml:space="preserve">Pass this extension name to e_source_get_extension() to access
 #ESourceGoa.  This is also used as a group name in key files.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SOURCE_EXTENSION_LDAP_BACKEND"
+              value="LDAP Backend"
+              c:type="E_SOURCE_EXTENSION_LDAP_BACKEND">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SOURCE_EXTENSION_LOCAL_BACKEND"
+              value="Local Backend"
+              c:type="E_SOURCE_EXTENSION_LOCAL_BACKEND">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SOURCE_EXTENSION_MAIL_ACCOUNT"
@@ -4132,6 +4147,11 @@ different authentication methods can use different names.</doc>
 #ESourceUoa.  This is also used as a group name in key files.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SOURCE_EXTENSION_WEATHER_BACKEND"
+              value="Weather Backend"
+              c:type="E_SOURCE_EXTENSION_WEATHER_BACKEND">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SOURCE_EXTENSION_WEBDAV_BACKEND"
               value="WebDAV Backend"
               c:type="E_SOURCE_EXTENSION_WEBDAV_BACKEND"
@@ -4149,6 +4169,61 @@ with a key file value.  Use this flag when installing #GObject properties
 in #ESourceExtension subclasses.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <class name="SoupAuthBearer"
+           c:symbol-prefix="soup_auth_bearer"
+           c:type="ESoupAuthBearer"
+           version="3.10"
+           parent="GObject.Object"
+           glib:type-name="ESoupAuthBearer"
+           glib:get-type="e_soup_auth_bearer_get_type"
+           glib:type-struct="SoupAuthBearerClass">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <method name="set_access_token"
+              c:identifier="e_soup_auth_bearer_set_access_token"
+              version="3.10">
+        <doc xml:space="preserve">This function is analogous to soup_auth_authenticate() for "Basic" HTTP
+authentication, except it takes an OAuth 2.0 access token instead of a
+username and password.
+
+If @expires_in_seconds is greater than zero, soup_auth_is_authenticated()
+will return %FALSE after the given number of seconds have elapsed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bearer" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupAuthBearer</doc>
+            <type name="SoupAuthBearer" c:type="ESoupAuthBearer*"/>
+          </instance-parameter>
+          <parameter name="access_token" transfer-ownership="none">
+            <doc xml:space="preserve">an OAuth 2.0 access token</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="expires_in_seconds" transfer-ownership="none">
+            <doc xml:space="preserve">expiry for @access_token, or 0 if unknown</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent" introspectable="0">
+        <type c:type="SoupAuth"/>
+      </field>
+      <field name="priv">
+        <type name="SoupAuthBearerPrivate" c:type="ESoupAuthBearerPrivate*"/>
+      </field>
+    </class>
+    <record name="SoupAuthBearerClass"
+            c:type="ESoupAuthBearerClass"
+            glib:is-gtype-struct-for="SoupAuthBearer">
+      <field name="parent_class" introspectable="0">
+        <type c:type="SoupAuthClass"/>
+      </field>
+    </record>
+    <record name="SoupAuthBearerPrivate"
+            c:type="ESoupAuthBearerPrivate"
+            disguised="1">
+    </record>
     <class name="Source"
            c:symbol-prefix="source"
            c:type="ESource"
@@ -9140,6 +9215,59 @@ been already provided.</doc>
         <doc xml:space="preserve">The source is currently connected to its (possibly remote) data store.</doc>
       </member>
     </enumeration>
+    <class name="SourceContacts"
+           c:symbol-prefix="source_contacts"
+           c:type="ESourceContacts"
+           parent="SourceExtension"
+           glib:type-name="ESourceContacts"
+           glib:get-type="e_source_contacts_get_type"
+           glib:type-struct="SourceContactsClass">
+      <method name="get_include_me"
+              c:identifier="e_source_contacts_get_include_me">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceContacts" c:type="ESourceContacts*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_include_me"
+              c:identifier="e_source_contacts_set_include_me">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceContacts" c:type="ESourceContacts*"/>
+          </instance-parameter>
+          <parameter name="include_me" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="include-me" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <field name="parent">
+        <type name="SourceExtension" c:type="ESourceExtension"/>
+      </field>
+      <field name="priv">
+        <type name="SourceContactsPrivate" c:type="ESourceContactsPrivate*"/>
+      </field>
+    </class>
+    <record name="SourceContactsClass"
+            c:type="ESourceContactsClass"
+            glib:is-gtype-struct-for="SourceContacts">
+      <field name="parent_class">
+        <type name="SourceExtensionClass" c:type="ESourceExtensionClass"/>
+      </field>
+    </record>
+    <record name="SourceContactsPrivate"
+            c:type="ESourceContactsPrivate"
+            disguised="1">
+    </record>
     <class name="SourceCredentialsProvider"
            c:symbol-prefix="source_credentials_provider"
            c:type="ESourceCredentialsProvider"
@@ -10319,6 +10447,36 @@ be finalized by another thread while the caller is still using it.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="property_lock"
+              c:identifier="e_source_extension_property_lock"
+              version="3.18">
+        <doc xml:space="preserve">Acquires a property lock, thus no other thread can change properties
+of the @extension until the lock is released.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceExtension</doc>
+            <type name="SourceExtension" c:type="ESourceExtension*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="property_unlock"
+              c:identifier="e_source_extension_property_unlock"
+              version="3.18">
+        <doc xml:space="preserve">Releases a property lock, previously acquired with e_source_extension_property_lock(),
+thus other threads can change properties of the @extension.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceExtension</doc>
+            <type name="SourceExtension" c:type="ESourceExtension*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="ref_source"
               c:identifier="e_source_extension_ref_source"
               version="3.8"
@@ -10592,6 +10750,390 @@ instead.</doc>
       </field>
     </record>
     <record name="SourceGoaPrivate" c:type="ESourceGoaPrivate" disguised="1">
+    </record>
+    <class name="SourceLDAP"
+           c:symbol-prefix="source_ldap"
+           c:type="ESourceLDAP"
+           parent="SourceExtension"
+           glib:type-name="ESourceLDAP"
+           glib:get-type="e_source_ldap_get_type"
+           glib:type-struct="SourceLDAPClass">
+      <method name="dup_filter" c:identifier="e_source_ldap_dup_filter">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="dup_root_dn" c:identifier="e_source_ldap_dup_root_dn">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_authentication"
+              c:identifier="e_source_ldap_get_authentication">
+        <return-value transfer-ownership="none">
+          <type name="SourceLDAPAuthentication"
+                c:type="ESourceLDAPAuthentication"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_can_browse"
+              c:identifier="e_source_ldap_get_can_browse">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_filter" c:identifier="e_source_ldap_get_filter">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_limit" c:identifier="e_source_ldap_get_limit">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_root_dn" c:identifier="e_source_ldap_get_root_dn">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_scope" c:identifier="e_source_ldap_get_scope">
+        <return-value transfer-ownership="none">
+          <type name="SourceLDAPScope" c:type="ESourceLDAPScope"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_security" c:identifier="e_source_ldap_get_security">
+        <return-value transfer-ownership="none">
+          <type name="SourceLDAPSecurity" c:type="ESourceLDAPSecurity"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_authentication"
+              c:identifier="e_source_ldap_set_authentication">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="authentication" transfer-ownership="none">
+            <type name="SourceLDAPAuthentication"
+                  c:type="ESourceLDAPAuthentication"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_can_browse"
+              c:identifier="e_source_ldap_set_can_browse">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="can_browse" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_filter" c:identifier="e_source_ldap_set_filter">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="filter" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_limit" c:identifier="e_source_ldap_set_limit">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="limit" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_root_dn" c:identifier="e_source_ldap_set_root_dn">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="root_dn" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_scope" c:identifier="e_source_ldap_set_scope">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="scope" transfer-ownership="none">
+            <type name="SourceLDAPScope" c:type="ESourceLDAPScope"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_security" c:identifier="e_source_ldap_set_security">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLDAP" c:type="ESourceLDAP*"/>
+          </instance-parameter>
+          <parameter name="security" transfer-ownership="none">
+            <type name="SourceLDAPSecurity" c:type="ESourceLDAPSecurity"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="authentication" writable="1" transfer-ownership="none">
+        <type name="SourceLDAPAuthentication"/>
+      </property>
+      <property name="can-browse"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="filter"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="limit"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="root-dn"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="scope"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="SourceLDAPScope"/>
+      </property>
+      <property name="security" writable="1" transfer-ownership="none">
+        <type name="SourceLDAPSecurity"/>
+      </property>
+      <field name="parent">
+        <type name="SourceExtension" c:type="ESourceExtension"/>
+      </field>
+      <field name="priv">
+        <type name="SourceLDAPPrivate" c:type="ESourceLDAPPrivate*"/>
+      </field>
+    </class>
+    <enumeration name="SourceLDAPAuthentication"
+                 version="3.18"
+                 glib:type-name="ESourceLDAPAuthentication"
+                 glib:get-type="e_source_ldap_authentication_get_type"
+                 c:type="ESourceLDAPAuthentication">
+      <doc xml:space="preserve">Defines authentication types for LDAP sources.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="E_SOURCE_LDAP_AUTHENTICATION_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">Use none authentication type.</doc>
+      </member>
+      <member name="email"
+              value="1"
+              c:identifier="E_SOURCE_LDAP_AUTHENTICATION_EMAIL"
+              glib:nick="email">
+        <doc xml:space="preserve">Use an email address for authentication.</doc>
+      </member>
+      <member name="binddn"
+              value="2"
+              c:identifier="E_SOURCE_LDAP_AUTHENTICATION_BINDDN"
+              glib:nick="binddn">
+        <doc xml:space="preserve">Use a bind DN for authentication.</doc>
+      </member>
+    </enumeration>
+    <record name="SourceLDAPClass"
+            c:type="ESourceLDAPClass"
+            glib:is-gtype-struct-for="SourceLDAP">
+      <field name="parent_class">
+        <type name="SourceExtensionClass" c:type="ESourceExtensionClass"/>
+      </field>
+    </record>
+    <record name="SourceLDAPPrivate" c:type="ESourceLDAPPrivate" disguised="1">
+    </record>
+    <enumeration name="SourceLDAPScope"
+                 version="3.18"
+                 glib:type-name="ESourceLDAPScope"
+                 glib:get-type="e_source_ldap_scope_get_type"
+                 c:type="ESourceLDAPScope">
+      <doc xml:space="preserve">Defines search scope for LDAP sources.</doc>
+      <member name="onelevel"
+              value="0"
+              c:identifier="E_SOURCE_LDAP_SCOPE_ONELEVEL"
+              glib:nick="onelevel">
+        <doc xml:space="preserve">One level search scope.</doc>
+      </member>
+      <member name="subtree"
+              value="1"
+              c:identifier="E_SOURCE_LDAP_SCOPE_SUBTREE"
+              glib:nick="subtree">
+        <doc xml:space="preserve">Sub-tree search scope.</doc>
+      </member>
+    </enumeration>
+    <enumeration name="SourceLDAPSecurity"
+                 version="3.18"
+                 glib:type-name="ESourceLDAPSecurity"
+                 glib:get-type="e_source_ldap_security_get_type"
+                 c:type="ESourceLDAPSecurity">
+      <doc xml:space="preserve">Defines what connection security should be used for LDAP sources.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="E_SOURCE_LDAP_SECURITY_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">Connect insecurely.</doc>
+      </member>
+      <member name="ldaps"
+              value="1"
+              c:identifier="E_SOURCE_LDAP_SECURITY_LDAPS"
+              glib:nick="ldaps">
+        <doc xml:space="preserve">Connect using secure LDAP (LDAPS).</doc>
+      </member>
+      <member name="starttls"
+              value="2"
+              c:identifier="E_SOURCE_LDAP_SECURITY_STARTTLS"
+              glib:nick="starttls">
+        <doc xml:space="preserve">Connect using STARTTLS.</doc>
+      </member>
+    </enumeration>
+    <class name="SourceLocal"
+           c:symbol-prefix="source_local"
+           c:type="ESourceLocal"
+           parent="SourceExtension"
+           glib:type-name="ESourceLocal"
+           glib:get-type="e_source_local_get_type"
+           glib:type-struct="SourceLocalClass">
+      <method name="dup_custom_file"
+              c:identifier="e_source_local_dup_custom_file"
+              introspectable="0">
+        <return-value>
+          <type name="Gio.File" c:type="GFile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLocal" c:type="ESourceLocal*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_custom_file"
+              c:identifier="e_source_local_get_custom_file"
+              introspectable="0">
+        <return-value>
+          <type name="Gio.File" c:type="GFile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLocal" c:type="ESourceLocal*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_custom_file"
+              c:identifier="e_source_local_set_custom_file">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceLocal" c:type="ESourceLocal*"/>
+          </instance-parameter>
+          <parameter name="custom_file" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="custom-file"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="Gio.File"/>
+      </property>
+      <field name="parent">
+        <type name="SourceExtension" c:type="ESourceExtension"/>
+      </field>
+      <field name="priv">
+        <type name="SourceLocalPrivate" c:type="ESourceLocalPrivate*"/>
+      </field>
+    </class>
+    <record name="SourceLocalClass"
+            c:type="ESourceLocalClass"
+            glib:is-gtype-struct-for="SourceLocal">
+      <field name="parent_class">
+        <type name="SourceExtensionClass" c:type="ESourceExtensionClass"/>
+      </field>
+    </record>
+    <record name="SourceLocalPrivate"
+            c:type="ESourceLocalPrivate"
+            disguised="1">
     </record>
     <class name="SourceMDN"
            c:symbol-prefix="source_mdn"
@@ -15482,6 +16024,124 @@ with the #ESource to which @extension belongs.</doc>
     </record>
     <record name="SourceUoaPrivate" c:type="ESourceUoaPrivate" disguised="1">
     </record>
+    <class name="SourceWeather"
+           c:symbol-prefix="source_weather"
+           c:type="ESourceWeather"
+           parent="SourceExtension"
+           glib:type-name="ESourceWeather"
+           glib:get-type="e_source_weather_get_type"
+           glib:type-struct="SourceWeatherClass">
+      <method name="dup_location" c:identifier="e_source_weather_dup_location">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceWeather" c:type="ESourceWeather*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_location" c:identifier="e_source_weather_get_location">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceWeather" c:type="ESourceWeather*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_units" c:identifier="e_source_weather_get_units">
+        <return-value transfer-ownership="none">
+          <type name="SourceWeatherUnits" c:type="ESourceWeatherUnits"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceWeather" c:type="ESourceWeather*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_location" c:identifier="e_source_weather_set_location">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceWeather" c:type="ESourceWeather*"/>
+          </instance-parameter>
+          <parameter name="location" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_units" c:identifier="e_source_weather_set_units">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <type name="SourceWeather" c:type="ESourceWeather*"/>
+          </instance-parameter>
+          <parameter name="units" transfer-ownership="none">
+            <type name="SourceWeatherUnits" c:type="ESourceWeatherUnits"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="location"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="units"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="SourceWeatherUnits"/>
+      </property>
+      <field name="parent">
+        <type name="SourceExtension" c:type="ESourceExtension"/>
+      </field>
+      <field name="priv">
+        <type name="SourceWeatherPrivate" c:type="ESourceWeatherPrivate*"/>
+      </field>
+    </class>
+    <record name="SourceWeatherClass"
+            c:type="ESourceWeatherClass"
+            glib:is-gtype-struct-for="SourceWeather">
+      <field name="parent_class">
+        <type name="SourceExtensionClass" c:type="ESourceExtensionClass"/>
+      </field>
+    </record>
+    <record name="SourceWeatherPrivate"
+            c:type="ESourceWeatherPrivate"
+            disguised="1">
+    </record>
+    <enumeration name="SourceWeatherUnits"
+                 version="3.18"
+                 glib:type-name="ESourceWeatherUnits"
+                 glib:get-type="e_source_weather_units_get_type"
+                 c:type="ESourceWeatherUnits">
+      <doc xml:space="preserve">Units to be used in an #ESourceWeather extension.</doc>
+      <member name="fahrenheit"
+              value="0"
+              c:identifier="E_SOURCE_WEATHER_UNITS_FAHRENHEIT"
+              glib:nick="fahrenheit">
+        <doc xml:space="preserve">Fahrenheit units</doc>
+      </member>
+      <member name="centigrade"
+              value="1"
+              c:identifier="E_SOURCE_WEATHER_UNITS_CENTIGRADE"
+              glib:nick="centigrade">
+        <doc xml:space="preserve">Centigrade units</doc>
+      </member>
+      <member name="kelvin"
+              value="2"
+              c:identifier="E_SOURCE_WEATHER_UNITS_KELVIN"
+              glib:nick="kelvin">
+        <doc xml:space="preserve">Kelvin units</doc>
+      </member>
+    </enumeration>
     <class name="SourceWebdav"
            c:symbol-prefix="source_webdav"
            c:type="ESourceWebdav"
@@ -16128,6 +16788,45 @@ with e_source_webdav_update_ssl_trust().</doc>
         </parameter>
       </parameters>
     </callback>
+    <bitfield name="WebDAVDiscoverSupports" c:type="EWebDAVDiscoverSupports">
+      <member name="none"
+              value="0"
+              c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_NONE">
+      </member>
+      <member name="contacts"
+              value="1"
+              c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_CONTACTS">
+      </member>
+      <member name="events"
+              value="2"
+              c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_EVENTS">
+      </member>
+      <member name="memos"
+              value="4"
+              c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_MEMOS">
+      </member>
+      <member name="tasks"
+              value="8"
+              c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_TASKS">
+      </member>
+    </bitfield>
+    <record name="WebDAVDiscoveredSource" c:type="EWebDAVDiscoveredSource">
+      <field name="href" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="supports" writable="1">
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="display_name" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="description" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="color" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+    </record>
     <record name="XmlHash" c:type="EXmlHash" disguised="1">
       <doc xml:space="preserve">A hash table representation of an XML file.</doc>
     </record>
@@ -17224,6 +17923,37 @@ When the operation is complete, @src_queue will be empty.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="soup_ssl_trust_connect"
+              c:identifier="e_soup_ssl_trust_connect"
+              version="3.16"
+              introspectable="0">
+      <doc xml:space="preserve">Sets up automatic SSL certificate trust handling for @soup_message using the trust
+data stored in @source's WebDAV extension. If @soup_message is about to be sent on
+an SSL connection with an invalid certificate, the code checks if the WebDAV
+extension already has a trust response for that certificate and verifies it
+with e_source_webdav_verify_ssl_trust(). If the verification fails, then
+the @soup_message send also fails.
+
+This works by connecting to the "network-event" signal on @soup_message and
+connecting to the "accept-certificate" signal on each #GTlsConnection for
+which @soup_message reports a #G_SOCKET_CLIENT_TLS_HANDSHAKING event. These
+handlers are torn down automatically when @soup_message is disposed. This process
+is not thread-safe; it is sufficient for safety if all use of @soup_message's
+session and the disposal of @soup_message occur in the same thread.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="soup_message" transfer-ownership="none">
+          <doc xml:space="preserve">a #SoupMessage about to be sent to the source</doc>
+          <type c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">an #ESource that uses WebDAV</doc>
+          <type name="Source" c:type="ESource*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="strftime" c:identifier="e_strftime">
       <doc xml:space="preserve">This function is a wrapper around the strftime (3) function, which
 converts the &amp;percnt;l and &amp;percnt;k (12h and 24h) format variables
@@ -18119,6 +18849,236 @@ Free the returned #GWeakRef with e_weak_ref_free().</doc>
                    allow-none="1">
           <doc xml:space="preserve">a #GObject or %NULL</doc>
           <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_discover_free_discovered_sources"
+              c:identifier="e_webdav_discover_free_discovered_sources"
+              version="3.18"
+              introspectable="0">
+      <doc xml:space="preserve">Frees a @GSList of discovered sources returned from
+e_webdav_discover_sources_finish() or e_webdav_discover_sources_sync().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="discovered_sources" transfer-ownership="none">
+          <doc xml:space="preserve">A #GSList of discovered sources</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_discover_sources"
+              c:identifier="e_webdav_discover_sources"
+              version="3.18">
+      <doc xml:space="preserve">Asynchronously runs discovery of the WebDAV sources (CalDAV and CardDAV), eventually
+limited by the @only_supports filter, which can be %E_WEBDAV_DISCOVER_SUPPORTS_NONE
+to search all types. Note that the list of returned calendars can be more general,
+thus check for its actual support type for further filtering of the results.
+The @url_use_path can be used to override actual server path, or even complete URL,
+for the given @source.
+
+When the operation is finished, @callback will be called. You can then
+call e_webdav_discover_sources_finish() to get the result of the operation.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">an #ESource from which to take connection details</doc>
+          <type name="Source" c:type="ESource*"/>
+        </parameter>
+        <parameter name="url_use_path"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional URL override, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="only_supports" transfer-ownership="none">
+          <doc xml:space="preserve">bit-or of EWebDAVDiscoverSupports, to limit what type of sources to search</doc>
+          <type name="guint32" c:type="guint32"/>
+        </parameter>
+        <parameter name="credentials"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">credentials to use for authentication to the server</doc>
+          <type name="NamedParameters" c:type="const ENamedParameters*"/>
+        </parameter>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="async"
+                   closure="6">
+          <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request
+           is satisfied</doc>
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:space="preserve">data to pass to the callback function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_discover_sources_finish"
+              c:identifier="e_webdav_discover_sources_finish"
+              version="3.18"
+              introspectable="0"
+              throws="1">
+      <doc xml:space="preserve">Finishes the operation started with e_webdav_discover_sources(). If an
+error occurred, the function will set @error and return %FALSE. The function
+can return success and no discovered sources, the same as it can return failure,
+but still set some output arguments, like the certificate related output
+arguments with SOUP_STATUS_SSL_FAILED error.
+
+The return value of @out_certificate_pem should be freed with g_free()
+when no longer needed.
+
+The return value of @out_discovered_sources should be freed
+with e_webdav_discover_free_discovered_sources() when no longer needed.
+
+The return value of @out_calendar_user_addresses should be freed
+with g_slist_free_full (calendar_user_addresses, g_free); when
+no longer needed.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE on success, %FALSE on failure</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">an #ESource on which the operation was started</doc>
+          <type name="Source" c:type="ESource*"/>
+        </parameter>
+        <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve">a #GAsyncResult</doc>
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+        </parameter>
+        <parameter name="out_certificate_pem"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">(allow-none): optional return location
+  for a server SSL certificate in PEM format, when the operation failed
+  with an SSL error</doc>
+          <type name="utf8" c:type="gchar**"/>
+        </parameter>
+        <parameter name="out_certificate_errors"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">(allow-none): optional #GTlsCertificateFlags,
+  with certificate error flags when the operation failed with SSL error</doc>
+          <type name="Gio.TlsCertificateFlags" c:type="GTlsCertificateFlags*"/>
+        </parameter>
+        <parameter name="out_discovered_sources"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">(element-type EWebDAVDiscoveredSource): a #GSList
+  of all discovered sources</doc>
+          <type name="GLib.SList" c:type="GSList**">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+        <parameter name="out_calendar_user_addresses"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">(allow-none): (element-type gchar *): a #GSList of
+  all discovered mail addresses for calendar sources</doc>
+          <type name="GLib.SList" c:type="GSList**">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_discover_sources_sync"
+              c:identifier="e_webdav_discover_sources_sync"
+              version="3.18"
+              introspectable="0"
+              throws="1">
+      <doc xml:space="preserve">Synchronously runs discovery of the WebDAV sources (CalDAV and CardDAV), eventually
+limited by the @only_supports filter, which can be %E_WEBDAV_DISCOVER_SUPPORTS_NONE
+to search all types. Note that the list of returned calendars can be more general,
+thus check for its actual support type for further filtering of the results.
+The @url_use_path can be used to override actual server path, or even complete URL,
+for the given @source.
+
+If an error occurred, the function will set @error and return %FALSE. The function
+can return success and no discovered sources, the same as it can return failure,
+but still set some output arguments, like the certificate related output
+arguments with SOUP_STATUS_SSL_FAILED error.
+
+The return value of @out_certificate_pem should be freed with g_free()
+when no longer needed.
+
+The return value of @out_discovered_sources should be freed
+with e_webdav_discover_free_discovered_sources() when no longer needed.
+
+The return value of @out_calendar_user_addresses should be freed
+with g_slist_free_full (calendar_user_addresses, g_free); when
+no longer needed.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE on success, %FALSE on failure</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">an #ESource from which to take connection details</doc>
+          <type name="Source" c:type="ESource*"/>
+        </parameter>
+        <parameter name="url_use_path"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional URL override, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="only_supports" transfer-ownership="none">
+          <doc xml:space="preserve">bit-or of EWebDAVDiscoverSupports, to limit what type of sources to search</doc>
+          <type name="guint32" c:type="guint32"/>
+        </parameter>
+        <parameter name="credentials"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">credentials to use for authentication to the server</doc>
+          <type name="NamedParameters" c:type="const ENamedParameters*"/>
+        </parameter>
+        <parameter name="out_certificate_pem" transfer-ownership="none">
+          <type name="utf8" c:type="gchar**"/>
+        </parameter>
+        <parameter name="out_certificate_errors" transfer-ownership="none">
+          <type name="Gio.TlsCertificateFlags" c:type="GTlsCertificateFlags*"/>
+        </parameter>
+        <parameter name="out_discovered_sources" transfer-ownership="none">
+          <type name="GLib.SList" c:type="GSList**">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+        <parameter name="out_calendar_user_addresses"
+                   transfer-ownership="none">
+          <type name="GLib.SList" c:type="GSList**">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
       </parameters>
     </function>

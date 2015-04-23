@@ -40544,7 +40544,7 @@ context is still running).</doc>
       <virtual-method name="cancel" invoker="cancel">
         <doc xml:space="preserve">Cancels a file monitor.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if monitor was cancelled.</doc>
+          <doc xml:space="preserve">always %TRUE</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -40576,7 +40576,7 @@ context is still running).</doc>
       <method name="cancel" c:identifier="g_file_monitor_cancel">
         <doc xml:space="preserve">Cancels a file monitor.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if monitor was cancelled.</doc>
+          <doc xml:space="preserve">always %TRUE</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -40587,30 +40587,20 @@ context is still running).</doc>
         </parameters>
       </method>
       <method name="emit_event" c:identifier="g_file_monitor_emit_event">
-        <doc xml:space="preserve">Emits the #GFileMonitor::changed signal if a change
-has taken place. Should be called from file monitor
-implementations only.
-
-The signal will be emitted from an idle handler (in the
-[thread-default main context][g-main-context-push-thread-default]).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="monitor" transfer-ownership="none">
-            <doc xml:space="preserve">a #GFileMonitor.</doc>
             <type name="FileMonitor" c:type="GFileMonitor*"/>
           </instance-parameter>
           <parameter name="child" transfer-ownership="none">
-            <doc xml:space="preserve">a #GFile.</doc>
             <type name="File" c:type="GFile*"/>
           </parameter>
           <parameter name="other_file" transfer-ownership="none">
-            <doc xml:space="preserve">a #GFile.</doc>
             <type name="File" c:type="GFile*"/>
           </parameter>
           <parameter name="event_type" transfer-ownership="none">
-            <doc xml:space="preserve">a set of #GFileMonitorEvent flags.</doc>
             <type name="FileMonitorEvent" c:type="GFileMonitorEvent"/>
           </parameter>
         </parameters>
@@ -40650,13 +40640,6 @@ consecutive change events to the same file.</doc>
       <property name="cancelled" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="GLib.MainContext"/>
-      </property>
       <property name="rate-limit" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
@@ -40669,7 +40652,28 @@ consecutive change events to the same file.</doc>
       <glib:signal name="changed" when="last">
         <doc xml:space="preserve">Emitted when @file has been changed.
 
-If using #G_FILE_MONITOR_SEND_MOVED flag and @event_type is
+If using %G_FILE_MONITOR_WATCH_RENAMES on a directory monitor, and
+the information is available (and if supported by the backend),
+@event_type may be %G_FILE_MONITOR_EVENT_RENAMED,
+%G_FILE_MONITOR_EVENT_MOVED_IN or %G_FILE_MONITOR_EVENT_MOVED_OUT.
+
+In all cases @file will be a child of the monitored directory.  For
+renames, @file will be the old name and @other_file is the new
+name.  For "moved in" events, @file is the name of the file that
+appeared and @other_file is the old name that it was moved from (in
+another directory).  For "moved out" events, @file is the name of
+the file that used to be in this directory and @other_file is the
+name of the file at its new location.
+
+It makes sense to treat %G_FILE_MONITOR_EVENT_MOVED_IN as
+equivalent to %G_FILE_MONITOR_EVENT_CREATED and
+%G_FILE_MONITOR_EVENT_MOVED_OUT as equivalent to
+%G_FILE_MONITOR_EVENT_DELETED, with extra information.
+%G_FILE_MONITOR_EVENT_RENAMED is equivalent to a delete/create
+pair.  This is exactly how the events will be reported in the case
+that the %G_FILE_MONITOR_WATCH_RENAMES flag is not in use.
+
+If using the deprecated flag %G_FILE_MONITOR_SEND_MOVED flag and @event_type is
 #G_FILE_MONITOR_EVENT_MOVED, @file will be set to a #GFile containing the
 old path, and @other_file will be set to a #GFile containing the new path.
 
@@ -40726,7 +40730,7 @@ In all the other cases, @other_file will be set to #NULL.</doc>
       <field name="cancel">
         <callback name="cancel">
           <return-value transfer-ownership="none">
-            <doc xml:space="preserve">%TRUE if monitor was cancelled.</doc>
+            <doc xml:space="preserve">always %TRUE</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
@@ -40824,7 +40828,32 @@ In all the other cases, @other_file will be set to #NULL.</doc>
               value="7"
               c:identifier="G_FILE_MONITOR_EVENT_MOVED"
               glib:nick="moved">
-        <doc xml:space="preserve">the file was moved.</doc>
+        <doc xml:space="preserve">the file was moved -- only sent if the
+  (deprecated) %G_FILE_MONITOR_SEND_MOVED flag is set</doc>
+      </member>
+      <member name="renamed"
+              value="8"
+              c:identifier="G_FILE_MONITOR_EVENT_RENAMED"
+              glib:nick="renamed">
+        <doc xml:space="preserve">the file was renamed within the
+  current directory -- only sent if the %G_FILE_MONITOR_WATCH_MOVES
+  flag is set.  Since: 2.44.</doc>
+      </member>
+      <member name="moved_in"
+              value="9"
+              c:identifier="G_FILE_MONITOR_EVENT_MOVED_IN"
+              glib:nick="moved-in">
+        <doc xml:space="preserve">the file was moved into the
+  monitored directory from another location -- only sent if the
+  %G_FILE_MONITOR_WATCH_MOVES flag is set.  Since: 2.44.</doc>
+      </member>
+      <member name="moved_out"
+              value="10"
+              c:identifier="G_FILE_MONITOR_EVENT_MOVED_OUT"
+              glib:nick="moved-out">
+        <doc xml:space="preserve">the file was moved out of the
+  monitored directory to another location -- only sent if the
+  %G_FILE_MONITOR_WATCH_MOVES flag is set.  Since: 2.44</doc>
       </member>
     </enumeration>
     <bitfield name="FileMonitorFlags"
@@ -40852,7 +40881,8 @@ In all the other cases, @other_file will be set to #NULL.</doc>
   by file renames (moves) and send a single G_FILE_MONITOR_EVENT_MOVED
   event instead (NB: not supported on all backends; the default
   behaviour -without specifying this flag- is to send single DELETED
-  and CREATED events).</doc>
+  and CREATED events).  Deprecated since 2.44: use
+  %G_FILE_MONITOR_WATCH_MOVES instead.</doc>
       </member>
       <member name="watch_hard_links"
               value="4"
@@ -40860,6 +40890,15 @@ In all the other cases, @other_file will be set to #NULL.</doc>
               glib:nick="watch-hard-links">
         <doc xml:space="preserve">Watch for changes to the file made
   via another hard link. Since 2.36.</doc>
+      </member>
+      <member name="watch_moves"
+              value="8"
+              c:identifier="G_FILE_MONITOR_WATCH_MOVES"
+              glib:nick="watch-moves">
+        <doc xml:space="preserve">Watch for rename operations on a
+  monitored directory.  This causes %G_FILE_MONITOR_EVENT_RENAMED,
+  %G_FILE_MONITOR_EVENT_MOVED_IN and %G_FILE_MONITOR_EVENT_MOVED_OUT
+  events to be emitted when possible.  Since: 2.44.</doc>
       </member>
     </bitfield>
     <record name="FileMonitorPrivate"
@@ -64062,7 +64101,10 @@ baker_bake_cake_finish (Baker        *self,
 }
 ]|</doc>
       <implements name="AsyncResult"/>
-      <constructor name="new" c:identifier="g_simple_async_result_new">
+      <constructor name="new"
+                   c:identifier="g_simple_async_result_new"
+                   deprecated="1"
+                   deprecated-version="2.46">
         <doc xml:space="preserve">Creates a #GSimpleAsyncResult.
 
 The common convention is to create the #GSimpleAsyncResult in the
@@ -64073,6 +64115,7 @@ If your operation supports cancellation with #GCancellable (which it
 probably should) then you should provide the user's cancellable to
 g_simple_async_result_set_check_cancellable() immediately after
 this function returns.</doc>
+        <doc-deprecated xml:space="preserve">Use g_task_new() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GSimpleAsyncResult.</doc>
           <type name="SimpleAsyncResult" c:type="GSimpleAsyncResult*"/>
@@ -64106,8 +64149,11 @@ this function returns.</doc>
       </constructor>
       <constructor name="new_error"
                    c:identifier="g_simple_async_result_new_error"
-                   introspectable="0">
+                   introspectable="0"
+                   deprecated="1"
+                   deprecated-version="2.46">
         <doc xml:space="preserve">Creates a new #GSimpleAsyncResult with a set error.</doc>
+        <doc-deprecated xml:space="preserve">Use g_task_new() and g_task_return_new_error() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GSimpleAsyncResult.</doc>
           <type name="SimpleAsyncResult" c:type="GSimpleAsyncResult*"/>
@@ -64152,8 +64198,11 @@ this function returns.</doc>
         </parameters>
       </constructor>
       <constructor name="new_from_error"
-                   c:identifier="g_simple_async_result_new_from_error">
+                   c:identifier="g_simple_async_result_new_from_error"
+                   deprecated="1"
+                   deprecated-version="2.46">
         <doc xml:space="preserve">Creates a #GSimpleAsyncResult from an error condition.</doc>
+        <doc-deprecated xml:space="preserve">Use g_task_new() and g_task_return_error() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GSimpleAsyncResult.</doc>
           <type name="SimpleAsyncResult" c:type="GSimpleAsyncResult*"/>
@@ -64188,9 +64237,12 @@ this function returns.</doc>
       <constructor name="new_take_error"
                    c:identifier="g_simple_async_result_new_take_error"
                    version="2.28"
-                   introspectable="0">
+                   introspectable="0"
+                   deprecated="1"
+                   deprecated-version="2.46">
         <doc xml:space="preserve">Creates a #GSimpleAsyncResult from an error condition, and takes over the
 caller's ownership of @error, so the caller does not need to free it anymore.</doc>
+        <doc-deprecated xml:space="preserve">Use g_task_new() and g_task_return_error() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GSimpleAsyncResult</doc>
           <type name="SimpleAsyncResult" c:type="GSimpleAsyncResult*"/>
@@ -64224,7 +64276,9 @@ caller's ownership of @error, so the caller does not need to free it anymore.</d
       </constructor>
       <function name="is_valid"
                 c:identifier="g_simple_async_result_is_valid"
-                version="2.20">
+                version="2.20"
+                deprecated="1"
+                deprecated-version="2.46">
         <doc xml:space="preserve">Ensures that the data passed to the _finish function of an async
 operation is consistent.  Three checks are performed.
 
@@ -64237,6 +64291,7 @@ to the _async function corresponding to the _finish function from
 which this function is called).  (Alternatively, if either
 @source_tag or @result's source tag is %NULL, then the source tag
 check is skipped.)</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_is_valid() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">#TRUE if all checks passed or #FALSE if any failed.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -64262,7 +64317,10 @@ check is skipped.)</doc>
           </parameter>
         </parameters>
       </function>
-      <method name="complete" c:identifier="g_simple_async_result_complete">
+      <method name="complete"
+              c:identifier="g_simple_async_result_complete"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Completes an asynchronous I/O job immediately. Must be called in
 the thread where the asynchronous result was to be delivered, as it
 invokes the callback directly. If you are in a different thread use
@@ -64270,6 +64328,7 @@ g_simple_async_result_complete_in_idle().
 
 Calling this function takes a reference to @simple for as long as
 is needed to complete the call.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64281,7 +64340,9 @@ is needed to complete the call.</doc>
         </parameters>
       </method>
       <method name="complete_in_idle"
-              c:identifier="g_simple_async_result_complete_in_idle">
+              c:identifier="g_simple_async_result_complete_in_idle"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Completes an asynchronous function in an idle handler in the
 [thread-default main context][g-main-context-push-thread-default]
 of the thread that @simple was initially created in
@@ -64289,6 +64350,7 @@ of the thread that @simple was initially created in
 
 Calling this function takes a reference to @simple for as long as
 is needed to complete the call.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64300,8 +64362,11 @@ is needed to complete the call.</doc>
         </parameters>
       </method>
       <method name="get_op_res_gboolean"
-              c:identifier="g_simple_async_result_get_op_res_gboolean">
+              c:identifier="g_simple_async_result_get_op_res_gboolean"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Gets the operation result boolean from within the asynchronous result.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_propagate_boolean() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the operation's result was %TRUE, %FALSE
     if the operation's result was %FALSE.</doc>
@@ -64316,8 +64381,11 @@ is needed to complete the call.</doc>
       </method>
       <method name="get_op_res_gpointer"
               c:identifier="g_simple_async_result_get_op_res_gpointer"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Gets a pointer result as returned by the asynchronous function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_propagate_pointer() instead.</doc-deprecated>
         <return-value>
           <doc xml:space="preserve">a pointer from the result.</doc>
           <type name="gpointer" c:type="gpointer"/>
@@ -64330,8 +64398,11 @@ is needed to complete the call.</doc>
         </parameters>
       </method>
       <method name="get_op_res_gssize"
-              c:identifier="g_simple_async_result_get_op_res_gssize">
+              c:identifier="g_simple_async_result_get_op_res_gssize"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Gets a gssize from the asynchronous result.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_propagate_int() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a gssize returned from the asynchronous function.</doc>
           <type name="gssize" c:type="gssize"/>
@@ -64345,8 +64416,11 @@ is needed to complete the call.</doc>
       </method>
       <method name="get_source_tag"
               c:identifier="g_simple_async_result_get_source_tag"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46.">
         <doc xml:space="preserve">Gets the source tag for the #GSimpleAsyncResult.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_get_source_tag() instead.</doc-deprecated>
         <return-value>
           <doc xml:space="preserve">a #gpointer to the source object for the #GSimpleAsyncResult.</doc>
           <type name="gpointer" c:type="gpointer"/>
@@ -64360,6 +64434,8 @@ is needed to complete the call.</doc>
       </method>
       <method name="propagate_error"
               c:identifier="g_simple_async_result_propagate_error"
+              deprecated="1"
+              deprecated-version="2.46"
               throws="1">
         <doc xml:space="preserve">Propagates an error from within the simple asynchronous result to
 a given destination.
@@ -64367,6 +64443,7 @@ a given destination.
 If the #GCancellable given to a prior call to
 g_simple_async_result_set_check_cancellable() is cancelled then this
 function will return %TRUE with @dest set appropriately.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the error was propagated to @dest. %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -64380,13 +64457,16 @@ function will return %TRUE with @dest set appropriately.</doc>
       </method>
       <method name="run_in_thread"
               c:identifier="g_simple_async_result_run_in_thread"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Runs the asynchronous job in a separate thread and then calls
 g_simple_async_result_complete_in_idle() on @simple to return
 the result to the appropriate main loop.
 
 Calling this function takes a reference to @simple for as long as
 is needed to run the job and report its completion.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_run_in_thread() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64415,7 +64495,9 @@ is needed to run the job and report its completion.</doc>
       </method>
       <method name="set_check_cancellable"
               c:identifier="g_simple_async_result_set_check_cancellable"
-              version="2.32">
+              version="2.32"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets a #GCancellable to check before dispatching results.
 
 This function has one very specific purpose: the provided cancellable
@@ -64431,6 +64513,7 @@ already been sent as an idle to the main context to be dispatched).
 
 The checking described above is done regardless of any call to the
 unrelated g_simple_async_result_set_handle_cancellation() function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64450,8 +64533,11 @@ unrelated g_simple_async_result_set_handle_cancellation() function.</doc>
       </method>
       <method name="set_error"
               c:identifier="g_simple_async_result_set_error"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets an error within the asynchronous result without a #GError.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_new_error() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64480,9 +64566,12 @@ unrelated g_simple_async_result_set_handle_cancellation() function.</doc>
       </method>
       <method name="set_error_va"
               c:identifier="g_simple_async_result_set_error_va"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets an error within the asynchronous result without a #GError.
 Unless writing a binding, see g_simple_async_result_set_error().</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_error() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64510,8 +64599,11 @@ Unless writing a binding, see g_simple_async_result_set_error().</doc>
         </parameters>
       </method>
       <method name="set_from_error"
-              c:identifier="g_simple_async_result_set_from_error">
+              c:identifier="g_simple_async_result_set_from_error"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets the result from a #GError.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_error() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64527,7 +64619,9 @@ Unless writing a binding, see g_simple_async_result_set_error().</doc>
         </parameters>
       </method>
       <method name="set_handle_cancellation"
-              c:identifier="g_simple_async_result_set_handle_cancellation">
+              c:identifier="g_simple_async_result_set_handle_cancellation"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets whether to handle cancellation within the asynchronous operation.
 
 This function has nothing to do with
@@ -64548,8 +64642,11 @@ g_simple_async_result_set_check_cancellable().  It only refers to the
         </parameters>
       </method>
       <method name="set_op_res_gboolean"
-              c:identifier="g_simple_async_result_set_op_res_gboolean">
+              c:identifier="g_simple_async_result_set_op_res_gboolean"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets the operation result to a boolean within the asynchronous result.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_boolean() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64566,8 +64663,11 @@ g_simple_async_result_set_check_cancellable().  It only refers to the
       </method>
       <method name="set_op_res_gpointer"
               c:identifier="g_simple_async_result_set_op_res_gpointer"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets the operation result within the asynchronous result to a pointer.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_pointer() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64589,9 +64689,12 @@ g_simple_async_result_set_check_cancellable().  It only refers to the
         </parameters>
       </method>
       <method name="set_op_res_gssize"
-              c:identifier="g_simple_async_result_set_op_res_gssize">
+              c:identifier="g_simple_async_result_set_op_res_gssize"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets the operation result within the asynchronous result to
 the given @op_res.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_int() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -64609,9 +64712,12 @@ the given @op_res.</doc>
       <method name="take_error"
               c:identifier="g_simple_async_result_take_error"
               version="2.28"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
         <doc xml:space="preserve">Sets the result from @error, and takes over the caller's ownership
 of @error, so the caller does not need to free it any more.</doc>
+        <doc-deprecated xml:space="preserve">Use #GTask and g_task_return_error() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -69020,7 +69126,7 @@ applications to print e.g. "Connecting to example.com
 This can be useful if you want to do something unusual on it
 not supported by the #GSocketConnection APIs.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GSocketAddress or %NULL on error.</doc>
+          <doc xml:space="preserve">a #GSocket or %NULL on error.</doc>
           <type name="Socket" c:type="GSocket*"/>
         </return-value>
         <parameters>
@@ -69512,6 +69618,22 @@ or g_socket_listener_add_inet_port().</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="event">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="listener" transfer-ownership="none">
+            <type name="SocketListener" c:type="GSocketListener*"/>
+          </instance-parameter>
+          <parameter name="event" transfer-ownership="none">
+            <type name="SocketListenerEvent" c:type="GSocketListenerEvent*"/>
+          </parameter>
+          <parameter name="socket" transfer-ownership="none">
+            <type name="Socket" c:type="GSocket*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="accept"
               c:identifier="g_socket_listener_accept"
               version="2.22"
@@ -69946,6 +70068,25 @@ See g_socket_set_listen_backlog() for details</doc>
       <field name="priv">
         <type name="SocketListenerPrivate" c:type="GSocketListenerPrivate*"/>
       </field>
+      <glib:signal name="event" when="last" version="2.46">
+        <doc xml:space="preserve">Emitted when @listener's activity on @socket changes state.
+Note that when @listener is used to listen on both IPv4 and
+IPv6, a separate set of signals will be emitted for each, and
+the order they happen in is undefined.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">the event that is occurring</doc>
+            <type name="SocketListenerEvent"/>
+          </parameter>
+          <parameter name="socket" transfer-ownership="none">
+            <doc xml:space="preserve">the #GSocket the event is occurring on</doc>
+            <type name="Socket"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="SocketListenerClass"
             c:type="GSocketListenerClass"
@@ -69966,11 +70107,22 @@ See g_socket_set_listen_backlog() for details</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_g_reserved1" introspectable="0">
-        <callback name="_g_reserved1">
+      <field name="event">
+        <callback name="event">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
+          <parameters>
+            <parameter name="listener" transfer-ownership="none">
+              <type name="SocketListener" c:type="GSocketListener*"/>
+            </parameter>
+            <parameter name="event" transfer-ownership="none">
+              <type name="SocketListenerEvent" c:type="GSocketListenerEvent*"/>
+            </parameter>
+            <parameter name="socket" transfer-ownership="none">
+              <type name="Socket" c:type="GSocket*"/>
+            </parameter>
+          </parameters>
         </callback>
       </field>
       <field name="_g_reserved2" introspectable="0">
@@ -70009,6 +70161,42 @@ See g_socket_set_listen_backlog() for details</doc>
         </callback>
       </field>
     </record>
+    <enumeration name="SocketListenerEvent"
+                 version="2.46"
+                 glib:type-name="GSocketListenerEvent"
+                 glib:get-type="g_socket_listener_event_get_type"
+                 c:type="GSocketListenerEvent">
+      <doc xml:space="preserve">Describes an event occurring on a #GSocketListener. See the
+#GSocketListener::event signal for more details.
+
+Additional values may be added to this type in the future.</doc>
+      <member name="binding"
+              value="0"
+              c:identifier="G_SOCKET_LISTENER_BINDING"
+              glib:nick="binding">
+        <doc xml:space="preserve">The listener is about to bind a socket.</doc>
+      </member>
+      <member name="bound"
+              value="1"
+              c:identifier="G_SOCKET_LISTENER_BOUND"
+              glib:nick="bound">
+        <doc xml:space="preserve">The listener has bound a socket.</doc>
+      </member>
+      <member name="listening"
+              value="2"
+              c:identifier="G_SOCKET_LISTENER_LISTENING"
+              glib:nick="listening">
+        <doc xml:space="preserve">The listener is about to start
+   listening on this socket.</doc>
+      </member>
+      <member name="listened"
+              value="3"
+              c:identifier="G_SOCKET_LISTENER_LISTENED"
+              glib:nick="listened">
+        <doc xml:space="preserve">The listener is now listening on
+  this socket.</doc>
+      </member>
+    </enumeration>
     <record name="SocketListenerPrivate"
             c:type="GSocketListenerPrivate"
             disguised="1">
@@ -73169,7 +73357,13 @@ reference on it.</doc>
 
 This takes a ref on @task until the task completes.
 
-See #GTaskThreadFunc for more details about how @task_func is handled.</doc>
+See #GTaskThreadFunc for more details about how @task_func is handled.
+
+Although GLib currently rate-limits the tasks queued via
+g_task_run_in_thread(), you should not assume that it will always
+do this. If you have a very large number of tasks to run, but don't
+want them to all run at once, you should only queue a limited
+number of them at a time.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -73197,7 +73391,13 @@ See #GTaskThreadFunc for more details about how @task_func is handled.
 Normally this is used with tasks created with a %NULL
 `callback`, but note that even if the task does
 have a callback, it will not be invoked when @task_func returns.
-#GTask:completed will be set to %TRUE just before this function returns.</doc>
+#GTask:completed will be set to %TRUE just before this function returns.
+
+Although GLib currently rate-limits the tasks queued via
+g_task_run_in_thread_sync(), you should not assume that it will
+always do this. If you have a very large number of tasks to run,
+but don't want them to all run at once, you should only queue a
+limited number of them at a time.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -74869,6 +75069,52 @@ communicate with the server identified by @server_identity.</doc>
           </parameter>
         </parameters>
       </function>
+      <virtual-method name="copy_session_state"
+                      invoker="copy_session_state"
+                      version="2.46">
+        <doc xml:space="preserve">Copies session state from one connection to another. This is
+not normally needed, but may be used when the same session
+needs to be used between different endpoints as is required
+by some protocols such as FTP over TLS. @source should have
+already completed a handshake, and @conn should not have
+completed a handshake.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsClientConnection</doc>
+            <type name="TlsClientConnection" c:type="GTlsClientConnection*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsClientConnection</doc>
+            <type name="TlsClientConnection" c:type="GTlsClientConnection*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="copy_session_state"
+              c:identifier="g_tls_client_connection_copy_session_state"
+              version="2.46">
+        <doc xml:space="preserve">Copies session state from one connection to another. This is
+not normally needed, but may be used when the same session
+needs to be used between different endpoints as is required
+by some protocols such as FTP over TLS. @source should have
+already completed a handshake, and @conn should not have
+completed a handshake.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsClientConnection</doc>
+            <type name="TlsClientConnection" c:type="GTlsClientConnection*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsClientConnection</doc>
+            <type name="TlsClientConnection" c:type="GTlsClientConnection*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_accepted_cas"
               c:identifier="g_tls_client_connection_get_accepted_cas"
               version="2.28">
@@ -75078,6 +75324,23 @@ overrides the default via #GTlsConnection::accept-certificate.</doc>
       <field name="g_iface">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="copy_session_state">
+        <callback name="copy_session_state">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="conn" transfer-ownership="none">
+              <doc xml:space="preserve">a #GTlsClientConnection</doc>
+              <type name="TlsClientConnection" c:type="GTlsClientConnection*"/>
+            </parameter>
+            <parameter name="source" transfer-ownership="none">
+              <doc xml:space="preserve">a #GTlsClientConnection</doc>
+              <type name="TlsClientConnection" c:type="GTlsClientConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
     </record>
     <class name="TlsConnection"
@@ -86714,10 +86977,13 @@ recursively.</doc>
     </function>
     <function name="simple_async_report_error_in_idle"
               c:identifier="g_simple_async_report_error_in_idle"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
       <doc xml:space="preserve">Reports an error in an asynchronous function in an idle function by
 directly setting the contents of the #GAsyncResult with the given error
 information.</doc>
+      <doc-deprecated xml:space="preserve">Use g_task_report_error().</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -86761,10 +87027,13 @@ information.</doc>
       </parameters>
     </function>
     <function name="simple_async_report_gerror_in_idle"
-              c:identifier="g_simple_async_report_gerror_in_idle">
+              c:identifier="g_simple_async_report_gerror_in_idle"
+              deprecated="1"
+              deprecated-version="2.46">
       <doc xml:space="preserve">Reports an error in an idle function. Similar to
 g_simple_async_report_error_in_idle(), but takes a #GError rather
 than building a new one.</doc>
+      <doc-deprecated xml:space="preserve">Use g_task_report_error().</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -86798,10 +87067,13 @@ than building a new one.</doc>
     <function name="simple_async_report_take_gerror_in_idle"
               c:identifier="g_simple_async_report_take_gerror_in_idle"
               version="2.28"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.46">
       <doc xml:space="preserve">Reports an error in an idle function. Similar to
 g_simple_async_report_gerror_in_idle(), but takes over the caller's
 ownership of @error, so the caller does not have to free it any more.</doc>
+      <doc-deprecated xml:space="preserve">Use g_task_report_error().</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
