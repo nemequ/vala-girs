@@ -12,6 +12,8 @@ namespace NM {
 		public const string FREQUENCY;
 		[CCode (cheader_filename = "nm-access-point.h", cname = "NM_ACCESS_POINT_HW_ADDRESS")]
 		public const string HW_ADDRESS;
+		[CCode (cheader_filename = "nm-access-point.h", cname = "NM_ACCESS_POINT_LAST_SEEN")]
+		public const string LAST_SEEN;
 		[CCode (cheader_filename = "nm-access-point.h", cname = "NM_ACCESS_POINT_MAX_BITRATE")]
 		public const string MAX_BITRATE;
 		[CCode (cheader_filename = "nm-access-point.h", cname = "NM_ACCESS_POINT_MODE")]
@@ -33,6 +35,7 @@ namespace NM {
 		public uint32 get_frequency ();
 		[Deprecated (since = "0.9")]
 		public unowned string get_hw_address ();
+		public int get_last_seen ();
 		public uint32 get_max_bitrate ();
 		public NM.80211Mode get_mode ();
 		public NM.80211ApSecurityFlags get_rsn_flags ();
@@ -43,6 +46,7 @@ namespace NM {
 		public uint flags { get; }
 		public uint frequency { get; }
 		public string hw_address { get; }
+		public int last_seen { get; }
 		public uint max_bitrate { get; }
 		public uint mode { get; }
 		public uint rsn_flags { get; }
