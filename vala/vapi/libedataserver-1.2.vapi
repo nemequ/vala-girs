@@ -230,6 +230,8 @@ namespace E {
 		public async bool store_password (string password, bool permanently, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool store_password_sync (string password, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string to_string (size_t? length);
+		public async bool unset_last_credentials_required_arguments (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool unset_last_credentials_required_arguments_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Source.with_uid (string uid, GLib.MainContext? main_context) throws GLib.Error;
 		public virtual async bool write (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -584,16 +586,19 @@ namespace E {
 		public string dup_key_id ();
 		public string dup_signing_algorithm ();
 		public bool get_always_trust ();
+		public bool get_encrypt_by_default ();
 		public bool get_encrypt_to_self ();
 		public unowned string get_key_id ();
 		public bool get_sign_by_default ();
 		public unowned string get_signing_algorithm ();
 		public void set_always_trust (bool always_trust);
+		public void set_encrypt_by_default (bool encrypt_by_default);
 		public void set_encrypt_to_self (bool encrypt_to_self);
 		public void set_key_id (string key_id);
 		public void set_sign_by_default (bool sign_by_default);
 		public void set_signing_algorithm (string signing_algorithm);
 		public bool always_trust { get; set construct; }
+		public bool encrypt_by_default { get; set construct; }
 		public bool encrypt_to_self { get; set construct; }
 		public string key_id { get; set construct; }
 		public bool sign_by_default { get; set construct; }

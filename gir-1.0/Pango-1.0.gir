@@ -522,8 +522,7 @@ since it never removes or combines existing attributes.</doc>
         </parameters>
       </method>
       <method name="copy" c:identifier="pango_attr_list_copy">
-        <doc xml:space="preserve">@list (nullable): a #PangoAttrList, may be %NULL
-Copy @list and return an identical new list.</doc>
+        <doc xml:space="preserve">Copy @list and return an identical new list.</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the newly allocated #PangoAttrList, with a
               reference count of one, which should
@@ -532,7 +531,11 @@ Copy @list and return an identical new list.</doc>
           <type name="AttrList" c:type="PangoAttrList*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="list" transfer-ownership="none">
+          <instance-parameter name="list"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #PangoAttrList, may be %NULL</doc>
             <type name="AttrList" c:type="PangoAttrList*"/>
           </instance-parameter>
         </parameters>
@@ -4710,31 +4713,31 @@ for a font (possibly restricted to a script). The fields of this
 structure are private to implementations of a font backend. See
 the documentation of the corresponding getters for documentation
 of their meaning.</doc>
-      <field name="ref_count" writable="1">
+      <field name="ref_count" readable="0" private="1">
         <type name="guint" c:type="guint"/>
       </field>
-      <field name="ascent" writable="1">
+      <field name="ascent" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="descent" writable="1">
+      <field name="descent" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="approximate_char_width" writable="1">
+      <field name="approximate_char_width" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="approximate_digit_width" writable="1">
+      <field name="approximate_digit_width" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="underline_position" writable="1">
+      <field name="underline_position" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="underline_thickness" writable="1">
+      <field name="underline_thickness" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="strikethrough_position" writable="1">
+      <field name="strikethrough_position" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
-      <field name="strikethrough_thickness" writable="1">
+      <field name="strikethrough_thickness" readable="0" private="1">
         <type name="gint" c:type="int"/>
       </field>
       <constructor name="new" c:identifier="pango_font_metrics_new">
@@ -5326,9 +5329,11 @@ As an example of the usage of #PangoGlyphItem, the results
 of shaping text with #PangoLayout is a list of #PangoLayoutLine,
 each of which contains a list of #PangoGlyphItem.</doc>
       <field name="item" writable="1">
+        <doc xml:space="preserve">corresponding #PangoItem.</doc>
         <type name="Item" c:type="PangoItem*"/>
       </field>
       <field name="glyphs" writable="1">
+        <doc xml:space="preserve">corresponding #PangoGlyphString.</doc>
         <type name="GlyphString" c:type="PangoGlyphString*"/>
       </field>
       <method name="apply_attrs"
@@ -5708,12 +5713,19 @@ of glyphs with geometry and visual attribute information.
 The storage for the glyph information is owned
 by the structure which simplifies memory management.</doc>
       <field name="num_glyphs" writable="1">
+        <doc xml:space="preserve">number of the glyphs in this glyph string.</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="glyphs" writable="1">
-        <type name="GlyphInfo" c:type="PangoGlyphInfo*"/>
+        <doc xml:space="preserve">array of glyph information
+         for the glyph string.</doc>
+        <array length="0" zero-terminated="0" c:type="PangoGlyphInfo*">
+          <type name="GlyphInfo" c:type="PangoGlyphInfo"/>
+        </array>
       </field>
       <field name="log_clusters" writable="1">
+        <doc xml:space="preserve">logical cluster info, indexed by the byte index
+               within the text corresponding to the glyph string.</doc>
         <type name="gint" c:type="gint*"/>
       </field>
       <field name="space" readable="0" private="1">
@@ -6277,15 +6289,19 @@ loaded module.</doc>
             c:symbol-prefix="item">
       <doc xml:space="preserve">The #PangoItem structure stores information about a segment of text.</doc>
       <field name="offset" writable="1">
+        <doc xml:space="preserve">byte offset of the start of this item in text.</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="length" writable="1">
+        <doc xml:space="preserve">length of this item in bytes.</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="num_chars" writable="1">
+        <doc xml:space="preserve">number of Unicode characters in the item.</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="analysis" writable="1">
+        <doc xml:space="preserve">analysis results for the item.</doc>
         <type name="Analysis" c:type="PangoAnalysis"/>
       </field>
       <constructor name="new" c:identifier="pango_item_new">
@@ -7387,7 +7403,7 @@ were actually wrapped.</doc>
           </parameter>
           <parameter name="trailing" transfer-ownership="none">
             <doc xml:space="preserve">an integer indicating the edge of the grapheme to retrieve the
-            position of. If 0, the trailing edge of the grapheme, if &gt; 0,
+            position of. If &gt; 0, the trailing edge of the grapheme, if 0,
             the leading of the grapheme.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -7520,9 +7536,9 @@ to form a single grapheme.</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="old_trailing" transfer-ownership="none">
-            <doc xml:space="preserve">if 0, the cursor was at the trailing edge of the
+            <doc xml:space="preserve">if 0, the cursor was at the leading edge of the
                grapheme indicated by @old_index, if &gt; 0, the cursor
-               was at the leading edge.</doc>
+               was at the trailing edge.</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="direction" transfer-ownership="none">
@@ -8000,7 +8016,7 @@ function returns %FALSE; on an exact hit, it returns %TRUE.</doc>
             <doc xml:space="preserve">location to store a integer indicating where
             in the grapheme the user clicked. It will either
             be zero, or the number of characters in the
-            grapheme. 0 represents the trailing edge of the grapheme.</doc>
+            grapheme. 0 represents the leading edge of the grapheme.</doc>
             <type name="gint" c:type="int*"/>
           </parameter>
         </parameters>
@@ -8460,6 +8476,7 @@ parent #PangoLayout are modified.
 Routines for rendering PangoLayout objects are provided in
 code specific to each rendering system.</doc>
       <field name="layout" writable="1">
+        <doc xml:space="preserve">the layout this line belongs to, might be %NULL</doc>
         <type name="Layout" c:type="PangoLayout*"/>
       </field>
       <field name="start_index" writable="1">
@@ -8471,6 +8488,8 @@ code specific to each rendering system.</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="runs" writable="1">
+        <doc xml:space="preserve">list of runs in the
+       line, from left to right</doc>
         <type name="GLib.SList" c:type="GSList*">
           <type name="gpointer" c:type="gpointer"/>
         </type>
@@ -8958,7 +8977,8 @@ given by @new_matrix then applying the original transformation.</doc>
               version="1.12">
         <doc xml:space="preserve">Returns the scale factor of a matrix on the height of the font.
 That is, the scale factor in the direction perpendicular to the
-vector that the X coordinate is mapped to.</doc>
+vector that the X coordinate is mapped to.  If the scale in the X
+coordinate is needed as well, use pango_matrix_get_font_scale_factors().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the scale factor of @matrix on the height of the font,
 or 1.0 if @matrix is %NULL.</doc>
@@ -8972,6 +8992,46 @@ or 1.0 if @matrix is %NULL.</doc>
             <doc xml:space="preserve">a #PangoMatrix, may be %NULL</doc>
             <type name="Matrix" c:type="const PangoMatrix*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_font_scale_factors"
+              c:identifier="pango_matrix_get_font_scale_factors"
+              version="1.38">
+        <doc xml:space="preserve">Calculates the scale factor of a matrix on the width and height of the font.
+That is, @xscale is the scale factor in the direction of the X coordinate,
+and @yscale is the scale factor in the direction perpendicular to the
+vector that the X coordinate is mapped to.
+
+Note that output numbers will always be non-negative.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="matrix"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #PangoMatrix, or %NULL</doc>
+            <type name="Matrix" c:type="const PangoMatrix*"/>
+          </instance-parameter>
+          <parameter name="xscale"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output scale factor in the x direction, or %NULL</doc>
+            <type name="gdouble" c:type="double*"/>
+          </parameter>
+          <parameter name="yscale"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output scale factor perpendicular to the x direction, or %NULL</doc>
+            <type name="gdouble" c:type="double*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="rotate" c:identifier="pango_matrix_rotate" version="1.6">
@@ -11086,8 +11146,8 @@ is returned.</doc>
                 version="1.4"
                 introspectable="0">
         <doc xml:space="preserve">Create a new #PangoScriptIter, used to break a string of
-Unicode into runs by text. No copy is made of @text, so
-the caller needs to make sure it remains valid until
+Unicode text into runs by Unicode script. No copy is made of
+@text, so the caller needs to make sure it remains valid until
 the iterator is freed with pango_script_iter_free().</doc>
         <return-value>
           <doc xml:space="preserve">the new script iterator, initialized

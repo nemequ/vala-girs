@@ -59,6 +59,8 @@ namespace Gedit {
 		public bool read_only { get; }
 		[NoAccessorMethod]
 		public string shortname { owned get; set; }
+		[NoAccessorMethod]
+		public bool use_gvfs_metadata { get; construct; }
 		public virtual signal void cursor_moved ();
 		public virtual signal void load ();
 		public virtual signal void loaded ();
@@ -275,22 +277,16 @@ namespace Gedit {
 	public enum DebugSection {
 		NO_DEBUG,
 		DEBUG_VIEW,
-		DEBUG_SEARCH,
-		DEBUG_PRINT,
 		DEBUG_PREFS,
+		DEBUG_WINDOW,
+		DEBUG_PANEL,
 		DEBUG_PLUGINS,
 		DEBUG_TAB,
 		DEBUG_DOCUMENT,
 		DEBUG_COMMANDS,
 		DEBUG_APP,
-		DEBUG_SESSION,
 		DEBUG_UTILS,
-		DEBUG_METADATA,
-		DEBUG_WINDOW,
-		DEBUG_LOADER,
-		DEBUG_SAVER,
-		DEBUG_PANEL,
-		DEBUG_DBUS
+		DEBUG_METADATA
 	}
 	[CCode (cheader_filename = "gedit/gedit-app.h", cprefix = "GEDIT_LOCKDOWN_", type_id = "gedit_lockdown_mask_get_type ()")]
 	[Flags]

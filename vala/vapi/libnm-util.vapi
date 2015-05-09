@@ -1861,6 +1861,8 @@ namespace NM {
 		MODEM_AVAILABLE,
 		SIM_PIN_INCORRECT,
 		NEW_ACTIVATION,
+		PARENT_CHANGED,
+		PARENT_MANAGED_CHANGED,
 		LAST
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_TYPE_", has_type_id = false)]

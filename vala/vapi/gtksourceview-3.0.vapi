@@ -214,7 +214,7 @@ namespace Gtk {
 		public void set_location (GLib.File? location);
 		public Gtk.SourceCompressionType compression_type { get; }
 		public Gtk.SourceEncoding encoding { get; }
-		public GLib.File location { get; set; }
+		public GLib.File location { get; set construct; }
 		public Gtk.SourceNewlineType newline_type { get; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_file_loader_get_type ()")]
@@ -421,6 +421,18 @@ namespace Gtk {
 		public string[] language_ids { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] search_path { get; set; }
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_map_get_type ()")]
+	[GIR (name = "Map")]
+	public class SourceMap : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SourceMap ();
+		public unowned Gtk.SourceView get_child_view ();
+		public unowned Gtk.SourceView? get_view ();
+		public void set_view (Gtk.SourceView view);
+		[NoAccessorMethod]
+		public Pango.FontDescription font_desc { owned get; set; }
+		public Gtk.SourceView view { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_mark_get_type ()")]
 	[GIR (name = "Mark")]
@@ -767,6 +779,11 @@ namespace Gtk {
 		public virtual signal void can_redo_changed ();
 		[HasEmitter]
 		public virtual signal void can_undo_changed ();
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
+	[GIR (name = "Map_autoptr")]
+	[SimpleType]
+	public struct SourceMap_autoptr {
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_BACKGROUND_PATTERN_TYPE_", type_id = "gtk_source_background_pattern_type_get_type ()")]
 	[GIR (name = "BackgroundPatternType")]
