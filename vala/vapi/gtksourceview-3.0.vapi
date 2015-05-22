@@ -43,6 +43,7 @@ namespace Gtk {
 		public void set_max_undo_levels (int max_undo_levels);
 		public void set_style_scheme (Gtk.SourceStyleScheme? scheme);
 		public void set_undo_manager (Gtk.SourceUndoManager? manager);
+		public void sort_lines (Gtk.TextIter start, Gtk.TextIter end, Gtk.SourceSortFlags flags, int column);
 		[CCode (has_construct_function = false)]
 		public SourceBuffer.with_language (Gtk.SourceLanguage language);
 		[NoAccessorMethod]
@@ -424,10 +425,9 @@ namespace Gtk {
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_map_get_type ()")]
 	[GIR (name = "Map")]
-	public class SourceMap : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public class SourceMap : Gtk.SourceView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SourceMap ();
-		public unowned Gtk.SourceView get_child_view ();
 		public unowned Gtk.SourceView? get_view ();
 		public void set_view (Gtk.SourceView view);
 		[NoAccessorMethod]
@@ -605,6 +605,8 @@ namespace Gtk {
 		[NoAccessorMethod]
 		public bool line_background_set { get; construct; }
 		[NoAccessorMethod]
+		public Pango.Underline pango_underline { get; construct; }
+		[NoAccessorMethod]
 		public string scale { owned get; construct; }
 		[NoAccessorMethod]
 		public bool scale_set { get; construct; }
@@ -612,8 +614,13 @@ namespace Gtk {
 		public bool strikethrough { get; construct; }
 		[NoAccessorMethod]
 		public bool strikethrough_set { get; construct; }
+		[Deprecated (since = "3.18")]
 		[NoAccessorMethod]
 		public bool underline { get; construct; }
+		[NoAccessorMethod]
+		public string underline_color { owned get; construct; }
+		[NoAccessorMethod]
+		public bool underline_color_set { get; construct; }
 		[NoAccessorMethod]
 		public bool underline_set { get; construct; }
 	}
@@ -780,11 +787,6 @@ namespace Gtk {
 		[HasEmitter]
 		public virtual signal void can_undo_changed ();
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
-	[GIR (name = "Map_autoptr")]
-	[SimpleType]
-	public struct SourceMap_autoptr {
-	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_BACKGROUND_PATTERN_TYPE_", type_id = "gtk_source_background_pattern_type_get_type ()")]
 	[GIR (name = "BackgroundPatternType")]
 	public enum SourceBackgroundPatternType {
@@ -873,6 +875,15 @@ namespace Gtk {
 		BEFORE,
 		AFTER,
 		ALWAYS
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_SORT_FLAGS_", type_id = "gtk_source_sort_flags_get_type ()")]
+	[Flags]
+	[GIR (name = "SortFlags")]
+	public enum SourceSortFlags {
+		NONE,
+		CASE_SENSITIVE,
+		REVERSE_ORDER,
+		REMOVE_DUPLICATES
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_VIEW_GUTTER_POSITION_", type_id = "gtk_source_view_gutter_position_get_type ()")]
 	[GIR (name = "ViewGutterPosition")]

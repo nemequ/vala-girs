@@ -6,7 +6,7 @@ namespace MediaArt {
 	public class Process : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public Process () throws GLib.Error;
-		public bool buffer (MediaArt.Type type, MediaArt.ProcessFlags flags, GLib.File related_file, [CCode (array_length_cname = "len", array_length_pos = 4.5, array_length_type = "gsize")] uint8[]? buffer, string mime, string? artist, string? title, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool buffer (MediaArt.Type type, MediaArt.ProcessFlags flags, GLib.File related_file, [CCode (array_length_cname = "len", array_length_pos = 4.5, array_length_type = "gsize")] uint8[]? buffer, string? mime, string? artist, string? title, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool buffer_async (MediaArt.Type type, MediaArt.ProcessFlags flags, GLib.File related_file, [CCode (array_length_cname = "len", array_length_pos = 4.5, array_length_type = "gsize")] uint8[]? buffer, string mime, string? artist, string? title, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool file (MediaArt.Type type, MediaArt.ProcessFlags flags, GLib.File file, string? artist, string? title, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool file_async (MediaArt.Type type, MediaArt.ProcessFlags flags, GLib.File file, string? artist, string? title, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;

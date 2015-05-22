@@ -274,8 +274,13 @@ namespace Osinfo {
 		public string generate (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async string generate_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string generate_command_line (Osinfo.Os os, Osinfo.InstallConfig config);
+		public string generate_command_line_for_media (Osinfo.Media media, Osinfo.InstallConfig config);
+		public string generate_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async string generate_for_media_async (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.File generate_output (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.File generate_output_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
+		public GLib.File generate_output_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async GLib.File generate_output_for_media_async (Osinfo.Media media, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Osinfo.AvatarFormat get_avatar_format ();
 		public bool get_can_post_install_drivers ();
 		public bool get_can_pre_install_drivers ();

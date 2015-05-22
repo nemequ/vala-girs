@@ -335,12 +335,6 @@ namespace Gedit {
 	public delegate void MessageCallback (Gedit.MessageBus bus, Gedit.Message message);
 	[CCode (cheader_filename = "gedit/gedit-app.h", cname = "GEDIT_LOCKDOWN_ALL")]
 	public const int LOCKDOWN_ALL;
-	[CCode (cheader_filename = "gedit/gedit-document.h", cname = "GEDIT_METADATA_ATTRIBUTE_ENCODING")]
-	public const string METADATA_ATTRIBUTE_ENCODING;
-	[CCode (cheader_filename = "gedit/gedit-document.h", cname = "GEDIT_METADATA_ATTRIBUTE_LANGUAGE")]
-	public const string METADATA_ATTRIBUTE_LANGUAGE;
-	[CCode (cheader_filename = "gedit/gedit-document.h", cname = "GEDIT_METADATA_ATTRIBUTE_POSITION")]
-	public const string METADATA_ATTRIBUTE_POSITION;
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_load_location (Gedit.Window window, GLib.File location, Gtk.SourceEncoding? encoding, int line_pos, int column_pos);
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
@@ -396,6 +390,7 @@ namespace Gedit {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "gedit/gedit-utils.h")]
 	public static string[] utils_drop_get_uris (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Deprecated (since = "3.18")]
 	public static string utils_escape_underscores (string text, ssize_t length);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static Gtk.SourceCompressionType utils_get_compression_type_from_content_type (string content_type);
@@ -410,6 +405,7 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_location_get_dirname_for_display (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Deprecated (since = "3.18")]
 	public static string utils_make_canonical_uri_from_shell_arg (string str);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_make_valid_utf8 (string name);
@@ -432,5 +428,6 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_str_middle_truncate (string string, uint truncate_length);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Deprecated (since = "3.18")]
 	public static string utils_uri_get_dirname (string uri);
 }

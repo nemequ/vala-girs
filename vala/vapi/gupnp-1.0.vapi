@@ -363,4 +363,6 @@ namespace GUPnP {
 	public delegate void ServiceProxyActionCallback (GUPnP.ServiceProxy proxy, GUPnP.ServiceProxyAction action);
 	[CCode (cheader_filename = "libgupnp/gupnp.h", instance_pos = 3.9)]
 	public delegate void ServiceProxyNotifyCallback (GUPnP.ServiceProxy proxy, string variable, GLib.Value value);
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	public static string get_uuid ();
 }

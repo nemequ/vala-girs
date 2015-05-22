@@ -15,9 +15,6 @@ and/or use gtk-doc annotations.  -->
              shared-library="libgtksourceview-3.0.so.1"
              c:identifier-prefixes="GtkSource"
              c:symbol-prefixes="gtk_source">
-    <alias name="Map_autoptr" c:type="GtkSourceMap_autoptr">
-      <type name="gpointer" c:type="gpointer"/>
-    </alias>
     <enumeration name="BackgroundPatternType"
                  version="3.16"
                  glib:type-name="GtkSourceBackgroundPatternType"
@@ -879,6 +876,36 @@ will be set.</doc>
                      allow-none="1">
             <doc xml:space="preserve">A #GtkSourceUndoManager or %NULL.</doc>
             <type name="UndoManager" c:type="GtkSourceUndoManager*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="sort_lines"
+              c:identifier="gtk_source_buffer_sort_lines"
+              version="3.18">
+        <doc xml:space="preserve">Sort the lines of text between the specified iterators.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkSourceBuffer.</doc>
+            <type name="Buffer" c:type="GtkSourceBuffer*"/>
+          </instance-parameter>
+          <parameter name="start" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkTextIter.</doc>
+            <type name="Gtk.TextIter" c:type="GtkTextIter*"/>
+          </parameter>
+          <parameter name="end" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkTextIter.</doc>
+            <type name="Gtk.TextIter" c:type="GtkTextIter*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GtkSourceSortFlags specifying how the sort should behave</doc>
+            <type name="SortFlags" c:type="GtkSourceSortFlags"/>
+          </parameter>
+          <parameter name="column" transfer-ownership="none">
+            <doc xml:space="preserve">sort considering the text starting at the given column</doc>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </method>
@@ -7101,12 +7128,13 @@ a %NULL-terminated array of strings or %NULL.</doc>
     <class name="Map"
            c:symbol-prefix="map"
            c:type="GtkSourceMap"
-           parent="Gtk.Bin"
+           parent="View"
            glib:type-name="GtkSourceMap"
            glib:get-type="gtk_source_map_get_type"
            glib:type-struct="MapClass">
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Scrollable"/>
       <constructor name="new" c:identifier="gtk_source_map_new" version="3.18">
         <doc xml:space="preserve">Creates a new #GtkSourceMap.</doc>
         <return-value transfer-ownership="none">
@@ -7114,21 +7142,6 @@ a %NULL-terminated array of strings or %NULL.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
       </constructor>
-      <method name="get_child_view"
-              c:identifier="gtk_source_map_get_child_view"
-              version="3.18">
-        <doc xml:space="preserve">Gets the internal #GtkSourceView in case further tweaking is required.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the internal #GtkSourceView.</doc>
-          <type name="View" c:type="GtkSourceView*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="map" transfer-ownership="none">
-            <doc xml:space="preserve">a #GtkSourceMap.</doc>
-            <type name="Map" c:type="GtkSourceMap*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_view"
               c:identifier="gtk_source_map_get_view"
               version="3.18">
@@ -7169,14 +7182,14 @@ a %NULL-terminated array of strings or %NULL.</doc>
         <type name="View"/>
       </property>
       <field name="parent_instance">
-        <type name="Gtk.Bin" c:type="GtkBin"/>
+        <type name="View" c:type="GtkSourceView"/>
       </field>
     </class>
     <record name="MapClass"
             c:type="GtkSourceMapClass"
             glib:is-gtype-struct-for="Map">
       <field name="parent_class">
-        <type name="Gtk.BinClass" c:type="GtkBinClass"/>
+        <type name="ViewClass" c:type="GtkSourceViewClass"/>
       </field>
       <field name="padding">
         <array zero-terminated="0" c:type="gpointer" fixed-size="10">
@@ -9682,6 +9695,36 @@ non-whitespace character on the second press.</doc>
 non-whitespace character when the HOME/END keys are pressed.</doc>
       </member>
     </enumeration>
+    <bitfield name="SortFlags"
+              version="3.18"
+              glib:type-name="GtkSourceSortFlags"
+              glib:get-type="gtk_source_sort_flags_get_type"
+              c:type="GtkSourceSortFlags">
+      <member name="none"
+              value="0"
+              c:identifier="GTK_SOURCE_SORT_FLAGS_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no flags specified</doc>
+      </member>
+      <member name="case_sensitive"
+              value="1"
+              c:identifier="GTK_SOURCE_SORT_FLAGS_CASE_SENSITIVE"
+              glib:nick="case-sensitive">
+        <doc xml:space="preserve">case sensitive sort</doc>
+      </member>
+      <member name="reverse_order"
+              value="2"
+              c:identifier="GTK_SOURCE_SORT_FLAGS_REVERSE_ORDER"
+              glib:nick="reverse-order">
+        <doc xml:space="preserve">sort in reverse order</doc>
+      </member>
+      <member name="remove_duplicates"
+              value="4"
+              c:identifier="GTK_SOURCE_SORT_FLAGS_REMOVE_DUPLICATES"
+              glib:nick="remove-duplicates">
+        <doc xml:space="preserve">remove duplicates</doc>
+      </member>
+    </bitfield>
     <class name="Style"
            c:symbol-prefix="style"
            c:type="GtkSourceStyle"
@@ -9764,6 +9807,12 @@ when you are done with it.</doc>
                 transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="pango-underline"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Pango.Underline"/>
+      </property>
       <property name="scale"
                 writable="1"
                 construct-only="1"
@@ -9789,6 +9838,21 @@ when you are done with it.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="underline"
+                deprecated="1"
+                deprecated-version="3.18"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc-deprecated xml:space="preserve">Use pango-underline.</doc-deprecated>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="underline-color"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="underline-color-set"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
