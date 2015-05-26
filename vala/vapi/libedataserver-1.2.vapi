@@ -140,8 +140,11 @@ namespace E {
 		public NamedParameters ();
 		public void assign (E.NamedParameters? from);
 		public void clear ();
+		public uint count ();
+		public bool exists (string name);
 		public void free ();
 		public unowned string @get (string name);
+		public string get_name (int index);
 		public E.NamedParameters new_clone ();
 		public void @set (string name, string? value);
 		[CCode (has_construct_function = false)]
@@ -175,7 +178,7 @@ namespace E {
 		public string dup_parent ();
 		public string dup_secret_label ();
 		public string dup_uid ();
-		public void emit_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
+		public void emit_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error);
 		public bool equal (E.Source source2);
 		public E.SourceConnectionStatus get_connection_status ();
 		public unowned string get_display_name ();
@@ -193,14 +196,14 @@ namespace E {
 		public bool get_writable ();
 		public bool has_extension (string extension_name);
 		public uint hash ();
-		public async bool invoke_authenticate (E.NamedParameters credentials, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool invoke_authenticate (E.NamedParameters? credentials, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool invoke_authenticate_impl (void* dbus_source, string arg_credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool invoke_authenticate_sync (E.NamedParameters credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool invoke_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool invoke_authenticate_sync (E.NamedParameters? credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool invoke_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool invoke_credentials_required_impl (void* dbus_source, string arg_reason, string arg_certificate_pem, string arg_certificate_errors, string arg_dbus_error_name, string arg_dbus_error_message, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool invoke_credentials_required_sync (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool invoke_credentials_required_sync (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool lookup_password (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
 		public bool lookup_password_sync (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
 		public async bool mail_signature_load (int io_priority, GLib.Cancellable? cancellable, out string contents, out size_t length) throws GLib.Error;

@@ -337,13 +337,13 @@ namespace Gtk {
 		[NoAccessorMethod]
 		public int ypad { get; set construct; }
 		[HasEmitter]
-		public virtual signal void activate (Gtk.TextIter iter, Cairo.RectangleInt area, Gdk.Event event);
+		public virtual signal void activate (Gtk.TextIter iter, Gdk.Rectangle area, Gdk.Event event);
 		[HasEmitter]
-		public virtual signal bool query_activatable (Gtk.TextIter iter, Cairo.RectangleInt area, Gdk.Event event);
+		public virtual signal bool query_activatable (Gtk.TextIter iter, Gdk.Rectangle area, Gdk.Event event);
 		[HasEmitter]
 		public virtual signal void query_data (Gtk.TextIter start, Gtk.TextIter end, Gtk.SourceGutterRendererState state);
 		[HasEmitter]
-		public virtual signal bool query_tooltip (Gtk.TextIter iter, Cairo.RectangleInt area, int x, int y, Gtk.Tooltip tooltip);
+		public virtual signal bool query_tooltip (Gtk.TextIter iter, Gdk.Rectangle area, int x, int y, Gtk.Tooltip tooltip);
 		[HasEmitter]
 		public virtual signal void queue_draw ();
 	}
