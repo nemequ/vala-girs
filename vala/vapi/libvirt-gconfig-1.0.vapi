@@ -354,6 +354,7 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public DomainFilesys.from_xml (string xml) throws GLib.Error;
 		public void set_access_type (GVirConfig.DomainFilesysAccessType type);
+		public void set_driver_format (GVirConfig.DomainDiskFormat format);
 		public void set_driver_type (GVirConfig.DomainFilesysDriverType type);
 		public void set_ram_usage (uint64 bytes);
 		public void set_readonly (bool readonly);
@@ -982,7 +983,10 @@ namespace GVirConfig {
 	public enum DomainFilesysDriverType {
 		DEFAULT,
 		PATH,
-		HANDLE
+		HANDLE,
+		LOOP,
+		NBD,
+		PLOOP
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_FILESYS_", type_id = "gvir_config_domain_filesys_type_get_type ()")]
 	public enum DomainFilesysType {

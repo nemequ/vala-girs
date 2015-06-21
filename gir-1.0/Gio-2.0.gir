@@ -1414,9 +1414,8 @@ and you must not call g_action_group_change_action_state().
 The state type of a particular action will never change but it is
 possible for an action to be removed and for a new action to be added
 with the same name but a different state type.</doc>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">the state type, if the action
-is stateful</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the state type, if the action is stateful</doc>
           <type name="GLib.VariantType" c:type="const GVariantType*"/>
         </return-value>
         <parameters>
@@ -1840,9 +1839,8 @@ and you must not call g_action_group_change_action_state().
 The state type of a particular action will never change but it is
 possible for an action to be removed and for a new action to be added
 with the same name but a different state type.</doc>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">the state type, if the action
-is stateful</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the state type, if the action is stateful</doc>
           <type name="GLib.VariantType" c:type="const GVariantType*"/>
         </return-value>
         <parameters>
@@ -2135,9 +2133,8 @@ actions in the groupb</doc>
       </field>
       <field name="get_action_state_type">
         <callback name="get_action_state_type">
-          <return-value transfer-ownership="full" nullable="1">
-            <doc xml:space="preserve">the state type, if the action
-is stateful</doc>
+          <return-value transfer-ownership="none" nullable="1">
+            <doc xml:space="preserve">the state type, if the action is stateful</doc>
             <type name="GLib.VariantType" c:type="const GVariantType*"/>
           </return-value>
           <parameters>
@@ -11023,6 +11020,13 @@ is authorized.</doc>
 an owner for the destination name in response to this method
 invocation.</doc>
       </member>
+      <member name="allow_interactive_authorization"
+              value="2"
+              c:identifier="G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION"
+              glib:nick="allow-interactive-authorization">
+        <doc xml:space="preserve">the caller is prepared to
+wait for interactive authorization. Since 2.46.</doc>
+      </member>
     </bitfield>
     <bitfield name="DBusCapabilityFlags"
               version="2.26"
@@ -16089,6 +16093,14 @@ a message to be sent to the other peer.</doc>
               glib:nick="no-auto-start">
         <doc xml:space="preserve">The bus must not launch an
 owner for the destination name in response to this message.</doc>
+      </member>
+      <member name="allow_interactive_authorization"
+              value="4"
+              c:identifier="G_DBUS_MESSAGE_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION"
+              glib:nick="allow-interactive-authorization">
+        <doc xml:space="preserve">If set on a method
+call, this flag means that the caller is prepared to wait for interactive
+authorization. Since 2.46.</doc>
       </member>
     </bitfield>
     <enumeration name="DBusMessageHeaderField"
@@ -32530,7 +32542,9 @@ If @etag is specified (not %NULL), any existing file must have that etag,
 or the error %G_IO_ERROR_WRONG_ETAG will be returned.
 
 If @make_backup is %TRUE, this function will attempt to make a backup
-of @file.
+of @file. Internally, it uses g_file_replace(), so will try to replace the
+file contents in the safest way possible. For example, atomic renames are
+used when replacing local files’ contents.
 
 If @cancellable is not %NULL, then the operation can be cancelled by
 triggering the cancellable object from another thread. If the operation
@@ -52591,6 +52605,11 @@ information is send by the mounting operation.</doc>
 See [Extending GIO][extending-gio].</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <record name="NativeSocketAddress"
+            c:type="GNativeSocketAddress"
+            disguised="1">
+      <doc xml:space="preserve">An socket address of some unknown native type.</doc>
+    </record>
     <class name="NativeVolumeMonitor"
            c:symbol-prefix="native_volume_monitor"
            c:type="GNativeVolumeMonitor"
@@ -57219,6 +57238,15 @@ If the action is disabled then calls to g_action_activate() and
 g_action_change_state() have no effect.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="invert-boolean"
+                version="2.46"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">If %TRUE, the state of the action will be the negation of the
+property value, provided the property is boolean.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="name"
                 version="2.38"
                 writable="1"
@@ -60435,7 +60463,7 @@ returns a #GInputStream that lets you read the data.
         </parameters>
       </method>
       <method name="ref" c:identifier="g_resource_ref" version="2.32">
-        <doc xml:space="preserve">Atomically increments the reference count of @array by one. This
+        <doc xml:space="preserve">Atomically increments the reference count of @resource by one. This
 function is MT-safe and may be called from any thread.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">The passed in #GResource</doc>
@@ -60450,7 +60478,7 @@ function is MT-safe and may be called from any thread.</doc>
       </method>
       <method name="unref" c:identifier="g_resource_unref" version="2.32">
         <doc xml:space="preserve">Atomically decrements the reference count of @resource by one. If the
-reference count drops to 0, all memory allocated by the array is
+reference count drops to 0, all memory allocated by the resource is
 released. This function is MT-safe and may be called from any
 thread.</doc>
         <return-value transfer-ownership="none">
@@ -60938,7 +60966,8 @@ values, as well as some other information.
 
 Normally, a schema has as fixed path that determines where the settings
 are stored in the conceptual global tree of settings. However, schemas
-can also be 'relocatable', i.e. not equipped with a fixed path. This is
+can also be '[relocatable][gsettings-relocatable]', i.e. not equipped with
+a fixed path. This is
 useful e.g. when the schema describes an 'account', and you want to be
 able to store a arbitrary number of accounts.
 
@@ -60970,9 +60999,33 @@ read.  Signals may be reported in additional cases as well and the
 Similar to GConf, the default values in GSettings schemas can be
 localized, but the localized values are stored in gettext catalogs
 and looked up with the domain that is specified in the
-gettext-domain attribute of the &lt;schemalist&gt; or &lt;schema&gt;
-elements and the category that is specified in the l10n attribute of
-the &lt;key&gt; element.
+`gettext-domain` attribute of the &lt;schemalist&gt; or &lt;schema&gt;
+elements and the category that is specified in the `l10n` attribute of
+the &lt;default&gt; element. The string which is translated includes all text in
+the &lt;default&gt; element, including any surrounding quotation marks.
+
+The `l10n` attribute must be set to `messages` or `time`, and sets the
+[locale category for
+translation](https://www.gnu.org/software/gettext/manual/html_node/Aspects.html#index-locale-categories-1).
+The `messages` category should be used by default; use `time` for
+translatable date or time formats. A translation comment can be added as an
+XML comment immediately above the &lt;default&gt; element — it is recommended to
+add these comments to aid translators understand the meaning and
+implications of the default value. An optional translation `context`
+attribute can be set on the &lt;default&gt; element to disambiguate multiple
+defaults which use the same string.
+
+For example:
+|[
+ &lt;!-- Translators: A list of words which are not allowed to be typed, in
+      GVariant serialization syntax.
+      See: https://developer.gnome.org/glib/stable/gvariant-text.html --&gt;
+ &lt;default l10n='messages' context='Banned words'&gt;['bad', 'words']&lt;/default&gt;
+]|
+
+Translations of default values must remain syntactically valid serialized
+#GVariants (e.g. retaining any surrounding quotation marks) or runtime
+errors will occur.
 
 GSettings uses schemas in a compact binary form that is created
 by the [glib-compile-schemas][glib-compile-schemas]
@@ -61101,7 +61154,84 @@ underlying settings. To make this even more convenient, GSettings
 looks for a boolean property with the name "sensitivity" and
 automatically binds it to the writability of the bound setting.
 If this 'magic' gets in the way, it can be suppressed with the
-#G_SETTINGS_BIND_NO_SENSITIVITY flag.</doc>
+#G_SETTINGS_BIND_NO_SENSITIVITY flag.
+
+## Relocatable schemas # {#gsettings-relocatable}
+
+A relocatable schema is one with no `path` attribute specified on its
+&lt;schema&gt; element. By using g_settings_new_with_path(), a #GSettings object
+can be instantiated for a relocatable schema, assigning a path to the
+instance. Paths passed to g_settings_new_with_path() will typically be
+constructed dynamically from a constant prefix plus some form of instance
+identifier; but they must still be valid GSettings paths. Paths could also
+be constant and used with a globally installed schema originating from a
+dependency library.
+
+For example, a relocatable schema could be used to store geometry information
+for different windows in an application. If the schema ID was
+`org.foo.MyApp.Window`, it could be instantiated for paths
+`/org/foo/MyApp/main/`, `/org/foo/MyApp/document-1/`,
+`/org/foo/MyApp/document-2/`, etc. If any of the paths are well-known
+they can be specified as &lt;child&gt; elements in the parent schema, e.g.:
+|[
+&lt;schema id="org.foo.MyApp" path="/org/foo/MyApp/"&gt;
+  &lt;child name="main" schema="org.foo.MyApp.Window"/&gt;
+&lt;/schema&gt;
+]|
+
+## Build system integration # {#gsettings-build-system}
+
+GSettings comes with autotools integration to simplify compiling and
+installing schemas. To add GSettings support to an application, add the
+following to your `configure.ac`:
+|[
+GLIB_GSETTINGS
+]|
+
+In the appropriate `Makefile.am`, use the following snippet to compile and
+install the named schema:
+|[
+gsettings_SCHEMAS = org.foo.MyApp.gschema.xml
+EXTRA_DIST = $(gsettings_SCHEMAS)
+
+@GSETTINGS_RULES@
+]|
+
+No changes are needed to the build system to mark a schema XML file for
+translation. Assuming it sets the `gettext-domain` attribute, a schema may
+be marked for translation by adding it to `POTFILES.in`, assuming gettext
+0.19 is in use (the preferred method for translation):
+|[
+data/org.foo.MyApp.gschema.xml
+]|
+
+Alternatively, if intltool 0.50.1 is in use:
+|[
+[type: gettext/gsettings]data/org.foo.MyApp.gschema.xml
+]|
+
+GSettings will use gettext to look up translations for the &lt;summary&gt; and
+&lt;description&gt; elements, and also any &lt;default&gt; elements which have a `l10n`
+attribute set. Translations must not be included in the `.gschema.xml` file
+by the build system, for example by using intltool XML rules with a
+`.gschema.xml.in` template.
+
+If an enumerated type defined in a C header file is to be used in a GSettings
+schema, it can either be defined manually using an &lt;enum&gt; element in the
+schema XML, or it can be extracted automatically from the C header. This
+approach is preferred, as it ensures the two representations are always
+synchronised. To do so, add the following to the relevant `Makefile.am`:
+|[
+gsettings_ENUM_NAMESPACE = org.foo.MyApp
+gsettings_ENUM_FILES = my-app-enums.h my-app-misc.h
+]|
+
+`gsettings_ENUM_NAMESPACE` specifies the schema namespace for the enum files,
+which are specified in `gsettings_ENUM_FILES`. This will generate a
+`org.foo.MyApp.enums.xml` file containing the extracted enums, which will be
+automatically included in the schema compilation, install and uninstall
+rules. It should not be committed to version control or included in
+`EXTRA_DIST`.</doc>
       <constructor name="new" c:identifier="g_settings_new" version="2.26">
         <doc xml:space="preserve">Creates a new #GSettings object with the schema specified by
 @schema_id.
@@ -63097,6 +63227,28 @@ with it.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="list_keys"
+              c:identifier="g_settings_schema_list_keys"
+              version="2.46">
+        <doc xml:space="preserve">Introspects the list of keys on @schema.
+
+You should probably not be calling this function from "normal" code
+(since you should already know what keys are in your schema).  This
+function is intended for introspection reasons.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a list of the keys on
+  @schema</doc>
+          <array c:type="gchar**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="schema" transfer-ownership="none">
+            <doc xml:space="preserve">a #GSettingsSchema</doc>
+            <type name="SettingsSchema" c:type="GSettingsSchema*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="ref" c:identifier="g_settings_schema_ref" version="2.32">
         <doc xml:space="preserve">Increase the reference count of @schema, returning a new reference.</doc>
         <return-value transfer-ownership="full">
@@ -63943,7 +64095,7 @@ If no action of this name is in the group then nothing happens.</doc>
            glib:type-name="GSimpleAsyncResult"
            glib:get-type="g_simple_async_result_get_type"
            glib:type-struct="SimpleAsyncResultClass">
-      <doc xml:space="preserve">As of GLib 2.36, #GSimpleAsyncResult is deprecated in favor of
+      <doc xml:space="preserve">As of GLib 2.46, #GSimpleAsyncResult is deprecated in favor of
 #GTask, which provides a simpler API.
 
 #GSimpleAsyncResult implements #GAsyncResult.
@@ -68600,7 +68752,10 @@ the future; unrecognized @event values should be ignored.</doc>
             <doc xml:space="preserve">the #GSocketConnectable that @event is occurring on</doc>
             <type name="SocketConnectable"/>
           </parameter>
-          <parameter name="connection" transfer-ownership="none">
+          <parameter name="connection"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the current representation of the connection</doc>
             <type name="IOStream"/>
           </parameter>
@@ -71757,9 +71912,8 @@ and will be used as the environment that the process is launched in.</doc>
         <doc xml:space="preserve">Returns the value of the environment variable @variable in the
 environment of processes launched from this launcher.
 
-The returned string is in the GLib file name encoding.  On UNIX, this
-means that it can be an arbitrary byte string.  On Windows, it will
-be UTF-8.</doc>
+On UNIX, the returned string can be an arbitrary byte string.
+On Windows, it will be UTF-8.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the value of the environment variable, %NULL if unset</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -71855,9 +72009,8 @@ g_environ_unsetenv(), etc.
 As an alternative, you can use g_subprocess_launcher_setenv(),
 g_subprocess_launcher_unsetenv(), etc.
 
-All strings in this array are expected to be in the GLib file name
-encoding.  On UNIX, this means that they can be arbitrary byte
-strings.  On Windows, they should be in UTF-8.</doc>
+On UNIX, all strings in this array can be arbitrary byte strings.
+On Windows, they should be in UTF-8.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -71993,9 +72146,9 @@ This feature is only available on UNIX.</doc>
         <doc xml:space="preserve">Sets the environment variable @variable in the environment of
 processes launched from this launcher.
 
-Both the variable's name and value should be in the GLib file name
-encoding. On UNIX, this means that they can be arbitrary byte
-strings. On Windows, they should be in UTF-8.</doc>
+On UNIX, both the variable's name and value can be arbitrary byte
+strings, except that the variable's name cannot contain '='.
+On Windows, they should be in UTF-8.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -72207,9 +72360,8 @@ This feature is only available on UNIX.</doc>
         <doc xml:space="preserve">Removes the environment variable @variable from the environment of
 processes launched from this launcher.
 
-The variable name should be in the GLib file name encoding.  On UNIX,
-this means that they can be arbitrary byte strings.  On Windows, they
-should be in UTF-8.</doc>
+On UNIX, the variable's name can be an arbitrary byte string not
+containing '='. On Windows, it should be in UTF-8.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -77344,7 +77496,11 @@ result of verification.</doc>
     </class>
     <record name="TlsDatabaseClass"
             c:type="GTlsDatabaseClass"
-            glib:is-gtype-struct-for="TlsDatabase">
+            glib:is-gtype-struct-for="TlsDatabase"
+            version="2.30">
+      <doc xml:space="preserve">The class for #GTlsDatabase. Derived classes should implement the various
+virtual methods. _async and _finish methods have a default
+implementation that runs the corresponding sync method in a thread.</doc>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>

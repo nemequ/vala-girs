@@ -1054,6 +1054,9 @@ Bluetooth device.
               c:type="NM_CLIENT_HOSTNAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_METERED" value="metered" c:type="NM_CLIENT_METERED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_NETWORKING_ENABLED"
               value="networking-enabled"
               c:type="NM_CLIENT_NETWORKING_ENABLED">
@@ -2541,6 +2544,10 @@ Element-type: NMDevice</doc>
         <doc xml:space="preserve">The machine hostname stored in persistent configuration. This can be
 modified by calling nm_client_save_hostname().</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="metered" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the connectivity is metered.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="networking-enabled"
                 writable="1"
@@ -4502,6 +4509,9 @@ and some #NMSetting8021x operations.</doc>
     <constant name="DEVICE_MANAGED" value="managed" c:type="NM_DEVICE_MANAGED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_METERED" value="metered" c:type="NM_DEVICE_METERED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_MODEM_CURRENT_CAPABILITIES"
               value="current-capabilities"
               c:type="NM_DEVICE_MODEM_CURRENT_CAPABILITIES">
@@ -5312,6 +5322,21 @@ used by the device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_metered"
+              c:identifier="nm_device_get_metered"
+              version="1.2">
+        <doc xml:space="preserve">Gets the metered setting of a #NMDevice.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the metered setting.</doc>
+          <type name="Metered" c:type="NMMetered"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_mtu" c:identifier="nm_device_get_mtu">
         <doc xml:space="preserve">Gets the  MTU of the #NMDevice.</doc>
         <return-value transfer-ownership="none">
@@ -5558,6 +5583,10 @@ operations like addressing and routing.</doc>
       <property name="managed" transfer-ownership="none">
         <doc xml:space="preserve">Whether the device is managed by NetworkManager.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="metered" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the device is metered.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="mtu" transfer-ownership="none">
         <doc xml:space="preserve">The MTU of the device.</doc>
@@ -9201,6 +9230,40 @@ errors in that namespace.</doc>
         </return-value>
       </function>
     </enumeration>
+    <enumeration name="Metered"
+                 version="1.2"
+                 glib:type-name="NMMetered"
+                 glib:get-type="nm_metered_get_type"
+                 c:type="NMMetered">
+      <doc xml:space="preserve">(Corresponds to the NM_METERED type in nm-device.xml.)</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="NM_METERED_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">The metered status is unknown</doc>
+      </member>
+      <member name="yes"
+              value="1"
+              c:identifier="NM_METERED_YES"
+              glib:nick="yes">
+        <doc xml:space="preserve">Metered, the value was statically set</doc>
+      </member>
+      <member name="no" value="2" c:identifier="NM_METERED_NO" glib:nick="no">
+        <doc xml:space="preserve">Not metered, the value was statically set</doc>
+      </member>
+      <member name="guess_yes"
+              value="3"
+              c:identifier="NM_METERED_GUESS_YES"
+              glib:nick="guess-yes">
+        <doc xml:space="preserve">Metered, the value was guessed</doc>
+      </member>
+      <member name="guess_no"
+              value="4"
+              c:identifier="NM_METERED_GUESS_NO"
+              glib:nick="guess-no">
+        <doc xml:space="preserve">Not metered, the value was guessed</doc>
+      </member>
+    </enumeration>
     <constant name="OBJECT_DBUS_CONNECTION"
               value="dbus-connection"
               c:type="NM_OBJECT_DBUS_CONNECTION">
@@ -10194,6 +10257,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               c:type="NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MIN">
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="SETTING_CONNECTION_AUTOCONNECT_SLAVES"
+              value="autoconnect-slaves"
+              c:type="NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_CONNECTION_GATEWAY_PING_TIMEOUT"
               value="gateway-ping-timeout"
               c:type="NM_SETTING_CONNECTION_GATEWAY_PING_TIMEOUT">
@@ -10212,6 +10280,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
     <constant name="SETTING_CONNECTION_MASTER"
               value="master"
               c:type="NM_SETTING_CONNECTION_MASTER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_CONNECTION_METERED"
+              value="metered"
+              c:type="NM_SETTING_CONNECTION_METERED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_CONNECTION_PERMISSIONS"
@@ -14597,6 +14670,23 @@ The higher number, the higher priority.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_autoconnect_slaves"
+              c:identifier="nm_setting_connection_get_autoconnect_slaves"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingConnection:autoconnect-slaves property of the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether slaves of the connection should be activated together
+         with the connection.</doc>
+          <type name="SettingConnectionAutoconnectSlaves"
+                c:type="NMSettingConnectionAutoconnectSlaves"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingConnection</doc>
+            <type name="SettingConnection" c:type="NMSettingConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_connection_type"
               c:identifier="nm_setting_connection_get_connection_type">
         <doc xml:space="preserve">Returns the #NMSettingConnection:type property of the connection.</doc>
@@ -14659,6 +14749,20 @@ property.</doc>
           <doc xml:space="preserve">interface name of the master device or UUID of the master
 connection.</doc>
           <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingConnection</doc>
+            <type name="SettingConnection" c:type="NMSettingConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_metered"
+              c:identifier="nm_setting_connection_get_metered"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingConnection:metered property of the setting.</doc>
+          <type name="Metered" c:type="NMMetered"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -14951,6 +15055,20 @@ connections with higher priority will be preferred. Defaults to 0.
 The higher number means higher priority.</doc>
         <type name="gint" c:type="gint"/>
       </property>
+      <property name="autoconnect-slaves"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether or not slaves of this connection should be automatically brought up
+when NetworkManager activates this connection. This only has a real effect
+for master connections.
+The permitted values are: 0: leave slave connections untouched,
+1: activate all the slave connections with this connection, -1: default.
+If -1 (default) is set, global connection.autoconnect-slaves is read to
+determine the real value. If it is default as well, this fallbacks to 0.</doc>
+        <type name="SettingConnectionAutoconnectSlaves"/>
+      </property>
       <property name="gateway-ping-timeout"
                 writable="1"
                 construct="1"
@@ -14981,6 +15099,13 @@ connection may be applied to the wrong interface.</doc>
       <property name="master" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Interface name of the master device or UUID of the master connection.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="metered"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the connection is metered.</doc>
+        <type name="Metered"/>
       </property>
       <property name="permissions" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">An array of strings defining what access a given user has to this
@@ -15071,6 +15196,33 @@ firewall.</doc>
         <type name="Setting" c:type="NMSetting"/>
       </field>
     </class>
+    <enumeration name="SettingConnectionAutoconnectSlaves"
+                 glib:type-name="NMSettingConnectionAutoconnectSlaves"
+                 glib:get-type="nm_setting_connection_autoconnect_slaves_get_type"
+                 c:type="NMSettingConnectionAutoconnectSlaves">
+      <doc xml:space="preserve">#NMSettingConnectionAutoconnectSlaves values indicate whether slave connections
+should be activated when master is activated.</doc>
+      <member name="default"
+              value="-1"
+              c:identifier="NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">default value</doc>
+      </member>
+      <member name="no"
+              value="0"
+              c:identifier="NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES_NO"
+              glib:nick="no">
+        <doc xml:space="preserve">slaves are not brought up when
+  master is activated</doc>
+      </member>
+      <member name="yes"
+              value="1"
+              c:identifier="NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES_YES"
+              glib:nick="yes">
+        <doc xml:space="preserve">slaves are brought up when
+  master is activated</doc>
+      </member>
+    </enumeration>
     <record name="SettingConnectionClass"
             c:type="NMSettingConnectionClass"
             glib:is-gtype-struct-for="SettingConnection">
@@ -16001,9 +16153,15 @@ property.</doc>
 enabled, it makes the kernel generate a temporary IPv6 address in
 addition to the public one generated from MAC address via modified
 EUI-64.  This enhances privacy, but could cause problems in some
-applications, on the other hand.  The permitted values are: 0: disabled,
-1: enabled (prefer public address), 2: enabled (prefer temporary
-addresses).</doc>
+applications, on the other hand.  The permitted values are: -1: unknown,
+0: disabled, 1: enabled (prefer public address), 2: enabled (prefer temporary
+addresses).
+
+Having a per-connection setting set to "-1" (unknown) means fallback to
+global configuration "ipv6.ip6-privacy".
+
+If also global configuration is unspecified or set to "-1", fallback to read
+"/proc/sys/net/ipv6/conf/default/use_tempaddr".</doc>
         <type name="SettingIP6ConfigPrivacy"/>
       </property>
       <field name="parent">
@@ -16194,6 +16352,11 @@ given route is duplicated internally and is not changed by this function.</doc>
             <doc xml:space="preserve">the #NMSettingIPConfig</doc>
             <type name="SettingIPConfig" c:type="NMSettingIPConfig*"/>
           </instance-parameter>
+          <parameter name="is_set" transfer-ownership="none">
+            <doc xml:space="preserve">the dns-options can be either empty or unset (default).
+  Specify how to clear the options.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
       <method name="clear_dns_searches"
@@ -16512,6 +16675,24 @@ specify a metric. See #NMSettingIPConfig:route-metric for more details.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="has_dns_options"
+              c:identifier="nm_setting_ip_config_has_dns_options">
+        <doc xml:space="preserve">NMSettingIPConfig can have a list of dns-options. If the list
+is empty, there are two similar (but differentiated) states.
+Either the options are explicitly set to have no values,
+or the options are left undefined. The latter means to use
+a default configuration, while the former explicitly means "no-options".</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether DNS options are initalized or left unset (the default).</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPConfig</doc>
+            <type name="SettingIPConfig" c:type="NMSettingIPConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="next_valid_dns_option"
               c:identifier="nm_setting_ip_config_next_valid_dns_option"
               version="1.2">
@@ -16743,7 +16924,11 @@ providing a static hostname for the computer.  If the
                 version="1.2"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Array of DNS options.</doc>
+        <doc xml:space="preserve">Array of DNS options.
+
+%NULL means that the options are unset and left at the default.
+In this case NetworkManager will use default options. This is
+distinct from an empty list of properties.</doc>
         <array>
           <type name="utf8"/>
         </array>

@@ -234,6 +234,8 @@ namespace E {
 		public bool store_password_sync (string password, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string to_string (size_t? length);
 		public async bool unset_last_credentials_required_arguments (GLib.Cancellable? cancellable) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool unset_last_credentials_required_arguments_impl (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool unset_last_credentials_required_arguments_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Source.with_uid (string uid, GLib.MainContext? main_context) throws GLib.Error;
@@ -1230,6 +1232,8 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Deprecated (since = "3.8")]
 	public static void util_free_string_slist (GLib.SList<string> strings);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static string util_get_source_full_name (void* registry, void* source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

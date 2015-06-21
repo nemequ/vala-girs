@@ -13521,7 +13521,7 @@ a &amp;lt;table&amp;gt; or a &amp;lt;view&amp;gt;):
           column NMTOKEN #IMPLIED
           ref_column NMTOKEN #IMPLIED&gt;
 
-)&gt;
+&lt;!ELEMENT unique (column)&gt;
 
 &lt;!ELEMENT view (definition)&gt;
 &lt;!ATTLIST view
@@ -15368,7 +15368,7 @@ Use this object with gda_repetitive_statement_append_set().</doc>
 
 This is a pointer to the internal array of values. Don't try to free
 or modify it (modifying is reserved to database provider's implementations).</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">a pointer to the #GValue in the position @num of @row.</doc>
           <type name="GObject.Value" c:type="GValue*"/>
         </return-value>
@@ -23802,7 +23802,7 @@ To include variables in the @sql string, see the
       <field name="params_used" writable="1">
         <doc xml:space="preserve">When rendering is complete, contains the ordered list of parameters which have been used while doing the rendering</doc>
         <type name="GLib.SList" c:type="GSList*">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="Holder"/>
         </type>
       </field>
       <field name="provider" writable="1">
@@ -28845,6 +28845,23 @@ returned by #g_type_name.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="get_application_exec_path"
+              c:identifier="gda_get_application_exec_path">
+      <doc xml:space="preserve">Find the path to the application identified by @app_name. For example if the application
+is "gda-sql", then calling this function will return
+"/your/prefix/bin/gda-sql-5.0" if Libgda is installed in
+the "/your/prefix" prefix (which would usually be "/usr"), and for the ABI version 5.0.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the path as a new string, or %NULL if the application cannot be found</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="app_name" transfer-ownership="none">
+          <doc xml:space="preserve">the name of the application to find</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="identifier_equal" c:identifier="gda_identifier_equal">
       <doc xml:space="preserve">Does the same as strcmp(@id1, @id2), but handles the case where id1 and/or id2 are enclosed in double quotes.
 can also be used in hash tables as a #GEqualFunc.</doc>
@@ -28875,6 +28892,28 @@ can also be used in hash tables as a #GEqualFunc.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="init" c:identifier="gda_init">
+      <doc xml:space="preserve">Initializes the GDA library, must be called prior to any Libgda usage.
+
+Please note that if you call setlocale() to modify the current locale, you should also
+call gda_locale_changed() before using Libgda again.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="locale_changed"
+              c:identifier="gda_locale_changed"
+              version="4.2.3">
+      <doc xml:space="preserve">Call this function whenever the setlocale() function has been called
+to change the current locale; this function is first called by gda_init() so you
+don't need to call it if you have set the locale before calling gda_init().
+
+Failing to call this function after having changed the current locale may result
+in Libgda reverting to the previous set locale.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
     </function>
     <function name="log_disable" c:identifier="gda_log_disable">
       <doc xml:space="preserve">Disables GDA logs.</doc>

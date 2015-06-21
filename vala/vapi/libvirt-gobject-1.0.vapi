@@ -279,6 +279,7 @@ namespace GVir {
 		public bool @delete (uint flags) throws GLib.Error;
 		public async bool delete_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_active ();
+		public bool get_autostart () throws GLib.Error;
 		public GVirConfig.StoragePool get_config (uint flags) throws GLib.Error;
 		public GVir.StoragePoolInfo get_info () throws GLib.Error;
 		public unowned string get_name ();
@@ -288,6 +289,7 @@ namespace GVir {
 		public GLib.List<GVir.StorageVol> get_volumes ();
 		public bool refresh (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool refresh_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool set_autostart (bool autostart) throws GLib.Error;
 		public bool start (uint flags) throws GLib.Error;
 		public async bool start_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool stop () throws GLib.Error;

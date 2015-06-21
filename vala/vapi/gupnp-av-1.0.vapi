@@ -85,7 +85,7 @@ namespace GUPnP {
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_descriptor_get_type ()")]
 	public class DIDLLiteDescriptor : GLib.Object {
 		[CCode (has_construct_function = false)]
-		protected DIDLLiteDescriptor ();
+		public DIDLLiteDescriptor ();
 		public unowned string get_content ();
 		public unowned string get_id ();
 		public unowned string get_metadata_type ();

@@ -4097,8 +4097,8 @@ etc. The date must be valid.</doc>
       <method name="get_monday_week_of_year"
               c:identifier="g_date_get_monday_week_of_year">
         <doc xml:space="preserve">Returns the week of the year, where weeks are understood to start on
-Monday. If the date is before the first Monday of the year, return
-0. The date must be valid.</doc>
+Monday. If the date is before the first Monday of the year, return 0.
+The date must be valid.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">week of the year</doc>
           <type name="guint" c:type="guint"/>
@@ -4125,9 +4125,9 @@ Monday. If the date is before the first Monday of the year, return
       </method>
       <method name="get_sunday_week_of_year"
               c:identifier="g_date_get_sunday_week_of_year">
-        <doc xml:space="preserve">Returns the week of the year during which this date falls, if weeks
-are understood to being on Sunday. The date must be valid. Can return
-0 if the day is before the first Sunday of the year.</doc>
+        <doc xml:space="preserve">Returns the week of the year during which this date falls, if
+weeks are understood to being on Sunday. The date must be valid.
+Can return 0 if the day is before the first Sunday of the year.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">week number</doc>
           <type name="guint" c:type="guint"/>
@@ -6270,7 +6270,7 @@ be returned.
 If @domain contains a `FAILED` (or otherwise generic) error code,
 you should generally not check for it explicitly, but should
 instead treat any not-explicitly-recognized error code as being
-equilalent to the `FAILED` code. This way, if the domain is
+equivalent to the `FAILED` code. This way, if the domain is
 extended in the future to provide a more specific error code for
 a certain case, your code will still work.</doc>
         <return-value transfer-ownership="none">
@@ -10189,7 +10189,9 @@ and @error is set to #G_KEY_FILE_ERROR_INVALID_VALUE.</doc>
         <doc xml:space="preserve">Retrieves a comment above @key from @group_name.
 If @key is %NULL then @comment will be read from above
 @group_name. If both @key and @group_name are %NULL, then
-@comment will be read from above the first group in the file.</doc>
+@comment will be read from above the first group in the file.
+
+Note that the returned string includes the '#' comment markers.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a comment that should be freed with g_free()</doc>
           <type name="utf8" c:type="gchar*"/>
@@ -11064,9 +11066,13 @@ If @group_name is %NULL, the start_group is used.</doc>
               version="2.6"
               throws="1">
         <doc xml:space="preserve">Places a comment above @key from @group_name.
+
 If @key is %NULL then @comment will be written above @group_name.
 If both @key and @group_name  are %NULL, then @comment will be
-written above the first group in the file.</doc>
+written above the first group in the file.
+
+Note that this function prepends a '#' comment marker to
+each line of @comment.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the comment was written, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -36084,8 +36090,7 @@ provided list @envp.</doc>
           </array>
         </parameter>
         <parameter name="variable" transfer-ownership="none">
-          <doc xml:space="preserve">the environment variable to get, in the GLib file name
-    encoding</doc>
+          <doc xml:space="preserve">the environment variable to get</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -37274,9 +37279,9 @@ will not reflect any change once the special directories are loaded.</doc>
     <function name="getenv" c:identifier="g_getenv">
       <doc xml:space="preserve">Returns the value of an environment variable.
 
-The name and value are in the GLib file name encoding. On UNIX,
-this means the actual bytes which might or might not be in some
-consistent character set and encoding. On Windows, it is in UTF-8.
+On UNIX, the name and value are byte strings which might or might not
+be in some consistent character set and encoding. On Windows, they are
+in UTF-8.
 On Windows, in case the environment variable's value contains
 references to other environment variables, they are expanded.</doc>
       <return-value transfer-ownership="none">
@@ -37288,8 +37293,7 @@ references to other environment variables, they are expanded.</doc>
       </return-value>
       <parameters>
         <parameter name="variable" transfer-ownership="none">
-          <doc xml:space="preserve">the environment variable to get, in the GLib file name
-    encoding</doc>
+          <doc xml:space="preserve">the environment variable to get</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -38467,6 +38471,7 @@ g_log_default_handler() as default log handler.</doc>
     </function>
     <function name="log_set_handler"
               c:identifier="g_log_set_handler"
+              shadowed-by="log_set_handler_full"
               introspectable="0">
       <doc xml:space="preserve">Sets the log handler for a domain and a set of log levels.
 To handle fatal and recursive messages the @log_levels parameter
@@ -38522,6 +38527,49 @@ g_log_set_handler ("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
         <parameter name="user_data" transfer-ownership="none">
           <doc xml:space="preserve">data passed to the log handler</doc>
           <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_set_handler_full"
+              c:identifier="g_log_set_handler_full"
+              shadows="log_set_handler"
+              version="2.46">
+      <doc xml:space="preserve">Like g_log_sets_handler(), but takes a destroy notify for the @user_data.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the id of the new handler</doc>
+        <type name="guint" c:type="guint"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_domain"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the log domain, or %NULL for the default ""
+    application domain</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="log_levels" transfer-ownership="none">
+          <doc xml:space="preserve">the log levels to apply the log handler for.
+    To handle fatal and recursive messages as well, combine
+    the log levels with the #G_LOG_FLAG_FATAL and
+    #G_LOG_FLAG_RECURSION bit flags.</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="log_func"
+                   transfer-ownership="none"
+                   scope="notified"
+                   closure="3"
+                   destroy="4">
+          <doc xml:space="preserve">the log handler function</doc>
+          <type name="LogFunc" c:type="GLogFunc"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:space="preserve">data passed to the log handler</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="destroy" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">destroy notify for @user_data, or %NULL</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
         </parameter>
       </parameters>
     </function>
@@ -40562,10 +40610,9 @@ example.</doc>
       </parameters>
     </function>
     <function name="setenv" c:identifier="g_setenv" version="2.4">
-      <doc xml:space="preserve">Sets an environment variable. Both the variable's name and value
-should be in the GLib file name encoding. On UNIX, this means that
-they can be arbitrary byte strings. On Windows, they should be in
-UTF-8.
+      <doc xml:space="preserve">Sets an environment variable. On UNIX, both the variable's name and
+value can be arbitrary byte strings, except that the variable's name
+cannot contain '='. On Windows, they should be in UTF-8.
 
 Note that on some systems, when variables are overwritten, the memory
 used for the previous variables and its value isn't reclaimed.

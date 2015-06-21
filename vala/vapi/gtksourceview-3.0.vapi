@@ -208,15 +208,22 @@ namespace Gtk {
 	public class SourceFile : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SourceFile ();
+		public void check_file_on_disk ();
 		public Gtk.SourceCompressionType get_compression_type ();
 		public unowned Gtk.SourceEncoding get_encoding ();
 		public unowned GLib.File get_location ();
 		public Gtk.SourceNewlineType get_newline_type ();
+		public bool is_deleted ();
+		public bool is_externally_modified ();
+		public bool is_local ();
+		public bool is_readonly ();
 		public void set_location (GLib.File? location);
 		public Gtk.SourceCompressionType compression_type { get; }
 		public Gtk.SourceEncoding encoding { get; }
 		public GLib.File location { get; set construct; }
 		public Gtk.SourceNewlineType newline_type { get; }
+		[NoAccessorMethod]
+		public bool read_only { get; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_file_loader_get_type ()")]
 	[GIR (name = "FileLoader")]

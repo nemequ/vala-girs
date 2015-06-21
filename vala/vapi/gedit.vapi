@@ -25,6 +25,7 @@ namespace Gedit {
 		[Deprecated (since = "3.14")]
 		public Gtk.SourceCompressionType get_compression_type ();
 		public string get_content_type ();
+		[Deprecated (since = "3.18")]
 		public bool get_deleted ();
 		[Deprecated (since = "3.14")]
 		public unowned Gtk.SourceEncoding get_encoding ();
@@ -36,25 +37,30 @@ namespace Gedit {
 		public string get_mime_type ();
 		[Deprecated (since = "3.14")]
 		public Gtk.SourceNewlineType get_newline_type ();
+		[Deprecated (since = "3.18")]
 		public bool get_readonly ();
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
 		public string get_uri_for_display ();
 		public bool goto_line (int line);
 		public bool goto_line_offset (int line, int line_offset);
+		[Deprecated (since = "3.18")]
 		public bool is_local ();
 		public bool is_untitled ();
 		public bool is_untouched ();
+		[Deprecated (since = "3.18")]
 		public void set_content_type (string? content_type);
 		public void set_language (Gtk.SourceLanguage? lang);
 		[Deprecated (since = "3.14")]
 		public void set_location (GLib.File location);
 		public void set_search_context (Gtk.SourceSearchContext? search_context);
+		[Deprecated (since = "3.18")]
 		public void set_short_name_for_display (string? short_name);
 		public string content_type { owned get; set; }
 		[NoAccessorMethod]
 		public bool empty_search { get; }
 		public string mime_type { owned get; }
+		[Deprecated (since = "3.18")]
 		[NoAccessorMethod]
 		public bool read_only { get; }
 		[NoAccessorMethod]
