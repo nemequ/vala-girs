@@ -23,7 +23,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libgnome-desktop/gnome-xkb-info.h"/>
   <namespace name="GnomeDesktop"
              version="3.0"
-             shared-library="libgnome-desktop-3.so.10"
+             shared-library="libgnome-desktop-3.so.12"
              c:identifier-prefixes="Gnome"
              c:symbol-prefixes="gnome">
     <class name="BG"
@@ -1709,9 +1709,37 @@ have the same width/height.  Those outputs are of course connected and on
       </member>
       <member name="off" value="3" c:identifier="GNOME_RR_DPMS_OFF">
       </member>
-      <member name="disabled" value="4" c:identifier="GNOME_RR_DPMS_DISABLED">
+      <member name="unknown" value="4" c:identifier="GNOME_RR_DPMS_UNKNOWN">
       </member>
-      <member name="unknown" value="5" c:identifier="GNOME_RR_DPMS_UNKNOWN">
+    </enumeration>
+    <enumeration name="RRDpmsModeType"
+                 glib:type-name="GnomeRRDpmsModeType"
+                 glib:get-type="gnome_rr_dpms_mode_get_type"
+                 c:type="GnomeRRDpmsModeType">
+      <member name="on"
+              value="0"
+              c:identifier="GNOME_RR_DPMS_ON"
+              glib:nick="on">
+      </member>
+      <member name="standby"
+              value="1"
+              c:identifier="GNOME_RR_DPMS_STANDBY"
+              glib:nick="standby">
+      </member>
+      <member name="suspend"
+              value="2"
+              c:identifier="GNOME_RR_DPMS_SUSPEND"
+              glib:nick="suspend">
+      </member>
+      <member name="off"
+              value="3"
+              c:identifier="GNOME_RR_DPMS_OFF"
+              glib:nick="off">
+      </member>
+      <member name="unknown"
+              value="4"
+              c:identifier="GNOME_RR_DPMS_UNKNOWN"
+              glib:nick="unknown">
       </member>
     </enumeration>
     <enumeration name="RRError"
@@ -1775,6 +1803,19 @@ have the same width/height.  Those outputs are of course connected and on
         </return-value>
         <parameters>
           <instance-parameter name="mode" transfer-ownership="none">
+            <type name="RRMode" c:type="GnomeRRMode*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_is_tiled" c:identifier="gnome_rr_mode_get_is_tiled">
+        <doc xml:space="preserve">Returns TRUE if this mode is a tiled
+mode created for span a tiled monitor.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">a #GnomeRRMode</doc>
             <type name="RRMode" c:type="GnomeRRMode*"/>
           </instance-parameter>
         </parameters>
@@ -2095,6 +2136,17 @@ have the same width/height.  Those outputs are of course connected and on
           </parameter>
         </parameters>
       </method>
+      <method name="supports_underscanning"
+              c:identifier="gnome_rr_output_supports_underscanning">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="output" transfer-ownership="none">
+            <type name="RROutput" c:type="GnomeRROutput*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </record>
     <class name="RROutputInfo"
            c:symbol-prefix="rr_output_info"
@@ -2128,6 +2180,8 @@ have the same width/height.  Those outputs are of course connected and on
       </method>
       <method name="get_geometry"
               c:identifier="gnome_rr_output_info_get_geometry">
+        <doc xml:space="preserve">Get the geometry for the monitor connected to the specified output.
+If the monitor is a tiled monitor, it returns the geometry for the complete monitor.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2302,6 +2356,21 @@ have the same width/height.  Those outputs are of course connected and on
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_primary_tile"
+              c:identifier="gnome_rr_output_info_is_primary_tile">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the specified output is connected to
+the primary tile of a monitor or to an untiled monitor,
+%FALSE if the output is connected to a secondary tile.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GnomeRROutputInfo</doc>
+            <type name="RROutputInfo" c:type="GnomeRROutputInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="set_active" c:identifier="gnome_rr_output_info_set_active">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2317,23 +2386,30 @@ have the same width/height.  Those outputs are of course connected and on
       </method>
       <method name="set_geometry"
               c:identifier="gnome_rr_output_info_set_geometry">
+        <doc xml:space="preserve">Set the geometry for the monitor connected to the specified output.
+If the monitor is a tiled monitor, it sets the geometry for the complete monitor.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GnomeRROutputInfo</doc>
             <type name="RROutputInfo" c:type="GnomeRROutputInfo*"/>
           </instance-parameter>
           <parameter name="x" transfer-ownership="none">
+            <doc xml:space="preserve">x offset for monitor</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="y" transfer-ownership="none">
+            <doc xml:space="preserve">y offset for monitor</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">monitor width</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">monitor height</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -2731,6 +2807,9 @@ configuration.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="dpms-mode" writable="1" transfer-ownership="none">
+        <type name="RRDpmsModeType"/>
+      </property>
       <property name="gdk-screen"
                 writable="1"
                 construct-only="1"
@@ -3052,6 +3131,31 @@ must not be modified.</doc>
             <doc xml:space="preserve">a #GnomeXkbInfo</doc>
             <type name="XkbInfo" c:type="GnomeXkbInfo*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_languages_for_layout"
+              c:identifier="gnome_xkb_info_get_languages_for_layout"
+              version="3.18">
+        <doc xml:space="preserve">Returns a list of all languages supported by a layout, given by
+@layout_id.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">the list of
+ISO 639 code strings. The caller takes ownership of the #GList but
+not of the strings themselves, those are internally allocated and
+must not be modified.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="utf8"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GnomeXkbInfo</doc>
+            <type name="XkbInfo" c:type="GnomeXkbInfo*"/>
+          </instance-parameter>
+          <parameter name="layout_id" transfer-ownership="none">
+            <doc xml:space="preserve">a layout identifier</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_layout_info"

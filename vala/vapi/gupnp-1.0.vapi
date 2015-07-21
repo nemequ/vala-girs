@@ -195,6 +195,7 @@ namespace GUPnP {
 		public string get_control_url ();
 		public string get_event_subscription_url ();
 		public string get_id ();
+		[Deprecated (since = "0.20.15.")]
 		public GUPnP.ServiceIntrospection? get_introspection () throws GLib.Error;
 		public void get_introspection_async ([CCode (scope = "async")] owned GUPnP.ServiceIntrospectionCallback callback);
 		public void get_introspection_async_full ([CCode (delegate_target_pos = 2.1, scope = "async")] owned GUPnP.ServiceIntrospectionCallback callback, GLib.Cancellable? cancellable);

@@ -141,17 +141,20 @@ namespace E {
 		public void assign (E.NamedParameters? from);
 		public void clear ();
 		public uint count ();
-		public bool exists (string name);
+		public bool exists (global::string name);
 		public void free ();
-		public unowned string @get (string name);
-		public string get_name (int index);
+		public unowned global::string @get (global::string name);
+		public global::string get_name (int index);
 		public E.NamedParameters new_clone ();
-		public void @set (string name, string? value);
+		public void @set (global::string name, global::string? value);
 		[CCode (has_construct_function = false)]
-		public NamedParameters.strv (string strv);
-		public bool test (string name, string value, bool case_sensitively);
+		public NamedParameters.string (global::string str);
+		[CCode (has_construct_function = false)]
+		public NamedParameters.strv (global::string strv);
+		public bool test (global::string name, global::string value, bool case_sensitively);
+		public global::string to_string ();
 		[CCode (array_length = false, array_null_terminated = true)]
-		public string[] to_strv ();
+		public global::string[] to_strv ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]

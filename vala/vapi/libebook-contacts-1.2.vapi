@@ -288,6 +288,8 @@ namespace E {
 		[NoAccessorMethod]
 		public string pager { owned get; set; }
 		[NoAccessorMethod]
+		public E.ContactCert pgpCert { owned get; set; }
+		[NoAccessorMethod]
 		public E.ContactAttrList phone { owned get; set; }
 		[NoAccessorMethod]
 		public E.ContactPhoto photo { owned get; set; }
@@ -694,6 +696,7 @@ namespace E {
 		BIRTH_DATE,
 		ANNIVERSARY,
 		X509_CERT,
+		PGP_CERT,
 		IM_GADUGADU_HOME_1,
 		IM_GADUGADU_HOME_2,
 		IM_GADUGADU_HOME_3,

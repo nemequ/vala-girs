@@ -11,16 +11,26 @@ namespace GVir {
 		public GVir.StoragePool create_storage_pool (GVirConfig.StoragePool conf, uint flags) throws GLib.Error;
 		public bool fetch_domains (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool fetch_domains_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool fetch_interfaces (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool fetch_interfaces_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool fetch_networks (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool fetch_networks_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool fetch_storage_pools (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool fetch_storage_pools_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVir.Domain find_domain_by_id (int id);
 		public GVir.Domain find_domain_by_name (string name);
+		public GVir.Interface find_interface_by_mac (string macaddr);
+		public GVir.Network find_network_by_name (string name);
 		public GVir.StoragePool find_storage_pool_by_name (string name);
 		public GVirConfig.Capabilities get_capabilities () throws GLib.Error;
 		public async GVirConfig.Capabilities get_capabilities_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVir.Domain get_domain (string uuid);
 		public GLib.List<GVir.Domain> get_domains ();
 		public string get_hypervisor_name () throws GLib.Error;
+		public GVir.Interface get_interface (string name);
+		public GLib.List<GVir.Interface> get_interfaces ();
+		public GVir.Network get_network (string uuid);
+		public GLib.List<GVir.Network> get_networks ();
 		public GVir.NodeInfo get_node_info () throws GLib.Error;
 		public GVir.StoragePool get_storage_pool (string uuid);
 		public GLib.List<GVir.StoragePool> get_storage_pools ();
@@ -178,6 +188,7 @@ namespace GVir {
 		[CCode (has_construct_function = false)]
 		protected Interface ();
 		public GVirConfig.Interface get_config (uint flags) throws GLib.Error;
+		public unowned string get_mac ();
 		public unowned string get_name ();
 		[NoAccessorMethod]
 		public GVir.InterfaceHandle handle { owned get; construct; }
@@ -202,6 +213,7 @@ namespace GVir {
 		[CCode (has_construct_function = false)]
 		protected Network ();
 		public GVirConfig.Network get_config (uint flags) throws GLib.Error;
+		public GLib.List<GVir.NetworkDHCPLease> get_dhcp_leases (string? mac, uint flags) throws GLib.Error;
 		public unowned string get_name ();
 		public unowned string get_uuid ();
 		[NoWrapper]
@@ -210,6 +222,22 @@ namespace GVir {
 		public virtual void stopped ();
 		[NoAccessorMethod]
 		public GVir.NetworkHandle handle { owned get; construct; }
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", type_id = "gvir_network_dhcp_lease_get_type ()")]
+	public class NetworkDHCPLease : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected NetworkDHCPLease ();
+		public unowned string get_client_id ();
+		public int64 get_expiry_time ();
+		public unowned string get_hostname ();
+		public unowned string get_iaid ();
+		public unowned string get_iface ();
+		public unowned string get_ip ();
+		public int get_ip_type ();
+		public unowned string get_mac ();
+		public uint get_prefix ();
+		[NoAccessorMethod]
+		public void* handle { get; construct; }
 	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", type_id = "gvir_network_filter_get_type ()")]
 	public class NetworkFilter : GLib.Object {
@@ -444,6 +472,11 @@ namespace GVir {
 		SECURE,
 		INACTIVE,
 		UPDATE_CPU
+	}
+	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_IP_ADDR_TYPE_", type_id = "gvir_ip_addr_type_get_type ()")]
+	public enum IPAddrType {
+		IPV4,
+		IPV6
 	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_STORAGE_POOL_STATE_", type_id = "gvir_storage_pool_state_get_type ()")]
 	public enum StoragePoolState {

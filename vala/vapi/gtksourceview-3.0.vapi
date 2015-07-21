@@ -380,8 +380,8 @@ namespace Gtk {
 	public class SourceGutterRendererText : Gtk.SourceGutterRenderer {
 		[CCode (has_construct_function = false, type = "GtkSourceGutterRenderer*")]
 		public SourceGutterRendererText ();
-		public void measure (string text, int width, int height);
-		public void measure_markup (string markup, int width, int height);
+		public void measure (string text, out int width, out int height);
+		public void measure_markup (string markup, out int width, out int height);
 		public void set_markup (string markup, int length);
 		public void set_text (string text, int length);
 		[NoAccessorMethod]
@@ -699,6 +699,7 @@ namespace Gtk {
 		public bool get_show_line_marks ();
 		public bool get_show_line_numbers ();
 		public bool get_show_right_margin ();
+		public bool get_smart_backspace ();
 		public Gtk.SourceSmartHomeEndType get_smart_home_end ();
 		public uint get_tab_width ();
 		public uint get_visual_column (Gtk.TextIter iter);
@@ -715,6 +716,7 @@ namespace Gtk {
 		public void set_show_line_marks (bool show);
 		public void set_show_line_numbers (bool show);
 		public void set_show_right_margin (bool show);
+		public void set_smart_backspace (bool smart_backspace);
 		public void set_smart_home_end (Gtk.SourceSmartHomeEndType smart_home_end);
 		public void set_tab_width (uint width);
 		public void unindent_lines (Gtk.TextIter start, Gtk.TextIter end);
@@ -732,6 +734,7 @@ namespace Gtk {
 		public bool show_line_marks { get; set; }
 		public bool show_line_numbers { get; set; }
 		public bool show_right_margin { get; set; }
+		public bool smart_backspace { get; set; }
 		public Gtk.SourceSmartHomeEndType smart_home_end { get; set; }
 		public uint tab_width { get; set; }
 		public signal void change_case (Gtk.SourceChangeCaseType case_type);

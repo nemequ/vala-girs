@@ -1957,6 +1957,123 @@ transformation (i.e. scale, rotation, etc)</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="bind_model"
+              c:identifier="clutter_actor_bind_model"
+              version="1.24">
+        <doc xml:space="preserve">Binds a #GListModel to a #ClutterActor.
+
+If the #ClutterActor was already bound to a #GListModel, the previous
+binding is destroyed.
+
+The existing children of #ClutterActor are destroyed when setting a
+model, and new children are created and added, representing the contents
+of the @model. The #ClutterActor is updated whenever the @model changes.
+If @model is %NULL, the #ClutterActor is left empty.
+
+When a #ClutterActor is bound to a model, adding and removing children
+directly is undefined behaviour.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #ClutterActor</doc>
+            <type name="Actor" c:type="ClutterActor*"/>
+          </instance-parameter>
+          <parameter name="model" transfer-ownership="none" optional="1">
+            <doc xml:space="preserve">a #GListModel</doc>
+            <type name="Gio.ListModel" c:type="GListModel*"/>
+          </parameter>
+          <parameter name="create_child_func"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="2"
+                     destroy="3">
+            <doc xml:space="preserve">a function that creates #ClutterActor instances
+  from the contents of the @model</doc>
+            <type name="ActorCreateChildFunc"
+                  c:type="ClutterActorCreateChildFunc"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data passed to @create_child_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">function called when unsetting the @model</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="bind_model_with_properties"
+              c:identifier="clutter_actor_bind_model_with_properties"
+              version="1.24"
+              introspectable="0">
+        <doc xml:space="preserve">Binds a #GListModel to a #ClutterActor.
+
+Unlike clutter_actor_bind_model(), this function automatically creates
+a child #ClutterActor of type @child_type, and binds properties on the
+items inside the @model to the corresponding properties on the child,
+for instance:
+
+|[&lt;!-- language="C" --&gt;
+  clutter_actor_bind_model_with_properties (actor, model,
+                                            MY_TYPE_CHILD_VIEW,
+                                            "label", "text", G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
+                                            "icon", "image", G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
+                                            "selected", "selected", G_BINDING_BIDIRECTIONAL,
+                                            "active", "active", G_BINDING_BIDIRECTIONAL,
+                                            NULL);
+]|
+
+is the equivalent of calling clutter_actor_bind_model() with a
+#ClutterActorCreateChildFunc of:
+
+|[&lt;!-- language="C" --&gt;
+  ClutterActor *res = g_object_new (MY_TYPE_CHILD_VIEW, NULL);
+
+  g_object_bind_property (item, "label", res, "text", G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE);
+  g_object_bind_property (item, "icon", res, "image", G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE);
+  g_object_bind_property (item, "selected", res, "selected", G_BINDING_BIDIRECTIONAL);
+  g_object_bind_property (item, "active", res, "active", G_BINDING_BIDIRECTIONAL);
+
+  return res;
+]|
+
+If the #ClutterActor was already bound to a #GListModel, the previous
+binding is destroyed.
+
+When a #ClutterActor is bound to a model, adding and removing children
+directly is undefined behaviour.
+
+See also: clutter_actor_bind_model()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #ClutterActor</doc>
+            <type name="Actor" c:type="ClutterActor*"/>
+          </instance-parameter>
+          <parameter name="model" transfer-ownership="none">
+            <doc xml:space="preserve">a #GListModel</doc>
+            <type name="Gio.ListModel" c:type="GListModel*"/>
+          </parameter>
+          <parameter name="child_type" transfer-ownership="none">
+            <doc xml:space="preserve">the type of #ClutterActor to use when creating
+  children mapping to items inside the @model</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="first_model_property" transfer-ownership="none">
+            <doc xml:space="preserve">the first property of @model to bind</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">tuples of property names on the @model, on the child, and the
+  #GBindingFlags used to bind them, terminated by %NULL</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="clear_actions"
               c:identifier="clutter_actor_clear_actions"
               version="1.4">
@@ -9718,6 +9835,30 @@ using @progress</doc>
         </array>
       </field>
     </record>
+    <callback name="ActorCreateChildFunc"
+              c:type="ClutterActorCreateChildFunc"
+              version="1.24">
+      <doc xml:space="preserve">Creates a #ClutterActor using the @item in the model.
+
+The usual way to implement this function is to create a #ClutterActor
+instance and then bind the #GObject properties to the actor properties
+of interest, using g_object_bind_property(). This way, when the @item
+in the #GListModel changes, the #ClutterActor changes as well.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The newly created child #ClutterActor</doc>
+        <type name="Actor" c:type="ClutterActor*"/>
+      </return-value>
+      <parameters>
+        <parameter name="item" transfer-ownership="none">
+          <doc xml:space="preserve">the item in the model</doc>
+          <type name="GObject.Object" c:type="gpointer"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="1">
+          <doc xml:space="preserve">Data passed to clutter_actor_bind_model()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <bitfield name="ActorFlags"
               glib:type-name="ClutterActorFlags"
               glib:get-type="clutter_actor_flags_get_type"
@@ -24868,6 +25009,12 @@ flag set.</doc>
       <field name="touch" readable="0" private="1">
         <type name="TouchEvent" c:type="ClutterTouchEvent"/>
       </field>
+      <field name="touchpad_pinch" readable="0" private="1">
+        <type name="TouchpadPinchEvent" c:type="ClutterTouchpadPinchEvent"/>
+      </field>
+      <field name="touchpad_swipe" readable="0" private="1">
+        <type name="TouchpadSwipeEvent" c:type="ClutterTouchpadSwipeEvent"/>
+      </field>
       <constructor name="new" c:identifier="clutter_event_new">
         <doc xml:space="preserve">Creates a new #ClutterEvent of the specified type.</doc>
         <return-value transfer-ownership="full">
@@ -25109,6 +25256,104 @@ be cast to the platform-specific implementation.</doc>
         <parameters>
           <instance-parameter name="event" transfer-ownership="none">
             <doc xml:space="preserve">a #ClutterEvent</doc>
+            <type name="Event" c:type="const ClutterEvent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gesture_motion_delta"
+              c:identifier="clutter_event_get_gesture_motion_delta"
+              version="1.24">
+        <doc xml:space="preserve">Returns the gesture motion deltas relative to the current pointer
+position.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">A clutter touchpad gesture event</doc>
+            <type name="Event" c:type="const ClutterEvent*"/>
+          </instance-parameter>
+          <parameter name="dx"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the displacement relative to the pointer
+     position in the X axis, or %NULL</doc>
+            <type name="gdouble" c:type="gdouble*"/>
+          </parameter>
+          <parameter name="dy"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the displacement relative to the pointer
+     position in the Y axis, or %NULL</doc>
+            <type name="gdouble" c:type="gdouble*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_gesture_phase"
+              c:identifier="clutter_event_get_gesture_phase">
+        <doc xml:space="preserve">Returns the phase of the event, See #ClutterTouchpadGesturePhase.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the phase of the gesture event.</doc>
+          <type name="TouchpadGesturePhase"
+                c:type="ClutterTouchpadGesturePhase"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a touchpad gesture event</doc>
+            <type name="Event" c:type="const ClutterEvent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gesture_pinch_angle_delta"
+              c:identifier="clutter_event_get_gesture_pinch_angle_delta"
+              version="1.24">
+        <doc xml:space="preserve">Returns the angle delta reported by this specific event.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The angle delta relative to the previous event.</doc>
+          <type name="gdouble" c:type="gdouble"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a touchpad pinch event</doc>
+            <type name="Event" c:type="const ClutterEvent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gesture_pinch_scale"
+              c:identifier="clutter_event_get_gesture_pinch_scale"
+              version="1.24">
+        <doc xml:space="preserve">Returns the current scale as reported by @event, 1.0 being the original
+distance at the time the corresponding event with phase
+%CLUTTER_TOUCHPAD_GESTURE_PHASE_BEGIN is received.
+is received.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the current pinch gesture scale</doc>
+          <type name="gdouble" c:type="gdouble"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a touchpad pinch event</doc>
+            <type name="Event" c:type="const ClutterEvent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gesture_swipe_finger_count"
+              c:identifier="clutter_event_get_gesture_swipe_finger_count"
+              version="1.24">
+        <doc xml:space="preserve">Returns the number of fingers that is triggering the touchpad gesture.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of fingers swiping.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a touchpad swipe event</doc>
             <type name="Event" c:type="const ClutterEvent*"/>
           </instance-parameter>
         </parameters>
@@ -25993,8 +26238,22 @@ type used to denote the event sequence of a touch event.</doc>
         <doc xml:space="preserve">A touch event sequence has been canceled;
   event added in 1.10</doc>
       </member>
-      <member name="event_last"
+      <member name="touchpad_pinch"
               value="17"
+              c:identifier="CLUTTER_TOUCHPAD_PINCH"
+              glib:nick="touchpad-pinch">
+        <doc xml:space="preserve">A pinch gesture event, the current state is
+  determined by its phase field; event added in 1.24</doc>
+      </member>
+      <member name="touchpad_swipe"
+              value="18"
+              c:identifier="CLUTTER_TOUCHPAD_SWIPE"
+              glib:nick="touchpad-swipe">
+        <doc xml:space="preserve">A swipe gesture event, the current state is
+  determined by its phase field; event added in 1.24</doc>
+      </member>
+      <member name="event_last"
+              value="19"
               c:identifier="CLUTTER_EVENT_LAST"
               glib:nick="event-last">
         <doc xml:space="preserve">Marks the end of the #ClutterEventType enumeration;
@@ -43079,16 +43338,21 @@ should never be accessed directly</doc>
            c:symbol-prefix="list_model"
            c:type="ClutterListModel"
            version="0.6"
+           deprecated="1"
+           deprecated-version="1.24"
            parent="Model"
            glib:type-name="ClutterListModel"
            glib:get-type="clutter_list_model_get_type"
            glib:type-struct="ListModelClass">
       <doc xml:space="preserve">The #ClutterListModel struct contains only private data.</doc>
+      <doc-deprecated xml:space="preserve">Use #GListStore instead</doc-deprecated>
       <implements name="Scriptable"/>
       <constructor name="new"
                    c:identifier="clutter_list_model_new"
                    version="0.6"
-                   introspectable="0">
+                   introspectable="0"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">Creates a new default model with @n_columns columns with the types
 and names passed in.
 
@@ -43107,6 +43371,7 @@ string and #GdkPixbuf respectively.
 Note that the name of the column can be set to %NULL, in which case
 the canonical name of the type held by the column will be used as
 the title.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListStore instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #ClutterListModel</doc>
           <type name="Model" c:type="ClutterModel*"/>
@@ -43124,9 +43389,12 @@ the title.</doc>
       </constructor>
       <constructor name="newv"
                    c:identifier="clutter_list_model_newv"
-                   version="0.6">
+                   version="0.6"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">Non-vararg version of clutter_list_model_new(). This function is
 useful for language bindings.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListStore instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new default #ClutterModel</doc>
           <type name="Model" c:type="ClutterModel*"/>
@@ -43160,8 +43428,11 @@ useful for language bindings.</doc>
     <record name="ListModelClass"
             c:type="ClutterListModelClass"
             glib:is-gtype-struct-for="ListModel"
-            version="0.6">
+            version="0.6"
+            deprecated="1"
+            deprecated-version="1.24">
       <doc xml:space="preserve">The #ClutterListModelClass struct contains only private data.</doc>
+      <doc-deprecated xml:space="preserve">Use #GListStore instead</doc-deprecated>
       <field name="parent_class" readable="0" private="1">
         <type name="ModelClass" c:type="ClutterModelClass"/>
       </field>
@@ -43850,6 +44121,8 @@ pango_font_description_from_string().</doc>
            c:symbol-prefix="model"
            c:type="ClutterModel"
            version="0.6"
+           deprecated="1"
+           deprecated-version="1.24"
            parent="GObject.Object"
            abstract="1"
            glib:type-name="ClutterModel"
@@ -43858,6 +44131,7 @@ pango_font_description_from_string().</doc>
       <doc xml:space="preserve">Base class for list models. The #ClutterModel structure contains
 only private data and should be manipulated using the provided
 API.</doc>
+      <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
       <implements name="Scriptable"/>
       <virtual-method name="filter_changed">
         <return-value transfer-ownership="none">
@@ -43871,8 +44145,11 @@ API.</doc>
       </virtual-method>
       <virtual-method name="get_column_name"
                       invoker="get_column_name"
-                      version="0.6">
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the name of the @column</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the name of the column. The model holds the returned
   string, and it should not be modified or freed</doc>
@@ -43891,8 +44168,11 @@ API.</doc>
       </virtual-method>
       <virtual-method name="get_column_type"
                       invoker="get_column_type"
-                      version="0.6">
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the type of the @column.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the type of the column.</doc>
           <type name="GType" c:type="GType"/>
@@ -43910,12 +44190,15 @@ API.</doc>
       </virtual-method>
       <virtual-method name="get_iter_at_row"
                       invoker="get_iter_at_row"
-                      version="0.6">
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves a #ClutterModelIter representing the row at the given index.
 
 If a filter function has been set using clutter_model_set_filter()
 then the @model implementation will return the first non filtered
 row.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A new #ClutterModelIter, or %NULL if @row was
   out of bounds. When done using the iterator object, call g_object_unref()
@@ -43935,8 +44218,11 @@ row.</doc>
       </virtual-method>
       <virtual-method name="get_n_columns"
                       invoker="get_n_columns"
-                      version="0.6">
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the number of columns inside @model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of columns</doc>
           <type name="guint" c:type="guint"/>
@@ -43948,9 +44234,14 @@ row.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_n_rows" invoker="get_n_rows" version="0.6">
+      <virtual-method name="get_n_rows"
+                      invoker="get_n_rows"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the number of rows inside @model, eventually taking
 into account any filtering function set using clutter_model_set_filter().</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The length of the @model. If there is a filter set, then
   the length of the filtered @model is returned.</doc>
@@ -44057,7 +44348,9 @@ into account any filtering function set using clutter_model_set_filter().</doc>
       <method name="append"
               c:identifier="clutter_model_append"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Creates and appends a new row to the #ClutterModel, setting the
 row values upon creation. For example, to append a new row where
 column 0 is type %G_TYPE_INT and column 1 is of type %G_TYPE_STRING:
@@ -44069,6 +44362,7 @@ column 0 is type %G_TYPE_INT and column 1 is of type %G_TYPE_STRING:
                                      G_TYPE_STRING, "Team");
   clutter_model_append (model, 0, 42, 1, "Team #1", -1);
 &lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44085,9 +44379,12 @@ column 0 is type %G_TYPE_INT and column 1 is of type %G_TYPE_STRING:
       </method>
       <method name="appendv"
               c:identifier="clutter_model_appendv"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Creates and appends a new row to the #ClutterModel, setting the row
 values for the given @columns upon creation.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44116,11 +44413,14 @@ values for the given @columns upon creation.</doc>
       </method>
       <method name="filter_iter"
               c:identifier="clutter_model_filter_iter"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Checks whether the row pointer by @iter should be filtered or not using
 the filtering function set on @model.
 
 This function should be used only by subclasses of #ClutterModel.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the row should be displayed,
   %FALSE otherwise</doc>
@@ -44139,11 +44439,14 @@ This function should be used only by subclasses of #ClutterModel.</doc>
       </method>
       <method name="filter_row"
               c:identifier="clutter_model_filter_row"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Checks whether @row should be filtered or not using the
 filtering function set on @model.
 
 This function should be used only by subclasses of #ClutterModel.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the row should be displayed,
   %FALSE otherwise</doc>
@@ -44162,8 +44465,11 @@ This function should be used only by subclasses of #ClutterModel.</doc>
       </method>
       <method name="foreach"
               c:identifier="clutter_model_foreach"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Calls @func for each row in the model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44187,8 +44493,11 @@ This function should be used only by subclasses of #ClutterModel.</doc>
       </method>
       <method name="get_column_name"
               c:identifier="clutter_model_get_column_name"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the name of the @column</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the name of the column. The model holds the returned
   string, and it should not be modified or freed</doc>
@@ -44207,8 +44516,11 @@ This function should be used only by subclasses of #ClutterModel.</doc>
       </method>
       <method name="get_column_type"
               c:identifier="clutter_model_get_column_type"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the type of the @column.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the type of the column.</doc>
           <type name="GType" c:type="GType"/>
@@ -44226,9 +44538,12 @@ This function should be used only by subclasses of #ClutterModel.</doc>
       </method>
       <method name="get_filter_set"
               c:identifier="clutter_model_get_filter_set"
-              version="1.0">
+              version="1.0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Returns whether the @model has a filter in place, set
 using clutter_model_set_filter()</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if a filter is set</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -44242,9 +44557,12 @@ using clutter_model_set_filter()</doc>
       </method>
       <method name="get_first_iter"
               c:identifier="clutter_model_get_first_iter"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves a #ClutterModelIter representing the first non-filtered
 row in @model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A new #ClutterModelIter.
   Call g_object_unref() when done using it</doc>
@@ -44259,12 +44577,15 @@ row in @model.</doc>
       </method>
       <method name="get_iter_at_row"
               c:identifier="clutter_model_get_iter_at_row"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves a #ClutterModelIter representing the row at the given index.
 
 If a filter function has been set using clutter_model_set_filter()
 then the @model implementation will return the first non filtered
 row.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A new #ClutterModelIter, or %NULL if @row was
   out of bounds. When done using the iterator object, call g_object_unref()
@@ -44284,9 +44605,12 @@ row.</doc>
       </method>
       <method name="get_last_iter"
               c:identifier="clutter_model_get_last_iter"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves a #ClutterModelIter representing the last non-filtered
 row in @model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A new #ClutterModelIter.
   Call g_object_unref() when done using it</doc>
@@ -44301,8 +44625,11 @@ row in @model.</doc>
       </method>
       <method name="get_n_columns"
               c:identifier="clutter_model_get_n_columns"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the number of columns inside @model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the number of columns</doc>
           <type name="guint" c:type="guint"/>
@@ -44316,9 +44643,12 @@ row in @model.</doc>
       </method>
       <method name="get_n_rows"
               c:identifier="clutter_model_get_n_rows"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the number of rows inside @model, eventually taking
 into account any filtering function set using clutter_model_set_filter().</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The length of the @model. If there is a filter set, then
   the length of the filtered @model is returned.</doc>
@@ -44333,8 +44663,11 @@ into account any filtering function set using clutter_model_set_filter().</doc>
       </method>
       <method name="get_sorting_column"
               c:identifier="clutter_model_get_sorting_column"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the number of column used for sorting the @model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a column number, or -1 if the model is not sorted</doc>
           <type name="gint" c:type="gint"/>
@@ -44349,7 +44682,9 @@ into account any filtering function set using clutter_model_set_filter().</doc>
       <method name="insert"
               c:identifier="clutter_model_insert"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Inserts a new row to the #ClutterModel at @row, setting the row
 values upon creation. For example, to insert a new row at index 100,
 where column 0 is type %G_TYPE_INT and column 1 is of type
@@ -44362,6 +44697,7 @@ where column 0 is type %G_TYPE_INT and column 1 is of type
                                      G_TYPE_STRING, "Team");
   clutter_model_insert (model, 3, 0, 42, 1, "Team #1", -1);
 &lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44382,10 +44718,13 @@ where column 0 is type %G_TYPE_INT and column 1 is of type
       </method>
       <method name="insert_value"
               c:identifier="clutter_model_insert_value"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets the data in the cell specified by @iter and @column. The type of
 @value must be convertable to the type of the column. If the row does
 not exist then it is created.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44410,9 +44749,12 @@ not exist then it is created.</doc>
       </method>
       <method name="insertv"
               c:identifier="clutter_model_insertv"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Inserts data at @row into the #ClutterModel, setting the row
 values for the given @columns upon creation.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44446,7 +44788,9 @@ values for the given @columns upon creation.</doc>
       <method name="prepend"
               c:identifier="clutter_model_prepend"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Creates and prepends a new row to the #ClutterModel, setting the row
 values upon creation. For example, to prepend a new row where column 0
 is type %G_TYPE_INT and column 1 is of type %G_TYPE_STRING:
@@ -44458,6 +44802,7 @@ is type %G_TYPE_INT and column 1 is of type %G_TYPE_STRING:
                                      G_TYPE_STRING, "Team");
   clutter_model_prepend (model, 0, 42, 1, "Team #1", -1);
 &lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44474,9 +44819,12 @@ is type %G_TYPE_INT and column 1 is of type %G_TYPE_STRING:
       </method>
       <method name="prependv"
               c:identifier="clutter_model_prependv"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Creates and prepends a new row to the #ClutterModel, setting the row
 values for the given @columns upon creation.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44503,8 +44851,13 @@ values for the given @columns upon creation.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="remove" c:identifier="clutter_model_remove" version="0.6">
+      <method name="remove"
+              c:identifier="clutter_model_remove"
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Removes the row at the given position from the model.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44519,9 +44872,14 @@ values for the given @columns upon creation.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="resort" c:identifier="clutter_model_resort" version="0.6">
+      <method name="resort"
+              c:identifier="clutter_model_resort"
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Force a resort on the @model. This function should only be
 used by subclasses of #ClutterModel.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44534,8 +44892,11 @@ used by subclasses of #ClutterModel.</doc>
       </method>
       <method name="set_filter"
               c:identifier="clutter_model_set_filter"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Filters the @model using the given filtering function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44566,12 +44927,15 @@ used by subclasses of #ClutterModel.</doc>
       </method>
       <method name="set_names"
               c:identifier="clutter_model_set_names"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Assigns a name to the columns of a #ClutterModel.
 
 This function is meant primarily for #GObjects that inherit from
 #ClutterModel, and should only be used when contructing a #ClutterModel.
 It will not work after the initial creation of the #ClutterModel.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44594,8 +44958,11 @@ It will not work after the initial creation of the #ClutterModel.</doc>
       </method>
       <method name="set_sort"
               c:identifier="clutter_model_set_sort"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sorts @model using the given sorting function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44630,9 +44997,12 @@ It will not work after the initial creation of the #ClutterModel.</doc>
       </method>
       <method name="set_sorting_column"
               c:identifier="clutter_model_set_sorting_column"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets the model to sort by @column. If @column is a negative value
 the sorting column will be unset.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44649,12 +45019,15 @@ the sorting column will be unset.</doc>
       </method>
       <method name="set_types"
               c:identifier="clutter_model_set_types"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets the types of the columns inside a #ClutterModel.
 
 This function is meant primarily for #GObjects that inherit from
 #ClutterModel, and should only be used when contructing a #ClutterModel.
 It will not work after the initial creation of the #ClutterModel.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44675,11 +45048,16 @@ It will not work after the initial creation of the #ClutterModel.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="filter-set" version="1.0" transfer-ownership="none">
+      <property name="filter-set"
+                version="1.0"
+                deprecated="1"
+                deprecated-version="1.24"
+                transfer-ownership="none">
         <doc xml:space="preserve">Whether the #ClutterModel has a filter set
 
 This property is set to %TRUE if a filter function has been
 set using clutter_model_set_filter()</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent_instance" readable="0" private="1">
@@ -44688,16 +45066,26 @@ set using clutter_model_set_filter()</doc>
       <field name="priv" readable="0" private="1">
         <type name="ModelPrivate" c:type="ClutterModelPrivate*"/>
       </field>
-      <glib:signal name="filter-changed" when="last" version="0.6">
+      <glib:signal name="filter-changed"
+                   when="last"
+                   version="0.6"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">The ::filter-changed signal is emitted when a new filter has been applied</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="row-added" when="last" version="0.6">
+      <glib:signal name="row-added"
+                   when="last"
+                   version="0.6"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">The ::row-added signal is emitted when a new row has been added.
 The data on the row has already been set when the ::row-added signal
 has been emitted.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44708,10 +45096,15 @@ has been emitted.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="row-changed" when="last" version="0.6">
+      <glib:signal name="row-changed"
+                   when="last"
+                   version="0.6"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">The ::row-removed signal is emitted when a row has been changed.
 The data on the row has already been updated when the ::row-changed
 signal has been emitted.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44722,10 +45115,15 @@ signal has been emitted.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="row-removed" when="last" version="0.6">
+      <glib:signal name="row-removed"
+                   when="last"
+                   version="0.6"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">The ::row-removed signal is emitted when a row has been removed.
 The data on the row pointed by the passed iterator is still valid
 when the ::row-removed signal has been emitted.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44736,8 +45134,13 @@ when the ::row-removed signal has been emitted.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="sort-changed" when="last" version="0.6">
+      <glib:signal name="sort-changed"
+                   when="last"
+                   version="0.6"
+                   deprecated="1"
+                   deprecated-version="1.24">
         <doc xml:space="preserve">The ::sort-changed signal is emitted after the model has been sorted</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -44746,8 +45149,11 @@ when the ::row-removed signal has been emitted.</doc>
     <record name="ModelClass"
             c:type="ClutterModelClass"
             glib:is-gtype-struct-for="Model"
-            version="0.6">
+            version="0.6"
+            deprecated="1"
+            deprecated-version="1.24">
       <doc xml:space="preserve">Class for #ClutterModel instances.</doc>
+      <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
       <field name="parent_class" readable="0" private="1">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -45013,8 +45419,11 @@ when the ::row-removed signal has been emitted.</doc>
     </record>
     <callback name="ModelFilterFunc"
               c:type="ClutterModelFilterFunc"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
       <doc xml:space="preserve">Filters the content of a row in the model.</doc>
+      <doc-deprecated xml:space="preserve">Implement filters using a custom #GListModel instead</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">If the row should be displayed, return %TRUE</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -45036,8 +45445,11 @@ when the ::row-removed signal has been emitted.</doc>
     </callback>
     <callback name="ModelForeachFunc"
               c:type="ClutterModelForeachFunc"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
       <doc xml:space="preserve">Iterates on the content of a row in the model</doc>
+      <doc-deprecated xml:space="preserve">Use #GListModel</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the iteration should continue, %FALSE otherwise</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -45061,6 +45473,8 @@ when the ::row-removed signal has been emitted.</doc>
            c:symbol-prefix="model_iter"
            c:type="ClutterModelIter"
            version="0.6"
+           deprecated="1"
+           deprecated-version="1.24"
            parent="GObject.Object"
            abstract="1"
            glib:type-name="ClutterModelIter"
@@ -45069,8 +45483,14 @@ when the ::row-removed signal has been emitted.</doc>
       <doc xml:space="preserve">Base class for list models iters. The #ClutterModelIter structure
 contains only private data and should be manipulated using the
 provided API.</doc>
-      <virtual-method name="copy" invoker="copy" version="0.8">
+      <doc-deprecated xml:space="preserve">Use custom iterators for #GListModel</doc-deprecated>
+      <virtual-method name="copy"
+                      invoker="copy"
+                      version="0.8"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Copies the passed iterator.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a copy of the iterator, or %NULL</doc>
           <type name="ModelIter" c:type="ClutterModelIter*"/>
@@ -45082,8 +45502,13 @@ provided API.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_model" invoker="get_model" version="0.6">
+      <virtual-method name="get_model"
+                      invoker="get_model"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves a pointer to the #ClutterModel that this iter is part of.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a pointer to a #ClutterModel.</doc>
           <type name="Model" c:type="ClutterModel*"/>
@@ -45095,8 +45520,13 @@ provided API.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_row" invoker="get_row" version="0.6">
+      <virtual-method name="get_row"
+                      invoker="get_row"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the position of the row that the @iter points to.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the position of the @iter in the model</doc>
           <type name="guint" c:type="guint"/>
@@ -45108,9 +45538,14 @@ provided API.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_value" invoker="get_value" version="0.6">
+      <virtual-method name="get_value"
+                      invoker="get_value"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Sets an initializes @value to that at @column. When done with @value,
 g_value_unset() needs to be called to free any allocated memory.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45132,9 +45567,14 @@ g_value_unset() needs to be called to free any allocated memory.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="is_first" invoker="is_first" version="0.6">
+      <virtual-method name="is_first"
+                      invoker="is_first"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Gets whether the current iterator is at the beginning of the model
 to which it belongs.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">#TRUE if @iter is the first iter in the filtered model</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -45146,9 +45586,14 @@ to which it belongs.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="is_last" invoker="is_last" version="0.6">
+      <virtual-method name="is_last"
+                      invoker="is_last"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Gets whether the iterator is at the end of the model to which it
 belongs.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">#TRUE if @iter is the last iter in the filtered model.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -45160,10 +45605,15 @@ belongs.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="next" invoker="next" version="0.6">
+      <virtual-method name="next"
+                      invoker="next"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Updates the @iter to point at the next position in the model.
 The model implementation should take into account the presence of
 a filter function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The passed iterator, updated to point at the next
   row in the model.</doc>
@@ -45176,10 +45626,15 @@ a filter function.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="prev" invoker="prev" version="0.6">
+      <virtual-method name="prev"
+                      invoker="prev"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Sets the @iter to point at the previous position in the model.
 The model implementation should take into account the presence of
 a filter function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The passed iterator, updated to point at the previous
   row in the model.</doc>
@@ -45192,9 +45647,14 @@ a filter function.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="set_value" invoker="set_value" version="0.6">
+      <virtual-method name="set_value"
+                      invoker="set_value"
+                      version="0.6"
+                      deprecated="1"
+                      deprecated-version="1.24">
         <doc xml:space="preserve">Sets the data in the cell specified by @iter and @column. The type of
 @value must be convertable to the type of the column.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45213,8 +45673,13 @@ a filter function.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="copy" c:identifier="clutter_model_iter_copy" version="0.8">
+      <method name="copy"
+              c:identifier="clutter_model_iter_copy"
+              version="0.8"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Copies the passed iterator.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a copy of the iterator, or %NULL</doc>
           <type name="ModelIter" c:type="ClutterModelIter*"/>
@@ -45229,7 +45694,9 @@ a filter function.</doc>
       <method name="get"
               c:identifier="clutter_model_iter_get"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Gets the value of one or more cells in the row referenced by @iter. The
 variable argument list should contain integer column numbers, each column
 column number followed by a place to store the value being retrieved. The
@@ -45242,6 +45709,7 @@ For example, to get a value from column 0 with type %G_TYPE_STRING use:
 
 where place_string_here is a gchar* to be filled with the string. If
 appropriate, the returned values have to be freed or unreferenced.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45258,8 +45726,11 @@ appropriate, the returned values have to be freed or unreferenced.</doc>
       </method>
       <method name="get_model"
               c:identifier="clutter_model_iter_get_model"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves a pointer to the #ClutterModel that this iter is part of.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a pointer to a #ClutterModel.</doc>
           <type name="Model" c:type="ClutterModel*"/>
@@ -45273,8 +45744,11 @@ appropriate, the returned values have to be freed or unreferenced.</doc>
       </method>
       <method name="get_row"
               c:identifier="clutter_model_iter_get_row"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Retrieves the position of the row that the @iter points to.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the position of the @iter in the model</doc>
           <type name="guint" c:type="guint"/>
@@ -45289,9 +45763,12 @@ appropriate, the returned values have to be freed or unreferenced.</doc>
       <method name="get_valist"
               c:identifier="clutter_model_iter_get_valist"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">See clutter_model_iter_get(). This version takes a va_list for language
 bindings.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45308,9 +45785,12 @@ bindings.</doc>
       </method>
       <method name="get_value"
               c:identifier="clutter_model_iter_get_value"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets an initializes @value to that at @column. When done with @value,
 g_value_unset() needs to be called to free any allocated memory.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45334,9 +45814,12 @@ g_value_unset() needs to be called to free any allocated memory.</doc>
       </method>
       <method name="is_first"
               c:identifier="clutter_model_iter_is_first"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Gets whether the current iterator is at the beginning of the model
 to which it belongs.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">#TRUE if @iter is the first iter in the filtered model</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -45350,9 +45833,12 @@ to which it belongs.</doc>
       </method>
       <method name="is_last"
               c:identifier="clutter_model_iter_is_last"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Gets whether the iterator is at the end of the model to which it
 belongs.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">#TRUE if @iter is the last iter in the filtered model.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -45364,10 +45850,15 @@ belongs.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="next" c:identifier="clutter_model_iter_next" version="0.6">
+      <method name="next"
+              c:identifier="clutter_model_iter_next"
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Updates the @iter to point at the next position in the model.
 The model implementation should take into account the presence of
 a filter function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The passed iterator, updated to point at the next
   row in the model.</doc>
@@ -45380,10 +45871,15 @@ a filter function.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="prev" c:identifier="clutter_model_iter_prev" version="0.6">
+      <method name="prev"
+              c:identifier="clutter_model_iter_prev"
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets the @iter to point at the previous position in the model.
 The model implementation should take into account the presence of
 a filter function.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The passed iterator, updated to point at the previous
   row in the model.</doc>
@@ -45399,7 +45895,9 @@ a filter function.</doc>
       <method name="set"
               c:identifier="clutter_model_iter_set"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets the value of one or more cells in the row referenced by @iter. The
 variable argument list should contain integer column numbers, each column
 column number followed by the value to be set. The  list is terminated by a
@@ -45409,6 +45907,7 @@ For example, to set column 0 with type %G_TYPE_STRING, use:
 &lt;informalexample&gt;&lt;programlisting&gt;
   clutter_model_iter_set (iter, 0, "foo", -1);
 &lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45426,9 +45925,12 @@ For example, to set column 0 with type %G_TYPE_STRING, use:
       <method name="set_valist"
               c:identifier="clutter_model_iter_set_valist"
               version="0.6"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">See clutter_model_iter_set(); this version takes a va_list for language
 bindings.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45445,9 +45947,12 @@ bindings.</doc>
       </method>
       <method name="set_value"
               c:identifier="clutter_model_iter_set_value"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
         <doc xml:space="preserve">Sets the data in the cell specified by @iter and @column. The type of
 @value must be convertable to the type of the column.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -45468,16 +45973,22 @@ bindings.</doc>
       </method>
       <property name="model"
                 version="0.6"
+                deprecated="1"
+                deprecated-version="1.24"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">A reference to the #ClutterModel that this iter belongs to.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <type name="Model"/>
       </property>
       <property name="row"
                 version="0.6"
+                deprecated="1"
+                deprecated-version="1.24"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The row number to which this iter points to.</doc>
+        <doc-deprecated xml:space="preserve">Use #GListModel instead</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
       <field name="parent_instance" readable="0" private="1">
@@ -45490,8 +46001,11 @@ bindings.</doc>
     <record name="ModelIterClass"
             c:type="ClutterModelIterClass"
             glib:is-gtype-struct-for="ModelIter"
-            version="0.6">
+            version="0.6"
+            deprecated="1"
+            deprecated-version="1.24">
       <doc xml:space="preserve">Class for #ClutterModelIter instances.</doc>
+      <doc-deprecated xml:space="preserve">Use custom iterators for #GListModel</doc-deprecated>
       <field name="parent_class" readable="0" private="1">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -45703,8 +46217,13 @@ bindings.</doc>
     </record>
     <record name="ModelPrivate" c:type="ClutterModelPrivate" disguised="1">
     </record>
-    <callback name="ModelSortFunc" c:type="ClutterModelSortFunc" version="0.6">
+    <callback name="ModelSortFunc"
+              c:type="ClutterModelSortFunc"
+              version="0.6"
+              deprecated="1"
+              deprecated-version="1.24">
       <doc xml:space="preserve">Compares the content of two rows in the model.</doc>
+      <doc-deprecated xml:space="preserve">Implement sorting using a custom #GListModel instead</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">a positive integer if @a is after @b, a negative integer if
   @a is before @b, or 0 if the rows are the same</doc>
@@ -63233,6 +63752,56 @@ device the event originated from, use clutter_event_get_source_device()</doc>
         <type name="InputDevice" c:type="ClutterInputDevice*"/>
       </field>
     </record>
+    <enumeration name="TouchpadGesturePhase"
+                 version="1.24"
+                 glib:type-name="ClutterTouchpadGesturePhase"
+                 glib:get-type="clutter_touchpad_gesture_phase_get_type"
+                 c:type="ClutterTouchpadGesturePhase">
+      <doc xml:space="preserve">The phase of a touchpad gesture event. All gestures are guaranteed to
+begin with an event of type %CLUTTER_TOUCHPAD_GESTURE_PHASE_BEGIN,
+followed by a number of %CLUTTER_TOUCHPAD_GESTURE_PHASE_UPDATE (possibly 0).
+
+A finished gesture may have 2 possible outcomes, an event with phase
+%CLUTTER_TOUCHPAD_GESTURE_PHASE_END will be emitted when the gesture is
+considered successful, this should be used as the hint to perform any
+permanent changes.
+
+Cancelled gestures may be so for a variety of reasons, due to hardware,
+or due to the gesture recognition layers hinting the gesture did not
+finish resolutely (eg. a 3rd finger being added during a pinch gesture).
+In these cases, the last event with report the phase
+%CLUTTER_TOUCHPAD_GESTURE_PHASE_CANCEL, this should be used as a hint
+to undo any visible/permanent changes that were done throughout the
+progress of the gesture.
+
+See also #ClutterTouchpadPinchEvent and #ClutterTouchpadPinchEvent.</doc>
+      <member name="begin"
+              value="0"
+              c:identifier="CLUTTER_TOUCHPAD_GESTURE_PHASE_BEGIN"
+              glib:nick="begin">
+        <doc xml:space="preserve">The gesture has begun.</doc>
+      </member>
+      <member name="update"
+              value="1"
+              c:identifier="CLUTTER_TOUCHPAD_GESTURE_PHASE_UPDATE"
+              glib:nick="update">
+        <doc xml:space="preserve">The gesture has been updated.</doc>
+      </member>
+      <member name="end"
+              value="2"
+              c:identifier="CLUTTER_TOUCHPAD_GESTURE_PHASE_END"
+              glib:nick="end">
+        <doc xml:space="preserve">The gesture was finished, changes
+  should be permanently applied.</doc>
+      </member>
+      <member name="cancel"
+              value="3"
+              c:identifier="CLUTTER_TOUCHPAD_GESTURE_PHASE_CANCEL"
+              glib:nick="cancel">
+        <doc xml:space="preserve">The gesture was cancelled, all
+  changes should be undone.</doc>
+      </member>
+    </enumeration>
     <constant name="TouchpadOff"
               value="269025201"
               c:type="CLUTTER_TouchpadOff">
@@ -63241,6 +63810,118 @@ device the event originated from, use clutter_event_get_source_device()</doc>
     <constant name="TouchpadOn" value="269025200" c:type="CLUTTER_TouchpadOn">
       <type name="gint" c:type="gint"/>
     </constant>
+    <record name="TouchpadPinchEvent"
+            c:type="ClutterTouchpadPinchEvent"
+            version="1.24">
+      <doc xml:space="preserve">Used for touchpad pinch gesture events. The current state of the
+gesture will be determined by the @phase field.
+
+Each event with phase %CLUTTER_TOUCHPAD_GESTURE_PHASE_BEGIN
+will report a @scale of 1.0, all later phases in the gesture
+report the current scale relative to the initial 1.0 value
+(eg. 0.5 being half the size, 2.0 twice as big).</doc>
+      <field name="type" writable="1">
+        <doc xml:space="preserve">event type</doc>
+        <type name="EventType" c:type="ClutterEventType"/>
+      </field>
+      <field name="time" writable="1">
+        <doc xml:space="preserve">event time</doc>
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="flags" writable="1">
+        <doc xml:space="preserve">event flags</doc>
+        <type name="EventFlags" c:type="ClutterEventFlags"/>
+      </field>
+      <field name="stage" writable="1">
+        <doc xml:space="preserve">event source stage</doc>
+        <type name="Stage" c:type="ClutterStage*"/>
+      </field>
+      <field name="source" writable="1">
+        <doc xml:space="preserve">event source actor (unused)</doc>
+        <type name="Actor" c:type="ClutterActor*"/>
+      </field>
+      <field name="phase" writable="1">
+        <doc xml:space="preserve">the current phase of the gesture</doc>
+        <type name="TouchpadGesturePhase"
+              c:type="ClutterTouchpadGesturePhase"/>
+      </field>
+      <field name="x" writable="1">
+        <doc xml:space="preserve">the X coordinate of the pointer, relative to the stage</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="y" writable="1">
+        <doc xml:space="preserve">the Y coordinate of the pointer, relative to the stage</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="dx" writable="1">
+        <doc xml:space="preserve">movement delta of the pinch focal point in the X axis</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="dy" writable="1">
+        <doc xml:space="preserve">movement delta of the pinch focal point in the Y axis</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="angle_delta" writable="1">
+        <doc xml:space="preserve">angle delta in degrees, clockwise rotations are
+  represented by positive deltas</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="scale" writable="1">
+        <doc xml:space="preserve">the current scale</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+    </record>
+    <record name="TouchpadSwipeEvent"
+            c:type="ClutterTouchpadSwipeEvent"
+            version="1.24">
+      <doc xml:space="preserve">Used for touchpad swipe gesture events. The current state of the
+gesture will be determined by the @phase field.</doc>
+      <field name="type" writable="1">
+        <doc xml:space="preserve">event type</doc>
+        <type name="EventType" c:type="ClutterEventType"/>
+      </field>
+      <field name="time" writable="1">
+        <doc xml:space="preserve">event time</doc>
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="flags" writable="1">
+        <doc xml:space="preserve">event flags</doc>
+        <type name="EventFlags" c:type="ClutterEventFlags"/>
+      </field>
+      <field name="stage" writable="1">
+        <doc xml:space="preserve">event source stage</doc>
+        <type name="Stage" c:type="ClutterStage*"/>
+      </field>
+      <field name="source" writable="1">
+        <doc xml:space="preserve">event source actor (unused)</doc>
+        <type name="Actor" c:type="ClutterActor*"/>
+      </field>
+      <field name="phase" writable="1">
+        <doc xml:space="preserve">the current phase of the gesture</doc>
+        <type name="TouchpadGesturePhase"
+              c:type="ClutterTouchpadGesturePhase"/>
+      </field>
+      <field name="n_fingers" writable="1">
+        <doc xml:space="preserve">the number of fingers triggering the swipe</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="x" writable="1">
+        <doc xml:space="preserve">the X coordinate of the pointer, relative to the stage</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="y" writable="1">
+        <doc xml:space="preserve">the Y coordinate of the pointer, relative to the stage</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="dx" writable="1">
+        <doc xml:space="preserve">movement delta of the pinch focal point in the X axis</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+      <field name="dy" writable="1">
+        <doc xml:space="preserve">movement delta of the pinch focal point in the Y axis</doc>
+        <type name="gfloat" c:type="gfloat"/>
+      </field>
+    </record>
     <constant name="TouchpadToggle"
               value="269025193"
               c:type="CLUTTER_TouchpadToggle">

@@ -219,6 +219,13 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public DomainChardevSourceSpiceVmc.from_xml (string xml) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_chardev_source_unix_get_type ()")]
+	public class DomainChardevSourceUnix : GVirConfig.DomainChardevSource {
+		[CCode (has_construct_function = false)]
+		public DomainChardevSourceUnix ();
+		[CCode (has_construct_function = false)]
+		public DomainChardevSourceUnix.from_xml (string xml) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_clock_get_type ()")]
 	public class DomainClock : GVirConfig.Object {
 		[CCode (has_construct_function = false)]
@@ -686,6 +693,8 @@ namespace GVirConfig {
 		public DomainVideo.from_xml (string xml) throws GLib.Error;
 		public void set_heads (uint head_count);
 		public void set_model (GVirConfig.DomainVideoModel model);
+		public void set_ram (uint kbytes);
+		public void set_vgamem (uint kbytes);
 		public void set_vram (uint kbytes);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_interface_get_type ()")]
