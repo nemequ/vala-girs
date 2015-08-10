@@ -139,19 +139,22 @@ namespace Ggit {
 		public uint mainline { get; set; }
 		public Ggit.MergeOptions merge_options { owned get; set; }
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_clone_options_get_type ()")]
-	[Compact]
-	public class CloneOptions {
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_clone_options_get_type ()")]
+	public class CloneOptions : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public CloneOptions ();
-		public Ggit.CloneOptions copy ();
-		public void free ();
+		[NoWrapper]
+		public virtual Ggit.Remote? create_remote (Ggit.Repository repository, string name, string url) throws GLib.Error;
+		[NoWrapper]
+		public virtual Ggit.Repository? create_repository (string path, bool is_bare) throws GLib.Error;
 		public unowned string get_checkout_branch ();
 		public unowned Ggit.FetchOptions get_fetch_options ();
 		public bool get_is_bare ();
+		public Ggit.CloneLocal get_local ();
 		public void set_checkout_branch (string? checkout_branch);
 		public void set_fetch_options (Ggit.FetchOptions? fetch_options);
 		public void set_is_bare (bool bare);
+		public void set_local (Ggit.CloneLocal local);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_commit_get_type ()")]
 	public class Commit : Ggit.Object {
@@ -193,15 +196,18 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		public Config.from_file (GLib.File file) throws GLib.Error;
 		public bool get_bool (string name) throws GLib.Error;
+		public Ggit.ConfigEntry get_entry (string name) throws GLib.Error;
 		public int32 get_int32 (string name) throws GLib.Error;
 		public int64 get_int64 (string name) throws GLib.Error;
 		public unowned string get_string (string name) throws GLib.Error;
 		public string match (GLib.Regex regex, out GLib.MatchInfo match_info) throws GLib.Error;
 		public bool match_foreach (GLib.Regex regex, Ggit.ConfigMatchCallback callback) throws GLib.Error;
+		public Ggit.Config open_level (Ggit.ConfigLevel level) throws GLib.Error;
 		public bool set_bool (string name, bool value) throws GLib.Error;
 		public bool set_int32 (string name, int32 value) throws GLib.Error;
 		public bool set_int64 (string name, int64 value) throws GLib.Error;
 		public bool set_string (string name, string value) throws GLib.Error;
+		public Ggit.Config snapshot () throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_config_entry_ref", type_id = "ggit_config_entry_get_type ()", unref_function = "ggit_config_entry_unref")]
 	[Compact]
@@ -428,7 +434,9 @@ namespace Ggit {
 		public FetchOptions ();
 		public Ggit.FetchOptions copy ();
 		public void free ();
+		public Ggit.RemoteDownloadTagsType get_download_tags ();
 		public unowned Ggit.RemoteCallbacks get_remote_callbacks ();
+		public void set_download_tags (Ggit.RemoteDownloadTagsType download_tags);
 		public void set_remote_callbacks (Ggit.RemoteCallbacks? callbacks);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_index_get_type ()")]
@@ -747,6 +755,7 @@ namespace Ggit {
 		public Ggit.Object lookup (Ggit.OId oid, GLib.Type gtype) throws GLib.Error;
 		public Ggit.Branch lookup_branch (string branch_name, Ggit.BranchType branch_type) throws GLib.Error;
 		public Ggit.Ref lookup_reference (string name) throws GLib.Error;
+		public Ggit.Ref lookup_reference_dwim (string short_name) throws GLib.Error;
 		public Ggit.Remote lookup_remote (string name) throws GLib.Error;
 		public Ggit.Submodule lookup_submodule (string name) throws GLib.Error;
 		public bool note_foreach (string? notes_ref, Ggit.NoteCallback callback) throws GLib.Error;
@@ -863,6 +872,7 @@ namespace Ggit {
 		public void set_fetch_options (Ggit.FetchOptions? fetch_options);
 		public Ggit.CheckoutOptions checkout_options { get; set; }
 		public Ggit.CheckoutStrategy clone_checkout_strategy { get; set; }
+		public Ggit.FetchOptions fetch_options { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_tag_get_type ()")]
 	public class Tag : Ggit.Object {
@@ -975,7 +985,23 @@ namespace Ggit {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
+	public struct CredPlaintext_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
 	public struct CredSshInteractivePrompt_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct CredSshInteractive_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct CredSshKeyFromAgent_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct Cred_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
@@ -988,6 +1014,10 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
 	public struct DiffFindOptions_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct DiffFormatEmailOptions_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
@@ -1083,11 +1113,27 @@ namespace Ggit {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
+	public struct RemoteCallbacks_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
 	public struct RemoteHead_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
+	public struct Remote_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct Repository_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
 	public struct RevertOptions_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct RevisionWalker_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
@@ -1096,6 +1142,10 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
 	public struct StatusOptions_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct SubmoduleUpdateOptions_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
@@ -1108,6 +1158,10 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
 	public struct TransferProgress_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct TreeBuilder_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
@@ -1172,6 +1226,13 @@ namespace Ggit {
 		DONT_WRITE_INDEX,
 		UPDATE_SUBMODULES,
 		UPDATE_SUBMODULES_IF_CHANGED
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CLONE_LOCAL_", type_id = "ggit_clone_local_get_type ()")]
+	public enum CloneLocal {
+		AUTO,
+		LOCAL,
+		NO_LOCAL,
+		NO_LINKS
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CONFIG_LEVEL_", type_id = "ggit_config_level_get_type ()")]
 	public enum ConfigLevel {
@@ -1292,7 +1353,8 @@ namespace Ggit {
 		SHOW_UNTRACKED_CONTENT,
 		SHOW_UNMODIFIED,
 		PATIENCE,
-		MINIMAL
+		MINIMAL,
+		SHOW_BINARY
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIRECTION_", type_id = "ggit_direction_get_type ()")]
 	public enum Direction {

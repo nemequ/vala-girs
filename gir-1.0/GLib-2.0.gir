@@ -970,7 +970,7 @@ lock.</doc-deprecated>
         </parameters>
       </method>
       <method name="remove" c:identifier="g_async_queue_remove" version="2.46">
-        <doc xml:space="preserve">Remove an item from the queue. This function does not block.</doc>
+        <doc xml:space="preserve">Remove an item from the queue.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the item was removed</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -988,7 +988,7 @@ lock.</doc-deprecated>
       <method name="remove_unlocked"
               c:identifier="g_async_queue_remove_unlocked"
               version="2.46">
-        <doc xml:space="preserve">Remove an item from the queue. This function does not block.
+        <doc xml:space="preserve">Remove an item from the queue.
 
 This function must be called while holding the @queue's lock.</doc>
         <return-value transfer-ownership="none">
@@ -7527,7 +7527,7 @@ the #GHashTable, the old value is freed using that function.
 If you supplied a @key_destroy_func when creating the
 #GHashTable, the old key is freed using that function.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE of the key did not exist yet</doc>
+          <doc xml:space="preserve">%TRUE if the key did not exist yet</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -14730,7 +14730,9 @@ to zero, it frees all the memory associated with the match_info structure.</doc>
     <record name="MemVTable" c:type="GMemVTable">
       <doc xml:space="preserve">A set of functions used to perform memory allocation. The same #GMemVTable must
 be used for all allocations in the same program; a call to g_mem_set_vtable(),
-if it exists, should be prior to any use of GLib.</doc>
+if it exists, should be prior to any use of GLib.
+
+This functions related to this has been deprecated in 2.46, and no longer work.</doc>
       <field name="malloc" introspectable="0">
         <callback name="malloc" introspectable="0">
           <return-value>
@@ -37607,7 +37609,7 @@ the #GHashTable, the old value is freed using that function.
 If you supplied a @key_destroy_func when creating the
 #GHashTable, the old key is freed using that function.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE of the key did not exist yet</doc>
+        <doc xml:space="preserve">%TRUE if the key did not exist yet</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
@@ -39107,46 +39109,42 @@ of g_markup_escape_text(). See g_markup_printf_escaped().</doc>
       </parameters>
     </function>
     <function name="mem_is_system_malloc"
-              c:identifier="g_mem_is_system_malloc">
+              c:identifier="g_mem_is_system_malloc"
+              deprecated="1"
+              deprecated-version="2.46">
       <doc xml:space="preserve">Checks whether the allocator used by g_malloc() is the system's
 malloc implementation. If it returns %TRUE memory allocated with
 malloc() can be used interchangeable with memory allocated using g_malloc().
 This function is useful for avoiding an extra copy of allocated memory returned
-by a non-GLib-based API.
-
-A different allocator can be set using g_mem_set_vtable().</doc>
+by a non-GLib-based API.</doc>
+      <doc-deprecated xml:space="preserve">GLib always uses the system malloc, so this function always
+returns %TRUE.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">if %TRUE, malloc() and g_malloc() can be mixed.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
     </function>
-    <function name="mem_profile" c:identifier="g_mem_profile">
-      <doc xml:space="preserve">Outputs a summary of memory usage.
-
-It outputs the frequency of allocations of different sizes,
-the total number of bytes which have been allocated,
-the total number of bytes which have been freed,
-and the difference between the previous two values, i.e. the number of bytes
-still in use.
-
-Note that this function will not output anything unless you have
-previously installed the #glib_mem_profiler_table with g_mem_set_vtable().</doc>
+    <function name="mem_profile"
+              c:identifier="g_mem_profile"
+              deprecated="1"
+              deprecated-version="2.46">
+      <doc xml:space="preserve">GLib used to support some tools for memory profiling, but this
+no longer works. There are many other useful tools for memory
+profiling these days which can be used instead.</doc>
+      <doc-deprecated xml:space="preserve">Use other memory profiling tools instead</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
     </function>
-    <function name="mem_set_vtable" c:identifier="g_mem_set_vtable">
-      <doc xml:space="preserve">Sets the #GMemVTable to use for memory allocation. You can use this
-to provide custom memory allocation routines.
-
-The @vtable only needs to provide malloc(), realloc(), and free()
-functions; GLib can provide default implementations of the others.
-The malloc() and realloc() implementations should return %NULL on
-failure, GLib will handle error-checking for you. @vtable is copied,
-so need not persist after this function has been called.
-
-Note that this function must be called before using any other GLib
-functions.</doc>
+    <function name="mem_set_vtable"
+              c:identifier="g_mem_set_vtable"
+              deprecated="1"
+              deprecated-version="2.46">
+      <doc xml:space="preserve">This function used to let you override the memory allocation function.
+However, its use was incompatible with the use of global constructors
+in GLib and GIO, because those use the GLib allocators before main is
+reached. Therefore this function is now deprecated and is just a stub.</doc>
+      <doc-deprecated xml:space="preserve">Use other memory profiling tools instead</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -41276,13 +41274,8 @@ tools it is enough to make the program have a wmain() instead of
 main(). wmain() has a wide character argument vector as parameter.
 
 At least currently, mingw doesn't support wmain(), so if you use
-mingw to develop the spawned program, it will have to call the
-undocumented function __wgetmainargs() to get the wide character
-argument vector and environment. See gspawn-win32-helper.c in the
-GLib sources or init.c in the mingw runtime sources for a prototype
-for that function. Alternatively, you can retrieve the Win32 system
-level wide character command line passed to the spawned program
-using the GetCommandLineW() function.
+mingw to develop the spawned program, it should call
+g_win32_get_command_line() to get arguments in UTF-8.
 
 On Windows the low-level child process creation API CreateProcess()
 doesn't use argument vectors, but a command line. The C runtime
@@ -41871,7 +41864,11 @@ the string, is updated: `hash = hash * 33 + c`. This function
 uses the signed value of each byte.
 
 It can be passed to g_hash_table_new() as the @hash_func parameter,
-when using non-%NULL strings as keys in a #GHashTable.</doc>
+when using non-%NULL strings as keys in a #GHashTable.
+
+Note that this function may not be a perfect fit for all use cases.
+For example, it produces some hash collisions with strings as short
+as 2.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">a hash value corresponding to the key</doc>
         <type name="guint" c:type="guint"/>

@@ -2470,6 +2470,17 @@ possible to copy to the clipboard when there is an active selection
 inside the #WebKitWebView.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="EDITING_COMMAND_CREATE_LINK"
+              value="CreateLink"
+              c:type="WEBKIT_EDITING_COMMAND_CREATE_LINK"
+              version="2.10">
+      <doc xml:space="preserve">The create link command. Creates a link elment thst is inserted at
+the current cursor position. If there's a selection, the selected text
+will be used as the link text, otherwise the URL itself will be used.
+It receives the link URL as argument. This command should be executed
+with webkit_web_view_execute_editing_command_with_argument()</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="EDITING_COMMAND_CUT"
               value="Cut"
               c:type="WEBKIT_EDITING_COMMAND_CUT">
@@ -2479,6 +2490,16 @@ You can check whether it's possible to execute the command with
 webkit_web_view_can_execute_editing_command(). In general it's
 possible to cut to the clipboard when the #WebKitWebView content is
 editable and there is an active selection.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="EDITING_COMMAND_INSERT_IMAGE"
+              value="InsertImage"
+              c:type="WEBKIT_EDITING_COMMAND_INSERT_IMAGE"
+              version="2.10">
+      <doc xml:space="preserve">The insert image command. Creates an image element that is inserted at
+the current cursor position. It receives an URI as argument,
+that is used as the image source. This command should be executed with
+webkit_web_view_execute_editing_command_with_argument().</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="EDITING_COMMAND_PASTE"
@@ -4034,7 +4055,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="5" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -9433,6 +9454,21 @@ details on the format of the languages in the list.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_web_process_count_limit"
+              c:identifier="webkit_web_context_get_web_process_count_limit"
+              version="2.10">
+        <doc xml:space="preserve">Gets the maximum number of web processes that can be created at the same time for the @context.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the maximum limit of web processes, or 0 if there isn't a limit.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitWebContext</doc>
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_website_data_manager"
               c:identifier="webkit_web_context_get_website_data_manager"
               version="2.10">
@@ -9692,7 +9728,7 @@ hangs or crashes, only the WebViews using it stop working, while
 the rest of the WebViews in the application will still function
 normally.
 
-This method **must be called before any other functions**,
+This method **must be called before any web process has been created**,
 as early as possible in your application. Calling it later will make
 your application crash.</doc>
         <return-value transfer-ownership="none">
@@ -9814,6 +9850,29 @@ before anything is loaded.</doc>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve">a #GVariant</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_web_process_count_limit"
+              c:identifier="webkit_web_context_set_web_process_count_limit"
+              version="2.10">
+        <doc xml:space="preserve">Sets the maximum number of web processes that can be created at the same time for the @context.
+The default value is 0 and means no limit.
+
+This method **must be called before any web process has been created**,
+as early as possible in your application. Calling it later will make
+your application crash.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitWebContext</doc>
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+          <parameter name="limit" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum number of web processes</doc>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </method>
@@ -11005,6 +11064,30 @@ it's possible to execute the command.</doc>
           <parameter name="command" transfer-ownership="none">
             <doc xml:space="preserve">the command to execute</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="execute_editing_command_with_argument"
+              c:identifier="webkit_web_view_execute_editing_command_with_argument"
+              version="2.10">
+        <doc xml:space="preserve">Request to execute the given @command with @argument for @web_view. You can use
+webkit_web_view_can_execute_editing_command() to check whether
+it's possible to execute the command.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+          <parameter name="command" transfer-ownership="none">
+            <doc xml:space="preserve">the command to execute</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="argument" transfer-ownership="none">
+            <doc xml:space="preserve">the command argument</doc>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>

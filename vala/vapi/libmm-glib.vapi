@@ -76,6 +76,45 @@ namespace MM {
 		public void set_rm_protocol (MM.ModemCdmaRmProtocol protocol);
 		public void set_user (string user);
 	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_get_type ()")]
+	public class Call : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected Call ();
+		public async bool accept (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string dup_number ();
+		public string dup_path ();
+		public MM.CallDirection get_direction ();
+		public unowned string get_number ();
+		public unowned string get_path ();
+		public MM.CallState get_state ();
+		public MM.CallStateReason get_state_reason ();
+		public async bool hangup (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool hangup_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool send_dtmf (string dtmf, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool send_dtmf_sync (string dtmf, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool start (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool start_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_properties_get_type ()")]
+	public class CallProperties : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public CallProperties ();
+		public MM.CallProperties dup ();
+		[CCode (has_construct_function = false)]
+		public CallProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public CallProperties.from_string (string str) throws GLib.Error;
+		public GLib.Variant get_dictionary ();
+		public MM.CallDirection get_direction ();
+		public unowned string get_number ();
+		public MM.CallState get_state ();
+		public MM.CallStateReason get_state_reason ();
+		public void set_direction (MM.CallDirection direction);
+		public void set_number (string text);
+		public void set_state (MM.CallState state);
+		public void set_state_reason (MM.CallStateReason state_reason);
+	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cdma_manual_activation_properties_get_type ()")]
 	public class CdmaManualActivationProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -315,6 +354,22 @@ namespace MM {
 		[CCode (has_construct_function = false, type = "MmGdbusModemTime*")]
 		public GdbusModemTimeSkeleton ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModemVoiceProxy", type_id = "mm_gdbus_modem_voice_proxy_get_type ()")]
+	public class GdbusModemVoiceProxy : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemVoice {
+		[CCode (cname = "mm_gdbus_modem_voice_proxy_new", has_construct_function = false)]
+		public async GdbusModemVoiceProxy (GLib.DBusConnection connection, GLib.DBusProxyFlags flags, string? name, string object_path, GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (cname = "mm_gdbus_modem_voice_proxy_new_for_bus", has_construct_function = false)]
+		public async GdbusModemVoiceProxy.for_bus (GLib.BusType bus_type, GLib.DBusProxyFlags flags, string name, string object_path, GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (has_construct_function = false, type = "MmGdbusModemVoice*")]
+		public GdbusModemVoiceProxy.for_bus_sync (GLib.BusType bus_type, GLib.DBusProxyFlags flags, string name, string object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (has_construct_function = false, type = "MmGdbusModemVoice*")]
+		public GdbusModemVoiceProxy.sync (GLib.DBusConnection connection, GLib.DBusProxyFlags flags, string? name, string object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModemVoiceSkeleton", type_id = "mm_gdbus_modem_voice_skeleton_get_type ()")]
+	public class GdbusModemVoiceSkeleton : GLib.DBusInterfaceSkeleton, GLib.DBusInterface, MM.GdbusModemVoice {
+		[CCode (has_construct_function = false, type = "MmGdbusModemVoice*")]
+		public GdbusModemVoiceSkeleton ();
+	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusObjectManagerClient", type_id = "mm_gdbus_object_manager_client_get_type ()")]
 	public class GdbusObjectManagerClient : GLib.DBusObjectManagerClient, GLib.AsyncInitable, GLib.DBusObjectManager, GLib.Initable {
 		[CCode (cname = "mm_gdbus_object_manager_client_new", has_construct_function = false)]
@@ -347,6 +402,7 @@ namespace MM {
 		public void set_modem_signal (MM.GdbusModemSignal? interface_);
 		public void set_modem_simple (MM.GdbusModemSimple? interface_);
 		public void set_modem_time (MM.GdbusModemTime? interface_);
+		public void set_modem_voice (MM.GdbusModemVoice? interface_);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusOrgFreedesktopModemManager1Proxy", type_id = "mm_gdbus_org_freedesktop_modem_manager1_proxy_get_type ()")]
 	public class GdbusOrgFreedesktopModemManager1Proxy : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusOrgFreedesktopModemManager1 {
@@ -732,6 +788,19 @@ namespace MM {
 		public unowned string get_path ();
 		public unowned MM.NetworkTimezone peek_network_timezone ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_voice_get_type ()")]
+	public class ModemVoice : MM.GdbusModemVoiceProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemVoice {
+		[CCode (has_construct_function = false)]
+		protected ModemVoice ();
+		public async MM.Call create_call (MM.CallProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		public MM.Call create_call_sync (MM.CallProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool delete_call (string call, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool delete_call_sync (string call, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string dup_path ();
+		public unowned string get_path ();
+		public async GLib.List<MM.Call> list_calls (GLib.Cancellable? cancellable) throws GLib.Error;
+		public GLib.List<MM.Call> list_calls_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_network_timezone_get_type ()")]
 	public class NetworkTimezone : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -762,6 +831,7 @@ namespace MM {
 		public MM.ModemSignal get_modem_signal ();
 		public MM.ModemSimple get_modem_simple ();
 		public MM.ModemTime get_modem_time ();
+		public MM.ModemVoice get_modem_voice ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_signal_get_type ()")]
 	public class Signal : GLib.Object {
@@ -1330,6 +1400,30 @@ namespace MM {
 		public virtual signal bool handle_get_network_time (GLib.DBusMethodInvocation invocation);
 		public virtual signal void network_time_changed (string arg_time);
 	}
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModemVoice", type_id = "mm_gdbus_modem_voice_get_type ()")]
+	public interface GdbusModemVoice : GLib.Object {
+		public async bool call_create_call (GLib.Variant arg_properties, GLib.Cancellable? cancellable, out string out_path) throws GLib.Error;
+		public bool call_create_call_sync (GLib.Variant arg_properties, out string out_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_delete_call (string arg_path, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_delete_call_sync (string arg_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_list_calls (GLib.Cancellable? cancellable, out string out_result) throws GLib.Error;
+		public bool call_list_calls_sync (out string out_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void complete_create_call (owned GLib.DBusMethodInvocation invocation, string path);
+		public void complete_delete_call (owned GLib.DBusMethodInvocation invocation);
+		public void complete_list_calls (owned GLib.DBusMethodInvocation invocation, string result);
+		public void emit_call_added (string arg_path);
+		public void emit_call_deleted (string arg_path);
+		public static unowned GLib.DBusInterfaceInfo interface_info ();
+		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public abstract string[] calls { owned get; set; }
+		public virtual signal void call_added (string arg_path);
+		public virtual signal void call_deleted (string arg_path);
+		public virtual signal bool handle_create_call (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
+		public virtual signal bool handle_delete_call (GLib.DBusMethodInvocation invocation, string arg_path);
+		public virtual signal bool handle_list_calls (GLib.DBusMethodInvocation invocation);
+	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusObject", type_id = "mm_gdbus_object_get_type ()")]
 	public interface GdbusObject : GLib.DBusObject, GLib.Object {
 		public MM.GdbusModem get_modem ();
@@ -1343,6 +1437,7 @@ namespace MM {
 		public MM.GdbusModemSignal get_modem_signal ();
 		public MM.GdbusModemSimple get_modem_simple ();
 		public MM.GdbusModemTime get_modem_time ();
+		public MM.GdbusModemVoice get_modem_voice ();
 		[NoAccessorMethod]
 		public abstract MM.GdbusModem modem { owned get; set; }
 		[NoAccessorMethod]
@@ -1365,6 +1460,8 @@ namespace MM {
 		public abstract MM.GdbusModemSimple modem_simple { owned get; set; }
 		[NoAccessorMethod]
 		public abstract MM.GdbusModemTime modem_time { owned get; set; }
+		[NoAccessorMethod]
+		public abstract MM.GdbusModemVoice modem_voice { owned get; set; }
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusOrgFreedesktopModemManager1", type_id = "mm_gdbus_org_freedesktop_modem_manager1_get_type ()")]
 	public interface GdbusOrgFreedesktopModemManager1 : GLib.Object {
@@ -1498,6 +1595,36 @@ namespace MM {
 		STATIC,
 		DHCP;
 		public static unowned string get_string (MM.BearerIpMethod val);
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CALL_DIRECTION_", type_id = "mm_call_direction_get_type ()")]
+	public enum CallDirection {
+		UNKNOWN,
+		INCOMING,
+		OUTGOING;
+		public static unowned string get_string (MM.CallDirection val);
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CALL_STATE_", type_id = "mm_call_state_get_type ()")]
+	public enum CallState {
+		UNKNOWN,
+		DIALING,
+		RINGING_OUT,
+		RINGING_IN,
+		ACTIVE,
+		HELD,
+		WAITING,
+		TERMINATED;
+		public static unowned string get_string (MM.CallState val);
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CALL_STATE_REASON_", type_id = "mm_call_state_reason_get_type ()")]
+	public enum CallStateReason {
+		UNKNOWN,
+		OUTGOING_STARTED,
+		INCOMING_NEW,
+		ACCEPTED,
+		TERMINATED,
+		REFUSED_OR_BUSY,
+		ERROR;
+		public static unowned string get_string (MM.CallStateReason val);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_FIRMWARE_IMAGE_TYPE_", type_id = "mm_firmware_image_type_get_type ()")]
 	public enum FirmwareImageType {
@@ -2284,12 +2411,34 @@ namespace MM {
 	public const string BEARER_PROPERTY_PROPERTIES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_SUSPENDED")]
 	public const string BEARER_PROPERTY_SUSPENDED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_ACCEPT")]
+	public const string CALL_METHOD_ACCEPT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_HANGUP")]
+	public const string CALL_METHOD_HANGUP;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_SENDDTMF")]
+	public const string CALL_METHOD_SENDDTMF;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_START")]
+	public const string CALL_METHOD_START;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_DIRECTION")]
+	public const string CALL_PROPERTY_DIRECTION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_NUMBER")]
+	public const string CALL_PROPERTY_NUMBER;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_STATE")]
+	public const string CALL_PROPERTY_STATE;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_STATEREASON")]
+	public const string CALL_PROPERTY_STATEREASON;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_SIGNAL_DTMFRECEIVED")]
+	public const string CALL_SIGNAL_DTMFRECEIVED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_SIGNAL_STATECHANGED")]
+	public const string CALL_SIGNAL_STATECHANGED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_ERROR_PREFIX")]
 	public const string DBUS_ERROR_PREFIX;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE")]
 	public const string DBUS_INTERFACE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_BEARER")]
 	public const string DBUS_INTERFACE_BEARER;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_CALL")]
+	public const string DBUS_INTERFACE_CALL;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM")]
 	public const string DBUS_INTERFACE_MODEM;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_FIRMWARE")]
@@ -2310,6 +2459,8 @@ namespace MM {
 	public const string DBUS_INTERFACE_MODEM_SIGNAL;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_TIME")]
 	public const string DBUS_INTERFACE_MODEM_TIME;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_VOICE")]
+	public const string DBUS_INTERFACE_MODEM_VOICE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_SIM")]
 	public const string DBUS_INTERFACE_SIM;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_SMS")]
@@ -2536,6 +2687,18 @@ namespace MM {
 	public const string MODEM_TIME_PROPERTY_NETWORKTIMEZONE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_TIME_SIGNAL_NETWORKTIMECHANGED")]
 	public const string MODEM_TIME_SIGNAL_NETWORKTIMECHANGED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_CREATECALL")]
+	public const string MODEM_VOICE_METHOD_CREATECALL;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_DELETECALL")]
+	public const string MODEM_VOICE_METHOD_DELETECALL;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_LISTCALLS")]
+	public const string MODEM_VOICE_METHOD_LISTCALLS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_PROPERTY_CALLS")]
+	public const string MODEM_VOICE_PROPERTY_CALLS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_SIGNAL_CALLADDED")]
+	public const string MODEM_VOICE_SIGNAL_CALLADDED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_SIGNAL_CALLDELETED")]
+	public const string MODEM_VOICE_SIGNAL_CALLDELETED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIMPLE_PROPERTY_3GPP_OPERATOR_CODE")]
 	public const string SIMPLE_PROPERTY_3GPP_OPERATOR_CODE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIMPLE_PROPERTY_3GPP_OPERATOR_NAME")]
@@ -2662,6 +2825,10 @@ namespace MM {
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_time_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
 	public static uint gdbus_modem_time_override_properties (GLib.ObjectClass klass, uint property_id_begin);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	public static unowned GLib.DBusInterfaceInfo gdbus_modem_voice_interface_info ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	public static uint gdbus_modem_voice_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_org_freedesktop_modem_manager1_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]

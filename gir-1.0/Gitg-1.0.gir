@@ -920,11 +920,14 @@
 				<type name="Gitg.CredentialsManager" c:type="GitgCredentialsManager*"/>
 			</return-value>
 			<parameters>
-				<parameter name="remote" transfer-ownership="none">
-					<type name="Gitg.Remote" c:type="GitgRemote*"/>
+				<parameter name="config" transfer-ownership="none" allow-none="1">
+					<type name="Ggit.Config" c:type="GgitConfig*"/>
 				</parameter>
 				<parameter name="window" transfer-ownership="none">
 					<type name="Gtk.Window" c:type="GtkWindow*"/>
+				</parameter>
+				<parameter name="save_user_in_config" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
 				</parameter>
 			</parameters>
 		</constructor>
@@ -1542,6 +1545,42 @@
 			</return-value>
 		</method>
 		<method name="set_show_parents" c:identifier="gitg_diff_view_set_show_parents">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="default-collapse-all" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<method name="get_default_collapse_all" c:identifier="gitg_diff_view_get_default_collapse_all">
+			<return-value transfer-ownership="none">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="set_default_collapse_all" c:identifier="gitg_diff_view_set_default_collapse_all">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="use-gravatar" writable="1" construct="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<method name="get_use_gravatar" c:identifier="gitg_diff_view_get_use_gravatar">
+			<return-value transfer-ownership="none">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="set_use_gravatar" c:identifier="gitg_diff_view_set_use_gravatar">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
 			</return-value>
@@ -2233,7 +2272,10 @@
 				<parameter name="direction" transfer-ownership="none">
 					<type name="Ggit.Direction" c:type="GgitDirection"/>
 				</parameter>
-				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+				<parameter name="callbacks" transfer-ownership="none" allow-none="1">
+					<type name="Ggit.RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
 					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
 				</parameter>
 				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
@@ -2279,7 +2321,10 @@
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="1" scope="async">
+				<parameter name="callbacks" transfer-ownership="none" allow-none="1">
+					<type name="Ggit.RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
 					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
 				</parameter>
 				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
@@ -2302,11 +2347,11 @@
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="signature" transfer-ownership="none">
-					<type name="Ggit.Signature" c:type="GgitSignature*"/>
-				</parameter>
 				<parameter name="message" transfer-ownership="none" allow-none="1">
 					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="callbacks" transfer-ownership="none" allow-none="1">
+					<type name="Ggit.RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
 				</parameter>
 				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
 					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
@@ -2331,12 +2376,12 @@
 				<type name="Gitg.Remote" c:type="GitgRemote*"/>
 			</return-value>
 		</constructor>
-		<property name="authentication-error">
-			<type name="GLib.Error"/>
+		<property name="transfer-progress">
+			<type name="gdouble" c:type="gdouble"/>
 		</property>
-		<method name="get_authentication_error" c:identifier="gitg_remote_get_authentication_error">
+		<method name="get_transfer_progress" c:identifier="gitg_remote_get_transfer_progress">
 			<return-value transfer-ownership="none">
-				<type name="GLib.Error"/>
+				<type name="gdouble" c:type="gdouble"/>
 			</return-value>
 		</method>
 		<property name="state" writable="1">
@@ -2347,6 +2392,104 @@
 				<type name="Gitg.RemoteState" c:type="GitgRemoteState"/>
 			</return-value>
 		</method>
+		<property name="fetch-specs" writable="1">
+			<array>
+				<type name="utf8" c:type="gchar*"/>
+			</array>
+		</property>
+		<method name="get_fetch_specs" c:identifier="gitg_remote_get_fetch_specs">
+			<return-value transfer-ownership="full" allow-none="1">
+				<array length="0">
+					<type name="utf8" c:type="gchar*"/>
+				</array>
+			</return-value>
+			<parameters>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="set_fetch_specs" c:identifier="gitg_remote_set_fetch_specs">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<array length="1">
+						<type name="utf8" c:type="gchar*"/>
+					</array>
+				</parameter>
+				<parameter name="value_length1" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="push-specs" writable="1">
+			<array>
+				<type name="utf8" c:type="gchar*"/>
+			</array>
+		</property>
+		<method name="get_push_specs" c:identifier="gitg_remote_get_push_specs">
+			<return-value transfer-ownership="full" allow-none="1">
+				<array length="0">
+					<type name="utf8" c:type="gchar*"/>
+				</array>
+			</return-value>
+			<parameters>
+				<parameter name="result_length1" direction="out" transfer-ownership="none">
+					<type name="gint" c:type="gint*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="set_push_specs" c:identifier="gitg_remote_set_push_specs">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<array length="1">
+						<type name="utf8" c:type="gchar*"/>
+					</array>
+				</parameter>
+				<parameter name="value_length1" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="credentials-provider" writable="1">
+			<type name="Gitg.CredentialsProvider" c:type="GitgCredentialsProvider*"/>
+		</property>
+		<method name="get_credentials_provider" c:identifier="gitg_remote_get_credentials_provider">
+			<return-value transfer-ownership="none" allow-none="1">
+				<type name="Gitg.CredentialsProvider" c:type="GitgCredentialsProvider*"/>
+			</return-value>
+		</method>
+		<method name="set_credentials_provider" c:identifier="gitg_remote_set_credentials_provider">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<type name="Gitg.CredentialsProvider" c:type="GitgCredentialsProvider*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<glib:signal name="tip_updated">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="refname" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="a" transfer-ownership="none">
+					<type name="Ggit.OId" c:type="GgitOId*"/>
+				</parameter>
+				<parameter name="b" transfer-ownership="none">
+					<type name="Ggit.OId" c:type="GgitOId*"/>
+				</parameter>
+			</parameters>
+		</glib:signal>
 	</class>
 	<record name="RemoteClass" c:type="GitgRemoteClass" glib:is-gtype-struct-for="Remote">
 		<field name="parent_class">
@@ -2447,29 +2590,36 @@
 		<field name="priv">
 			<type name="RepositoryListBoxPrivate" c:type="GitgRepositoryListBoxPrivate*"/>
 		</field>
-		<method name="add_repository" c:identifier="gitg_repository_list_box_add_repository">
+		<method name="end_cloning" c:identifier="gitg_repository_list_box_end_cloning">
 			<return-value transfer-ownership="full">
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="repository" transfer-ownership="none">
+				<parameter name="row" transfer-ownership="none">
+					<type name="Gitg.RepositoryListBoxRow" c:type="GitgRepositoryListBoxRow*"/>
+				</parameter>
+				<parameter name="repository" transfer-ownership="none" allow-none="1">
 					<type name="Gitg.Repository" c:type="GitgRepository*"/>
 				</parameter>
 			</parameters>
 		</method>
-		<method name="clone_repository" c:identifier="gitg_repository_list_box_clone_repository">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
+		<method name="begin_cloning" c:identifier="gitg_repository_list_box_begin_cloning">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gitg.RepositoryListBoxRow" c:type="GitgRepositoryListBoxRow*"/>
 			</return-value>
 			<parameters>
-				<parameter name="url" transfer-ownership="none">
+				<parameter name="name" transfer-ownership="none">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
-				<parameter name="location" transfer-ownership="none">
-					<type name="Gio.File" c:type="GFile*"/>
-				</parameter>
-				<parameter name="is_bare" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
+			</parameters>
+		</method>
+		<method name="add_repository" c:identifier="gitg_repository_list_box_add_repository">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gitg.RepositoryListBoxRow" c:type="GitgRepositoryListBoxRow*"/>
+			</return-value>
+			<parameters>
+				<parameter name="repository" transfer-ownership="none">
+					<type name="Gitg.Repository" c:type="GitgRepository*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -2839,6 +2989,16 @@
 				</parameter>
 			</parameters>
 		</method>
+		<method name="lookup_reference_dwim" c:identifier="gitg_repository_lookup_reference_dwim" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Ref" c:type="GitgRef*"/>
+			</return-value>
+			<parameters>
+				<parameter name="short_name" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
 		<method name="create_reference" c:identifier="gitg_repository_create_reference" throws="1">
 			<return-value transfer-ownership="full">
 				<type name="Gitg.Ref" c:type="GitgRef*"/>
@@ -2849,9 +3009,6 @@
 				</parameter>
 				<parameter name="oid" transfer-ownership="none">
 					<type name="Ggit.OId" c:type="GgitOId*"/>
-				</parameter>
-				<parameter name="signature" transfer-ownership="none">
-					<type name="Ggit.Signature" c:type="GgitSignature*"/>
 				</parameter>
 				<parameter name="message" transfer-ownership="none">
 					<type name="utf8" c:type="const gchar*"/>
@@ -2869,9 +3026,6 @@
 				<parameter name="target" transfer-ownership="none">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
-				<parameter name="signature" transfer-ownership="none">
-					<type name="Ggit.Signature" c:type="GgitSignature*"/>
-				</parameter>
 				<parameter name="message" transfer-ownership="none">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
@@ -2882,6 +3036,19 @@
 				<type name="Gitg.Ref" c:type="GitgRef*"/>
 			</return-value>
 		</method>
+		<function name="init_repository" c:identifier="gitg_repository_init_repository" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Repository" c:type="GitgRepository*"/>
+			</return-value>
+			<parameters>
+				<parameter name="location" transfer-ownership="none">
+					<type name="Gio.File" c:type="GFile*"/>
+				</parameter>
+				<parameter name="is_bare" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</function>
 		<method name="get_signature_with_environment" c:identifier="gitg_repository_get_signature_with_environment" throws="1">
 			<return-value transfer-ownership="full">
 				<type name="Ggit.Signature" c:type="GgitSignature*"/>
@@ -3180,6 +3347,16 @@
 		<method name="select" c:identifier="gitg_sidebar_select">
 			<return-value transfer-ownership="full">
 				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="item" transfer-ownership="none">
+					<type name="Gitg.SidebarItem" c:type="GitgSidebarItem*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="is_selected" c:identifier="gitg_sidebar_is_selected">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
 			</return-value>
 			<parameters>
 				<parameter name="item" transfer-ownership="none">
@@ -4360,6 +4537,67 @@
 					</parameter>
 					<parameter name="value" transfer-ownership="none">
 						<type name="gboolean" c:type="gboolean"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+	</record>
+	<interface name="CredentialsProvider" c:type="GitgCredentialsProvider" glib:type-name="GitgCredentialsProvider" glib:get-type="gitg_credentials_provider_get_type" glib:type-struct="CredentialsProviderIface">
+		<prerequisite name="GObject.Object"/>
+		<method name="credentials" c:identifier="gitg_credentials_provider_credentials" throws="1">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Ggit.Cred" c:type="GgitCred*"/>
+			</return-value>
+			<parameters>
+				<parameter name="url" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="username_from_url" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="allowed_types" transfer-ownership="none">
+					<type name="Ggit.Credtype" c:type="GgitCredtype"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="credentials" invoker="credentials" throws="1">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Ggit.Cred" c:type="GgitCred*"/>
+			</return-value>
+			<parameters>
+				<parameter name="url" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="username_from_url" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="allowed_types" transfer-ownership="none">
+					<type name="Ggit.Credtype" c:type="GgitCredtype"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+	</interface>
+	<record name="CredentialsProviderIface" c:type="GitgCredentialsProviderIface" glib:is-gtype-struct-for="CredentialsProvider">
+		<field name="parent_iface">
+			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+		</field>
+		<field name="credentials">
+			<callback name="credentials" c:type="credentials" throws="1">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="Ggit.Cred" c:type="GgitCred*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Gitg.CredentialsProvider" c:type="GitgCredentialsProvider*"/>
+					</parameter>
+					<parameter name="url" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="username_from_url" transfer-ownership="none" allow-none="1">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="allowed_types" transfer-ownership="none">
+						<type name="Ggit.Credtype" c:type="GgitCredtype"/>
 					</parameter>
 				</parameters>
 			</callback>

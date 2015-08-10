@@ -11091,6 +11091,16 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_WIRED_SPEED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_WIRED_WAKE_ON_LAN"
+              value="wake-on-lan"
+              c:type="NM_SETTING_WIRED_WAKE_ON_LAN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_WIRED_WAKE_ON_LAN_PASSWORD"
+              value="wake-on-lan-password"
+              c:type="NM_SETTING_WIRED_WAKE_ON_LAN_PASSWORD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_WIRELESS_BAND"
               value="band"
               c:type="NM_SETTING_WIRELESS_BAND">
@@ -19157,6 +19167,37 @@ conjunction with that device.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_wake_on_lan"
+              c:identifier="nm_setting_wired_get_wake_on_lan"
+              version="1.2">
+        <doc xml:space="preserve">Returns the Wake-on-LAN options enabled for the connection</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the Wake-on-LAN options</doc>
+          <type name="SettingWiredWakeOnLan" c:type="NMSettingWiredWakeOnLan"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWired</doc>
+            <type name="SettingWired" c:type="NMSettingWired*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_wake_on_lan_password"
+              c:identifier="nm_setting_wired_get_wake_on_lan_password"
+              version="1.2">
+        <doc xml:space="preserve">Returns the Wake-on-LAN password. This only applies to
+%NM_SETTING_WIRED_WAKE_ON_LAN_MAGIC.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the Wake-on-LAN setting password, or %NULL if there is no password.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWired</doc>
+            <type name="SettingWired" c:type="NMSettingWired*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="remove_mac_blacklist_item"
               c:identifier="nm_setting_wired_remove_mac_blacklist_item">
         <doc xml:space="preserve">Removes the MAC address at index @idx from the blacklist.</doc>
@@ -19301,6 +19342,27 @@ period (.) character.</doc>
 Mbit/s, ie 100 == 100Mbit/s.</doc>
         <type name="guint" c:type="guint"/>
       </property>
+      <property name="wake-on-lan"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #NMSettingWiredWakeOnLan options to enable. Not all devices support all options.
+May be any combination of %NM_SETTING_WIRED_WAKE_ON_LAN_PHY,
+%NM_SETTING_WIRED_WAKE_ON_LAN_UNICAST, %NM_SETTING_WIRED_WAKE_ON_LAN_MULTICAST,
+%NM_SETTING_WIRED_WAKE_ON_LAN_BROADCAST, %NM_SETTING_WIRED_WAKE_ON_LAN_ARP,
+%NM_SETTING_WIRED_WAKE_ON_LAN_MAGIC.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="wake-on-lan-password"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">If specified, the password used with magic-packet-based
+Wake-on-LAN, represented as an Ethernet MAC address.  If %NULL,
+no password will be required.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
       </field>
@@ -19317,6 +19379,56 @@ Mbit/s, ie 100 == 100Mbit/s.</doc>
         </array>
       </field>
     </record>
+    <bitfield name="SettingWiredWakeOnLan"
+              version="1.2"
+              glib:type-name="NMSettingWiredWakeOnLan"
+              glib:get-type="nm_setting_wired_wake_on_lan_get_type"
+              c:type="NMSettingWiredWakeOnLan">
+      <doc xml:space="preserve">Options for #NMSettingWired:wake-on-lan. Note that not all options
+are supported by all devices.</doc>
+      <member name="default"
+              value="1"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">Use the default value</doc>
+      </member>
+      <member name="phy"
+              value="2"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_PHY"
+              glib:nick="phy">
+        <doc xml:space="preserve">Wake on PHY activity</doc>
+      </member>
+      <member name="unicast"
+              value="4"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_UNICAST"
+              glib:nick="unicast">
+        <doc xml:space="preserve">Wake on unicast messages</doc>
+      </member>
+      <member name="multicast"
+              value="8"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_MULTICAST"
+              glib:nick="multicast">
+        <doc xml:space="preserve">Wake on multicast messages</doc>
+      </member>
+      <member name="broadcast"
+              value="16"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_BROADCAST"
+              glib:nick="broadcast">
+        <doc xml:space="preserve">Wake on broadcast messages</doc>
+      </member>
+      <member name="arp"
+              value="32"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_ARP"
+              glib:nick="arp">
+        <doc xml:space="preserve">Wake on ARP</doc>
+      </member>
+      <member name="magic"
+              value="64"
+              c:identifier="NM_SETTING_WIRED_WAKE_ON_LAN_MAGIC"
+              glib:nick="magic">
+        <doc xml:space="preserve">Wake on magic packet</doc>
+      </member>
+    </bitfield>
     <class name="SettingWireless"
            c:symbol-prefix="setting_wireless"
            c:type="NMSettingWireless"
@@ -20676,6 +20788,24 @@ connection failed to validate</doc>
 nm_utils_hwaddr_len(), and nm_utils_hwaddr_aton().</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <callback name="UtilsCheckFilePredicate"
+              c:type="NMUtilsCheckFilePredicate"
+              throws="1">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="stat" transfer-ownership="none">
+          <type name="gpointer" c:type="const stat*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="2">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <callback name="UtilsFileSearchInPathsPredicate"
               c:type="NMUtilsFileSearchInPathsPredicate">
       <return-value transfer-ownership="none">
@@ -20822,6 +20952,36 @@ generating the dynamic WEP keys automatically</doc>
     <constant name="VPN_PLUGIN_CONFIG_TUNDEV"
               value="tundev"
               c:type="NM_VPN_PLUGIN_CONFIG_TUNDEV">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_INFO_FILENAME"
+              value="filename"
+              c:type="NM_VPN_PLUGIN_INFO_FILENAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_INFO_KEYFILE"
+              value="keyfile"
+              c:type="NM_VPN_PLUGIN_INFO_KEYFILE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_INFO_KF_GROUP_CONNECTION"
+              value="VPN Connection"
+              c:type="NM_VPN_PLUGIN_INFO_KF_GROUP_CONNECTION">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_INFO_KF_GROUP_GNOME"
+              value="GNOME"
+              c:type="NM_VPN_PLUGIN_INFO_KF_GROUP_GNOME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_INFO_KF_GROUP_LIBNM"
+              value="libnm"
+              c:type="NM_VPN_PLUGIN_INFO_KF_GROUP_LIBNM">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_INFO_NAME"
+              value="name"
+              c:type="NM_VPN_PLUGIN_INFO_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="VPN_PLUGIN_IP4_CONFIG_ADDRESS"
@@ -21371,6 +21531,58 @@ string used by the connection, and must not be modified.</doc>
                glib:type-name="NMVpnEditorPlugin"
                glib:get-type="nm_vpn_editor_plugin_get_type"
                glib:type-struct="VpnEditorPluginInterface">
+      <function name="load_from_file"
+                c:identifier="nm_vpn_editor_plugin_load_from_file"
+                version="1.2"
+                throws="1">
+        <doc xml:space="preserve">Load the shared libary @plugin_filename and create a new
+#NMVpnEditorPlugin instace via the #NMVpnEditorPluginFactory
+function.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new plugin instance or %NULL on error.</doc>
+          <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+        </return-value>
+        <parameters>
+          <parameter name="plugin_filename" transfer-ownership="none">
+            <doc xml:space="preserve">The path to the share library to load.
+ Apply some common heuristics to find the library, such as
+ appending "so" file ending.
+ If the path is not an absolute path or no matching module
+ can be found, lookup inside a directory defined at compile time.
+ Due to this, @check_file might be called for two different paths.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="check_name" transfer-ownership="none">
+            <doc xml:space="preserve">if not-null, check that the loaded plugin has
+ the given name.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="check_service" transfer-ownership="none">
+            <doc xml:space="preserve">if not-null, check that the loaded plugin advertises
+ the given service.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="check_owner" transfer-ownership="none">
+            <doc xml:space="preserve">if non-negative, check whether the file is owned
+ by UID @check_owner or by root. In this case also check that
+ the file is not writable by anybody else.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="check_file"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="5">
+            <doc xml:space="preserve">optional callback to validate the file prior to
+  loading the shared library.</doc>
+            <type name="UtilsCheckFilePredicate"
+                  c:type="NMUtilsCheckFilePredicate"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for @check_file</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
       <virtual-method name="export_to_file" throws="1">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -21772,6 +21984,379 @@ to errors in the "org.freedesktop.NetworkManager.VPN.Error" namespace.</doc>
   the VPN plugin.</doc>
       </member>
     </enumeration>
+    <class name="VpnPluginInfo"
+           c:symbol-prefix="vpn_plugin_info"
+           c:type="NMVpnPluginInfo"
+           parent="GObject.Object"
+           glib:type-name="NMVpnPluginInfo"
+           glib:get-type="nm_vpn_plugin_info_get_type"
+           glib:type-struct="VpnPluginInfoClass">
+      <implements name="Gio.Initable"/>
+      <constructor name="new_from_file"
+                   c:identifier="nm_vpn_plugin_info_new_from_file"
+                   version="1.2"
+                   throws="1">
+        <doc xml:space="preserve">Read the plugin info from file @filename. Does not do
+any further verification on the file. You might want to check
+file permissions and ownership of the file.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">%NULL if there is any error or a newly created
+#NMVpnPluginInfo instance.</doc>
+          <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">filename to read.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_with_data"
+                   c:identifier="nm_vpn_plugin_info_new_with_data"
+                   version="1.2"
+                   throws="1">
+        <doc xml:space="preserve">This constructor does not read any data from file but
+takes instead a @keyfile argument.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">new plugin info instance.</doc>
+          <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">optional filename.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="keyfile" transfer-ownership="none">
+            <doc xml:space="preserve">inject data for the plugin info instance.</doc>
+            <type name="GLib.KeyFile" c:type="GKeyFile*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="list_add"
+                c:identifier="nm_vpn_plugin_info_list_add"
+                version="1.2"
+                introspectable="0"
+                throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the plugin was added to @list. This will fail
+to add duplicate plugins.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">list of plugins</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="plugin_info" transfer-ownership="none">
+            <doc xml:space="preserve">instance to add</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="list_find_by_filename"
+                c:identifier="nm_vpn_plugin_info_list_find_by_filename"
+                version="1.2"
+                introspectable="0">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the first plugin with a matching @filename (or %NULL).</doc>
+          <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">list of plugins</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">filename to search</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="list_find_by_name"
+                c:identifier="nm_vpn_plugin_info_list_find_by_name"
+                version="1.2"
+                introspectable="0">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the first plugin with a matching @name (or %NULL).</doc>
+          <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">list of plugins</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name to search</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="list_find_by_service"
+                c:identifier="nm_vpn_plugin_info_list_find_by_service"
+                version="1.2"
+                introspectable="0">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the first plugin with a matching @service (or %NULL).</doc>
+          <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">list of plugins</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">service to search</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="list_load"
+                c:identifier="nm_vpn_plugin_info_list_load"
+                version="1.2"
+                introspectable="0">
+        <return-value>
+          <doc xml:space="preserve">list of plugins loaded from the default
+directories rejecting duplicates.</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+      </function>
+      <function name="list_remove"
+                c:identifier="nm_vpn_plugin_info_list_remove"
+                version="1.2"
+                introspectable="0">
+        <doc xml:space="preserve">Remove @plugin_info from @list.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @plugin_info was in @list and successfully removed.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">list of plugins</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="plugin_info" transfer-ownership="none">
+            <doc xml:space="preserve">instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="validate_filename"
+                c:identifier="nm_vpn_plugin_info_validate_filename"
+                version="1.2">
+        <doc xml:space="preserve">Regular name files have a certain pattern. That basically means
+they have the file extension "name". Check if @filename
+is valid according to that pattern.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">the filename to check</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_editor_plugin"
+              c:identifier="nm_vpn_plugin_info_get_editor_plugin"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the cached #NMVpnEditorPlugin instance.</doc>
+          <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_filename"
+              c:identifier="nm_vpn_plugin_info_get_filename"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the filename. Can be %NULL.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_name"
+              c:identifier="nm_vpn_plugin_info_get_name"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the name. Cannot be %NULL.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_plugin"
+              c:identifier="nm_vpn_plugin_info_get_plugin"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the plugin. Can be %NULL.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_program"
+              c:identifier="nm_vpn_plugin_info_get_program"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the program. Can be %NULL.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_service"
+              c:identifier="nm_vpn_plugin_info_get_service"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the service. Cannot be %NULL.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="load_editor_plugin"
+              c:identifier="nm_vpn_plugin_info_load_editor_plugin"
+              version="1.2"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">loads the plugin and returns the newly created
+  instance. The plugin is owned by @self and can be later retrieved again
+  via nm_vpn_plugin_info_get_editor_plugin(). You can load the
+  plugin only once, unless you reset the state via
+  nm_vpn_plugin_info_set_editor_plugin().</doc>
+          <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="lookup_property"
+              c:identifier="nm_vpn_plugin_info_lookup_property"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#NMVpnPluginInfo is internally a #GKeyFile. Returns the matching
+property.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+          <parameter name="group" transfer-ownership="none">
+            <doc xml:space="preserve">group name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_editor_plugin"
+              c:identifier="nm_vpn_plugin_info_set_editor_plugin"
+              version="1.2">
+        <doc xml:space="preserve">Set the internal plugin instance. If %NULL, only clear the previous instance.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+          <parameter name="plugin"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">plugin instance</doc>
+            <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="filename"
+                version="1.2"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The filename from which the info was loaded.
+Can be %NULL if the instance was not loaded from
+a file (i.e. the keyfile instance was passed to the
+constructor).</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="keyfile"
+                version="1.2"
+                readable="0"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Initalize the instance with a different keyfile instance.
+When passing a keyfile instance, the constructor will not
+try to read from filename.</doc>
+        <type name="GLib.KeyFile"/>
+      </property>
+      <property name="name" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The name of the VPN plugin.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="VpnPluginInfoClass"
+            c:type="NMVpnPluginInfoClass"
+            glib:is-gtype-struct-for="VpnPluginInfo">
+      <field name="parent">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <enumeration name="VpnServiceState"
                  glib:type-name="NMVpnServiceState"
                  glib:get-type="nm_vpn_service_state_get_type"
@@ -22206,6 +22791,70 @@ underlying device driver.</doc>
         <parameter name="other_type" transfer-ownership="none">
           <doc xml:space="preserve">a connection type to test against @virtual_type</doc>
           <type name="GType" c:type="GType"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_enum_from_str"
+              c:identifier="nm_utils_enum_from_str"
+              version="1.2">
+      <doc xml:space="preserve">Converts a string to the matching enum value.
+
+If the enum is a %G_TYPE_FLAGS the function returns the logical OR of values
+matching the comma-separated tokens in the string; if an unknown token is found
+the function returns %FALSE and stores a pointer to a newly allocated string
+containing the unrecognized token in @err_token.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the conversion was successful, %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="type" transfer-ownership="none">
+          <doc xml:space="preserve">the %GType of the enum</doc>
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">the input string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="out_value"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the output value</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+        <parameter name="err_token"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">location to store the first unrecognized token</doc>
+          <type name="utf8" c:type="char**"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_enum_to_str"
+              c:identifier="nm_utils_enum_to_str"
+              version="1.2">
+      <doc xml:space="preserve">Converts an enum value to its string representation. If the enum is a
+%G_TYPE_FLAGS the function returns a comma-separated list of matching values.
+If the enum is a %G_TYPE_ENUM and the given value is not valid the
+function returns %NULL.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated string or %NULL</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="type" transfer-ownership="none">
+          <doc xml:space="preserve">the %GType of the enum</doc>
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">the value to be translated</doc>
+          <type name="gint" c:type="int"/>
         </parameter>
       </parameters>
     </function>
@@ -23283,6 +23932,59 @@ support it, this will use unicode graphics characters to represent
         <parameter name="psk" transfer-ownership="none">
           <doc xml:space="preserve">a string that might be a WPA PSK</doc>
           <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="vpn_editor_plugin_load_from_file"
+              c:identifier="nm_vpn_editor_plugin_load_from_file"
+              moved-to="VpnEditorPlugin.load_from_file"
+              version="1.2"
+              throws="1">
+      <doc xml:space="preserve">Load the shared libary @plugin_filename and create a new
+#NMVpnEditorPlugin instace via the #NMVpnEditorPluginFactory
+function.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a new plugin instance or %NULL on error.</doc>
+        <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+      </return-value>
+      <parameters>
+        <parameter name="plugin_filename" transfer-ownership="none">
+          <doc xml:space="preserve">The path to the share library to load.
+ Apply some common heuristics to find the library, such as
+ appending "so" file ending.
+ If the path is not an absolute path or no matching module
+ can be found, lookup inside a directory defined at compile time.
+ Due to this, @check_file might be called for two different paths.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="check_name" transfer-ownership="none">
+          <doc xml:space="preserve">if not-null, check that the loaded plugin has
+ the given name.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="check_service" transfer-ownership="none">
+          <doc xml:space="preserve">if not-null, check that the loaded plugin advertises
+ the given service.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="check_owner" transfer-ownership="none">
+          <doc xml:space="preserve">if non-negative, check whether the file is owned
+ by UID @check_owner or by root. In this case also check that
+ the file is not writable by anybody else.</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="check_file"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="5">
+          <doc xml:space="preserve">optional callback to validate the file prior to
+  loading the shared library.</doc>
+          <type name="UtilsCheckFilePredicate"
+                c:type="NMUtilsCheckFilePredicate"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none">
+          <doc xml:space="preserve">user data for @check_file</doc>
+          <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </function>

@@ -265,7 +265,8 @@ namespace GWeather {
 		DEFAULT,
 		KELVIN,
 		CENTIGRADE,
-		FAHRENHEIT
+		FAHRENHEIT;
+		public static GWeather.TemperatureUnit to_real (GWeather.TemperatureUnit unit);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_WIND_", type_id = "gweather_wind_direction_get_type ()")]
 	public enum WindDirection {
