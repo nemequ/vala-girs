@@ -16,6 +16,9 @@ and/or use gtk-doc annotations.  -->
              shared-library="libgit2-glib-1.0.so.0"
              c:identifier-prefixes="Ggit"
              c:symbol-prefixes="ggit">
+    <alias name="AnnotatedCommit_autoptr" c:type="GgitAnnotatedCommit_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
     <alias name="BlameHunk_autoptr" c:type="GgitBlameHunk_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
@@ -153,6 +156,9 @@ and/or use gtk-doc annotations.  -->
     <alias name="PushOptions_autoptr" c:type="GgitPushOptions_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
+    <alias name="RebaseOptions_autoptr" c:type="GgitRebaseOptions_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
     <alias name="RefSpec_autoptr" c:type="GgitRefSpec_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
@@ -212,6 +218,56 @@ and/or use gtk-doc annotations.  -->
     <alias name="Tree_autoptr" c:type="GgitTree_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
+    <record name="AnnotatedCommit"
+            c:type="GgitAnnotatedCommit"
+            glib:type-name="GgitAnnotatedCommit"
+            glib:get-type="ggit_annotated_commit_get_type"
+            c:symbol-prefix="annotated_commit">
+      <doc xml:space="preserve">Represents an annotated commit object.</doc>
+      <method name="get_id" c:identifier="ggit_annotated_commit_get_id">
+        <doc xml:space="preserve">Gets the commit ID that the given @annotated_commit refs to.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the commit ID that the given @annotated_commit refs to.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="annotated_commit"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitAnnotatedCommit.</doc>
+            <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="ggit_annotated_commit_ref">
+        <doc xml:space="preserve">Atomically increments the reference count of @annotated_commit by one.
+This function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a newly allocated #GgitAnnotatedCommit.</doc>
+          <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="annotated_commit"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitAnnotatedCommit.</doc>
+            <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="ggit_annotated_commit_unref">
+        <doc xml:space="preserve">Atomically decrements the reference count of @entry by one.
+If the reference count drops to 0, @entry is freed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="annotated_commit"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitAnnotatedCommit.</doc>
+            <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <bitfield name="AttributeCheckFlags"
               glib:type-name="GgitAttributeCheckFlags"
               glib:get-type="ggit_attribute_check_flags_get_type"
@@ -6343,6 +6399,19 @@ readable.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="has_conflicts" c:identifier="ggit_index_has_conflicts">
+        <doc xml:space="preserve">Get whether the index has any conflicts.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the index has any conflicts, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitIndex.</doc>
+            <type name="Index" c:type="GgitIndex*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="read" c:identifier="ggit_index_read" throws="1">
         <doc xml:space="preserve">Update the contents of an existing index object in memory by reading from
 the hard disk.
@@ -6422,6 +6491,27 @@ to for instance create a commit.</doc>
             <doc xml:space="preserve">a #GgitIndex.</doc>
             <type name="Index" c:type="GgitIndex*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="write_tree_to"
+              c:identifier="ggit_index_write_tree_to"
+              throws="1">
+        <doc xml:space="preserve">Write a new tree object to @repository containing a representation of the current
+state of the index. The index must not contain any files in conflict. You can use
+the resulting tree to for instance create a commit.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GgitOId or %NULL in case of an error.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitIndex.</doc>
+            <type name="Index" c:type="GgitIndex*"/>
+          </instance-parameter>
+          <parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </parameter>
         </parameters>
       </method>
       <property name="file"
@@ -6780,6 +6870,19 @@ If the reference count drops to 0, @entries is freed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_conflict" c:identifier="ggit_index_entry_is_conflict">
+        <doc xml:space="preserve">Get whether the entry represents a conflict.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the entry is a conflict, or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitIndexEntry.</doc>
+            <type name="IndexEntry" c:type="GgitIndexEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="ref" c:identifier="ggit_index_entry_ref">
         <doc xml:space="preserve">Atomically increments the reference count of @entry by one.
 This function is MT-safe and may be called from any thread.</doc>
@@ -7128,6 +7231,65 @@ If the reference count drops to 0, @entry is freed.</doc>
               glib:nick="union">
       </member>
     </enumeration>
+    <bitfield name="MergeFileFlags"
+              glib:type-name="GgitMergeFileFlags"
+              glib:get-type="ggit_merge_file_flags_get_type"
+              c:type="GgitMergeFileFlags">
+      <doc xml:space="preserve">GGIT_MERGE_FILE_DEFAULT: Defaults.
+GGIT_MERGE_FILE_STYLE_MERGE: Create standard conflicted merge files.
+GGIT_MERGE_FILE_STYLE_DIFF3: Create diff3-style files.
+GGIT_MERGE_FILE_SIMPLIFY_ALNUM: Condense non-alphanumeric regions for simplified diff file.
+GGIT_MERGE_FILE_IGNORE_WHITESPACE: Ignore all whitespace.
+GGIT_MERGE_FILE_IGNORE_WHITESPACE_CHANGE: Ignore changes in amount of whitespace.
+GGIT_MERGE_FILE_IGNORE_WHITESPACE_EOL: Ignore whitespace at end of line.
+GGIT_MERGE_FILE_DIFF_PATIENCE: Use the "patience diff" algorithm.
+GGIT_MERGE_FILE_DIFF_MINIMAL: Take extra time to find minimal diff.</doc>
+      <member name="default"
+              value="0"
+              c:identifier="GGIT_MERGE_FILE_DEFAULT"
+              glib:nick="default">
+      </member>
+      <member name="style_merge"
+              value="1"
+              c:identifier="GGIT_MERGE_FILE_STYLE_MERGE"
+              glib:nick="style-merge">
+      </member>
+      <member name="style_diff3"
+              value="2"
+              c:identifier="GGIT_MERGE_FILE_STYLE_DIFF3"
+              glib:nick="style-diff3">
+      </member>
+      <member name="simplify_alnum"
+              value="4"
+              c:identifier="GGIT_MERGE_FILE_SIMPLIFY_ALNUM"
+              glib:nick="simplify-alnum">
+      </member>
+      <member name="ignore_whitespace"
+              value="8"
+              c:identifier="GGIT_MERGE_FILE_IGNORE_WHITESPACE"
+              glib:nick="ignore-whitespace">
+      </member>
+      <member name="ignore_whitespace_change"
+              value="16"
+              c:identifier="GGIT_MERGE_FILE_IGNORE_WHITESPACE_CHANGE"
+              glib:nick="ignore-whitespace-change">
+      </member>
+      <member name="ignore_whitespace_eol"
+              value="32"
+              c:identifier="GGIT_MERGE_FILE_IGNORE_WHITESPACE_EOL"
+              glib:nick="ignore-whitespace-eol">
+      </member>
+      <member name="diff_patience"
+              value="64"
+              c:identifier="GGIT_MERGE_FILE_DIFF_PATIENCE"
+              glib:nick="diff-patience">
+      </member>
+      <member name="diff_minimal"
+              value="128"
+              c:identifier="GGIT_MERGE_FILE_DIFF_MINIMAL"
+              glib:nick="diff-minimal">
+      </member>
+    </bitfield>
     <record name="MergeOptions"
             c:type="GgitMergeOptions"
             glib:type-name="GgitMergeOptions"
@@ -7140,33 +7302,6 @@ If the reference count drops to 0, @entry is freed.</doc>
           <doc xml:space="preserve">a newly allocated #GgitMergeOptions.</doc>
           <type name="MergeOptions" c:type="GgitMergeOptions*"/>
         </return-value>
-        <parameters>
-          <parameter name="tree_flags" transfer-ownership="none">
-            <doc xml:space="preserve">flags to consider when merging.</doc>
-            <type name="MergeTreeFlags" c:type="GgitMergeTreeFlags"/>
-          </parameter>
-          <parameter name="rename_threshold" transfer-ownership="none">
-            <doc xml:space="preserve">similarity to consider a file renamed (default 50).</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="target_limit" transfer-ownership="none">
-            <doc xml:space="preserve">maximum similarity sources to examine
-               (overrides the `merge.renameLimit` config) (default 200).</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="metric"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GgitDiffSimilarityMetric or %NULL to use internal metric.</doc>
-            <type name="DiffSimilarityMetric"
-                  c:type="GgitDiffSimilarityMetric*"/>
-          </parameter>
-          <parameter name="file_favor" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitMergeFileFavor.</doc>
-            <type name="MergeFileFavor" c:type="GgitMergeFileFavor"/>
-          </parameter>
-        </parameters>
       </constructor>
       <method name="copy" c:identifier="ggit_merge_options_copy">
         <doc xml:space="preserve">Copies @merge_options into a newly allocated #GgitMergeOptions.</doc>
@@ -7191,6 +7326,204 @@ If the reference count drops to 0, @entry is freed.</doc>
             <doc xml:space="preserve">a #GgitMergeOptions.</doc>
             <type name="MergeOptions" c:type="GgitMergeOptions*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_file_favor"
+              c:identifier="ggit_merge_options_get_file_favor">
+        <doc xml:space="preserve">Get flags for handling conflicting content.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the file favor.</doc>
+          <type name="MergeFileFavor" c:type="GgitMergeFileFavor"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_file_flags"
+              c:identifier="ggit_merge_options_get_file_flags">
+        <doc xml:space="preserve">Get file merging flags.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the file merging flags.</doc>
+          <type name="MergeFileFlags" c:type="GgitMergeFileFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rename_threshold"
+              c:identifier="ggit_merge_options_get_rename_threshold">
+        <doc xml:space="preserve">Get the rename threshold (defaults to 50). If %GGIT_MERGE_TREE_FIND_RENAMES
+is enabled, added files will be compared with deleted files to
+determine their similarity. Files that are more similar than the rename
+threshold (percentage-wise) will be treated as a rename.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the rename threshold.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_similarity_metric"
+              c:identifier="ggit_merge_options_get_similarity_metric">
+        <doc xml:space="preserve">Get the similarity metric.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the similarity metric, or %NULL.</doc>
+          <type name="DiffSimilarityMetric"
+                c:type="GgitDiffSimilarityMetric*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_target_limit"
+              c:identifier="ggit_merge_options_get_target_limit">
+        <doc xml:space="preserve">Get the maximum number of similarity sources to examine for renames (defaults to 200).
+If the number of rename candidates (add / delete pairs) is greater than
+this value, inexact rename detection is aborted.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the target limit.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tree_flags"
+              c:identifier="ggit_merge_options_get_tree_flags">
+        <doc xml:space="preserve">Get the tree flags to use for merging.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the tree flags.</doc>
+          <type name="MergeTreeFlags" c:type="GgitMergeTreeFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_file_favor"
+              c:identifier="ggit_merge_options_set_file_favor">
+        <doc xml:space="preserve">Set flags for handling conflicting content.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="file_favor" transfer-ownership="none">
+            <doc xml:space="preserve">the file favor.</doc>
+            <type name="MergeFileFavor" c:type="GgitMergeFileFavor"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_file_flags"
+              c:identifier="ggit_merge_options_set_file_flags">
+        <doc xml:space="preserve">Set file merging flags.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="file_flags" transfer-ownership="none">
+            <doc xml:space="preserve">the file flags.</doc>
+            <type name="MergeFileFlags" c:type="GgitMergeFileFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rename_threshold"
+              c:identifier="ggit_merge_options_set_rename_threshold">
+        <doc xml:space="preserve">Set the rename threshold (defaults to 50). If %GGIT_MERGE_TREE_FIND_RENAMES
+is enabled, added files will be compared with deleted files to
+determine their similarity. Files that are more similar than the rename
+threshold (percentage-wise) will be treated as a rename.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="rename_threshold" transfer-ownership="none">
+            <doc xml:space="preserve">similarity to consider a file renamed.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_similarity_metric"
+              c:identifier="ggit_merge_options_set_similarity_metric">
+        <doc xml:space="preserve">Set the similarity metric, or %NULL for the default similarity metric.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="metric" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSimilarityMetric.</doc>
+            <type name="DiffSimilarityMetric"
+                  c:type="GgitDiffSimilarityMetric*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_target_limit"
+              c:identifier="ggit_merge_options_set_target_limit">
+        <doc xml:space="preserve">Set the maximum number of similarity sources to examine for renames (defaults to 200).
+If the number of rename candidates (add / delete pairs) is greater than
+this value, inexact rename detection is aborted.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="target_limit" transfer-ownership="none">
+            <doc xml:space="preserve">maximum similarity source to examine for renames.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_tree_flags"
+              c:identifier="ggit_merge_options_set_tree_flags">
+        <doc xml:space="preserve">Set the tree flags to use for merging.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="tree_flags" transfer-ownership="none">
+            <doc xml:space="preserve">the tree flags.</doc>
+            <type name="MergeTreeFlags" c:type="GgitMergeTreeFlags"/>
+          </parameter>
         </parameters>
       </method>
     </record>
@@ -7964,6 +8297,192 @@ the number of threads will be automatically detected.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
+    <enumeration name="RebaseOperationType"
+                 glib:type-name="GgitRebaseOperationType"
+                 glib:get-type="ggit_rebase_operation_type_get_type"
+                 c:type="GgitRebaseOperationType">
+      <doc xml:space="preserve">Type of rebase operation in-progress.</doc>
+      <member name="pick"
+              value="0"
+              c:identifier="GGIT_REBASE_OPERATION_PICK"
+              glib:nick="pick">
+        <doc xml:space="preserve">The given commit is to be cherry-picked.
+The client should commit the changes and continue if there are no conflicts.</doc>
+      </member>
+      <member name="reword"
+              value="1"
+              c:identifier="GGIT_REBASE_OPERATION_REWORD"
+              glib:nick="reword">
+        <doc xml:space="preserve">The given commit is to be cherry-picked,
+but the client should prompt the user to provide an updated commit message.</doc>
+      </member>
+      <member name="edit"
+              value="2"
+              c:identifier="GGIT_REBASE_OPERATION_EDIT"
+              glib:nick="edit">
+        <doc xml:space="preserve">The given commit is to be cherry-picked,
+but the client should stop to allow the user to edit the changes before
+committing them.</doc>
+      </member>
+      <member name="squash"
+              value="3"
+              c:identifier="GGIT_REBASE_OPERATION_SQUASH"
+              glib:nick="squash">
+        <doc xml:space="preserve">The given commit is to be squashed into
+the previous commit. The commit message will be merged with the previous message.</doc>
+      </member>
+      <member name="fixup"
+              value="4"
+              c:identifier="GGIT_REBASE_OPERATION_FIXUP"
+              glib:nick="fixup">
+        <doc xml:space="preserve">The given commit is to be squashed into the
+previous commit. The commit message from this commit will be discarded.</doc>
+      </member>
+      <member name="exec"
+              value="5"
+              c:identifier="GGIT_REBASE_OPERATION_EXEC"
+              glib:nick="exec">
+        <doc xml:space="preserve">No commit will be cherry-picked.
+The client should run the given command and (if successful) continue.</doc>
+      </member>
+    </enumeration>
+    <record name="RebaseOptions"
+            c:type="GgitRebaseOptions"
+            glib:type-name="GgitRebaseOptions"
+            glib:get-type="ggit_rebase_options_get_type"
+            c:symbol-prefix="rebase_options">
+      <doc xml:space="preserve">Represents the options used when rebasing.</doc>
+      <constructor name="new" c:identifier="ggit_rebase_options_new">
+        <doc xml:space="preserve">Creates a new #GgitRebaseOptions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GgitRebaseOptions.</doc>
+          <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+        </return-value>
+      </constructor>
+      <method name="copy" c:identifier="ggit_rebase_options_copy">
+        <doc xml:space="preserve">Copies @rebase_options into a newly allocated #GgitRebaseOptions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GgitRebaseOptions.</doc>
+          <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="free" c:identifier="ggit_rebase_options_free">
+        <doc xml:space="preserve">Frees @rebase_options.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_checkout_options"
+              c:identifier="ggit_rebase_options_get_checkout_options">
+        <doc xml:space="preserve">Get the checkout options object or %NULL if not set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the checkout options or %NULL.</doc>
+          <type name="CheckoutOptions" c:type="GgitCheckoutOptions*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_quiet" c:identifier="ggit_rebase_options_get_quiet">
+        <doc xml:space="preserve">Gets whether you want a quiet rebase experience.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">returns whether you want a quiet rebase experience.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rewrite_notes_ref"
+              c:identifier="ggit_rebase_options_get_rewrite_notes_ref">
+        <doc xml:space="preserve">Gets the the name of the notes reference used to rewrite notes for rebased
+commits when finishing the rebase or %NULL if not set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the name of the notes reference or %NULL.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_checkout_options"
+              c:identifier="ggit_rebase_options_set_checkout_options">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+          <parameter name="checkout_options" transfer-ownership="none">
+            <type name="CheckoutOptions" c:type="GgitCheckoutOptions*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_quiet" c:identifier="ggit_rebase_options_set_quiet">
+        <doc xml:space="preserve">Used by ggit_rebase_init(), this will instruct other clients working
+on this rebase that you want a quiet rebase experience, which they
+may choose to provide in an application-specific manner.  This has no
+effect upon libgit2-glib directly, but is provided for interoperability
+between Git tools.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+          <parameter name="quiet" transfer-ownership="none">
+            <doc xml:space="preserve">whether you want a quiet rebase experience.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rewrite_notes_ref"
+              c:identifier="ggit_rebase_options_set_rewrite_notes_ref">
+        <doc xml:space="preserve">Used by ggit_rebase_finish(), this is the name of the notes reference
+used to rewrite notes for rebased commits when finishing the rebase;
+if %NULL, the contents of the configuration option `notes.rewriteRef`
+is examined, unless the configuration option `notes.rewrite.rebase`
+is set to false.  If `notes.rewriteRef` is also %NULL, notes will
+not be rewritten.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </instance-parameter>
+          <parameter name="rewrite_notes_ref" transfer-ownership="none">
+            <doc xml:space="preserve">the name of the notes reference.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </record>
     <class name="Ref"
            c:symbol-prefix="ref"
            c:type="GgitRef"
@@ -8441,6 +8960,24 @@ If the reference count drops to 0, @refspec is freed.</doc>
         <doc xml:space="preserve">All reference types.</doc>
       </member>
     </enumeration>
+    <callback name="ReferencesCallback" c:type="GgitReferencesCallback">
+      <doc xml:space="preserve">The type of the callback functions for retrieving the references
+in a #GgitRepository. See ggit_repository_references_foreach().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">0 to go for the next references or a #GgitError in case there was an error.</doc>
+        <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="reference" transfer-ownership="full">
+          <doc xml:space="preserve">the reference.</doc>
+          <type name="Ref" c:type="GgitRef*"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="1">
+          <doc xml:space="preserve">user-supplied data.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <callback name="ReferencesNameCallback"
               c:type="GgitReferencesNameCallback">
       <doc xml:space="preserve">The type of the callback functions for retrieving the references
@@ -10838,6 +11375,64 @@ does not exist, %NULL is returned and a GGIT_ERROR_NOTFOUND error set.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="merge_commits"
+              c:identifier="ggit_repository_merge_commits"
+              throws="1">
+        <doc xml:space="preserve">Merge two commits creating a #GgitIndex reflecting the result of the merge.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GgitIndex or %NULL if an error occurred.</doc>
+          <type name="Index" c:type="GgitIndex*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="our_commit" transfer-ownership="none">
+            <doc xml:space="preserve">the commit that reflects the destination tree.</doc>
+            <type name="Commit" c:type="GgitCommit*"/>
+          </parameter>
+          <parameter name="their_commit" transfer-ownership="none">
+            <doc xml:space="preserve">the commit that reflects the source tree.</doc>
+            <type name="Commit" c:type="GgitCommit*"/>
+          </parameter>
+          <parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">the merge options.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="merge_trees"
+              c:identifier="ggit_repository_merge_trees"
+              throws="1">
+        <doc xml:space="preserve">Merge two trees creating a #GgitIndex reflecting the result of the merge.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GgitIndex or %NULL if an error occurred.</doc>
+          <type name="Index" c:type="GgitIndex*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="ancestor_tree" transfer-ownership="none">
+            <doc xml:space="preserve">the common ancestor between the trees, or %NULL.</doc>
+            <type name="Tree" c:type="GgitTree*"/>
+          </parameter>
+          <parameter name="our_tree" transfer-ownership="none">
+            <doc xml:space="preserve">the tree that reflects the destination tree.</doc>
+            <type name="Tree" c:type="GgitTree*"/>
+          </parameter>
+          <parameter name="their_tree" transfer-ownership="none">
+            <doc xml:space="preserve">the tree that reflects the source tree.</doc>
+            <type name="Tree" c:type="GgitTree*"/>
+          </parameter>
+          <parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">the merge options.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="note_foreach"
               c:identifier="ggit_repository_note_foreach"
               throws="1">
@@ -10921,10 +11516,40 @@ on the command line.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="references_foreach"
+              c:identifier="ggit_repository_references_foreach"
+              throws="1">
+        <doc xml:space="preserve">Gathers references and run a callback for each one.
+
+To the callback is passed the reference and the data pointer
+passed to this function. If the callback returns something other than
+0, the iteration will stop and @error will be set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if there was no error, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="1">
+            <doc xml:space="preserve">a #GgitReferencesCallback.</doc>
+            <type name="ReferencesCallback" c:type="GgitReferencesCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">callback user data.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="references_foreach_name"
               c:identifier="ggit_repository_references_foreach_name"
               throws="1">
-        <doc xml:space="preserve">Gathers references and run a callback for each one.
+        <doc xml:space="preserve">Gathers reference names and run a callback for each one.
 
 To the callback is passed the name of the reference and the data pointer
 passed to this function. If the callback returns something other than
@@ -11109,6 +11734,24 @@ This commit is also the target of the direct reference refs/stash.</doc>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve">a #GgitStashFlags to control the stashing process.</doc>
             <type name="StashFlags" c:type="GgitStashFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_head"
+              c:identifier="ggit_repository_set_head"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if head was successfully set, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="ref_name" transfer-ownership="none">
+            <doc xml:space="preserve">canonical name of the reference HEAD should point to.</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>

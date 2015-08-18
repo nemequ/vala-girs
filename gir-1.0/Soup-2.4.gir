@@ -17214,7 +17214,74 @@ assume servers will use them.</doc>
         </return-value>
       </function>
     </enumeration>
+    <record name="XMLRPCParams"
+            c:type="SoupXMLRPCParams"
+            disguised="1"
+            version="2.52">
+      <doc xml:space="preserve">Opaque structure containing XML-RPC methodCall parameter values.
+Can be parsed using soup_xmlrpc_params_parse() and freed with
+soup_xmlrpc_params_free().</doc>
+      <method name="free"
+              c:identifier="soup_xmlrpc_params_free"
+              version="2.52">
+        <doc xml:space="preserve">Free a #SoupXMLRPCParams returned by soup_xmlrpc_parse_request().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a SoupXMLRPCParams</doc>
+            <type name="XMLRPCParams" c:type="SoupXMLRPCParams*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="parse"
+              c:identifier="soup_xmlrpc_params_parse"
+              version="2.52"
+              throws="1">
+        <doc xml:space="preserve">Parse method parameters returned by soup_xmlrpc_parse_request().
+
+Deserialization details:
+ - If @signature is provided, &amp;lt;int&amp;gt; and &amp;lt;i4&amp;gt; can be deserialized
+   to byte, int16, uint16, int32, uint32, int64 or uint64. Otherwise
+   it will be deserialized to int32. If the value is out of range
+   for the target type it will return an error.
+ - &amp;lt;struct&amp;gt; will be deserialized to "a{sv}". @signature could define
+   another value type (e.g. "a{ss}").
+ - &amp;lt;array&amp;gt; will be deserialized to "av". @signature could define
+   another element type (e.g. "as") or could be a tuple (e.g. "(ss)").
+ - &amp;lt;base64&amp;gt; will be deserialized to "ay".
+ - &amp;lt;string&amp;gt; will be deserialized to "s".
+ - &amp;lt;dateTime.iso8601&amp;gt; will be deserialized to an unspecified variant
+   type. If @signature is provided it must have the generic "v" type, which
+   means there is no guarantee that it's actually a datetime that has been
+   received. soup_xmlrpc_variant_get_datetime() must be used to parse and
+   type check this special variant.
+ - @signature must not have maybes, otherwise an error is returned.
+ - Dictionaries must have string keys, otherwise an error is returned.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new (non-floating) #GVariant, or %NULL</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #SoupXMLRPCParams</doc>
+            <type name="XMLRPCParams" c:type="SoupXMLRPCParams*"/>
+          </instance-parameter>
+          <parameter name="signature"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A valid #GVariant type string, or %NULL</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </record>
     <constant name="XMLRPC_H" value="1" c:type="SOUP_XMLRPC_H">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="XMLRPC_OLD_H" value="1" c:type="SOUP_XMLRPC_OLD_H">
       <type name="gint" c:type="gint"/>
     </constant>
     <function name="add_completion"
@@ -18456,10 +18523,12 @@ soup_uri_new() already did).</doc>
     </function>
     <function name="value_array_append"
               c:identifier="soup_value_array_append"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Appends the provided value of type @type to @array as with
 g_value_array_append(). (The provided data is copied rather than
 being inserted directly.)</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -18480,10 +18549,12 @@ being inserted directly.)</doc>
     </function>
     <function name="value_array_append_vals"
               c:identifier="soup_value_array_append_vals"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Appends the provided values into @array as with
 g_value_array_append(). (The provided data is copied rather than
 being inserted directly.)</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -18505,11 +18576,13 @@ pairs, terminated by %G_TYPE_INVALID</doc>
     </function>
     <function name="value_array_from_args"
               c:identifier="soup_value_array_from_args"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Creates a #GValueArray from the provided arguments, which must
 consist of pairs of a #GType and a value of that type, terminated
 by %G_TYPE_INVALID. (The array will contain copies of the provided
 data rather than pointing to the passed-in data directly.)</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">a new #GValueArray, or %NULL if an error
 occurred.</doc>
@@ -18524,9 +18597,11 @@ occurred.</doc>
     </function>
     <function name="value_array_get_nth"
               c:identifier="soup_value_array_get_nth"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Gets the @index_ element of @array and stores its value into the
 provided location.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if @array contained a value with index @index_
 and type @type, %FALSE if not.</doc>
@@ -18553,10 +18628,12 @@ and type @type, %FALSE if not.</doc>
     </function>
     <function name="value_array_insert"
               c:identifier="soup_value_array_insert"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Inserts the provided value of type @type into @array as with
 g_value_array_insert(). (The provided data is copied rather than
 being inserted directly.)</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -18579,9 +18656,12 @@ being inserted directly.)</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="value_array_new" c:identifier="soup_value_array_new">
+    <function name="value_array_new"
+              c:identifier="soup_value_array_new"
+              deprecated="1">
       <doc xml:space="preserve">Creates a new %GValueArray. (This is just a wrapper around
 g_value_array_new(), for naming consistency purposes.)</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a new %GValueArray</doc>
         <type name="GObject.ValueArray" c:type="GValueArray*"/>
@@ -18589,9 +18669,11 @@ g_value_array_new(), for naming consistency purposes.)</doc>
     </function>
     <function name="value_array_new_with_vals"
               c:identifier="soup_value_array_new_with_vals"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Creates a new %GValueArray and copies the provided values
 into it.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a new %GValueArray</doc>
         <type name="GObject.ValueArray" c:type="GValueArray*"/>
@@ -18610,11 +18692,13 @@ pairs, terminated by %G_TYPE_INVALID</doc>
     </function>
     <function name="value_array_to_args"
               c:identifier="soup_value_array_to_args"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Extracts a #GValueArray into the provided arguments, which must
 consist of pairs of a #GType and a value of pointer-to-that-type,
 terminated by %G_TYPE_INVALID. The returned values will point to the
 same memory as the values in the array.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">success or failure</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -18632,9 +18716,11 @@ same memory as the values in the array.</doc>
     </function>
     <function name="value_hash_insert"
               c:identifier="soup_value_hash_insert"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Inserts the provided value of type @type into @hash. (Unlike with
 g_hash_table_insert(), both the key and the value are copied).</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -18662,10 +18748,12 @@ g_hash_table_insert(), both the key and the value are copied).</doc>
     </function>
     <function name="value_hash_insert_vals"
               c:identifier="soup_value_hash_insert_vals"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Inserts the given data into @hash. As with
 soup_value_hash_insert(), the keys and values are copied rather
 than being inserted directly.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -18689,9 +18777,11 @@ by additional key/type/value triplets, terminated by %NULL</doc>
       </parameters>
     </function>
     <function name="value_hash_insert_value"
-              c:identifier="soup_value_hash_insert_value">
+              c:identifier="soup_value_hash_insert_value"
+              deprecated="1">
       <doc xml:space="preserve">Inserts @value into @hash. (Unlike with g_hash_table_insert(), both
 the key and the value are copied).</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -18715,9 +18805,11 @@ the key and the value are copied).</doc>
     </function>
     <function name="value_hash_lookup"
               c:identifier="soup_value_hash_lookup"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Looks up @key in @hash and stores its value into the provided
 location.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if @hash contained a value with key @key and
 type @type, %FALSE if not.</doc>
@@ -18747,8 +18839,10 @@ type @type, %FALSE if not.</doc>
     </function>
     <function name="value_hash_lookup_vals"
               c:identifier="soup_value_hash_lookup_vals"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Looks up a number of keys in @hash and returns their values.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if all of the keys were found, %FALSE
 if any were missing; note that you will generally need to
@@ -18777,9 +18871,12 @@ by %NULL.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="value_hash_new" c:identifier="soup_value_hash_new">
+    <function name="value_hash_new"
+              c:identifier="soup_value_hash_new"
+              deprecated="1">
       <doc xml:space="preserve">Creates a #GHashTable whose keys are strings and whose values
 are #GValue.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a new
 empty #GHashTable</doc>
@@ -18791,11 +18888,13 @@ empty #GHashTable</doc>
     </function>
     <function name="value_hash_new_with_vals"
               c:identifier="soup_value_hash_new_with_vals"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Creates a #GHashTable whose keys are strings and whose values
 are #GValue, and initializes it with the provided data. As
 with soup_value_hash_insert(), the keys and values are copied
 rather than being inserted directly.</doc>
+      <doc-deprecated xml:space="preserve">Use #GVariant API instead.</doc-deprecated>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a new
 #GHashTable, initialized with the given values</doc>
@@ -19001,7 +19100,8 @@ soup_xmlrpc_build_method_response().)</doc>
       </parameters>
     </function>
     <function name="xmlrpc_build_method_call"
-              c:identifier="soup_xmlrpc_build_method_call">
+              c:identifier="soup_xmlrpc_build_method_call"
+              deprecated="1">
       <doc xml:space="preserve">This creates an XML-RPC methodCall and returns it as a string.
 This is the low-level method that soup_xmlrpc_request_new() is
 built on.
@@ -19024,6 +19124,7 @@ The correspondence between glib types and XML-RPC types is:
 
 For structs, use a #GHashTable that maps strings to #GValue;
 soup_value_hash_new() and related methods can help with this.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_build_request() instead.</doc-deprecated>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">the text of the methodCall, or %NULL on
 error</doc>
@@ -19047,13 +19148,15 @@ error</doc>
       </parameters>
     </function>
     <function name="xmlrpc_build_method_response"
-              c:identifier="soup_xmlrpc_build_method_response">
+              c:identifier="soup_xmlrpc_build_method_response"
+              deprecated="1">
       <doc xml:space="preserve">This creates a (successful) XML-RPC methodResponse and returns it
 as a string. To create a fault response, use
 soup_xmlrpc_build_fault().
 
 The glib type to XML-RPC type mapping is as with
 soup_xmlrpc_build_method_call(), qv.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_build_response() instead.</doc-deprecated>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">the text of the methodResponse, or %NULL
 on error</doc>
@@ -19066,6 +19169,72 @@ on error</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="xmlrpc_build_request"
+              c:identifier="soup_xmlrpc_build_request"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">This creates an XML-RPC methodCall and returns it as a string.
+This is the low-level method that soup_xmlrpc_message_new() is
+built on.
+
+@params is a #GVariant tuple representing the method parameters.
+
+Serialization details:
+ - "a{s*}" and "{s*}" are serialized as &amp;lt;struct&amp;gt;
+ - "ay" is serialized as &amp;lt;base64&amp;gt;
+ - Other arrays and tuples are serialized as &amp;lt;array&amp;gt;
+ - booleans are serialized as &amp;lt;boolean&amp;gt;
+ - byte, int16, uint16 and int32 are serialized as &amp;lt;int&amp;gt;
+ - uint32 and int64 are serialized as the nonstandard &amp;lt;i8&amp;gt; type
+ - doubles are serialized as &amp;lt;double&amp;gt;
+ - Strings are serialized as &amp;lt;string&amp;gt;
+ - Variants (i.e. "v" type) are unwrapped and their child is serialized.
+ - #GVariants created by soup_xmlrpc_variant_new_datetime() are serialized as
+   &amp;lt;dateTime.iso8601&amp;gt;
+ - Other types are not supported and will return %NULL and set @error.
+   This notably includes: object-paths, signatures, uint64, handles, maybes
+   and dictionaries with non-string keys.
+
+If @params is floating, it is consumed.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the text of the methodCall, or %NULL on error.</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="method_name" transfer-ownership="none">
+          <doc xml:space="preserve">the name of the XML-RPC method</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="params" transfer-ownership="none">
+          <doc xml:space="preserve">a #GVariant tuple</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xmlrpc_build_response"
+              c:identifier="soup_xmlrpc_build_response"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">This creates a (successful) XML-RPC methodResponse and returns it
+as a string. To create a fault response, use soup_xmlrpc_build_fault(). This
+is the low-level method that soup_xmlrpc_message_set_response() is built on.
+
+See soup_xmlrpc_build_request() for serialization details, but note
+that since a method can only have a single return value, @value
+should not be a tuple here (unless the return value is an array).
+
+If @value is floating, it is consumed.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the text of the methodResponse, or %NULL on error.</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">the return value</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="xmlrpc_error_quark"
               c:identifier="soup_xmlrpc_error_quark"
               moved-to="XMLRPCError.quark">
@@ -19075,7 +19244,8 @@ on error</doc>
     </function>
     <function name="xmlrpc_extract_method_call"
               c:identifier="soup_xmlrpc_extract_method_call"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Parses @method_call to get the name and parameters, and puts
 the parameters into variables of the appropriate types.
 
@@ -19086,6 +19256,7 @@ variables of the indicated type, rather than values of the type.
 
 See also soup_xmlrpc_parse_method_call(), which can be used if
 you don't know the types of the parameters.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_parse_request_full() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">success or failure.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -19114,7 +19285,8 @@ you don't know the types of the parameters.</doc>
     </function>
     <function name="xmlrpc_extract_method_response"
               c:identifier="soup_xmlrpc_extract_method_response"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Parses @method_response and extracts the return value into
 a variable of the correct type.
 
@@ -19124,6 +19296,7 @@ the error #code containing the fault code, and the error #message
 containing the fault string. (If @method_response cannot be parsed
 at all, soup_xmlrpc_extract_method_response() will return %FALSE,
 but @error will be unset.)</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_parse_response() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if a return value was parsed, %FALSE if the
 response was of the wrong type, or contained a fault.</doc>
@@ -19159,12 +19332,99 @@ response was of the wrong type, or contained a fault.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <function name="xmlrpc_message_new"
+              c:identifier="soup_xmlrpc_message_new"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">Creates an XML-RPC methodCall and returns a #SoupMessage, ready
+to send, for that method call.
+
+See soup_xmlrpc_build_request() for serialization details.
+
+If @params is floating, it is consumed.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a #SoupMessage encoding the
+  indicated XML-RPC request, or %NULL on error.</doc>
+        <type name="Message" c:type="SoupMessage*"/>
+      </return-value>
+      <parameters>
+        <parameter name="uri" transfer-ownership="none">
+          <doc xml:space="preserve">URI of the XML-RPC service</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="method_name" transfer-ownership="none">
+          <doc xml:space="preserve">the name of the XML-RPC method to invoke at @uri</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="params" transfer-ownership="none">
+          <doc xml:space="preserve">a #GVariant tuple</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xmlrpc_message_set_fault"
+              c:identifier="soup_xmlrpc_message_set_fault"
+              version="2.52"
+              introspectable="0">
+      <doc xml:space="preserve">Sets the status code and response body of @msg to indicate an
+unsuccessful XML-RPC call, with the error described by @fault_code
+and @fault_format.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none">
+          <doc xml:space="preserve">an XML-RPC request</doc>
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="fault_code" transfer-ownership="none">
+          <doc xml:space="preserve">the fault code</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="fault_format" transfer-ownership="none">
+          <doc xml:space="preserve">a printf()-style format string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">the parameters to @fault_format</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xmlrpc_message_set_response"
+              c:identifier="soup_xmlrpc_message_set_response"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">Sets the status code and response body of @msg to indicate a
+successful XML-RPC call, with a return value given by @value. To set a
+fault response, use soup_xmlrpc_message_set_fault().
+
+See soup_xmlrpc_build_request() for serialization details.
+
+If @value is floating, it is consumed.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="msg" transfer-ownership="none">
+          <doc xml:space="preserve">an XML-RPC request</doc>
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">a #GVariant</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="xmlrpc_parse_method_call"
-              c:identifier="soup_xmlrpc_parse_method_call">
+              c:identifier="soup_xmlrpc_parse_method_call"
+              deprecated="1">
       <doc xml:space="preserve">Parses @method_call to get the name and parameters, and returns the
 parameter values in a #GValueArray; see also
 soup_xmlrpc_extract_method_call(), which is more convenient if you
 know in advance what the types of the parameters will be.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_parse_request_full() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">success or failure.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -19196,6 +19456,7 @@ know in advance what the types of the parameters will be.</doc>
     </function>
     <function name="xmlrpc_parse_method_response"
               c:identifier="soup_xmlrpc_parse_method_response"
+              deprecated="1"
               throws="1">
       <doc xml:space="preserve">Parses @method_response and returns the return value in @value. If
 @method_response is a fault, @value will be unchanged, and @error
@@ -19204,6 +19465,7 @@ will be set to an error of type %SOUP_XMLRPC_FAULT, with the error
 the fault string. (If @method_response cannot be parsed at all,
 soup_xmlrpc_parse_method_response() will return %FALSE, but @error
 will be unset.)</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_parse_response() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if a return value was parsed, %FALSE if the
 response could not be parsed, or contained a fault.</doc>
@@ -19227,15 +19489,79 @@ response could not be parsed, or contained a fault.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="xmlrpc_parse_request"
+              c:identifier="soup_xmlrpc_parse_request"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">Parses @method_call and return the method name. Method parameters can be
+parsed later using soup_xmlrpc_params_parse().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">method's name, or %NULL on error.</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="method_call" transfer-ownership="none">
+          <doc xml:space="preserve">the XML-RPC methodCall string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <doc xml:space="preserve">the length of @method_call, or -1 if it is NUL-terminated</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="params"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">on success, a new #SoupXMLRPCParams</doc>
+          <type name="XMLRPCParams" c:type="SoupXMLRPCParams**"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xmlrpc_parse_response"
+              c:identifier="soup_xmlrpc_parse_response"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">Parses @method_response and returns the return value. If
+@method_response is a fault, %NULL is returned, and @error
+will be set to an error in the %SOUP_XMLRPC_FAULT domain, with the error
+code containing the fault code, and the error message containing
+the fault string. If @method_response cannot be parsed, %NULL is returned,
+and @error will be set to an error in the %SOUP_XMLRPC_ERROR domain.
+
+See soup_xmlrpc_params_parse() for deserialization details.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a new (non-floating) #GVariant, or %NULL</doc>
+        <type name="GLib.Variant" c:type="GVariant*"/>
+      </return-value>
+      <parameters>
+        <parameter name="method_response" transfer-ownership="none">
+          <doc xml:space="preserve">the XML-RPC methodResponse string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <doc xml:space="preserve">the length of @method_response, or -1 if it is NUL-terminated</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="signature"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">A valid #GVariant type string, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="xmlrpc_request_new"
               c:identifier="soup_xmlrpc_request_new"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Creates an XML-RPC methodCall and returns a #SoupMessage, ready
 to send, for that method call.
 
 The parameters are passed as type/value pairs; ie, first a #GType,
 and then a value of the appropriate type, finally terminated by
 %G_TYPE_INVALID.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_message_new() instead.</doc-deprecated>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a #SoupMessage encoding the
 indicated XML-RPC request.</doc>
@@ -19258,10 +19584,12 @@ indicated XML-RPC request.</doc>
     </function>
     <function name="xmlrpc_set_fault"
               c:identifier="soup_xmlrpc_set_fault"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Sets the status code and response body of @msg to indicate an
 unsuccessful XML-RPC call, with the error described by @fault_code
 and @fault_format.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_message_set_fault() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -19286,10 +19614,12 @@ and @fault_format.</doc>
     </function>
     <function name="xmlrpc_set_response"
               c:identifier="soup_xmlrpc_set_response"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
       <doc xml:space="preserve">Sets the status code and response body of @msg to indicate a
 successful XML-RPC call, with a return value given by @type and the
 following varargs argument, of the type indicated by @type.</doc>
+      <doc-deprecated xml:space="preserve">Use soup_xmlrpc_message_set_response() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -19305,6 +19635,50 @@ following varargs argument, of the type indicated by @type.</doc>
         <parameter name="..." transfer-ownership="none">
           <doc xml:space="preserve">the response value</doc>
           <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xmlrpc_variant_get_datetime"
+              c:identifier="soup_xmlrpc_variant_get_datetime"
+              version="2.52"
+              throws="1">
+      <doc xml:space="preserve">Get the #SoupDate from special #GVariant created by
+soup_xmlrpc_variant_new_datetime() or by parsing a &amp;lt;dateTime.iso8601&amp;gt;
+node. See soup_xmlrpc_params_parse().
+
+If @variant does not contain a datetime it will return an error but it is not
+considered a programmer error because it generally means parameters received
+are not in the expected type.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a new #SoupDate, or %NULL on error.</doc>
+        <type name="Date" c:type="SoupDate*"/>
+      </return-value>
+      <parameters>
+        <parameter name="variant" transfer-ownership="none">
+          <doc xml:space="preserve">a #GVariant</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xmlrpc_variant_new_datetime"
+              c:identifier="soup_xmlrpc_variant_new_datetime"
+              version="2.52">
+      <doc xml:space="preserve">Construct a special #GVariant used to serialize a &amp;lt;dateTime.iso8601&amp;gt;
+node. See soup_xmlrpc_build_request().
+
+The actual type of the returned #GVariant is unspecified and "v" or "*"
+should be used in variant format strings. For example:
+&lt;informalexample&gt;&lt;programlisting&gt;
+args = g_variant_new ("(v)", soup_xmlrpc_variant_new_datetime (date));
+&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a floating #GVariant.</doc>
+        <type name="GLib.Variant" c:type="GVariant*"/>
+      </return-value>
+      <parameters>
+        <parameter name="date" transfer-ownership="none">
+          <doc xml:space="preserve">a #SoupDate</doc>
+          <type name="Date" c:type="SoupDate*"/>
         </parameter>
       </parameters>
     </function>

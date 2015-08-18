@@ -467,6 +467,22 @@
 		<field name="priv">
 			<type name="UserQueryPrivate" c:type="GitgExtUserQueryPrivate*"/>
 		</field>
+		<constructor name="full" c:identifier="gitg_ext_user_query_new_full">
+			<return-value transfer-ownership="full">
+				<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
+			</return-value>
+			<parameters>
+				<parameter name="title" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="message" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="message_type" transfer-ownership="none">
+					<type name="Gtk.MessageType" c:type="GtkMessageType"/>
+				</parameter>
+			</parameters>
+		</constructor>
 		<constructor name="new" c:identifier="gitg_ext_user_query_new">
 			<return-value transfer-ownership="full">
 				<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
@@ -723,6 +739,16 @@
 	</record>
 	<interface name="Application" c:type="GitgExtApplication" glib:type-name="GitgExtApplication" glib:get-type="gitg_ext_application_get_type" glib:type-struct="ApplicationIface">
 		<prerequisite name="GObject.Object"/>
+		<method name="get_verified_committer" c:identifier="gitg_ext_application_get_verified_committer">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Ggit.Signature" c:type="GgitSignature*"/>
+			</return-value>
+		</method>
+		<virtual-method name="get_verified_committer" invoker="get_verified_committer">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Ggit.Signature" c:type="GgitSignature*"/>
+			</return-value>
+		</virtual-method>
 		<method name="get_activity_by_id" c:identifier="gitg_ext_application_get_activity_by_id">
 			<return-value transfer-ownership="full" allow-none="1">
 				<type name="GitgExt.Activity" c:type="GitgExtActivity*"/>
@@ -780,6 +806,58 @@
 			<parameters>
 				<parameter name="query" transfer-ownership="none">
 					<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<method name="user_query_async" c:identifier="gitg_ext_application_user_query_async">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="query" transfer-ownership="none">
+					<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="user_query_finish" c:identifier="gitg_ext_application_user_query_finish">
+			<return-value transfer-ownership="full">
+				<type name="Gtk.ResponseType" c:type="GtkResponseType"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="user_query_async" invoker="user_query_async">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="query" transfer-ownership="none">
+					<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="2" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="user_query_finish" invoker="user_query_finish">
+			<return-value transfer-ownership="full">
+				<type name="Gtk.ResponseType" c:type="GtkResponseType"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -1016,6 +1094,18 @@
 		<field name="parent_iface">
 			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
 		</field>
+		<field name="get_verified_committer">
+			<callback name="get_verified_committer" c:type="get_verified_committer">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="Ggit.Signature" c:type="GgitSignature*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="GitgExt.Application" c:type="GitgExtApplication*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
 		<field name="get_activity_by_id">
 			<callback name="get_activity_by_id" c:type="get_activity_by_id">
 				<return-value transfer-ownership="full" allow-none="1">
@@ -1057,6 +1147,42 @@
 					</parameter>
 					<parameter name="query" transfer-ownership="none">
 						<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="user_query_async">
+			<callback name="user_query_async" c:type="user_query_async">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="GitgExt.Application" c:type="GitgExtApplication*"/>
+					</parameter>
+					<parameter name="query" transfer-ownership="none">
+						<type name="GitgExt.UserQuery" c:type="GitgExtUserQuery*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="user_query_finish">
+			<callback name="user_query_finish" c:type="user_query_finish">
+				<return-value transfer-ownership="full">
+					<type name="Gtk.ResponseType" c:type="GtkResponseType"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="GitgExt.Application" c:type="GitgExtApplication*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -1615,6 +1741,49 @@
 			</callback>
 		</field>
 	</record>
+	<interface name="Notification" c:type="GitgExtNotification" glib:type-name="GitgExtNotification" glib:get-type="gitg_ext_notification_get_type" glib:type-struct="NotificationIface">
+		<prerequisite name="GObject.Object"/>
+		<property name="widget">
+			<type name="Gtk.Widget" c:type="GtkWidget*"/>
+		</property>
+		<method name="get_widget" c:identifier="gitg_ext_notification_get_widget">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gtk.Widget" c:type="GtkWidget*"/>
+			</return-value>
+		</method>
+		<virtual-method name="get_widget" invoker="get_widget">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gtk.Widget" c:type="GtkWidget*"/>
+			</return-value>
+		</virtual-method>
+		<glib:signal name="close">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="delay" transfer-ownership="none">
+					<type name="guint" c:type="guint"/>
+				</parameter>
+			</parameters>
+		</glib:signal>
+	</interface>
+	<record name="NotificationIface" c:type="GitgExtNotificationIface" glib:is-gtype-struct-for="Notification">
+		<field name="parent_iface">
+			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+		</field>
+		<field name="get_widget">
+			<callback name="get_widget" c:type="get_widget">
+				<return-value transfer-ownership="full" allow-none="1">
+					<type name="Gtk.Widget" c:type="GtkWidget*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+	</record>
 	<interface name="Notifications" c:type="GitgExtNotifications" glib:type-name="GitgExtNotifications" glib:get-type="gitg_ext_notifications_get_type" glib:type-struct="NotificationsIface">
 		<prerequisite name="GObject.Object"/>
 		<method name="add" c:identifier="gitg_ext_notifications_add">
@@ -1622,8 +1791,8 @@
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="widget" transfer-ownership="none">
-					<type name="Gtk.Widget" c:type="GtkWidget*"/>
+				<parameter name="notification" transfer-ownership="none">
+					<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
 				</parameter>
 			</parameters>
 		</method>
@@ -1632,8 +1801,8 @@
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="widget" transfer-ownership="none">
-					<type name="Gtk.Widget" c:type="GtkWidget*"/>
+				<parameter name="notification" transfer-ownership="none">
+					<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
 				</parameter>
 			</parameters>
 		</virtual-method>
@@ -1642,8 +1811,8 @@
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="widget" transfer-ownership="none">
-					<type name="Gtk.Widget" c:type="GtkWidget*"/>
+				<parameter name="notification" transfer-ownership="none">
+					<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
 				</parameter>
 				<parameter name="delay" transfer-ownership="none">
 					<type name="guint" c:type="guint"/>
@@ -1655,8 +1824,8 @@
 				<type name="none"/>
 			</return-value>
 			<parameters>
-				<parameter name="widget" transfer-ownership="none">
-					<type name="Gtk.Widget" c:type="GtkWidget*"/>
+				<parameter name="notification" transfer-ownership="none">
+					<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
 				</parameter>
 				<parameter name="delay" transfer-ownership="none">
 					<type name="guint" c:type="guint"/>
@@ -1677,8 +1846,8 @@
 					<parameter name="self" transfer-ownership="none">
 						<type name="GitgExt.Notifications" c:type="GitgExtNotifications*"/>
 					</parameter>
-					<parameter name="widget" transfer-ownership="none">
-						<type name="Gtk.Widget" c:type="GtkWidget*"/>
+					<parameter name="notification" transfer-ownership="none">
+						<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
 					</parameter>
 				</parameters>
 			</callback>
@@ -1692,8 +1861,8 @@
 					<parameter name="self" transfer-ownership="none">
 						<type name="GitgExt.Notifications" c:type="GitgExtNotifications*"/>
 					</parameter>
-					<parameter name="widget" transfer-ownership="none">
-						<type name="Gtk.Widget" c:type="GtkWidget*"/>
+					<parameter name="notification" transfer-ownership="none">
+						<type name="GitgExt.Notification" c:type="GitgExtNotification*"/>
 					</parameter>
 					<parameter name="delay" transfer-ownership="none">
 						<type name="guint" c:type="guint"/>
@@ -1917,6 +2086,16 @@
 				</parameter>
 			</parameters>
 		</virtual-method>
+		<method name="refresh" c:identifier="gitg_ext_ref_action_interface_refresh">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
+		<virtual-method name="refresh" invoker="refresh">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</virtual-method>
 		<property name="application" writable="1" construct="1">
 			<type name="GitgExt.Application" c:type="GitgExtApplication*"/>
 		</property>
@@ -1949,6 +2128,25 @@
 					<type name="GitgExt.Application" c:type="GitgExtApplication*"/>
 				</parameter>
 			</parameters>
+		</virtual-method>
+		<property name="references">
+			<type name="Gee.List" c:type="GeeList*">
+				<type name="Gitg.Ref" c:type="GitgRef*"/>
+			</type>
+		</property>
+		<method name="get_references" c:identifier="gitg_ext_ref_action_interface_get_references">
+			<return-value transfer-ownership="full">
+				<type name="Gee.List" c:type="GeeList*">
+					<type name="Gitg.Ref" c:type="GitgRef*"/>
+				</type>
+			</return-value>
+		</method>
+		<virtual-method name="get_references" invoker="get_references">
+			<return-value transfer-ownership="full">
+				<type name="Gee.List" c:type="GeeList*">
+					<type name="Gitg.Ref" c:type="GitgRef*"/>
+				</type>
+			</return-value>
 		</virtual-method>
 	</interface>
 	<record name="RefActionInterfaceIface" c:type="GitgExtRefActionInterfaceIface" glib:is-gtype-struct-for="RefActionInterface">
@@ -2045,6 +2243,18 @@
 				</parameters>
 			</callback>
 		</field>
+		<field name="refresh">
+			<callback name="refresh" c:type="refresh">
+				<return-value transfer-ownership="full">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="GitgExt.RefActionInterface" c:type="GitgExtRefActionInterface*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
 		<field name="get_application">
 			<callback name="get_application" c:type="get_application">
 				<return-value transfer-ownership="full">
@@ -2068,6 +2278,20 @@
 					</parameter>
 					<parameter name="value" transfer-ownership="none">
 						<type name="GitgExt.Application" c:type="GitgExtApplication*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="get_references">
+			<callback name="get_references" c:type="get_references">
+				<return-value transfer-ownership="full">
+					<type name="Gee.List" c:type="GeeList*">
+						<type name="Gitg.Ref" c:type="GitgRef*"/>
+					</type>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="GitgExt.RefActionInterface" c:type="GitgExtRefActionInterface*"/>
 					</parameter>
 				</parameters>
 			</callback>

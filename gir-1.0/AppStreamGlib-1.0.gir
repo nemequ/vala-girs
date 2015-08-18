@@ -3691,7 +3691,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="0" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="1" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="5" c:type="AS_MINOR_VERSION">
@@ -4278,10 +4278,10 @@ using as_image_get_basename(). This can be overridden if required.</doc>
               c:identifier="AS_PROVIDE_KIND_MODALIAS">
         <doc xml:space="preserve">A hardware modalias</doc>
       </member>
-      <member name="firmware"
+      <member name="firmware_runtime"
               value="5"
-              c:identifier="AS_PROVIDE_KIND_FIRMWARE">
-        <doc xml:space="preserve">A firmware file</doc>
+              c:identifier="AS_PROVIDE_KIND_FIRMWARE_RUNTIME">
+        <doc xml:space="preserve">A runtime-loadable firmware file</doc>
       </member>
       <member name="python2" value="6" c:identifier="AS_PROVIDE_KIND_PYTHON2">
         <doc xml:space="preserve">A Python 2 module</doc>
@@ -4289,13 +4289,20 @@ using as_image_get_basename(). This can be overridden if required.</doc>
       <member name="python3" value="7" c:identifier="AS_PROVIDE_KIND_PYTHON3">
         <doc xml:space="preserve">A Python 3 module</doc>
       </member>
-      <member name="dbus" value="8" c:identifier="AS_PROVIDE_KIND_DBUS">
-        <doc xml:space="preserve">A D-Bus service</doc>
+      <member name="dbus_session"
+              value="8"
+              c:identifier="AS_PROVIDE_KIND_DBUS_SESSION">
+        <doc xml:space="preserve">A D-Bus session service</doc>
       </member>
       <member name="dbus_system"
               value="9"
               c:identifier="AS_PROVIDE_KIND_DBUS_SYSTEM">
         <doc xml:space="preserve">A D-Bus system service</doc>
+      </member>
+      <member name="firmware_flashed"
+              value="10"
+              c:identifier="AS_PROVIDE_KIND_FIRMWARE_FLASHED">
+        <doc xml:space="preserve">A flashed firmware GUID</doc>
       </member>
     </enumeration>
     <class name="Release"
@@ -5244,6 +5251,29 @@ without us duplicating entries in the software center.</doc>
           <parameter name="pkgnames" transfer-ownership="none">
             <doc xml:space="preserve">the package names to find.</doc>
             <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_app_by_provide"
+              c:identifier="as_store_get_app_by_provide"
+              version="0.5.0">
+        <doc xml:space="preserve">Finds an application in the store by something that it provides.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #AsApp or %NULL</doc>
+          <type name="App" c:type="AsApp*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsProvideKind</doc>
+            <type name="ProvideKind" c:type="AsProvideKind"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the provide value, e.g. "com.hughski.ColorHug2.firmware"</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -6903,26 +6933,6 @@ legacy key names.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="utils_check_url_exists"
-              c:identifier="as_utils_check_url_exists"
-              version="0.1.5"
-              throws="1">
-      <doc xml:space="preserve">Checks to see if a URL is reachable.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE if the URL was reachable and pointed to a non-zero-length file.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
-      <parameters>
-        <parameter name="url" transfer-ownership="none">
-          <doc xml:space="preserve">the URL to check.</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-        <parameter name="timeout" transfer-ownership="none">
-          <doc xml:space="preserve">the timeout in seconds.</doc>
-          <type name="guint" c:type="guint"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="utils_error_quark"
               c:identifier="as_utils_error_quark"
               version="0.3.7">
@@ -6972,6 +6982,38 @@ legacy key names.</doc>
         <parameter name="flags" transfer-ownership="none">
           <doc xml:space="preserve">A #AsUtilsFindIconFlag bitfield</doc>
           <type name="UtilsFindIconFlag" c:type="AsUtilsFindIconFlag"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_guid_from_string"
+              c:identifier="as_utils_guid_from_string"
+              version="0.5.0">
+      <doc xml:space="preserve">Returns a GUID for a given string. This uses SHA1 and some string
+modification so even small differences in the @str will produce radically
+different GUID return values.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">A new GUID, or %NULL if the string was invalid</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">A source string to use as a key</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_guid_is_valid"
+              c:identifier="as_utils_guid_is_valid"
+              version="0.5.0">
+      <doc xml:space="preserve">Checks the source string is a valid string GUID descriptor.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @guid was a valid GUID, %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="guid" transfer-ownership="none">
+          <doc xml:space="preserve">string to check</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
