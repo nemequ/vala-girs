@@ -357,38 +357,6 @@ namespace Gedit {
 	public static void debug_init ();
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
 	public static void debug_plugin_message (string file, int line, string function, string message);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_BOOLEAN__INT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_BOOLEAN__OBJECT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_BOOLEAN__VOID (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_ENUM__VOID (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_OBJECT__OBJECT_OBJECT_INT_INT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__BOOLEAN_POINTER (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__BOXED_BOXED (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__BOXED_OBJECT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__INT_INT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__OBJECT_BOXED_ENUM_ENUM_FLAGS (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__OBJECT_BOXED_INT_BOOLEAN (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__OBJECT_OBJECT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__OBJECT_OBJECT_INT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__STRING_STRING (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "gedit/gedit-marshal.h")]
-	public static void marshal_VOID__UINT64_UINT64 (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_basename_for_display (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]

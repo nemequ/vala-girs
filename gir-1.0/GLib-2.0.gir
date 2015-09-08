@@ -12660,7 +12660,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="7" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -23552,6 +23552,9 @@ The exact type of @func depends on the type of source; ie. you
 should not count on @func being called with @data as its first
 parameter.
 
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle memory management of @data.
+
 Typically, you won't use this function. Instead use functions specific
 to the type of source you are using.</doc>
         <return-value transfer-ownership="none">
@@ -24501,7 +24504,7 @@ free it after use with g_free().</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="string" transfer-ownership="none">
+          <instance-parameter name="string" transfer-ownership="full">
             <doc xml:space="preserve">a #GString</doc>
             <type name="String" c:type="GString*"/>
           </instance-parameter>
@@ -25426,6 +25429,10 @@ Some systems restrict the length of @name to 16 bytes.
 
 If the thread can not be created the program aborts. See
 g_thread_try_new() if you want to attempt to deal with failures.
+
+If you are using threads to offload (potentially many) short-lived tasks,
+#GThreadPool may be more appropriate than manually spawning and tracking
+multiple #GThreads.
 
 To free the struct returned by this function, use g_thread_unref().
 Note that g_thread_join() implicitly unrefs the #GThread as well.</doc>
@@ -29053,7 +29060,9 @@ g_variant_is_signature() if you're not sure.</doc>
                    version="2.24">
         <doc xml:space="preserve">Creates a string #GVariant with the contents of @string.
 
-@string must be valid UTF-8.</doc>
+@string must be valid UTF-8, and must not be %NULL. To encode
+potentially-%NULL strings, use g_variant_new() with `ms` as the
+[format string][gvariant-format-strings-maybe-types].</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a floating reference to a new string #GVariant instance</doc>
           <type name="Variant" c:type="GVariant*"/>
@@ -29095,7 +29104,8 @@ If @length is -1 then @strv is %NULL-terminated.</doc>
                    introspectable="0">
         <doc xml:space="preserve">Creates a string #GVariant with the contents of @string.
 
-@string must be valid UTF-8.
+@string must be valid UTF-8, and must not be %NULL. To encode
+potentially-%NULL strings, use this with g_variant_new_maybe().
 
 This function consumes @string.  g_free() will be called on @string
 when it is no longer required.
@@ -30075,7 +30085,7 @@ involved.</doc>
 type.  This includes the types %G_VARIANT_TYPE_STRING,
 %G_VARIANT_TYPE_OBJECT_PATH and %G_VARIANT_TYPE_SIGNATURE.
 
-The string will always be UTF-8 encoded.
+The string will always be UTF-8 encoded, and will never be %NULL.
 
 If @length is non-%NULL then the length of the string (in bytes) is
 returned there.  For trusted values, this information is already
@@ -34186,7 +34196,8 @@ from (but not including) @nth_bit upwards. Bits are numbered
 from 0 (least significant) to sizeof(#gulong) * 8 - 1 (31 or 63,
 usually). To start searching from the 0th bit, set @nth_bit to -1.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the index of the first bit set which is higher than @nth_bit</doc>
+        <doc xml:space="preserve">the index of the first bit set which is higher than @nth_bit, or -1
+   if no higher bits are set</doc>
         <type name="gint" c:type="gint"/>
       </return-value>
       <parameters>
@@ -34207,7 +34218,8 @@ from 0 (least significant) to sizeof(#gulong) * 8 - 1 (31 or 63,
 usually). To start searching from the last bit, set @nth_bit to
 -1 or GLIB_SIZEOF_LONG * 8.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the index of the first bit set which is lower than @nth_bit</doc>
+        <doc xml:space="preserve">the index of the first bit set which is lower than @nth_bit, or -1
+   if no lower bits are set</doc>
         <type name="gint" c:type="gint"/>
       </return-value>
       <parameters>
@@ -37970,6 +37982,9 @@ default idle priority, #G_PRIORITY_DEFAULT_IDLE.  If the function
 returns %FALSE it is automatically removed from the list of event
 sources and will not be called again.
 
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle the return value and memory management of @data.
+
 This internally creates a main loop source using g_idle_source_new()
 and attaches it to the global #GMainContext using g_source_attach(), so
 the callback will be invoked in whichever thread is running that main
@@ -37996,6 +38011,9 @@ use a custom main context.</doc>
       <doc xml:space="preserve">Adds a function to be called whenever there are no higher priority
 events pending.  If the function returns %FALSE it is automatically
 removed from the list of event sources and will not be called again.
+
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle the return value and memory management of @data.
 
 This internally creates a main loop source using g_idle_source_new()
 and attaches it to the global #GMainContext using g_source_attach(), so
@@ -42321,10 +42339,12 @@ on a %NULL value, g_strdupv() simply returns %NULL.</doc>
       <doc xml:space="preserve">Returns a string corresponding to the given error code, e.g.
 "no such process". You should use this function in preference to
 strerror(), because it returns a string in UTF-8 encoding, and since
-not all platforms support the strerror() function.</doc>
+not all platforms support the strerror() function.
+
+Note that the string may be translated according to the current locale.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">a UTF-8 string describing the error code. If the error code
-    is unknown, it returns "unknown error (&lt;code&gt;)".</doc>
+    is unknown, it returns a string like "unknown error (&lt;code&gt;)".</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
@@ -44183,6 +44203,9 @@ After each call to the timeout function, the time of the next
 timeout is recalculated based on the current time and the given interval
 (it does not try to 'catch up' time lost in delays).
 
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle the return value and memory management of @data.
+
 If you want to have a timer in the "seconds" range and do not care
 about the exact time of the first call of the timer, use the
 g_timeout_add_seconds() function; this function allows for more
@@ -44231,6 +44254,9 @@ event sources. Thus they should not be relied on for precise timing.
 After each call to the timeout function, the time of the next
 timeout is recalculated based on the current time and the given interval
 (it does not try to 'catch up' time lost in delays).
+
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle the return value and memory management of @data.
 
 This internally creates a main loop source using g_timeout_source_new()
 and attaches it to the global #GMainContext using g_source_attach(), so
@@ -44296,6 +44322,9 @@ Note that the first call of the timer may not be precise for timeouts
 of one second. If you need finer precision and have such a timeout,
 you may want to use g_timeout_add() instead.
 
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle the return value and memory management of @data.
+
 The interval given is in terms of monotonic time, not wall clock
 time.  See g_get_monotonic_time().</doc>
       <return-value transfer-ownership="none">
@@ -44338,6 +44367,9 @@ Note that timeout functions may be delayed, due to the processing of other
 event sources. Thus they should not be relied on for precise timing.
 After each call to the timeout function, the time of the next
 timeout is recalculated based on the current time and the given @interval
+
+See [memory management of sources][mainloop-memory-management] for details
+on how to handle the return value and memory management of @data.
 
 If you want timing more precise than whole seconds, use g_timeout_add()
 instead.

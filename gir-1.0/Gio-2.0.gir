@@ -11401,7 +11401,14 @@ dispatched anywhere else - not even the standard dispatch machinery
 (that API such as g_dbus_connection_signal_subscribe() and
 g_dbus_connection_send_message_with_reply() relies on) will see the
 message. Similary, if a filter consumes an outgoing message, the
-message will not be sent to the other peer.</doc>
+message will not be sent to the other peer.
+
+If @user_data_free_func is non-%NULL, it will be called (in the
+thread-default main context of the thread you are calling this
+method from) at some point after @user_data is no longer
+needed. (It is not guaranteed to be called synchronously when the
+filter is removed, and may be called after @connection has been
+destroyed.)</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a filter identifier that can be used with
     g_dbus_connection_remove_filter()</doc>
@@ -12360,6 +12367,7 @@ message bus connection.</doc>
       </method>
       <method name="register_object"
               c:identifier="g_dbus_connection_register_object"
+              shadowed-by="register_object_with_closures"
               version="2.26"
               throws="1">
         <doc xml:space="preserve">Registers callbacks for exported objects at @object_path with the
@@ -12441,6 +12449,54 @@ See this [server][gdbus-server] for an example of how to use this method.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="register_object_with_closures"
+              c:identifier="g_dbus_connection_register_object_with_closures"
+              shadows="register_object"
+              version="2.46"
+              throws="1">
+        <doc xml:space="preserve">Version of g_dbus_connection_register_object() using closures instead of a
+#GDBusInterfaceVTable for easier binding in other languages.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">0 if @error is set, otherwise a registration id (never 0)
+that can be used with g_dbus_connection_unregister_object() .</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">A #GDBusConnection.</doc>
+            <type name="DBusConnection" c:type="GDBusConnection*"/>
+          </instance-parameter>
+          <parameter name="object_path" transfer-ownership="none">
+            <doc xml:space="preserve">The object path to register at.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="interface_info" transfer-ownership="none">
+            <doc xml:space="preserve">Introspection data for the interface.</doc>
+            <type name="DBusInterfaceInfo" c:type="GDBusInterfaceInfo*"/>
+          </parameter>
+          <parameter name="method_call_closure"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">#GClosure for handling incoming method calls.</doc>
+            <type name="GObject.Closure" c:type="GClosure*"/>
+          </parameter>
+          <parameter name="get_property_closure"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">#GClosure for getting a property.</doc>
+            <type name="GObject.Closure" c:type="GClosure*"/>
+          </parameter>
+          <parameter name="set_property_closure"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">#GClosure for setting a property.</doc>
+            <type name="GObject.Closure" c:type="GClosure*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="register_subtree"
               c:identifier="g_dbus_connection_register_subtree"
               version="2.26"
@@ -12517,7 +12573,14 @@ that can be used with g_dbus_connection_unregister_subtree() .</doc>
       <method name="remove_filter"
               c:identifier="g_dbus_connection_remove_filter"
               version="2.26">
-        <doc xml:space="preserve">Removes a filter.</doc>
+        <doc xml:space="preserve">Removes a filter.
+
+Note that since filters run in a different thread, there is a race
+condition where it is possible that the filter will be running even
+after calling g_dbus_connection_remove_filter(), so you cannot just
+free data that the filter might be using. Instead, you should pass
+a #GDestroyNotify to g_dbus_connection_add_filter(), which will be
+called when it is guaranteed that the data is no longer needed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -12822,7 +12885,14 @@ processing the received signal.
 If one of %G_DBUS_SIGNAL_FLAGS_MATCH_ARG0_NAMESPACE or
 %G_DBUS_SIGNAL_FLAGS_MATCH_ARG0_PATH are given, @arg0 is
 interpreted as part of a namespace or path.  The first argument
-of a signal is matched against that part as specified by D-Bus.</doc>
+of a signal is matched against that part as specified by D-Bus.
+
+If @user_data_free_func is non-%NULL, it will be called (in the
+thread-default main context of the thread you are calling this
+method from) at some point after @user_data is no longer
+needed. (It is not guaranteed to be called synchronously when the
+signal is unsubscribed from, and may be called after @connection
+has been destroyed.)</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a subscription identifier that can be used with g_dbus_connection_signal_unsubscribe()</doc>
           <type name="guint" c:type="guint"/>
@@ -25271,6 +25341,18 @@ Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.</doc>
 Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="FILE_ATTRIBUTE_STANDARD_IS_VOLATILE"
+              value="standard::is-volatile"
+              c:type="G_FILE_ATTRIBUTE_STANDARD_IS_VOLATILE"
+              version="2.46">
+      <doc xml:space="preserve">A key in the "standard" namespace for checking if a file is
+volatile. This is meant for opaque, non-POSIX-like backends to
+indicate that the URI is not persistent. Applications should look
+at #G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET for the persistent URI.
+
+Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="FILE_ATTRIBUTE_STANDARD_NAME"
               value="standard::name"
               c:type="G_FILE_ATTRIBUTE_STANDARD_NAME">
@@ -26912,7 +26994,8 @@ This call does no blocking I/O.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="get_path" invoker="get_path">
-        <doc xml:space="preserve">Gets the local pathname for #GFile, if one exists.
+        <doc xml:space="preserve">Gets the local pathname for #GFile, if one exists. If non-%NULL, this is
+guaranteed to be an absolute, canonical path. It might contain symlinks.
 
 This call does no blocking I/O.</doc>
         <return-value transfer-ownership="full" nullable="1">
@@ -30523,7 +30606,8 @@ This call does no blocking I/O.</doc>
         </parameters>
       </method>
       <method name="get_path" c:identifier="g_file_get_path">
-        <doc xml:space="preserve">Gets the local pathname for #GFile, if one exists.
+        <doc xml:space="preserve">Gets the local pathname for #GFile, if one exists. If non-%NULL, this is
+guaranteed to be an absolute, canonical path. It might contain symlinks.
 
 This call does no blocking I/O.</doc>
         <return-value transfer-ownership="full" nullable="1">
@@ -30607,10 +30691,10 @@ This call does no blocking I/O.</doc>
 
 If @parent is %NULL then this function returns %TRUE if @file has any
 parent at all.  If @parent is non-%NULL then %TRUE is only returned
-if @file is a child of @parent.</doc>
+if @file is an immediate child of @parent.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if @file is a child of @parent (or any parent in the
-         case that @parent is %NULL).</doc>
+          <doc xml:space="preserve">%TRUE if @file is an immediate child of @parent (or any parent in
+         the case that @parent is %NULL).</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -46674,6 +46758,29 @@ efficiently.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="sort" c:identifier="g_list_store_sort" version="2.46">
+        <doc xml:space="preserve">Sort the items in @store according to @compare_func.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #GListStore</doc>
+            <type name="ListStore" c:type="GListStore*"/>
+          </instance-parameter>
+          <parameter name="compare_func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="1">
+            <doc xml:space="preserve">pairwise comparison function for sorting</doc>
+            <type name="GLib.CompareDataFunc" c:type="GCompareDataFunc"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">user data for @compare_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="splice" c:identifier="g_list_store_splice" version="2.44">
         <doc xml:space="preserve">Changes @store by removing @n_removals items and adding @n_additions
 items to it. @additions must contain @n_additions items of type
@@ -61027,16 +61134,6 @@ values as #GVariant, and allows any #GVariantType for keys. Key names
 are restricted to lowercase characters, numbers and '-'. Furthermore,
 the names must begin with a lowercase character, must not end
 with a '-', and must not contain consecutive dashes.
-
-GSettings supports change notification.  The primary mechanism to
-watch for changes is to connect to the "changed" signal.  You can
-optionally watch for changes on only a single key by using a signal
-detail.  Signals are only guaranteed to be emitted for a given key
-after you have read the value of that key while a signal handler was
-connected for that key.  Signals may or may not be emitted in the
-case that the key "changed" to the value that you had previously
-read.  Signals may be reported in additional cases as well and the
-"changed" signal should really be treated as "may have changed".
 
 Similar to GConf, the default values in GSettings schemas can be
 localized, but the localized values are stored in gettext catalogs

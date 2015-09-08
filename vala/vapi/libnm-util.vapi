@@ -1720,11 +1720,13 @@ namespace NM {
 		public uint wep_tx_keyidx { get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_AP_FLAGS_", has_type_id = false)]
+	[Flags]
 	public enum @80211ApFlags {
 		NONE,
 		PRIVACY
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_AP_SEC_", has_type_id = false)]
+	[Flags]
 	public enum @80211ApSecurityFlags {
 		NONE,
 		PAIR_WEP40,
@@ -1754,6 +1756,7 @@ namespace NM {
 		DEACTIVATED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_BT_CAPABILITY_", has_type_id = false)]
+	[Flags]
 	public enum BluetoothCapabilities {
 		NONE,
 		DUN,
@@ -1768,6 +1771,7 @@ namespace NM {
 		FULL
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_CAP_", has_type_id = false)]
+	[Flags]
 	public enum DeviceCapabilities {
 		NONE,
 		NM_SUPPORTED,
@@ -1775,6 +1779,7 @@ namespace NM {
 		IS_SOFTWARE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_MODEM_CAPABILITY_", has_type_id = false)]
+	[Flags]
 	public enum DeviceModemCapabilities {
 		NONE,
 		POTS,
@@ -1885,6 +1890,7 @@ namespace NM {
 		TEAM
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", has_type_id = false)]
+	[Flags]
 	public enum DeviceWifiCapabilities {
 		NONE,
 		CIPHER_WEP40,

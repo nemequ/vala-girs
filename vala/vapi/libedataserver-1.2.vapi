@@ -1194,6 +1194,12 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void queue_transfer (GLib.Queue src_queue, GLib.Queue dst_queue);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static bool secret_store_delete_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static bool secret_store_lookup_sync (string uid, out string out_secret, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static bool secret_store_store_sync (string uid, string secret, string label, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t strftime (string string, size_t max, string fmt, void* tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void time_format_date_and_time (void* date_tm, bool use_24_hour_format, bool show_midnight, bool show_zero_seconds, string buffer, int buffer_size);

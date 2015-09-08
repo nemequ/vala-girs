@@ -156,7 +156,13 @@ and/or use gtk-doc annotations.  -->
     <alias name="PushOptions_autoptr" c:type="GgitPushOptions_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
+    <alias name="RebaseOperation_autoptr" c:type="GgitRebaseOperation_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
     <alias name="RebaseOptions_autoptr" c:type="GgitRebaseOptions_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
+    <alias name="Rebase_autoptr" c:type="GgitRebase_autoptr">
       <type name="gpointer" c:type="gpointer"/>
     </alias>
     <alias name="RefSpec_autoptr" c:type="GgitRefSpec_autoptr">
@@ -254,8 +260,8 @@ This function is MT-safe and may be called from any thread.</doc>
         </parameters>
       </method>
       <method name="unref" c:identifier="ggit_annotated_commit_unref">
-        <doc xml:space="preserve">Atomically decrements the reference count of @entry by one.
-If the reference count drops to 0, @entry is freed.</doc>
+        <doc xml:space="preserve">Atomically decrements the reference count of @annotated_commit by one.
+If the reference count drops to 0, @annotated_commit is freed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8297,6 +8303,237 @@ the number of threads will be automatically detected.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
+    <class name="Rebase"
+           c:symbol-prefix="rebase"
+           c:type="GgitRebase"
+           parent="Native"
+           glib:type-name="GgitRebase"
+           glib:get-type="ggit_rebase_get_type"
+           glib:type-struct="RebaseClass">
+      <doc xml:space="preserve">Represents a rebase object.</doc>
+      <method name="abort" c:identifier="ggit_rebase_abort" throws="1">
+        <doc xml:space="preserve">Aborts a rebase that is currently in progress, resetting the repository
+and working directory to their state before rebase began.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="commit" c:identifier="ggit_rebase_commit" throws="1">
+        <doc xml:space="preserve">Commits the current patch.  You must have resolved any conflicts that
+were introduced during the patch application from the ggit_rebase_next()
+invocation.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GgitOId of the newly created commit.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+          <parameter name="author"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GgitSignature or %NULL to keep the author from
+the original commit.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+          <parameter name="committer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitSignature.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+          <parameter name="message"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the message for this commit, or %NULL to use
+the message from the original commit.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="finish" c:identifier="ggit_rebase_finish" throws="1">
+        <doc xml:space="preserve">Finishes a rebase that is currently in progress once all patches have
+been applied.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+          <parameter name="signature"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the identity that is finishing the rebase or %NULL.</doc>
+            <type name="Signature" c:type="GgitSignature*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_operation_by_index"
+              c:identifier="ggit_rebase_get_operation_by_index">
+        <doc xml:space="preserve">Gets the rebase operation specified by @idx.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The rebase operation or %NULL if @idx was out of bounds.</doc>
+          <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">The index of the rebase operation to retrieve.</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_operation_entry_count"
+              c:identifier="ggit_rebase_get_operation_entry_count">
+        <doc xml:space="preserve">Gets the count of rebase operations that are to be applied.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the count of rebase operations that are to be applied.</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_operation_index"
+              c:identifier="ggit_rebase_get_operation_index">
+        <doc xml:space="preserve">Gets the index of the rebase operation that is currently being applied.
+If the first operation has not yet been applied (because you have
+called ggit_repository_rebase_init() but not yet ggit_rebase_next())
+then this returns @GGIT_REBASE_NO_OPERATION.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The index of the rebase operation currently being applied.</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="next" c:identifier="ggit_rebase_next" throws="1">
+        <doc xml:space="preserve">Performs the next rebase operation and returns the information about it.
+If the operation is one that applies a patch (which is any operation except
+@GGIT_REBASE_OPERATION_EXEC) then the patch will be applied and the index and
+working directory will be updated with the changes. If there are conflicts,
+you will need to address those before committing the changes.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the rebase operation that is to be performed next.</doc>
+          <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebase.</doc>
+            <type name="Rebase" c:type="GgitRebase*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="RebaseClass"
+            c:type="GgitRebaseClass"
+            glib:is-gtype-struct-for="Rebase">
+      <field name="parent_class">
+        <type name="NativeClass" c:type="GgitNativeClass"/>
+      </field>
+    </record>
+    <record name="RebaseOperation"
+            c:type="GgitRebaseOperation"
+            glib:type-name="GgitRebaseOperation"
+            glib:get-type="ggit_rebase_operation_get_type"
+            c:symbol-prefix="rebase_operation">
+      <doc xml:space="preserve">Represents a rebase operation.</doc>
+      <method name="get_exec" c:identifier="ggit_rebase_operation_get_exec">
+        <doc xml:space="preserve">Gets the executable the user has requested be run.  This will only
+be populated for operations of type @GGIT_REBASE_OPERATION_EXEC.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the executable the user has requested be run.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_operation"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOperation.</doc>
+            <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="ggit_rebase_operation_get_id">
+        <doc xml:space="preserve">Gets the commit ID being cherry-picked. This will be populated for
+all operations except those of type @GGIT_REBASE_OPERATION_EXEC.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the commit ID being cherry-picked.</doc>
+          <type name="OId" c:type="GgitOId*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_operation"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOperation.</doc>
+            <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_operation_type"
+              c:identifier="ggit_rebase_operation_get_operation_type">
+        <doc xml:space="preserve">Gets the type of rebase operation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GgitRebaseOperationType.</doc>
+          <type name="RebaseOperationType" c:type="GgitRebaseOperationType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_operation"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOperation.</doc>
+            <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="ggit_rebase_operation_ref">
+        <doc xml:space="preserve">Atomically increments the reference count of @rebase_operation by one.
+This function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a newly allocated #GgitRebaseOperation.</doc>
+          <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_operation"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOperation.</doc>
+            <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="ggit_rebase_operation_unref">
+        <doc xml:space="preserve">Atomically decrements the reference count of @rebase_operation by one.
+If the reference count drops to 0, @rebase_operation is freed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="rebase_operation"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOperation.</doc>
+            <type name="RebaseOperation" c:type="GgitRebaseOperation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <enumeration name="RebaseOperationType"
                  glib:type-name="GgitRebaseOperationType"
                  glib:get-type="ggit_rebase_operation_type_get_type"
@@ -10939,11 +11176,17 @@ what git would report for the branches.</doc>
             <doc xml:space="preserve">the commit for upstream.</doc>
             <type name="OId" c:type="GgitOId*"/>
           </parameter>
-          <parameter name="ahead" transfer-ownership="none">
+          <parameter name="ahead"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">number of unique from commits in @upstream.</doc>
             <type name="gsize" c:type="gsize*"/>
           </parameter>
-          <parameter name="behind" transfer-ownership="none">
+          <parameter name="behind"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">number of unique from commits in @local.</doc>
             <type name="gsize" c:type="gsize*"/>
           </parameter>
@@ -11513,6 +11756,72 @@ on the command line.</doc>
           <parameter name="id" transfer-ownership="none">
             <doc xml:space="preserve">OID of the git object to decorate.</doc>
             <type name="OId" c:type="GgitOId*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="rebase_init"
+              c:identifier="ggit_repository_rebase_init"
+              throws="1">
+        <doc xml:space="preserve">Initializes a rebase operation to rebase the changes in @branch
+relative to @upstream onto another branch. To begin the rebase
+process, call git_rebase_next(). When you have finished with this
+object, call g_object_unref().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GgitRebase.</doc>
+          <type name="Rebase" c:type="GgitRebase*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="branch"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the terminal commit to rebase, or %NULL to rebase the
+current branch.</doc>
+            <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+          </parameter>
+          <parameter name="upstream"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the commit to begin rebasing from, or %NULL to
+rebase all reachable commits.</doc>
+            <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+          </parameter>
+          <parameter name="onto"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the branch to rebase onto, or %NULL to rebase onto
+the given upstream.</doc>
+            <type name="AnnotatedCommit" c:type="GgitAnnotatedCommit*"/>
+          </parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions to specify how rebase is performed, or %NULL.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="rebase_open"
+              c:identifier="ggit_repository_rebase_open"
+              throws="1">
+        <doc xml:space="preserve">Opens an existing rebase that was previously started by either an
+invocation of ggit_rebase_init() or by another client.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GgitRebase.</doc>
+          <type name="Rebase" c:type="GgitRebase*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="repository" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRepository.</doc>
+            <type name="Repository" c:type="GgitRepository*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitRebaseOptions to specify how rebase is performed, or %NULL.</doc>
+            <type name="RebaseOptions" c:type="GgitRebaseOptions*"/>
           </parameter>
         </parameters>
       </method>

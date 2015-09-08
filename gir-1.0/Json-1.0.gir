@@ -1670,7 +1670,9 @@ content.</doc>
         </parameters>
       </method>
       <method name="set_object" c:identifier="json_node_set_object">
-        <doc xml:space="preserve">Sets @objects inside @node. The reference count of @object is increased.</doc>
+        <doc xml:space="preserve">Sets @objects inside @node. The reference count of @object is increased.
+
+If @object is %NULL, the node’s existing object is cleared.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1679,7 +1681,10 @@ content.</doc>
             <doc xml:space="preserve">a #JsonNode initialized to %JSON_NODE_OBJECT</doc>
             <type name="Node" c:type="JsonNode*"/>
           </instance-parameter>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a #JsonObject</doc>
             <type name="Object" c:type="JsonObject*"/>
           </parameter>
@@ -2059,11 +2064,13 @@ See also: json_object_get_member()</doc>
               c:identifier="json_object_get_object_member"
               version="0.8">
         <doc xml:space="preserve">Convenience function that retrieves the object
-stored in @member_name of @object
+stored in @member_name of @object. It is an error to specify a @member_name
+which does not exist.
 
 See also: json_object_get_member()</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the object inside the object's member</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the object inside the object’s
+   member, or %NULL if the value for the member is `null`</doc>
           <type name="Object" c:type="JsonObject*"/>
         </return-value>
         <parameters>
@@ -3594,7 +3601,21 @@ json_reader_end_element (reader);
 
 If @reader is not currently on an array or an object, or if the @index_ is
 bigger than the size of the array or the object, the #JsonReader will be
-put in an error state until json_reader_end_element() is called.</doc>
+put in an error state until json_reader_end_element() is called. This means
+that if used conditionally, json_reader_end_element() must be called on both
+code paths:
+
+|[
+if (!json_reader_read_element (reader, 1))
+  {
+    json_reader_end_element (reader);
+    g_set_error (error, …);
+    return FALSE;
+  }
+
+str_value = json_reader_get_string_value (reader);
+json_reader_end_element (reader);
+]|</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success, and %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -3639,7 +3660,20 @@ json_reader_end_member (reader);
 
 If @reader is not currently on an object, or if the @member_name is not
 defined in the object, the #JsonReader will be put in an error state until
-json_reader_end_member() is called.</doc>
+json_reader_end_member() is called. This means that if used conditionally,
+json_reader_end_member() must be called on both code paths:
+
+|[
+if (!json_reader_read_member (reader, "title"))
+  {
+    json_reader_end_member (reader);
+    g_set_error (error, …);
+    return FALSE;
+  }
+
+str_value = json_reader_get_string_value (reader);
+json_reader_end_member (reader);
+]|</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success, and %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>

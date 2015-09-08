@@ -618,6 +618,27 @@ namespace Ggit {
 		public void set_parallelism (int parallelism);
 		public int parallelism { get; set construct; }
 	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_rebase_get_type ()")]
+	public class Rebase : Ggit.Native {
+		[CCode (has_construct_function = false)]
+		protected Rebase ();
+		public void abort () throws GLib.Error;
+		public Ggit.OId commit (Ggit.Signature? author, Ggit.Signature committer, string? message) throws GLib.Error;
+		public void finish (Ggit.Signature? signature) throws GLib.Error;
+		public Ggit.RebaseOperation get_operation_by_index (size_t idx);
+		public size_t get_operation_entry_count ();
+		public size_t get_operation_index ();
+		public Ggit.RebaseOperation next () throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_rebase_operation_ref", type_id = "ggit_rebase_operation_get_type ()", unref_function = "ggit_rebase_operation_unref")]
+	[Compact]
+	public class RebaseOperation {
+		public unowned string get_exec ();
+		public Ggit.OId get_id ();
+		public Ggit.RebaseOperationType get_operation_type ();
+		public unowned Ggit.RebaseOperation @ref ();
+		public void unref ();
+	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_rebase_options_get_type ()")]
 	[Compact]
 	public class RebaseOptions {
@@ -768,7 +789,7 @@ namespace Ggit {
 		public Ggit.BranchEnumerator enumerate_branches (Ggit.BranchType list_type) throws GLib.Error;
 		public Ggit.StatusFlags file_status (GLib.File location) throws GLib.Error;
 		public bool file_status_foreach (Ggit.StatusOptions? options, Ggit.StatusCallback callback) throws GLib.Error;
-		public void get_ahead_behind (Ggit.OId local, Ggit.OId upstream, size_t ahead, size_t behind) throws GLib.Error;
+		public void get_ahead_behind (Ggit.OId local, Ggit.OId upstream, out size_t ahead, out size_t behind) throws GLib.Error;
 		public unowned string get_attribute (string path, string name, Ggit.AttributeCheckFlags flags) throws GLib.Error;
 		public Ggit.Config get_config () throws GLib.Error;
 		public string get_default_notes_ref () throws GLib.Error;
@@ -800,6 +821,8 @@ namespace Ggit {
 		public static Ggit.Repository open (GLib.File location) throws GLib.Error;
 		public bool path_is_ignored (string path) throws GLib.Error;
 		public Ggit.Note read_note (string? notes_ref, Ggit.OId id) throws GLib.Error;
+		public Ggit.Rebase rebase_init (Ggit.AnnotatedCommit? branch, Ggit.AnnotatedCommit? upstream, Ggit.AnnotatedCommit? onto, Ggit.RebaseOptions options) throws GLib.Error;
+		public Ggit.Rebase rebase_open (Ggit.RebaseOptions options) throws GLib.Error;
 		public bool references_foreach (Ggit.ReferencesCallback callback) throws GLib.Error;
 		public bool references_foreach_name (Ggit.ReferencesNameCallback callback) throws GLib.Error;
 		public bool remove_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id) throws GLib.Error;
@@ -1141,7 +1164,15 @@ namespace Ggit {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]
+	public struct RebaseOperation_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
 	public struct RebaseOptions_autoptr {
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[SimpleType]
+	public struct Rebase_autoptr {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[SimpleType]

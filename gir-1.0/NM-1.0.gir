@@ -7561,6 +7561,84 @@ set.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="request_scan_options"
+              c:identifier="nm_device_wifi_request_scan_options"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Request NM to scan for access points on @device. Note that the function
+returns immediately after requesting the scan, and it may take some time
+after that for the scan to complete.
+This is the same as @nm_device_wifi_request_scan except it accepts @options
+for the scanning. The argument is the dictionary passed to RequestScan()
+D-Bus call. Valid otions inside the dictionary are:
+'ssids' =&gt; array of SSIDs (saay)</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error, in which case @error will be
+set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWifi</doc>
+            <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">dictionary with options for RequestScan(), or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_scan_options_async"
+              c:identifier="nm_device_wifi_request_scan_options_async"
+              version="1.2">
+        <doc xml:space="preserve">Request NM to scan for access points on @device. Note that @callback will be
+called immediately after requesting the scan, and it may take some time after
+that for the scan to complete.
+This is the same as @nm_device_wifi_request_scan_async except it accepts @options
+for the scanning. The argument is the dictionary passed to RequestScan()
+D-Bus call. Valid otions inside the dictionary are:
+'ssids' =&gt; array of SSIDs (saay)</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWifi</doc>
+            <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">dictionary with options for RequestScan(), or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the scan has been requested</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="access-points" transfer-ownership="none">
         <doc xml:space="preserve">List of all Wi-Fi access points the device can see.
 
@@ -21552,11 +21630,6 @@ function.</doc>
  Due to this, @check_file might be called for two different paths.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
-          <parameter name="check_name" transfer-ownership="none">
-            <doc xml:space="preserve">if not-null, check that the loaded plugin has
- the given name.</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
           <parameter name="check_service" transfer-ownership="none">
             <doc xml:space="preserve">if not-null, check that the loaded plugin advertises
  the given service.</doc>
@@ -21571,7 +21644,7 @@ function.</doc>
           <parameter name="check_file"
                      transfer-ownership="none"
                      scope="call"
-                     closure="5">
+                     closure="4">
             <doc xml:space="preserve">optional callback to validate the file prior to
   loading the shared library.</doc>
             <type name="UtilsCheckFilePredicate"
@@ -23831,6 +23904,24 @@ object's #NMSettingConnection:id: property.  Should be freed with g_free()</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="utils_wifi_2ghz_freqs"
+              c:identifier="nm_utils_wifi_2ghz_freqs"
+              version="1.2">
+      <doc xml:space="preserve">Utility function to return 2.4 GHz Wi-Fi frequencies (802.11bg band).</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">zero-terminated array of frequencies numbers (in MHz)</doc>
+        <type name="guint" c:type="const guint*"/>
+      </return-value>
+    </function>
+    <function name="utils_wifi_5ghz_freqs"
+              c:identifier="nm_utils_wifi_5ghz_freqs"
+              version="1.2">
+      <doc xml:space="preserve">Utility function to return 5 GHz Wi-Fi frequencies (802.11a band).</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">zero-terminated array of frequencies numbers (in MHz)</doc>
+        <type name="guint" c:type="const guint*"/>
+      </return-value>
+    </function>
     <function name="utils_wifi_channel_to_freq"
               c:identifier="nm_utils_wifi_channel_to_freq">
       <doc xml:space="preserve">Utility function to translate a Wi-Fi channel to its corresponding frequency.</doc>
@@ -23957,11 +24048,6 @@ function.</doc>
  Due to this, @check_file might be called for two different paths.</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="check_name" transfer-ownership="none">
-          <doc xml:space="preserve">if not-null, check that the loaded plugin has
- the given name.</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
         <parameter name="check_service" transfer-ownership="none">
           <doc xml:space="preserve">if not-null, check that the loaded plugin advertises
  the given service.</doc>
@@ -23976,7 +24062,7 @@ function.</doc>
         <parameter name="check_file"
                    transfer-ownership="none"
                    scope="call"
-                   closure="5">
+                   closure="4">
           <doc xml:space="preserve">optional callback to validate the file prior to
   loading the shared library.</doc>
           <type name="UtilsCheckFilePredicate"

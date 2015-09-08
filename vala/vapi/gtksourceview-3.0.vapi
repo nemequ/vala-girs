@@ -311,9 +311,9 @@ namespace Gtk {
 		protected SourceGutterRenderer ();
 		public virtual void begin (Cairo.Context cr, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.TextIter start, Gtk.TextIter end);
 		[NoWrapper]
-		public virtual void change_buffer (Gtk.TextBuffer old_buffer);
+		public virtual void change_buffer (Gtk.TextBuffer? old_buffer);
 		[NoWrapper]
-		public virtual void change_view (Gtk.TextView old_view);
+		public virtual void change_view (Gtk.TextView? old_view);
 		public virtual void draw (Cairo.Context cr, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.TextIter start, Gtk.TextIter end, Gtk.SourceGutterRendererState state);
 		public virtual void end ();
 		public void get_alignment (out float xalign, out float yalign);
