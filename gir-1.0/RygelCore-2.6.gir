@@ -30,17 +30,16 @@
 		<member name="energy_management" c:identifier="RYGEL_PLUGIN_CAPABILITIES_ENERGY_MANAGEMENT" value="64"/>
 	</bitfield>
 	<enumeration name="ConfigurationEntry" c:type="RygelConfigurationEntry" glib:type-name="RygelConfigurationEntry" glib:get-type="rygel_configuration_entry_get_type">
-		<member name="upnp_enabled" c:identifier="RYGEL_CONFIGURATION_ENTRY_UPNP_ENABLED" value="0"/>
-		<member name="interface" c:identifier="RYGEL_CONFIGURATION_ENTRY_INTERFACE" value="1"/>
-		<member name="port" c:identifier="RYGEL_CONFIGURATION_ENTRY_PORT" value="2"/>
-		<member name="transcoding" c:identifier="RYGEL_CONFIGURATION_ENTRY_TRANSCODING" value="3"/>
-		<member name="allow_upload" c:identifier="RYGEL_CONFIGURATION_ENTRY_ALLOW_UPLOAD" value="4"/>
-		<member name="allow_deletion" c:identifier="RYGEL_CONFIGURATION_ENTRY_ALLOW_DELETION" value="5"/>
-		<member name="log_levels" c:identifier="RYGEL_CONFIGURATION_ENTRY_LOG_LEVELS" value="6"/>
-		<member name="plugin_path" c:identifier="RYGEL_CONFIGURATION_ENTRY_PLUGIN_PATH" value="7"/>
-		<member name="video_upload_folder" c:identifier="RYGEL_CONFIGURATION_ENTRY_VIDEO_UPLOAD_FOLDER" value="8"/>
-		<member name="music_upload_folder" c:identifier="RYGEL_CONFIGURATION_ENTRY_MUSIC_UPLOAD_FOLDER" value="9"/>
-		<member name="picture_upload_folder" c:identifier="RYGEL_CONFIGURATION_ENTRY_PICTURE_UPLOAD_FOLDER" value="10"/>
+		<member name="interface" c:identifier="RYGEL_CONFIGURATION_ENTRY_INTERFACE" value="0"/>
+		<member name="port" c:identifier="RYGEL_CONFIGURATION_ENTRY_PORT" value="1"/>
+		<member name="transcoding" c:identifier="RYGEL_CONFIGURATION_ENTRY_TRANSCODING" value="2"/>
+		<member name="allow_upload" c:identifier="RYGEL_CONFIGURATION_ENTRY_ALLOW_UPLOAD" value="3"/>
+		<member name="allow_deletion" c:identifier="RYGEL_CONFIGURATION_ENTRY_ALLOW_DELETION" value="4"/>
+		<member name="log_levels" c:identifier="RYGEL_CONFIGURATION_ENTRY_LOG_LEVELS" value="5"/>
+		<member name="plugin_path" c:identifier="RYGEL_CONFIGURATION_ENTRY_PLUGIN_PATH" value="6"/>
+		<member name="video_upload_folder" c:identifier="RYGEL_CONFIGURATION_ENTRY_VIDEO_UPLOAD_FOLDER" value="7"/>
+		<member name="music_upload_folder" c:identifier="RYGEL_CONFIGURATION_ENTRY_MUSIC_UPLOAD_FOLDER" value="8"/>
+		<member name="picture_upload_folder" c:identifier="RYGEL_CONFIGURATION_ENTRY_PICTURE_UPLOAD_FOLDER" value="9"/>
 	</enumeration>
 	<enumeration name="SectionEntry" c:type="RygelSectionEntry" glib:type-name="RygelSectionEntry" glib:get-type="rygel_section_entry_get_type">
 		<member name="title" c:identifier="RYGEL_SECTION_ENTRY_TITLE" value="0"/>
@@ -263,6 +262,16 @@
 			<return-value transfer-ownership="full" allow-none="1">
 				<type name="utf8" c:type="gchar*"/>
 			</return-value>
+		</method>
+		<method name="set_serial_number" c:identifier="rygel_description_file_set_serial_number">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="serial" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
 		</method>
 		<method name="set_dlna_caps" c:identifier="rygel_description_file_set_dlna_caps">
 			<return-value transfer-ownership="full">
@@ -1089,16 +1098,6 @@
 		<field name="priv">
 			<type name="BaseConfigurationPrivate" c:type="RygelBaseConfigurationPrivate*"/>
 		</field>
-		<method name="get_upnp_enabled" c:identifier="rygel_base_configuration_get_upnp_enabled" throws="1">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<virtual-method name="get_upnp_enabled" invoker="get_upnp_enabled" throws="1">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</virtual-method>
 		<method name="get_interface" c:identifier="rygel_base_configuration_get_interface" throws="1">
 			<return-value transfer-ownership="full">
 				<type name="utf8" c:type="gchar*"/>
@@ -1436,18 +1435,6 @@
 	<record name="BaseConfigurationClass" c:type="RygelBaseConfigurationClass" glib:is-gtype-struct-for="BaseConfiguration">
 		<field name="parent_class">
 			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
-		</field>
-				<field name="get_upnp_enabled">
-			<callback name="get_upnp_enabled" c:type="get_upnp_enabled" throws="1">
-				<return-value transfer-ownership="full">
-					<type name="gboolean" c:type="gboolean"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="RygelCore.BaseConfiguration" c:type="RygelBaseConfiguration*"/>
-					</parameter>
-				</parameters>
-			</callback>
 		</field>
 				<field name="get_interface">
 			<callback name="get_interface" c:type="get_interface" throws="1">
@@ -1983,18 +1970,165 @@
 			</callback>
 		</field>
 	</record>
+	<interface name="DBusAclProvider" c:type="RygelDBusAclProvider" glib:type-name="RygelDBusAclProvider" glib:get-type="rygel_dbus_acl_provider_get_type" glib:type-struct="DBusAclProviderIface">
+		<prerequisite name="GObject.Object"/>
+		<annotation key="dbus.name" value="org.gnome.Rygel1.AclProvider1"/>
+		<method name="is_allowed" c:identifier="rygel_dbus_acl_provider_is_allowed">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="device" transfer-ownership="none">
+					<type name="GLib.HashTable" c:type="GHashTable*">
+						<type name="utf8" c:type="gchar*"/>
+						<type name="utf8" c:type="gchar*"/>
+					</type>
+				</parameter>
+				<parameter name="service" transfer-ownership="none">
+					<type name="GLib.HashTable" c:type="GHashTable*">
+						<type name="utf8" c:type="gchar*"/>
+						<type name="utf8" c:type="gchar*"/>
+					</type>
+				</parameter>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="address" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="agent" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="6" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<method name="is_allowed_finish" c:identifier="rygel_dbus_acl_provider_is_allowed_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</method>
+		<virtual-method name="is_allowed" invoker="is_allowed">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="device" transfer-ownership="none">
+					<type name="GLib.HashTable" c:type="GHashTable*">
+						<type name="utf8" c:type="gchar*"/>
+						<type name="utf8" c:type="gchar*"/>
+					</type>
+				</parameter>
+				<parameter name="service" transfer-ownership="none">
+					<type name="GLib.HashTable" c:type="GHashTable*">
+						<type name="utf8" c:type="gchar*"/>
+						<type name="utf8" c:type="gchar*"/>
+					</type>
+				</parameter>
+				<parameter name="path" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="address" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="agent" transfer-ownership="none" allow-none="1">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="6" scope="async">
+					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+				</parameter>
+				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+					<type name="gpointer" c:type="void*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<virtual-method name="is_allowed_finish" invoker="is_allowed_finish" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+			<parameters>
+				<parameter name="_res_" transfer-ownership="none">
+					<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+				</parameter>
+			</parameters>
+		</virtual-method>
+		<constant name="SERVICE_NAME" c:identifier="RYGEL_DBUS_ACL_PROVIDER_SERVICE_NAME" value="org.gnome.Rygel1.AclProvider1">
+			<type name="utf8" c:type="const gchar*"/>
+		</constant>
+		<constant name="OBJECT_PATH" c:identifier="RYGEL_DBUS_ACL_PROVIDER_OBJECT_PATH" value="/org/gnome/Rygel1/AclProvider1">
+			<type name="utf8" c:type="const gchar*"/>
+		</constant>
+	</interface>
+	<record name="DBusAclProviderIface" c:type="RygelDBusAclProviderIface" glib:is-gtype-struct-for="DBusAclProvider">
+		<field name="parent_iface">
+			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+		</field>
+		<field name="is_allowed">
+			<callback name="is_allowed" c:type="is_allowed">
+				<return-value transfer-ownership="none">
+					<type name="none"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelCore.DBusAclProvider" c:type="RygelDBusAclProvider*"/>
+					</parameter>
+					<parameter name="device" transfer-ownership="none">
+						<type name="GLib.HashTable" c:type="GHashTable*">
+							<type name="utf8" c:type="gchar*"/>
+							<type name="utf8" c:type="gchar*"/>
+						</type>
+					</parameter>
+					<parameter name="service" transfer-ownership="none">
+						<type name="GLib.HashTable" c:type="GHashTable*">
+							<type name="utf8" c:type="gchar*"/>
+							<type name="utf8" c:type="gchar*"/>
+						</type>
+					</parameter>
+					<parameter name="path" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="address" transfer-ownership="none">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="agent" transfer-ownership="none" allow-none="1">
+						<type name="utf8" c:type="const gchar*"/>
+					</parameter>
+					<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="7" scope="async">
+						<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+					</parameter>
+					<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
+						<type name="gpointer" c:type="void*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+		<field name="is_allowed_finish">
+			<callback name="is_allowed_finish" c:type="is_allowed_finish" throws="1">
+				<return-value transfer-ownership="full">
+					<type name="gboolean" c:type="gboolean"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="RygelCore.DBusAclProvider" c:type="RygelDBusAclProvider*"/>
+					</parameter>
+					<parameter name="_res_" transfer-ownership="none">
+						<type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+					</parameter>
+				</parameters>
+			</callback>
+		</field>
+	</record>
 	<interface name="Configuration" c:type="RygelConfiguration" glib:type-name="RygelConfiguration" glib:get-type="rygel_configuration_get_type" glib:type-struct="ConfigurationIface">
 		<prerequisite name="GObject.Object"/>
-		<method name="get_upnp_enabled" c:identifier="rygel_configuration_get_upnp_enabled" throws="1">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<virtual-method name="get_upnp_enabled" invoker="get_upnp_enabled" throws="1">
-			<return-value transfer-ownership="full">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</virtual-method>
 		<method name="get_interface" c:identifier="rygel_configuration_get_interface" throws="1" deprecated="Use get_interfaces" deprecated-version="0.19.2">
 			<annotation key="deprecated.replacement" value="get_interfaces"/>
 			<annotation key="deprecated.since" value="0.19.2"/>
@@ -2367,18 +2501,6 @@
 	<record name="ConfigurationIface" c:type="RygelConfigurationIface" glib:is-gtype-struct-for="Configuration">
 		<field name="parent_iface">
 			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-		</field>
-		<field name="get_upnp_enabled">
-			<callback name="get_upnp_enabled" c:type="get_upnp_enabled" throws="1">
-				<return-value transfer-ownership="full">
-					<type name="gboolean" c:type="gboolean"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="RygelCore.Configuration" c:type="RygelConfiguration*"/>
-					</parameter>
-				</parameters>
-			</callback>
 		</field>
 		<field name="get_interface">
 			<callback name="get_interface" c:type="get_interface" throws="1" deprecated="Use get_interfaces" deprecated-version="0.19.2">

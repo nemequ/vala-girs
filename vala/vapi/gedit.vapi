@@ -264,6 +264,10 @@ namespace Gedit {
 	}
 	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
 	[SimpleType]
+	public struct ProgressInfoBar_autoptr {
+	}
+	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
+	[SimpleType]
 	public struct Statusbar_autoptr {
 	}
 	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
