@@ -80,6 +80,7 @@ namespace E {
 		public unowned GLib.DBusConnection get_connection ();
 		public unowned string get_object_path ();
 		public bool is_running ();
+		public void* ref_client ();
 		public void set_fields_of_interest (GLib.SList<string> fields_of_interest) throws GLib.Error;
 		public void set_flags (E.BookClientViewFlags flags) throws GLib.Error;
 		public void start () throws GLib.Error;

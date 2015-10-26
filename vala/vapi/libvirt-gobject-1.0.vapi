@@ -202,7 +202,7 @@ namespace GVir {
 		[CCode (has_construct_function = false)]
 		public Manager ();
 		public void add_connection (GVir.Connection conn);
-		public GVir.Connection find_connection_by_uri (string uri);
+		public GVir.Connection? find_connection_by_uri (string uri);
 		public GLib.List<GVir.Connection> get_connections ();
 		public void remove_connection (GVir.Connection conn);
 		public virtual signal void connection_added (GVir.Connection conn);

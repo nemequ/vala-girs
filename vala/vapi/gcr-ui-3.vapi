@@ -16,7 +16,7 @@ namespace Gcr {
 	public class CertificateWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public CertificateWidget (Gcr.Certificate? certificate);
-		public unowned Gcr.Certificate get_certificate ();
+		public unowned Gcr.Certificate? get_certificate ();
 		public void set_certificate (Gcr.Certificate? certificate);
 		[NoAccessorMethod]
 		public Gck.Attributes attributes { owned get; set; }
@@ -67,7 +67,7 @@ namespace Gcr {
 	public class KeyRenderer : GLib.Object, Gcr.Renderer {
 		[CCode (has_construct_function = false)]
 		public KeyRenderer (string? label, Gck.Attributes? attrs);
-		public unowned Gck.Attributes get_attributes ();
+		public unowned Gck.Attributes? get_attributes ();
 		public void set_attributes (Gck.Attributes? attrs);
 		[NoAccessorMethod]
 		public Gck.Object object { owned get; set; }
@@ -76,7 +76,7 @@ namespace Gcr {
 	public class KeyWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public KeyWidget (Gck.Attributes? attrs);
-		public unowned Gck.Attributes get_attributes ();
+		public unowned Gck.Attributes? get_attributes ();
 		public void set_attributes (Gck.Attributes? attrs);
 		public Gck.Attributes attributes { get; set; }
 	}
@@ -152,9 +152,9 @@ namespace Gcr {
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_renderer_get_type ()")]
 	public interface Renderer : GLib.Object {
-		public static Gcr.Renderer create (string? label, Gck.Attributes attrs);
+		public static Gcr.Renderer? create (string? label, Gck.Attributes attrs);
 		public void emit_data_changed ();
-		public unowned Gck.Attributes get_attributes ();
+		public unowned Gck.Attributes? get_attributes ();
 		[NoWrapper]
 		public abstract void populate_popup (Gcr.Viewer viewer, Gtk.Menu menu);
 		public void popuplate_popup (Gcr.Viewer viewer, Gtk.Menu menu);
@@ -184,7 +184,7 @@ namespace Gcr {
 		TREE
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
-	public static Gcr.Renderer renderer_create (string? label, Gck.Attributes attrs);
+	public static Gcr.Renderer? renderer_create (string? label, Gck.Attributes attrs);
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
 	public static void renderer_register (GLib.Type renderer_type, Gck.Attributes attrs);
 	[CCode (cheader_filename = "ui/gcr-ui.h")]

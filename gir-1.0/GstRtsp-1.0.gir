@@ -164,13 +164,16 @@ connection is closed.</doc>
         </parameters>
       </method>
       <method name="get_read_socket"
-              c:identifier="gst_rtsp_connection_get_read_socket"
-              introspectable="0">
-        <return-value>
+              c:identifier="gst_rtsp_connection_get_read_socket">
+        <doc xml:space="preserve">Get the file descriptor for reading.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the file descriptor used for reading or %NULL on
+error. The file descriptor remains valid until the connection is closed.</doc>
           <type name="Gio.Socket" c:type="GSocket*"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPConnection</doc>
             <type name="RTSPConnection" c:type="const GstRTSPConnection*"/>
           </instance-parameter>
         </parameters>
@@ -223,6 +226,24 @@ certificate database.</doc>
 database has been previously set. Use g_object_unref() to release the
 certificate database.</doc>
           <type name="Gio.TlsDatabase" c:type="GTlsDatabase*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPConnection</doc>
+            <type name="RTSPConnection" c:type="GstRTSPConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tls_interaction"
+              c:identifier="gst_rtsp_connection_get_tls_interaction"
+              version="1.6">
+        <doc xml:space="preserve">Gets a #GTlsInteraction object to be used when the connection or certificate
+database need to interact with the user. This will be used to prompt the
+user for passwords where necessary.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a reference on the #GTlsInteraction. Use
+g_object_unref() to release.</doc>
+          <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
@@ -609,6 +630,26 @@ can't be verified with the default certificate database first.</doc>
           <parameter name="database" transfer-ownership="none">
             <doc xml:space="preserve">a #GTlsDatabase</doc>
             <type name="Gio.TlsDatabase" c:type="GTlsDatabase*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_tls_interaction"
+              c:identifier="gst_rtsp_connection_set_tls_interaction"
+              version="1.6">
+        <doc xml:space="preserve">Sets a #GTlsInteraction object to be used when the connection or certificate
+database need to interact with the user. This will be used to prompt the
+user for passwords where necessary.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPConnection</doc>
+            <type name="RTSPConnection" c:type="GstRTSPConnection*"/>
+          </instance-parameter>
+          <parameter name="interaction" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTlsInteraction</doc>
+            <type name="Gio.TlsInteraction" c:type="GTlsInteraction*"/>
           </parameter>
         </parameters>
       </method>
@@ -1093,10 +1134,16 @@ read from @socket which should be used before starting to read new data.</doc>
           <type name="RTSPResult"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
-          <parameter name="p0" transfer-ownership="none">
+          <parameter name="p0"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1731,16 +1778,22 @@ read from @socket which should be used before starting to read new data.</doc>
               glib:get-type="gst_rtsp_lower_trans_get_type"
               c:type="GstRTSPLowerTrans">
       <doc xml:space="preserve">The different transport methods.</doc>
-      <member name="udp_unicast"
+      <member name="unknown"
+              value="0"
+              c:identifier="GST_RTSP_LOWER_TRANS_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">invalid transport flag</doc>
+      </member>
+      <member name="udp"
               value="1"
               c:identifier="GST_RTSP_LOWER_TRANS_UDP"
-              glib:nick="udp-unicast">
+              glib:nick="udp">
         <doc xml:space="preserve">stream data over UDP</doc>
       </member>
-      <member name="udp_multicast"
+      <member name="udp_mcast"
               value="2"
               c:identifier="GST_RTSP_LOWER_TRANS_UDP_MCAST"
-              glib:nick="udp-multicast">
+              glib:nick="udp-mcast">
         <doc xml:space="preserve">stream data over UDP multicast</doc>
       </member>
       <member name="tcp"
@@ -1828,6 +1881,30 @@ of @value.</doc>
           <parameter name="field" transfer-ownership="none">
             <doc xml:space="preserve">a #GstRTSPHeaderField</doc>
             <type name="RTSPHeaderField" c:type="GstRTSPHeaderField"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the value of the header</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_header_by_name"
+              c:identifier="gst_rtsp_message_add_header_by_name"
+              version="1.6">
+        <doc xml:space="preserve">Add a header with key @header and @value to @msg. This function takes a copy
+of @value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstRTSPResult.</doc>
+          <type name="RTSPResult" c:type="GstRTSPResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPMessage</doc>
+            <type name="RTSPMessage" c:type="GstRTSPMessage*"/>
+          </instance-parameter>
+          <parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">header string</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">the value of the header</doc>
@@ -1935,6 +2012,38 @@ was not found.</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
           <parameter name="indx" transfer-ownership="none">
+            <doc xml:space="preserve">the index of the header</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_header_by_name"
+              c:identifier="gst_rtsp_message_get_header_by_name"
+              version="1.6">
+        <doc xml:space="preserve">Get the @index header value with key @header from @msg. The result in @value
+stays valid as long as it remains present in @msg.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#GST_RTSP_OK when @field was found, #GST_RTSP_ENOTIMPL if the key
+was not found.</doc>
+          <type name="RTSPResult" c:type="GstRTSPResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPMessage</doc>
+            <type name="RTSPMessage" c:type="GstRTSPMessage*"/>
+          </instance-parameter>
+          <parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPHeaderField</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">pointer to hold the result</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="index" transfer-ownership="none">
             <doc xml:space="preserve">the index of the header</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
@@ -2176,6 +2285,30 @@ headers will be removed.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="remove_header_by_name"
+              c:identifier="gst_rtsp_message_remove_header_by_name"
+              version="1.6">
+        <doc xml:space="preserve">Remove the @index header with key @header from @msg. If @index equals -1,
+all matching headers will be removed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstRTSPResult</doc>
+          <type name="RTSPResult" c:type="GstRTSPResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPMessage</doc>
+            <type name="RTSPMessage" c:type="GstRTSPMessage*"/>
+          </instance-parameter>
+          <parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">the header string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">the index of the header</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_body" c:identifier="gst_rtsp_message_set_body">
         <doc xml:space="preserve">Set the body of @msg to a copy of @data.</doc>
         <return-value transfer-ownership="none">
@@ -2268,6 +2401,30 @@ ownership of @value.</doc>
           <parameter name="field" transfer-ownership="none">
             <doc xml:space="preserve">a #GstRTSPHeaderField</doc>
             <type name="RTSPHeaderField" c:type="GstRTSPHeaderField"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="full">
+            <doc xml:space="preserve">the value of the header</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="take_header_by_name"
+              c:identifier="gst_rtsp_message_take_header_by_name"
+              version="1.6">
+        <doc xml:space="preserve">Add a header with key @header and @value to @msg. This function takes
+ownership of @value, but not of @header.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstRTSPResult.</doc>
+          <type name="RTSPResult" c:type="GstRTSPResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPMessage</doc>
+            <type name="RTSPMessage" c:type="GstRTSPMessage*"/>
+          </instance-parameter>
+          <parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a header string</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="value" transfer-ownership="full">
             <doc xml:space="preserve">the value of the header</doc>
@@ -2498,30 +2655,45 @@ response message.</doc>
         </parameters>
       </function>
     </bitfield>
-    <enumeration name="RTSPMsgType" c:type="GstRTSPMsgType">
+    <enumeration name="RTSPMsgType"
+                 glib:type-name="GstRTSPMsgType"
+                 glib:get-type="gst_rtsp_msg_type_get_type"
+                 c:type="GstRTSPMsgType">
       <doc xml:space="preserve">The type of a message.</doc>
-      <member name="invalid" value="0" c:identifier="GST_RTSP_MESSAGE_INVALID">
+      <member name="invalid"
+              value="0"
+              c:identifier="GST_RTSP_MESSAGE_INVALID"
+              glib:nick="invalid">
         <doc xml:space="preserve">invalid message type</doc>
       </member>
-      <member name="request" value="1" c:identifier="GST_RTSP_MESSAGE_REQUEST">
+      <member name="request"
+              value="1"
+              c:identifier="GST_RTSP_MESSAGE_REQUEST"
+              glib:nick="request">
         <doc xml:space="preserve">RTSP request message</doc>
       </member>
       <member name="response"
               value="2"
-              c:identifier="GST_RTSP_MESSAGE_RESPONSE">
+              c:identifier="GST_RTSP_MESSAGE_RESPONSE"
+              glib:nick="response">
         <doc xml:space="preserve">RTSP response message</doc>
       </member>
       <member name="http_request"
               value="3"
-              c:identifier="GST_RTSP_MESSAGE_HTTP_REQUEST">
+              c:identifier="GST_RTSP_MESSAGE_HTTP_REQUEST"
+              glib:nick="http-request">
         <doc xml:space="preserve">HTTP request message.</doc>
       </member>
       <member name="http_response"
               value="4"
-              c:identifier="GST_RTSP_MESSAGE_HTTP_RESPONSE">
+              c:identifier="GST_RTSP_MESSAGE_HTTP_RESPONSE"
+              glib:nick="http-response">
         <doc xml:space="preserve">HTTP response message.</doc>
       </member>
-      <member name="data" value="5" c:identifier="GST_RTSP_MESSAGE_DATA">
+      <member name="data"
+              value="5"
+              c:identifier="GST_RTSP_MESSAGE_DATA"
+              glib:nick="data">
         <doc xml:space="preserve">data message</doc>
       </member>
     </enumeration>
@@ -2530,6 +2702,12 @@ response message.</doc>
               glib:get-type="gst_rtsp_profile_get_type"
               c:type="GstRTSPProfile">
       <doc xml:space="preserve">The transfer profile to use.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="GST_RTSP_PROFILE_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">invalid profile</doc>
+      </member>
       <member name="avp"
               value="1"
               c:identifier="GST_RTSP_PROFILE_AVP"
@@ -2657,23 +2835,39 @@ UTC times will be converted to nanoseconds since 1900.</doc>
         </parameters>
       </function>
     </record>
-    <enumeration name="RTSPRangeUnit" c:type="GstRTSPRangeUnit">
+    <enumeration name="RTSPRangeUnit"
+                 glib:type-name="GstRTSPRangeUnit"
+                 glib:get-type="gst_rtsp_range_unit_get_type"
+                 c:type="GstRTSPRangeUnit">
       <doc xml:space="preserve">Different possible time range units.</doc>
-      <member name="smpte" value="0" c:identifier="GST_RTSP_RANGE_SMPTE">
+      <member name="smpte"
+              value="0"
+              c:identifier="GST_RTSP_RANGE_SMPTE"
+              glib:nick="smpte">
         <doc xml:space="preserve">SMPTE timecode</doc>
       </member>
       <member name="smpte_30_drop"
               value="1"
-              c:identifier="GST_RTSP_RANGE_SMPTE_30_DROP">
+              c:identifier="GST_RTSP_RANGE_SMPTE_30_DROP"
+              glib:nick="smpte-30-drop">
         <doc xml:space="preserve">29.97 frames per second</doc>
       </member>
-      <member name="smpte_25" value="2" c:identifier="GST_RTSP_RANGE_SMPTE_25">
+      <member name="smpte_25"
+              value="2"
+              c:identifier="GST_RTSP_RANGE_SMPTE_25"
+              glib:nick="smpte-25">
         <doc xml:space="preserve">25 frames per second</doc>
       </member>
-      <member name="npt" value="3" c:identifier="GST_RTSP_RANGE_NPT">
+      <member name="npt"
+              value="3"
+              c:identifier="GST_RTSP_RANGE_NPT"
+              glib:nick="npt">
         <doc xml:space="preserve">Normal play time</doc>
       </member>
-      <member name="clock" value="4" c:identifier="GST_RTSP_RANGE_CLOCK">
+      <member name="clock"
+              value="4"
+              c:identifier="GST_RTSP_RANGE_CLOCK"
+              glib:nick="clock">
         <doc xml:space="preserve">Absolute time expressed as ISO 8601 timestamps</doc>
       </member>
     </enumeration>
@@ -3121,33 +3315,63 @@ UTC times will be converted to nanoseconds since 1900.</doc>
         <type name="RTSPTime2" c:type="GstRTSPTime2"/>
       </field>
     </record>
-    <enumeration name="RTSPTimeType" c:type="GstRTSPTimeType">
+    <enumeration name="RTSPTimeType"
+                 glib:type-name="GstRTSPTimeType"
+                 glib:get-type="gst_rtsp_time_type_get_type"
+                 c:type="GstRTSPTimeType">
       <doc xml:space="preserve">Possible time types.</doc>
-      <member name="seconds" value="0" c:identifier="GST_RTSP_TIME_SECONDS">
+      <member name="seconds"
+              value="0"
+              c:identifier="GST_RTSP_TIME_SECONDS"
+              glib:nick="seconds">
         <doc xml:space="preserve">seconds</doc>
       </member>
-      <member name="now" value="1" c:identifier="GST_RTSP_TIME_NOW">
+      <member name="now"
+              value="1"
+              c:identifier="GST_RTSP_TIME_NOW"
+              glib:nick="now">
         <doc xml:space="preserve">now</doc>
       </member>
-      <member name="end" value="2" c:identifier="GST_RTSP_TIME_END">
+      <member name="end"
+              value="2"
+              c:identifier="GST_RTSP_TIME_END"
+              glib:nick="end">
         <doc xml:space="preserve">end</doc>
       </member>
-      <member name="frames" value="3" c:identifier="GST_RTSP_TIME_FRAMES">
+      <member name="frames"
+              value="3"
+              c:identifier="GST_RTSP_TIME_FRAMES"
+              glib:nick="frames">
         <doc xml:space="preserve">frames and subframes</doc>
       </member>
-      <member name="utc" value="4" c:identifier="GST_RTSP_TIME_UTC">
+      <member name="utc"
+              value="4"
+              c:identifier="GST_RTSP_TIME_UTC"
+              glib:nick="utc">
         <doc xml:space="preserve">UTC time</doc>
       </member>
     </enumeration>
-    <bitfield name="RTSPTransMode" c:type="GstRTSPTransMode">
+    <bitfield name="RTSPTransMode"
+              glib:type-name="GstRTSPTransMode"
+              glib:get-type="gst_rtsp_trans_mode_get_type"
+              c:type="GstRTSPTransMode">
       <doc xml:space="preserve">The transfer mode to use.</doc>
-      <member name="unknown" value="0" c:identifier="GST_RTSP_TRANS_UNKNOWN">
+      <member name="unknown"
+              value="0"
+              c:identifier="GST_RTSP_TRANS_UNKNOWN"
+              glib:nick="unknown">
         <doc xml:space="preserve">invalid tansport mode</doc>
       </member>
-      <member name="rtp" value="1" c:identifier="GST_RTSP_TRANS_RTP">
+      <member name="rtp"
+              value="1"
+              c:identifier="GST_RTSP_TRANS_RTP"
+              glib:nick="rtp">
         <doc xml:space="preserve">transfer RTP data</doc>
       </member>
-      <member name="rdt" value="2" c:identifier="GST_RTSP_TRANS_RDT">
+      <member name="rdt"
+              value="2"
+              c:identifier="GST_RTSP_TRANS_RDT"
+              glib:nick="rdt">
         <doc xml:space="preserve">transfer RDT (RealMedia) data</doc>
       </member>
     </bitfield>
@@ -3677,7 +3901,8 @@ and make sure gst_rtsp_watch_write_data() returns immediately with
             <doc xml:space="preserve">a #GstRTSPWatch</doc>
             <type name="RTSPWatch" c:type="GstRTSPWatch*"/>
           </instance-parameter>
-          <parameter name="flush" transfer-ownership="none">
+          <parameter name="flushing" transfer-ownership="none">
+            <doc xml:space="preserve">new flushing state</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -3820,7 +4045,10 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <doc xml:space="preserve">watch functions</doc>
             <type name="RTSPWatchFuncs" c:type="GstRTSPWatchFuncs*"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data to pass to @funcs</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -3845,7 +4073,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="message" transfer-ownership="none">
               <type name="RTSPMessage" c:type="GstRTSPMessage*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="2">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="2">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3863,7 +4095,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="id" transfer-ownership="none">
               <type name="guint" c:type="guint"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="2">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="2">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3878,7 +4114,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="watch" transfer-ownership="none">
               <type name="RTSPWatch" c:type="GstRTSPWatch*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3896,7 +4136,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="result" transfer-ownership="none">
               <type name="RTSPResult" c:type="GstRTSPResult"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="2">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="2">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3911,7 +4155,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="watch" transfer-ownership="none">
               <type name="RTSPWatch" c:type="GstRTSPWatch*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3926,7 +4174,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="watch" transfer-ownership="none">
               <type name="RTSPWatch" c:type="GstRTSPWatch*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3950,7 +4202,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="id" transfer-ownership="none">
               <type name="guint" c:type="guint"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="4">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3965,7 +4221,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="watch" transfer-ownership="none">
               <type name="RTSPWatch" c:type="GstRTSPWatch*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3986,7 +4246,11 @@ communication. Free with gst_rtsp_watch_unref () after usage.</doc>
             <parameter name="response" transfer-ownership="none">
               <type name="RTSPMessage" c:type="GstRTSPMessage*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="3">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -4557,6 +4821,44 @@ with gst_rtsp_url_free().</doc>
         <parameter name="version" transfer-ownership="none">
           <doc xml:space="preserve">a #GstRTSPVersion</doc>
           <type name="RTSPVersion" c:type="GstRTSPVersion"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rtsp_watch_new"
+              c:identifier="gst_rtsp_watch_new"
+              moved-to="RTSPWatch.new"
+              introspectable="0">
+      <doc xml:space="preserve">Create a watch object for @conn. The functions provided in @funcs will be
+called with @user_data when activity happened on the watch.
+
+The new watch is usually created so that it can be attached to a
+maincontext with gst_rtsp_watch_attach().
+
+@conn must exist for the entire lifetime of the watch.</doc>
+      <return-value>
+        <doc xml:space="preserve">a #GstRTSPWatch that can be used for asynchronous RTSP
+communication. Free with gst_rtsp_watch_unref () after usage.</doc>
+        <type name="RTSPWatch" c:type="GstRTSPWatch*"/>
+      </return-value>
+      <parameters>
+        <parameter name="conn" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstRTSPConnection</doc>
+          <type name="RTSPConnection" c:type="GstRTSPConnection*"/>
+        </parameter>
+        <parameter name="funcs" transfer-ownership="none">
+          <doc xml:space="preserve">watch functions</doc>
+          <type name="RTSPWatchFuncs" c:type="GstRTSPWatchFuncs*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data to pass to @funcs</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="notify" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">notify when @user_data is not referenced anymore</doc>
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
         </parameter>
       </parameters>
     </function>

@@ -74,20 +74,20 @@ namespace GWeather {
 		public void free_timezones (GWeather.Timezone zones);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned GWeather.Location[] get_children ();
-		public string get_city_name ();
-		public unowned string get_code ();
+		public string? get_city_name ();
+		public unowned string? get_code ();
 		public void get_coords (out double latitude, out double longitude);
-		public unowned string get_country ();
-		public string get_country_name ();
+		public unowned string? get_country ();
+		public string? get_country_name ();
 		public double get_distance (GWeather.Location loc2);
 		public GWeather.LocationLevel get_level ();
 		public unowned string get_name ();
-		public unowned GWeather.Location get_parent ();
+		public unowned GWeather.Location? get_parent ();
 		public unowned string get_sort_name ();
-		public unowned GWeather.Timezone get_timezone ();
+		public unowned GWeather.Timezone? get_timezone ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public GWeather.Timezone[] get_timezones ();
-		public static unowned GWeather.Location get_world ();
+		public static unowned GWeather.Location? get_world ();
 		public bool has_coords ();
 		public GWeather.Location @ref ();
 		public unowned GLib.Variant serialize ();
@@ -100,7 +100,7 @@ namespace GWeather {
 	public class LocationEntry : Gtk.SearchEntry, Atk.Implementor, Gtk.Buildable, Gtk.CellEditable, Gtk.Editable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public LocationEntry (GWeather.Location top);
-		public GWeather.Location get_location ();
+		public GWeather.Location? get_location ();
 		public bool has_custom_text ();
 		public bool set_city (string? city_name, string code);
 		public void set_location (GWeather.Location? loc);
@@ -124,7 +124,7 @@ namespace GWeather {
 	public class TimezoneMenu : Gtk.ComboBox, Atk.Implementor, Gtk.Buildable, Gtk.CellEditable, Gtk.CellLayout {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public TimezoneMenu (GWeather.Location top);
-		public unowned string get_tzid ();
+		public unowned string? get_tzid ();
 		public void set_tzid (string? tzid);
 		public GWeather.Location top { construct; }
 		public string tzid { get; set; }

@@ -471,10 +471,10 @@ namespace E {
 		public void free ();
 		public unowned string? get_group ();
 		public unowned string get_name ();
-		public unowned GLib.List<string> get_param (string name);
+		public unowned GLib.List<string>? get_param (string name);
 		public unowned GLib.List<E.VCardAttributeParam> get_params ();
 		public string? get_value ();
-		public GLib.StringBuilder get_value_decoded ();
+		public GLib.StringBuilder? get_value_decoded ();
 		public unowned GLib.List<string> get_values ();
 		public unowned GLib.List<GLib.StringBuilder> get_values_decoded ();
 		public bool has_type (string typestr);

@@ -122,7 +122,7 @@ namespace Grl {
 		public unowned string get_id ();
 		public unowned string get_keyword ();
 		public unowned string get_keyword_nth (uint index);
-		public GLib.DateTime get_last_played ();
+		public unowned string get_last_played ();
 		public int get_last_position ();
 		public unowned string get_license ();
 		public unowned string get_mime ();
@@ -159,7 +159,7 @@ namespace Grl {
 		public void set_favourite (bool favourite);
 		public void set_id (string id);
 		public void set_keyword (string keyword);
-		public void set_last_played (GLib.DateTime last_played);
+		public void set_last_played (string last_played);
 		public void set_last_position (int last_position);
 		public void set_license (string license);
 		public void set_mime (string mime);

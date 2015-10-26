@@ -6,8 +6,6 @@
 <include name="GdkPixbuf" version="2.0"/>
 <include name="Ggit" version="1.0"/>
 <include name="GLib" version="2.0"/>
-<include name="Soup" version="2.4"/>
-<include name="WebKit2" version="4.0"/>
 <include name="Gee" version="0.8"/>
 <include name="Pango" version="1.0"/>
 <include name="cairo" version="1.0"/>
@@ -95,9 +93,6 @@
 	</enumeration>
 	<enumeration name="DateError" c:type="GitgDateError" glib:error-domain="gitg_date_error-quark">
 		<member name="invalid_format" c:identifier="GITG_DATE_ERROR_INVALID_FORMAT" value="0"/>
-	</enumeration>
-	<enumeration name="DiffViewRequestIconError" c:type="GitgDiffViewRequestIconError" glib:error-domain="gitg_diff_view_request_icon_error-quark">
-		<member name="icon_not_found" c:identifier="GITG_DIFF_VIEW_REQUEST_ICON_ERROR_ICON_NOT_FOUND" value="0"/>
 	</enumeration>
 	<enumeration name="InitError" c:type="GitgInitError" glib:error-domain="gitg_init_error-quark">
 		<member name="threads_unsafe" c:identifier="GITG_INIT_ERROR_THREADS_UNSAFE" value="0"/>
@@ -259,10 +254,13 @@
 				<parameter name="email" transfer-ownership="none">
 					<type name="utf8" c:type="const gchar*"/>
 				</parameter>
+				<parameter name="size" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
 					<type name="Gio.Cancellable" c:type="GCancellable*"/>
 				</parameter>
-				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="3" scope="async">
+				<parameter name="_callback_" transfer-ownership="none" allow-none="1" closure="4" scope="async">
 					<type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
 				</parameter>
 				<parameter name="_callback__target" transfer-ownership="none" allow-none="1">
@@ -1108,331 +1106,14 @@
 		</field>
 	</record>
 	<record name="DiffStatPrivate" c:type="GitgDiffStatPrivate" disguised="1"/>
-	<class name="DiffViewOptions" c:type="GitgDiffViewOptions" glib:type-name="GitgDiffViewOptions" glib:get-type="gitg_diff_view_options_get_type" glib:type-struct="DiffViewOptionsClass" parent="Gtk.Grid">
-		<annotation key="gtk-template.ui" value="/org/gnome/gitg/ui/diff-view/diff-view-options.ui"/>
+	<class name="DiffView" c:type="GitgDiffView" glib:type-name="GitgDiffView" glib:get-type="gitg_diff_view_get_type" glib:type-struct="DiffViewClass" parent="Gtk.Grid">
+		<annotation key="gtk-template.ui" value="/org/gnome/gitg/ui/gitg-diff-view.ui"/>
 		<field name="parent_instance">
 			<type name="Gtk.Grid" c:type="GtkGrid"/>
 		</field>
 		<field name="priv">
-			<type name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate*"/>
-		</field>
-		<constructor name="new" c:identifier="gitg_diff_view_options_new">
-			<return-value transfer-ownership="none">
-				<type name="Gitg.DiffViewOptions" c:type="GitgDiffViewOptions*"/>
-			</return-value>
-			<parameters>
-				<parameter name="view" transfer-ownership="none">
-					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-				</parameter>
-			</parameters>
-		</constructor>
-		<property name="changes-inline" writable="1">
-			<type name="gboolean" c:type="gboolean"/>
-		</property>
-		<method name="get_changes_inline" c:identifier="gitg_diff_view_options_get_changes_inline">
-			<return-value transfer-ownership="none">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="set_changes_inline" c:identifier="gitg_diff_view_options_set_changes_inline">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</parameter>
-			</parameters>
-		</method>
-		<property name="ignore-whitespace" writable="1">
-			<type name="gboolean" c:type="gboolean"/>
-		</property>
-		<method name="get_ignore_whitespace" c:identifier="gitg_diff_view_options_get_ignore_whitespace">
-			<return-value transfer-ownership="none">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="set_ignore_whitespace" c:identifier="gitg_diff_view_options_set_ignore_whitespace">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</parameter>
-			</parameters>
-		</method>
-		<property name="wrap" writable="1">
-			<type name="gboolean" c:type="gboolean"/>
-		</property>
-		<method name="get_wrap" c:identifier="gitg_diff_view_options_get_wrap">
-			<return-value transfer-ownership="none">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<method name="set_wrap" c:identifier="gitg_diff_view_options_set_wrap">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</parameter>
-			</parameters>
-		</method>
-		<property name="context-lines" writable="1">
-			<type name="gint" c:type="gint"/>
-		</property>
-		<method name="get_context_lines" c:identifier="gitg_diff_view_options_get_context_lines">
-			<return-value transfer-ownership="none">
-				<type name="gint" c:type="gint"/>
-			</return-value>
-		</method>
-		<method name="set_context_lines" c:identifier="gitg_diff_view_options_set_context_lines">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
-				</parameter>
-			</parameters>
-		</method>
-		<property name="tab-width" writable="1">
-			<type name="gint" c:type="gint"/>
-		</property>
-		<method name="get_tab_width" c:identifier="gitg_diff_view_options_get_tab_width">
-			<return-value transfer-ownership="none">
-				<type name="gint" c:type="gint"/>
-			</return-value>
-		</method>
-		<method name="set_tab_width" c:identifier="gitg_diff_view_options_set_tab_width">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
-				</parameter>
-			</parameters>
-		</method>
-		<property name="view" writable="1" construct="1">
-			<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-		</property>
-		<method name="get_view" c:identifier="gitg_diff_view_options_get_view">
-			<return-value transfer-ownership="none">
-				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-			</return-value>
-		</method>
-		<method name="set_view" c:identifier="gitg_diff_view_options_set_view">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-				</parameter>
-			</parameters>
-		</method>
-	</class>
-	<record name="DiffViewOptionsClass" c:type="GitgDiffViewOptionsClass" glib:is-gtype-struct-for="DiffViewOptions">
-		<field name="parent_class">
-			<type name="Gtk.GridClass" c:type="GtkGridClass"/>
-		</field>
-	</record>
-	<record name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate" disguised="1"/>
-	<record name="DiffViewRequest">
-		<field name="d_view" allow-none="1">
-			<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-		</field>
-		<field name="d_uri">
-			<type name="Soup.URI" c:type="SoupURI*"/>
-		</field>
-		<field name="d_mimetype" allow-none="1">
-			<type name="utf8" c:type="gchar*"/>
-		</field>
-		<field name="d_size">
-			<type name="gint64" c:type="gint64"/>
-		</field>
-		<field name="d_request">
-			<type name="WebKit2.URISchemeRequest" c:type="WebKitURISchemeRequest*"/>
-		</field>
-		<field name="d_hasView">
-			<type name="gboolean" c:type="gboolean"/>
-		</field>
-		<constructor name="new" c:identifier="gitg_diff_view_request_new">
-			<return-value transfer-ownership="full">
-				<type name="Gitg.DiffViewRequest" c:type="GitgDiffViewRequest*"/>
-			</return-value>
-			<parameters>
-				<parameter name="view" transfer-ownership="none" allow-none="1">
-					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-				</parameter>
-				<parameter name="request" transfer-ownership="none">
-					<type name="WebKit2.URISchemeRequest" c:type="WebKitURISchemeRequest*"/>
-				</parameter>
-				<parameter name="uri" transfer-ownership="none">
-					<type name="Soup.URI" c:type="SoupURI*"/>
-				</parameter>
-			</parameters>
-		</constructor>
-		<method name="finish_empty" c:identifier="gitg_diff_view_request_finish_empty">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-		</method>
-		<method name="parameter" c:identifier="gitg_diff_view_request_parameter">
-			<return-value transfer-ownership="full" allow-none="1">
-				<type name="utf8" c:type="gchar*"/>
-			</return-value>
-			<parameters>
-				<parameter name="v" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<method name="run_async" c:identifier="gitg_diff_view_request_run_async" throws="1">
-			<return-value transfer-ownership="full" allow-none="1">
-				<type name="Gio.InputStream" c:type="GInputStream*"/>
-			</return-value>
-			<parameters>
-				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
-					<type name="Gio.Cancellable" c:type="GCancellable*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<virtual-method name="run_async" invoker="run_async" throws="1">
-			<return-value transfer-ownership="full" allow-none="1">
-				<type name="Gio.InputStream" c:type="GInputStream*"/>
-			</return-value>
-			<parameters>
-				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
-					<type name="Gio.Cancellable" c:type="GCancellable*"/>
-				</parameter>
-			</parameters>
-		</virtual-method>
-		<method name="run" c:identifier="gitg_diff_view_request_run">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
-					<type name="Gio.Cancellable" c:type="GCancellable*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<method name="get_content_length" c:identifier="gitg_diff_view_request_get_content_length">
-			<return-value transfer-ownership="full">
-				<type name="gint64" c:type="gint64"/>
-			</return-value>
-		</method>
-		<virtual-method name="get_content_length" invoker="get_content_length">
-			<return-value transfer-ownership="full">
-				<type name="gint64" c:type="gint64"/>
-			</return-value>
-		</virtual-method>
-		<method name="get_content_type" c:identifier="gitg_diff_view_request_get_content_type">
-			<return-value transfer-ownership="full">
-				<type name="utf8" c:type="gchar*"/>
-			</return-value>
-		</method>
-		<virtual-method name="get_content_type" invoker="get_content_type">
-			<return-value transfer-ownership="full">
-				<type name="utf8" c:type="gchar*"/>
-			</return-value>
-		</virtual-method>
-		<property name="uri">
-			<type name="Soup.URI" c:type="SoupURI*"/>
-		</property>
-		<method name="get_uri" c:identifier="gitg_diff_view_request_get_uri">
-			<return-value transfer-ownership="none">
-				<type name="Soup.URI" c:type="SoupURI*"/>
-			</return-value>
-		</method>
-		<property name="has-view">
-			<type name="gboolean" c:type="gboolean"/>
-		</property>
-		<method name="get_has_view" c:identifier="gitg_diff_view_request_get_has_view">
-			<return-value transfer-ownership="none">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<property name="view">
-			<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-		</property>
-		<method name="get_view" c:identifier="gitg_diff_view_request_get_view">
-			<return-value transfer-ownership="none" allow-none="1">
-				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-			</return-value>
-		</method>
-	</record>
-	<class name="DiffView" c:type="GitgDiffView" glib:type-name="GitgDiffView" glib:get-type="gitg_diff_view_get_type" glib:type-struct="DiffViewClass" parent="WebKit2.WebView">
-		<field name="parent_instance">
-			<type name="WebKit2.WebView" c:type="WebKitWebView"/>
-		</field>
-		<field name="priv">
 			<type name="DiffViewPrivate" c:type="GitgDiffViewPrivate*"/>
 		</field>
-		<method name="request" c:identifier="gitg_diff_view_request">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="request" transfer-ownership="none">
-					<type name="Gitg.DiffViewRequest" c:type="GitgDiffViewRequest*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<constructor name="new" c:identifier="gitg_diff_view_new">
-			<return-value transfer-ownership="none">
-				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-			</return-value>
-		</constructor>
-		<method name="loaded" c:identifier="gitg_diff_view_loaded">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-		</method>
-		<method name="update_has_selection" c:identifier="gitg_diff_view_update_has_selection">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="hs" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</parameter>
-			</parameters>
-		</method>
-		<method name="load_parent" c:identifier="gitg_diff_view_load_parent">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="id" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<method name="select_parent" c:identifier="gitg_diff_view_select_parent">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="id" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<method name="open_url" c:identifier="gitg_diff_view_open_url">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="url" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
 		<method name="get_selection" c:identifier="gitg_diff_view_get_selection">
 			<return-value transfer-ownership="none">
 				<type name="none"/>
@@ -1461,22 +1142,11 @@
 				</parameter>
 			</parameters>
 		</method>
-		<property name="custom-css" writable="1" construct-only="1">
-			<type name="Gio.File" c:type="GFile*"/>
-		</property>
-		<method name="get_custom_css" c:identifier="gitg_diff_view_get_custom_css">
-			<return-value transfer-ownership="none" allow-none="1">
-				<type name="Gio.File" c:type="GFile*"/>
+		<constructor name="new" c:identifier="gitg_diff_view_new">
+			<return-value transfer-ownership="none">
+				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
 			</return-value>
-		</method>
-		<property name="custom-js" writable="1" construct-only="1">
-			<type name="Gio.File" c:type="GFile*"/>
-		</property>
-		<method name="get_custom_js" c:identifier="gitg_diff_view_get_custom_js">
-			<return-value transfer-ownership="none" allow-none="1">
-				<type name="Gio.File" c:type="GFile*"/>
-			</return-value>
-		</method>
+		</constructor>
 		<property name="options">
 			<type name="Ggit.DiffOptions" c:type="GgitDiffOptions*"/>
 		</property>
@@ -1709,16 +1379,6 @@
 				</parameter>
 			</parameters>
 		</method>
-		<glib:signal name="request_select_commit">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="id" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</glib:signal>
 		<glib:signal name="options_changed">
 			<return-value transfer-ownership="full">
 				<type name="none"/>
@@ -1727,7 +1387,7 @@
 	</class>
 	<record name="DiffViewClass" c:type="GitgDiffViewClass" glib:is-gtype-struct-for="DiffView">
 		<field name="parent_class">
-			<type name="WebKit2.WebViewClass" c:type="WebKitWebViewClass"/>
+			<type name="Gtk.GridClass" c:type="GtkGridClass"/>
 		</field>
 		<field name="options_changed">
 			<callback name="diff_view_options_changed" c:type="diff_view_options_changed">
@@ -1738,6 +1398,139 @@
 		</field>
 	</record>
 	<record name="DiffViewPrivate" c:type="GitgDiffViewPrivate" disguised="1"/>
+	<class name="DiffViewOptions" c:type="GitgDiffViewOptions" glib:type-name="GitgDiffViewOptions" glib:get-type="gitg_diff_view_options_get_type" glib:type-struct="DiffViewOptionsClass" parent="Gtk.Grid">
+		<annotation key="gtk-template.ui" value="/org/gnome/gitg/ui/gitg-diff-view-options.ui"/>
+		<field name="parent_instance">
+			<type name="Gtk.Grid" c:type="GtkGrid"/>
+		</field>
+		<field name="priv">
+			<type name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="gitg_diff_view_options_new">
+			<return-value transfer-ownership="none">
+				<type name="Gitg.DiffViewOptions" c:type="GitgDiffViewOptions*"/>
+			</return-value>
+			<parameters>
+				<parameter name="view" transfer-ownership="none">
+					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<property name="changes-inline" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<method name="get_changes_inline" c:identifier="gitg_diff_view_options_get_changes_inline">
+			<return-value transfer-ownership="none">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="set_changes_inline" c:identifier="gitg_diff_view_options_set_changes_inline">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="ignore-whitespace" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<method name="get_ignore_whitespace" c:identifier="gitg_diff_view_options_get_ignore_whitespace">
+			<return-value transfer-ownership="none">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="set_ignore_whitespace" c:identifier="gitg_diff_view_options_set_ignore_whitespace">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="wrap" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<method name="get_wrap" c:identifier="gitg_diff_view_options_get_wrap">
+			<return-value transfer-ownership="none">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="set_wrap" c:identifier="gitg_diff_view_options_set_wrap">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="context-lines" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_context_lines" c:identifier="gitg_diff_view_options_get_context_lines">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_context_lines" c:identifier="gitg_diff_view_options_set_context_lines">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="tab-width" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_tab_width" c:identifier="gitg_diff_view_options_get_tab_width">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_tab_width" c:identifier="gitg_diff_view_options_set_tab_width">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="view" writable="1" construct="1">
+			<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+		</property>
+		<method name="get_view" c:identifier="gitg_diff_view_options_get_view">
+			<return-value transfer-ownership="none">
+				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+			</return-value>
+		</method>
+		<method name="set_view" c:identifier="gitg_diff_view_options_set_view">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+				</parameter>
+			</parameters>
+		</method>
+	</class>
+	<record name="DiffViewOptionsClass" c:type="GitgDiffViewOptionsClass" glib:is-gtype-struct-for="DiffViewOptions">
+		<field name="parent_class">
+			<type name="Gtk.GridClass" c:type="GtkGridClass"/>
+		</field>
+	</record>
+	<record name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate" disguised="1"/>
 	<class name="Hook" c:type="GitgHook" glib:type-name="GitgHook" glib:get-type="gitg_hook_get_type" glib:type-struct="HookClass" parent="GObject.Object">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>
@@ -3086,6 +2879,23 @@
 		</field>
 	</record>
 	<record name="RepositoryPrivate" c:type="GitgRepositoryPrivate" disguised="1"/>
+	<record name="Resource">
+		<function name="load_css" c:identifier="gitg_resource_load_css">
+			<return-value transfer-ownership="full" allow-none="1">
+				<type name="Gtk.CssProvider" c:type="GtkCssProvider*"/>
+			</return-value>
+			<parameters>
+				<parameter name="id" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</function>
+		<constructor name="new" c:identifier="gitg_resource_new">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Resource" c:type="GitgResource*"/>
+			</return-value>
+		</constructor>
+	</record>
 	<class name="SidebarStore" c:type="GitgSidebarStore" glib:type-name="GitgSidebarStore" glib:get-type="gitg_sidebar_store_get_type" glib:type-struct="SidebarStoreClass" parent="Gtk.TreeStore">
 		<field name="parent_instance">
 			<type name="Gtk.TreeStore" c:type="GtkTreeStore"/>
@@ -4345,10 +4155,32 @@
 	<interface name="Branch" c:type="GitgBranch" glib:type-name="GitgBranch" glib:get-type="gitg_branch_get_type" glib:type-struct="BranchIface">
 		<prerequisite name="Ggit.Branch"/>
 		<prerequisite name="Gitg.Ref"/>
+		<method name="get_upstream" c:identifier="gitg_branch_get_upstream" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Ref" c:type="GitgRef*"/>
+			</return-value>
+		</method>
+		<virtual-method name="get_upstream" invoker="get_upstream" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Ref" c:type="GitgRef*"/>
+			</return-value>
+		</virtual-method>
 	</interface>
 	<record name="BranchIface" c:type="GitgBranchIface" glib:is-gtype-struct-for="Branch">
 		<field name="parent_iface">
 			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+		</field>
+		<field name="get_upstream">
+			<callback name="get_upstream" c:type="get_upstream" throws="1">
+				<return-value transfer-ownership="full">
+					<type name="Gitg.Ref" c:type="GitgRef*"/>
+				</return-value>
+				<parameters>
+					<parameter name="self" transfer-ownership="none">
+						<type name="Gitg.Branch" c:type="GitgBranch*"/>
+					</parameter>
+				</parameters>
+			</callback>
 		</field>
 	</record>
 	<interface name="Ref" c:type="GitgRef" glib:type-name="GitgRef" glib:get-type="gitg_ref_get_type" glib:type-struct="RefIface">

@@ -292,6 +292,54 @@ executing instruction indication in a source file, etc..</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_source_tag"
+              c:identifier="gtk_source_buffer_create_source_tag"
+              version="3.20"
+              introspectable="0">
+        <doc xml:space="preserve">In short, this is the same function as gtk_text_buffer_create_tag(), but
+instead of creating a #GtkTextTag, this function creates a #GtkSourceTag.
+
+This function creates a #GtkSourceTag and adds it to the tag table for
+@buffer.  Equivalent to calling gtk_text_tag_new() and then adding the tag to
+the buffer’s tag table. The returned tag is owned by the buffer’s tag table,
+so the ref count will be equal to one.
+
+If @tag_name is %NULL, the tag is anonymous.
+
+If @tag_name is non-%NULL, a tag called @tag_name must not already
+exist in the tag table for this buffer.
+
+The @first_property_name argument and subsequent arguments are a list
+of properties to set on the tag, as with g_object_set().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GtkSourceTag.</doc>
+          <type name="Gtk.TextTag" c:type="GtkTextTag*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkSourceBuffer</doc>
+            <type name="Buffer" c:type="GtkSourceBuffer*"/>
+          </instance-parameter>
+          <parameter name="tag_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">name of the new tag, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="first_property_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">name of first property to set, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">%NULL-terminated list of property names and values</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="end_not_undoable_action"
               c:identifier="gtk_source_buffer_end_not_undoable_action">
         <doc xml:space="preserve">Marks the end of a not undoable action on the buffer.  When the
@@ -823,7 +871,9 @@ The buffer holds a reference to @language.</doc>
 track.  If the number of user actions exceeds the limit set by this
 function, older actions will be discarded.
 
-If @max_undo_levels is -1, no limit is set.</doc>
+If @max_undo_levels is -1, the undo/redo is unlimited.
+
+If @max_undo_levels is 0, the undo/redo is disabled.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -978,19 +1028,24 @@ brackets style.</doc>
         <type name="BufferPrivate" c:type="GtkSourceBufferPrivate*"/>
       </field>
       <glib:signal name="bracket-matched" when="last" version="2.12">
-        <doc xml:space="preserve">Sets @iter to a valid iterator pointing to the matching bracket
-if @state is #GTK_SOURCE_BRACKET_MATCH_FOUND. Otherwise @iter is
-meaningless.</doc>
+        <doc xml:space="preserve">@iter is set to a valid iterator pointing to the matching bracket
+if @state is %GTK_SOURCE_BRACKET_MATCH_FOUND. Otherwise @iter is
+meaningless.
+
+The signal is emitted only when the @state changes, typically when
+the cursor moves.
+
+A use-case for this signal is to show messages in a #GtkStatusbar.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="iter" transfer-ownership="none">
-            <doc xml:space="preserve">iterator to initialize.</doc>
+            <doc xml:space="preserve">if found, the location of the matching bracket.</doc>
             <type name="Gtk.TextIter"/>
           </parameter>
           <parameter name="state" transfer-ownership="none">
-            <doc xml:space="preserve">state of bracket matching</doc>
+            <doc xml:space="preserve">state of bracket matching.</doc>
             <type name="BracketMatchType"/>
           </parameter>
         </parameters>
@@ -4258,7 +4313,10 @@ called.</doc>
             <type name="MountOperationFactory"
                   c:type="GtkSourceMountOperationFactory"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the data to pass to the @callback function.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -4511,7 +4569,10 @@ function.</doc>
             <type name="Gio.FileProgressCallback"
                   c:type="GFileProgressCallback"/>
           </parameter>
-          <parameter name="progress_callback_data" transfer-ownership="none">
+          <parameter name="progress_callback_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data to pass to @progress_callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -4535,7 +4596,10 @@ function.</doc>
   satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -4884,7 +4948,10 @@ documentation to know how to use this function.</doc>
             <type name="Gio.FileProgressCallback"
                   c:type="GFileProgressCallback"/>
           </parameter>
-          <parameter name="progress_callback_data" transfer-ownership="none">
+          <parameter name="progress_callback_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data to pass to @progress_callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -4908,7 +4975,10 @@ documentation to know how to use this function.</doc>
   satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -8027,7 +8097,10 @@ g_free() when done with it.</doc>
           <doc xml:space="preserve">a #GtkSourceFile.</doc>
           <type name="File" c:type="GtkSourceFile*"/>
         </parameter>
-        <parameter name="userdata" transfer-ownership="none">
+        <parameter name="userdata"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -9249,7 +9322,10 @@ ownership of @cancellable, so you can unref it after calling this function.</doc
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the data to pass to the @callback function.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -9370,7 +9446,10 @@ ownership of @cancellable, so you can unref it after calling this function.</doc
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the data to pass to the @callback function.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -10787,6 +10866,69 @@ a %NULL-terminated array of strings or %NULL.</doc>
             c:type="GtkSourceStyleSchemePrivate"
             disguised="1">
     </record>
+    <class name="Tag"
+           c:symbol-prefix="tag"
+           c:type="GtkSourceTag"
+           parent="Gtk.TextTag"
+           glib:type-name="GtkSourceTag"
+           glib:get-type="gtk_source_tag_get_type"
+           glib:type-struct="TagClass">
+      <constructor name="new" c:identifier="gtk_source_tag_new">
+        <doc xml:space="preserve">Creates a #GtkSourceTag. Configure the tag using object arguments,
+i.e. using g_object_set().
+
+For usual cases, gtk_source_buffer_create_source_tag() is more convenient to
+use.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GtkSourceTag.</doc>
+          <type name="Gtk.TextTag" c:type="GtkTextTag*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">tag name, or %NULL.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <property name="draw-spaces"
+                version="3.20"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether to draw spaces. This property takes precedence over the value
+defined by the GtkSourceView's #GtkSourceView:draw-spaces property
+(only where the tag is applied).
+
+Setting this property also changes #GtkSourceTag:draw-spaces-set to
+%TRUE.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="draw-spaces-set"
+                version="3.20"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the #GtkSourceTag:draw-spaces property is set and must be
+taken into account.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Gtk.TextTag" c:type="GtkTextTag"/>
+      </field>
+    </class>
+    <record name="TagClass"
+            c:type="GtkSourceTagClass"
+            glib:is-gtype-struct-for="Tag">
+      <field name="parent_class">
+        <type name="Gtk.TextTagClass" c:type="GtkTextTagClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <interface name="UndoManager"
                c:symbol-prefix="undo_manager"
                c:type="GtkSourceUndoManager"
@@ -11619,7 +11761,10 @@ on the context.</doc>
       <method name="set_draw_spaces"
               c:identifier="gtk_source_view_set_draw_spaces">
         <doc xml:space="preserve">Set if and how the spaces should be visualized. Specifying @flags as 0 will
-disable display of spaces.</doc>
+disable display of spaces.
+
+For a finer-grained method, there is also the GtkSourceTag's
+#GtkSourceTag:draw-spaces property.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11923,7 +12068,10 @@ specified lines.</doc>
                 version="2.4"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Set if and how the spaces should be visualized.</doc>
+        <doc xml:space="preserve">Set if and how the spaces should be visualized.
+
+For a finer-grained method, there is also the GtkSourceTag's
+#GtkSourceTag:draw-spaces property.</doc>
         <type name="DrawSpacesFlags"/>
       </property>
       <property name="highlight-current-line"

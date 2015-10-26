@@ -25,7 +25,7 @@ namespace GCab {
 		protected File ();
 		public uint32 get_attributes ();
 		public void get_date (GLib.TimeVal result);
-		public unowned string get_extract_name ();
+		public unowned string? get_extract_name ();
 		public GLib.File get_file ();
 		public unowned string get_name ();
 		public uint32 get_size ();

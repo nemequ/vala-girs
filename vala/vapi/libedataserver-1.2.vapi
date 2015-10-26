@@ -175,6 +175,9 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
 		public int compare_by_display_name (E.Source source2);
+		public static bool credentials_google_is_supported ();
+		public static bool credentials_google_util_extract_from_credentials (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds);
+		public bool credentials_google_util_generate_secret_uid (string out_uid);
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_password_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_display_name ();
@@ -395,8 +398,14 @@ namespace E {
 		public virtual bool can_prompt ();
 		public virtual bool can_store ();
 		public virtual bool delete_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void* get_provider ();
 		public virtual bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, E.NamedParameters out_credentials) throws GLib.Error;
 		public virtual bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_google_get_type ()")]
+	public class SourceCredentialsProviderImplGoogle : E.SourceCredentialsProviderImpl {
+		[CCode (has_construct_function = false)]
+		protected SourceCredentialsProviderImplGoogle ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_password_get_type ()")]
 	public class SourceCredentialsProviderImplPassword : E.SourceCredentialsProviderImpl {
@@ -502,11 +511,13 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_cc ();
 		public unowned string get_drafts_folder ();
+		public E.SourceMailCompositionReplyStyle get_reply_style ();
 		public bool get_sign_imip ();
 		public unowned string get_templates_folder ();
 		public void set_bcc (string? bcc);
 		public void set_cc (string? cc);
 		public void set_drafts_folder (string? drafts_folder);
+		public void set_reply_style (E.SourceMailCompositionReplyStyle reply_style);
 		public void set_sign_imip (bool sign_imip);
 		public void set_templates_folder (string? templates_folder);
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -514,6 +525,7 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] cc { get; set construct; }
 		public string drafts_folder { get; set construct; }
+		public E.SourceMailCompositionReplyStyle reply_style { get; set construct; }
 		public bool sign_imip { get; set construct; }
 		public string templates_folder { get; set construct; }
 	}
@@ -972,6 +984,14 @@ namespace E {
 		LDAPS,
 		STARTTLS
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_MAIL_COMPOSITION_REPLY_STYLE_", type_id = "e_source_mail_composition_reply_style_get_type ()")]
+	public enum SourceMailCompositionReplyStyle {
+		DEFAULT,
+		QUOTED,
+		DO_NOT_QUOTE,
+		ATTACH,
+		OUTLOOK
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_WEATHER_UNITS_", type_id = "e_source_weather_units_get_type ()")]
 	public enum SourceWeatherUnits {
 		FAHRENHEIT,
@@ -1035,6 +1055,14 @@ namespace E {
 	public const string DEBUG_LOG_DOMAIN_GLOG;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_USER")]
 	public const string DEBUG_LOG_DOMAIN_USER;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_ACCESS_TOKEN")]
+	public const string GOOGLE_SECRET_ACCESS_TOKEN;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_EXPIRES_AFTER")]
+	public const string GOOGLE_SECRET_EXPIRES_AFTER;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_REFRESH_TOKEN")]
+	public const string GOOGLE_SECRET_REFRESH_TOKEN;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_GOOGLE_SECRET")]
+	public const string SOURCE_CREDENTIAL_GOOGLE_SECRET;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_PASSWORD")]
 	public const string SOURCE_CREDENTIAL_PASSWORD;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_SSL_TRUST")]
@@ -1243,6 +1271,8 @@ namespace E {
 	public static void util_free_string_slist (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_get_source_full_name (void* registry, void* source);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static bool util_get_source_oauth2_access_token_sync (void* source, E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

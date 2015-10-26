@@ -245,7 +245,10 @@ remove elements from the @array.</doc>
             <doc xml:space="preserve">the function to be called on each element</doc>
             <type name="ArrayForeach" c:type="JsonArrayForeach"/>
           </parameter>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">data to be passed to the function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -520,7 +523,11 @@ this function. It is safe to change the value of @element_node.</doc>
           <doc xml:space="preserve">a #JsonNode containing the value at @index_</doc>
           <type name="Node" c:type="JsonNode*"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
           <doc xml:space="preserve">data passed to the function</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -528,10 +535,9 @@ this function. It is safe to change the value of @element_node.</doc>
     </callback>
     <callback name="BoxedDeserializeFunc"
               c:type="JsonBoxedDeserializeFunc"
-              version="0.10"
-              introspectable="0">
+              version="0.10">
       <doc xml:space="preserve">Deserializes the contents of the passed #JsonNode into a #GBoxed</doc>
-      <return-value>
+      <return-value transfer-ownership="none" nullable="1">
         <doc xml:space="preserve">the newly created boxed type</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
@@ -551,7 +557,10 @@ this function. It is safe to change the value of @element_node.</doc>
         <type name="Node" c:type="JsonNode*"/>
       </return-value>
       <parameters>
-        <parameter name="boxed" transfer-ownership="none">
+        <parameter name="boxed"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">a #GBoxed</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
@@ -1905,7 +1914,10 @@ remove members from the @object.</doc>
             <doc xml:space="preserve">the function to be called on each member</doc>
             <type name="ObjectForeach" c:type="JsonObjectForeach"/>
           </parameter>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">data to be passed to the function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -2420,12 +2432,100 @@ this function. It is safe to change the value of @member_node.</doc>
           <doc xml:space="preserve">a #JsonNode containing the @member_name value</doc>
           <type name="Node" c:type="JsonNode*"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
           <doc xml:space="preserve">data passed to the function</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </callback>
+    <record name="ObjectIter" c:type="JsonObjectIter">
+      <doc xml:space="preserve">An iterator used to iterate over the members of a #JsonObject. This must
+be allocated on the stack and initialised using json_object_iter_init().
+The order in which members are returned by the iterator is undefined. The
+iterator is invalidated if its #JsonObject is modified during iteration.
+
+All the fields in the #JsonObjectIter structure are private and should
+never be accessed directly.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <field name="priv" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+      <method name="init" c:identifier="json_object_iter_init">
+        <doc xml:space="preserve">Initialise the @iter and associate it with @object.
+
+|[&lt;!-- language="C" --&gt;
+JsonObjectIter iter;
+const gchar *member_name;
+JsonNode *member_node;
+
+json_object_iter_init (&amp;iter, some_object);
+while (json_object_iter_next (&amp;iter, &amp;member_name, &amp;member_node))
+  {
+    // Do something with @member_name and @member_node.
+  }
+]|</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve">an uninitialised #JsonObjectIter</doc>
+            <type name="ObjectIter" c:type="JsonObjectIter*"/>
+          </instance-parameter>
+          <parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">the #JsonObject to iterate over</doc>
+            <type name="Object" c:type="JsonObject*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next" c:identifier="json_object_iter_next">
+        <doc xml:space="preserve">Advance @iter and retrieve the next member in the object. If the end of the
+object is reached, %FALSE is returned and @member_name and @member_node are
+set to invalid values. After that point, the @iter is invalid.
+
+The order in which members are returned by the iterator is undefined. The
+iterator is invalidated if its #JsonObject is modified during iteration.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @member_name and @member_node are valid; %FALSE if the end
+   of the object has been reached</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonObjectIter</doc>
+            <type name="ObjectIter" c:type="JsonObjectIter*"/>
+          </instance-parameter>
+          <parameter name="member_name"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return
+   location for the member name, or %NULL to ignore</doc>
+            <type name="utf8" c:type="const gchar**"/>
+          </parameter>
+          <parameter name="member_node"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return
+   location for the member value, or %NULL to ignore</doc>
+            <type name="Node" c:type="JsonNode**"/>
+          </parameter>
+        </parameters>
+      </method>
+    </record>
     <class name="Parser"
            c:symbol-prefix="parser"
            c:type="JsonParser"
@@ -2766,7 +2866,10 @@ of the operation.</doc>
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the data to pass to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -2846,7 +2949,10 @@ an error in a JSON stream.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="error" transfer-ownership="none">
+          <parameter name="error"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a pointer to the #GError</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -4435,7 +4541,7 @@ returns %TRUE and it's undefined otherwise.</doc>
               c:identifier="json_boxed_deserialize"
               version="0.10">
       <doc xml:space="preserve">Deserializes @node into a #GBoxed of @gboxed_type</doc>
-      <return-value transfer-ownership="full">
+      <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">the newly allocated #GBoxed. Use
   g_boxed_free() to release the resources allocated by this
   function</doc>
@@ -4517,7 +4623,10 @@ into a #JsonNode</doc>
           <doc xml:space="preserve">a boxed type</doc>
           <type name="GType" c:type="GType"/>
         </parameter>
-        <parameter name="boxed" transfer-ownership="none">
+        <parameter name="boxed"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">a pointer to a #GBoxed of type @gboxed_type</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>

@@ -11,6 +11,8 @@ namespace NM {
 		public const string CONFIG_DHCP_HOSTNAME;
 		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_SEND_HOSTNAME")]
 		public const string CONFIG_DHCP_SEND_HOSTNAME;
+		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_TIMEOUT")]
+		public const string CONFIG_DHCP_TIMEOUT;
 		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_DNS")]
 		public const string CONFIG_DNS;
 		[CCode (cheader_filename = "nm-setting-ip4-config.h", cname = "NM_SETTING_IP4_CONFIG_DNS_SEARCH")]
@@ -141,7 +143,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static int hex2byte (string hex);
 		[CCode (cheader_filename = "nm-utils.h")]
-		public static string hexstr2bin (string hex, ulong len);
+		public static string hexstr2bin (string hex, size_t len);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static GLib.ByteArray hwaddr_atoba (string asc, int type);
 		[CCode (cheader_filename = "nm-utils.h")]
@@ -1069,6 +1071,7 @@ namespace NM {
 		public unowned string get_dhcp_client_id ();
 		public unowned string get_dhcp_hostname ();
 		public bool get_dhcp_send_hostname ();
+		public int get_dhcp_timeout ();
 		public uint32 get_dns (uint32 i);
 		public unowned string get_dns_search (uint32 i);
 		public bool get_ignore_auto_dns ();
@@ -1096,6 +1099,8 @@ namespace NM {
 		public string dhcp_hostname { owned get; set; }
 		[NoAccessorMethod]
 		public bool dhcp_send_hostname { get; set construct; }
+		[NoAccessorMethod]
+		public uint dhcp_timeout { get; set; }
 		[NoAccessorMethod]
 		public bool ignore_auto_dns { get; set construct; }
 		[NoAccessorMethod]

@@ -32,7 +32,7 @@ namespace Gedit {
 		public unowned Gtk.SourceFile get_file ();
 		public unowned Gtk.SourceLanguage get_language ();
 		[Deprecated (since = "3.14")]
-		public GLib.File get_location ();
+		public GLib.File? get_location ();
 		public string get_metadata (string key);
 		public string get_mime_type ();
 		[Deprecated (since = "3.14")]
@@ -241,46 +241,6 @@ namespace Gedit {
 		public abstract void update_state ();
 		[NoAccessorMethod]
 		public abstract Gedit.Window window { owned get; construct; }
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct AppActivatable_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct App_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct Document_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct EncodingsComboBox_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct MenuExtension_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct ProgressInfoBar_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct Statusbar_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct Tab_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct ViewActivatable_autoptr {
-	}
-	[CCode (cheader_filename = "gedit/gedit-app-activatable.h,gedit/gedit-app.h,gedit/gedit-commands.h,gedit/gedit-debug.h,gedit/gedit-document.h,gedit/gedit-encodings-combo-box.h,gedit/gedit-menu-extension.h,gedit/gedit-message-bus.h,gedit/gedit-message.h,gedit/gedit-progress-info-bar.h,gedit/gedit-statusbar.h,gedit/gedit-tab.h,gedit/gedit-utils.h,gedit/gedit-view-activatable.h,gedit/gedit-view.h,gedit/gedit-window-activatable.h,gedit/gedit-window.h")]
-	[SimpleType]
-	public struct WindowActivatable_autoptr {
 	}
 	[CCode (cheader_filename = "gedit/gedit-debug.h", cprefix = "GEDIT_", type_id = "gedit_debug_section_get_type ()")]
 	[Flags]

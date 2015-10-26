@@ -476,6 +476,22 @@ Free with gst_discoverer_stream_info_list_free() after usage.</doc>
            glib:type-name="GstDiscovererInfo"
            glib:get-type="gst_discoverer_info_get_type">
       <doc xml:space="preserve">Structure containing the information of a URI analyzed by #GstDiscoverer.</doc>
+      <function name="from_variant"
+                c:identifier="gst_discoverer_info_from_variant"
+                version="1.6">
+        <doc xml:space="preserve">Parses a #GVariant as produced by gst_discoverer_info_to_variant()
+back to a #GstDiscovererInfo.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly-allocated #GstDiscovererInfo.</doc>
+          <type name="DiscovererInfo" c:type="GstDiscovererInfo*"/>
+        </return-value>
+        <parameters>
+          <parameter name="variant" transfer-ownership="none">
+            <doc xml:space="preserve">A #GVariant to deserialize into a #GstDiscovererInfo.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </function>
       <method name="copy" c:identifier="gst_discoverer_info_copy">
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A copy of the #GstDiscovererInfo</doc>
@@ -541,7 +557,7 @@ gst_discoverer_stream_info_list_free().</doc>
               c:identifier="gst_discoverer_info_get_misc"
               deprecated="1">
         <doc-deprecated xml:space="preserve">This functions is deprecated since version 1.4, use
-gst_discoverer_info_get_missing_elements_installer_details</doc-deprecated>
+#gst_discoverer_info_get_missing_elements_installer_details</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">Miscellaneous information stored as a #GstStructure
 (for example: information about missing plugins). If you wish to use the
@@ -732,6 +748,31 @@ gst_discoverer_stream_info_list_free().</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="to_variant"
+              c:identifier="gst_discoverer_info_to_variant"
+              version="1.6">
+        <doc xml:space="preserve">Serializes @info to a #GVariant that can be parsed again
+through gst_discoverer_info_from_variant().
+
+Note that any #GstToc (s) that might have been discovered will not be serialized
+for now.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly-allocated #GVariant representing @info.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="info" transfer-ownership="none">
+            <doc xml:space="preserve">A #GstDiscovererInfo</doc>
+            <type name="DiscovererInfo" c:type="GstDiscovererInfo*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">A combination of #GstDiscovererSerializeFlags to specify
+what needs to be serialized.</doc>
+            <type name="DiscovererSerializeFlags"
+                  c:type="GstDiscovererSerializeFlags"/>
+          </parameter>
+        </parameters>
+      </method>
     </class>
     <record name="DiscovererPrivate"
             c:type="GstDiscovererPrivate"
@@ -779,6 +820,46 @@ gst_discoverer_stream_info_list_free().</doc>
         <doc xml:space="preserve">Some plugins are missing for full discovery</doc>
       </member>
     </enumeration>
+    <bitfield name="DiscovererSerializeFlags"
+              version="1.6"
+              glib:type-name="GstDiscovererSerializeFlags"
+              glib:get-type="gst_discoverer_serialize_flags_get_type"
+              c:type="GstDiscovererSerializeFlags">
+      <doc xml:space="preserve">You can use these flags to control what is serialized by
+gst_discoverer_info_to_variant()</doc>
+      <member name="basic"
+              value="0"
+              c:identifier="GST_DISCOVERER_SERIALIZE_BASIC"
+              glib:nick="basic">
+        <doc xml:space="preserve">Serialize only basic information, excluding
+caps, tags and miscellaneous information</doc>
+      </member>
+      <member name="caps"
+              value="1"
+              c:identifier="GST_DISCOVERER_SERIALIZE_CAPS"
+              glib:nick="caps">
+        <doc xml:space="preserve">Serialize the caps for each stream</doc>
+      </member>
+      <member name="tags"
+              value="2"
+              c:identifier="GST_DISCOVERER_SERIALIZE_TAGS"
+              glib:nick="tags">
+        <doc xml:space="preserve">Serialize the tags for each stream</doc>
+      </member>
+      <member name="misc"
+              value="4"
+              c:identifier="GST_DISCOVERER_SERIALIZE_MISC"
+              glib:nick="misc">
+        <doc xml:space="preserve">Serialize miscellaneous information for each stream</doc>
+      </member>
+      <member name="all"
+              value="7"
+              c:identifier="GST_DISCOVERER_SERIALIZE_ALL"
+              glib:nick="all">
+        <doc xml:space="preserve">Serialize all the available info, including
+caps, tags and miscellaneous information</doc>
+      </member>
+    </bitfield>
     <class name="DiscovererStreamInfo"
            c:symbol-prefix="discoverer_stream_info"
            c:type="GstDiscovererStreamInfo"
@@ -835,7 +916,7 @@ and fress the #GList.</doc>
               c:identifier="gst_discoverer_stream_info_get_misc"
               deprecated="1">
         <doc-deprecated xml:space="preserve">This functions is deprecated since version 1.4, use
-gst_discoverer_stream_get_missing_elements_installer_details</doc-deprecated>
+#gst_discoverer_info_get_missing_elements_installer_details</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">additional information regarding the stream (for
 example codec version, profile, etc..). If you wish to use the #GstStructure
@@ -1372,6 +1453,20 @@ subtitles), are currently ignored.</doc>
           </parameter>
         </parameters>
       </function>
+      <method name="get_allow_dynamic_output"
+              c:identifier="gst_encoding_profile_get_allow_dynamic_output">
+        <doc xml:space="preserve">Get whether the format that has been negotiated in at some point can be renegotiated
+later during the encoding.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="profile" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstEncodingProfile</doc>
+            <type name="EncodingProfile" c:type="GstEncodingProfile*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_description"
               c:identifier="gst_encoding_profile_get_description">
         <return-value transfer-ownership="none">
@@ -1509,6 +1604,16 @@ Can be %NULL. Unref after usage.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_enabled" c:identifier="gst_encoding_profile_is_enabled">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="profile" transfer-ownership="none">
+            <type name="EncodingProfile" c:type="GstEncodingProfile*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="is_equal" c:identifier="gst_encoding_profile_is_equal">
         <doc xml:space="preserve">Checks whether the two #GstEncodingProfile are equal</doc>
         <return-value transfer-ownership="none">
@@ -1523,6 +1628,25 @@ Can be %NULL. Unref after usage.</doc>
           <parameter name="b" transfer-ownership="none">
             <doc xml:space="preserve">a #GstEncodingProfile</doc>
             <type name="EncodingProfile" c:type="GstEncodingProfile*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_allow_dynamic_output"
+              c:identifier="gst_encoding_profile_set_allow_dynamic_output">
+        <doc xml:space="preserve">Sets whether the format that has been negotiated in at some point can be renegotiated
+later during the encoding.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="profile" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstEncodingProfile</doc>
+            <type name="EncodingProfile" c:type="GstEncodingProfile*"/>
+          </instance-parameter>
+          <parameter name="allow_dynamic_output" transfer-ownership="none">
+            <doc xml:space="preserve">Whether the format that has been negotiated first can be renegotiated
+during the encoding</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -1541,6 +1665,23 @@ Can be %NULL. Unref after usage.</doc>
           <parameter name="description" transfer-ownership="none">
             <doc xml:space="preserve">the description to set on the profile</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_enabled"
+              c:identifier="gst_encoding_profile_set_enabled">
+        <doc xml:space="preserve">Set whether the profile should be used or not.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="profile" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstEncodingProfile</doc>
+            <type name="EncodingProfile" c:type="GstEncodingProfile*"/>
+          </instance-parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">%FALSE to disable #profile, %TRUE to enable it</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -2033,6 +2174,91 @@ gst_install_plugins_context_free() when no longer needed</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="set_confirm_search"
+              c:identifier="gst_install_plugins_context_set_confirm_search"
+              version="1.6">
+        <doc xml:space="preserve">This function is used to tell the external installer process whether it
+should ask for confirmation or not before searching for missing plugins.
+
+If set, this option will be passed to the installer via a
+--interaction=[show-confirm-search|hide-confirm-search] command line option.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="ctx" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstInstallPluginsContext</doc>
+            <type name="InstallPluginsContext"
+                  c:type="GstInstallPluginsContext*"/>
+          </instance-parameter>
+          <parameter name="confirm_search" transfer-ownership="none">
+            <doc xml:space="preserve">whether to ask for confirmation before searching for plugins</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_desktop_id"
+              c:identifier="gst_install_plugins_context_set_desktop_id"
+              version="1.6">
+        <doc xml:space="preserve">This function is used to pass the calling application's desktop file ID to
+the external installer process.
+
+A desktop file ID is the basename of the desktop file, including the
+.desktop extension.
+
+If set, the desktop file ID will be passed to the installer via a
+--desktop-id= command line option.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="ctx" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstInstallPluginsContext</doc>
+            <type name="InstallPluginsContext"
+                  c:type="GstInstallPluginsContext*"/>
+          </instance-parameter>
+          <parameter name="desktop_id" transfer-ownership="none">
+            <doc xml:space="preserve">the desktop file ID of the calling application</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_startup_notification_id"
+              c:identifier="gst_install_plugins_context_set_startup_notification_id"
+              version="1.6">
+        <doc xml:space="preserve">Sets the startup notification ID for the launched process.
+
+This is typically used to to pass the current X11 event timestamp to the
+external installer process.
+
+Startup notification IDs are defined in the
+[FreeDesktop.Org Startup Notifications standard](http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt).
+
+If set, the ID will be passed to the installer via a
+--startup-notification-id= command line option.
+
+GTK+/GNOME applications should be able to create a startup notification ID
+like this:
+&lt;programlisting&gt;
+  timestamp = gtk_get_current_event_time ();
+  startup_id = g_strdup_printf ("_TIME%u", timestamp);
+...
+&lt;/programlisting&gt;</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="ctx" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstInstallPluginsContext</doc>
+            <type name="InstallPluginsContext"
+                  c:type="GstInstallPluginsContext*"/>
+          </instance-parameter>
+          <parameter name="startup_id" transfer-ownership="none">
+            <doc xml:space="preserve">the startup notification ID</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_xid"
               c:identifier="gst_install_plugins_context_set_xid">
         <doc xml:space="preserve">This function is for X11-based applications (such as most Gtk/Qt
@@ -2086,7 +2312,11 @@ a callback function if you are using the asynchronous interface.</doc>
           <doc xml:space="preserve">whether the installation of the requested plugins succeeded or not</doc>
           <type name="InstallPluginsReturn" c:type="GstInstallPluginsReturn"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="1">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="1">
           <doc xml:space="preserve">the user data passed to gst_install_plugins_async()</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -2207,13 +2437,13 @@ in debugging.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="PLUGINS_BASE_VERSION_MICRO"
-              value="5"
+              value="0"
               c:type="GST_PLUGINS_BASE_VERSION_MICRO">
       <doc xml:space="preserve">The micro version of GStreamer's gst-plugins-base libraries at compile time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="PLUGINS_BASE_VERSION_MINOR"
-              value="4"
+              value="6"
               c:type="GST_PLUGINS_BASE_VERSION_MINOR">
       <doc xml:space="preserve">The minor version of GStreamer's gst-plugins-base libraries at compile time.</doc>
       <type name="gint" c:type="gint"/>
@@ -2717,7 +2947,10 @@ installed but no suitable video decoder and no suitable audio decoder).</doc>
           <type name="InstallPluginsResultFunc"
                 c:type="GstInstallPluginsResultFunc"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">the user data to pass to @func when called, or NULL</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>

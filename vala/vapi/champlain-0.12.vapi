@@ -506,6 +506,7 @@ namespace Champlain {
 		public GLib.List<weak Champlain.MapSource> get_overlay_sources ();
 		public Champlain.State get_state ();
 		public void get_viewport_origin (out int x, out int y);
+		public unowned Champlain.BoundingBox get_world ();
 		public uint get_zoom_level ();
 		public bool get_zoom_on_double_click ();
 		public void go_to (double latitude, double longitude);
@@ -522,6 +523,7 @@ namespace Champlain {
 		public void set_map_source (Champlain.MapSource map_source);
 		public void set_max_zoom_level (uint zoom_level);
 		public void set_min_zoom_level (uint zoom_level);
+		public void set_world (Champlain.BoundingBox bbox);
 		public void set_zoom_level (uint zoom_level);
 		public void set_zoom_on_double_click (bool value);
 		public void stop_go_to ();
@@ -545,6 +547,7 @@ namespace Champlain {
 		public Champlain.MapSource map_source { get; set; }
 		public uint max_zoom_level { get; set; }
 		public uint min_zoom_level { get; set; }
+		public Champlain.BoundingBox world { get; set; }
 		public uint zoom_level { get; set; }
 		public bool zoom_on_double_click { get; set; }
 		public signal void animation_completed ();

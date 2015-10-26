@@ -62,7 +62,7 @@ namespace Secret {
 		public bool get_locked ();
 		public uint64 get_modified ();
 		public string get_schema_name ();
-		public Secret.Value get_secret ();
+		public Secret.Value? get_secret ();
 		public unowned Secret.Service get_service ();
 		public async bool load_secret (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool load_secret_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -133,15 +133,15 @@ namespace Secret {
 		public bool ensure_session_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Secret.Service @get (Secret.ServiceFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual GLib.Type get_collection_gtype ();
-		public GLib.List<Secret.Collection> get_collections ();
+		public GLib.List<Secret.Collection>? get_collections ();
 		public Secret.ServiceFlags get_flags ();
 		public virtual GLib.Type get_item_gtype ();
-		public async Secret.Value get_secret_for_dbus_path (string item_path, GLib.Cancellable? cancellable) throws GLib.Error;
-		public Secret.Value get_secret_for_dbus_path_sync (string item_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async Secret.Value? get_secret_for_dbus_path (string item_path, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Secret.Value? get_secret_for_dbus_path_sync (string item_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.HashTable<string,Secret.Value> get_secrets_for_dbus_paths (string item_paths, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.HashTable<string,Secret.Value> get_secrets_for_dbus_paths_sync (string item_paths, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public unowned string get_session_algorithms ();
-		public unowned string get_session_dbus_path ();
+		public unowned string? get_session_algorithms ();
+		public unowned string? get_session_dbus_path ();
 		public static Secret.Service get_sync (Secret.ServiceFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool load_collections (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool load_collections_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -186,7 +186,7 @@ namespace Secret {
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public unowned uint8[] @get ();
 		public unowned string get_content_type ();
-		public unowned string get_text ();
+		public unowned string? get_text ();
 		public Secret.Value @ref ();
 		public void unref ();
 	}

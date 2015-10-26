@@ -684,6 +684,16 @@ namespace Gtk {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] search_path { get; set; }
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_tag_get_type ()")]
+	[GIR (name = "Tag")]
+	public class SourceTag : Gtk.TextTag {
+		[CCode (has_construct_function = false, type = "GtkTextTag*")]
+		public SourceTag (string? name);
+		[NoAccessorMethod]
+		public bool draw_spaces { get; set; }
+		[NoAccessorMethod]
+		public bool draw_spaces_set { get; set; }
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_view_get_type ()")]
 	[GIR (name = "View")]
 	public class SourceView : Gtk.TextView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {

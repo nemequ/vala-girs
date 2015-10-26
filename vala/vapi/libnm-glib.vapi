@@ -321,6 +321,7 @@ namespace NM {
 		public unowned string get_vendor ();
 		public bool is_software ();
 		public void set_autoconnect (bool autoconnect);
+		public void set_managed (bool managed);
 		public NM.ActiveConnection active_connection { get; }
 		public bool autoconnect { get; set; }
 		public NM.ObjectArray available_connections { get; }

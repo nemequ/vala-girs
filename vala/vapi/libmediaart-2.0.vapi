@@ -35,7 +35,7 @@ namespace MediaArt {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
-	public static bool buffer_to_jpeg (uint8 buffer, ulong len, string buffer_mime, string target) throws GLib.Error;
+	public static bool buffer_to_jpeg (uint8 buffer, size_t len, string buffer_mime, string target) throws GLib.Error;
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
 	public static bool file_to_jpeg (string filename, string target) throws GLib.Error;
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]

@@ -76,7 +76,7 @@ namespace Vnc {
 		public Connection ();
 		public bool audio_disable ();
 		public bool audio_enable ();
-		public bool client_cut_text (void* data, ulong length);
+		public bool client_cut_text (void* data, size_t length);
 		public bool framebuffer_update_request (bool incremental, uint16 x, uint16 y, uint16 width, uint16 height);
 		public bool get_abs_pointer ();
 		public unowned Vnc.AudioFormat get_audio_format ();

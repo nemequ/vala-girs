@@ -206,6 +206,24 @@ gst_audio_base_sink_set_provide_clock.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="report_device_failure"
+              c:identifier="gst_audio_base_sink_report_device_failure"
+              version="1.6">
+        <doc xml:space="preserve">Informs this base class that the audio output device has failed for
+some reason, causing a discontinuity (for example, because the device
+recovered from the error, but lost all contents of its ring buffer).
+This function is typically called by derived classes, and is useful
+for the custom slave method.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioBaseSink</doc>
+            <type name="AudioBaseSink" c:type="GstAudioBaseSink*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="set_alignment_threshold"
               c:identifier="gst_audio_base_sink_set_alignment_threshold">
         <doc xml:space="preserve">Controls the sink's alignment threshold.</doc>
@@ -220,6 +238,47 @@ gst_audio_base_sink_set_provide_clock.</doc>
           <parameter name="alignment_threshold" transfer-ownership="none">
             <doc xml:space="preserve">the new alignment threshold in nanoseconds</doc>
             <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_custom_slaving_callback"
+              c:identifier="gst_audio_base_sink_set_custom_slaving_callback"
+              version="1.6">
+        <doc xml:space="preserve">Sets the custom slaving callback. This callback will
+be invoked if the slave-method property is set to
+GST_AUDIO_BASE_SINK_SLAVE_CUSTOM and the audio sink
+receives and plays samples.
+
+Setting the callback to NULL causes the sink to
+behave as if the GST_AUDIO_BASE_SINK_SLAVE_NONE
+method were used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioBaseSink</doc>
+            <type name="AudioBaseSink" c:type="GstAudioBaseSink*"/>
+          </instance-parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">a #GstAudioBaseSinkCustomSlavingCallback</doc>
+            <type name="AudioBaseSinkCustomSlavingCallback"
+                  c:type="GstAudioBaseSinkCustomSlavingCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">called when user_data becomes unused</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
       </method>
@@ -401,6 +460,103 @@ functionality.</doc>
         </array>
       </field>
     </record>
+    <callback name="AudioBaseSinkCustomSlavingCallback"
+              c:type="GstAudioBaseSinkCustomSlavingCallback"
+              version="1.6">
+      <doc xml:space="preserve">This function is set with gst_audio_base_sink_set_custom_slaving_callback()
+and is called during playback. It receives the current time of external and
+internal clocks, which the callback can then use to apply any custom
+slaving/synchronization schemes.
+
+The external clock is the sink's element clock, the internal one is the
+internal audio clock. The internal audio clock's calibration is applied to
+the timestamps before they are passed to the callback. The difference between
+etime and itime is the skew; how much internal and external clock lie apart
+from each other. A skew of 0 means both clocks are perfectly in sync.
+itime &gt; etime means the external clock is going slower, while itime &lt; etime
+means it is going faster than the internal clock. etime and itime are always
+valid timestamps, except for when a discontinuity happens.
+
+requested_skew is an output value the callback can write to. It informs the
+sink of whether or not it should move the playout pointer, and if so, by how
+much. This pointer is only NULL if a discontinuity occurs; otherwise, it is
+safe to write to *requested_skew. The default skew is 0.
+
+The sink may experience discontinuities. If one happens, discont is TRUE,
+itime, etime are set to GST_CLOCK_TIME_NONE, and requested_skew is NULL.
+This makes it possible to reset custom clock slaving algorithms when a
+discontinuity happens.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="sink" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstAudioBaseSink</doc>
+          <type name="AudioBaseSink" c:type="GstAudioBaseSink*"/>
+        </parameter>
+        <parameter name="etime" transfer-ownership="none">
+          <doc xml:space="preserve">external clock time</doc>
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </parameter>
+        <parameter name="itime" transfer-ownership="none">
+          <doc xml:space="preserve">internal clock time</doc>
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </parameter>
+        <parameter name="requested_skew" transfer-ownership="none">
+          <doc xml:space="preserve">skew amount requested by the callback</doc>
+          <type name="Gst.ClockTimeDiff" c:type="GstClockTimeDiff*"/>
+        </parameter>
+        <parameter name="discont_reason" transfer-ownership="none">
+          <doc xml:space="preserve">reason for discontinuity (if any)</doc>
+          <type name="AudioBaseSinkDiscontReason"
+                c:type="GstAudioBaseSinkDiscontReason"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="5">
+          <doc xml:space="preserve">user data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <enumeration name="AudioBaseSinkDiscontReason"
+                 version="1.6"
+                 c:type="GstAudioBaseSinkDiscontReason">
+      <doc xml:space="preserve">Different possible reasons for discontinuities. This enum is useful for the custom
+slave method.</doc>
+      <member name="no_discont"
+              value="0"
+              c:identifier="GST_AUDIO_BASE_SINK_DISCONT_REASON_NO_DISCONT">
+        <doc xml:space="preserve">No discontinuity occurred</doc>
+      </member>
+      <member name="new_caps"
+              value="1"
+              c:identifier="GST_AUDIO_BASE_SINK_DISCONT_REASON_NEW_CAPS">
+        <doc xml:space="preserve">New caps are set, causing renegotiotion</doc>
+      </member>
+      <member name="flush"
+              value="2"
+              c:identifier="GST_AUDIO_BASE_SINK_DISCONT_REASON_FLUSH">
+        <doc xml:space="preserve">Samples have been flushed</doc>
+      </member>
+      <member name="sync_latency"
+              value="3"
+              c:identifier="GST_AUDIO_BASE_SINK_DISCONT_REASON_SYNC_LATENCY">
+        <doc xml:space="preserve">Sink was synchronized to the estimated latency (occurs during initialization)</doc>
+      </member>
+      <member name="alignment"
+              value="4"
+              c:identifier="GST_AUDIO_BASE_SINK_DISCONT_REASON_ALIGNMENT">
+        <doc xml:space="preserve">Aligning buffers failed because the timestamps are too discontinuous</doc>
+      </member>
+      <member name="device_failure"
+              value="5"
+              c:identifier="GST_AUDIO_BASE_SINK_DISCONT_REASON_DEVICE_FAILURE">
+        <doc xml:space="preserve">Audio output device experienced and recovered from an error but introduced latency in the process (see also @gst_audio_base_sink_report_device_failure())</doc>
+      </member>
+    </enumeration>
     <record name="AudioBaseSinkPrivate"
             c:type="GstAudioBaseSinkPrivate"
             disguised="1">
@@ -429,6 +585,12 @@ drifts too much.</doc>
               c:identifier="GST_AUDIO_BASE_SINK_SLAVE_NONE"
               glib:nick="none">
         <doc xml:space="preserve">No adjustment is done.</doc>
+      </member>
+      <member name="custom"
+              value="3"
+              c:identifier="GST_AUDIO_BASE_SINK_SLAVE_CUSTOM"
+              glib:nick="custom">
+        <doc xml:space="preserve">Use custom clock slaving algorithm (Since: 1.6)</doc>
       </member>
     </enumeration>
     <class name="AudioBaseSrc"
@@ -1166,7 +1328,10 @@ calculated it will call @func with @user_data. When @func returns
             <type name="AudioClockGetTimeFunc"
                   c:type="GstAudioClockGetTimeFunc"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -1295,7 +1460,11 @@ be used.</doc>
           <doc xml:space="preserve">the #GstAudioClock</doc>
           <type name="Gst.Clock" c:type="GstClock*"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="1">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="1">
           <doc xml:space="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -1461,6 +1630,19 @@ Things that subclass need to take care of:
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="getcaps">
+        <return-value transfer-ownership="full">
+          <type name="Gst.Caps" c:type="GstCaps*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dec" transfer-ownership="none">
+            <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+          </instance-parameter>
+          <parameter name="filter" transfer-ownership="none">
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="handle_frame">
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
@@ -1570,6 +1752,19 @@ negotiate fails.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="sink_query">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dec" transfer-ownership="none">
+            <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+          </instance-parameter>
+          <parameter name="query" transfer-ownership="none">
+            <type name="Gst.Query" c:type="GstQuery*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="src_event">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -1580,6 +1775,19 @@ negotiate fails.</doc>
           </instance-parameter>
           <parameter name="event" transfer-ownership="none">
             <type name="Gst.Event" c:type="GstEvent*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="src_query">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dec" transfer-ownership="none">
+            <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+          </instance-parameter>
+          <parameter name="query" transfer-ownership="none">
+            <type name="Gst.Query" c:type="GstQuery*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -1601,6 +1809,25 @@ negotiate fails.</doc>
           <instance-parameter name="dec" transfer-ownership="none">
             <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
           </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="transform_meta">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enc" transfer-ownership="none">
+            <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+          </instance-parameter>
+          <parameter name="outbuf" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+          <parameter name="meta" transfer-ownership="none">
+            <type name="Gst.Meta" c:type="GstMeta*"/>
+          </parameter>
+          <parameter name="inbuf" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
         </parameters>
       </virtual-method>
       <method name="allocate_output_buffer"
@@ -1885,15 +2112,12 @@ MT safe.</doc>
         </parameters>
       </method>
       <method name="merge_tags" c:identifier="gst_audio_decoder_merge_tags">
-        <doc xml:space="preserve">Adds tags to so-called pending tags, which will be processed
-before pushing out data downstream.
+        <doc xml:space="preserve">Sets the audio decoder tags and how they should be merged with any
+upstream stream tags. This will override any tags previously-set
+with gst_audio_decoder_merge_tags().
 
 Note that this is provided for convenience, and the subclass is
-not required to use this and can still do tag handling on its own,
-although it should be aware that baseclass already takes care
-of the usual CODEC/AUDIO_CODEC tags.
-
-MT safe.</doc>
+not required to use this and can still do tag handling on its own.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1902,12 +2126,15 @@ MT safe.</doc>
             <doc xml:space="preserve">a #GstAudioDecoder</doc>
             <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
           </instance-parameter>
-          <parameter name="tags" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstTagList to merge</doc>
+          <parameter name="tags"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstTagList to merge, or NULL</doc>
             <type name="Gst.TagList" c:type="const GstTagList*"/>
           </parameter>
           <parameter name="mode" transfer-ownership="none">
-            <doc xml:space="preserve">the #GstTagMergeMode to use</doc>
+            <doc xml:space="preserve">the #GstTagMergeMode to use, usually #GST_TAG_MERGE_REPLACE</doc>
             <type name="Gst.TagMergeMode" c:type="GstTagMergeMode"/>
           </parameter>
         </parameters>
@@ -1925,6 +2152,37 @@ negotiate fails.</doc>
             <doc xml:space="preserve">a #GstAudioDecoder</doc>
             <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="proxy_getcaps"
+              c:identifier="gst_audio_decoder_proxy_getcaps"
+              version="1.6">
+        <doc xml:space="preserve">Returns caps that express @caps (or sink template caps if @caps == NULL)
+restricted to rate/channels/... combinations supported by downstream
+elements.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstCaps owned by caller</doc>
+          <type name="Gst.Caps" c:type="GstCaps*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="decoder" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioDecoder</doc>
+            <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+          </instance-parameter>
+          <parameter name="caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">initial caps</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+          <parameter name="filter"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">filter caps</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_drainable"
@@ -2119,6 +2377,29 @@ MT safe.</doc>
           <parameter name="tolerance" transfer-ownership="none">
             <doc xml:space="preserve">new tolerance</doc>
             <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_use_default_pad_acceptcaps"
+              c:identifier="gst_audio_decoder_set_use_default_pad_acceptcaps"
+              version="1.6">
+        <doc xml:space="preserve">Lets #GstAudioDecoder sub-classes decide if they want the sink pad
+to use the default pad query handler to reply to accept-caps queries.
+
+By setting this to true it is possible to further customize the default
+handler with %GST_PAD_SET_ACCEPT_INTERSECT and
+%GST_PAD_SET_ACCEPT_TEMPLATE</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="decoder" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioDecoder</doc>
+            <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+          </instance-parameter>
+          <parameter name="use" transfer-ownership="none">
+            <doc xml:space="preserve">if the default pad accept-caps query handling should be used</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -2371,8 +2652,74 @@ overridden.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="sink_query">
+        <callback name="sink_query">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="dec" transfer-ownership="none">
+              <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+            </parameter>
+            <parameter name="query" transfer-ownership="none">
+              <type name="Gst.Query" c:type="GstQuery*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="src_query">
+        <callback name="src_query">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="dec" transfer-ownership="none">
+              <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+            </parameter>
+            <parameter name="query" transfer-ownership="none">
+              <type name="Gst.Query" c:type="GstQuery*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="getcaps">
+        <callback name="getcaps">
+          <return-value transfer-ownership="full">
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </return-value>
+          <parameters>
+            <parameter name="dec" transfer-ownership="none">
+              <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+            </parameter>
+            <parameter name="filter" transfer-ownership="none">
+              <type name="Gst.Caps" c:type="GstCaps*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="transform_meta">
+        <callback name="transform_meta">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="enc" transfer-ownership="none">
+              <type name="AudioDecoder" c:type="GstAudioDecoder*"/>
+            </parameter>
+            <parameter name="outbuf" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+            <parameter name="meta" transfer-ownership="none">
+              <type name="Gst.Meta" c:type="GstMeta*"/>
+            </parameter>
+            <parameter name="inbuf" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="16">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -2685,6 +3032,19 @@ negotiate fails.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="sink_query">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="encoder" transfer-ownership="none">
+            <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
+          </instance-parameter>
+          <parameter name="query" transfer-ownership="none">
+            <type name="Gst.Query" c:type="GstQuery*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="src_event">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -2695,6 +3055,19 @@ negotiate fails.</doc>
           </instance-parameter>
           <parameter name="event" transfer-ownership="none">
             <type name="Gst.Event" c:type="GstEvent*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="src_query">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="encoder" transfer-ownership="none">
+            <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
+          </instance-parameter>
+          <parameter name="query" transfer-ownership="none">
+            <type name="Gst.Query" c:type="GstQuery*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -2716,6 +3089,25 @@ negotiate fails.</doc>
           <instance-parameter name="enc" transfer-ownership="none">
             <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
           </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="transform_meta">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="enc" transfer-ownership="none">
+            <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
+          </instance-parameter>
+          <parameter name="outbuf" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+          <parameter name="meta" transfer-ownership="none">
+            <type name="Gst.Meta" c:type="GstMeta*"/>
+          </parameter>
+          <parameter name="inbuf" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
         </parameters>
       </virtual-method>
       <method name="allocate_output_buffer"
@@ -2992,13 +3384,12 @@ MT safe.</doc>
         </parameters>
       </method>
       <method name="merge_tags" c:identifier="gst_audio_encoder_merge_tags">
-        <doc xml:space="preserve">Adds tags to so-called pending tags, which will be processed
-before pushing out data downstream.
+        <doc xml:space="preserve">Sets the audio encoder tags and how they should be merged with any
+upstream stream tags. This will override any tags previously-set
+with gst_audio_encoder_merge_tags().
 
 Note that this is provided for convenience, and the subclass is
-not required to use this and can still do tag handling on its own,
-although it should be aware that baseclass already takes care
-of the usual CODEC/AUDIO_CODEC tags.
+not required to use this and can still do tag handling on its own.
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -3009,12 +3400,16 @@ MT safe.</doc>
             <doc xml:space="preserve">a #GstAudioEncoder</doc>
             <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
           </instance-parameter>
-          <parameter name="tags" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstTagList to merge</doc>
+          <parameter name="tags"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstTagList to merge, or NULL to unset
+    previously-set tags</doc>
             <type name="Gst.TagList" c:type="const GstTagList*"/>
           </parameter>
           <parameter name="mode" transfer-ownership="none">
-            <doc xml:space="preserve">the #GstTagMergeMode to use</doc>
+            <doc xml:space="preserve">the #GstTagMergeMode to use, usually #GST_TAG_MERGE_REPLACE</doc>
             <type name="Gst.TagMergeMode" c:type="GstTagMergeMode"/>
           </parameter>
         </parameters>
@@ -3048,11 +3443,17 @@ restricted to channel/rate combinations supported by downstream elements
             <doc xml:space="preserve">a #GstAudioEncoder</doc>
             <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
           </instance-parameter>
-          <parameter name="caps" transfer-ownership="none">
+          <parameter name="caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">initial caps</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
-          <parameter name="filter" transfer-ownership="none">
+          <parameter name="filter"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">filter caps</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
@@ -3547,8 +3948,59 @@ needed. At minimum @set_format and @handle_frame needs to be overridden.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="transform_meta">
+        <callback name="transform_meta">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="enc" transfer-ownership="none">
+              <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
+            </parameter>
+            <parameter name="outbuf" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+            <parameter name="meta" transfer-ownership="none">
+              <type name="Gst.Meta" c:type="GstMeta*"/>
+            </parameter>
+            <parameter name="inbuf" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="sink_query">
+        <callback name="sink_query">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="encoder" transfer-ownership="none">
+              <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
+            </parameter>
+            <parameter name="query" transfer-ownership="none">
+              <type name="Gst.Query" c:type="GstQuery*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="src_query">
+        <callback name="src_query">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="encoder" transfer-ownership="none">
+              <type name="AudioEncoder" c:type="GstAudioEncoder*"/>
+            </parameter>
+            <parameter name="query" transfer-ownership="none">
+              <type name="Gst.Query" c:type="GstQuery*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="17">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -5196,7 +5648,10 @@ MT safe.</doc>
             <type name="AudioRingBufferCallback"
                   c:type="GstAudioRingBufferCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user data passed to the callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -5417,7 +5872,11 @@ called to fill the memory at @data with @len bytes of samples.</doc>
           <doc xml:space="preserve">amount to fill</doc>
           <type name="guint" c:type="guint"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
           <doc xml:space="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -5918,7 +6377,10 @@ together with #GstAudioBaseSink using a default implementation of a
           <instance-parameter name="sink" transfer-ownership="none">
             <type name="AudioSink" c:type="GstAudioSink*"/>
           </instance-parameter>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="length" transfer-ownership="none">
@@ -6007,7 +6469,10 @@ together with #GstAudioBaseSink using a default implementation of a
             <parameter name="sink" transfer-ownership="none">
               <type name="AudioSink" c:type="GstAudioSink*"/>
             </parameter>
-            <parameter name="data" transfer-ownership="none">
+            <parameter name="data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
             <parameter name="length" transfer-ownership="none">
@@ -6142,7 +6607,10 @@ together with #GstAudioBaseSrc using a default implementation of a
           <instance-parameter name="src" transfer-ownership="none">
             <type name="AudioSrc" c:type="GstAudioSrc*"/>
           </instance-parameter>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="length" transfer-ownership="none">
@@ -6255,7 +6723,10 @@ functionality.</doc>
             <parameter name="src" transfer-ownership="none">
               <type name="AudioSrc" c:type="GstAudioSrc*"/>
             </parameter>
-            <parameter name="data" transfer-ownership="none">
+            <parameter name="data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
             <parameter name="length" transfer-ownership="none">
@@ -6534,7 +7005,9 @@ positions and the same positions, only in a different order.
       <doc xml:space="preserve">Convert the @channels present in @channel_mask to a @position array
 (which should have at least @channels entries ensured by caller).
 If @channel_mask is set to 0, it is considered as 'not present' for purpose
-of conversion.</doc>
+of conversion.
+A partially valid @channel_mask with less bits set than the number
+of channels is considered valid.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if channel and channel mask are valid and could be converted</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -6915,15 +7388,14 @@ positions and the same positions, only in a different order.</doc>
       </parameters>
     </function>
     <function name="buffer_add_audio_downmix_meta"
-              c:identifier="gst_buffer_add_audio_downmix_meta"
-              introspectable="0">
+              c:identifier="gst_buffer_add_audio_downmix_meta">
       <doc xml:space="preserve">Attaches #GstAudioDownmixMeta metadata to @buffer with the given parameters.
 
 @matrix is an two-dimensional array of @to_channels times @from_channels
 coefficients, i.e. the i-th output channels is constructed by multiplicating
 the input channels with the coefficients in @matrix[i] and taking the sum
 of the results.</doc>
-      <return-value>
+      <return-value transfer-ownership="none">
         <doc xml:space="preserve">the #GstAudioDownmixMeta on @buffer.</doc>
         <type name="AudioDownmixMeta" c:type="GstAudioDownmixMeta*"/>
       </return-value>
@@ -6967,11 +7439,10 @@ of the results.</doc>
       </parameters>
     </function>
     <function name="buffer_get_audio_downmix_meta_for_channels"
-              c:identifier="gst_buffer_get_audio_downmix_meta_for_channels"
-              introspectable="0">
+              c:identifier="gst_buffer_get_audio_downmix_meta_for_channels">
       <doc xml:space="preserve">Find the #GstAudioDownmixMeta on @buffer for the given destination
 channel positions.</doc>
-      <return-value>
+      <return-value transfer-ownership="none">
         <doc xml:space="preserve">the #GstAudioDownmixMeta on @buffer.</doc>
         <type name="AudioDownmixMeta" c:type="GstAudioDownmixMeta*"/>
       </return-value>

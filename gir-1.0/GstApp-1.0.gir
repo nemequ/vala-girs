@@ -288,7 +288,10 @@ reasons.</doc>
             <doc xml:space="preserve">the callbacks</doc>
             <type name="AppSinkCallbacks" c:type="GstAppSinkCallbacks*"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a user_data argument for the callbacks</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -301,8 +304,8 @@ reasons.</doc>
       <method name="set_caps" c:identifier="gst_app_sink_set_caps">
         <doc xml:space="preserve">Set the capabilities on the appsink element.  This function takes
 a copy of the caps structure. After calling this method, the sink will only
-accept caps that match @caps. If @caps is non-fixed, you must check the caps
-on the buffers to get the actual used caps.</doc>
+accept caps that match @caps. If @caps is non-fixed, or incomplete,
+you must check the caps on the samples to get the actual used caps.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -400,7 +403,7 @@ elements until a sample is pulled from @appsink.</doc>
       </field>
       <glib:signal name="eos" when="last">
         <doc xml:space="preserve">Signal that the end-of-stream has been reached. This signal is emitted from
-the steaming thread.</doc>
+the streaming thread.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -408,7 +411,7 @@ the steaming thread.</doc>
       <glib:signal name="new-preroll" when="last">
         <doc xml:space="preserve">Signal that a new preroll sample is available.
 
-This signal is emitted from the steaming thread and only when the
+This signal is emitted from the streaming thread and only when the
 "emit-signals" property is %TRUE.
 
 The new preroll sample can be retrieved with the "pull-preroll" action
@@ -424,7 +427,7 @@ set to %TRUE, which it is not by default for performance reasons.</doc>
       <glib:signal name="new-sample" when="last">
         <doc xml:space="preserve">Signal that a new sample is available.
 
-This signal is emitted from the steaming thread and only when the
+This signal is emitted from the streaming thread and only when the
 "emit-signals" property is %TRUE.
 
 The new sample can be retrieved with the "pull-sample" action
@@ -494,7 +497,11 @@ gst_app_sink_set_callbacks().</doc>
             <parameter name="appsink" transfer-ownership="none">
               <type name="AppSink" c:type="GstAppSink*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -509,7 +516,11 @@ gst_app_sink_set_callbacks().</doc>
             <parameter name="appsink" transfer-ownership="none">
               <type name="AppSink" c:type="GstAppSink*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -524,7 +535,11 @@ gst_app_sink_set_callbacks().</doc>
             <parameter name="appsink" transfer-ownership="none">
               <type name="AppSink" c:type="GstAppSink*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -624,17 +639,20 @@ gst_app_sink_set_callbacks().</doc>
            glib:get-type="gst_app_src_get_type"
            glib:type-struct="AppSrcClass">
       <doc xml:space="preserve">The appsrc element can be used by applications to insert data into a
-GStreamer pipeline. Unlike most GStreamer elements, Appsrc provides
+GStreamer pipeline. Unlike most GStreamer elements, appsrc provides
 external API functions.
 
 appsrc can be used by linking with the libgstapp library to access the
 methods directly or by using the appsrc action signals.
 
-Before operating appsrc, the caps property must be set to a fixed caps
+Before operating appsrc, the caps property must be set to fixed caps
 describing the format of the data that will be pushed with appsrc. An
 exception to this is when pushing buffers with unknown caps, in which case no
 caps should be set. This is typically true of file-like sources that push raw
-byte buffers.
+byte buffers. If you don't want to explicitly set the caps, you can use
+gst_app_src_push_sample. This method gets the caps associated with the
+sample and sets them on the appsrc replacing any previously set caps (if
+different from sample's caps).
 
 The main way of handing data to the appsrc element is by calling the
 gst_app_src_push_buffer() method or by emitting the push-buffer action signal.
@@ -662,16 +680,16 @@ new position.
 These signals allow the application to operate the appsrc in two different
 ways:
 
-The push model, in which the application repeatedly calls the push-buffer method
-with a new buffer. Optionally, the queue size in the appsrc can be controlled
-with the enough-data and need-data signals by respectively stopping/starting
-the push-buffer calls. This is a typical mode of operation for the
-stream-type "stream" and "seekable". Use this model when implementing various
-network protocols or hardware devices.
+The push mode, in which the application repeatedly calls the push-buffer/push-sample
+method with a new buffer/sample. Optionally, the queue size in the appsrc
+can be controlled with the enough-data and need-data signals by respectively
+stopping/starting the push-buffer/push-sample calls. This is a typical
+mode of operation for the stream-type "stream" and "seekable". Use this
+mode when implementing various network protocols or hardware devices.
 
-The pull model where the need-data signal triggers the next push-buffer call.
+The pull mode, in which the need-data signal triggers the next push-buffer call.
 This mode is typically used in the "random-access" stream-type. Use this
-model for file access or other randomly accessable sources. In this mode, a
+mode for file access or other randomly accessable sources. In this mode, a
 buffer of exactly the amount of bytes given by the need-data signal should be
 pushed into appsrc.
 
@@ -680,10 +698,10 @@ size in bytes. Setting this property is mandatory in the random-access mode.
 For the stream and seekable modes, setting this property is optional but
 recommended.
 
-When the application is finished pushing data into appsrc, it should call
+When the application has finished pushing data into appsrc, it should call
 gst_app_src_end_of_stream() or emit the end-of-stream action signal. After
 this call, no more buffers can be pushed into appsrc until a flushing seek
-happened or the state of the appsrc has gone through READY.</doc>
+occurs or the state of the appsrc has gone through READY.</doc>
       <implements name="Gst.URIHandler"/>
       <virtual-method name="end_of_stream" invoker="end_of_stream">
         <doc xml:space="preserve">Indicates to the appsrc element that the last buffer queued in the
@@ -743,6 +761,32 @@ space becomes available in the queue.</doc>
           <parameter name="buffer" transfer-ownership="full">
             <doc xml:space="preserve">a #GstBuffer to push</doc>
             <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="push_sample" invoker="push_sample" version="1.6">
+        <doc xml:space="preserve">Extract a buffer from the provided sample and adds it to the queue of
+buffers that the appsrc element will push to its source pad. Any
+previous caps setted on appsrc will be replaced by the caps associated
+with the sample if not equal.
+
+When the block property is TRUE, this function can block until free
+space becomes available in the queue.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#GST_FLOW_OK when the buffer was successfuly queued.
+#GST_FLOW_FLUSHING when @appsrc is not PAUSED or PLAYING.
+#GST_FLOW_EOS when EOS occured.</doc>
+          <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="appsrc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAppSrc</doc>
+            <type name="AppSrc" c:type="GstAppSrc*"/>
+          </instance-parameter>
+          <parameter name="sample" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSample from wich extract buffer to
+push and caps to set</doc>
+            <type name="Gst.Sample" c:type="GstSample*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -902,6 +946,34 @@ space becomes available in the queue.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="push_sample"
+              c:identifier="gst_app_src_push_sample"
+              version="1.6">
+        <doc xml:space="preserve">Extract a buffer from the provided sample and adds it to the queue of
+buffers that the appsrc element will push to its source pad. Any
+previous caps setted on appsrc will be replaced by the caps associated
+with the sample if not equal.
+
+When the block property is TRUE, this function can block until free
+space becomes available in the queue.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#GST_FLOW_OK when the buffer was successfuly queued.
+#GST_FLOW_FLUSHING when @appsrc is not PAUSED or PLAYING.
+#GST_FLOW_EOS when EOS occured.</doc>
+          <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="appsrc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAppSrc</doc>
+            <type name="AppSrc" c:type="GstAppSrc*"/>
+          </instance-parameter>
+          <parameter name="sample" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSample from wich extract buffer to
+push and caps to set</doc>
+            <type name="Gst.Sample" c:type="GstSample*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_callbacks"
               c:identifier="gst_app_src_set_callbacks"
               introspectable="0">
@@ -924,7 +996,10 @@ reasons.</doc>
             <doc xml:space="preserve">the callbacks</doc>
             <type name="AppSrcCallbacks" c:type="GstAppSrcCallbacks*"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a user_data argument for the callbacks</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -1145,6 +1220,28 @@ becomes available in the queue.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="push-sample" when="last" action="1" version="1.6">
+        <doc xml:space="preserve">Extract a buffer from the provided sample and adds the extracted buffer
+to the queue of buffers that the appsrc element will
+push to its source pad. This function set the appsrc caps based on the caps
+in the sample and reset the caps if they change.
+Only the caps and the buffer of the provided sample are used and not
+for example the segment in the sample.
+This function does not take ownership of the
+sample so the sample needs to be unreffed after calling this function.
+
+When the block property is TRUE, this function can block until free space
+becomes available in the queue.</doc>
+        <return-value transfer-ownership="none">
+          <type name="Gst.FlowReturn"/>
+        </return-value>
+        <parameters>
+          <parameter name="sample" transfer-ownership="none">
+            <doc xml:space="preserve">a sample from which extract buffer to push</doc>
+            <type name="Gst.Sample"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="seek-data" when="last">
         <doc xml:space="preserve">Seek to the given offset. The next push-buffer should produce buffers from
 the new @offset.
@@ -1178,7 +1275,11 @@ gst_app_src_set_callbacks().</doc>
             <parameter name="length" transfer-ownership="none">
               <type name="guint" c:type="guint"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="2">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="2">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -1193,7 +1294,11 @@ gst_app_src_set_callbacks().</doc>
             <parameter name="src" transfer-ownership="none">
               <type name="AppSrc" c:type="GstAppSrc*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -1211,7 +1316,11 @@ gst_app_src_set_callbacks().</doc>
             <parameter name="offset" transfer-ownership="none">
               <type name="guint64" c:type="guint64"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="2">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="2">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -1306,8 +1415,29 @@ gst_app_src_set_callbacks().</doc>
           </parameters>
         </callback>
       </field>
+      <field name="push_sample">
+        <callback name="push_sample">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">#GST_FLOW_OK when the buffer was successfuly queued.
+#GST_FLOW_FLUSHING when @appsrc is not PAUSED or PLAYING.
+#GST_FLOW_EOS when EOS occured.</doc>
+            <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
+          </return-value>
+          <parameters>
+            <parameter name="appsrc" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstAppSrc</doc>
+              <type name="AppSrc" c:type="GstAppSrc*"/>
+            </parameter>
+            <parameter name="sample" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstSample from wich extract buffer to
+push and caps to set</doc>
+              <type name="Gst.Sample" c:type="GstSample*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="3">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>

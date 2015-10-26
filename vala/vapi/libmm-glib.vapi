@@ -770,8 +770,8 @@ namespace MM {
 		protected ModemSimple ();
 		public async MM.Bearer connect (MM.SimpleConnectProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
 		public MM.Bearer connect_sync (MM.SimpleConnectProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool disconnect (string bearer, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool disconnect_sync (string bearer, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool disconnect (string? bearer, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool disconnect_sync (string? bearer, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_path ();
 		public unowned string get_path ();
 		public async MM.SimpleStatus get_status (GLib.Cancellable? cancellable) throws GLib.Error;

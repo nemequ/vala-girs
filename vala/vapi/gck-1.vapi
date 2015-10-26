@@ -23,7 +23,7 @@ namespace Gck {
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public unowned uint8[] get_data ();
 		public void get_date (GLib.Date value);
-		public global::string get_string ();
+		public global::string? get_string ();
 		public global::ulong get_ulong ();
 		public uint hash ();
 		public void init_copy (Gck.Attribute src);
@@ -96,10 +96,10 @@ namespace Gck {
 	public class Enumerator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Enumerator ();
-		public Gck.Enumerator get_chained ();
-		public GLib.TlsInteraction get_interaction ();
+		public Gck.Enumerator? get_chained ();
+		public GLib.TlsInteraction? get_interaction ();
 		public GLib.Type get_object_type ();
-		public Gck.Object next (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public Gck.Object? next (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.List<Gck.Module> next_async (int max_objects, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<Gck.Object> next_n (int max_objects, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_chained (Gck.Enumerator? chained);
@@ -128,7 +128,7 @@ namespace Gck {
 		public GLib.List<Gck.Slot> get_slots (bool token_present);
 		public uint hash ();
 		public static Gck.Module initialize (string path, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static async Gck.Module initialize_async (string path, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static async Gck.Module? initialize_async (string path, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool match (Gck.UriData uri);
 		[NoAccessorMethod]
 		public void* functions { get; construct; }
@@ -164,8 +164,7 @@ namespace Gck {
 		public async Gck.Attributes get_async ([CCode (array_length_cname = "n_attr_types", array_length_pos = 1.5, array_length_type = "guint")] ulong[] attr_types, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (array_length_pos = 2.1, array_length_type = "gsize")]
 		public uint8[] get_data (ulong attr_type, GLib.Cancellable? cancellable) throws GLib.Error;
-		[CCode (array_length_pos = 1.1, array_length_type = "gsize")]
-		public uint8[] get_data_finish (GLib.AsyncResult result) throws GLib.Error;
+		public async uint8[] get_data_async (ulong attr_type, Gck.Allocator allocator, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Gck.Attributes get_full ([CCode (array_length_cname = "n_attr_types", array_length_pos = 1.5, array_length_type = "guint")] ulong[] attr_types, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ulong get_handle ();
 		public Gck.Module get_module ();
@@ -213,8 +212,8 @@ namespace Gck {
 		public uint8[] encrypt_full (Gck.Object key, Gck.Mechanism mechanism, [CCode (array_length_cname = "n_input", array_length_pos = 3.33333, array_length_type = "gsize")] uint8[] input, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public Gck.Enumerator enumerate_objects (Gck.Attributes match);
 		[CCode (array_length_pos = 2.1, array_length_type = "gulong")]
-		public ulong[] find_handles (Gck.Attributes match, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async ulong[] find_handles_async (Gck.Attributes match, GLib.Cancellable? cancellable) throws GLib.Error;
+		public ulong[]? find_handles (Gck.Attributes match, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async ulong[]? find_handles_async (Gck.Attributes match, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<Gck.Object> find_objects (Gck.Attributes match, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.List<Gck.Object> find_objects_async (Gck.Attributes match, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static Gck.Session from_handle (Gck.Slot slot, ulong session_handle, Gck.SessionOptions options);
@@ -223,7 +222,7 @@ namespace Gck {
 		public bool generate_key_pair_full (Gck.Mechanism mechanism, Gck.Attributes public_attrs, Gck.Attributes private_attrs, out Gck.Object public_key, out Gck.Object private_key, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ulong get_handle ();
 		public Gck.SessionInfo get_info ();
-		public GLib.TlsInteraction get_interaction ();
+		public GLib.TlsInteraction? get_interaction ();
 		public Gck.Module get_module ();
 		public Gck.SessionOptions get_options ();
 		public Gck.Slot get_slot ();
@@ -398,6 +397,8 @@ namespace Gck {
 		WITH_VERSION,
 		FOR_ANY
 	}
+	[CCode (cheader_filename = "gck/gck.h", has_target = false)]
+	public delegate void* Allocator (void* data, size_t length);
 	[CCode (cheader_filename = "gck/gck.h", cname = "GCK_INVALID")]
 	public const ulong INVALID;
 	[CCode (cheader_filename = "gck/gck.h", cname = "GCK_MAJOR_VERSION")]
@@ -431,7 +432,7 @@ namespace Gck {
 	[CCode (cheader_filename = "gck/gck.h")]
 	public static async GLib.List<Gck.Module> modules_initialize_registered_async (GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "gck/gck.h")]
-	public static Gck.Object modules_object_for_uri (GLib.List<Gck.Module> modules, string uri, Gck.SessionOptions session_options) throws GLib.Error;
+	public static Gck.Object? modules_object_for_uri (GLib.List<Gck.Module> modules, string uri, Gck.SessionOptions session_options) throws GLib.Error;
 	[CCode (cheader_filename = "gck/gck.h")]
 	public static GLib.List<Gck.Object> modules_objects_for_uri (GLib.List<Gck.Module> modules, string uri, Gck.SessionOptions session_options) throws GLib.Error;
 	[CCode (cheader_filename = "gck/gck.h")]

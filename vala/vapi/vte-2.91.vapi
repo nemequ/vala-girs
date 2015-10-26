@@ -7,8 +7,10 @@ namespace Vte {
 		[CCode (has_construct_function = false)]
 		protected Pty ();
 		public void child_setup ();
+		[Deprecated (since = "0.42")]
+		public void close ();
 		[CCode (has_construct_function = false)]
-		public Pty.foreign_sync (owned int fd, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public Pty.foreign_sync (int fd, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int get_fd ();
 		public bool get_size (out int rows, out int columns) throws GLib.Error;
 		public bool set_size (int rows, int columns) throws GLib.Error;
@@ -19,11 +21,23 @@ namespace Vte {
 		[NoAccessorMethod]
 		public Vte.PtyFlags flags { get; construct; }
 	}
+	[CCode (cheader_filename = "vte/vte.h", ref_function = "vte_regex_ref", type_id = "vte_regex_get_type ()", unref_function = "vte_regex_unref")]
+	[Compact]
+	public class Regex {
+		[CCode (has_construct_function = false)]
+		public Regex (string pattern, ssize_t pattern_length, uint32 flags) throws GLib.Error;
+		public bool jit (uint32 flags) throws GLib.Error;
+		public Vte.Regex @ref ();
+		public Vte.Regex unref ();
+	}
 	[CCode (cheader_filename = "vte/vte.h", type_id = "vte_terminal_get_type ()")]
 	public class Terminal : Gtk.Widget, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Terminal ();
 		public void copy_primary ();
+		[Deprecated (since = "0.44")]
+		public bool event_check_gregex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] GLib.Regex[] regexes, GLib.RegexMatchFlags match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
+		public bool event_check_regex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] Vte.Regex[] regexes, uint32 match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
 		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[] data);
 		public void feed_child (string text, ssize_t length);
 		public void feed_child_binary (uint8 data, size_t length);
@@ -54,11 +68,16 @@ namespace Vte {
 		public string get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public unowned string get_window_title ();
 		public unowned string get_word_char_exceptions ();
-		public int match_add_gregex (GLib.Regex regex, GLib.RegexMatchFlags flags);
+		[Deprecated (since = "0.44")]
+		public int match_add_gregex (GLib.Regex gregex, GLib.RegexMatchFlags gflags);
+		public int match_add_regex (Vte.Regex regex, uint32 flags);
+		[Deprecated (since = "0.44")]
 		public string match_check (long column, long row, out int tag);
 		public string match_check_event (Gdk.Event event, out int tag);
 		public void match_remove (int tag);
 		public void match_remove_all ();
+		[Deprecated (since = "0.40")]
+		public void match_set_cursor (int tag, Gdk.Cursor? cursor);
 		public void match_set_cursor_name (int tag, string cursor_name);
 		public void match_set_cursor_type (int tag, Gdk.CursorType cursor_type);
 		public void paste_primary ();
@@ -66,9 +85,13 @@ namespace Vte {
 		public void reset (bool clear_tabstops, bool clear_history);
 		public bool search_find_next ();
 		public bool search_find_previous ();
+		[Deprecated (since = "0.44")]
 		public unowned GLib.Regex search_get_gregex ();
+		public unowned Vte.Regex search_get_regex ();
 		public bool search_get_wrap_around ();
-		public void search_set_gregex (GLib.Regex? regex, GLib.RegexMatchFlags flags);
+		[Deprecated (since = "0.44")]
+		public void search_set_gregex (GLib.Regex? gregex, GLib.RegexMatchFlags gflags);
+		public void search_set_regex (Vte.Regex? regex, uint32 flags);
 		public void search_set_wrap_around (bool wrap_around);
 		public void select_all ();
 		public void set_allow_bold (bool allow_bold);
@@ -209,6 +232,12 @@ namespace Vte {
 		PTY98_FAILED;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_REGEX_ERROR_")]
+	public errordomain RegexError {
+		INCOMPATIBLE,
+		NOT_SUPPORTED;
+		public static GLib.Quark quark ();
+	}
 	[CCode (cheader_filename = "vte/vte.h", instance_pos = 3.9)]
 	public delegate bool SelectionFunc (Vte.Terminal terminal, long column, long row);
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_MAJOR_VERSION")]
@@ -217,6 +246,8 @@ namespace Vte {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_MINOR_VERSION")]
 	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_REGEX_FLAGS_DEFAULT")]
+	public const int REGEX_FLAGS_DEFAULT;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
 	[CCode (cheader_filename = "vte/vte.h")]
