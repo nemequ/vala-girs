@@ -6,7 +6,10 @@ namespace Gb {
 	public class Application : Gtk.Application, GLib.ActionGroup, GLib.ActionMap {
 		[CCode (has_construct_function = false)]
 		protected Application ();
+		public unowned string get_argv0 ();
+		public unowned string get_keybindings_mode ();
 		public GLib.DateTime get_started_at ();
+		public async GLib.DBusProxy get_worker_async (string plugin_name, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool open_project_async (GLib.File file, GLib.GenericArray<GLib.File>? additional_files, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void show_projects_window ();
 	}
@@ -213,57 +216,12 @@ namespace Gb {
 		[NoWrapper]
 		public abstract void unload (Gb.EditorView view);
 	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct ApplicationAddin_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct Application_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct Document_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct EditorViewAddin_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct EditorView_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct MenuExtension_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct TreeBuilder_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct TreeNode_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct Tree_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct ViewGrid_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct ViewStack_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct View_autoptr {
-	}
-	[CCode (cheader_filename = "gnome-builder.h")]
-	[SimpleType]
-	public struct Workbench_autoptr {
+	[CCode (cheader_filename = "gnome-builder.h", cprefix = "GB_VIEW_GRID_SPLIT_", type_id = "gb_view_grid_split_get_type ()")]
+	public enum ViewGridSplit {
+		LEFT,
+		RIGHT,
+		MOVE_LEFT,
+		MOVE_RIGHT
 	}
 	[CCode (cheader_filename = "gnome-builder.h", instance_pos = 2.9)]
 	public delegate bool TreeFilterFunc (Gb.Tree tree, Gb.TreeNode node);

@@ -2056,7 +2056,8 @@ namespace NM {
 	public enum VlanFlags {
 		REORDER_HEADERS,
 		GVRP,
-		LOOSE_BINDING
+		LOOSE_BINDING,
+		MVRP
 	}
 	[CCode (cheader_filename = "nm-setting-vlan.h", cprefix = "NM_VLAN_", type_id = "nm_vlan_priority_map_get_type ()")]
 	public enum VlanPriorityMap {
@@ -2545,4 +2546,6 @@ namespace NM {
 	public const string SETTING_DCB_SETTING_NAME;
 	[CCode (cheader_filename = "nm-setting.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_VLAN_FLAGS_ALL")]
+	public const int VLAN_FLAGS_ALL;
 }

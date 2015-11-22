@@ -33,6 +33,7 @@ namespace Ide {
 		protected Buffer ();
 		public void check_for_volume_change ();
 		public bool get_busy ();
+		public size_t get_change_count ();
 		public bool get_changed_on_volume ();
 		public GLib.Bytes get_content ();
 		public unowned Ide.Context get_context ();
@@ -819,8 +820,10 @@ namespace Ide {
 	public class SourceView : Gtk.SourceView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false)]
 		protected SourceView ();
+		[NoWrapper]
+		public virtual void auto_indent ();
 		public unowned Ide.BackForwardList? get_back_forward_list ();
-		public uint get_count ();
+		public int get_count ();
 		public unowned Ide.SourceSnippet? get_current_snippet ();
 		public bool get_enable_word_completion ();
 		public unowned Ide.FileSettings? get_file_settings ();
@@ -834,6 +837,7 @@ namespace Ide {
 		public bool get_rubberband_search ();
 		public uint get_scroll_offset ();
 		public unowned Gtk.SourceSearchContext? get_search_context ();
+		public Gtk.DirectionType get_search_direction ();
 		public bool get_show_grid_lines ();
 		public bool get_show_line_changes ();
 		public bool get_show_line_diagnostics ();
@@ -842,6 +846,8 @@ namespace Ide {
 		public bool get_snippet_completion ();
 		public Gdk.Rectangle get_visible_rect ();
 		public void get_visual_position (uint line, uint line_offset);
+		[NoWrapper]
+		public virtual void insert_at_cursor_and_indent (string str);
 		public bool move_mark_onscreen (Gtk.TextMark mark);
 		public bool place_cursor_onscreen ();
 		public void rollback_search ();
@@ -849,7 +855,7 @@ namespace Ide {
 		public void scroll_to_iter (Gtk.TextIter iter, double within_margin, bool use_align, double xalign, double yalign, bool animate_scroll);
 		public void scroll_to_mark (Gtk.TextMark mark, double within_margin, bool use_align, double xalign, double yalign, bool animate_scroll);
 		public void set_back_forward_list (Ide.BackForwardList back_forward_list);
-		public void set_count (uint count);
+		public void set_count (int count);
 		public void set_enable_word_completion (bool enable_word_copletion);
 		public void set_font_desc (Pango.FontDescription font_desc);
 		public void set_font_name (string font_name);
@@ -858,6 +864,7 @@ namespace Ide {
 		public void set_overwrite_braces (bool overwrite_braces);
 		public void set_rubberband_search (bool rubberband_search);
 		public void set_scroll_offset (uint scroll_offset);
+		public void set_search_direction (Gtk.DirectionType direction);
 		public void set_show_grid_lines (bool show_grid_lines);
 		public void set_show_line_changes (bool show_line_changes);
 		public void set_show_line_diagnostics (bool show_line_changes);
@@ -865,7 +872,7 @@ namespace Ide {
 		public void set_show_search_shadow (bool show_search_bubbles);
 		public void set_snippet_completion (bool snippet_completion);
 		public Ide.BackForwardList back_forward_list { get; set; }
-		public uint count { get; set; }
+		public int count { get; set; }
 		public bool enable_word_completion { get; set; }
 		public Ide.FileSettings file_settings { get; }
 		public Pango.FontDescription font_desc { get; set; }
@@ -880,6 +887,7 @@ namespace Ide {
 		public bool rubberband_search { get; set; }
 		public uint scroll_offset { get; set; }
 		public Gtk.SourceSearchContext search_context { get; }
+		public Gtk.DirectionType search_direction { get; set; }
 		public bool show_grid_lines { get; set; }
 		public bool show_line_changes { get; set; }
 		public bool show_line_diagnostics { get; set; }
@@ -888,7 +896,6 @@ namespace Ide {
 		public bool snippet_completion { get; set; }
 		public virtual signal void action (string prefix, string action_name, string param);
 		public virtual signal void append_to_count (int digit);
-		public virtual signal void auto_indent ();
 		public virtual signal void begin_macro ();
 		public signal void begin_user_action ();
 		public virtual signal void capture_modifier ();
@@ -909,7 +916,6 @@ namespace Ide {
 		public virtual signal void hide_completion ();
 		public virtual signal void increase_font_size ();
 		public virtual signal void indent_selection (int level);
-		public virtual signal void insert_at_cursor_and_indent (string str);
 		public virtual signal void insert_modifier (bool use_count);
 		[HasEmitter]
 		public virtual signal void jump (Gtk.TextIter location);
@@ -924,11 +930,16 @@ namespace Ide {
 		[HasEmitter]
 		public signal void push_snippet (Ide.SourceSnippet snippet, Gtk.TextIter? location);
 		public virtual signal void rebuild_highlight ();
+		public signal void reindent ();
 		public virtual signal void replay_macro (bool use_count);
 		public virtual signal void request_documentation ();
 		public virtual signal void reset_font_size ();
 		public virtual signal void restore_insert_mark ();
+		public virtual signal void save_command ();
 		public virtual signal void save_insert_mark ();
+		public virtual signal void save_search_char ();
+		public virtual signal void select_inner (string inner_left, string inner_right, bool exclusive, bool string_mode);
+		public virtual signal void select_tag (bool exclusive);
 		public virtual signal void selection_theatric (Ide.SourceViewTheatric theatric);
 		public virtual signal void set_mode (string mode, Ide.SourceViewModeType type);
 		public virtual signal void set_overwrite (bool overwrite);
@@ -947,10 +958,10 @@ namespace Ide {
 		public Ide.SourceViewModeType get_mode_type ();
 		public bool get_repeat_insert_with_count ();
 		public bool get_suppress_unbound ();
+		public void set_has_indenter (bool has_indenter);
 		public string name { get; }
 		public signal void action (string object, string p0, string p1);
 		public signal void append_to_count (int object);
-		public signal void auto_indent ();
 		public signal void backspace ();
 		public signal void begin_macro ();
 		public signal void begin_user_action ();
@@ -975,7 +986,6 @@ namespace Ide {
 		public signal void increase_font_size ();
 		public signal void indent_selection (int object);
 		public signal void insert_at_cursor (string object);
-		public signal void insert_at_cursor_and_indent (string object);
 		public signal void insert_modifier (bool object);
 		public signal void join_lines ();
 		public signal void move_cursor (Gtk.MovementStep object, int p0, bool p1);
@@ -993,12 +1003,17 @@ namespace Ide {
 		public signal void push_selection ();
 		public signal void rebuild_highlight ();
 		public signal void redo ();
+		public signal void reindent ();
 		public signal void replay_macro (bool object);
 		public signal void request_documentation ();
 		public signal void reset_font_size ();
 		public signal void restore_insert_mark ();
+		public signal void save_command ();
 		public signal void save_insert_mark ();
+		public signal void save_search_char ();
 		public signal void select_all (bool object);
+		public signal void select_inner (string object, string p0, bool p1, bool p2);
+		public signal void select_tag (bool object);
 		public signal void selection_theatric (Ide.SourceViewTheatric object);
 		public signal void set_anchor ();
 		public signal void set_mode (string object, Ide.SourceViewModeType p0);
@@ -1115,6 +1130,7 @@ namespace Ide {
 	public interface CompletionProvider : Gtk.SourceCompletionProvider, GLib.Object {
 		public static string context_current_word (Gtk.SourceCompletionContext context);
 		public static bool context_in_comment (Gtk.SourceCompletionContext context);
+		public static bool context_in_comment_or_string (Gtk.SourceCompletionContext context);
 		[NoWrapper]
 		public abstract void set_context (Ide.Context context);
 		public abstract Ide.Context context { construct; }
@@ -1203,6 +1219,10 @@ namespace Ide {
 		public abstract uint get_n_children (Ide.SymbolNode? node);
 		public abstract Ide.SymbolNode? get_nth_child (Ide.SymbolNode? node, uint nth);
 	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeTagsBuilderInterface", type_id = "ide_tags_builder_get_type ()")]
+	public interface TagsBuilder : GLib.Object {
+		public abstract async bool build_async (GLib.File directory_or_flie, bool asynchronous, GLib.Cancellable? cancellable) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeTargetInterface", type_id = "ide_target_get_type ()")]
 	public interface Target : Ide.Object {
 	}
@@ -1212,285 +1232,10 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeTestSuiteInterface", type_id = "ide_test_suite_get_type ()")]
 	public interface TestSuite : Ide.Object {
 	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct BackForwardItem_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct BackForwardList_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct BufferChangeMonitor_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct BufferManager_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Buffer_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct BuildResult_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct BuildSystem_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Builder_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct CompletionItem_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct CompletionResults_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Context_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Deployer_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct DeviceManager_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct DeviceProvider_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Device_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct DiagnosticProvider_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Diagnostic_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Diagnostician_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Diagnostics_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct DirectoryVcs_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct DoapPerson_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Doap_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ExtensionAdapter_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ExtensionSetAdapter_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct FileSettings_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct File_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct GitRemoteCallbacks_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct GitVcs_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct HighlightEngine_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct HighlightIndex_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Highlighter_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Indenter_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct LocalDevice_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Object_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct PatternSpec_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Progress_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ProjectFile_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ProjectFiles_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ProjectInfo_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ProjectItem_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ProjectMiner_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Project_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct RecentProjects_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Refactory_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct ScriptManager_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Script_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SearchContext_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SearchEngine_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SearchProvider_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SearchResult_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Service_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Settings_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceLocation_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceMap_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceRange_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceSnippetChunk_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceSnippetContext_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceSnippet_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceSnippetsManager_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceSnippets_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceViewMode_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SourceView_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SymbolNode_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SymbolResolver_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct SymbolTree_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Symbol_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct UnsavedFile_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct UnsavedFiles_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct VcsUri_autoptr {
-	}
-	[CCode (cheader_filename = "ide.h")]
-	[SimpleType]
-	public struct Vcs_autoptr {
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeWorkerInterface", type_id = "ide_worker_get_type ()")]
+	public interface Worker : GLib.Object {
+		public abstract GLib.DBusProxy create_proxy (GLib.DBusConnection connection) throws GLib.Error;
+		public abstract void register_service (GLib.DBusConnection connection);
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_BUFFER_LINE_CHANGE_", has_type_id = false)]
 	public enum BufferLineChange {
@@ -1554,6 +1299,8 @@ namespace Ide {
 		LAST_CHAR,
 		NEXT_WORD_START,
 		NEXT_FULL_WORD_START,
+		NEXT_SUB_WORD_START,
+		PREVIOUS_SUB_WORD_START,
 		PREVIOUS_WORD_START,
 		PREVIOUS_FULL_WORD_START,
 		PREVIOUS_WORD_END,
@@ -1574,10 +1321,14 @@ namespace Ide {
 		LINE_END,
 		HALF_PAGE_UP,
 		HALF_PAGE_DOWN,
+		HALF_PAGE_LEFT,
+		HALF_PAGE_RIGHT,
 		PAGE_UP,
 		PAGE_DOWN,
 		SCREEN_UP,
 		SCREEN_DOWN,
+		SCREEN_LEFT,
+		SCREEN_RIGHT,
 		SCREEN_TOP,
 		SCREEN_MIDDLE,
 		SCREEN_BOTTOM,
@@ -1585,12 +1336,16 @@ namespace Ide {
 		SCROLL_SCREEN_TOP,
 		SCROLL_SCREEN_CENTER,
 		SCROLL_SCREEN_BOTTOM,
+		SCROLL_SCREEN_LEFT,
+		SCROLL_SCREEN_RIGHT,
 		PREVIOUS_UNMATCHED_BRACE,
 		NEXT_UNMATCHED_BRACE,
 		PREVIOUS_UNMATCHED_PAREN,
 		NEXT_UNMATCHED_PAREN,
 		NEXT_MATCH_MODIFIER,
-		PREVIOUS_MATCH_MODIFIER
+		PREVIOUS_MATCH_MODIFIER,
+		NEXT_MATCH_SEARCH_CHAR,
+		PREVIOUS_MATCH_SEARCH_CHAR
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_SOURCE_VIEW_THEATRIC_", type_id = "ide_source_view_theatric_get_type ()")]
 	public enum SourceViewTheatric {
@@ -1657,7 +1412,11 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h")]
 	public static bool completion_provider_context_in_comment (Gtk.SourceCompletionContext context);
 	[CCode (cheader_filename = "ide.h")]
+	public static bool completion_provider_context_in_comment_or_string (Gtk.SourceCompletionContext context);
+	[CCode (cheader_filename = "ide.h")]
 	public static unowned string get_program_name ();
+	[CCode (cheader_filename = "ide.h")]
+	public static int log_get_verbosity ();
 	[CCode (cheader_filename = "ide.h")]
 	public static void log_increase_verbosity ();
 	[CCode (cheader_filename = "ide.h")]

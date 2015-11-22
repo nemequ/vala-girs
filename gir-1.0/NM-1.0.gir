@@ -3941,6 +3941,22 @@ setting and which property failed validation, and how it failed validation.</doc
           </instance-parameter>
         </parameters>
       </method>
+      <method name="verify_secrets"
+              c:identifier="nm_connection_verify_secrets"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Verifies the secrets in the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the secrets are valid, %FALSE if they are not</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection to verify in</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <glib:signal name="changed" when="first">
         <doc xml:space="preserve">The ::changed signal is emitted when any property of any property
 (including secrets) of any setting of the connection is modified,
@@ -10968,6 +10984,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
     <constant name="SETTING_GSM_APN" value="apn" c:type="NM_SETTING_GSM_APN">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_GSM_DEVICE_ID"
+              value="device-id"
+              c:type="NM_SETTING_GSM_DEVICE_ID">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_GSM_HOME_ONLY"
               value="home-only"
               c:type="NM_SETTING_GSM_HOME_ONLY">
@@ -11004,6 +11025,16 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
     <constant name="SETTING_GSM_SETTING_NAME"
               value="gsm"
               c:type="NM_SETTING_GSM_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_GSM_SIM_ID"
+              value="sim-id"
+              c:type="NM_SETTING_GSM_SIM_ID">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_GSM_SIM_OPERATOR_ID"
+              value="sim-operator-id"
+              c:type="NM_SETTING_GSM_SIM_OPERATOR_ID">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_GSM_USERNAME"
@@ -11093,6 +11124,11 @@ through that interface to the default network.</doc>
     <constant name="SETTING_IP4_CONFIG_SETTING_NAME"
               value="ipv4"
               c:type="NM_SETTING_IP4_CONFIG_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP6_CONFIG_ADDR_GEN_MODE"
+              value="addr-gen-mode"
+              c:type="NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_IP6_CONFIG_IP6_PRIVACY"
@@ -11610,6 +11646,11 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_WIRELESS_MAC_ADDRESS_BLACKLIST">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_WIRELESS_MAC_ADDRESS_RANDOMIZATION"
+              value="mac-address-randomization"
+              c:type="NM_SETTING_WIRELESS_MAC_ADDRESS_RANDOMIZATION">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_WIRELESS_MODE"
               value="mode"
               c:type="NM_SETTING_WIRELESS_MODE">
@@ -12048,6 +12089,34 @@ It should only be accessed through the functions described below.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="verify_secrets"
+                      invoker="verify_secrets"
+                      version="1.2"
+                      throws="1">
+        <doc xml:space="preserve">Verifies the secrets in the setting.
+The returned #GError contains information about which secret of the setting
+failed validation, and in what way that secret failed validation.
+The secret validation is done separately from main setting validation, because
+in some cases connection failure is not desired just for the secrets.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the setting secrets are valid, %FALSE if they are not</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting to verify secrets in</doc>
+            <type name="Setting" c:type="NMSetting*"/>
+          </instance-parameter>
+          <parameter name="connection"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #NMConnection that @setting came from, or
+  %NULL if @setting is being verified in isolation.</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="compare" c:identifier="nm_setting_compare">
         <doc xml:space="preserve">Compares two #NMSetting objects for similarity, with comparison behavior
 modified by a set of flags.  See the documentation for #NMSettingCompareFlags
@@ -12269,6 +12338,34 @@ failed validation, and in what way that property failed validation.</doc>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
             <doc xml:space="preserve">the #NMSetting to verify</doc>
+            <type name="Setting" c:type="NMSetting*"/>
+          </instance-parameter>
+          <parameter name="connection"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #NMConnection that @setting came from, or
+  %NULL if @setting is being verified in isolation.</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="verify_secrets"
+              c:identifier="nm_setting_verify_secrets"
+              version="1.2"
+              throws="1">
+        <doc xml:space="preserve">Verifies the secrets in the setting.
+The returned #GError contains information about which secret of the setting
+failed validation, and in what way that secret failed validation.
+The secret validation is done separately from main setting validation, because
+in some cases connection failure is not desired just for the secrets.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the setting secrets are valid, %FALSE if they are not</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting to verify secrets in</doc>
             <type name="Setting" c:type="NMSetting*"/>
           </instance-parameter>
           <parameter name="connection"
@@ -14842,6 +14939,28 @@ username is required, it is specified here.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="verify_secrets">
+        <callback name="verify_secrets" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the setting secrets are valid, %FALSE if they are not</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="setting" transfer-ownership="none">
+              <doc xml:space="preserve">the #NMSetting to verify secrets in</doc>
+              <type name="Setting" c:type="NMSetting*"/>
+            </parameter>
+            <parameter name="connection"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">the #NMConnection that @setting came from, or
+  %NULL if @setting is being verified in isolation.</doc>
+              <type name="Connection" c:type="NMConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="need_secrets" introspectable="0">
         <callback name="need_secrets" introspectable="0">
           <return-value>
@@ -14964,7 +15083,7 @@ username is required, it is specified here.</doc>
         </callback>
       </field>
       <field name="padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="7">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -16452,6 +16571,20 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_device_id"
+              c:identifier="nm_setting_gsm_get_device_id"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingGsm:device-id property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingGsm</doc>
+            <type name="SettingGsm" c:type="NMSettingGsm*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_home_only" c:identifier="nm_setting_gsm_get_home_only">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingGsm:home-only property of the setting</doc>
@@ -16538,6 +16671,34 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_sim_id"
+              c:identifier="nm_setting_gsm_get_sim_id"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingGsm:sim-id property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingGsm</doc>
+            <type name="SettingGsm" c:type="NMSettingGsm*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_sim_operator_id"
+              c:identifier="nm_setting_gsm_get_sim_operator_id"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingGsm:sim-operator-id property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingGsm</doc>
+            <type name="SettingGsm" c:type="NMSettingGsm*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_username" c:identifier="nm_setting_gsm_get_username">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingGsm:username property of the setting</doc>
@@ -16558,6 +16719,15 @@ access to the Internet or just a provider-specific walled-garden, so it
 is important to use the correct APN for the user's mobile broadband plan.
 The APN may only be composed of the characters a-z, 0-9, ., and - per GSM
 03.60 Section 14.9.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="device-id"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The device unique identifier (as given by the WWAN management service)
+which this connection applies to.  If given, the connection will only
+apply to the specified device.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="home-only" writable="1" transfer-ownership="none">
@@ -16599,6 +16769,27 @@ device.</doc>
       <property name="pin-flags" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSettingGsm:pin property.</doc>
         <type name="SettingSecretFlags"/>
+      </property>
+      <property name="sim-id"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The SIM card unique identifier (as given by the WWAN management service)
+which this connection applies to.  If given, the connection will apply
+to any device also allowed by #NMSettingGsm:device-id which contains a
+SIM card matching the given identifier.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="sim-operator-id"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">A MCC/MNC string like "310260" or "21601" identifying the specific
+mobile network operator which this connection applies to.  If given,
+the connection will apply to any device also allowed by
+#NMSettingGsm:device-id and #NMSettingGsm:sim-id which contains a SIM
+card provisioined by the given operator.</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="username" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The username used to authenticate with the network, if required.  Many
@@ -16708,6 +16899,23 @@ DHCP server may use to customize the DHCP lease and options.</doc>
           <type name="Setting" c:type="NMSetting*"/>
         </return-value>
       </constructor>
+      <method name="get_addr_gen_mode"
+              c:identifier="nm_setting_ip6_config_get_addr_gen_mode"
+              version="1.2">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingIP6Config:addr-gen-mode
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">IPv6 Address Generation Mode.</doc>
+          <type name="SettingIP6ConfigAddrGenMode"
+                c:type="NMSettingIP6ConfigAddrGenMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIP6Config</doc>
+            <type name="SettingIP6Config" c:type="NMSettingIP6Config*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_ip6_privacy"
               c:identifier="nm_setting_ip6_config_get_ip6_privacy">
         <doc xml:space="preserve">Returns the value contained in the #NMSettingIP6Config:ip6-privacy
@@ -16724,6 +16932,36 @@ property.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="addr-gen-mode"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Configure method for creating the address for use with RFC4862 IPv6
+Stateless Address Autoconfiguration. The permitted values are: "eui64",
+"stable-privacy" or unset.
+
+If the property is set to "eui64", the addresses will be generated
+using the interface tokens derived from  hardware address. This makes
+the host part of the address to stay constant, making it possible
+to track host's presence when it changes networks. The address changes
+when the interface hardware is replaced.
+
+The value of "stable-privacy" enables use of cryptographically
+secure hash of a secret host-specific key along with the connection
+identification and the network address as specified by RFC7217.
+This makes it impossible to use the address track host's presence,
+and makes the address stable when the network interface hardware is
+replaced.
+
+Leaving this unset causes a default that could be subject to change
+in future versions to be used.
+
+Note that this setting is distinct from the Privacy Extensions as
+configured by "ip6-privacy" property and it does not affect the
+temporary addresses configured with this option.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
       <property name="ip6-privacy"
                 writable="1"
                 construct="1"
@@ -16740,13 +16978,35 @@ Having a per-connection setting set to "-1" (unknown) means fallback to
 global configuration "ipv6.ip6-privacy".
 
 If also global configuration is unspecified or set to "-1", fallback to read
-"/proc/sys/net/ipv6/conf/default/use_tempaddr".</doc>
+"/proc/sys/net/ipv6/conf/default/use_tempaddr".
+
+Note that this setting is distinct from the Stable Privacy addresses
+that can be enabled with the "addr-gen-mode" property's "stable-privacy"
+setting as another way of avoiding host tracking with IPv6 addresses.</doc>
         <type name="SettingIP6ConfigPrivacy"/>
       </property>
       <field name="parent">
         <type name="SettingIPConfig" c:type="NMSettingIPConfig"/>
       </field>
     </class>
+    <enumeration name="SettingIP6ConfigAddrGenMode"
+                 version="1.2"
+                 glib:type-name="NMSettingIP6ConfigAddrGenMode"
+                 glib:get-type="nm_setting_ip6_config_addr_gen_mode_get_type"
+                 c:type="NMSettingIP6ConfigAddrGenMode">
+      <doc xml:space="preserve">#NMSettingIP6ConfigAddrGenMode controls how the the Interface Identifier for
+RFC4862 Stateless Address Autoconfiguration is created.</doc>
+      <member name="eui64"
+              value="0"
+              c:identifier="NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE_EUI64"
+              glib:nick="eui64">
+      </member>
+      <member name="stable_privacy"
+              value="1"
+              c:identifier="NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE_STABLE_PRIVACY"
+              glib:nick="stable-privacy">
+      </member>
+    </enumeration>
     <record name="SettingIP6ConfigClass"
             c:type="NMSettingIP6ConfigClass"
             glib:is-gtype-struct-for="SettingIP6Config">
@@ -17779,6 +18039,31 @@ specify the base device by setting either this property or
         </array>
       </field>
     </record>
+    <enumeration name="SettingMacRandomization"
+                 glib:type-name="NMSettingMacRandomization"
+                 glib:get-type="nm_setting_mac_randomization_get_type"
+                 c:type="NMSettingMacRandomization">
+      <doc xml:space="preserve">Controls if and how the MAC address of a device is randomzied.</doc>
+      <member name="default"
+              value="0"
+              c:identifier="NM_SETTING_MAC_RANDOMIZATION_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">the default value, which unless
+overridden by user-controlled defaults configuration, is "never".</doc>
+      </member>
+      <member name="never"
+              value="1"
+              c:identifier="NM_SETTING_MAC_RANDOMIZATION_NEVER"
+              glib:nick="never">
+        <doc xml:space="preserve">the device's MAC address is always used.</doc>
+      </member>
+      <member name="always"
+              value="2"
+              c:identifier="NM_SETTING_MAC_RANDOMIZATION_ALWAYS"
+              glib:nick="always">
+        <doc xml:space="preserve">a random MAC address is used.</doc>
+      </member>
+    </enumeration>
     <class name="SettingOlpcMesh"
            c:symbol-prefix="setting_olpc_mesh"
            c:type="NMSettingOlpcMesh"
@@ -18962,7 +19247,8 @@ both "from" and "to" are unsigned integers, ie "7:3".</doc>
 interface.  Flags include %NM_VLAN_FLAG_REORDER_HEADERS (reordering of
 output packet headers), %NM_VLAN_FLAG_GVRP (use of the GVRP protocol),
 and %NM_VLAN_FLAG_LOOSE_BINDING (loose binding of the interface to its
-master device's operating state).
+master device's operating state). %NM_VLAN_FLAG_MVRP (use of the MVRP
+protocol).
 
 The default value of this property is NM_VLAN_FLAG_REORDER_HEADERS,
 but it used to be 0. To preserve backward compatibility, the default-value
@@ -20242,6 +20528,22 @@ capabilities</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_mac_address_randomization"
+              c:identifier="nm_setting_wireless_get_mac_address_randomization"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingWireless:mac-address-randomization property of the
+setting</doc>
+          <type name="SettingMacRandomization"
+                c:type="NMSettingMacRandomization"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWireless</doc>
+            <type name="SettingWireless" c:type="NMSettingWireless*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_mac_blacklist_item"
               c:identifier="nm_setting_wireless_get_mac_blacklist_item">
         <return-value transfer-ownership="none">
@@ -20470,6 +20772,17 @@ standard hex-digits-and-colons notation (eg "00:11:22:33:44:55").</doc>
         <array>
           <type name="utf8"/>
         </array>
+      </property>
+      <property name="mac-address-randomization"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">One of %NM_SETTING_MAC_RANDOMIZATION_DEFAULT (never randomize unless
+the user has set a global default to randomize and the supplicant
+supports randomization),  %NM_SETTING_MAC_RANDOMIZATION_NEVER (never
+randomize the MAC address), or %NM_SETTING_MAC_RANDOMIZATION_ALWAYS
+(always randomize the MAC address).</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="mode" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Wi-Fi network mode; one of "infrastructure", "adhoc" or "ap".  If blank,
@@ -21508,6 +21821,9 @@ generating the dynamic WEP keys automatically</doc>
         <doc xml:space="preserve">WPA2 is used with 802.1x authentication</doc>
       </member>
     </enumeration>
+    <constant name="VLAN_FLAGS_ALL" value="0" c:type="NM_VLAN_FLAGS_ALL">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="VPN_CONNECTION_BANNER"
               value="banner"
               c:type="NM_VPN_CONNECTION_BANNER">
@@ -21739,6 +22055,13 @@ generating the dynamic WEP keys automatically</doc>
         <doc xml:space="preserve">indicates that this interface's operating
  state is tied to the underlying network interface but other details
  (like routing) are not.</doc>
+      </member>
+      <member name="mvrp"
+              value="8"
+              c:identifier="NM_VLAN_FLAG_MVRP"
+              glib:nick="mvrp">
+        <doc xml:space="preserve">indicates that this interface should use MVRP to register
+ itself with it's switch</doc>
       </member>
     </bitfield>
     <enumeration name="VlanPriorityMap"
@@ -22849,20 +23172,6 @@ is valid according to that pattern.</doc>
               version="1.2">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the program. Can be %NULL.</doc>
-          <type name="utf8" c:type="const char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">plugin info instance</doc>
-            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_service"
-              c:identifier="nm_vpn_plugin_info_get_service"
-              version="1.2">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the service. Cannot be %NULL.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
