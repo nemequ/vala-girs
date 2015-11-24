@@ -90,6 +90,8 @@ namespace GVir {
 		public async bool save_to_file_async (string filename, GVirConfig.Domain? custom_conf, uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string screenshot (GVir.Stream stream, uint monitor_id, uint flags) throws GLib.Error;
 		public bool set_config (GVirConfig.Domain conf) throws GLib.Error;
+		public bool set_time (GLib.DateTime? date_time, uint flags) throws GLib.Error;
+		public async bool set_time_async (GLib.DateTime? date_time, uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool shutdown (uint flags) throws GLib.Error;
 		public bool start (uint flags) throws GLib.Error;
 		public async bool start_async (uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
