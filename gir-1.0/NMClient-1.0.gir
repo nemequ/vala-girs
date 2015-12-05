@@ -890,6 +890,11 @@ This is the internal string used by the connection, and must not be modified.</d
               c:type="NM_CLIENT_ACTIVE_CONNECTIONS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_ALL_DEVICES"
+              value="all-devices"
+              c:type="NM_CLIENT_ALL_DEVICES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_CONNECTIVITY"
               value="connectivity"
               c:type="NM_CLIENT_CONNECTIVITY">
@@ -1349,6 +1354,33 @@ The returned array is owned by the client and should not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_all_devices"
+              c:identifier="nm_client_get_all_devices"
+              version="1.2">
+        <doc xml:space="preserve">Gets both real devices and device placeholders (eg, software devices which
+do not currently exist, but could be created automatically by NetworkManager
+if one of their NMDevice::ActivatableConnections was activated).  Use
+nm_device_is_real() to determine whether each device is a real device or
+a placeholder.
+
+Use nm_device_get_type() or the NM_IS_DEVICE_XXXX() functions to determine
+what kind of device each member of the returned array is, and then you may
+use device-specific methods such as nm_device_ethernet_get_hw_address().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GPtrArray
+containing all the #NMDevices.  The returned array is owned by the
+#NMClient object and should not be modified.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_connectivity"
               c:identifier="nm_client_get_connectivity"
               version="0.9.8.6">
@@ -1785,6 +1817,10 @@ likely to become the new #NMClient:primary-connection.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </property>
+      <property name="all-devices" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">List of both real devices and device placeholders.</doc>
+        <type name="ObjectArray"/>
+      </property>
       <property name="connectivity"
                 version="0.9.8.6"
                 transfer-ownership="none">
@@ -1792,7 +1828,7 @@ likely to become the new #NMClient:primary-connection.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="devices" version="0.9.10" transfer-ownership="none">
-        <doc xml:space="preserve">List of known network devices.</doc>
+        <doc xml:space="preserve">List of real network devices.  Does not include placeholder devices.</doc>
         <type name="ObjectArray"/>
       </property>
       <property name="manager-running" transfer-ownership="none">
@@ -1851,8 +1887,35 @@ see nm_client_get_primary_connection() for more details.</doc>
       <field name="parent">
         <type name="Object" c:type="NMObject"/>
       </field>
+      <glib:signal name="any-device-added" when="first">
+        <doc xml:space="preserve">Notifies that a #NMDevice is added.  This signal is emitted for both
+regular devices and placeholder devices.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the new device</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="any-device-removed" when="first">
+        <doc xml:space="preserve">Notifies that a #NMDevice is removed.  This signal is emitted for both
+regular devices and placeholder devices.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the removed device</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="device-added" when="first">
-        <doc xml:space="preserve">Notifies that a #NMDevice is added.</doc>
+        <doc xml:space="preserve">Notifies that a #NMDevice is added.  This signal is not emitted for
+placeholder devices.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1864,7 +1927,8 @@ see nm_client_get_primary_connection() for more details.</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="device-removed" when="first">
-        <doc xml:space="preserve">Notifies that a #NMDevice is removed.</doc>
+        <doc xml:space="preserve">Notifies that a #NMDevice is removed.  This signal is not emitted for
+placeholder devices.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2395,6 +2459,9 @@ the user requires to obtain a given #NMClientPermission</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="DEVICE_PRODUCT" value="product" c:type="NM_DEVICE_PRODUCT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_REAL" value="real" c:type="NM_DEVICE_REAL">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="DEVICE_STATE" value="state" c:type="NM_DEVICE_STATE">
@@ -3501,6 +3568,20 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_real" c:identifier="nm_device_is_real" version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the device exists, or %FALSE if it is a placeholder device
+that could be automatically created by NetworkManager if one of its
+#NMDevice:available-connections was activated.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="is_software"
               c:identifier="nm_device_is_software"
               version="1.0">
@@ -3632,6 +3713,12 @@ nm_device_get_physical_port_id().)</doc>
       <property name="product" transfer-ownership="none">
         <doc xml:space="preserve">The product string of the device.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="real" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the device is real or is a placeholder device that could
+be created automatically by NetworkManager if one of its
+#NMDevice:available-connections was activated.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="state" transfer-ownership="none">
         <doc xml:space="preserve">The state of the device.</doc>

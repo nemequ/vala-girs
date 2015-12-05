@@ -4885,7 +4885,18 @@ filenames, then the use of %G_OPTION_REMAINING is recommended.  If
 the options dictionary.  If you do use %G_OPTION_REMAINING then you
 need to handle these arguments for yourself because once they are
 consumed, they will no longer be visible to the default handling
-(which treats them as filenames to be opened).</doc>
+(which treats them as filenames to be opened).
+
+It is important to use the proper GVariant format when retrieving
+the options with g_variant_dict_lookup():
+- for %G_OPTION_ARG_NONE, use b
+- for %G_OPTION_ARG_STRING, use &amp;s
+- for %G_OPTION_ARG_INT, use i
+- for %G_OPTION_ARG_INT64, use x
+- for %G_OPTION_ARG_DOUBLE, use d
+- for %G_OPTION_ARG_FILENAME, use ^ay
+- for %G_OPTION_ARG_STRING_ARRAY, use &amp;as
+- for %G_OPTION_ARG_FILENAME_ARRAY, use ^aay</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -5624,7 +5635,12 @@ the path to %NULL.
 
 Changing the resource base path once the application is running is
 not recommended.  The point at which the resource path is consulted
-for forming paths for various purposes is unspecified.</doc>
+for forming paths for various purposes is unspecified.  When writing
+a sub-class of #GApplication you should either set the
+#GApplication:resource-base-path property at construction time, or call
+this function during the instance initialization. Alternatively, you
+can call this function in the #GApplicationClass.startup virtual function,
+before chaining up to the parent implementation.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -68075,8 +68091,7 @@ the peer, or -1 on error</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">a pointer to a #GSocketAddress
     pointer, or %NULL</doc>
             <type name="SocketAddress" c:type="GSocketAddress**"/>
@@ -68092,9 +68107,10 @@ the peer, or -1 on error</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
           <parameter name="messages"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
             <doc xml:space="preserve">a pointer which
    may be filled with an array of #GSocketControlMessages, or %NULL</doc>
             <array length="4"
@@ -68104,12 +68120,18 @@ the peer, or -1 on error</doc>
                     c:type="GSocketControlMessage**"/>
             </array>
           </parameter>
-          <parameter name="num_messages" transfer-ownership="none">
+          <parameter name="num_messages"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">a pointer which will be filled with the number of
    elements in @messages, or %NULL</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>
-          <parameter name="flags" transfer-ownership="none">
+          <parameter name="flags"
+                     direction="inout"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">a pointer to an int containing #GSocketMsgFlags flags</doc>
             <type name="gint" c:type="gint*"/>
           </parameter>

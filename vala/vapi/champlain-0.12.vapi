@@ -343,7 +343,7 @@ namespace Champlain {
 		public NullTileSource.full (Champlain.Renderer renderer);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_path_layer_get_type ()")]
-	public class PathLayer : Champlain.Layer, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
+	public class PathLayer : Champlain.Layer, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		public PathLayer ();
 		public void add_node (Champlain.Location location);
@@ -408,7 +408,7 @@ namespace Champlain {
 		public uint max_width { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_tile_get_type ()")]
-	public class Tile : Clutter.Actor, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
+	public class Tile : Clutter.Actor, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		public Tile ();
 		public void display_content ();
@@ -527,6 +527,7 @@ namespace Champlain {
 		public void set_zoom_level (uint zoom_level);
 		public void set_zoom_on_double_click (bool value);
 		public void stop_go_to ();
+		public Cairo.Surface to_surface (bool include_layers);
 		public double x_to_longitude (double x);
 		public double y_to_latitude (double y);
 		public void zoom_in ();
@@ -574,6 +575,12 @@ namespace Champlain {
 		[NoAccessorMethod]
 		public int y_origin { get; set; }
 		public signal void relocated ();
+	}
+	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_exportable_get_type ()")]
+	public interface Exportable : GLib.Object {
+		public abstract unowned Cairo.Surface get_surface ();
+		public abstract void set_surface (Cairo.Surface surface);
+		public abstract Cairo.Surface surface { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_location_get_type ()")]
 	public interface Location : GLib.Object {

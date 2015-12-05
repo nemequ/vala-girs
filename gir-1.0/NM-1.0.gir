@@ -1013,6 +1013,21 @@ Bluetooth device.
               c:type="NM_CLIENT_ACTIVE_CONNECTIONS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_ALL_DEVICES"
+              value="all-devices"
+              c:type="NM_CLIENT_ALL_DEVICES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_ANY_DEVICE_ADDED"
+              value="any-device-added"
+              c:type="NM_CLIENT_ANY_DEVICE_ADDED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_ANY_DEVICE_REMOVED"
+              value="any-device-removed"
+              c:type="NM_CLIENT_ANY_DEVICE_REMOVED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_CAN_MODIFY"
               value="can-modify"
               c:type="NM_CLIENT_CAN_MODIFY">
@@ -1216,6 +1231,32 @@ the callback can be invoked with two first parameters as NULL.</doc>
           </parameter>
         </parameters>
       </function>
+      <virtual-method name="any_device_added">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="NMDevice*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="any_device_removed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="NMDevice*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="connection_added">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1752,6 +1793,33 @@ any.</doc>
 The returned array is owned by the client and should not be modified.</doc>
           <array name="GLib.PtrArray" c:type="const GPtrArray*">
             <type name="ActiveConnection"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_all_devices"
+              c:identifier="nm_client_get_all_devices"
+              version="1.2">
+        <doc xml:space="preserve">Gets both real devices and device placeholders (eg, software devices which
+do not currently exist, but could be created automatically by NetworkManager
+if one of their NMDevice::ActivatableConnections was activated).  Use
+nm_device_is_real() to determine whether each device is a real device or
+a placeholder.
+
+Use nm_device_get_type() or the NM_IS_DEVICE_XXXX() functions to determine
+what kind of device each member of the returned array is, and then you may
+use device-specific methods such as nm_device_ethernet_get_hw_address().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GPtrArray
+containing all the #NMDevices.  The returned array is owned by the
+#NMClient object and should not be modified.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="Device"/>
           </array>
         </return-value>
         <parameters>
@@ -2542,6 +2610,14 @@ Element-type: NMActiveConnection</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </property>
+      <property name="all-devices" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">List of both real devices and device placeholders.
+
+Element-type: NMDevice</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </property>
       <property name="can-modify" transfer-ownership="none">
         <doc xml:space="preserve">If %TRUE, adding and modifying connections is supported.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -2562,7 +2638,7 @@ Element-type: NMRemoteConnection</doc>
         <type name="ConnectivityState"/>
       </property>
       <property name="devices" transfer-ownership="none">
-        <doc xml:space="preserve">List of known network devices.
+        <doc xml:space="preserve">List of real network devices.  Does not include placeholder devices.
 
 Element-type: NMDevice</doc>
         <array name="GLib.PtrArray">
@@ -2632,6 +2708,32 @@ see nm_client_get_primary_connection() for more details.</doc>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
+      <glib:signal name="any-device-added" when="first">
+        <doc xml:space="preserve">Notifies that a #NMDevice is added.  This signal is emitted for both
+regular devices and placeholder devices.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the new device</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="any-device-removed" when="first">
+        <doc xml:space="preserve">Notifies that a #NMDevice is removed.  This signal is emitted for both
+regular devices and placeholder devices.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the removed device</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="connection-added" when="first">
         <doc xml:space="preserve">Notifies that a #NMConnection has been added.</doc>
         <return-value transfer-ownership="none">
@@ -2657,7 +2759,8 @@ see nm_client_get_primary_connection() for more details.</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="device-added" when="first">
-        <doc xml:space="preserve">Notifies that a #NMDevice is added.</doc>
+        <doc xml:space="preserve">Notifies that a #NMDevice is added.  This signal is not emitted for
+placeholder devices.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2669,7 +2772,8 @@ see nm_client_get_primary_connection() for more details.</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="device-removed" when="first">
-        <doc xml:space="preserve">Notifies that a #NMDevice is removed.</doc>
+        <doc xml:space="preserve">Notifies that a #NMDevice is removed.  This signal is not emitted for
+placeholder devices.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2733,6 +2837,36 @@ see nm_client_get_primary_connection() for more details.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="any_device_added">
+        <callback name="any_device_added">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="client" transfer-ownership="none">
+              <type name="Client" c:type="NMClient*"/>
+            </parameter>
+            <parameter name="device" transfer-ownership="none">
+              <type name="Device" c:type="NMDevice*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="any_device_removed">
+        <callback name="any_device_removed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="client" transfer-ownership="none">
+              <type name="Client" c:type="NMClient*"/>
+            </parameter>
+            <parameter name="device" transfer-ownership="none">
+              <type name="Device" c:type="NMDevice*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="permission_changed">
         <callback name="permission_changed">
           <return-value transfer-ownership="none">
@@ -2783,7 +2917,7 @@ see nm_client_get_primary_connection() for more details.</doc>
         </callback>
       </field>
       <field name="padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="6">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -3480,6 +3614,21 @@ connection contains one, otherwise %NULL</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_setting_ip_tunnel"
+              c:identifier="nm_connection_get_setting_ip_tunnel"
+              version="1.2">
+        <doc xml:space="preserve">A shortcut to return any #NMSettingIPTunnel the connection might contain.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #NMSettingIPTunnel if the connection contains one, otherwise %NULL</doc>
+          <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_setting_olpc_mesh"
               c:identifier="nm_connection_get_setting_olpc_mesh">
         <doc xml:space="preserve">A shortcut to return any #NMSettingOlpcMesh the connection might contain.</doc>
@@ -3556,6 +3705,21 @@ connection contains one, otherwise %NULL</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an #NMSettingTeamPort if the connection contains one, otherwise %NULL</doc>
           <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_setting_tun"
+              c:identifier="nm_connection_get_setting_tun"
+              version="1.2">
+        <doc xml:space="preserve">A shortcut to return any #NMSettingTun the connection might contain.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #NMSettingTun if the connection contains one, otherwise %NULL</doc>
+          <type name="SettingTun" c:type="NMSettingTun*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
@@ -4562,6 +4726,61 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DEVICE_IP_INTERFACE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT"
+              value="encapsulation-limit"
+              c:type="NM_DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_FLOW_LABEL"
+              value="flow-label"
+              c:type="NM_DEVICE_IP_TUNNEL_FLOW_LABEL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_INPUT_KEY"
+              value="input-key"
+              c:type="NM_DEVICE_IP_TUNNEL_INPUT_KEY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_LOCAL"
+              value="local"
+              c:type="NM_DEVICE_IP_TUNNEL_LOCAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_MODE"
+              value="mode"
+              c:type="NM_DEVICE_IP_TUNNEL_MODE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_OUTPUT_KEY"
+              value="output-key"
+              c:type="NM_DEVICE_IP_TUNNEL_OUTPUT_KEY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_PARENT"
+              value="parent"
+              c:type="NM_DEVICE_IP_TUNNEL_PARENT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_PATH_MTU_DISCOVERY"
+              value="path-mtu-discovery"
+              c:type="NM_DEVICE_IP_TUNNEL_PATH_MTU_DISCOVERY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_REMOTE"
+              value="remote"
+              c:type="NM_DEVICE_IP_TUNNEL_REMOTE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_TOS"
+              value="tos"
+              c:type="NM_DEVICE_IP_TUNNEL_TOS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP_TUNNEL_TTL"
+              value="ttl"
+              c:type="NM_DEVICE_IP_TUNNEL_TTL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_LLDP_NEIGHBORS"
               value="lldp-neighbors"
               c:type="NM_DEVICE_LLDP_NEIGHBORS">
@@ -4614,6 +4833,9 @@ and some #NMSetting8021x operations.</doc>
     <constant name="DEVICE_PRODUCT" value="product" c:type="NM_DEVICE_PRODUCT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_REAL" value="real" c:type="NM_DEVICE_REAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_STATE" value="state" c:type="NM_DEVICE_STATE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -4635,6 +4857,39 @@ and some #NMSetting8021x operations.</doc>
     <constant name="DEVICE_TEAM_SLAVES"
               value="slaves"
               c:type="NM_DEVICE_TEAM_SLAVES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_GROUP"
+              value="group"
+              c:type="NM_DEVICE_TUN_GROUP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_HW_ADDRESS"
+              value="hw-address"
+              c:type="NM_DEVICE_TUN_HW_ADDRESS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_MODE" value="mode" c:type="NM_DEVICE_TUN_MODE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_MULTI_QUEUE"
+              value="multi-queue"
+              c:type="NM_DEVICE_TUN_MULTI_QUEUE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_NO_PI"
+              value="no-pi"
+              c:type="NM_DEVICE_TUN_NO_PI">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_OWNER"
+              value="owner"
+              c:type="NM_DEVICE_TUN_OWNER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_TUN_VNET_HDR"
+              value="vnet-hdr"
+              c:type="NM_DEVICE_TUN_VNET_HDR">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="DEVICE_UDI" value="udi" c:type="NM_DEVICE_UDI">
@@ -5572,6 +5827,20 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_real" c:identifier="nm_device_is_real" version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the device exists, or %FALSE if it is a placeholder device
+that could be automatically created by NetworkManager if one of its
+#NMDevice:available-connections was activated.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="is_software" c:identifier="nm_device_is_software">
         <doc xml:space="preserve">Whether the device is a software device.</doc>
         <return-value transfer-ownership="none">
@@ -5718,6 +5987,12 @@ nm_device_get_physical_port_id().)</doc>
       <property name="product" transfer-ownership="none">
         <doc xml:space="preserve">The product string of the device.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="real" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the device is real or is a placeholder device that could
+be created automatically by NetworkManager if one of its
+#NMDevice:available-connections was activated.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="state" transfer-ownership="none">
         <doc xml:space="preserve">The state of the device.</doc>
@@ -6417,6 +6692,238 @@ if not known.</doc>
     <record name="DeviceGenericClass"
             c:type="NMDeviceGenericClass"
             glib:is-gtype-struct-for="DeviceGeneric">
+      <field name="parent">
+        <type name="DeviceClass" c:type="NMDeviceClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <class name="DeviceIPTunnel"
+           c:symbol-prefix="device_ip_tunnel"
+           c:type="NMDeviceIPTunnel"
+           parent="Device"
+           glib:type-name="NMDeviceIPTunnel"
+           glib:get-type="nm_device_ip_tunnel_get_type"
+           glib:type-struct="DeviceIPTunnelClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.Initable"/>
+      <method name="get_encapsulation_limit"
+              c:identifier="nm_device_ip_tunnel_get_encapsulation_limit"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the maximum permitted encapsulation level</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flow_label"
+              c:identifier="nm_device_ip_tunnel_get_flow_label"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the flow label assigned to tunnel packets</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_input_key"
+              c:identifier="nm_device_ip_tunnel_get_input_key"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the key used for incoming packets</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_local"
+              c:identifier="nm_device_ip_tunnel_get_local"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the local endpoint of the tunnel</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mode"
+              c:identifier="nm_device_ip_tunnel_get_mode"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the tunneling mode</doc>
+          <type name="IPTunnelMode" c:type="NMIPTunnelMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_output_key"
+              c:identifier="nm_device_ip_tunnel_get_output_key"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the key used for outgoing packets</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_parent"
+              c:identifier="nm_device_ip_tunnel_get_parent"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the device's parent device</doc>
+          <type name="Device" c:type="NMDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_path_mtu_discovery"
+              c:identifier="nm_device_ip_tunnel_get_path_mtu_discovery"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether path MTU discovery is enabled</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_remote"
+              c:identifier="nm_device_ip_tunnel_get_remote"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the remote endpoint of the tunnel</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tos"
+              c:identifier="nm_device_ip_tunnel_get_tos"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">type of service (IPv4) or traffic class (IPv6) assigned
+to tunneled packets.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_ttl"
+              c:identifier="nm_device_ip_tunnel_get_ttl"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the TTL assigned to tunneled packets</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="encapsulation-limit"
+                version="1.2"
+                transfer-ownership="none">
+        <doc xml:space="preserve">How many additional levels of encapsulation are permitted to
+be prepended to packets. This property applies only to IPv6
+tunnels.</doc>
+        <type name="guint8" c:type="guint8"/>
+      </property>
+      <property name="flow-label" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The flow label to assign to tunnel packets. This property
+applies only to IPv6 tunnels.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="input-key" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="local" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The local endpoint of the tunnel.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="mode" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The tunneling mode of the device.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="output-key" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The key used for tunneled output packets, if applicable.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="parent" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The key used for tunneled input packets, if applicable.</doc>
+        <type name="Device"/>
+      </property>
+      <property name="path-mtu-discovery"
+                version="1.2"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether path MTU discovery is enabled on this tunnel.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="remote" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The remote endpoint of the tunnel.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="tos" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The type of service (IPv4) or traffic class (IPv6) assigned to
+tunneled packets.</doc>
+        <type name="guint8" c:type="guint8"/>
+      </property>
+      <property name="ttl" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The TTL assigned to tunneled packets. 0 is a special value
+ meaning that packets inherit the TTL value</doc>
+        <type name="guint8" c:type="guint8"/>
+      </property>
+      <field name="parent">
+        <type name="Device" c:type="NMDevice"/>
+      </field>
+    </class>
+    <record name="DeviceIPTunnelClass"
+            c:type="NMDeviceIPTunnelClass"
+            glib:is-gtype-struct-for="DeviceIPTunnel">
       <field name="parent">
         <type name="DeviceClass" c:type="NMDeviceClass"/>
       </field>
@@ -7262,6 +7769,164 @@ Element-type: NMDevice</doc>
         </array>
       </field>
     </record>
+    <class name="DeviceTun"
+           c:symbol-prefix="device_tun"
+           c:type="NMDeviceTun"
+           parent="Device"
+           glib:type-name="NMDeviceTun"
+           glib:get-type="nm_device_tun_get_type"
+           glib:type-struct="DeviceTunClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.Initable"/>
+      <method name="get_group"
+              c:identifier="nm_device_tun_get_group"
+              version="1.2">
+        <doc xml:space="preserve">Gets the tunnel group.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the gid of the tunnel group, or -1 if it has no owner.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceTun</doc>
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_hw_address"
+              c:identifier="nm_device_tun_get_hw_address"
+              version="1.2">
+        <doc xml:space="preserve">Gets the hardware (MAC) address of the #NMDeviceTun</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the hardware address. This is the internal string used by the
+device, and must not be modified.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceTun</doc>
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mode"
+              c:identifier="nm_device_tun_get_mode"
+              version="1.2">
+        <doc xml:space="preserve">Returns the TUN/TAP mode for the device.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">'tun' or 'tap'</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceTun</doc>
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_multi_queue"
+              c:identifier="nm_device_tun_get_multi_queue"
+              version="1.2">
+        <doc xml:space="preserve">Returns whether the #NMDeviceTun has the IFF_MULTI_QUEUE flag.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the device doesn't have the flag, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceTun</doc>
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_no_pi" c:identifier="nm_device_tun_get_no_pi">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_owner"
+              c:identifier="nm_device_tun_get_owner"
+              version="1.2">
+        <doc xml:space="preserve">Gets the tunnel owner.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the uid of the tunnel owner, or -1 if it has no owner.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceTun</doc>
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vnet_hdr"
+              c:identifier="nm_device_tun_get_vnet_hdr"
+              version="1.2">
+        <doc xml:space="preserve">Returns whether the #NMDeviceTun has the IFF_VNET_HDR flag.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the device has the flag, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceTun</doc>
+            <type name="DeviceTun" c:type="NMDeviceTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="group" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The gid of the tunnel group, or -1 if it has no owner.</doc>
+        <type name="gint64" c:type="gint64"/>
+      </property>
+      <property name="hw-address" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The hardware (MAC) address of the device.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="mode" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The tunnel mode, either "tun" or "tap".</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="multi-queue" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The tunnel's "TUN_TAP_MQ" flag; true if callers can connect to
+the tap device multiple times, for multiple send/receive
+queues.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="no-pi" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The tunnel's "TUN_NO_PI" flag; true if no protocol info is
+prepended to the tunnel packets.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="owner" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The uid of the tunnel owner, or -1 if it has no owner.</doc>
+        <type name="gint64" c:type="gint64"/>
+      </property>
+      <property name="vnet-hdr" version="1.2" transfer-ownership="none">
+        <doc xml:space="preserve">The tunnel's "TUN_VNET_HDR" flag; true if the tunnel packets
+include a virtio network header.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <field name="parent">
+        <type name="Device" c:type="NMDevice"/>
+      </field>
+    </class>
+    <record name="DeviceTunClass"
+            c:type="NMDeviceTunClass"
+            glib:is-gtype-struct-for="DeviceTun">
+      <field name="parent">
+        <type name="DeviceClass" c:type="NMDeviceClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <enumeration name="DeviceType"
                  glib:type-name="NMDeviceType"
                  glib:get-type="nm_device_type_get_type"
@@ -7366,6 +8031,17 @@ GSM/UMTS, or LTE network access protocols</doc>
               c:identifier="NM_DEVICE_TYPE_TEAM"
               glib:nick="team">
         <doc xml:space="preserve">a team master interface</doc>
+      </member>
+      <member name="tun"
+              value="16"
+              c:identifier="NM_DEVICE_TYPE_TUN"
+              glib:nick="tun">
+        <doc xml:space="preserve">a TUN or TAP interface</doc>
+      </member>
+      <member name="ip_tunnel"
+              value="17"
+              c:identifier="NM_DEVICE_TYPE_IP_TUNNEL"
+              glib:nick="ip-tunnel">
       </member>
     </enumeration>
     <class name="DeviceVlan"
@@ -9330,6 +10006,72 @@ reaches zero, the object will be destroyed.</doc>
         </parameters>
       </method>
     </record>
+    <enumeration name="IPTunnelMode"
+                 version="1.2"
+                 glib:type-name="NMIPTunnelMode"
+                 glib:get-type="nm_ip_tunnel_mode_get_type"
+                 c:type="NMIPTunnelMode">
+      <doc xml:space="preserve">The tunneling mode.</doc>
+      <member name="uknown"
+              value="0"
+              c:identifier="NM_IP_TUNNEL_MODE_UKNOWN"
+              glib:nick="uknown">
+      </member>
+      <member name="ipip"
+              value="1"
+              c:identifier="NM_IP_TUNNEL_MODE_IPIP"
+              glib:nick="ipip">
+        <doc xml:space="preserve">IP in IP tunnel</doc>
+      </member>
+      <member name="gre"
+              value="2"
+              c:identifier="NM_IP_TUNNEL_MODE_GRE"
+              glib:nick="gre">
+        <doc xml:space="preserve">GRE tunnel</doc>
+      </member>
+      <member name="sit"
+              value="3"
+              c:identifier="NM_IP_TUNNEL_MODE_SIT"
+              glib:nick="sit">
+        <doc xml:space="preserve">SIT tunnel</doc>
+      </member>
+      <member name="isatap"
+              value="4"
+              c:identifier="NM_IP_TUNNEL_MODE_ISATAP"
+              glib:nick="isatap">
+        <doc xml:space="preserve">ISATAP tunnel</doc>
+      </member>
+      <member name="vti"
+              value="5"
+              c:identifier="NM_IP_TUNNEL_MODE_VTI"
+              glib:nick="vti">
+        <doc xml:space="preserve">VTI tunnel</doc>
+      </member>
+      <member name="ip6ip6"
+              value="6"
+              c:identifier="NM_IP_TUNNEL_MODE_IP6IP6"
+              glib:nick="ip6ip6">
+        <doc xml:space="preserve">IPv6 in IPv6 tunnel</doc>
+      </member>
+      <member name="ipip6"
+              value="7"
+              c:identifier="NM_IP_TUNNEL_MODE_IPIP6"
+              glib:nick="ipip6">
+        <doc xml:space="preserve">IPv4 in IPv6 tunnel</doc>
+      </member>
+      <member name="ip6gre"
+              value="8"
+              c:identifier="NM_IP_TUNNEL_MODE_IP6GRE"
+              glib:nick="ip6gre">
+        <doc xml:space="preserve">IPv6 GRE tunnel</doc>
+      </member>
+      <member name="vti6"
+              value="9"
+              c:identifier="NM_IP_TUNNEL_MODE_VTI6"
+              glib:nick="vti6">
+        <doc xml:space="preserve">IPv6 VTI tunnel</doc>
+      </member>
+    </enumeration>
     <constant name="IP_CONFIG_ADDRESSES"
               value="addresses"
               c:type="NM_IP_CONFIG_ADDRESSES">
@@ -11264,6 +12006,66 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_IP_CONFIG_ROUTE_METRIC">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT"
+              value="encapsulation-limit"
+              c:type="NM_SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_FLOW_LABEL"
+              value="flow-label"
+              c:type="NM_SETTING_IP_TUNNEL_FLOW_LABEL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_INPUT_KEY"
+              value="input-key"
+              c:type="NM_SETTING_IP_TUNNEL_INPUT_KEY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_LOCAL"
+              value="local"
+              c:type="NM_SETTING_IP_TUNNEL_LOCAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_MODE"
+              value="mode"
+              c:type="NM_SETTING_IP_TUNNEL_MODE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_OUTPUT_KEY"
+              value="output-key"
+              c:type="NM_SETTING_IP_TUNNEL_OUTPUT_KEY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_PARENT"
+              value="parent"
+              c:type="NM_SETTING_IP_TUNNEL_PARENT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_PATH_MTU_DISCOVERY"
+              value="path-mtu-discovery"
+              c:type="NM_SETTING_IP_TUNNEL_PATH_MTU_DISCOVERY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_REMOTE"
+              value="remote"
+              c:type="NM_SETTING_IP_TUNNEL_REMOTE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_SETTING_NAME"
+              value="ip-tunnel"
+              c:type="NM_SETTING_IP_TUNNEL_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_TOS"
+              value="tos"
+              c:type="NM_SETTING_IP_TUNNEL_TOS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_TTL"
+              value="ttl"
+              c:type="NM_SETTING_IP_TUNNEL_TTL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_NAME" value="name" c:type="NM_SETTING_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -11466,6 +12268,39 @@ supported for IPv6)</doc>
     <constant name="SETTING_TEAM_SETTING_NAME"
               value="team"
               c:type="NM_SETTING_TEAM_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_GROUP"
+              value="group"
+              c:type="NM_SETTING_TUN_GROUP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_MODE"
+              value="mode"
+              c:type="NM_SETTING_TUN_MODE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_MULTI_QUEUE"
+              value="multi-queue"
+              c:type="NM_SETTING_TUN_MULTI_QUEUE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_OWNER"
+              value="owner"
+              c:type="NM_SETTING_TUN_OWNER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_PI" value="pi" c:type="NM_SETTING_TUN_PI">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_SETTING_NAME"
+              value="tun"
+              c:type="NM_SETTING_TUN_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TUN_VNET_HDR"
+              value="vnet-hdr"
+              c:type="NM_SETTING_TUN_VNET_HDR">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_VLAN_EGRESS_PRIORITY_MAP"
@@ -17915,6 +18750,296 @@ Element-Type: NMIPRoute</doc>
         </array>
       </field>
     </record>
+    <class name="SettingIPTunnel"
+           c:symbol-prefix="setting_ip_tunnel"
+           c:type="NMSettingIPTunnel"
+           parent="Setting"
+           glib:type-name="NMSettingIPTunnel"
+           glib:get-type="nm_setting_ip_tunnel_get_type"
+           glib:type-struct="SettingIPTunnelClass">
+      <constructor name="new"
+                   c:identifier="nm_setting_ip_tunnel_new"
+                   version="1.2">
+        <doc xml:space="preserve">Creates a new #NMSettingIPTunnel object with default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMSettingIPTunnel object</doc>
+          <type name="Setting" c:type="NMSetting*"/>
+        </return-value>
+      </constructor>
+      <method name="get_encapsulation_limit"
+              c:identifier="nm_setting_ip_tunnel_get_encapsulation_limit"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:encapsulation-limit property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the encapsulation limit value</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flow_label"
+              c:identifier="nm_setting_ip_tunnel_get_flow_label"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:flow-label property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the flow label value</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_input_key"
+              c:identifier="nm_setting_ip_tunnel_get_input_key"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:input-key property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the input key</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_local"
+              c:identifier="nm_setting_ip_tunnel_get_local"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:local property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the local endpoint</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mode"
+              c:identifier="nm_setting_ip_tunnel_get_mode"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:mode property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the tunnel mode</doc>
+          <type name="IPTunnelMode" c:type="NMIPTunnelMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_output_key"
+              c:identifier="nm_setting_ip_tunnel_get_output_key"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:output-key property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the output key</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_parent"
+              c:identifier="nm_setting_ip_tunnel_get_parent"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:parent property of the setting</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the parent device</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_path_mtu_discovery"
+              c:identifier="nm_setting_ip_tunnel_get_path_mtu_discovery"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:path-mtu-discovery property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether path MTU discovery is enabled</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_remote"
+              c:identifier="nm_setting_ip_tunnel_get_remote"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:remote property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the remote endpoint</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tos"
+              c:identifier="nm_setting_ip_tunnel_get_tos"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:tos property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the TOS value</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_ttl"
+              c:identifier="nm_setting_ip_tunnel_get_ttl"
+              version="1.2">
+        <doc xml:space="preserve">Returns the #NMSettingIPTunnel:ttl property of the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the Time-to-live value</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPTunnel</doc>
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="encapsulation-limit"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">How many additional levels of encapsulation are permitted to be prepended
+to packets. This property applies only to IPv6 tunnels.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="flow-label"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The flow label to assign to tunnel packets. This property applies only to
+IPv6 tunnels.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="input-key"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The key used for tunnel input packets; the property is valid only for
+certain tunnel modes (GRE, IP6GRE). If empty, no key is used.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="local"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The local endpoint of the tunnel; the value can be empty, otherwise it
+must contain an IPv4 or IPv6 address.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="mode"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The tunneling mode, for example %NM_IP_TUNNEL_MODE_IPIP or
+%NM_IP_TUNNEL_MODE_GRE.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="output-key"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The key used for tunnel output packets; the property is valid only for
+certain tunnel modes (GRE, IP6GRE). If empty, no key is used.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="parent"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">If given, specifies the parent interface name or parent connection UUID
+the new device will be bound to so that tunneled packets will only be
+routed via that interface.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="path-mtu-discovery"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether to enable Path MTU Discovery on this tunnel.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="remote"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The remote endpoint of the tunnel; the value must contain an IPv4 or IPv6
+address.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="tos"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The type of service (IPv4) or traffic class (IPv6) field to be set on
+tunneled packets.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="ttl"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The TTL to assign to tunneled packets. 0 is a special value meaning that
+packets inherit the TTL value.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <field name="parent">
+        <type name="Setting" c:type="NMSetting"/>
+      </field>
+    </class>
+    <record name="SettingIPTunnelClass"
+            c:type="NMSettingIPTunnelClass"
+            glib:is-gtype-struct-for="SettingIPTunnel">
+      <field name="parent">
+        <type name="SettingClass" c:type="NMSettingClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <class name="SettingInfiniband"
            c:symbol-prefix="setting_infiniband"
            c:type="NMSettingInfiniband"
@@ -18971,6 +20096,192 @@ used. See man teamd.conf for the format details.</doc>
         </array>
       </field>
     </record>
+    <class name="SettingTun"
+           c:symbol-prefix="setting_tun"
+           c:type="NMSettingTun"
+           parent="Setting"
+           glib:type-name="NMSettingTun"
+           glib:get-type="nm_setting_tun_get_type"
+           glib:type-struct="SettingTunClass">
+      <constructor name="new" c:identifier="nm_setting_tun_new" version="1.2">
+        <doc xml:space="preserve">Creates a new #NMSettingTun object with default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMSettingTun object</doc>
+          <type name="Setting" c:type="NMSetting*"/>
+        </return-value>
+      </constructor>
+      <method name="get_group"
+              c:identifier="nm_setting_tun_get_group"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTun:group property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTun</doc>
+            <type name="SettingTun" c:type="NMSettingTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mode"
+              c:identifier="nm_setting_tun_get_mode"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTun:mode property of the setting</doc>
+          <type name="SettingTunMode" c:type="NMSettingTunMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTun</doc>
+            <type name="SettingTun" c:type="NMSettingTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_multi_queue"
+              c:identifier="nm_setting_tun_get_multi_queue"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTun:multi-queue property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTun</doc>
+            <type name="SettingTun" c:type="NMSettingTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_owner"
+              c:identifier="nm_setting_tun_get_owner"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTun:owner property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTun</doc>
+            <type name="SettingTun" c:type="NMSettingTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pi" c:identifier="nm_setting_tun_get_pi" version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTun:pi property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTun</doc>
+            <type name="SettingTun" c:type="NMSettingTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vnet_hdr"
+              c:identifier="nm_setting_tun_get_vnet_hdr"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTun:vnet_hdr property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTun</doc>
+            <type name="SettingTun" c:type="NMSettingTun*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="group"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The group ID which will own the device. If set to %NULL everyone
+will be able to use the device.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="mode"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The operating mode of the virtual device. Allowed values are
+%NM_SETTING_TUN_MODE_TUN to create a layer 3 device and
+%NM_SETTING_TUN_MODE_TAP to create an Ethernet-like layer 2
+one.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="multi-queue"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">If the property is set to %TRUE, the interface will support
+multiple file descriptors (queues) to parallelize packet
+sending or receiving. Otherwise, the interface will only
+support a single queue.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="owner"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The user ID which will own the device. If set to %NULL everyone
+will be able to use the device.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="pi" version="1.2" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">If %TRUE the interface will prepend a 4 byte header describing the
+physical interface to the packets.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="vnet-hdr"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">If %TRUE the IFF_VNET_HDR the tunnel packets will include a virtio
+network header.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <field name="parent">
+        <type name="Setting" c:type="NMSetting"/>
+      </field>
+    </class>
+    <record name="SettingTunClass"
+            c:type="NMSettingTunClass"
+            glib:is-gtype-struct-for="SettingTun">
+      <field name="parent">
+        <type name="SettingClass" c:type="NMSettingClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <enumeration name="SettingTunMode"
+                 glib:type-name="NMSettingTunMode"
+                 glib:get-type="nm_setting_tun_mode_get_type"
+                 c:type="NMSettingTunMode">
+      <doc xml:space="preserve">#NMSettingTunMode values indicate the device type (TUN/TAP)</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="NM_SETTING_TUN_MODE_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">an unknown device type</doc>
+      </member>
+      <member name="tun"
+              value="1"
+              c:identifier="NM_SETTING_TUN_MODE_TUN"
+              glib:nick="tun">
+        <doc xml:space="preserve">a TUN device</doc>
+      </member>
+      <member name="tap"
+              value="2"
+              c:identifier="NM_SETTING_TUN_MODE_TAP"
+              glib:nick="tap">
+        <doc xml:space="preserve">a TAP device</doc>
+      </member>
+    </enumeration>
     <callback name="SettingValueIterFn" c:type="NMSettingValueIterFn">
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
@@ -23809,6 +25120,33 @@ containing the unrecognized token in @err_token.</doc>
                    allow-none="1">
           <doc xml:space="preserve">location to store the first unrecognized token</doc>
           <type name="utf8" c:type="char**"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_enum_get_values"
+              c:identifier="nm_utils_enum_get_values"
+              version="1.2"
+              introspectable="0">
+      <doc xml:space="preserve">Returns the list of possible values for a given enum.</doc>
+      <return-value>
+        <doc xml:space="preserve">a NULL-terminated dynamically-allocated array of static strings
+or %NULL on error</doc>
+        <array c:type="const char**">
+          <type name="utf8"/>
+        </array>
+      </return-value>
+      <parameters>
+        <parameter name="type" transfer-ownership="none">
+          <doc xml:space="preserve">the %GType of the enum</doc>
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="from" transfer-ownership="none">
+          <doc xml:space="preserve">the first element to be returned</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="to" transfer-ownership="none">
+          <doc xml:space="preserve">the last element to be returned</doc>
+          <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>
     </function>

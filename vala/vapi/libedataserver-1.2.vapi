@@ -609,18 +609,21 @@ namespace E {
 		public bool get_encrypt_by_default ();
 		public bool get_encrypt_to_self ();
 		public unowned string get_key_id ();
+		public bool get_prefer_inline ();
 		public bool get_sign_by_default ();
 		public unowned string get_signing_algorithm ();
 		public void set_always_trust (bool always_trust);
 		public void set_encrypt_by_default (bool encrypt_by_default);
 		public void set_encrypt_to_self (bool encrypt_to_self);
 		public void set_key_id (string key_id);
+		public void set_prefer_inline (bool prefer_inline);
 		public void set_sign_by_default (bool sign_by_default);
 		public void set_signing_algorithm (string signing_algorithm);
 		public bool always_trust { get; set construct; }
 		public bool encrypt_by_default { get; set construct; }
 		public bool encrypt_to_self { get; set construct; }
 		public string key_id { get; set construct; }
+		public bool prefer_inline { get; set construct; }
 		public bool sign_by_default { get; set construct; }
 		public string signing_algorithm { get; set construct; }
 	}
