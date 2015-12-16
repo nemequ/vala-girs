@@ -317,23 +317,17 @@ namespace Grl {
 		public unowned string get_description ();
 		public unowned string get_filename ();
 		public unowned string get_id ();
-		public unowned string get_info (string key);
-		public GLib.List<weak string> get_info_keys ();
 		public unowned string get_license ();
+		public unowned string get_module_name ();
 		public unowned string get_name ();
 		public unowned string get_site ();
 		public GLib.List<weak Grl.Source> get_sources ();
 		public unowned string get_version ();
-		public bool load (GLib.List<Grl.Config> configurations);
 		public void register_keys ();
 		public void set_filename (string filename);
 		public void set_id (string id);
-		public void set_info (string key, string value);
-		public void set_load_func (void* load_function);
 		public void set_module (GLib.Module module);
-		public void set_optional_info (GLib.HashTable<void*,void*> info);
-		public void set_register_keys_func (void* register_keys_function);
-		public void set_unload_func (void* unload_function);
+		public void set_module_name (string module_name);
 		public void unload ();
 		[NoAccessorMethod]
 		public bool loaded { get; }
@@ -354,6 +348,8 @@ namespace Grl {
 	public class Registry : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Registry ();
+		public bool activate_all_plugins ();
+		public bool activate_plugin_by_id (string plugin_id) throws GLib.Error;
 		public bool add_config (owned Grl.Config config) throws GLib.Error;
 		public bool add_config_from_file (string config_file) throws GLib.Error;
 		public bool add_config_from_resource (string resource_path) throws GLib.Error;
@@ -363,9 +359,8 @@ namespace Grl {
 		public GLib.List<weak Grl.Plugin> get_plugins (bool only_loaded);
 		public GLib.List<weak Grl.Source> get_sources (bool ranked);
 		public GLib.List<weak Grl.Source> get_sources_by_operations (Grl.SupportedOps ops, bool ranked);
-		public bool load_all_plugins () throws GLib.Error;
+		public bool load_all_plugins (bool activate) throws GLib.Error;
 		public bool load_plugin (string library_filename) throws GLib.Error;
-		public bool load_plugin_by_id (string plugin_id) throws GLib.Error;
 		public bool load_plugin_directory (string path) throws GLib.Error;
 		public Grl.KeyID lookup_metadata_key (string key_name);
 		public unowned string lookup_metadata_key_desc (Grl.KeyID key);
@@ -809,6 +804,10 @@ namespace Grl {
 	}
 	[CCode (cheader_filename = "grilo.h", has_target = false)]
 	public delegate void OperationCancelCb (void* data);
+	[CCode (cheader_filename = "grilo.h", has_target = false)]
+	public delegate void PluginDeinitFunc (Grl.Plugin plugin);
+	[CCode (cheader_filename = "grilo.h", has_target = false)]
+	public delegate void PluginRegisterKeysFunc (Grl.Registry registry, Grl.Plugin plugin);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 2.9)]
 	public delegate void SourceRemoveCb (Grl.Source source, owned Grl.Media media, GLib.Error? error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 3.9)]

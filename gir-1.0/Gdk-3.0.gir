@@ -352,6 +352,26 @@ right button in a left-handed setup.</doc>
 left button in a left-handed setup.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <record name="Border" c:type="GdkBorder">
+      <doc xml:space="preserve">A struct that specifies a border around a rectangular area
+that can be of different width on each side.</doc>
+      <field name="left" writable="1">
+        <doc xml:space="preserve">The width of the left border</doc>
+        <type name="gint16" c:type="gint16"/>
+      </field>
+      <field name="right" writable="1">
+        <doc xml:space="preserve">The width of the right border</doc>
+        <type name="gint16" c:type="gint16"/>
+      </field>
+      <field name="top" writable="1">
+        <doc xml:space="preserve">The width of the top border</doc>
+        <type name="gint16" c:type="gint16"/>
+      </field>
+      <field name="bottom" writable="1">
+        <doc xml:space="preserve">The width of the bottom border</doc>
+        <type name="gint16" c:type="gint16"/>
+      </field>
+    </record>
     <enumeration name="ByteOrder"
                  glib:type-name="GdkByteOrder"
                  glib:get-type="gdk_byte_order_get_type"
@@ -1908,6 +1928,22 @@ it. See gdk_device_get_vendor_id() for more information.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_seat"
+              c:identifier="gdk_device_get_seat"
+              version="3.20">
+        <doc xml:space="preserve">Returns the #GdkSeat the device belongs to.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GdkSeat. This memory is owned by GTK+ and
+         must not be freed.</doc>
+          <type name="Seat" c:type="GdkSeat*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdkDevice</doc>
+            <type name="Device" c:type="GdkDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_source"
               c:identifier="gdk_device_get_source"
               version="2.20">
@@ -2086,7 +2122,11 @@ unless there is an ongoing grab on them, see gdk_device_grab().</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="grab" c:identifier="gdk_device_grab" version="3.0">
+      <method name="grab"
+              c:identifier="gdk_device_grab"
+              version="3.0"
+              deprecated="1"
+              deprecated-version="3.20.">
         <doc xml:space="preserve">Grabs the device so that all events coming from this device are passed to
 this application until the device is ungrabbed with gdk_device_ungrab(),
 or the window becomes unviewable. This overrides any previous grab on the device
@@ -2108,6 +2148,7 @@ It is equivalent to a pointer grab on the window with @owner_events set to
 If you set up anything at the time you take the grab that needs to be
 cleaned up when the grab ends, you should handle the #GdkEventGrabBroken
 events that are emitted when the grab ends unvoluntarily.</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_seat_grab() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%GDK_GRAB_SUCCESS if the grab was successful.</doc>
           <type name="GrabStatus" c:type="GdkGrabStatus"/>
@@ -2268,8 +2309,13 @@ by the input mode.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="ungrab" c:identifier="gdk_device_ungrab" version="3.0">
+      <method name="ungrab"
+              c:identifier="gdk_device_ungrab"
+              version="3.0"
+              deprecated="1"
+              deprecated-version="3.20.">
         <doc xml:space="preserve">Release any grab on @device.</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_seat_ungrab() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2380,6 +2426,13 @@ always come in keyboard/pointer pairs. Other device types will have a %NULL asso
                 transfer-ownership="none">
         <doc xml:space="preserve">Product ID of this device, see gdk_device_get_product_id().</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="seat"
+                version="3.20"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">#GdkSeat of this device.</doc>
+        <type name="Seat"/>
       </property>
       <property name="type"
                 version="3.0"
@@ -2529,7 +2582,9 @@ macro buttons. Such keys can be globally set to map into normal X
 keyboard events. The mapping is set using gdk_device_set_key().</doc>
       <method name="get_client_pointer"
               c:identifier="gdk_device_manager_get_client_pointer"
-              version="3.0">
+              version="3.0"
+              deprecated="1"
+              deprecated-version="3.20.">
         <doc xml:space="preserve">Returns the client pointer, that is, the master pointer that acts as the core pointer
 for this application. In X11, window managers may change this depending on the interaction
 pattern under the presence of several pointers.
@@ -2567,9 +2622,13 @@ and there aren’t other means to get a meaningful #GdkDevice to operate on.</do
       </method>
       <method name="list_devices"
               c:identifier="gdk_device_manager_list_devices"
-              version="3.0">
+              version="3.0"
+              deprecated="1"
+              deprecated-version="3.20">
         <doc xml:space="preserve">Returns the list of devices of type @type currently attached to
 @device_manager.</doc>
+        <doc-deprecated xml:space="preserve">, use gdk_seat_get_pointer(), gdk_seat_get_keyboard()
+            and gdk_seat_list_slaves() instead.</doc-deprecated>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve">a list of
          #GdkDevices. The returned list must be
@@ -2868,10 +2927,28 @@ for @display</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_default_seat"
+              c:identifier="gdk_display_get_default_seat"
+              version="3.20">
+        <doc xml:space="preserve">Returns the default #GdkSeat for this display.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the default seat.</doc>
+          <type name="Seat" c:type="GdkSeat*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_device_manager"
               c:identifier="gdk_display_get_device_manager"
-              version="3.0">
+              version="3.0"
+              deprecated="1"
+              deprecated-version="3.20.">
         <doc xml:space="preserve">Returns the #GdkDeviceManager associated to @display.</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_display_get_default_seat() and #GdkSeat operations.</doc-deprecated>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">A #GdkDeviceManager, or
          %NULL. This memory is owned by GDK and must not be freed
@@ -3150,6 +3227,24 @@ The list is statically allocated and should not be freed.</doc>
     a list of #GdkDevice</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Device"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="list_seats"
+              c:identifier="gdk_display_list_seats"
+              version="3.20">
+        <doc xml:space="preserve">Returns the list of seats known to @display.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">the
+         list of seats known to the #GdkDisplay</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Seat"/>
           </type>
         </return-value>
         <parameters>
@@ -3568,6 +3663,32 @@ system for @display is opened.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
+      <glib:signal name="seat-added" when="last" version="3.20">
+        <doc xml:space="preserve">The ::seat-added signal is emitted whenever a new seat is made
+known to the windowing system.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">the seat that was just added</doc>
+            <type name="Seat"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="seat-removed" when="last" version="3.20">
+        <doc xml:space="preserve">The ::seat-removed signal is emitted whenever a seat is removed
+by the windowing system.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">the seat that was just added</doc>
+            <type name="Seat"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <class name="DisplayManager"
            c:symbol-prefix="display_manager"
@@ -3927,6 +4048,30 @@ for @context are emitted as if they came from this device.</doc>
           <parameter name="device" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkDevice</doc>
             <type name="Device" c:type="GdkDevice*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_hotspot"
+              c:identifier="gdk_drag_context_set_hotspot"
+              version="3.20">
+        <doc xml:space="preserve">Sets the position of the drag window that will be kept
+under the cursor hotspot. Initially, the hotspot is at the
+top left corner of the drag window.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDragContext</doc>
+            <type name="DragContext" c:type="GdkDragContext*"/>
+          </instance-parameter>
+          <parameter name="hot_x" transfer-ownership="none">
+            <doc xml:space="preserve">x coordinate of the drag window hotspot</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="hot_y" transfer-ownership="none">
+            <doc xml:space="preserve">y coordinate of the drag window hotspot</doc>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </method>
@@ -4554,6 +4699,19 @@ to which `event-&gt;motion.x_root` and
             <doc xml:space="preserve">location to store the scroll direction</doc>
             <type name="ScrollDirection" c:type="GdkScrollDirection*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_seat" c:identifier="gdk_event_get_seat" version="3.20">
+        <doc xml:space="preserve">Returns the #GdkSeat this event was generated for.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GdkSeat of this event</doc>
+          <type name="Seat" c:type="GdkSeat*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkEvent</doc>
+            <type name="Event" c:type="const GdkEvent*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_source_device"
@@ -18518,6 +18676,318 @@ height of a screen changes.</doc>
   in #GdkEventScroll. See gdk_event_get_scroll_deltas(). Since: 3.4</doc>
       </member>
     </enumeration>
+    <class name="Seat"
+           c:symbol-prefix="seat"
+           c:type="GdkSeat"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="GdkSeat"
+           glib:get-type="gdk_seat_get_type">
+      <doc xml:space="preserve">The #GdkSeat object represents a collection of input devices
+that belong to an user.</doc>
+      <method name="get_capabilities"
+              c:identifier="gdk_seat_get_capabilities"
+              version="3.20">
+        <doc xml:space="preserve">Returns the capabilities this #GdkSeat currently has.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the seat capabilities</doc>
+          <type name="SeatCapabilities" c:type="GdkSeatCapabilities"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_display" c:identifier="gdk_seat_get_display">
+        <doc xml:space="preserve">Returns the #GdkDisplay this seat belongs to.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDisplay. This memory is owned by GTK+ and
+         must not be freed.</doc>
+          <type name="Display" c:type="GdkDisplay*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_keyboard"
+              c:identifier="gdk_seat_get_keyboard"
+              version="3.20">
+        <doc xml:space="preserve">Returns the master device that routes keyboard events.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a master #GdkDevice with keyboard
+         capabilities. This object is owned by GTK+ and must not be
+         freed.</doc>
+          <type name="Device" c:type="GdkDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pointer"
+              c:identifier="gdk_seat_get_pointer"
+              version="3.20">
+        <doc xml:space="preserve">Returns the master device that routes pointer events.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a master #GdkDevice with pointer
+         capabilities. This object is owned by GTK+ and must not be
+         freed.</doc>
+          <type name="Device" c:type="GdkDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_slaves"
+              c:identifier="gdk_seat_get_slaves"
+              version="3.20">
+        <doc xml:space="preserve">Returns the slave devices that match the given capabilities.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">A list of #GdkDevices. The list
+         must be freed with g_list_free(), the elements are owned
+         by GDK and must not be freed.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Seat"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+          <parameter name="capabilities" transfer-ownership="none">
+            <doc xml:space="preserve">capabilities to get devices for</doc>
+            <type name="SeatCapabilities" c:type="GdkSeatCapabilities"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="grab" c:identifier="gdk_seat_grab" version="3.20">
+        <doc xml:space="preserve">Grabs the seat so that all events corresponding to the given @capabilities
+are passed to this application until the seat is ungrabbed with gdk_seat_ungrab(),
+or the window becomes hidden. This overrides any previous grab on the
+seat by this client.
+
+As a rule of thumb, if a grab is desired over %GDK_SEAT_CAPABILITY_POINTER,
+all other "pointing" capabilities (eg. %GDK_SEAT_CAPABILITY_TOUCH) should
+be grabbed too, so the user is able to interact with all of those while
+the grab holds, you should thus use %GDK_SEAT_CAPABILITY_ALL_POINTING most
+commonly.
+
+Grabs are used for operations which need complete control over the
+events corresponding to the given capabilities. For example in GTK+ this
+is used for Drag and Drop operations, popup menus and such.
+
+Note that if the event mask of a #GdkWindow has selected both button press
+and button release events, or touch begin and touch end, then a press event
+will cause an automatic grab until the button is released, equivalent to a
+grab on the window with @owner_events set to %TRUE. This performed as most
+applications expect to receive presses and releases in pairs.
+
+If you set up anything at the time you take the grab that needs to be
+cleaned up when the grab ends, you should handle the #GdkEventGrabBroken
+events that are emitted when the grab ends unvoluntarily.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%GDK_GRAB_SUCCESS if the grab was successful.</doc>
+          <type name="GrabStatus" c:type="GdkGrabStatus"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">the #GdkWindow which will own the grab</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </parameter>
+          <parameter name="capabilities" transfer-ownership="none">
+            <doc xml:space="preserve">capabilities that will be grabbed</doc>
+            <type name="SeatCapabilities" c:type="GdkSeatCapabilities"/>
+          </parameter>
+          <parameter name="owner_events" transfer-ownership="none">
+            <doc xml:space="preserve">if %FALSE then all device events are reported with respect to
+               @window and are only reported if selected by @event_mask. If
+               %TRUE then pointer events for this application are reported
+               as normal, but pointer events outside this application are
+               reported with respect to @window and only if selected by
+               @event_mask. In either mode, unreported events are discarded.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="cursor"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the cursor to display while the grab is active. If
+         this is %NULL then the normal cursors are used for
+         @window and its descendants, and the cursor for @window is used
+         elsewhere.</doc>
+            <type name="Cursor" c:type="GdkCursor*"/>
+          </parameter>
+          <parameter name="event"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the event that is triggering the grab, or %NULL if none
+        is available.</doc>
+            <type name="Event" c:type="const GdkEvent*"/>
+          </parameter>
+          <parameter name="prepare_func"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="call"
+                     closure="6">
+            <doc xml:space="preserve">function to prepare the window to be
+               grabbed, it can be %NULL if @window is visible before this call.</doc>
+            <type name="SeatGrabPrepareFunc" c:type="GdkSeatGrabPrepareFunc"/>
+          </parameter>
+          <parameter name="prepare_func_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="5">
+            <doc xml:space="preserve">user data to pass to @prepare_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="ungrab" c:identifier="gdk_seat_ungrab" version="3.20">
+        <doc xml:space="preserve">Releases a grab added through gdk_seat_grab().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="display"
+                version="3.20"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">#GdkDisplay of this seat.</doc>
+        <type name="Display"/>
+      </property>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <glib:signal name="device-added" when="last" version="3.20">
+        <doc xml:space="preserve">The ::device-added signal is emitted either when a new input
+device is related to this seat.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the newly added #GdkDevice.</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="device-removed" when="last" version="3.20">
+        <doc xml:space="preserve">The ::device-removed signal is emitted either when an
+input device is removed (e.g. unplugged).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the just removed #GdkDevice.</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <bitfield name="SeatCapabilities"
+              version="3.20"
+              glib:type-name="GdkSeatCapabilities"
+              glib:get-type="gdk_seat_capabilities_get_type"
+              c:type="GdkSeatCapabilities">
+      <doc xml:space="preserve">Flags describing the seat capabilities.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GDK_SEAT_CAPABILITY_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">No input capabilities</doc>
+      </member>
+      <member name="pointer"
+              value="1"
+              c:identifier="GDK_SEAT_CAPABILITY_POINTER"
+              glib:nick="pointer">
+        <doc xml:space="preserve">The seat has a pointer (e.g. mouse)</doc>
+      </member>
+      <member name="touch"
+              value="2"
+              c:identifier="GDK_SEAT_CAPABILITY_TOUCH"
+              glib:nick="touch">
+        <doc xml:space="preserve">The seat has touchscreen(s) attached</doc>
+      </member>
+      <member name="tablet_stylus"
+              value="4"
+              c:identifier="GDK_SEAT_CAPABILITY_TABLET_STYLUS"
+              glib:nick="tablet-stylus">
+        <doc xml:space="preserve">The seat has drawing tablet(s) attached</doc>
+      </member>
+      <member name="keyboard"
+              value="8"
+              c:identifier="GDK_SEAT_CAPABILITY_KEYBOARD"
+              glib:nick="keyboard">
+        <doc xml:space="preserve">The seat has keyboard(s) attached</doc>
+      </member>
+      <member name="all_pointing"
+              value="7"
+              c:identifier="GDK_SEAT_CAPABILITY_ALL_POINTING"
+              glib:nick="all-pointing">
+        <doc xml:space="preserve">The union of all pointing capabilities</doc>
+      </member>
+      <member name="all"
+              value="15"
+              c:identifier="GDK_SEAT_CAPABILITY_ALL"
+              glib:nick="all">
+        <doc xml:space="preserve">The union of all capabilities</doc>
+      </member>
+    </bitfield>
+    <callback name="SeatGrabPrepareFunc"
+              c:type="GdkSeatGrabPrepareFunc"
+              version="3.20">
+      <doc xml:space="preserve">Type of the callback used to set up @window so it can be
+grabbed. A typical action would be ensuring the window is
+visible, although there's room for other initialization
+actions.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="seat" transfer-ownership="none">
+          <doc xml:space="preserve">the #GdkSeat being grabbed</doc>
+          <type name="Seat" c:type="GdkSeat*"/>
+        </parameter>
+        <parameter name="window" transfer-ownership="none">
+          <doc xml:space="preserve">the #GdkWindow being grabbed</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <doc xml:space="preserve">user data passed in gdk_seat_grab()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <enumeration name="SettingAction"
                  glib:type-name="GdkSettingAction"
                  glib:get-type="gdk_setting_action_get_type"
@@ -24423,6 +24893,42 @@ This function is called by the drag source.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="drag_begin_from_point"
+              c:identifier="gdk_drag_begin_from_point"
+              version="3.20">
+      <doc xml:space="preserve">Starts a drag and creates a new drag context for it.
+
+This function is called by the drag source.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly created #GdkDragContext</doc>
+        <type name="DragContext" c:type="GdkDragContext*"/>
+      </return-value>
+      <parameters>
+        <parameter name="window" transfer-ownership="none">
+          <doc xml:space="preserve">the source window for this drag</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </parameter>
+        <parameter name="device" transfer-ownership="none">
+          <doc xml:space="preserve">the device that controls this drag</doc>
+          <type name="Device" c:type="GdkDevice*"/>
+        </parameter>
+        <parameter name="targets" transfer-ownership="none">
+          <doc xml:space="preserve">the offered targets,
+    as list of #GdkAtoms</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Atom"/>
+          </type>
+        </parameter>
+        <parameter name="x_root" transfer-ownership="none">
+          <doc xml:space="preserve">the x coordinate where the drag nominally started</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="y_root" transfer-ownership="none">
+          <doc xml:space="preserve">the y coordinate where the drag nominally started</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="drag_drop" c:identifier="gdk_drag_drop">
       <doc xml:space="preserve">Drops on the current destination.
 
@@ -24438,6 +24944,29 @@ This function is called by the drag source.</doc>
         <parameter name="time_" transfer-ownership="none">
           <doc xml:space="preserve">the timestamp for this operation</doc>
           <type name="guint32" c:type="guint32"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="drag_drop_done"
+              c:identifier="gdk_drag_drop_done"
+              version="3.20">
+      <doc xml:space="preserve">Inform GDK if the drop ended successfully. Passing %FALSE
+for @success may trigger a drag cancellation animation.
+
+This function is called by the drag source, and should
+be the last call before dropping the reference to the
+@context.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="context" transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDragContext</doc>
+          <type name="DragContext" c:type="GdkDragContext*"/>
+        </parameter>
+        <parameter name="success" transfer-ownership="none">
+          <doc xml:space="preserve">whether the drag was ultimatively successful</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </parameter>
       </parameters>
     </function>

@@ -7,7 +7,6 @@ and/or use gtk-doc annotations.  -->
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="Gtk" version="3.0"/>
-  <include name="GtkSource" version="3.0"/>
   <package name="gspell-1"/>
   <c:include name="gspell/gspell.h"/>
   <namespace name="Gspell"
@@ -44,7 +43,17 @@ language based on the current locale.</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
-      <virtual-method name="add_word_to_personal">
+      <virtual-method name="session_cleared">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="checker" transfer-ownership="none">
+            <type name="Checker" c:type="GspellChecker*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="word_added_to_personal">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -57,7 +66,7 @@ language based on the current locale.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="add_word_to_session">
+      <virtual-method name="word_added_to_session">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -68,18 +77,6 @@ language based on the current locale.</doc>
           <parameter name="word" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="clear_session" invoker="clear_session">
-        <doc xml:space="preserve">Clears the session dictionary.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="checker" transfer-ownership="none">
-            <doc xml:space="preserve">a #GspellChecker.</doc>
-            <type name="Checker" c:type="GspellChecker*"/>
-          </instance-parameter>
         </parameters>
       </virtual-method>
       <method name="add_word_to_personal"
@@ -260,7 +257,13 @@ the best available language based on the current locale.</doc>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <glib:signal name="add-word-to-personal" when="last">
+      <glib:signal name="session-cleared" when="last">
+        <doc xml:space="preserve">Emitted when the session dictionary is cleared.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="word-added-to-personal" when="last">
         <doc xml:space="preserve">Emitted when a word is added to the personal dictionary.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -272,7 +275,7 @@ the best available language based on the current locale.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="add-word-to-session" when="last">
+      <glib:signal name="word-added-to-session" when="last">
         <doc xml:space="preserve">Emitted when a word is added to the session dictionary. The session
 dictionary is lost when the application exits.</doc>
         <return-value transfer-ownership="none">
@@ -285,12 +288,6 @@ dictionary is lost when the application exits.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="clear-session" when="last">
-        <doc xml:space="preserve">Emitted when the session dictionary is cleared.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
     </class>
     <record name="CheckerClass"
             c:type="GspellCheckerClass"
@@ -298,8 +295,8 @@ dictionary is lost when the application exits.</doc>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-      <field name="add_word_to_personal">
-        <callback name="add_word_to_personal">
+      <field name="word_added_to_personal">
+        <callback name="word_added_to_personal">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -313,8 +310,8 @@ dictionary is lost when the application exits.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="add_word_to_session">
-        <callback name="add_word_to_session">
+      <field name="word_added_to_session">
+        <callback name="word_added_to_session">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -328,14 +325,13 @@ dictionary is lost when the application exits.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="clear_session">
-        <callback name="clear_session">
+      <field name="session_cleared">
+        <callback name="session_cleared">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
             <parameter name="checker" transfer-ownership="none">
-              <doc xml:space="preserve">a #GspellChecker.</doc>
               <type name="Checker" c:type="GspellChecker*"/>
             </parameter>
           </parameters>
@@ -423,8 +419,8 @@ from a spell-checker-related function.</doc>
         </return-value>
         <parameters>
           <parameter name="buffer" transfer-ownership="none">
-            <doc xml:space="preserve">a #GtkSourceBuffer.</doc>
-            <type name="GtkSource.Buffer" c:type="GtkSourceBuffer*"/>
+            <doc xml:space="preserve">a #GtkTextBuffer.</doc>
+            <type name="Gtk.TextBuffer" c:type="GtkTextBuffer*"/>
           </parameter>
           <parameter name="checker" transfer-ownership="none">
             <doc xml:space="preserve">a #GspellChecker.</doc>
@@ -471,10 +467,10 @@ the #GspellInlineCheckerGtv:buffer property.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The #GtkSourceBuffer. If a same buffer is used for several views, the
+        <doc xml:space="preserve">The #GtkTextBuffer. If a same buffer is used for several views, the
 misspelled words are visible in all views, because #GtkTextTag's are
 added to the buffer.</doc>
-        <type name="GtkSource.Buffer"/>
+        <type name="Gtk.TextBuffer"/>
       </property>
       <property name="spell-checker"
                 writable="1"
@@ -496,6 +492,19 @@ added to the buffer.</doc>
             glib:type-name="GspellLanguage"
             glib:get-type="gspell_language_get_type"
             c:symbol-prefix="language">
+      <method name="compare" c:identifier="gspell_language_compare">
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="language_a" transfer-ownership="none">
+            <type name="Language" c:type="const GspellLanguage*"/>
+          </instance-parameter>
+          <parameter name="language_b" transfer-ownership="none">
+            <type name="Language" c:type="const GspellLanguage*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="copy" c:identifier="gspell_language_copy">
         <doc xml:space="preserve">Used by language bindings.</doc>
         <return-value transfer-ownership="full">
@@ -503,7 +512,7 @@ added to the buffer.</doc>
           <type name="Language" c:type="GspellLanguage*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lang" transfer-ownership="none">
+          <instance-parameter name="language" transfer-ownership="none">
             <doc xml:space="preserve">a #GspellLanguage.</doc>
             <type name="Language" c:type="const GspellLanguage*"/>
           </instance-parameter>
@@ -515,7 +524,7 @@ added to the buffer.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lang" transfer-ownership="none">
+          <instance-parameter name="language" transfer-ownership="none">
             <doc xml:space="preserve">a #GspellLanguage.</doc>
             <type name="Language" c:type="GspellLanguage*"/>
           </instance-parameter>
@@ -526,7 +535,7 @@ added to the buffer.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lang" transfer-ownership="none">
+          <instance-parameter name="language" transfer-ownership="none">
             <type name="Language" c:type="const GspellLanguage*"/>
           </instance-parameter>
         </parameters>
@@ -536,7 +545,7 @@ added to the buffer.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lang" transfer-ownership="none">
+          <instance-parameter name="language" transfer-ownership="none">
             <type name="Language" c:type="const GspellLanguage*"/>
           </instance-parameter>
         </parameters>
@@ -546,7 +555,7 @@ added to the buffer.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the list of available
 languages for the spell checking.</doc>
-          <type name="GLib.SList" c:type="const GSList*">
+          <type name="GLib.List" c:type="const GList*">
             <type name="Language"/>
           </type>
         </return-value>
@@ -556,7 +565,7 @@ languages for the spell checking.</doc>
           <type name="Language" c:type="const GspellLanguage*"/>
         </return-value>
         <parameters>
-          <parameter name="key" transfer-ownership="none">
+          <parameter name="language_code" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -1087,7 +1096,7 @@ checking is finished or if an error occurred.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the list of available
 languages for the spell checking.</doc>
-        <type name="GLib.SList" c:type="const GSList*">
+        <type name="GLib.List" c:type="const GList*">
           <type name="Language"/>
         </type>
       </return-value>
@@ -1099,7 +1108,7 @@ languages for the spell checking.</doc>
         <type name="Language" c:type="const GspellLanguage*"/>
       </return-value>
       <parameters>
-        <parameter name="key" transfer-ownership="none">
+        <parameter name="language_code" transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

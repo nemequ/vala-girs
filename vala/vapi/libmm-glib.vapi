@@ -19,10 +19,12 @@ namespace MM {
 		public MM.BearerIpConfig get_ipv6_config ();
 		public unowned string get_path ();
 		public MM.BearerProperties get_properties ();
+		public MM.BearerStats get_stats ();
 		public bool get_suspended ();
 		public unowned MM.BearerIpConfig peek_ipv4_config ();
 		public unowned MM.BearerIpConfig peek_ipv6_config ();
 		public unowned MM.BearerProperties peek_properties ();
+		public unowned MM.BearerStats peek_stats ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_bearer_ip_config_get_type ()")]
 	public class BearerIpConfig : GLib.Object {
@@ -75,6 +77,20 @@ namespace MM {
 		public void set_password (string password);
 		public void set_rm_protocol (MM.ModemCdmaRmProtocol protocol);
 		public void set_user (string user);
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_bearer_stats_get_type ()")]
+	public class BearerStats : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public BearerStats ();
+		[CCode (has_construct_function = false)]
+		public BearerStats.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
+		public GLib.Variant get_dictionary ();
+		public uint get_duration ();
+		public uint64 get_rx_bytes ();
+		public uint64 get_tx_bytes ();
+		public void set_duration (uint duration);
+		public void set_rx_bytes (uint64 rx_bytes);
+		public void set_tx_bytes (uint64 tx_bytes);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_get_type ()")]
 	public class Call : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable {
@@ -1056,6 +1072,8 @@ namespace MM {
 		public abstract uint ip_timeout { get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant properties { owned get; set; }
+		[NoAccessorMethod]
+		public abstract GLib.Variant stats { owned get; set; }
 		[NoAccessorMethod]
 		public abstract bool suspended { get; set; }
 		public virtual signal bool handle_connect (GLib.DBusMethodInvocation invocation);
@@ -2409,6 +2427,8 @@ namespace MM {
 	public const string BEARER_PROPERTY_IPTIMEOUT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_PROPERTIES")]
 	public const string BEARER_PROPERTY_PROPERTIES;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_STATS")]
+	public const string BEARER_PROPERTY_STATS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_SUSPENDED")]
 	public const string BEARER_PROPERTY_SUSPENDED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_ACCEPT")]

@@ -56,6 +56,11 @@ and/or use gtk-doc annotations.  -->
               c:type="MM_BEARER_PROPERTY_PROPERTIES">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="BEARER_PROPERTY_STATS"
+              value="Stats"
+              c:type="MM_BEARER_PROPERTY_STATS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="BEARER_PROPERTY_SUSPENDED"
               value="Suspended"
               c:type="MM_BEARER_PROPERTY_SUSPENDED">
@@ -389,6 +394,25 @@ new values.&lt;/warning&gt;</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_stats" c:identifier="mm_bearer_get_stats">
+        <doc xml:space="preserve">Gets a #MMBearerStats object specifying the statistics of the current bearer
+connection.
+
+&lt;warning&gt;The values reported by @self are not updated when the values in the
+interface change. Instead, the client is expected to call
+mm_bearer_get_stats() again to get a new #MMBearerStats with the
+new values.&lt;/warning&gt;</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #MMBearerStats that must be freed with g_object_unref() or %NULL if unknown.</doc>
+          <type name="BearerStats" c:type="MMBearerStats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #MMBearer.</doc>
+            <type name="Bearer" c:type="MMBearer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_suspended" c:identifier="mm_bearer_get_suspended">
         <doc xml:space="preserve">Checks whether or not the #MMBearer is suspended (but not deactivated) while the
 device is handling other communications, like a voice call.</doc>
@@ -454,6 +478,25 @@ thread.&lt;/warning&gt;</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">A #MMBearerProperties. Do not free the returned value, it belongs to @self.</doc>
           <type name="BearerProperties" c:type="MMBearerProperties*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #MMBearer.</doc>
+            <type name="Bearer" c:type="MMBearer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="peek_stats" c:identifier="mm_bearer_peek_stats">
+        <doc xml:space="preserve">Gets a #MMBearerStats object specifying the statistics of the current bearer
+connection.
+
+&lt;warning&gt;The returned value is only valid until the property changes so
+it is only safe to use this function on the thread where
+@self was constructed. Use mm_bearer_get_stats() if on another
+thread.&lt;/warning&gt;</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #MMBearerStats. Do not free the returned value, it belongs to @self.</doc>
+          <type name="BearerStats" c:type="MMBearerStats*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -1228,6 +1271,139 @@ connection.</doc>
     </record>
     <record name="BearerPropertiesPrivate"
             c:type="MMBearerPropertiesPrivate"
+            disguised="1">
+    </record>
+    <class name="BearerStats"
+           c:symbol-prefix="bearer_stats"
+           c:type="MMBearerStats"
+           parent="GObject.Object"
+           glib:type-name="MMBearerStats"
+           glib:get-type="mm_bearer_stats_get_type"
+           glib:type-struct="BearerStatsClass">
+      <doc xml:space="preserve">The #MMBearerStats structure contains private data and should
+only be accessed using the provided API.</doc>
+      <constructor name="new" c:identifier="mm_bearer_stats_new">
+        <return-value transfer-ownership="full">
+          <type name="BearerStats" c:type="MMBearerStats*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_from_dictionary"
+                   c:identifier="mm_bearer_stats_new_from_dictionary"
+                   throws="1">
+        <return-value transfer-ownership="full">
+          <type name="BearerStats" c:type="MMBearerStats*"/>
+        </return-value>
+        <parameters>
+          <parameter name="dictionary" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_dictionary"
+              c:identifier="mm_bearer_stats_get_dictionary">
+        <return-value transfer-ownership="full">
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_duration" c:identifier="mm_bearer_stats_get_duration">
+        <doc xml:space="preserve">Gets the duration of the current connection, in seconds.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #guint.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMBearerStats.</doc>
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rx_bytes" c:identifier="mm_bearer_stats_get_rx_bytes">
+        <doc xml:space="preserve">Gets the number of bytes received without error in the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #guint64.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMBearerStats.</doc>
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tx_bytes" c:identifier="mm_bearer_stats_get_tx_bytes">
+        <doc xml:space="preserve">Gets the number of bytes transmitted without error in the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #guint64.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMBearerStats.</doc>
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_duration" c:identifier="mm_bearer_stats_set_duration">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+          <parameter name="duration" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rx_bytes" c:identifier="mm_bearer_stats_set_rx_bytes">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+          <parameter name="rx_bytes" transfer-ownership="none">
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_tx_bytes" c:identifier="mm_bearer_stats_set_tx_bytes">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BearerStats" c:type="MMBearerStats*"/>
+          </instance-parameter>
+          <parameter name="tx_bytes" transfer-ownership="none">
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="BearerStatsPrivate" c:type="MMBearerStatsPrivate*"/>
+      </field>
+    </class>
+    <record name="BearerStatsClass"
+            c:type="MMBearerStatsClass"
+            glib:is-gtype-struct-for="BearerStats">
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="BearerStatsPrivate"
+            c:type="MMBearerStatsPrivate"
             disguised="1">
     </record>
     <constant name="CALL_METHOD_ACCEPT"
@@ -3191,6 +3367,23 @@ Since this D-Bus property is readable, it is meaningful to use this function on 
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_stats" invoker="get_stats" introspectable="0">
+        <doc xml:space="preserve">Gets the value of the &lt;link linkend="gdbus-property-org-freedesktop-ModemManager1-Bearer.Stats"&gt;"Stats"&lt;/link&gt; D-Bus property.
+
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+
+&lt;warning&gt;The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where @object was constructed. Use mm_gdbus_bearer_dup_stats() if on another thread.&lt;/warning&gt;</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The property value or %NULL if the property is not set. Do not free the returned value, it belongs to @object.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #MmGdbusBearer.</doc>
+            <type name="GdbusBearer" c:type="MmGdbusBearer*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_suspended"
                       invoker="get_suspended"
                       introspectable="0">
@@ -3509,6 +3702,23 @@ Since this D-Bus property is readable, it is meaningful to use this function on 
           </instance-parameter>
         </parameters>
       </method>
+      <method name="dup_stats"
+              c:identifier="mm_gdbus_bearer_dup_stats"
+              introspectable="0">
+        <doc xml:space="preserve">Gets a copy of the &lt;link linkend="gdbus-property-org-freedesktop-ModemManager1-Bearer.Stats"&gt;"Stats"&lt;/link&gt; D-Bus property.
+
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The property value or %NULL if the property is not set. The returned value should be freed with g_variant_unref().</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #MmGdbusBearer.</doc>
+            <type name="GdbusBearer" c:type="MmGdbusBearer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_connected"
               c:identifier="mm_gdbus_bearer_get_connected"
               introspectable="0">
@@ -3608,6 +3818,25 @@ Since this D-Bus property is readable, it is meaningful to use this function on 
 Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
 
 &lt;warning&gt;The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where @object was constructed. Use mm_gdbus_bearer_dup_properties() if on another thread.&lt;/warning&gt;</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The property value or %NULL if the property is not set. Do not free the returned value, it belongs to @object.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #MmGdbusBearer.</doc>
+            <type name="GdbusBearer" c:type="MmGdbusBearer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stats"
+              c:identifier="mm_gdbus_bearer_get_stats"
+              introspectable="0">
+        <doc xml:space="preserve">Gets the value of the &lt;link linkend="gdbus-property-org-freedesktop-ModemManager1-Bearer.Stats"&gt;"Stats"&lt;/link&gt; D-Bus property.
+
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+
+&lt;warning&gt;The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where @object was constructed. Use mm_gdbus_bearer_dup_stats() if on another thread.&lt;/warning&gt;</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The property value or %NULL if the property is not set. Do not free the returned value, it belongs to @object.</doc>
           <type name="GLib.Variant" c:type="GVariant*"/>
@@ -3756,6 +3985,26 @@ Since this D-Bus property is not writable, it is only meaningful to use this fun
           </parameter>
         </parameters>
       </method>
+      <method name="set_stats"
+              c:identifier="mm_gdbus_bearer_set_stats"
+              introspectable="0">
+        <doc xml:space="preserve">Sets the &lt;link linkend="gdbus-property-org-freedesktop-ModemManager1-Bearer.Stats"&gt;"Stats"&lt;/link&gt; D-Bus property to @value.
+
+Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #MmGdbusBearer.</doc>
+            <type name="GdbusBearer" c:type="MmGdbusBearer*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">The value to set.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_suspended"
               c:identifier="mm_gdbus_bearer_set_suspended"
               introspectable="0">
@@ -3808,6 +4057,12 @@ Since the D-Bus property for this #GObject property is readable but not writable
       </property>
       <property name="properties" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Represents the D-Bus property &lt;link linkend="gdbus-property-org-freedesktop-ModemManager1-Bearer.Properties"&gt;"Properties"&lt;/link&gt;.
+
+Since the D-Bus property for this #GObject property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.</doc>
+        <type name="GLib.Variant"/>
+      </property>
+      <property name="stats" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Represents the D-Bus property &lt;link linkend="gdbus-property-org-freedesktop-ModemManager1-Bearer.Stats"&gt;"Stats"&lt;/link&gt;.
 
 Since the D-Bus property for this #GObject property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.</doc>
         <type name="GLib.Variant"/>
@@ -3961,6 +4216,20 @@ If a signal handler returns %TRUE, it means the signal handler will handle the i
       </field>
       <field name="get_properties">
         <callback name="get_properties">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">The property value or %NULL if the property is not set. Do not free the returned value, it belongs to @object.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </return-value>
+          <parameters>
+            <parameter name="object" transfer-ownership="none">
+              <doc xml:space="preserve">A #MmGdbusBearer.</doc>
+              <type name="GdbusBearer" c:type="MmGdbusBearer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_stats">
+        <callback name="get_stats">
           <return-value transfer-ownership="none">
             <doc xml:space="preserve">The property value or %NULL if the property is not set. Do not free the returned value, it belongs to @object.</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>

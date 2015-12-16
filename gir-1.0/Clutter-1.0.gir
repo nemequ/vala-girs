@@ -1980,7 +1980,10 @@ directly is undefined behaviour.</doc>
             <doc xml:space="preserve">a #ClutterActor</doc>
             <type name="Actor" c:type="ClutterActor*"/>
           </instance-parameter>
-          <parameter name="model" transfer-ownership="none">
+          <parameter name="model"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a #GListModel</doc>
             <type name="Gio.ListModel" c:type="GListModel*"/>
           </parameter>
@@ -70190,15 +70193,45 @@ If @enable is %FALSE the following events will not work:
     <function name="set_windowing_backend"
               c:identifier="clutter_set_windowing_backend"
               version="1.16">
-      <doc xml:space="preserve">Restricts clutter to only use the specified backend.
-This must be called before the first API call to clutter, including
+      <doc xml:space="preserve">Restricts Clutter to only use the specified backend or list of backends.
+
+You can use one of the `CLUTTER_WINDOWING_*` symbols, e.g.
+
+|[&lt;!-- language="C" --&gt;
+  clutter_set_windowing_backend (CLUTTER_WINDOWING_X11);
+]|
+
+Will force Clutter to use the X11 windowing and input backend, and terminate
+if the X11 backend could not be initialized successfully.
+
+Since Clutter 1.26, you can also use a comma-separated list of windowing
+system backends to provide a fallback in case backends are not available or
+enabled, e.g.:
+
+|[&lt;!-- language="C" --&gt;
+  clutter_set_windowing_backend ("gdk,wayland,x11");
+]|
+
+Will make Clutter test for the GDK, Wayland, and X11 backends in that order.
+
+You can use the `*` special value to ask Clutter to use the internally
+defined list of backends. For instance:
+
+|[&lt;!-- language="C" --&gt;
+  clutter_set_windowing_backend ("x11,wayland,*");
+]|
+
+Will make Clutter test the X11 and Wayland backends, and then fall back
+to the internal list of available backends.
+
+This function must be called before the first API call to Clutter, including
 clutter_get_option_context()</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
         <parameter name="backend_type" transfer-ownership="none">
-          <doc xml:space="preserve">the name of a clutter window backend</doc>
+          <doc xml:space="preserve">a comma separated list of windowing backends</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>

@@ -21,7 +21,8 @@ namespace GSSDP {
 		public Client.with_port (string? iface, uint16 msearch_port) throws GLib.Error;
 		[NoAccessorMethod]
 		public bool active { get; set; }
-		public string host_ip { get; }
+		[NoAccessorMethod]
+		public string host_ip { owned get; set construct; }
 		public string @interface { get; construct; }
 		[NoAccessorMethod]
 		public uint msearch_port { get; construct; }
