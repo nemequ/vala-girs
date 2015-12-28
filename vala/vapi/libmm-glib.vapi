@@ -718,8 +718,11 @@ namespace MM {
 		public MM.LocationGpsNmea get_gps_nmea_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async MM.LocationGpsRaw get_gps_raw (GLib.Cancellable? cancellable) throws GLib.Error;
 		public MM.LocationGpsRaw get_gps_raw_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public uint get_gps_refresh_rate ();
 		public unowned string get_path ();
 		public unowned string get_supl_server ();
+		public async bool set_gps_refresh_rate (uint rate, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool set_gps_refresh_rate_sync (uint rate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_supl_server (string supl, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_supl_server_sync (string supl, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool setup (MM.ModemLocationSource sources, bool signal_location, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1285,11 +1288,14 @@ namespace MM {
 	public interface GdbusModemLocation : GLib.Object {
 		public async bool call_get_location (GLib.Cancellable? cancellable, out GLib.Variant out_Location) throws GLib.Error;
 		public bool call_get_location_sync (out GLib.Variant out_Location, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_gps_refresh_rate (uint arg_rate, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_gps_refresh_rate_sync (uint arg_rate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_supl_server (string arg_supl, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_supl_server_sync (string arg_supl, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_setup (uint arg_sources, bool arg_signal_location, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_setup_sync (uint arg_sources, bool arg_signal_location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_get_location (owned GLib.DBusMethodInvocation invocation, GLib.Variant Location);
+		public void complete_set_gps_refresh_rate (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_supl_server (owned GLib.DBusMethodInvocation invocation);
 		public void complete_setup (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
@@ -1299,12 +1305,15 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract uint enabled { get; set; }
 		[NoAccessorMethod]
+		public abstract uint gps_refresh_rate { get; set; }
+		[NoAccessorMethod]
 		public abstract GLib.Variant location { owned get; set; }
 		[NoAccessorMethod]
 		public abstract bool signals_location { get; set; }
 		[NoAccessorMethod]
 		public abstract string supl_server { owned get; set; }
 		public virtual signal bool handle_get_location (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_set_gps_refresh_rate (GLib.DBusMethodInvocation invocation, uint arg_rate);
 		public virtual signal bool handle_set_supl_server (GLib.DBusMethodInvocation invocation, string arg_supl);
 		public virtual signal bool handle_setup (GLib.DBusMethodInvocation invocation, uint arg_sources, bool arg_signal_location);
 	}
@@ -2509,6 +2518,8 @@ namespace MM {
 	public const string MODEM_FIRMWARE_METHOD_SELECT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_GETLOCATION")]
 	public const string MODEM_LOCATION_METHOD_GETLOCATION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_SETGPSREFRESHRATE")]
+	public const string MODEM_LOCATION_METHOD_SETGPSREFRESHRATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_SETSUPLSERVER")]
 	public const string MODEM_LOCATION_METHOD_SETSUPLSERVER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_SETUP")]
@@ -2517,6 +2528,8 @@ namespace MM {
 	public const string MODEM_LOCATION_PROPERTY_CAPABILITIES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_ENABLED")]
 	public const string MODEM_LOCATION_PROPERTY_ENABLED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_GPSREFRESHRATE")]
+	public const string MODEM_LOCATION_PROPERTY_GPSREFRESHRATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_LOCATION")]
 	public const string MODEM_LOCATION_PROPERTY_LOCATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_SIGNALSLOCATION")]

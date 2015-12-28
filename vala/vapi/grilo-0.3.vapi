@@ -102,39 +102,83 @@ namespace Grl {
 	public class Media : Grl.Data {
 		[CCode (has_construct_function = false)]
 		public Media ();
+		public void add_artist (string artist);
 		public void add_author (string author);
+		public void add_director (string director);
 		public void add_external_player (string player);
 		public void add_external_url (string url);
+		public void add_genre (string genre);
 		public void add_keyword (string keyword);
+		public void add_lyrics (string lyrics);
+		public void add_mb_artist_id (string mb_artist_id);
+		public void add_performer (string performer);
+		public void add_producer (string producer);
 		public void add_region_data (string region, GLib.DateTime publication_date, string certificate);
 		public void add_thumbnail (string thumbnail);
 		public void add_thumbnail_binary (uint8 thumbnail, size_t size);
-		public void add_url_data (string url, string mime);
+		public void add_url_data (string url, string mime, int bitrate, float framerate, int width, int height);
+		[CCode (cname = "grl_media_audio_new", has_construct_function = false)]
+		public Media.audio_new ();
+		[CCode (cname = "grl_media_container_new", has_construct_function = false)]
+		public Media.container_new ();
+		public unowned string get_album ();
+		public unowned string get_artist ();
+		public unowned string get_artist_nth (uint index);
 		public unowned string get_author ();
 		public unowned string get_author_nth (uint index);
+		public int get_bitrate ();
+		public unowned string get_camera_model ();
 		public unowned string get_certificate ();
+		public int get_childcount ();
 		public unowned GLib.DateTime get_creation_date ();
 		public unowned string get_description ();
+		public unowned string get_director ();
+		public unowned string get_director_nth (uint index);
 		public int get_duration ();
+		public int get_episode ();
+		public unowned string get_episode_title ();
+		public float get_exposure_time ();
 		public unowned string get_external_url ();
 		public unowned string get_external_url_nth (uint index);
 		public bool get_favourite ();
+		public unowned string get_flash_used ();
+		public float get_framerate ();
+		public unowned string get_genre ();
+		public unowned string get_genre_nth (uint index);
+		public int get_height ();
 		public unowned string get_id ();
+		public float get_iso_speed ();
 		public unowned string get_keyword ();
 		public unowned string get_keyword_nth (uint index);
 		public GLib.DateTime get_last_played ();
 		public int get_last_position ();
 		public unowned string get_license ();
+		public unowned string get_lyrics ();
+		public unowned string get_lyrics_nth (uint index);
+		public unowned string get_mb_album_id ();
+		public unowned string get_mb_artist_id ();
+		public unowned string get_mb_artist_id_nth (uint index);
+		public unowned string get_mb_recording_id ();
+		public unowned string get_mb_track_id ();
+		public Grl.MediaType get_media_type ();
 		public unowned string get_mime ();
 		public unowned GLib.DateTime get_modification_date ();
+		public int get_orientation ();
+		public unowned string get_original_title ();
+		public unowned string get_performer ();
+		public unowned string get_performer_nth (uint index);
 		public int get_play_count ();
 		public unowned string get_player ();
 		public unowned string get_player_nth (uint index);
+		public unowned string get_producer ();
+		public unowned string get_producer_nth (uint index);
 		public unowned GLib.DateTime get_publication_date ();
 		public float get_rating ();
 		public unowned string get_region ();
 		public unowned string get_region_data (out unowned GLib.DateTime publication_date, out unowned string certificate);
 		public unowned string get_region_data_nth (uint index, out unowned GLib.DateTime publication_date, out unowned string certificate);
+		public int get_season ();
+		public unowned string get_show ();
 		public unowned string get_site ();
 		public int64 get_size ();
 		public unowned string get_source ();
@@ -145,30 +189,63 @@ namespace Grl {
 		public uint8 get_thumbnail_binary_nth (size_t size, uint index);
 		public unowned string get_thumbnail_nth (uint index);
 		public unowned string get_title ();
+		public int get_track_number ();
 		public unowned string get_url ();
-		public unowned string get_url_data (out unowned string mime);
-		public unowned string get_url_data_nth (uint index, out unowned string mime);
+		public unowned string get_url_data (out unowned string mime, out int bitrate, float framerate, int width, int height);
+		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate, float framerate, int width, int height);
+		public int get_width ();
+		[CCode (cname = "grl_media_image_new", has_construct_function = false)]
+		public Media.image_new ();
+		public bool is_audio ();
+		public bool is_container ();
+		public bool is_image ();
+		public bool is_video ();
 		public string serialize ();
+		public void set_album (string album);
+		public void set_artist (string artist);
 		public void set_author (string author);
+		public void set_bitrate (int bitrate);
+		public void set_camera_model (string camera_model);
 		public void set_certificate (string certificate);
+		public void set_childcount (int childcount);
 		public void set_creation_date (GLib.DateTime creation_date);
 		public void set_description (string description);
+		public void set_director (string director);
 		public void set_duration (int duration);
+		public void set_episode (int episode);
+		public void set_episode_title (string episode_title);
+		public void set_exposure_time (float exposure_time);
 		public void set_external_player (string player);
 		public void set_external_url (string url);
 		public void set_favourite (bool favourite);
+		public void set_flash_used (string flash_used);
+		public void set_framerate (float framerate);
+		public void set_genre (string genre);
+		public void set_height (int height);
 		public void set_id (string id);
+		public void set_iso_speed (float iso_speed);
 		public void set_keyword (string keyword);
 		public void set_last_played (GLib.DateTime last_played);
 		public void set_last_position (int last_position);
 		public void set_license (string license);
+		public void set_lyrics (string lyrics);
+		public void set_mb_album_id (string mb_album_id);
+		public void set_mb_artist_id (string mb_artist_id);
+		public void set_mb_recording_id (string mb_recording_id);
+		public void set_mb_track_id (string mb_track_id);
 		public void set_mime (string mime);
 		public void set_modification_date (GLib.DateTime modification_date);
+		public void set_orientation (int orientation);
+		public void set_original_title (string original_title);
+		public void set_performer (string performer);
 		public void set_play_count (int play_count);
+		public void set_producer (string producer);
 		public void set_publication_date (GLib.DateTime date);
 		public void set_rating (float rating, float max);
 		public void set_region (string region);
 		public void set_region_data (string region, GLib.DateTime publication_date, string certificate);
+		public void set_season (int season);
+		public void set_show (string show);
 		public void set_site (string site);
 		public void set_size (int64 size);
 		public void set_source (string source);
@@ -176,115 +253,15 @@ namespace Grl {
 		public void set_thumbnail (string thumbnail);
 		public void set_thumbnail_binary (uint8 thumbnail, size_t size);
 		public void set_title (string title);
-		public void set_url (string url);
-		public void set_url_data (string url, string mime);
-		public static Grl.Media unserialize (string serial);
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_audio_get_type ()")]
-	public class MediaAudio : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaAudio ();
-		public void add_artist (string artist);
-		public void add_genre (string genre);
-		public void add_lyrics (string lyrics);
-		public void add_mb_artist_id (string mb_artist_id);
-		public void add_url_data (string url, string mime, int bitrate);
-		public unowned string get_album ();
-		public unowned string get_artist ();
-		public unowned string get_artist_nth (uint index);
-		public int get_bitrate ();
-		public unowned string get_genre ();
-		public unowned string get_genre_nth (uint index);
-		public unowned string get_lyrics ();
-		public unowned string get_lyrics_nth (uint index);
-		public unowned string get_mb_album_id ();
-		public unowned string get_mb_artist_id ();
-		public unowned string get_mb_artist_id_nth (uint index);
-		public unowned string get_mb_recording_id ();
-		public unowned string get_mb_track_id ();
-		public int get_track_number ();
-		public unowned string get_url_data (out unowned string mime, out int bitrate);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, out int bitrate);
-		public void set_album (string album);
-		public void set_artist (string artist);
-		public void set_bitrate (int bitrate);
-		public void set_genre (string genre);
-		public void set_lyrics (string lyrics);
-		public void set_mb_album_id (string mb_album_id);
-		public void set_mb_artist_id (string mb_artist_id);
-		public void set_mb_recording_id (string mb_recording_id);
-		public void set_mb_track_id (string mb_track_id);
 		public void set_track_number (int track_number);
-		public void set_url_data (string url, string mime, int bitrate);
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_box_get_type ()")]
-	public class MediaBox : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaBox ();
-		public int get_childcount ();
-		public void set_childcount (int childcount);
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_image_get_type ()")]
-	public class MediaImage : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaImage ();
-		public void add_url_data (string url, string mime, int width, int height);
-		public unowned string get_camera_model ();
-		public float get_exposure_time ();
-		public unowned string get_flash_used ();
-		public int get_height ();
-		public float get_iso_speed ();
-		public int get_orientation ();
-		public unowned string get_url_data (out unowned string mime, int width, int height);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, int width, int height);
-		public int get_width ();
-		public void set_camera_model (string camera_model);
-		public void set_exposure_time (float exposure_time);
-		public void set_flash_used (string flash_used);
-		public void set_height (int height);
-		public void set_iso_speed (float iso_speed);
-		public void set_orientation (int orientation);
-		public void set_size (int width, int height);
-		public void set_url_data (string url, string mime, int width, int height);
+		public void set_url (string url);
+		public void set_url_data (string url, string mime, int bitrate, float framerate, int width, int height);
 		public void set_width (int width);
-	}
-	[CCode (cheader_filename = "grilo.h", type_id = "grl_media_video_get_type ()")]
-	public class MediaVideo : Grl.Media {
-		[CCode (has_construct_function = false, type = "GrlMedia*")]
-		public MediaVideo ();
-		public void add_director (string director);
-		public void add_performer (string performer);
-		public void add_producer (string producer);
-		public void add_url_data (string url, string mime, float framerate, int width, int height);
-		public unowned string get_director ();
-		public unowned string get_director_nth (uint index);
-		public int get_episode ();
-		public unowned string get_episode_title ();
-		public float get_framerate ();
-		public int get_height ();
-		public unowned string get_original_title ();
-		public unowned string get_performer ();
-		public unowned string get_performer_nth (uint index);
-		public unowned string get_producer ();
-		public unowned string get_producer_nth (uint index);
-		public int get_season ();
-		public unowned string get_show ();
-		public unowned string get_url_data (out unowned string mime, float framerate, int width, int height);
-		public unowned string get_url_data_nth (uint index, out unowned string mime, float framerate, int width, int height);
-		public int get_width ();
-		public void set_director (string director);
-		public void set_episode (int episode);
-		public void set_episode_title (string episode_title);
-		public void set_framerate (float framerate);
-		public void set_height (int height);
-		public void set_original_title (string original_title);
-		public void set_performer (string performer);
-		public void set_producer (string producer);
-		public void set_season (int season);
-		public void set_show (string show);
-		public void set_size (int width, int height);
-		public void set_url_data (string url, string mime, float framerate, int width, int height);
-		public void set_width (int width);
+		public static Grl.Media unserialize (string serial);
+		[CCode (cname = "grl_media_video_new", has_construct_function = false)]
+		public Media.video_new ();
+		[NoAccessorMethod]
+		public Grl.MediaType media_type { get; set construct; }
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_operation_options_get_type ()")]
 	public class OperationOptions : GLib.Object {
@@ -370,9 +347,8 @@ namespace Grl {
 		public unowned Grl.Plugin lookup_plugin (string plugin_id);
 		public unowned Grl.Source lookup_source (string source_id);
 		public bool metadata_key_validate (Grl.KeyID key, GLib.Value value);
-		public Grl.KeyID register_metadata_key (owned GLib.ParamSpec param_spec) throws GLib.Error;
-		public void register_metadata_key_relation (Grl.KeyID key1, Grl.KeyID key2);
-		public Grl.KeyID register_metadata_key_system (GLib.ParamSpec param_spec, Grl.KeyID key) throws GLib.Error;
+		public Grl.KeyID register_metadata_key (owned GLib.ParamSpec param_spec, Grl.KeyID bind_key) throws GLib.Error;
+		public Grl.KeyID register_metadata_key_system (GLib.ParamSpec param_spec, Grl.KeyID key, Grl.KeyID bind_key) throws GLib.Error;
 		public bool register_source (Grl.Plugin plugin, owned Grl.Source source) throws GLib.Error;
 		public void restrict_plugins (string plugins);
 		public void shutdown ();
@@ -427,7 +403,7 @@ namespace Grl {
 		[CCode (cname = "grl_source_search")]
 		public uint do_search (string text, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options, Grl.SourceResultCb callback);
 		[CCode (cname = "grl_source_store")]
-		public void do_store (Grl.MediaBox? parent, Grl.Media media, Grl.WriteFlags flags, Grl.SourceStoreCb callback);
+		public void do_store (Grl.Media? parent, Grl.Media media, Grl.WriteFlags flags, Grl.SourceStoreCb callback);
 		[CCode (cname = "grl_source_store_metadata")]
 		public void do_store_metadata (Grl.Media media, GLib.List<Grl.KeyID>? keys, Grl.WriteFlags flags, Grl.SourceStoreCb callback);
 		public uint get_auto_split_threshold ();
@@ -440,7 +416,7 @@ namespace Grl {
 		public unowned string get_name ();
 		public unowned Grl.Plugin get_plugin ();
 		public int get_rank ();
-		public Grl.MediaType get_supported_media ();
+		public Grl.SupportedMedia get_supported_media ();
 		[CCode (cname = "grl_source_supported_operations")]
 		public uint get_supported_operations ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -471,7 +447,7 @@ namespace Grl {
 		[NoWrapper]
 		public virtual void store_metadata (Grl.SourceStoreMetadataSpec sms);
 		public GLib.List<weak Grl.KeyID> store_metadata_sync (Grl.Media media, GLib.List<Grl.KeyID>? keys, Grl.WriteFlags flags) throws GLib.Error;
-		public void store_sync (Grl.MediaBox? parent, Grl.Media media, Grl.WriteFlags flags) throws GLib.Error;
+		public void store_sync (Grl.Media? parent, Grl.Media media, Grl.WriteFlags flags) throws GLib.Error;
 		public virtual unowned GLib.List<Grl.KeyID> supported_keys ();
 		[NoWrapper]
 		public virtual Grl.SupportedOps supported_operations ();
@@ -494,7 +470,7 @@ namespace Grl {
 		[NoAccessorMethod]
 		public string[] source_tags { owned get; set construct; }
 		[NoAccessorMethod]
-		public Grl.MediaType supported_media { get; set construct; }
+		public Grl.SupportedMedia supported_media { get; set construct; }
 		public signal void content_changed (GLib.GenericArray<Grl.Media> changed_medias, Grl.SourceChangeType change_type, bool location_unknown);
 	}
 	[CCode (cheader_filename = "grilo.h")]
@@ -697,7 +673,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h", has_type_id = false)]
 	public struct SourceStoreSpec {
 		public weak Grl.Source source;
-		public weak Grl.MediaBox parent;
+		public weak Grl.Media parent;
 		public weak Grl.Media media;
 		[CCode (delegate_target_cname = "user_data")]
 		public weak Grl.SourceStoreCb callback;
@@ -742,13 +718,12 @@ namespace Grl {
 		FULL
 	}
 	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_MEDIA_TYPE_", type_id = "grl_media_type_get_type ()")]
-	[Flags]
 	public enum MediaType {
-		NONE,
+		UNKNOWN,
 		AUDIO,
 		VIDEO,
 		IMAGE,
-		ALL
+		CONTAINER
 	}
 	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_RANK_", has_type_id = false)]
 	public enum Rank {
@@ -771,6 +746,15 @@ namespace Grl {
 		CHANGED,
 		ADDED,
 		REMOVED
+	}
+	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_SUPPORTED_MEDIA_", type_id = "grl_supported_media_get_type ()")]
+	[Flags]
+	public enum SupportedMedia {
+		NONE,
+		AUDIO,
+		VIDEO,
+		IMAGE,
+		ALL
 	}
 	[CCode (cheader_filename = "grilo.h", cprefix = "GRL_OP_", type_id = "grl_supported_ops_get_type ()")]
 	[Flags]
