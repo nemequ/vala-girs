@@ -28,16 +28,15 @@ namespace Gspell {
 		[NoAccessorMethod]
 		public Gspell.Navigator spell_navigator { owned get; construct; }
 	}
-	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_inline_checker_gtv_get_type ()")]
-	public class InlineCheckerGtv : GLib.Object {
+	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_inline_checker_text_get_type ()")]
+	public class InlineCheckerText : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public InlineCheckerGtv (Gtk.TextBuffer buffer, Gspell.Checker checker);
-		public void attach_view (Gtk.TextView view);
-		public void detach_view (Gtk.TextView view);
+		protected InlineCheckerText ();
+		public bool get_enabled ();
+		public void set_enabled (bool enabled);
+		public bool enabled { get; set; }
 		[NoAccessorMethod]
-		public Gtk.TextBuffer buffer { owned get; construct; }
-		[NoAccessorMethod]
-		public Gspell.Checker spell_checker { owned get; construct; }
+		public Gtk.TextView view { owned get; construct; }
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gspell_language_get_type ()")]
 	[Compact]
@@ -48,7 +47,7 @@ namespace Gspell {
 		public static unowned GLib.List<Gspell.Language> get_available ();
 		public unowned string get_code ();
 		public unowned string get_name ();
-		public static unowned Gspell.Language lookup (string language_code);
+		public static unowned Gspell.Language? lookup (string language_code);
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_language_chooser_button_get_type ()")]
 	public class LanguageChooserButton : Gtk.Button, Atk.Implementor, Gspell.LanguageChooser, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
@@ -64,9 +63,7 @@ namespace Gspell {
 	public class NavigatorGtv : GLib.Object, Gspell.Navigator {
 		[CCode (has_construct_function = false)]
 		protected NavigatorGtv ();
-		public static Gspell.Navigator @new (Gtk.TextView view, Gspell.Checker spell_checker);
-		[NoAccessorMethod]
-		public Gspell.Checker spell_checker { owned get; set construct; }
+		public static Gspell.Navigator @new (Gtk.TextView view);
 		[NoAccessorMethod]
 		public Gtk.TextView view { owned get; construct; }
 	}
@@ -87,4 +84,10 @@ namespace Gspell {
 		DICTIONARY,
 		NO_LANGUAGE_SET
 	}
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	public static unowned Gspell.Checker? text_buffer_get_spell_checker (Gtk.TextBuffer buffer);
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	public static void text_buffer_set_spell_checker (Gtk.TextBuffer buffer, Gspell.Checker? checker);
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	public static unowned Gspell.InlineCheckerText text_view_get_inline_checker (Gtk.TextView view);
 }

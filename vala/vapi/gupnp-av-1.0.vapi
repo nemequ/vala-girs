@@ -161,6 +161,7 @@ namespace GUPnP {
 		public unowned string get_write_status ();
 		public unowned Xml.Node get_xml_node ();
 		public string get_xml_string ();
+		public bool is_restricted_set ();
 		public void set_album (string album);
 		public void set_album_art (string album_art);
 		[Deprecated (since = "0.5.3")]
