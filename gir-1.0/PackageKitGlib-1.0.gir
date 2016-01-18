@@ -14483,6 +14483,118 @@ applications.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="upgrade_system_async"
+              c:identifier="pk_task_upgrade_system_async"
+              version="1.0.12">
+        <doc xml:space="preserve">This transaction will update the distro to the next version, which may
+involve just downloading the installer and setting up the boot device,
+or may involve doing an on-line upgrade.
+
+The backend will decide what is best to do.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="task" transfer-ownership="none">
+            <doc xml:space="preserve">a valid #PkTask instance</doc>
+            <type name="Task" c:type="PkTask*"/>
+          </instance-parameter>
+          <parameter name="distro_id" transfer-ownership="none">
+            <doc xml:space="preserve">a distro ID such as "fedora-14"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="upgrade_kind" transfer-ownership="none">
+            <doc xml:space="preserve">a #PkUpgradeKindEnum such as %PK_UPGRADE_KIND_ENUM_COMPLETE</doc>
+            <type name="UpgradeKindEnum" c:type="PkUpgradeKindEnum"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="progress_callback"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="4">
+            <doc xml:space="preserve">the function to run when the progress changes</doc>
+            <type name="ProgressCallback" c:type="PkProgressCallback"/>
+          </parameter>
+          <parameter name="progress_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">data to pass to @progress_callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="callback_ready"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">the function to run on completion</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to @callback_ready</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="upgrade_system_sync"
+              c:identifier="pk_task_upgrade_system_sync"
+              version="1.0.12"
+              throws="1">
+        <doc xml:space="preserve">This transaction will update the distro to the next version, which may
+involve just downloading the installer and setting up the boot device,
+or may involve doing an on-line upgrade.
+
+The backend will decide what is best to do.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a %PkResults object, or NULL for error</doc>
+          <type name="Results" c:type="PkResults*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="task" transfer-ownership="none">
+            <doc xml:space="preserve">a valid #PkTask instance</doc>
+            <type name="Task" c:type="PkTask*"/>
+          </instance-parameter>
+          <parameter name="distro_id" transfer-ownership="none">
+            <doc xml:space="preserve">a distro ID such as "fedora-14"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="upgrade_kind" transfer-ownership="none">
+            <doc xml:space="preserve">a #PkUpgradeKindEnum such as %PK_UPGRADE_KIND_ENUM_COMPLETE</doc>
+            <type name="UpgradeKindEnum" c:type="PkUpgradeKindEnum"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="progress_callback"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="4">
+            <doc xml:space="preserve">the function to run when the progress changes</doc>
+            <type name="ProgressCallback" c:type="PkProgressCallback"/>
+          </parameter>
+          <parameter name="progress_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">data to pass to @progress_callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="user_accepted"
               c:identifier="pk_task_user_accepted"
               version="0.5.2">
@@ -16457,6 +16569,22 @@ is manually installed or removed.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="offline_auth_set_prepared_upgrade_version"
+              c:identifier="pk_offline_auth_set_prepared_upgrade_version"
+              version="1.0.12"
+              throws="1">
+      <doc xml:space="preserve">Saves the distro version to upgrade to a prepared transaction file.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE for success, else %FALSE and @error set</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="release_ver" transfer-ownership="none">
+          <doc xml:space="preserve">Distro version to upgrade to</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="offline_auth_set_results"
               c:identifier="pk_offline_auth_set_results"
               version="0.9.6"
@@ -16478,6 +16606,23 @@ is manually installed or removed.</doc>
               version="0.9.6"
               throws="1">
       <doc xml:space="preserve">Triggers the offline update so that the next reboot will perform the
+pending transaction.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE for success, else %FALSE and @error set</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="action" transfer-ownership="none">
+          <doc xml:space="preserve">a #PkOfflineAction, e.g. %PK_OFFLINE_ACTION_REBOOT</doc>
+          <type name="OfflineAction" c:type="PkOfflineAction"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="offline_auth_trigger_upgrade"
+              c:identifier="pk_offline_auth_trigger_upgrade"
+              version="1.0.12"
+              throws="1">
+      <doc xml:space="preserve">Triggers the offline system upgrade so that the next reboot will perform the
 pending transaction.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE for success, else %FALSE and @error set</doc>
@@ -16609,6 +16754,35 @@ An error is set if the the value %PK_OFFLINE_ACTION_UNKNOWN is returned.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">A new #PkPackageSack, or %NULL</doc>
         <type name="PackageSack" c:type="PkPackageSack*"/>
+      </return-value>
+    </function>
+    <function name="offline_get_prepared_upgrade_monitor"
+              c:identifier="pk_offline_get_prepared_upgrade_monitor"
+              version="1.0.12"
+              throws="1">
+      <doc xml:space="preserve">Gets a file monitor for the prepared system upgrade transaction.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">A #GFileMonitor, or %NULL</doc>
+        <type name="Gio.FileMonitor" c:type="GFileMonitor*"/>
+      </return-value>
+      <parameters>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">A #GCancellable or %NULL</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="offline_get_prepared_upgrade_version"
+              c:identifier="pk_offline_get_prepared_upgrade_version"
+              version="1.0.12"
+              throws="1">
+      <doc xml:space="preserve">Gets the version of the prepared system upgrade in the prepared transaction.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the version, or %NULL if unset, free with g_free()</doc>
+        <type name="utf8" c:type="gchar*"/>
       </return-value>
     </function>
     <function name="offline_get_results"

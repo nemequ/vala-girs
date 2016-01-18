@@ -255,7 +255,6 @@ namespace Osinfo {
 		public bool is_required ();
 		public void set_value_map (Osinfo.Datamap datamap);
 		public string name { get; construct; }
-		public Osinfo.InstallConfigParamPolicy policy { get; }
 		[NoAccessorMethod]
 		public Osinfo.Datamap value_map { owned get; set; }
 	}
@@ -306,7 +305,6 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public InstallScript.uri (string id, string profile, string templateUri);
 		public Osinfo.AvatarFormat avatar_format { get; }
-		public Osinfo.PathFormat path_format { get; }
 		public string product_key_format { get; }
 		public string profile { get; construct; }
 		public string template_data { get; construct; }
@@ -363,6 +361,7 @@ namespace Osinfo {
 		public Media (string id, string architecture);
 		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static GLib.Quark error_quark ();
 		public unowned string get_application_id ();
 		public unowned string get_architecture ();
 		public unowned string get_initrd_path ();
@@ -624,19 +623,19 @@ namespace Osinfo {
 		[Deprecated (since = "0.2.2")]
 		public Osinfo.TreeList new_union (Osinfo.TreeList sourceTwo);
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_DEVICE_DRIVER_SIGNING_REQ_", type_id = "osinfo_device_driver_signing_req_get_type ()")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_DEVICE_DRIVER_SIGNING_REQ_", has_type_id = false)]
 	public enum DeviceDriverSigningReq {
 		NONE,
 		STRICT,
 		WARN
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", type_id = "osinfo_install_config_param_policy_get_type ()")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", has_type_id = false)]
 	public enum InstallConfigParamPolicy {
 		NONE,
 		REQUIRED,
 		OPTIONAL
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INJECTION_METHOD_", type_id = "osinfo_install_script_injection_method_get_type ()")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INJECTION_METHOD_", has_type_id = false)]
 	[Flags]
 	public enum InstallScriptInjectionMethod {
 		CDROM,
@@ -645,7 +644,15 @@ namespace Osinfo {
 		INITRD,
 		WEB
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PATH_FORMAT_", type_id = "osinfo_path_format_get_type ()")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_", has_type_id = false)]
+	public enum MediaError {
+		NO_DESCRIPTORS,
+		NO_PVD,
+		NO_SVD,
+		INSUFFICIENT_METADATA,
+		NOT_BOOTABLE
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PATH_FORMAT_", has_type_id = false)]
 	public enum PathFormat {
 		UNIX,
 		DOS
@@ -657,26 +664,17 @@ namespace Osinfo {
 		UPGRADES,
 		CLONES
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", type_id = "osinfo_product_relationship_get_type ()")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", has_type_id = false)]
 	public enum ProductRelationship {
 		DERIVES_FROM,
 		UPGRADES,
 		CLONES
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", type_id = "osinfo_release_status_get_type ()")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", has_type_id = false)]
 	public enum ReleaseStatus {
 		RELEASED,
 		SNAPSHOT,
 		PRERELEASE
-	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
-	public errordomain MediaError {
-		NO_DESCRIPTORS,
-		NO_PVD,
-		NO_SVD,
-		INSUFFICIENT_METADATA,
-		NOT_BOOTABLE;
-		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", instance_pos = 1.9)]
 	public delegate void ProductForeach (Osinfo.Product product);
@@ -806,8 +804,6 @@ namespace Osinfo {
 	public const string INSTALL_SCRIPT_PROP_TEMPLATE_URI;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_KIBIBYTES")]
 	public const int KIBIBYTES;
-	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MAJOR_VERSION")]
-	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEBIBYTES")]
 	public const int MEBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_APPLICATION_ID")]
@@ -844,10 +840,6 @@ namespace Osinfo {
 	public const string MEDIA_PROP_VOLUME_SIZE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEGAHERTZ")]
 	public const int MEGAHERTZ;
-	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MICRO_VERSION")]
-	public const int MICRO_VERSION;
-	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MINOR_VERSION")]
-	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_DISTRO")]
 	public const string OS_PROP_DISTRO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_FAMILY")]

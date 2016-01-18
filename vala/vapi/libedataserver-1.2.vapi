@@ -107,8 +107,8 @@ namespace E {
 	public abstract class Extension : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Extension ();
-		[NoAccessorMethod]
-		public E.Extensible extensible { owned get; construct; }
+		public unowned E.Extensible get_extensible ();
+		public E.Extensible extensible { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
@@ -131,6 +131,8 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		public Module (string filename);
 		public unowned string get_filename ();
+		public static GLib.List<weak E.Module> load_all_in_directory (string dirname);
+		public static E.Module load_file (string filename);
 		public string filename { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_named_parameters_get_type ()")]
@@ -165,7 +167,7 @@ namespace E {
 		public uint32 reserve_opid ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_soup_auth_bearer_get_type ()")]
-	public class SoupAuthBearer : GLib.Object {
+	public class SoupAuthBearer : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected SoupAuthBearer ();
 		public void set_access_token (string access_token, int expires_in_seconds);
@@ -219,7 +221,10 @@ namespace E {
 		public async bool mail_signature_symlink (string symlink_target, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool mail_signature_symlink_sync (string symlink_target, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static string parameter_to_key (string param_name);
-		public async void proxy_lookup (string uri, GLib.Cancellable? cancellable);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public async string[] proxy_lookup (string uri, GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] proxy_lookup_sync (string uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.DBusObject ref_dbus_object ();
 		public GLib.MainContext ref_main_context ();
 		public uint refresh_add_timeout (GLib.MainContext? context, owned E.SourceRefreshFunc callback);
@@ -382,6 +387,8 @@ namespace E {
 		public bool delete_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool lookup (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
 		public bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
+		public E.Source ref_credentials_source (E.Source source);
+		public GLib.Object ref_registry ();
 		public virtual E.Source ref_source (string uid);
 		public bool register_impl (E.SourceCredentialsProviderImpl provider_impl);
 		public async bool store (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -399,7 +406,7 @@ namespace E {
 		public virtual bool can_store ();
 		public virtual bool delete_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void* get_provider ();
-		public virtual bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, E.NamedParameters out_credentials) throws GLib.Error;
+		public virtual bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
 		public virtual bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_google_get_type ()")]
@@ -420,6 +427,7 @@ namespace E {
 		public unowned E.Source get_source ();
 		public void property_lock ();
 		public void property_unlock ();
+		public E.Source ref_source ();
 		public E.Source source { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_goa_get_type ()")]
@@ -471,9 +479,10 @@ namespace E {
 	public class SourceLocal : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceLocal ();
+		public GLib.File dup_custom_file ();
+		public unowned GLib.File get_custom_file ();
 		public void set_custom_file (GLib.File custom_file);
-		[NoAccessorMethod]
-		public GLib.File custom_file { owned get; set construct; }
+		public GLib.File custom_file { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mdn_get_type ()")]
 	public class SourceMDN : E.SourceExtension {
@@ -854,6 +863,7 @@ namespace E {
 		public string dup_email_address ();
 		public string dup_resource_path ();
 		public string dup_resource_query ();
+		public Soup.URI dup_soup_uri ();
 		public string dup_ssl_trust ();
 		public bool get_avoid_ifmatch ();
 		public bool get_calendar_auto_schedule ();
@@ -868,6 +878,7 @@ namespace E {
 		public void set_email_address (string? email_address);
 		public void set_resource_path (string? resource_path);
 		public void set_resource_query (string? resource_query);
+		public void set_soup_uri (Soup.URI soup_uri);
 		public void set_ssl_trust (string? ssl_trust);
 		public void unset_temporary_ssl_trust ();
 		public void update_ssl_trust (string host, GLib.TlsCertificate cert, E.TrustPromptResponse response);
@@ -878,14 +889,33 @@ namespace E {
 		public string email_address { get; set construct; }
 		public string resource_path { get; set construct; }
 		public string resource_query { get; set construct; }
+		[NoAccessorMethod]
+		public Soup.URI soup_uri { owned get; set; }
 		public string ssl_trust { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
 	public class XmlHash {
+		[CCode (cname = "e_xmlhash_add")]
+		public static void xmlhash_add (E.XmlHash hash, string key, string data);
+		[CCode (cname = "e_xmlhash_compare")]
+		public static E.XmlHashStatus xmlhash_compare (E.XmlHash hash, string key, string compare_data);
+		[CCode (cname = "e_xmlhash_destroy")]
+		public static void xmlhash_destroy (E.XmlHash hash);
+		[CCode (cname = "e_xmlhash_foreach_key")]
+		public static void xmlhash_foreach_key (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashFunc func);
+		[CCode (cname = "e_xmlhash_foreach_key_remove")]
+		public static void xmlhash_foreach_key_remove (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashRemoveFunc func);
+		[CCode (cname = "e_xmlhash_new")]
+		public static E.XmlHash xmlhash_new (string filename);
+		[CCode (cname = "e_xmlhash_remove")]
+		public static void xmlhash_remove (E.XmlHash hash, string key);
+		[CCode (cname = "e_xmlhash_write")]
+		public static void xmlhash_write (E.XmlHash hash);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EExtensibleInterface", type_id = "e_extensible_get_type ()")]
 	public interface Extensible : GLib.Object {
+		public GLib.List<weak E.Extension> list_extensions (GLib.Type extension_type);
 		public void load_extensions ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
@@ -1135,6 +1165,12 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_PARAM_SETTING")]
 	public const int SOURCE_PARAM_SETTING;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static unowned GLib.Binding binding_bind_property (void* source, string source_property, void* target, string target_property, GLib.BindingFlags flags);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static unowned GLib.Binding binding_bind_property_full (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.BindingTransformFunc? transform_to, owned GLib.BindingTransformFunc? transform_from);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static unowned GLib.Binding binding_bind_property_with_closures (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.Closure transform_to, GLib.Closure transform_from);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool binding_transform_enum_nick_to_value (GLib.Binding binding, GLib.Value source_value, GLib.Value target_value, void* not_used);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool binding_transform_enum_value_to_nick (GLib.Binding binding, GLib.Value source_value, GLib.Value target_value, void* not_used);
@@ -1207,7 +1243,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string get_user_data_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void localtime_with_offset (long tt, void* tm, int offset);
+	public static void localtime_with_offset (long tt, [CCode (type = "tm*")] Posix.tm tm, int offset);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void* memchunk_alloc (E.MemChunk memchunk);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1221,7 +1257,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void memchunk_free (E.MemChunk memchunk, void* mem);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static long mktime_utc (void* tm);
+	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void queue_transfer (GLib.Queue src_queue, GLib.Queue dst_queue);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1231,31 +1267,35 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool secret_store_store_sync (string uid, string secret, string label, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static size_t strftime (string string, size_t max, string fmt, void* tm);
+	public static void soup_ssl_trust_connect (Soup.Message soup_message, E.Source source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void time_format_date_and_time (void* date_tm, bool use_24_hour_format, bool show_midnight, bool show_zero_seconds, string buffer, int buffer_size);
+	public static size_t strftime (string string, size_t max, string fmt, [CCode (type = "const tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void time_format_time (void* date_tm, bool use_24_hour_format, bool show_zero_seconds, string buffer, int buffer_size);
+	public static void time_format_date_and_time ([CCode (type = "tm*")] Posix.tm date_tm, bool use_24_hour_format, bool show_midnight, bool show_zero_seconds, string buffer, int buffer_size);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static void time_format_time ([CCode (type = "tm*")] Posix.tm date_tm, bool use_24_hour_format, bool show_zero_seconds, string buffer, int buffer_size);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string time_get_d_fmt_with_4digit_year ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static E.TimeParseStatus time_parse_date (string value, void* result);
+	public static E.TimeParseStatus time_parse_date (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static E.TimeParseStatus time_parse_date_and_time (string value, void* result);
+	public static E.TimeParseStatus time_parse_date_and_time (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static E.TimeParseStatus time_parse_date_and_time_ex (string value, void* result, bool two_digit_year);
+	public static E.TimeParseStatus time_parse_date_and_time_ex (string value, [CCode (type = "tm*")] Posix.tm result, bool two_digit_year);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static E.TimeParseStatus time_parse_date_ex (string value, void* result, bool two_digit_year);
+	public static E.TimeParseStatus time_parse_date_ex (string value, [CCode (type = "tm*")] Posix.tm result, bool two_digit_year);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static E.TimeParseStatus time_parse_time (string value, void* result);
+	public static E.TimeParseStatus time_parse_time (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint timeout_add_seconds_with_name (int priority, uint interval, string? name, owned GLib.SourceFunc function);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint timeout_add_with_name (int priority, uint interval, string? name, owned GLib.SourceFunc function);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static void type_traverse (GLib.Type parent_type, E.TypeFunc func);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string uid_new ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static size_t utf8_strftime (string string, size_t max, string fmt, void* tm);
+	public static size_t utf8_strftime (string string, size_t max, string fmt, [CCode (type = "const tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Deprecated (since = "3.8")]
 	public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
@@ -1275,7 +1315,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_get_source_full_name (void* registry, void* source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool util_get_source_oauth2_access_token_sync (void* source, E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static bool util_get_source_oauth2_access_token_sync (void* source, E.NamedParameters credentials, out string out_access_token, out int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1309,25 +1349,21 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void weak_ref_free (GLib.WeakRef weak_ref);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static async void webdav_discover_sources (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable);
+	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource> discovered_sources);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static async bool webdav_discover_sources (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static bool webdav_discover_sources_sync (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static Xml.Doc* xml_from_hash (GLib.HashTable<string,string> hash, E.XmlHashType type, string root_name);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static Xml.Node* xml_get_child_by_name ([CCode (type = "const xmlNode*")] Xml.Node* parent, [CCode (type = "const xmlChar*")] string child_name);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	public static Xml.Doc* xml_parse_file (string filename);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int xml_save_file (string filename, [CCode (type = "xmlDocPtr")] Xml.Doc* doc);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static GLib.HashTable<string,string> xml_to_hash (Xml.Doc doc, E.XmlHashType type);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_add (E.XmlHash hash, string key, string data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static E.XmlHashStatus xmlhash_compare (E.XmlHash hash, string key, string compare_data);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_destroy (E.XmlHash hash);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_foreach_key (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashFunc func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_foreach_key_remove (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashRemoveFunc func);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_remove (E.XmlHash hash, string key);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void xmlhash_write (E.XmlHash hash);
 }

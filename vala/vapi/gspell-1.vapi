@@ -14,9 +14,8 @@ namespace Gspell {
 		public unowned Gspell.Language? get_language ();
 		public GLib.SList<string> get_suggestions (string word, ssize_t word_length);
 		public void set_correction (string word, ssize_t word_length, string replacement, ssize_t replacement_length);
-		public bool set_language (Gspell.Language? language);
-		[NoAccessorMethod]
-		public Gspell.Language language { owned get; set construct; }
+		public void set_language (Gspell.Language? language);
+		public Gspell.Language language { get; set construct; }
 		public virtual signal void session_cleared ();
 		public virtual signal void word_added_to_personal (string word);
 		public virtual signal void word_added_to_session (string word);
@@ -46,32 +45,40 @@ namespace Gspell {
 		public void free ();
 		public static unowned GLib.List<Gspell.Language> get_available ();
 		public unowned string get_code ();
+		public static unowned Gspell.Language? get_default ();
 		public unowned string get_name ();
 		public static unowned Gspell.Language? lookup (string language_code);
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_language_chooser_button_get_type ()")]
 	public class LanguageChooserButton : Gtk.Button, Atk.Implementor, Gspell.LanguageChooser, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public LanguageChooserButton (Gspell.Language current_language);
+		public LanguageChooserButton (Gspell.Language? current_language);
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_language_chooser_dialog_get_type ()")]
 	public class LanguageChooserDialog : Gtk.Dialog, Atk.Implementor, Gspell.LanguageChooser, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public LanguageChooserDialog (Gtk.Window parent, Gspell.Language current_language, Gtk.DialogFlags flags);
+		public LanguageChooserDialog (Gtk.Window parent, Gspell.Language? current_language, Gtk.DialogFlags flags);
 	}
-	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_navigator_gtv_get_type ()")]
-	public class NavigatorGtv : GLib.Object, Gspell.Navigator {
+	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_navigator_text_get_type ()")]
+	public class NavigatorText : GLib.Object, Gspell.Navigator {
 		[CCode (has_construct_function = false)]
-		protected NavigatorGtv ();
+		protected NavigatorText ();
 		public static Gspell.Navigator @new (Gtk.TextView view);
 		[NoAccessorMethod]
 		public Gtk.TextView view { owned get; construct; }
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_cname = "GspellLanguageChooserInterface", type_id = "gspell_language_chooser_get_type ()")]
 	public interface LanguageChooser : GLib.Object {
-		public abstract unowned Gspell.Language? get_language ();
-		public abstract void set_language (Gspell.Language language);
+		public unowned Gspell.Language? get_language ();
+		public unowned string get_language_code ();
+		[NoWrapper]
+		public abstract unowned Gspell.Language get_language_full (bool default_language);
+		public abstract void set_language (Gspell.Language? language);
+		public void set_language_code (string? language_code);
+		[ConcreteAccessor]
 		public abstract Gspell.Language language { get; set; }
+		[ConcreteAccessor]
+		public abstract string language_code { get; set; }
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_cname = "GspellNavigatorInterface", type_id = "gspell_navigator_get_type ()")]
 	public interface Navigator : GLib.Object {

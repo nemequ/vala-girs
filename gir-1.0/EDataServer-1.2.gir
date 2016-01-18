@@ -8,12 +8,13 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="GObject" version="2.0"/>
   <include name="Gio" version="2.0"/>
+  <include name="Soup" version="2.4"/>
   <include name="libxml2" version="2.0"/>
   <package name="libedataserver-1.2"/>
   <c:include name="libedataserver/libedataserver.h"/>
   <namespace name="EDataServer"
              version="1.2"
-             shared-library="libedataserver-1.2.so.21,libcamel-1.2.so.54"
+             shared-library="libedataserver-1.2.so.21,libcamel-1.2.so.55"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <record name="AsyncClosure"
@@ -3285,18 +3286,17 @@ If the reference count reaches 0 then the collator is freed</doc>
                glib:type-struct="ExtensibleInterface">
       <method name="list_extensions"
               c:identifier="e_extensible_list_extensions"
-              version="3.4"
-              introspectable="0">
+              version="3.4">
         <doc xml:space="preserve">Returns a list of #EExtension objects bound to @extensible whose
 types are ancestors of @extension_type.  For a complete list of
 extension objects bound to @extensible, pass %E_TYPE_EXTENSION.
 
 The list itself should be freed with g_list_free().  The extension
 objects are owned by @extensible and should not be unreferenced.</doc>
-        <return-value>
+        <return-value transfer-ownership="container">
           <doc xml:space="preserve">a list of extension objects derived from @extension_type</doc>
           <type name="GLib.List" c:type="GList*">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="Extension"/>
           </type>
         </return-value>
         <parameters>
@@ -3348,10 +3348,9 @@ when @extensible is finalized.</doc>
 functions below.</doc>
       <method name="get_extensible"
               c:identifier="e_extension_get_extensible"
-              version="3.4"
-              introspectable="0">
+              version="3.4">
         <doc xml:space="preserve">Returns the object that @extension extends.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the object being extended</doc>
           <type name="Extensible" c:type="EExtensible*"/>
         </return-value>
@@ -3617,16 +3616,15 @@ when in use.</doc>
       </constructor>
       <function name="load_all_in_directory"
                 c:identifier="e_module_load_all_in_directory"
-                version="3.4"
-                introspectable="0">
+                version="3.4">
         <doc xml:space="preserve">Loads all the modules in the specified directory into memory.  If
 you want to unload them (enabling on-demand loading) you must call
 g_type_module_unuse() on all the modules.  Free the returned list
 with g_list_free().</doc>
-        <return-value>
+        <return-value transfer-ownership="container">
           <doc xml:space="preserve">a list of #EModules loaded from @dirname</doc>
           <type name="GLib.List" c:type="GList*">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="Module"/>
           </type>
         </return-value>
         <parameters>
@@ -3638,12 +3636,11 @@ with g_list_free().</doc>
       </function>
       <function name="load_file"
                 c:identifier="e_module_load_file"
-                version="3.16"
-                introspectable="0">
+                version="3.16">
         <doc xml:space="preserve">Load the module from the specified filename into memory. If
 you want to unload it (enabling on-demand loading) you must call
 g_type_module_unuse() on the module.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">an #EModule loaded from @filename</doc>
           <type name="Module" c:type="EModule*"/>
         </return-value>
@@ -4397,7 +4394,7 @@ in #ESourceExtension subclasses.</doc>
            c:symbol-prefix="soup_auth_bearer"
            c:type="ESoupAuthBearer"
            version="3.10"
-           parent="GObject.Object"
+           parent="Soup.Auth"
            glib:type-name="ESoupAuthBearer"
            glib:get-type="e_soup_auth_bearer_get_type"
            glib:type-struct="SoupAuthBearerClass">
@@ -4430,8 +4427,8 @@ will return %FALSE after the given number of seconds have elapsed.</doc>
           </parameter>
         </parameters>
       </method>
-      <field name="parent" introspectable="0">
-        <type c:type="SoupAuth"/>
+      <field name="parent">
+        <type name="Soup.Auth" c:type="SoupAuth"/>
       </field>
       <field name="priv">
         <type name="SoupAuthBearerPrivate" c:type="ESoupAuthBearerPrivate*"/>
@@ -4440,8 +4437,8 @@ will return %FALSE after the given number of seconds have elapsed.</doc>
     <record name="SoupAuthBearerClass"
             c:type="ESoupAuthBearerClass"
             glib:is-gtype-struct-for="SoupAuthBearer">
-      <field name="parent_class" introspectable="0">
-        <type c:type="SoupAuthClass"/>
+      <field name="parent_class">
+        <type name="Soup.AuthClass" c:type="SoupAuthClass"/>
       </field>
     </record>
     <record name="SoupAuthBearerPrivate"
@@ -6832,12 +6829,11 @@ call e_source_proxy_lookup_finish() to get the result of the operation.</doc>
       <method name="proxy_lookup_finish"
               c:identifier="e_source_proxy_lookup_finish"
               version="3.12"
-              introspectable="0"
               throws="1">
         <doc xml:space="preserve">Finishes the operation started with e_source_proxy_lookup().
 
 Free the returned proxy URIs with g_strfreev() when finished with them.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">a %NULL-terminated array of proxy URIs, or %NULL</doc>
           <array c:type="gchar**">
             <type name="utf8"/>
@@ -6857,7 +6853,6 @@ Free the returned proxy URIs with g_strfreev() when finished with them.</doc>
       <method name="proxy_lookup_sync"
               c:identifier="e_source_proxy_lookup_sync"
               version="3.12"
-              introspectable="0"
               throws="1">
         <doc xml:space="preserve">Looks into @source's #ESourceProxy extension to determine what proxy,
 if any, to use to connect to @uri.  The returned proxy URIs are of the
@@ -6883,7 +6878,7 @@ If @source does not have an #ESourceProxy extension, the function sets
 @error to @G_IO_ERROR_NOT_SUPPORTED and returns %NULL.
 
 Free the returned proxy URIs with g_strfreev() when finished with them.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">a %NULL-terminated array of proxy URIs, or %NULL</doc>
           <array c:type="gchar**">
             <type name="utf8"/>
@@ -10118,14 +10113,13 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
       </method>
       <method name="ref_credentials_source"
               c:identifier="e_source_credentials_provider_ref_credentials_source"
-              version="3.16"
-              introspectable="0">
+              version="3.16">
         <doc xml:space="preserve">Returns a referenced parent #ESource, which holds the credentials for
 the given @source. This is useful for collections, where the credentials
 are usually stored on the collection source, thus shared between child
 sources. When ther eis no such parent source, a %NULL is returned, which
 means the @source holds credentials for itself.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">referenced parent #ESource, which holds credentials, or %NULL. Unref
    the returned non-NULL #ESource with g_object_unref(), when no longer needed.</doc>
           <type name="Source" c:type="ESource*"/>
@@ -10144,10 +10138,9 @@ means the @source holds credentials for itself.</doc>
       </method>
       <method name="ref_registry"
               c:identifier="e_source_credentials_provider_ref_registry"
-              version="3.16"
-              introspectable="0">
+              version="3.16">
         <doc xml:space="preserve">Returns refenrenced registry associated with this @provider.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">Reference registry associated with this @provider. Unref it
    with g_object_unref() when no longer needed.</doc>
           <type name="GObject.Object" c:type="GObject*"/>
@@ -10510,7 +10503,10 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
             <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
-          <parameter name="out_credentials" transfer-ownership="none">
+          <parameter name="out_credentials"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">an #ENamedParameters to be set with stored credentials</doc>
             <type name="NamedParameters" c:type="ENamedParameters**"/>
           </parameter>
@@ -10689,7 +10685,10 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
             <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
-          <parameter name="out_credentials" transfer-ownership="none">
+          <parameter name="out_credentials"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">an #ENamedParameters to be set with stored credentials</doc>
             <type name="NamedParameters" c:type="ENamedParameters**"/>
           </parameter>
@@ -10821,7 +10820,10 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
               <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
-            <parameter name="out_credentials" transfer-ownership="none">
+            <parameter name="out_credentials"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
               <doc xml:space="preserve">an #ENamedParameters to be set with stored credentials</doc>
               <type name="NamedParameters" c:type="ENamedParameters**"/>
             </parameter>
@@ -11064,13 +11066,12 @@ thus other threads can change properties of the @extension.</doc>
       </method>
       <method name="ref_source"
               c:identifier="e_source_extension_ref_source"
-              version="3.8"
-              introspectable="0">
+              version="3.8">
         <doc xml:space="preserve">Returns the #ESource instance to which the @extension belongs.
 
 The returned #ESource is referenced for thread-safety.  Unreference
 the #ESource with g_object_unref() when finished with it.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the #ESource instance</doc>
           <type name="Source" c:type="ESource*"/>
         </return-value>
@@ -11659,25 +11660,27 @@ instead.</doc>
            glib:get-type="e_source_local_get_type"
            glib:type-struct="SourceLocalClass">
       <method name="dup_custom_file"
-              c:identifier="e_source_local_dup_custom_file"
-              introspectable="0">
-        <return-value>
+              c:identifier="e_source_local_dup_custom_file">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the #GFile instance</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
           <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceLocal</doc>
             <type name="SourceLocal" c:type="ESourceLocal*"/>
           </instance-parameter>
         </parameters>
       </method>
       <method name="get_custom_file"
-              c:identifier="e_source_local_get_custom_file"
-              introspectable="0">
-        <return-value>
+              c:identifier="e_source_local_get_custom_file">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GFile instance</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
           <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceLocal</doc>
             <type name="SourceLocal" c:type="ESourceLocal*"/>
           </instance-parameter>
         </parameters>
@@ -16988,15 +16991,14 @@ The returned string should be freed with g_free() when no longer needed.</doc>
       </method>
       <method name="dup_soup_uri"
               c:identifier="e_source_webdav_dup_soup_uri"
-              version="3.6"
-              introspectable="0">
+              version="3.6">
         <doc xml:space="preserve">This is a convenience function which returns a newly-allocated
 #SoupURI, its contents assembled from the #ESourceAuthentication
 extension, the #ESourceSecurity extension, and @extension itself.
 Free the returned #SoupURI with soup_uri_free().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a newly-allocated #SoupURI</doc>
-          <type c:type="SoupURI*"/>
+          <type name="Soup.URI" c:type="SoupURI*"/>
         </return-value>
         <parameters>
           <instance-parameter name="extension" transfer-ownership="none">
@@ -17312,8 +17314,7 @@ instead.</doc>
       </method>
       <method name="set_soup_uri"
               c:identifier="e_source_webdav_set_soup_uri"
-              version="3.6"
-              introspectable="0">
+              version="3.6">
         <doc xml:space="preserve">This is a convenience function which propagates the components of
 @uri to the #ESourceAuthentication extension, the #ESourceSecurity
 extension, and @extension itself.  (The "fragment" component of
@@ -17328,7 +17329,7 @@ extension, and @extension itself.  (The "fragment" component of
           </instance-parameter>
           <parameter name="soup_uri" transfer-ownership="none">
             <doc xml:space="preserve">a #SoupURI</doc>
-            <type c:type="SoupURI*"/>
+            <type name="Soup.URI" c:type="SoupURI*"/>
           </parameter>
         </parameters>
       </method>
@@ -17461,11 +17462,8 @@ with e_source_webdav_update_ssl_trust().</doc>
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="soup-uri"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <type/>
+      <property name="soup-uri" writable="1" transfer-ownership="none">
+        <type name="Soup.URI"/>
       </property>
       <property name="ssl-trust"
                 writable="1"
@@ -17694,11 +17692,10 @@ This causes e_async_closure_wait() to terminate and return @result.</doc>
     </function>
     <function name="binding_bind_property"
               c:identifier="e_binding_bind_property"
-              version="3.16"
-              introspectable="0">
+              version="3.16">
       <doc xml:space="preserve">Thread safe variant of g_object_bind_property(). See its documentation
 for more information on arguments and return value.</doc>
-      <return-value>
+      <return-value transfer-ownership="none">
         <type name="GObject.Binding" c:type="GBinding*"/>
       </return-value>
       <parameters>
@@ -17727,44 +17724,56 @@ for more information on arguments and return value.</doc>
     </function>
     <function name="binding_bind_property_full"
               c:identifier="e_binding_bind_property_full"
-              version="3.16"
-              introspectable="0">
+              shadowed-by="binding_bind_property_with_closures"
+              version="3.16">
       <doc xml:space="preserve">Thread safe variant of g_object_bind_property_full(). See its documentation
 for more information on arguments and return value.</doc>
-      <return-value>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GBinding instance representing the
+  binding between the two #GObject instances. The binding is released
+  whenever the #GBinding reference count reaches zero.</doc>
         <type name="GObject.Binding" c:type="GBinding*"/>
       </return-value>
       <parameters>
-        <parameter name="source"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <type name="gpointer" c:type="gpointer"/>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">the source #GObject</doc>
+          <type name="GObject.Object" c:type="gpointer"/>
         </parameter>
         <parameter name="source_property" transfer-ownership="none">
+          <doc xml:space="preserve">the property on @source to bind</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
-        <parameter name="target"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <type name="gpointer" c:type="gpointer"/>
+        <parameter name="target" transfer-ownership="none">
+          <doc xml:space="preserve">the target #GObject</doc>
+          <type name="GObject.Object" c:type="gpointer"/>
         </parameter>
         <parameter name="target_property" transfer-ownership="none">
+          <doc xml:space="preserve">the property on @target to bind</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">flags to pass to #GBinding</doc>
           <type name="GObject.BindingFlags" c:type="GBindingFlags"/>
         </parameter>
-        <parameter name="transform_to" transfer-ownership="none">
+        <parameter name="transform_to"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="notified">
+          <doc xml:space="preserve">the transformation function
+  from the @source to the @target, or %NULL to use the default</doc>
           <type name="GObject.BindingTransformFunc"
                 c:type="GBindingTransformFunc"/>
         </parameter>
         <parameter name="transform_from"
                    transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
                    scope="notified"
                    closure="7"
                    destroy="8">
+          <doc xml:space="preserve">the transformation function
+  from the @target to the @source, or %NULL to use the default</doc>
           <type name="GObject.BindingTransformFunc"
                 c:type="GBindingTransformFunc"/>
         </parameter>
@@ -17772,48 +17781,58 @@ for more information on arguments and return value.</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">custom data to be passed to the transformation functions,
+  or %NULL</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
         <parameter name="notify" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">function to be called when disposing the binding, to free the
+  resources used by the transformation functions</doc>
           <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
         </parameter>
       </parameters>
     </function>
     <function name="binding_bind_property_with_closures"
               c:identifier="e_binding_bind_property_with_closures"
-              version="3.16"
-              introspectable="0">
+              shadows="binding_bind_property_full"
+              version="3.16">
       <doc xml:space="preserve">Thread safe variant of g_object_bind_property_with_closures(). See its
 documentation for more information on arguments and return value.</doc>
-      <return-value>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GBinding instance representing the
+  binding between the two #GObject instances. The binding is released
+  whenever the #GBinding reference count reaches zero.</doc>
         <type name="GObject.Binding" c:type="GBinding*"/>
       </return-value>
       <parameters>
-        <parameter name="source"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <type name="gpointer" c:type="gpointer"/>
+        <parameter name="source" transfer-ownership="none">
+          <doc xml:space="preserve">the source #GObject</doc>
+          <type name="GObject.Object" c:type="gpointer"/>
         </parameter>
         <parameter name="source_property" transfer-ownership="none">
+          <doc xml:space="preserve">the property on @source to bind</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
-        <parameter name="target"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <type name="gpointer" c:type="gpointer"/>
+        <parameter name="target" transfer-ownership="none">
+          <doc xml:space="preserve">the target #GObject</doc>
+          <type name="GObject.Object" c:type="gpointer"/>
         </parameter>
         <parameter name="target_property" transfer-ownership="none">
+          <doc xml:space="preserve">the property on @target to bind</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">flags to pass to #GBinding</doc>
           <type name="GObject.BindingFlags" c:type="GBindingFlags"/>
         </parameter>
         <parameter name="transform_to" transfer-ownership="none">
+          <doc xml:space="preserve">a #GClosure wrapping the transformation function
+  from the @source to the @target, or %NULL to use the default</doc>
           <type name="GObject.Closure" c:type="GClosure*"/>
         </parameter>
         <parameter name="transform_from" transfer-ownership="none">
+          <doc xml:space="preserve">a #GClosure wrapping the transformation function
+  from the @target to the @source, or %NULL to use the default</doc>
           <type name="GObject.Closure" c:type="GClosure*"/>
         </parameter>
       </parameters>
@@ -18401,7 +18420,7 @@ returned.</doc>
           <doc xml:space="preserve">a #GFile to delete</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </parameter>
-        <parameter name="result" transfer-ownership="none">
+        <parameter name="result" transfer-ownership="full">
           <doc xml:space="preserve">a #GAsyncResult</doc>
           <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
         </parameter>
@@ -18854,8 +18873,7 @@ an error occurs, the function sets @error and returns %FALSE.</doc>
     </function>
     <function name="soup_ssl_trust_connect"
               c:identifier="e_soup_ssl_trust_connect"
-              version="3.16"
-              introspectable="0">
+              version="3.16">
       <doc xml:space="preserve">Sets up automatic SSL certificate trust handling for @soup_message using the trust
 data stored in @source's WebDAV extension. If @soup_message is about to be sent on
 an SSL connection with an invalid certificate, the code checks if the WebDAV
@@ -18875,7 +18893,7 @@ session and the disposal of @soup_message occur in the same thread.</doc>
       <parameters>
         <parameter name="soup_message" transfer-ownership="none">
           <doc xml:space="preserve">a #SoupMessage about to be sent to the source</doc>
-          <type c:type="SoupMessage*"/>
+          <type name="Soup.Message" c:type="SoupMessage*"/>
         </parameter>
         <parameter name="source" transfer-ownership="none">
           <doc xml:space="preserve">an #ESource that uses WebDAV</doc>
@@ -19247,8 +19265,7 @@ convenient.  Those macros name the #GSource implicitly.</doc>
     </function>
     <function name="type_traverse"
               c:identifier="e_type_traverse"
-              version="3.4"
-              introspectable="0">
+              version="3.4">
       <doc xml:space="preserve">Calls @func for all instantiable subtypes of @parent_type.
 
 This is often useful for extending functionality by way of #EModule.
@@ -19263,7 +19280,10 @@ to instantiate all registered subtypes of @parent_type.</doc>
           <doc xml:space="preserve">the root #GType to traverse from</doc>
           <type name="GType" c:type="GType"/>
         </parameter>
-        <parameter name="func" transfer-ownership="none" closure="2">
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="2">
           <doc xml:space="preserve">the function to call for each visited #GType</doc>
           <type name="TypeFunc" c:type="ETypeFunc"/>
         </parameter>
@@ -19516,7 +19536,13 @@ Since 3.18</doc>
     <function name="util_get_source_oauth2_access_token_sync"
               c:identifier="e_util_get_source_oauth2_access_token_sync"
               throws="1">
+      <doc xml:space="preserve">Obtains the OAuth 2.0 access token for @source along with its expiry
+in seconds from the current time (or 0 if unknown).
+
+Free the returned access token with g_free() when finished with it.
+If an error occurs, the function will set @error and return %FALSE.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE on success, %FALSE on error</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
@@ -19524,21 +19550,38 @@ Since 3.18</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">an #ESource</doc>
           <type name="gpointer" c:type="_ESource*"/>
         </parameter>
         <parameter name="credentials" transfer-ownership="none">
+          <doc xml:space="preserve">an ENamedParameters</doc>
           <type name="NamedParameters" c:type="const ENamedParameters*"/>
         </parameter>
-        <parameter name="out_access_token" transfer-ownership="none">
+        <parameter name="out_access_token"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for the access token,
+                   or %NULL</doc>
           <type name="utf8" c:type="gchar**"/>
         </parameter>
-        <parameter name="out_expires_in_seconds" transfer-ownership="none">
+        <parameter name="out_expires_in_seconds"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for the token expiry,
+                 or %NULL</doc>
           <type name="gint" c:type="gint*"/>
         </parameter>
         <parameter name="cancellable"
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
       </parameters>
@@ -19863,7 +19906,7 @@ decomposed for comparison, and case is ignored.</doc>
       <doc xml:space="preserve">Allocates a new #GWeakRef and calls g_weak_ref_set() with @object.
 
 Free the returned #GWeakRef with e_weak_ref_free().</doc>
-      <return-value>
+      <return-value transfer-ownership="full">
         <doc xml:space="preserve">a new #GWeakRef</doc>
         <type name="GObject.WeakRef" c:type="GWeakRef*"/>
       </return-value>
@@ -19879,8 +19922,7 @@ Free the returned #GWeakRef with e_weak_ref_free().</doc>
     </function>
     <function name="webdav_discover_free_discovered_sources"
               c:identifier="e_webdav_discover_free_discovered_sources"
-              version="3.18"
-              introspectable="0">
+              version="3.18">
       <doc xml:space="preserve">Frees a @GSList of discovered sources returned from
 e_webdav_discover_sources_finish() or e_webdav_discover_sources_sync().</doc>
       <return-value transfer-ownership="none">
@@ -19890,7 +19932,7 @@ e_webdav_discover_sources_finish() or e_webdav_discover_sources_sync().</doc>
         <parameter name="discovered_sources" transfer-ownership="none">
           <doc xml:space="preserve">A #GSList of discovered sources</doc>
           <type name="GLib.SList" c:type="GSList*">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="WebDAVDiscoveredSource"/>
           </type>
         </parameter>
       </parameters>
@@ -19962,7 +20004,6 @@ call e_webdav_discover_sources_finish() to get the result of the operation.</doc
     <function name="webdav_discover_sources_finish"
               c:identifier="e_webdav_discover_sources_finish"
               version="3.18"
-              introspectable="0"
               throws="1">
       <doc xml:space="preserve">Finishes the operation started with e_webdav_discover_sources(). If an
 error occurred, the function will set @error and return %FALSE. The function
@@ -19995,8 +20036,10 @@ no longer needed.</doc>
         <parameter name="out_certificate_pem"
                    direction="out"
                    caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">(allow-none): optional return location
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional return location
   for a server SSL certificate in PEM format, when the operation failed
   with an SSL error</doc>
           <type name="utf8" c:type="gchar**"/>
@@ -20004,8 +20047,10 @@ no longer needed.</doc>
         <parameter name="out_certificate_errors"
                    direction="out"
                    caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">(allow-none): optional #GTlsCertificateFlags,
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional #GTlsCertificateFlags,
   with certificate error flags when the operation failed with SSL error</doc>
           <type name="Gio.TlsCertificateFlags" c:type="GTlsCertificateFlags*"/>
         </parameter>
@@ -20013,20 +20058,22 @@ no longer needed.</doc>
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full">
-          <doc xml:space="preserve">(element-type EWebDAVDiscoveredSource): a #GSList
+          <doc xml:space="preserve">a #GSList
   of all discovered sources</doc>
           <type name="GLib.SList" c:type="GSList**">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="WebDAVDiscoveredSource"/>
           </type>
         </parameter>
         <parameter name="out_calendar_user_addresses"
                    direction="out"
                    caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">(allow-none): (element-type gchar *): a #GSList of
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GSList of
   all discovered mail addresses for calendar sources</doc>
           <type name="GLib.SList" c:type="GSList**">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
           </type>
         </parameter>
       </parameters>
@@ -20034,7 +20081,6 @@ no longer needed.</doc>
     <function name="webdav_discover_sources_sync"
               c:identifier="e_webdav_discover_sources_sync"
               version="3.18"
-              introspectable="0"
               throws="1">
       <doc xml:space="preserve">Synchronously runs discovery of the WebDAV sources (CalDAV and CardDAV), eventually
 limited by the @only_supports filter, which can be %E_WEBDAV_DISCOVER_SUPPORTS_NONE
@@ -20087,8 +20133,10 @@ no longer needed.</doc>
         <parameter name="out_certificate_pem"
                    direction="out"
                    caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">(allow-none): optional return location
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional return location
   for a server SSL certificate in PEM format, when the operation failed
   with an SSL error</doc>
           <type name="utf8" c:type="gchar**"/>
@@ -20096,8 +20144,10 @@ no longer needed.</doc>
         <parameter name="out_certificate_errors"
                    direction="out"
                    caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">(allow-none): optional #GTlsCertificateFlags,
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">optional #GTlsCertificateFlags,
   with certificate error flags when the operation failed with SSL error</doc>
           <type name="Gio.TlsCertificateFlags" c:type="GTlsCertificateFlags*"/>
         </parameter>
@@ -20105,20 +20155,22 @@ no longer needed.</doc>
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full">
-          <doc xml:space="preserve">(element-type EWebDAVDiscoveredSource): a #GSList
+          <doc xml:space="preserve">a #GSList
   of all discovered sources</doc>
           <type name="GLib.SList" c:type="GSList**">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="WebDAVDiscoveredSource"/>
           </type>
         </parameter>
         <parameter name="out_calendar_user_addresses"
                    direction="out"
                    caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">(allow-none): (element-type gchar *): a #GSList of
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GSList of
   all discovered mail addresses for calendar sources</doc>
           <type name="GLib.SList" c:type="GSList**">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
           </type>
         </parameter>
         <parameter name="cancellable"
@@ -20177,7 +20229,7 @@ to build an equivalent #xmlDoc. This is the reverse of e_xml_to_hash().</doc>
               introspectable="0">
       <doc xml:space="preserve">Attempts to find a child element of @parent named @child_name.
 If no such child exists, the function returns %NULL.</doc>
-      <return-value>
+      <return-value nullable="1">
         <doc xml:space="preserve">a child XML node structure, or %NULL</doc>
         <type name="libxml2.Node" c:type="xmlNode*"/>
       </return-value>

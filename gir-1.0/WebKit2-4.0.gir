@@ -4141,7 +4141,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -4648,6 +4648,21 @@ navigation.</doc>
            glib:type-name="WebKitNotification"
            glib:get-type="webkit_notification_get_type"
            glib:type-struct="NotificationClass">
+      <method name="clicked"
+              c:identifier="webkit_notification_clicked"
+              version="2.12">
+        <doc xml:space="preserve">Tells WebKit the notification has been clicked. This will emit the
+#WebKitNotification::clicked signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="notification" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitNotification</doc>
+            <type name="Notification" c:type="WebKitNotification*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="close"
               c:identifier="webkit_notification_close"
               version="2.8">
@@ -4725,6 +4740,12 @@ navigation.</doc>
       <field name="priv">
         <type name="NotificationPrivate" c:type="WebKitNotificationPrivate*"/>
       </field>
+      <glib:signal name="clicked" when="last" version="2.12">
+        <doc xml:space="preserve">Emitted when a notification has been clicked. See webkit_notification_clicked().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="closed" when="last" version="2.8">
         <doc xml:space="preserve">Emitted when a notification has been withdrawn.
 
@@ -5673,12 +5694,12 @@ can save its current web page into a self-contained file.</doc>
             c:symbol-prefix="script_dialog">
       <method name="confirm_set_confirmed"
               c:identifier="webkit_script_dialog_confirm_set_confirmed">
-        <doc xml:space="preserve">This method is used for %WEBKIT_SCRIPT_DIALOG_CONFIRM dialogs when
+        <doc xml:space="preserve">This method is used for %WEBKIT_SCRIPT_DIALOG_CONFIRM and %WEBKIT_SCRIPT_DIALOG_BEFORE_UNLOAD_CONFIRM dialogs when
 #WebKitWebView::script-dialog signal is emitted to set whether the user
 confirmed the dialog or not. The default implementation of #WebKitWebView::script-dialog
-signal sets %TRUE when the OK button is clicked and %FALSE otherwise.
+signal sets %TRUE when the OK or Stay buttons are clicked and %FALSE otherwise.
 It's an error to use this method with a #WebKitScriptDialog that is not of type
-%WEBKIT_SCRIPT_DIALOG_CONFIRM.</doc>
+%WEBKIT_SCRIPT_DIALOG_CONFIRM or %WEBKIT_SCRIPT_DIALOG_BEFORE_UNLOAD_CONFIRM</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -5785,6 +5806,13 @@ confirmation to the user.</doc>
               glib:nick="prompt">
         <doc xml:space="preserve">Prompt script dialog, used to ask
 information to the user.</doc>
+      </member>
+      <member name="before_unload_confirm"
+              value="3"
+              c:identifier="WEBKIT_SCRIPT_DIALOG_BEFORE_UNLOAD_CONFIRM"
+              glib:nick="before-unload-confirm">
+        <doc xml:space="preserve">Before unload confirm dialog,
+used to ask confirmation to leave the current page to the user. Since 2.12</doc>
       </member>
     </enumeration>
     <class name="SecurityManager"
@@ -8271,6 +8299,22 @@ visible in the webview</doc>
           <doc xml:space="preserve">a #SoupMessageHeaders with the HTTP headers of @request
    or %NULL if @request is not an HTTP request.</doc>
           <type name="Soup.MessageHeaders" c:type="SoupMessageHeaders*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="request" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitURIRequest</doc>
+            <type name="URIRequest" c:type="WebKitURIRequest*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_http_method"
+              c:identifier="webkit_uri_request_get_http_method"
+              version="2.12">
+        <doc xml:space="preserve">Get the HTTP method of the #WebKitURIRequest.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the HTTP method of the #WebKitURIRequest or %NULL if @request is not
+   an HTTP request.</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="request" transfer-ownership="none">
@@ -11389,6 +11433,22 @@ the #WebKitWebView</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_session_state"
+              c:identifier="webkit_web_view_get_session_state"
+              version="2.12">
+        <doc xml:space="preserve">Gets the current session state of @web_view</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #WebKitWebViewSessionState</doc>
+          <type name="WebViewSessionState"
+                c:type="WebKitWebViewSessionState*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_settings" c:identifier="webkit_web_view_get_settings">
         <doc xml:space="preserve">Gets the #WebKitSettings currently applied to @web_view.
 If no other #WebKitSettings have been explicitly applied to
@@ -11954,6 +12014,25 @@ using any cached data.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="restore_session_state"
+              c:identifier="webkit_web_view_restore_session_state"
+              version="2.12">
+        <doc xml:space="preserve">Restore the @web_view session state from @state</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+          <parameter name="state" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebViewSessionState</doc>
+            <type name="WebViewSessionState"
+                  c:type="WebKitWebViewSessionState*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="run_javascript"
               c:identifier="webkit_web_view_run_javascript">
         <doc xml:space="preserve">Asynchronously run @script in the context of the current page in @web_view. If
@@ -12421,6 +12500,23 @@ If there is a loading operation in progress, it will be cancelled and
           </instance-parameter>
         </parameters>
       </method>
+      <method name="try_close"
+              c:identifier="webkit_web_view_try_close"
+              version="2.12">
+        <doc xml:space="preserve">Tries to close the @web_view. This will fire the onbeforeunload event
+to ask the user for confirmation to close the page. If there isn't an
+onbeforeunload event handler or the user confirms to close the page,
+the #WebKitWebView::close signal is emitted, otherwise nothing happens.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="editable"
                 version="2.8"
                 writable="1"
@@ -12545,7 +12641,8 @@ dialog asynchronously for the user to interact with.</doc>
       </glib:signal>
       <glib:signal name="close" when="last">
         <doc xml:space="preserve">Emitted when closing a #WebKitWebView is requested. This occurs when a
-call is made from JavaScript's &lt;function&gt;window.close&lt;/function&gt; function.
+call is made from JavaScript's &lt;function&gt;window.close&lt;/function&gt; function or
+after trying to close the @web_view with webkit_web_view_try_close().
 It is the owner's responsibility to handle this signal to hide or
 destroy the #WebKitWebView, if necessary.</doc>
         <return-value transfer-ownership="none">
@@ -13060,7 +13157,8 @@ The default signal handler will asynchronously run a regular
       </glib:signal>
       <glib:signal name="script-dialog" when="last">
         <doc xml:space="preserve">Emitted when JavaScript code calls &lt;function&gt;window.alert&lt;/function&gt;,
-&lt;function&gt;window.confirm&lt;/function&gt; or &lt;function&gt;window.prompt&lt;/function&gt;.
+&lt;function&gt;window.confirm&lt;/function&gt; or &lt;function&gt;window.prompt&lt;/function&gt;,
+or when &lt;function&gt;onbeforeunload&lt;/function&gt; event is fired.
 The @dialog parameter should be used to build the dialog.
 If the signal is not handled a different dialog will be built and shown depending
 on the dialog type:
@@ -13074,6 +13172,9 @@ on the dialog type:
 &lt;listitem&gt;&lt;para&gt;
  %WEBKIT_SCRIPT_DIALOG_PROMPT: message dialog with OK and Cancel buttons and
  a text entry with the default text.
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;
+ %WEBKIT_SCRIPT_DIALOG_BEFORE_UNLOAD_CONFIRM: message dialog with Stay and Leave buttons.
 &lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;</doc>
         <return-value transfer-ownership="none">
@@ -13602,6 +13703,80 @@ form has not been submitted, webkit_form_submission_request_submit() will be cal
       </field>
     </record>
     <record name="WebViewPrivate" c:type="WebKitWebViewPrivate" disguised="1">
+    </record>
+    <record name="WebViewSessionState"
+            c:type="WebKitWebViewSessionState"
+            glib:type-name="WebKitWebViewSessionState"
+            glib:get-type="webkit_web_view_session_state_get_type"
+            c:symbol-prefix="web_view_session_state">
+      <constructor name="new"
+                   c:identifier="webkit_web_view_session_state_new"
+                   version="2.12">
+        <doc xml:space="preserve">Creates a new #WebKitWebViewSessionState from seralized data.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #WebKitWebViewSessionState, or %NULL if @data doesn't contain a
+    valid serialized #WebKitWebViewSessionState.</doc>
+          <type name="WebViewSessionState"
+                c:type="WebKitWebViewSessionState*"/>
+        </return-value>
+        <parameters>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">a #GBytes</doc>
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="ref"
+              c:identifier="webkit_web_view_session_state_ref"
+              version="2.12">
+        <doc xml:space="preserve">Atomically increments the reference count of @state by one. This
+function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The passed in #WebKitWebViewSessionState</doc>
+          <type name="WebViewSessionState"
+                c:type="WebKitWebViewSessionState*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="state" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebViewSessionState</doc>
+            <type name="WebViewSessionState"
+                  c:type="WebKitWebViewSessionState*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="serialize"
+              c:identifier="webkit_web_view_session_state_serialize"
+              version="2.12">
+        <doc xml:space="preserve">Serializes a #WebKitWebViewSessionState.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GBytes containing the @state serialized.</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="state" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebViewSessionState</doc>
+            <type name="WebViewSessionState"
+                  c:type="WebKitWebViewSessionState*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref"
+              c:identifier="webkit_web_view_session_state_unref"
+              version="2.12">
+        <doc xml:space="preserve">Atomically decrements the reference count of @state by one. If the
+reference count drops to 0, all memory allocated by the #WebKitWebViewSessionState is
+released. This function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="state" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebViewSessionState</doc>
+            <type name="WebViewSessionState"
+                  c:type="WebKitWebViewSessionState*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </record>
     <class name="WebsiteDataManager"
            c:symbol-prefix="website_data_manager"
