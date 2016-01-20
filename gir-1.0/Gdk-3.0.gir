@@ -4036,6 +4036,42 @@ the drag operation is over.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="manage_dnd" c:identifier="gdk_drag_context_manage_dnd">
+        <doc xml:space="preserve">Requests the drag and drop operation to be managed by @context.
+When a drag and drop operation becomes managed, the #GdkDragContext
+will internally handle all input and source-side #GdkEventDND events
+as required by the windowing system.
+
+Once the drag and drop operation is managed, the drag context will
+emit the following signals:
+- The #GdkDragContext::action-changed signal whenever the final action
+  to be performed by the drag and drop operation changes.
+- The #GdkDragContext::drop-performed signal after the user performs
+  the drag and drop gesture (typically by releasing the mouse button).
+- The #GdkDragContext::dnd-finished signal after the drag and drop
+  operation concludes (after all #GdkSelection transfers happen).
+- The #GdkDragContext::cancel signal if the drag and drop operation is
+  finished but doesn't happen over an accepting destination, or is
+  cancelled through other means.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#TRUE if the drag and drop operation is managed.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDragContext</doc>
+            <type name="DragContext" c:type="GdkDragContext*"/>
+          </instance-parameter>
+          <parameter name="ipc_window" transfer-ownership="none">
+            <doc xml:space="preserve">Window to use for IPC messaging/events</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </parameter>
+          <parameter name="actions" transfer-ownership="none">
+            <doc xml:space="preserve">the actions supported by the drag source</doc>
+            <type name="DragAction" c:type="GdkDragAction"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_device" c:identifier="gdk_drag_context_set_device">
         <doc xml:space="preserve">Associates a #GdkDevice to @context, so all Drag and Drop events
 for @context are emitted as if they came from this device.</doc>
@@ -4077,6 +4113,58 @@ top left corner of the drag window.</doc>
           </parameter>
         </parameters>
       </method>
+      <glib:signal name="action-changed" when="last" version="3.20">
+        <doc xml:space="preserve">A new action is being chosen for the drag and drop operation.
+
+This signal will only be emitted if the #GdkDragContext manages
+the drag and drop operation. See gdk_drag_context_manage_dnd()
+for more information.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="DragAction"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="cancel" when="first" version="3.20">
+        <doc xml:space="preserve">The drag and drop operation was cancelled.
+
+This signal will only be emitted if the #GdkDragContext manages
+the drag and drop operation. See gdk_drag_context_manage_dnd()
+for more information.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="dnd-finished" when="last" version="3.20">
+        <doc xml:space="preserve">The drag and drop operation was finished, the drag destination
+finished reading all data. The drag source can now free all
+miscellaneous data.
+
+This signal will only be emitted if the #GdkDragContext manages
+the drag and drop operation. See gdk_drag_context_manage_dnd()
+for more information.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="drop-performed" when="last" version="3.20">
+        <doc xml:space="preserve">The drag and drop operation was performed on an accepting client.
+
+This signal will only be emitted if the #GdkDragContext manages
+the drag and drop operation. See gdk_drag_context_manage_dnd()
+for more information.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <enumeration name="DragProtocol"
                  glib:type-name="GdkDragProtocol"
@@ -4786,6 +4874,27 @@ returns #GDK_CURRENT_TIME. If @event is %NULL, returns #GDK_CURRENT_TIME.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The #GdkWindow associated with the event</doc>
           <type name="Window" c:type="GdkWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkEvent</doc>
+            <type name="Event" c:type="const GdkEvent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_scroll_stop_event"
+              c:identifier="gdk_event_is_scroll_stop_event"
+              version="3.20">
+        <doc xml:space="preserve">Check whether a scroll event is a stop scroll event. Scroll sequences
+with smooth scroll information may provide a stop scroll event once the
+interaction with the device finishes, e.g. by lifting a finger. This
+stop scroll event is the signal that a widget may trigger kinetic
+scrolling based on the current velocity.
+
+Stop scroll events always have a a delta of 0/0.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the event is a scroll stop event</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="event" transfer-ownership="none">
@@ -5791,6 +5900,9 @@ gdk_event_get_source_device() to get the slave device.</doc>
       <field name="delta_y" writable="1">
         <doc xml:space="preserve">the y coordinate of the scroll delta</doc>
         <type name="gdouble" c:type="gdouble"/>
+      </field>
+      <field name="is_stop" writable="1" bits="1">
+        <type name="guint" c:type="guint"/>
       </field>
     </record>
     <record name="EventSelection" c:type="GdkEventSelection">
@@ -17925,7 +18037,9 @@ gdk_display_get_default ()).</doc>
         </return-value>
       </function>
       <function name="height" c:identifier="gdk_screen_height">
-        <doc xml:space="preserve">Returns the height of the default screen in pixels.</doc>
+        <doc xml:space="preserve">Gets the height of the default screen in pixels. The returned
+size is in ”application pixels”, not in ”device pixels” (see
+gdk_screen_get_monitor_scale_factor()).</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the height of the default screen in pixels.</doc>
           <type name="gint" c:type="gint"/>
@@ -17941,7 +18055,9 @@ though it is not always correct.</doc>
         </return-value>
       </function>
       <function name="width" c:identifier="gdk_screen_width">
-        <doc xml:space="preserve">Returns the width of the default screen in pixels.</doc>
+        <doc xml:space="preserve">Gets the width of the default screen in pixels. The returned
+size is in ”application pixels”, not in ”device pixels” (see
+gdk_screen_get_monitor_scale_factor()).</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the width of the default screen in pixels.</doc>
           <type name="gint" c:type="gint"/>
@@ -18019,7 +18135,9 @@ no longer needed.</doc>
       <method name="get_height"
               c:identifier="gdk_screen_get_height"
               version="2.2">
-        <doc xml:space="preserve">Gets the height of @screen in pixels</doc>
+        <doc xml:space="preserve">Gets the height of @screen in pixels. The returned size is in
+”application pixels”, not in ”device pixels” (see
+gdk_screen_get_monitor_scale_factor()).</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the height of @screen in pixels.</doc>
           <type name="gint" c:type="gint"/>
@@ -18100,7 +18218,9 @@ bounding rectangle of @window resides.</doc>
               c:identifier="gdk_screen_get_monitor_geometry"
               version="2.2">
         <doc xml:space="preserve">Retrieves the #GdkRectangle representing the size and position of
-the individual monitor within the entire screen area.
+the individual monitor within the entire screen area. The returned
+geometry is in ”application pixels”, not in ”device pixels” (see
+gdk_screen_get_monitor_scale_factor()).
 
 Monitor numbers start at 0. To obtain the number of monitors of
 @screen, use gdk_screen_get_n_monitors().
@@ -18175,7 +18295,7 @@ product name of the display device.</doc>
       <method name="get_monitor_scale_factor"
               c:identifier="gdk_screen_get_monitor_scale_factor"
               version="3.10">
-        <doc xml:space="preserve">Returns the internal scale factor that maps from monitor coordiantes
+        <doc xml:space="preserve">Returns the internal scale factor that maps from monitor coordinates
 to the actual device pixels. On traditional systems this is 1, but
 on very high density outputs this can be a higher value (often 2).
 
@@ -18220,7 +18340,9 @@ where it is better to use gdk_window_get_scale_factor() instead.</doc>
               c:identifier="gdk_screen_get_monitor_workarea"
               version="3.4">
         <doc xml:space="preserve">Retrieves the #GdkRectangle representing the size and position of
-the “work area” on a monitor within the entire screen area.
+the “work area” on a monitor within the entire screen area. The returned
+geometry is in ”application pixels”, not in ”device pixels” (see
+gdk_screen_get_monitor_scale_factor()).
 
 The work area should be considered when positioning menus and
 similar popups, to avoid placing them below panels, docks or other
@@ -18441,7 +18563,9 @@ its elements need not be freed.</doc>
       <method name="get_width"
               c:identifier="gdk_screen_get_width"
               version="2.2">
-        <doc xml:space="preserve">Gets the width of @screen in pixels</doc>
+        <doc xml:space="preserve">Gets the width of @screen in pixels. The returned size is in
+”application pixels”, not in ”device pixels” (see
+gdk_screen_get_monitor_scale_factor()).</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the width of @screen in pixels.</doc>
           <type name="gint" c:type="gint"/>
@@ -24827,7 +24951,10 @@ any way and doesn’t observe the presence of XInput 2.</doc>
     <function name="drag_abort" c:identifier="gdk_drag_abort">
       <doc xml:space="preserve">Aborts a drag without dropping.
 
-This function is called by the drag source.</doc>
+This function is called by the drag source.
+
+This function does not need to be called in managed drag and drop
+operations. See gdk_drag_context_manage_dnd() for more information.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -24933,7 +25060,10 @@ This function is called by the drag source.</doc>
     <function name="drag_drop" c:identifier="gdk_drag_drop">
       <doc xml:space="preserve">Drops on the current destination.
 
-This function is called by the drag source.</doc>
+This function is called by the drag source.
+
+This function does not need to be called in managed drag and drop
+operations. See gdk_drag_context_manage_dnd() for more information.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -25055,7 +25185,10 @@ This function is called by the drag source to obtain the
       <doc xml:space="preserve">Updates the drag context when the pointer moves or the
 set of actions changes.
 
-This function is called by the drag source.</doc>
+This function is called by the drag source.
+
+This function does not need to be called in managed drag and drop
+operations. See gdk_drag_context_manage_dnd() for more information.</doc>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
