@@ -12,7 +12,7 @@ namespace GWeather {
 		public string get_conditions ();
 		public string get_dew ();
 		public GWeather.Provider get_enabled_providers ();
-		[Deprecated (since = "3.10")]
+		[Version (deprecated = true, deprecated_since = "3.10")]
 		public string get_forecast ();
 		public unowned GLib.SList<GWeather.Info> get_forecast_list ();
 		public string get_humidity ();
@@ -66,10 +66,13 @@ namespace GWeather {
 		public GWeather.Location deserialize (GLib.Variant serialized);
 		[CCode (has_construct_function = false)]
 		public Location.detached (string name, string? icao, double latitude, double longitude);
+		[Version (since = "3.12")]
 		public async GWeather.Location detect_nearest_city (double lat, double lon, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool equal (GWeather.Location two);
 		public GWeather.Location find_by_station_code (string station_code);
+		[Version (since = "3.12")]
 		public GWeather.Location find_nearest_city (double lat, double lon);
+		[Version (since = "3.12")]
 		public GWeather.Location find_nearest_city_full (double lat, double lon, owned GWeather.FilterFunc? func);
 		public void free_timezones (GWeather.Timezone zones);
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -93,7 +96,7 @@ namespace GWeather {
 		public unowned GLib.Variant serialize ();
 		public void unref ();
 		[CCode (has_construct_function = false)]
-		[Deprecated (since = "3.10")]
+		[Version (deprecated = true, deprecated_since = "3.10")]
 		public Location.world (bool use_regions);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", type_id = "gweather_location_entry_get_type ()")]
@@ -110,6 +113,7 @@ namespace GWeather {
 	[CCode (cheader_filename = "libgweather/gweather.h", ref_function = "gweather_timezone_ref", type_id = "gweather_timezone_get_type ()", unref_function = "gweather_timezone_unref")]
 	[Compact]
 	public class Timezone {
+		[Version (since = "3.12")]
 		public static unowned GWeather.Timezone get_by_tzid (string tzid);
 		public int get_dst_offset ();
 		public unowned string get_name ();

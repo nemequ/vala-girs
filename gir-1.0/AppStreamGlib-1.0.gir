@@ -428,6 +428,24 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_translation"
+              c:identifier="as_app_add_translation"
+              version="0.5.8">
+        <doc xml:space="preserve">Adds a translation to an application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="translation" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsTranslation instance.</doc>
+            <type name="Translation" c:type="AsTranslation*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_url" c:identifier="as_app_add_url" version="0.1.0">
         <doc xml:space="preserve">Adds some URL data to the application.</doc>
         <return-value transfer-ownership="none">
@@ -1254,6 +1272,23 @@ entry set.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">enumerated value</doc>
           <type name="AppState" c:type="AsAppState"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_translations"
+              c:identifier="as_app_get_translations"
+              version="0.5.8">
+        <doc xml:space="preserve">Gets any translations the application has defined.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Translation"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="app" transfer-ownership="none">
@@ -3120,7 +3155,7 @@ NOTE: This is only set for icons of type %AS_ICON_KIND_REMOTE</doc>
       </member>
     </enumeration>
     <enumeration name="IdKind" c:type="AsIdKind">
-      <doc xml:space="preserve">The ID type.</doc>
+      <doc xml:space="preserve">The component type.</doc>
       <member name="unknown" value="0" c:identifier="AS_ID_KIND_UNKNOWN">
         <doc xml:space="preserve">Type invalid or not known</doc>
       </member>
@@ -3152,6 +3187,9 @@ NOTE: This is only set for icons of type %AS_ICON_KIND_REMOTE</doc>
       </member>
       <member name="runtime" value="9" c:identifier="AS_ID_KIND_RUNTIME">
         <doc xml:space="preserve">Runtime platform</doc>
+      </member>
+      <member name="generic" value="10" c:identifier="AS_ID_KIND_GENERIC">
+        <doc xml:space="preserve">Generic component</doc>
       </member>
     </enumeration>
     <class name="Image"
@@ -3198,6 +3236,23 @@ NOTE: This is only set for icons of type %AS_ICON_KIND_REMOTE</doc>
           </parameter>
         </parameters>
       </function>
+      <method name="equal" c:identifier="as_image_equal" version="0.5.7">
+        <doc xml:space="preserve">Checks if two images are the same.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE for success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="image1" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsImage instance.</doc>
+            <type name="Image" c:type="AsImage*"/>
+          </instance-parameter>
+          <parameter name="image2" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsImage instance.</doc>
+            <type name="Image" c:type="AsImage*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_alpha_flags"
               c:identifier="as_image_get_alpha_flags"
               version="0.2.2"
@@ -3341,6 +3396,38 @@ using as_image_get_basename(). This can be overridden if required.</doc>
           <parameter name="filename" transfer-ownership="none">
             <doc xml:space="preserve">filename to read from</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_filename_full"
+              c:identifier="as_image_load_filename_full"
+              version="0.5.6"
+              throws="1">
+        <doc xml:space="preserve">Reads an image from a file.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE for success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="image" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsImage instance.</doc>
+            <type name="Image" c:type="AsImage*"/>
+          </instance-parameter>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">filename to read from</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="dest_size" transfer-ownership="none">
+            <doc xml:space="preserve">The size of the constructed pixbuf, or 0 for the native size</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="src_size_min" transfer-ownership="none">
+            <doc xml:space="preserve">The smallest source size allowed, or 0 for none</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsImageLoadFlags, e.g. %AS_IMAGE_LOAD_FLAG_NONE</doc>
+            <type name="ImageLoadFlags" c:type="AsImageLoadFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -3613,6 +3700,32 @@ using as_image_get_basename(). This can be overridden if required.</doc>
         <doc xml:space="preserve">A thumbnail at reduced resolution</doc>
       </member>
     </enumeration>
+    <enumeration name="ImageLoadFlags" c:type="AsImageLoadFlags">
+      <doc xml:space="preserve">The flags used for loading images.</doc>
+      <member name="none" value="0" c:identifier="AS_IMAGE_LOAD_FLAG_NONE">
+        <doc xml:space="preserve">No special flags set</doc>
+      </member>
+      <member name="sharpen"
+              value="1"
+              c:identifier="AS_IMAGE_LOAD_FLAG_SHARPEN">
+        <doc xml:space="preserve">Sharpen the resulting image</doc>
+      </member>
+      <member name="set_basename"
+              value="2"
+              c:identifier="AS_IMAGE_LOAD_FLAG_SET_BASENAME">
+        <doc xml:space="preserve">Set the image basename</doc>
+      </member>
+      <member name="set_checksum"
+              value="4"
+              c:identifier="AS_IMAGE_LOAD_FLAG_SET_CHECKSUM">
+        <doc xml:space="preserve">Set the image checksum</doc>
+      </member>
+      <member name="only_supported"
+              value="8"
+              c:identifier="AS_IMAGE_LOAD_FLAG_ONLY_SUPPORTED">
+        <doc xml:space="preserve">Only load supported formats like PNG and JPG</doc>
+      </member>
+    </enumeration>
     <enumeration name="ImageSaveFlags" c:type="AsImageSaveFlags">
       <doc xml:space="preserve">The flags used for saving images.</doc>
       <member name="none" value="0" c:identifier="AS_IMAGE_SAVE_FLAG_NONE">
@@ -3634,7 +3747,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     </enumeration>
     <enumeration name="InfError"
                  c:type="AsInfError"
-                 glib:error-domain="AsInfError">
+                 glib:error-domain="as-inf-error-quark">
       <doc xml:space="preserve">The error type.</doc>
       <member name="failed" value="0" c:identifier="AS_INF_ERROR_FAILED">
         <doc xml:space="preserve">Generic failure</doc>
@@ -3702,7 +3815,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="7" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="8" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="5" c:type="AS_MINOR_VERSION">
@@ -3744,7 +3857,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     </enumeration>
     <enumeration name="NodeError"
                  c:type="AsNodeError"
-                 glib:error-domain="AsNodeError">
+                 glib:error-domain="as-node-error-quark">
       <doc xml:space="preserve">The error type.</doc>
       <member name="failed" value="0" c:identifier="AS_NODE_ERROR_FAILED">
         <doc xml:space="preserve">Generic failure</doc>
@@ -4531,6 +4644,21 @@ using as_image_get_basename(). This can be overridden if required.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_state"
+              c:identifier="as_release_get_state"
+              version="0.5.8">
+        <doc xml:space="preserve">Gets the release state.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">enumberated value, or %AS_RELEASE_STATE_UNKNOWN for not set or invalid</doc>
+          <type name="ReleaseState" c:type="AsReleaseState"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_timestamp"
               c:identifier="as_release_get_timestamp"
               version="0.1.0">
@@ -4641,6 +4769,24 @@ NOTE: This is not stored in the XML file, and is only available in-memory.</doc>
           <parameter name="size" transfer-ownership="none">
             <doc xml:space="preserve">a size in bytes, or 0 for unknown</doc>
             <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_state"
+              c:identifier="as_release_set_state"
+              version="0.5.8">
+        <doc xml:space="preserve">Sets the release state.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+          <parameter name="state" transfer-ownership="none">
+            <doc xml:space="preserve">the release state, e.g. %AS_RELEASE_STATE_INSTALLED</doc>
+            <type name="ReleaseState" c:type="AsReleaseState"/>
           </parameter>
         </parameters>
       </method>
@@ -4782,6 +4928,22 @@ NOTE: This is not stored in the XML file, and is only available in-memory.</doc>
         </callback>
       </field>
     </record>
+    <enumeration name="ReleaseState" c:type="AsReleaseState">
+      <doc xml:space="preserve">The release state.</doc>
+      <member name="unknown" value="0" c:identifier="AS_RELEASE_STATE_UNKNOWN">
+        <doc xml:space="preserve">Unknown state</doc>
+      </member>
+      <member name="installed"
+              value="1"
+              c:identifier="AS_RELEASE_STATE_INSTALLED">
+        <doc xml:space="preserve">Release is installed</doc>
+      </member>
+      <member name="available"
+              value="2"
+              c:identifier="AS_RELEASE_STATE_AVAILABLE">
+        <doc xml:space="preserve">Release is available</doc>
+      </member>
+    </enumeration>
     <class name="Screenshot"
            c:symbol-prefix="screenshot"
            c:type="AsScreenshot"
@@ -4842,6 +5004,23 @@ NOTE: This is not stored in the XML file, and is only available in-memory.</doc>
           <parameter name="image" transfer-ownership="none">
             <doc xml:space="preserve">a #AsImage instance.</doc>
             <type name="Image" c:type="AsImage*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="equal" c:identifier="as_screenshot_equal" version="0.5.7">
+        <doc xml:space="preserve">Checks if two screenshots are the same.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE for success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="screenshot1" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsScreenshot instance.</doc>
+            <type name="Screenshot" c:type="AsScreenshot*"/>
+          </instance-parameter>
+          <parameter name="screenshot2" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsScreenshot instance.</doc>
+            <type name="Screenshot" c:type="AsScreenshot*"/>
           </parameter>
         </parameters>
       </method>
@@ -5981,7 +6160,7 @@ or removed from the store.</doc>
       <member name="app_install"
               value="4"
               c:identifier="AS_STORE_LOAD_FLAG_APP_INSTALL">
-        <doc xml:space="preserve">The ubuntu-specific app-install data</doc>
+        <doc xml:space="preserve">The ubuntu-specific app-install data (obsolete)</doc>
       </member>
       <member name="appdata"
               value="8"
@@ -5997,6 +6176,21 @@ or removed from the store.</doc>
               value="32"
               c:identifier="AS_STORE_LOAD_FLAG_ALLOW_VETO">
         <doc xml:space="preserve">Add vetoed applications</doc>
+      </member>
+      <member name="xdg_app_user"
+              value="64"
+              c:identifier="AS_STORE_LOAD_FLAG_XDG_APP_USER">
+        <doc xml:space="preserve">Add xdg-app user applications</doc>
+      </member>
+      <member name="xdg_app_system"
+              value="128"
+              c:identifier="AS_STORE_LOAD_FLAG_XDG_APP_SYSTEM">
+        <doc xml:space="preserve">Add xdg-app system applications</doc>
+      </member>
+      <member name="ignore_invalid"
+              value="256"
+              c:identifier="AS_STORE_LOAD_FLAG_IGNORE_INVALID">
+        <doc xml:space="preserve">Ignore invalid files</doc>
       </member>
     </enumeration>
     <enumeration name="StoreWatchFlags" c:type="AsStoreWatchFlags">
@@ -6175,6 +6369,8 @@ or removed from the store.</doc>
       <member name="size" value="47" c:identifier="AS_TAG_SIZE">
         <doc xml:space="preserve">`size`</doc>
       </member>
+      <member name="translation" value="48" c:identifier="AS_TAG_TRANSLATION">
+      </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">
       <doc xml:space="preserve">The flags to use when matching %AsTag's.</doc>
@@ -6190,6 +6386,201 @@ or removed from the store.</doc>
               value="2"
               c:identifier="AS_TAG_FLAG_USE_TRANSLATED">
         <doc xml:space="preserve">Use translated tag names</doc>
+      </member>
+    </enumeration>
+    <class name="Translation"
+           c:symbol-prefix="translation"
+           c:type="AsTranslation"
+           parent="GObject.Object"
+           glib:type-name="AsTranslation"
+           glib:get-type="as_translation_get_type"
+           glib:type-struct="TranslationClass">
+      <constructor name="new"
+                   c:identifier="as_translation_new"
+                   version="0.5.8">
+        <doc xml:space="preserve">Creates a new #AsTranslation.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsTranslation</doc>
+          <type name="Translation" c:type="AsTranslation*"/>
+        </return-value>
+      </constructor>
+      <function name="kind_from_string"
+                c:identifier="as_translation_kind_from_string"
+                version="0.5.8">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsTranslationKind, or %AS_TRANSLATION_KIND_UNKNOWN for unknown.</doc>
+          <type name="TranslationKind" c:type="AsTranslationKind"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="kind_to_string"
+                c:identifier="as_translation_kind_to_string"
+                version="0.5.8">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @kind</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsTranslationKind.</doc>
+            <type name="TranslationKind" c:type="AsTranslationKind"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_id"
+              c:identifier="as_translation_get_id"
+              version="0.5.8">
+        <doc xml:space="preserve">Gets the ID for this translation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">ID, e.g. "foobar-1.0.2"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="translation" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsTranslation instance.</doc>
+            <type name="Translation" c:type="AsTranslation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="as_translation_get_kind"
+              version="0.5.8">
+        <doc xml:space="preserve">Gets the translation kind.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #AsTranslationKind</doc>
+          <type name="TranslationKind" c:type="AsTranslationKind"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="translation" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsTranslation instance.</doc>
+            <type name="Translation" c:type="AsTranslation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_id"
+              c:identifier="as_translation_set_id"
+              version="0.5.8">
+        <doc xml:space="preserve">Sets the ID for this translation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="translation" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsTranslation instance.</doc>
+            <type name="Translation" c:type="AsTranslation*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">the URL.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_kind"
+              c:identifier="as_translation_set_kind"
+              version="0.5.8">
+        <doc xml:space="preserve">Sets the translation kind.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="translation" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsTranslation instance.</doc>
+            <type name="Translation" c:type="AsTranslation*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsTranslationKind, e.g. %AS_TRANSLATION_KIND_THUMBNAIL.</doc>
+            <type name="TranslationKind" c:type="AsTranslationKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="TranslationClass"
+            c:type="AsTranslationClass"
+            glib:is-gtype-struct-for="Translation">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="_as_reserved1" introspectable="0">
+        <callback name="_as_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved2" introspectable="0">
+        <callback name="_as_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved3" introspectable="0">
+        <callback name="_as_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved4" introspectable="0">
+        <callback name="_as_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved5" introspectable="0">
+        <callback name="_as_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved6" introspectable="0">
+        <callback name="_as_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved7" introspectable="0">
+        <callback name="_as_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved8" introspectable="0">
+        <callback name="_as_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <enumeration name="TranslationKind" c:type="AsTranslationKind">
+      <doc xml:space="preserve">The translation type.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="AS_TRANSLATION_KIND_UNKNOWN">
+        <doc xml:space="preserve">Type invalid or not known</doc>
+      </member>
+      <member name="gettext"
+              value="1"
+              c:identifier="AS_TRANSLATION_KIND_GETTEXT">
+        <doc xml:space="preserve">Gettext translation system</doc>
+      </member>
+      <member name="qt" value="2" c:identifier="AS_TRANSLATION_KIND_QT">
+        <doc xml:space="preserve">QT translation system</doc>
       </member>
     </enumeration>
     <enumeration name="UrgencyKind" c:type="AsUrgencyKind">
@@ -6240,7 +6631,7 @@ or removed from the store.</doc>
     </enumeration>
     <enumeration name="UtilsError"
                  c:type="AsUtilsError"
-                 glib:error-domain="AsUtilsError">
+                 glib:error-domain="as-utils-error-quark">
       <doc xml:space="preserve">The error type.</doc>
       <member name="failed" value="0" c:identifier="AS_UTILS_ERROR_FAILED">
         <doc xml:space="preserve">Generic failure</doc>

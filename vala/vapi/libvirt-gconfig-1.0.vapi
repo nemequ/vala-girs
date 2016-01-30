@@ -310,7 +310,7 @@ namespace GVirConfig {
 		public GVirConfig.DomainDiskCacheType get_driver_cache ();
 		public GVirConfig.DomainDiskFormat get_driver_format ();
 		public unowned string get_driver_name ();
-		[Deprecated (since = "0.1.7")]
+		[Version (deprecated = true, deprecated_since = "0.1.7")]
 		public unowned string get_driver_type ();
 		public GVirConfig.DomainDiskGuestDeviceType get_guest_device_type ();
 		public GVirConfig.DomainDiskSnapshotType get_snapshot_type ();
@@ -322,7 +322,7 @@ namespace GVirConfig {
 		public void set_driver_cache (GVirConfig.DomainDiskCacheType cache_type);
 		public void set_driver_format (GVirConfig.DomainDiskFormat format);
 		public void set_driver_name (string driver_name);
-		[Deprecated (since = "0.1.7")]
+		[Version (deprecated = true, deprecated_since = "0.1.7")]
 		public void set_driver_type (string driver_type);
 		public void set_guest_device_type (GVirConfig.DomainDiskGuestDeviceType type);
 		public void set_readonly (bool readonly);

@@ -17,6 +17,7 @@ namespace E {
 		public string to_string ();
 		public void unref ();
 		public static E.BookQuery vcard_field_exists (string field);
+		[Version (since = "2.22")]
 		public static E.BookQuery vcard_field_test (string field, E.BookQueryTest test, string value);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", type_id = "e_contact_get_type ()")]
@@ -25,20 +26,26 @@ namespace E {
 		public Contact ();
 		public E.Contact duplicate ();
 		public static E.ContactField field_id (string field_name);
+		[Version (since = "2.26")]
 		public static E.ContactField field_id_from_vcard (string vcard_field);
+		[Version (since = "3.16")]
 		public static bool field_is_string (E.ContactField field_id);
 		public static unowned string field_name (E.ContactField field_id);
+		[Version (since = "3.8")]
 		public static GLib.Type field_type (E.ContactField field_id);
 		[CCode (has_construct_function = false)]
 		public Contact.from_vcard (string vcard);
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.4")]
 		public Contact.from_vcard_with_uid (string vcard, string uid);
 		[CCode (simple_generics = true)]
 		public T @get<T> (E.ContactField field_id);
 		public GLib.List<E.VCardAttribute> get_attributes (E.ContactField field_id);
+		[Version (since = "3.16")]
 		public GLib.List<E.VCardAttribute> get_attributes_set (E.ContactField field_ids, int size);
 		[CCode (simple_generics = true)]
 		public unowned T get_const<T> (E.ContactField field_id);
+		[Version (since = "3.4")]
 		public bool inline_local_photos () throws GLib.Error;
 		public static unowned string pretty_name (E.ContactField field_id);
 		[CCode (simple_generics = true)]
@@ -328,6 +335,7 @@ namespace E {
 		public string region;
 		public string street;
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.2")]
 		public ContactAddress ();
 		public void free ();
 	}
@@ -341,6 +349,7 @@ namespace E {
 		public weak string data;
 		public size_t length;
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.8")]
 		public ContactCert ();
 		public void free ();
 	}
@@ -359,10 +368,12 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_geo_get_type ()")]
 	[Compact]
+	[Version (since = "1.12")]
 	public class ContactGeo {
 		public double latitude;
 		public double longitude;
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.8")]
 		public ContactGeo ();
 		public void free ();
 	}
@@ -394,19 +405,28 @@ namespace E {
 		public weak string data_uri;
 		public E.ContactPhotoType type;
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.2")]
 		public ContactPhoto ();
+		[Version (since = "3.8")]
 		public E.ContactPhoto copy ();
 		public void free ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		[Version (since = "3.2")]
 		public unowned uint8[]? get_inlined ();
+		[Version (since = "3.2")]
 		public unowned string? get_mime_type ();
+		[Version (since = "3.2")]
 		public unowned string? get_uri ();
+		[Version (since = "3.2")]
 		public void set_inlined ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] data);
+		[Version (since = "3.2")]
 		public void set_mime_type (string mime_type);
+		[Version (since = "3.2")]
 		public void set_uri (string uri);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_phone_number_get_type ()")]
 	[Compact]
+	[Version (since = "3.8")]
 	public class PhoneNumber {
 		public E.PhoneNumberMatch compare (E.PhoneNumber second_number);
 		public static E.PhoneNumberMatch compare_strings (string first_number, string second_number) throws GLib.Error;
@@ -422,6 +442,7 @@ namespace E {
 		public string to_string (E.PhoneNumberFormat format);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", type_id = "e_source_backend_summary_setup_get_type ()")]
+	[Version (since = "3.8")]
 	public class SourceBackendSummarySetup : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceBackendSummarySetup ();
@@ -440,18 +461,24 @@ namespace E {
 		public VCard ();
 		public void add_attribute (owned E.VCardAttribute attr);
 		public void add_attribute_with_value (owned E.VCardAttribute attr, string value);
+		[Version (since = "2.32")]
 		public void append_attribute (owned E.VCardAttribute attr);
+		[Version (since = "2.32")]
 		public void append_attribute_with_value (owned E.VCardAttribute attr, string value);
 		public void @construct (string str);
+		[Version (since = "3.12")]
 		public void construct_full (string str, ssize_t len, string? uid);
+		[Version (since = "3.4")]
 		public void construct_with_uid (string str, string? uid);
 		public void dump_structure ();
 		public static string escape_string (string s);
 		[CCode (has_construct_function = false)]
 		public VCard.from_string (string str);
 		public unowned E.VCardAttribute? get_attribute (string name);
+		[Version (since = "3.4")]
 		public unowned E.VCardAttribute? get_attribute_if_parsed (string name);
 		public unowned GLib.List<E.VCardAttribute> get_attributes ();
+		[Version (since = "3.2")]
 		public bool is_parsed ();
 		public void remove_attribute (owned E.VCardAttribute attr);
 		public void remove_attributes (string? attr_group, string attr_name);
@@ -479,6 +506,7 @@ namespace E {
 		public unowned GLib.List<GLib.StringBuilder> get_values_decoded ();
 		public bool has_type (string typestr);
 		public bool is_single_valued ();
+		[Version (since = "1.12")]
 		public void remove_param (string param_name);
 		public void remove_param_value (string param_name, string s);
 		public void remove_params ();
@@ -509,7 +537,7 @@ namespace E {
 		public void free ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", has_type_id = false)]
-	[Deprecated (since = "3.2")]
+	[Version (deprecated = true, deprecated_since = "3.2")]
 	public struct BookChange {
 		public E.BookChangeType change_type;
 		public weak E.Contact contact;
@@ -526,7 +554,7 @@ namespace E {
 		public void free ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CHANGE_CARD_", type_id = "e_book_change_type_get_type ()")]
-	[Deprecated (since = "3.2")]
+	[Version (deprecated = true, deprecated_since = "3.2")]
 	public enum BookChangeType {
 		ADDED,
 		DELETED,
@@ -534,23 +562,27 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CLIENT_VIEW_FLAGS_", type_id = "e_book_client_view_flags_get_type ()")]
 	[Flags]
+	[Version (since = "3.4")]
 	public enum BookClientViewFlags {
 		NONE,
 		NOTIFY_INITIAL
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_ORIGIN_", type_id = "e_book_cursor_origin_get_type ()")]
+	[Version (since = "3.12")]
 	public enum BookCursorOrigin {
 		CURRENT,
 		BEGIN,
 		END
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_SORT_", type_id = "e_book_cursor_sort_type_get_type ()")]
+	[Version (since = "3.12")]
 	public enum BookCursorSortType {
 		ASCENDING,
 		DESCENDING
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_STEP_", type_id = "e_book_cursor_step_flags_get_type ()")]
 	[Flags]
+	[Version (since = "3.12")]
 	public enum BookCursorStepFlags {
 		MOVE,
 		FETCH
@@ -576,7 +608,7 @@ namespace E {
 		LAST
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_VIEW_", type_id = "e_book_view_status_get_type ()")]
-	[Deprecated (since = "3.2")]
+	[Version (deprecated = true, deprecated_since = "3.2")]
 	public enum BookViewStatus {
 		STATUS_OK,
 		STATUS_TIME_LIMIT_EXCEEDED,
@@ -740,6 +772,7 @@ namespace E {
 		URI
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_DATA_BOOK_STATUS_", type_id = "e_data_book_status_get_type ()")]
+	[Version (since = "3.6")]
 	public enum DataBookStatus {
 		SUCCESS,
 		BUSY,
@@ -769,12 +802,14 @@ namespace E {
 		OUT_OF_SYNC
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_COUNTRY_FROM_", has_type_id = false)]
+	[Version (since = "3.8")]
 	public enum PhoneNumberCountrySource {
 		FQTN,
 		IDD,
 		DEFAULT
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_FORMAT_", has_type_id = false)]
+	[Version (since = "3.8")]
 	public enum PhoneNumberFormat {
 		E164,
 		INTERNATIONAL,
@@ -782,6 +817,7 @@ namespace E {
 		RFC3966
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_MATCH_", has_type_id = false)]
+	[Version (since = "3.8")]
 	public enum PhoneNumberMatch {
 		NONE,
 		EXACT,
@@ -794,18 +830,20 @@ namespace E {
 		@30
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CLIENT_ERROR_")]
+	[Version (since = "3.2")]
 	public errordomain BookClientError {
 		NO_SUCH_BOOK,
 		CONTACT_NOT_FOUND,
 		CONTACT_ID_ALREADY_EXISTS,
 		NO_SUCH_SOURCE,
 		NO_SPACE;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static GLib.Error create (E.BookClientError code, string custom_msg);
 		public static GLib.Quark quark ();
 		public static unowned string to_string (E.BookClientError code);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_ERROR_")]
+	[Version (since = "3.8")]
 	public errordomain PhoneNumberError {
 		NOT_IMPLEMENTED,
 		UNKNOWN,
@@ -817,9 +855,12 @@ namespace E {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_SOURCE_EXTENSION_BACKEND_SUMMARY_SETUP")]
+	[Version (since = "3.8")]
 	public const string SOURCE_EXTENSION_BACKEND_SUMMARY_SETUP;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_VCARD_21_VALID_PARAMETERS")]
+	[Version (since = "3.4")]
 	public const string VCARD_21_VALID_PARAMETERS;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_VCARD_21_VALID_PROPERTIES")]
+	[Version (since = "3.4")]
 	public const string VCARD_21_VALID_PROPERTIES;
 }

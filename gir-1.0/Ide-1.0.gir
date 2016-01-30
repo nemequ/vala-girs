@@ -9,10 +9,11 @@ and/or use gtk-doc annotations.  -->
   <include name="Gio" version="2.0"/>
   <include name="GtkSource" version="3.0"/>
   <include name="Peas" version="1.0"/>
+  <include name="Template" version="1.0"/>
   <c:include name="ide.h"/>
   <namespace name="Ide"
              version="1.0"
-             shared-library="libide-1.0.so,libegg-private.so.0"
+             shared-library="libide-1.0.so,libegg-private.so.0,libtemplate-glib-1.0.so.0"
              c:identifier-prefixes="Ide"
              c:symbol-prefixes="ide">
     <class name="Application"
@@ -4991,6 +4992,24 @@ instances.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="Doap" c:type="IdeDoap*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="load_from_data"
+              c:identifier="ide_doap_load_from_data"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Doap" c:type="IdeDoap*"/>
+          </instance-parameter>
+          <parameter name="data" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
         </parameters>
       </method>
       <method name="load_from_file"
@@ -10922,6 +10941,426 @@ ide_project_miner_emit_discovered() was used to emit the signal.</doc>
           <parameters>
             <parameter name="self" transfer-ownership="none">
               <type name="ProjectMiner" c:type="IdeProjectMiner*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <interface name="ProjectTemplate"
+               c:symbol-prefix="project_template"
+               c:type="IdeProjectTemplate"
+               glib:type-name="IdeProjectTemplate"
+               glib:get-type="ide_project_template_get_type"
+               glib:type-struct="ProjectTemplateInterface">
+      <virtual-method name="expand_async" invoker="expand_async">
+        <doc xml:space="preserve">Asynchronously requests expansion of the template.
+
+This may involve creating files and directories on disk as well as
+expanding files based on the contents of @params.
+
+It is expected that this method is only called once on an #IdeProjectTemplate.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an #IdeProjectTemplate</doc>
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">A hashtable of template parameters.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GLib.Variant"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">the callback for the asynchronous operation.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <doc xml:space="preserve">user data for @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="expand_finish" invoker="expand_finish" throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_description" invoker="get_description">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_icon_name" invoker="get_icon_name">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_id" invoker="get_id">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_languages" invoker="get_languages">
+        <doc xml:space="preserve">Gets the list of languages that this template can support when generating
+the project.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly allocated, NULL terminated list of
+  supported languages.</doc>
+          <array c:type="gchar**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an #IdeProjectTemplate</doc>
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_name" invoker="get_name">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_widget" invoker="get_widget">
+        <doc xml:space="preserve">Get's the configuration widget for the template if there is one.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeProjectTemplate</doc>
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="expand_async"
+              c:identifier="ide_project_template_expand_async">
+        <doc xml:space="preserve">Asynchronously requests expansion of the template.
+
+This may involve creating files and directories on disk as well as
+expanding files based on the contents of @params.
+
+It is expected that this method is only called once on an #IdeProjectTemplate.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an #IdeProjectTemplate</doc>
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">A hashtable of template parameters.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GLib.Variant"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">the callback for the asynchronous operation.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data for @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="expand_finish"
+              c:identifier="ide_project_template_expand_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_description"
+              c:identifier="ide_project_template_get_description">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_icon_name"
+              c:identifier="ide_project_template_get_icon_name">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="ide_project_template_get_id">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_languages"
+              c:identifier="ide_project_template_get_languages">
+        <doc xml:space="preserve">Gets the list of languages that this template can support when generating
+the project.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly allocated, NULL terminated list of
+  supported languages.</doc>
+          <array c:type="gchar**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an #IdeProjectTemplate</doc>
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_name" c:identifier="ide_project_template_get_name">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_widget" c:identifier="ide_project_template_get_widget">
+        <doc xml:space="preserve">Get's the configuration widget for the template if there is one.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeProjectTemplate</doc>
+            <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="ProjectTemplateInterface"
+            c:type="IdeProjectTemplateInterface"
+            glib:is-gtype-struct-for="ProjectTemplate">
+      <field name="parent">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="get_id">
+        <callback name="get_id">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_name">
+        <callback name="get_name">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_description">
+        <callback name="get_description">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_widget">
+        <callback name="get_widget">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">A #GtkWidget.</doc>
+            <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeProjectTemplate</doc>
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_languages">
+        <callback name="get_languages">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A newly allocated, NULL terminated list of
+  supported languages.</doc>
+            <array c:type="gchar**">
+              <type name="utf8"/>
+            </array>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">an #IdeProjectTemplate</doc>
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_icon_name">
+        <callback name="get_icon_name">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="expand_async">
+        <callback name="expand_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">an #IdeProjectTemplate</doc>
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
+            </parameter>
+            <parameter name="params" transfer-ownership="none">
+              <doc xml:space="preserve">A hashtable of template parameters.</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="GLib.Variant"/>
+              </type>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <doc xml:space="preserve">the callback for the asynchronous operation.</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <doc xml:space="preserve">user data for @callback.</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="expand_finish">
+        <callback name="expand_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="ProjectTemplate" c:type="IdeProjectTemplate*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
@@ -18051,6 +18490,221 @@ is assumed.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
     </record>
+    <class name="TemplateBase"
+           c:symbol-prefix="template_base"
+           c:type="IdeTemplateBase"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="IdeTemplateBase"
+           glib:get-type="ide_template_base_get_type"
+           glib:type-struct="TemplateBaseClass">
+      <method name="add_path" c:identifier="ide_template_base_add_path">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="destination" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="scope" transfer-ownership="none">
+            <type name="Template.Scope" c:type="TmplScope*"/>
+          </parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_resource"
+              c:identifier="ide_template_base_add_resource">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+          <parameter name="resource_path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="destination" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="scope" transfer-ownership="none">
+            <type name="Template.Scope" c:type="TmplScope*"/>
+          </parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="expand_all_async"
+              c:identifier="ide_template_base_expand_all_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="expand_all_finish"
+              c:identifier="ide_template_base_expand_all_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_locator" c:identifier="ide_template_base_get_locator">
+        <doc xml:space="preserve">Fetches the #TmplTemplateLocator used for resolving templates.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #TmplTemplateLocator or %NULL.</doc>
+          <type name="Template.TemplateLocator" c:type="TmplTemplateLocator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeTemplateBase</doc>
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_locator" c:identifier="ide_template_base_set_locator">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+          <parameter name="locator" transfer-ownership="none">
+            <type name="Template.TemplateLocator"
+                  c:type="TmplTemplateLocator*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="locator" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The #IdeTemplateBase:locator property contains the #TmplTemplateLocator
+that should be used to resolve template includes. If %NULL, templates
+will not be allowed to include other templates.
+directive.</doc>
+        <type name="Template.TemplateLocator"/>
+      </property>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="TemplateBaseClass"
+            c:type="IdeTemplateBaseClass"
+            glib:is-gtype-struct-for="TemplateBase">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <interface name="TemplateProvider"
+               c:symbol-prefix="template_provider"
+               c:type="IdeTemplateProvider"
+               glib:type-name="IdeTemplateProvider"
+               glib:get-type="ide_template_provider_get_type"
+               glib:type-struct="TemplateProviderInterface">
+      <virtual-method name="get_project_templates"
+                      invoker="get_project_templates">
+        <doc xml:space="preserve">Gets a list of templates for this provider.
+
+Plugins should implement this interface to feed #IdeProjectTemplate's into
+the project creation workflow.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GList of
+  #IdeProjectTemplate instances.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="ProjectTemplate"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeTemplateProvider</doc>
+            <type name="TemplateProvider" c:type="IdeTemplateProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_project_templates"
+              c:identifier="ide_template_provider_get_project_templates">
+        <doc xml:space="preserve">Gets a list of templates for this provider.
+
+Plugins should implement this interface to feed #IdeProjectTemplate's into
+the project creation workflow.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GList of
+  #IdeProjectTemplate instances.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="ProjectTemplate"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeTemplateProvider</doc>
+            <type name="TemplateProvider" c:type="IdeTemplateProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="TemplateProviderInterface"
+            c:type="IdeTemplateProviderInterface"
+            glib:is-gtype-struct-for="TemplateProvider">
+      <field name="parent_iface">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="get_project_templates">
+        <callback name="get_project_templates">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A #GList of
+  #IdeProjectTemplate instances.</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="ProjectTemplate"/>
+            </type>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeTemplateProvider</doc>
+              <type name="TemplateProvider" c:type="IdeTemplateProvider*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <interface name="TestCase"
                c:symbol-prefix="test_case"
                c:type="IdeTestCase"
@@ -21250,16 +21904,32 @@ ide_perspective_get_id().</doc>
         </parameters>
       </method>
       <property name="context" transfer-ownership="none">
+        <doc xml:space="preserve">The #IdeWorkbench:context property contains the #IdeContext for the loaded
+project. Loading a project consists of creating an #IdeContext, so there
+is a 1:1 mapping between "loaded project" and an #IdeContext.
+
+The #IdeContext contains many of the important components of a project.
+For example, it contains the #IdeVcs representing the active version
+control system and an #IdeBuildSystem representing the current build
+system.
+
+The creation of #IdeWorkbenchAddin addins are deferred until this property
+has been set.</doc>
         <type name="Context"/>
       </property>
       <property name="visible-perspective"
                 writable="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">This property contains the #IdePerspective that is currently selected.
+Connect to the "notify::visible-perspective" signal to be notified when
+the perspective has been changed.</doc>
         <type name="Perspective"/>
       </property>
       <property name="visible-perspective-name"
                 writable="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">This property is just like #IdeWorkbench:visible-perspective except that
+it contains the name of the perspective as a string.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <glib:signal name="action" when="first" action="1">

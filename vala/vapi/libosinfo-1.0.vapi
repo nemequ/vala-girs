@@ -51,7 +51,7 @@ namespace Osinfo {
 		public Osinfo.OsList get_os_list ();
 		public unowned Osinfo.Platform get_platform (string id);
 		public Osinfo.PlatformList get_platform_list ();
-		[Deprecated (since = "0.2.3")]
+		[Version (deprecated = true, deprecated_since = "0.2.3")]
 		public unowned Osinfo.Os guess_os_from_media (Osinfo.Media media, out unowned Osinfo.Media matched_media);
 		public unowned Osinfo.Os guess_os_from_tree (Osinfo.Tree tree, out unowned Osinfo.Tree matched_tree);
 		public bool identify_media (Osinfo.Media media);
@@ -80,13 +80,13 @@ namespace Osinfo {
 	public class DeploymentList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public DeploymentList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeploymentList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeploymentList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeploymentList new_intersection (Osinfo.DeploymentList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeploymentList new_union (Osinfo.DeploymentList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_device_get_type ()")]
@@ -139,26 +139,26 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public DeviceLinkList ();
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_intersection (Osinfo.DeviceLinkList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceLinkList new_union (Osinfo.DeviceLinkList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "devicelist", type_id = "osinfo_devicelist_get_type ()")]
 	public class DeviceList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public DeviceList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceList new_intersection (Osinfo.DeviceList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.DeviceList new_union (Osinfo.DeviceList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_entity_get_type ()")]
@@ -255,6 +255,7 @@ namespace Osinfo {
 		public bool is_required ();
 		public void set_value_map (Osinfo.Datamap datamap);
 		public string name { get; construct; }
+		public Osinfo.InstallConfigParamPolicy policy { get; }
 		[NoAccessorMethod]
 		public Osinfo.Datamap value_map { owned get; set; }
 	}
@@ -274,11 +275,15 @@ namespace Osinfo {
 		public async string generate_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string generate_command_line (Osinfo.Os os, Osinfo.InstallConfig config);
 		public string generate_command_line_for_media (Osinfo.Media media, Osinfo.InstallConfig config);
+		[Version (since = "0.2.12")]
 		public string generate_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.2.12")]
 		public async string generate_for_media_async (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.File generate_output (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.File generate_output_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.2.12")]
 		public GLib.File generate_output_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.2.12")]
 		public async GLib.File generate_output_for_media_async (Osinfo.Media media, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Osinfo.AvatarFormat get_avatar_format ();
 		public bool get_can_post_install_drivers ();
@@ -305,6 +310,7 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public InstallScript.uri (string id, string profile, string templateUri);
 		public Osinfo.AvatarFormat avatar_format { get; }
+		public Osinfo.PathFormat path_format { get; }
 		public string product_key_format { get; }
 		public string profile { get; construct; }
 		public string template_data { get; construct; }
@@ -314,13 +320,13 @@ namespace Osinfo {
 	public class InstallScriptList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public InstallScriptList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.InstallScriptList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.InstallScriptList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.InstallScriptList new_intersection (Osinfo.InstallScriptList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.InstallScriptList new_union (Osinfo.InstallScriptList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_list_get_type ()")]
@@ -361,7 +367,6 @@ namespace Osinfo {
 		public Media (string id, string architecture);
 		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static GLib.Quark error_quark ();
 		public unowned string get_application_id ();
 		public unowned string get_architecture ();
 		public unowned string get_initrd_path ();
@@ -410,13 +415,13 @@ namespace Osinfo {
 	public class MediaList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public MediaList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.MediaList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.MediaList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.MediaList new_intersection (Osinfo.MediaList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.MediaList new_union (Osinfo.MediaList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_os_get_type ()")]
@@ -453,13 +458,13 @@ namespace Osinfo {
 	public class OsList : Osinfo.ProductList {
 		[CCode (has_construct_function = false)]
 		public OsList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.OsList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.OsList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.OsList new_intersection (Osinfo.OsList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.OsList new_union (Osinfo.OsList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_os_variant_get_type ()")]
@@ -488,13 +493,13 @@ namespace Osinfo {
 	public class PlatformList : Osinfo.ProductList {
 		[CCode (has_construct_function = false)]
 		public PlatformList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.PlatformList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.PlatformList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.PlatformList new_intersection (Osinfo.PlatformList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.PlatformList new_union (Osinfo.PlatformList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_product_get_type ()")]
@@ -534,13 +539,13 @@ namespace Osinfo {
 	public class ProductList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public ProductList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ProductList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ProductList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ProductList new_intersection (Osinfo.ProductList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ProductList new_union (Osinfo.ProductList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_resources_get_type ()")]
@@ -566,13 +571,13 @@ namespace Osinfo {
 	public class ResourcesList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public ResourcesList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ResourcesList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ResourcesList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ResourcesList new_intersection (Osinfo.ResourcesList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.ResourcesList new_union (Osinfo.ResourcesList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_tree_get_type ()")]
@@ -614,28 +619,28 @@ namespace Osinfo {
 	public class TreeList : Osinfo.List {
 		[CCode (has_construct_function = false)]
 		public TreeList ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.TreeList new_copy ();
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.TreeList new_filtered (Osinfo.Filter filter);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.TreeList new_intersection (Osinfo.TreeList sourceTwo);
-		[Deprecated (since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2")]
 		public Osinfo.TreeList new_union (Osinfo.TreeList sourceTwo);
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_DEVICE_DRIVER_SIGNING_REQ_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_DEVICE_DRIVER_SIGNING_REQ_", type_id = "osinfo_device_driver_signing_req_get_type ()")]
 	public enum DeviceDriverSigningReq {
 		NONE,
 		STRICT,
 		WARN
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", type_id = "osinfo_install_config_param_policy_get_type ()")]
 	public enum InstallConfigParamPolicy {
 		NONE,
 		REQUIRED,
 		OPTIONAL
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INJECTION_METHOD_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INJECTION_METHOD_", type_id = "osinfo_install_script_injection_method_get_type ()")]
 	[Flags]
 	public enum InstallScriptInjectionMethod {
 		CDROM,
@@ -644,15 +649,7 @@ namespace Osinfo {
 		INITRD,
 		WEB
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_", has_type_id = false)]
-	public enum MediaError {
-		NO_DESCRIPTORS,
-		NO_PVD,
-		NO_SVD,
-		INSUFFICIENT_METADATA,
-		NOT_BOOTABLE
-	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PATH_FORMAT_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PATH_FORMAT_", type_id = "osinfo_path_format_get_type ()")]
 	public enum PathFormat {
 		UNIX,
 		DOS
@@ -664,17 +661,26 @@ namespace Osinfo {
 		UPGRADES,
 		CLONES
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", type_id = "osinfo_product_relationship_get_type ()")]
 	public enum ProductRelationship {
 		DERIVES_FROM,
 		UPGRADES,
 		CLONES
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", has_type_id = false)]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", type_id = "osinfo_release_status_get_type ()")]
 	public enum ReleaseStatus {
 		RELEASED,
 		SNAPSHOT,
 		PRERELEASE
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
+	public errordomain MediaError {
+		NO_DESCRIPTORS,
+		NO_PVD,
+		NO_SVD,
+		INSUFFICIENT_METADATA,
+		NOT_BOOTABLE;
+		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", instance_pos = 1.9)]
 	public delegate void ProductForeach (Osinfo.Product product);
@@ -804,6 +810,8 @@ namespace Osinfo {
 	public const string INSTALL_SCRIPT_PROP_TEMPLATE_URI;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_KIBIBYTES")]
 	public const int KIBIBYTES;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEBIBYTES")]
 	public const int MEBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_APPLICATION_ID")]
@@ -840,6 +848,10 @@ namespace Osinfo {
 	public const string MEDIA_PROP_VOLUME_SIZE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEGAHERTZ")]
 	public const int MEGAHERTZ;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_DISTRO")]
 	public const string OS_PROP_DISTRO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_FAMILY")]

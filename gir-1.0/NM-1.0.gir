@@ -10743,10 +10743,11 @@ reaches zero, the object will be destroyed.</doc>
                  glib:get-type="nm_ip_tunnel_mode_get_type"
                  c:type="NMIPTunnelMode">
       <doc xml:space="preserve">The tunneling mode.</doc>
-      <member name="uknown"
+      <member name="unknown"
               value="0"
-              c:identifier="NM_IP_TUNNEL_MODE_UKNOWN"
-              glib:nick="uknown">
+              c:identifier="NM_IP_TUNNEL_MODE_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">Unknown/unset tunnel mode</doc>
       </member>
       <member name="ipip"
               value="1"
@@ -11065,7 +11066,7 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="0" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="90" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -12671,6 +12672,16 @@ supported for IPv6)</doc>
               value="addresses"
               c:type="NM_SETTING_IP_CONFIG_ADDRESSES">
       <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_CONFIG_DAD_TIMEOUT"
+              value="dad-timeout"
+              c:type="NM_SETTING_IP_CONFIG_DAD_TIMEOUT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_CONFIG_DAD_TIMEOUT_MAX"
+              value="30000"
+              c:type="NM_SETTING_IP_CONFIG_DAD_TIMEOUT_MAX">
+      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="SETTING_IP_CONFIG_DHCP_HOSTNAME"
               value="dhcp-hostname"
@@ -18957,6 +18968,20 @@ given route is duplicated internally and is not changed by this function.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_dad_timeout"
+              c:identifier="nm_setting_ip_config_get_dad_timeout"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingIPConfig:dad-timeout property.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPConfig</doc>
+            <type name="SettingIPConfig" c:type="NMSettingIPConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_dhcp_hostname"
               c:identifier="nm_setting_ip_config_get_dhcp_hostname">
         <doc xml:space="preserve">Returns the value contained in the #NMSettingIPConfig:dhcp-hostname
@@ -19452,6 +19477,19 @@ Element-Type: NMIPAddress</doc>
         <array name="GLib.PtrArray">
           <type name="gpointer" c:type="gpointer"/>
         </array>
+      </property>
+      <property name="dad-timeout"
+                version="1.2"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Timeout in milliseconds used to check for the presence of duplicate IP
+addresses on the network.  If an address conflict is detected, the
+activation will fail.  A zero value means that no duplicate address
+detection is performed, -1 means the default value (either configuration
+ipvx.dad-timeout override or 3 seconds).  A value greater than zero is a
+timeout in milliseconds.</doc>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="dhcp-hostname" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If the #NMSettingIPConfig:dhcp-send-hostname property is %TRUE, then the
@@ -20300,6 +20338,7 @@ with a #NMSettingWired:mac-address property.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingOlpcMesh</doc>
             <type name="SettingOlpcMesh" c:type="NMSettingOlpcMesh*"/>
           </instance-parameter>
         </parameters>
@@ -21638,7 +21677,7 @@ is still considered as 0.</doc>
       </property>
       <property name="id" writable="1" construct="1" transfer-ownership="none">
         <doc xml:space="preserve">The VLAN identifier that the interface created by this connection should
-be assigned.</doc>
+be assigned. The valid range is from 0 to 4094, without the reserved id 4095.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="ingress-priority-map"
@@ -25139,6 +25178,7 @@ string used by the connection, and must not be modified.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="editor" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditor</doc>
             <type name="VpnEditor" c:type="NMVpnEditor*"/>
           </instance-parameter>
         </parameters>
@@ -25164,6 +25204,7 @@ string used by the connection, and must not be modified.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="editor" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditor</doc>
             <type name="VpnEditor" c:type="NMVpnEditor*"/>
           </instance-parameter>
         </parameters>
@@ -25204,6 +25245,7 @@ string used by the connection, and must not be modified.</doc>
           </return-value>
           <parameters>
             <parameter name="editor" transfer-ownership="none">
+              <doc xml:space="preserve">the #NMVpnEditor</doc>
               <type name="VpnEditor" c:type="NMVpnEditor*"/>
             </parameter>
           </parameters>
@@ -25329,13 +25371,16 @@ function.</doc>
       </virtual-method>
       <virtual-method name="get_editor" invoker="get_editor" throws="1">
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #NMVpnEditor or %NULL on error</doc>
           <type name="VpnEditor" c:type="NMVpnEditor*"/>
         </return-value>
         <parameters>
           <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditorPlugin</doc>
             <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
           </instance-parameter>
           <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection to be edited</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </parameter>
         </parameters>
@@ -25401,13 +25446,16 @@ function.</doc>
               c:identifier="nm_vpn_editor_plugin_get_editor"
               throws="1">
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #NMVpnEditor or %NULL on error</doc>
           <type name="VpnEditor" c:type="NMVpnEditor*"/>
         </return-value>
         <parameters>
           <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditorPlugin</doc>
             <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
           </instance-parameter>
           <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection to be edited</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </parameter>
         </parameters>
@@ -25430,13 +25478,17 @@ function.</doc>
               c:identifier="nm_vpn_editor_plugin_import"
               throws="1">
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #NMConnection imported from @path, or %NULL
+on error or if the file at @path was not recognized by this plugin</doc>
           <type name="Connection" c:type="NMConnection*"/>
         </return-value>
         <parameters>
           <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditorPlugin</doc>
             <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
+            <doc xml:space="preserve">full path to the file to attempt to read into a new #NMConnection</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -25495,13 +25547,16 @@ function.</doc>
       <field name="get_editor">
         <callback name="get_editor" throws="1">
           <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a new #NMVpnEditor or %NULL on error</doc>
             <type name="VpnEditor" c:type="NMVpnEditor*"/>
           </return-value>
           <parameters>
             <parameter name="plugin" transfer-ownership="none">
+              <doc xml:space="preserve">the #NMVpnEditorPlugin</doc>
               <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
             </parameter>
             <parameter name="connection" transfer-ownership="none">
+              <doc xml:space="preserve">the #NMConnection to be edited</doc>
               <type name="Connection" c:type="NMConnection*"/>
             </parameter>
           </parameters>

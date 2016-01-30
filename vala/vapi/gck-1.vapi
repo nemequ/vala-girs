@@ -133,9 +133,9 @@ namespace Gck {
 		[NoAccessorMethod]
 		public void* functions { get; construct; }
 		public string path { get; construct; }
-		[Deprecated]
+		[Version (deprecated = true)]
 		public virtual signal bool authenticate_object (Gck.Object object, string label, void* password);
-		[Deprecated]
+		[Version (deprecated = true)]
 		public virtual signal bool authenticate_slot (Gck.Slot slot, string label, void* password);
 	}
 	[CCode (cheader_filename = "gck/gck.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gck_module_info_get_type ()")]

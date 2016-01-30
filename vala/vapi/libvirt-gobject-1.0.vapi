@@ -80,6 +80,7 @@ namespace GVir {
 		public unowned string get_uuid ();
 		public bool open_console (GVir.Stream stream, string? devname, uint flags) throws GLib.Error;
 		public bool open_graphics (uint idx, int fd, uint flags) throws GLib.Error;
+		[Version (since = "0.2.0")]
 		public int open_graphics_fd (uint idx, uint flags) throws GLib.Error;
 		public bool reboot (uint flags) throws GLib.Error;
 		public bool resume () throws GLib.Error;

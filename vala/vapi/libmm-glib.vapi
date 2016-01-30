@@ -1028,7 +1028,7 @@ namespace MM {
 		public uint get_validity_relative ();
 		public MM.SmsValidityType get_validity_type ();
 		public unowned GLib.ByteArray peek_data_bytearray ();
-		public void set_class (int @class);
+		public void set_class (int message_class);
 		public void set_data (uint8 data, size_t data_length);
 		public void set_data_bytearray (GLib.ByteArray data);
 		public void set_delivery_report_request (bool request);

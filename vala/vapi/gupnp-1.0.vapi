@@ -14,23 +14,33 @@ namespace GUPnP {
 	public class Context : GSSDP.Client, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public Context (GLib.MainContext? main_context, string? iface, uint port) throws GLib.Error;
+		[Version (since = "0.20.11")]
 		public void add_server_handler (bool use_acl, string path, owned Soup.ServerCallback callback);
+		[Version (since = "0.20.11")]
 		public unowned GUPnP.Acl get_acl ();
+		[Version (since = "0.17.0")]
 		public unowned string get_default_language ();
-		[Deprecated (since = "0.12.7")]
+		[Version (deprecated = true, deprecated_since = "0.12.7")]
 		public unowned string get_host_ip ();
 		public uint get_port ();
 		public unowned Soup.Server get_server ();
+		[Version (since = "0.12.3")]
 		public unowned Soup.Session get_session ();
 		public uint get_subscription_timeout ();
 		public void host_path (string local_path, string server_path);
+		[Version (since = "0.13.3")]
 		public bool host_path_for_agent (string local_path, string server_path, GLib.Regex user_agent);
+		[Version (since = "0.20.11")]
 		public void remove_server_handler (string path);
+		[Version (since = "0.20.11")]
 		public void set_acl (GUPnP.Acl? acl);
+		[Version (since = "0.17.0")]
 		public void set_default_language (string language);
 		public void set_subscription_timeout (uint timeout);
 		public void unhost_path (string server_path);
+		[Version (since = "0.20.11")]
 		public GUPnP.Acl acl { get; set construct; }
+		[Version (since = "0.17.0")]
 		public string default_language { get; set construct; }
 		public uint port { get; construct; }
 		public Soup.Server server { get; }
@@ -41,11 +51,16 @@ namespace GUPnP {
 	public abstract class ContextManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ContextManager ();
+		[Version (since = "0.17.2")]
 		public static GUPnP.ContextManager create (uint port);
+		[Version (since = "0.19.1")]
 		public uint get_port ();
 		public unowned GUPnP.WhiteList get_white_list ();
+		[Version (since = "0.13.0")]
 		public void manage_control_point (GUPnP.ControlPoint control_point);
+		[Version (since = "0.13.0")]
 		public void manage_root_device (GUPnP.RootDevice root_device);
+		[Version (since = "0.20.3")]
 		public void rescan_control_points ();
 		public uint port { get; construct; }
 		public GUPnP.WhiteList white_list { get; }
@@ -92,6 +107,7 @@ namespace GUPnP {
 		[CCode (has_construct_function = false)]
 		protected DeviceInfo ();
 		public unowned GUPnP.Context get_context ();
+		[Version (since = "0.13.0")]
 		public string get_description_value (string element);
 		public GUPnP.DeviceInfo? get_device (string type);
 		public unowned string get_device_type ();
@@ -113,7 +129,9 @@ namespace GUPnP {
 		public unowned Soup.URI get_url_base ();
 		public GLib.List<string> list_device_types ();
 		public GLib.List<GUPnP.DeviceInfo> list_devices ();
+		[Version (since = "0.13.0")]
 		public GLib.List<string> list_dlna_capabilities ();
+		[Version (since = "0.20.4")]
 		public GLib.List<string> list_dlna_device_class_identifier ();
 		public GLib.List<string> list_service_types ();
 		public GLib.List<GUPnP.ServiceInfo> list_services ();
@@ -149,11 +167,14 @@ namespace GUPnP {
 		public unowned string get_description_dir ();
 		public unowned string get_description_path ();
 		public unowned string get_relative_location ();
+		[Version (since = "0.19.2")]
 		public unowned GSSDP.ResourceGroup get_ssdp_resource_group ();
 		public void set_available (bool available);
 		public bool available { get; set; }
 		public string description_dir { get; construct; }
+		[Version (since = "0.13.0")]
 		public GUPnP.XMLDoc description_doc { construct; }
+		[Version (since = "0.13.0")]
 		public string description_path { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_get_type ()")]
@@ -174,17 +195,22 @@ namespace GUPnP {
 	[Compact]
 	public class ServiceAction {
 		public void @get (...);
+		[Version (since = "0.17.0")]
 		public uint get_argument_count ();
+		[Version (since = "0.13.3")]
 		public GLib.Value? get_gvalue (string argument, GLib.Type type);
 		public GLib.List<string> get_locales ();
+		[Version (since = "0.13.0")]
 		public Soup.Message get_message ();
 		public unowned string get_name ();
 		public void get_value (string argument, ref GLib.Value value);
+		[Version (since = "0.13.3")]
 		public GLib.List<GLib.Value?> get_values (GLib.List<string> arg_names, GLib.List<GLib.Type?> arg_types);
 		public void @return ();
 		public void return_error (uint error_code, string error_description);
 		public void @set (...);
 		public void set_value (string argument, GLib.Value value);
+		[Version (since = "0.13.3")]
 		public void set_values (GLib.List<string> arg_names, GLib.List<GLib.Value?> arg_values);
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_info_get_type ()")]
@@ -195,9 +221,10 @@ namespace GUPnP {
 		public string get_control_url ();
 		public string get_event_subscription_url ();
 		public string get_id ();
-		[Deprecated (since = "0.20.15.")]
+		[Version (deprecated = true, deprecated_since = "0.20.15.")]
 		public GUPnP.ServiceIntrospection? get_introspection () throws GLib.Error;
 		public void get_introspection_async ([CCode (scope = "async")] owned GUPnP.ServiceIntrospectionCallback callback);
+		[Version (since = "0.20.9.")]
 		public void get_introspection_async_full ([CCode (delegate_target_pos = 2.1, scope = "async")] owned GUPnP.ServiceIntrospectionCallback callback, GLib.Cancellable? cancellable);
 		public unowned string get_location ();
 		public string get_scpd_url ();
@@ -226,11 +253,14 @@ namespace GUPnP {
 		[CCode (has_construct_function = false)]
 		protected ServiceProxy ();
 		public bool add_notify (string variable, GLib.Type type, [CCode (scope = "async")] owned GUPnP.ServiceProxyNotifyCallback callback);
+		[Version (since = "0.20.12")]
 		public bool add_notify_full (string variable, GLib.Type type, owned GUPnP.ServiceProxyNotifyCallback callback);
+		[Version (since = "0.20.12")]
 		public bool add_raw_notify (owned GUPnP.ServiceProxyNotifyCallback callback);
 		public unowned GUPnP.ServiceProxyAction begin_action (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] owned GUPnP.ServiceProxyActionCallback callback, ...);
-		[Deprecated (since = "0.20.9")]
+		[Version (deprecated = true, deprecated_since = "0.20.9")]
 		public unowned GUPnP.ServiceProxyAction begin_action_hash (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] owned GUPnP.ServiceProxyActionCallback callback, GLib.HashTable<string,GLib.Value?> hash);
+		[Version (since = "0.13.3")]
 		public unowned GUPnP.ServiceProxyAction begin_action_list (string action, GLib.List<string> in_names, GLib.List<GLib.Value?> in_values, [CCode (scope = "async")] owned GUPnP.ServiceProxyActionCallback callback);
 		public void cancel_action (GUPnP.ServiceProxyAction action);
 		public bool end_action (GUPnP.ServiceProxyAction action, ...) throws GLib.Error;
@@ -269,28 +299,42 @@ namespace GUPnP {
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_white_list_get_type ()")]
 	public class WhiteList : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.20.5")]
 		public WhiteList ();
+		[Version (since = "0.20.5")]
 		public bool add_entry (string entry);
+		[Version (since = "0.20.8")]
 		public void add_entryv ([CCode (array_length = false, array_null_terminated = true)] string[] entries);
+		[Version (since = "0.20.5")]
 		public bool check_context (GUPnP.Context context);
+		[Version (since = "0.20.5")]
 		public void clear ();
+		[Version (since = "0.20.5")]
 		public bool get_enabled ();
+		[Version (since = "0.20.5")]
 		public unowned GLib.List<string> get_entries ();
+		[Version (since = "0.20.5")]
 		public bool is_empty ();
+		[Version (since = "0.20.5")]
 		public bool remove_entry (string entry);
+		[Version (since = "0.20.5")]
 		public void set_enabled (bool enable);
+		[Version (since = "0.20.5")]
 		public bool enabled { get; set construct; }
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_xml_doc_get_type ()")]
 	public class XMLDoc : GLib.Object {
 		public weak Xml.Doc doc;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.13.0")]
 		public XMLDoc (Xml.Doc xml_doc);
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.13.0")]
 		public XMLDoc.from_path (string path) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_cname = "GUPnPAclInterface")]
 	public interface Acl : GLib.Object {
+		[Version (since = "0.20.11")]
 		public abstract bool can_sync ();
 		public abstract bool is_allowed (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent);
 		public abstract async bool is_allowed_async (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent, GLib.Cancellable? cancellable) throws GLib.Error;

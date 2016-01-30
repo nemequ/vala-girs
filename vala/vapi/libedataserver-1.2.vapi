@@ -4,21 +4,24 @@
 namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
+	[Version (since = "3.6")]
 	public class AsyncClosure {
 		public static void callback (GLib.Object object, GLib.AsyncResult result, void* closure);
 		public void free ();
 		public unowned GLib.AsyncResult wait ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_client_get_type ()")]
+	[Version (since = "3.2")]
 	public abstract class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Client ();
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public void cancel_all ();
 		public bool check_capability (string capability);
 		public bool check_refresh_supported ();
+		[Version (since = "3.16")]
 		public string dup_bus_name ();
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static GLib.Error error_create (E.ClientError code, string custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.ClientError code);
@@ -27,58 +30,64 @@ namespace E {
 		public unowned GLib.SList<string> get_capabilities ();
 		public unowned E.Source get_source ();
 		public bool is_online ();
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2.")]
 		public bool is_opened ();
 		public bool is_readonly ();
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual async bool open (bool only_if_exists, GLib.Cancellable? cancellable) throws GLib.Error;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual bool open_sync (bool only_if_exists, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.8")]
 		public GLib.MainContext ref_main_context ();
 		public virtual async bool refresh (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool refresh_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Deprecated (since = "3.6")]
+		[Version (deprecated = true, deprecated_since = "3.6", since = "3.2")]
 		public virtual async bool remove (GLib.Cancellable? cancellable) throws GLib.Error;
-		[Deprecated (since = "3.6")]
+		[Version (deprecated = true, deprecated_since = "3.6", since = "3.2")]
 		public virtual bool remove_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual async bool retrieve_capabilities (GLib.Cancellable? cancellable, out string capabilities) throws GLib.Error;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual bool retrieve_capabilities_sync (out string capabilities, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.16")]
 		public async bool retrieve_properties (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.16")]
 		public virtual bool retrieve_properties_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual async bool set_backend_property (string prop_name, string prop_value, GLib.Cancellable? cancellable) throws GLib.Error;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual bool set_backend_property_sync (string prop_name, string prop_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.16")]
 		public void set_bus_name (string bus_name);
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual void unwrap_dbus_error (GLib.Error dbus_error) throws GLib.Error;
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static GLib.SList<string> util_copy_string_slist (GLib.SList<string>? copy_to, GLib.SList<string> strings);
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static void util_free_object_slist (GLib.SList<GLib.Object> objects);
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static void util_free_string_slist (GLib.SList<string> strings);
 		public static GLib.SList<string> util_parse_comma_strings (string strings);
 		[CCode (array_length = false, array_null_terminated = true)]
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static string[] util_slist_to_strv (GLib.SList<string> strings);
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static GLib.SList<string> util_strv_to_slist (string strv);
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static bool util_unwrap_dbus_error (GLib.Error dbus_error, out GLib.Error client_error, E.ClientErrorsList known_errors, uint known_errors_count, GLib.Quark known_errors_domain, bool fail_when_none_matched);
+		[Version (since = "3.16")]
 		public async bool wait_for_connected (uint32 timeout_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.16")]
 		public bool wait_for_connected_sync (uint32 timeout_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void* capabilities { get; }
 		[NoAccessorMethod]
 		public GLib.MainContext main_context { owned get; }
 		[NoAccessorMethod]
 		public bool online { get; set; }
-		[Deprecated (since = "3.8")]
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "3.8")]
 		public virtual bool opened { get; }
 		[NoAccessorMethod]
 		public bool readonly { get; }
@@ -89,6 +98,7 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", ref_function = "e_collator_ref", type_id = "e_collator_get_type ()", unref_function = "e_collator_unref")]
 	[Compact]
+	[Version (since = "3.12")]
 	public class Collator {
 		[CCode (has_construct_function = false)]
 		public Collator (string locale) throws GLib.Error;
@@ -104,6 +114,7 @@ namespace E {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_extension_get_type ()")]
+	[Version (since = "3.4")]
 	public abstract class Extension : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Extension ();
@@ -112,14 +123,16 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
+	[Version (since = "1.12")]
 	public class Flag {
 		public void clear ();
 		public void free ();
 		public bool is_set ();
 		public void @set ();
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "1.12")]
 		public bool timed_wait (GLib.TimeVal abs_time);
 		public void wait ();
+		[Version (since = "3.8")]
 		public bool wait_until (int64 end_time);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -127,39 +140,49 @@ namespace E {
 	public class MemChunk {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_module_get_type ()")]
+	[Version (since = "3.4")]
 	public class Module : GLib.TypeModule, GLib.TypePlugin {
 		[CCode (has_construct_function = false)]
 		public Module (string filename);
 		public unowned string get_filename ();
 		public static GLib.List<weak E.Module> load_all_in_directory (string dirname);
+		[Version (since = "3.16")]
 		public static E.Module load_file (string filename);
 		public string filename { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_named_parameters_get_type ()")]
 	[Compact]
+	[Version (since = "3.8")]
 	public class NamedParameters {
 		[CCode (has_construct_function = false)]
 		public NamedParameters ();
 		public void assign (E.NamedParameters? from);
 		public void clear ();
+		[Version (since = "3.18")]
 		public uint count ();
+		[Version (since = "3.18")]
 		public bool exists (global::string name);
 		public void free ();
 		public unowned global::string @get (global::string name);
+		[Version (since = "3.18")]
 		public global::string get_name (int index);
+		[Version (since = "3.16")]
 		public E.NamedParameters new_clone ();
 		public void @set (global::string name, global::string? value);
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.18")]
 		public NamedParameters.string (global::string str);
 		[CCode (has_construct_function = false)]
 		public NamedParameters.strv (global::string strv);
 		public bool test (global::string name, global::string value, bool case_sensitively);
+		[Version (since = "3.18")]
 		public global::string to_string ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public global::string[] to_strv ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
+	[Version (since = "3.2")]
 	public class OperationPool {
 		public void free ();
 		public void push (void* opdata);
@@ -167,12 +190,14 @@ namespace E {
 		public uint32 reserve_opid ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_soup_auth_bearer_get_type ()")]
+	[Version (since = "3.10")]
 	public class SoupAuthBearer : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected SoupAuthBearer ();
 		public void set_access_token (string access_token, int expires_in_seconds);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_get_type ()")]
+	[Version (since = "3.6")]
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
@@ -180,21 +205,30 @@ namespace E {
 		public static bool credentials_google_is_supported ();
 		public static bool credentials_google_util_extract_from_credentials (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds);
 		public bool credentials_google_util_generate_secret_uid (string out_uid);
+		[Version (since = "3.12")]
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.12")]
 		public bool delete_password_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_display_name ();
 		public string dup_parent ();
+		[Version (since = "3.12")]
 		public string dup_secret_label ();
 		public string dup_uid ();
+		[Version (since = "3.16")]
 		public void emit_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error);
 		public bool equal (E.Source source2);
+		[Version (since = "3.16")]
 		public E.SourceConnectionStatus get_connection_status ();
 		public unowned string get_display_name ();
 		public bool get_enabled ();
 		public unowned E.SourceExtension get_extension (string extension_name);
+		[Version (since = "3.16")]
 		public async bool get_last_credentials_required_arguments (GLib.Cancellable? cancellable, out E.SourceCredentialsReason out_reason, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.Error out_op_error) throws GLib.Error;
+		[Version (since = "3.16")]
 		public bool get_last_credentials_required_arguments_sync (out E.SourceCredentialsReason out_reason, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.Error out_op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.8")]
 		public virtual async bool get_oauth2_access_token (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
+		[Version (since = "3.8")]
 		public virtual bool get_oauth2_access_token_sync (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
 		public unowned string get_parent ();
 		public bool get_remote_creatable ();
@@ -204,15 +238,21 @@ namespace E {
 		public bool get_writable ();
 		public bool has_extension (string extension_name);
 		public uint hash ();
+		[Version (since = "3.16")]
 		public async bool invoke_authenticate (E.NamedParameters? credentials, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool invoke_authenticate_impl (void* dbus_source, string arg_credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.16")]
 		public bool invoke_authenticate_sync (E.NamedParameters? credentials, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.16")]
 		public async bool invoke_credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool invoke_credentials_required_impl (void* dbus_source, string arg_reason, string arg_certificate_pem, string arg_certificate_errors, string arg_dbus_error_name, string arg_dbus_error_message, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.16")]
 		public bool invoke_credentials_required_sync (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.12")]
 		public async bool lookup_password (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
+		[Version (since = "3.12")]
 		public bool lookup_password_sync (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
 		public async bool mail_signature_load (int io_priority, GLib.Cancellable? cancellable, out string contents, out size_t length) throws GLib.Error;
 		public bool mail_signature_load_sync (out string contents, out size_t length, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -222,8 +262,10 @@ namespace E {
 		public bool mail_signature_symlink_sync (string symlink_target, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static string parameter_to_key (string param_name);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "3.12")]
 		public async string[] proxy_lookup (string uri, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "3.12")]
 		public string[] proxy_lookup_sync (string uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.DBusObject ref_dbus_object ();
 		public GLib.MainContext ref_main_context ();
@@ -237,16 +279,21 @@ namespace E {
 		public virtual bool remote_delete_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool remove (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool remove_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.16")]
 		public void set_connection_status (E.SourceConnectionStatus connection_status);
 		public void set_display_name (string display_name);
 		public void set_enabled (bool enabled);
 		public void set_parent (string? parent);
+		[Version (since = "3.12")]
 		public async bool store_password (string password, bool permanently, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.12")]
 		public bool store_password_sync (string password, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string to_string (size_t? length);
+		[Version (since = "3.18")]
 		public async bool unset_last_credentials_required_arguments (GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool unset_last_credentials_required_arguments_impl (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.18")]
 		public bool unset_last_credentials_required_arguments_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Source.with_uid (string uid, GLib.MainContext? main_context) throws GLib.Error;
@@ -269,11 +316,13 @@ namespace E {
 		public virtual signal void credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_address_book_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceAddressBook : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceAddressBook ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_alarms_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceAlarms : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceAlarms ();
@@ -286,28 +335,38 @@ namespace E {
 		public string last_notified { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_authentication_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceAuthentication : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceAuthentication ();
+		[Version (since = "3.16")]
 		public string dup_credential_name ();
 		public string dup_host ();
 		public string dup_method ();
+		[Version (since = "3.12")]
 		public string dup_proxy_uid ();
 		public string dup_user ();
+		[Version (since = "3.16")]
 		public unowned string get_credential_name ();
 		public unowned string get_host ();
 		public unowned string get_method ();
 		public uint16 get_port ();
+		[Version (since = "3.12")]
 		public unowned string get_proxy_uid ();
+		[Version (since = "3.10")]
 		public bool get_remember_password ();
 		public unowned string get_user ();
+		[Version (since = "3.8")]
 		public GLib.SocketConnectable ref_connectable ();
 		public bool required ();
+		[Version (since = "3.16")]
 		public void set_credential_name (string? credential_name);
 		public void set_host (string? host);
 		public void set_method (string? method);
 		public void set_port (uint16 port);
+		[Version (since = "3.12")]
 		public void set_proxy_uid (string proxy_uid);
+		[Version (since = "3.10")]
 		public void set_remember_password (bool remember_password);
 		public void set_user (string? user);
 		[NoAccessorMethod]
@@ -321,6 +380,7 @@ namespace E {
 		public string user { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_autocomplete_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceAutocomplete : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceAutocomplete ();
@@ -329,6 +389,7 @@ namespace E {
 		public bool include_me { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_backend_get_type ()")]
+	[Version (since = "3.6")]
 	public abstract class SourceBackend : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceBackend ();
@@ -338,11 +399,13 @@ namespace E {
 		public string backend_name { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_calendar_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceCalendar : E.SourceSelectable {
 		[CCode (has_construct_function = false)]
 		protected SourceCalendar ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_camel_get_type ()")]
+	[Version (since = "3.6")]
 	public abstract class SourceCamel : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceCamel ();
@@ -352,6 +415,7 @@ namespace E {
 		public static void register_types ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_collection_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceCollection : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceCollection ();
@@ -378,6 +442,7 @@ namespace E {
 		public bool include_me { get; set; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_get_type ()")]
+	[Version (since = "3.16")]
 	public class SourceCredentialsProvider : GLib.Object, E.Extensible {
 		[CCode (has_construct_function = false)]
 		public SourceCredentialsProvider (E.SourceRegistry registry);
@@ -398,6 +463,7 @@ namespace E {
 		public GLib.Object registry { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_get_type ()")]
+	[Version (since = "3.16")]
 	public abstract class SourceCredentialsProviderImpl : E.Extension {
 		[CCode (has_construct_function = false)]
 		protected SourceCredentialsProviderImpl ();
@@ -410,38 +476,51 @@ namespace E {
 		public virtual bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_google_get_type ()")]
+	[Version (since = "3.20")]
 	public class SourceCredentialsProviderImplGoogle : E.SourceCredentialsProviderImpl {
 		[CCode (has_construct_function = false)]
 		protected SourceCredentialsProviderImplGoogle ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_password_get_type ()")]
+	[Version (since = "3.16")]
 	public class SourceCredentialsProviderImplPassword : E.SourceCredentialsProviderImpl {
 		[CCode (has_construct_function = false)]
 		protected SourceCredentialsProviderImplPassword ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_extension_get_type ()")]
+	[Version (since = "3.6")]
 	public abstract class SourceExtension : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected SourceExtension ();
-		[Deprecated (since = "3.8")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.6")]
 		public unowned E.Source get_source ();
+		[Version (since = "3.18")]
 		public void property_lock ();
+		[Version (since = "3.18")]
 		public void property_unlock ();
+		[Version (since = "3.8")]
 		public E.Source ref_source ();
 		public E.Source source { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_goa_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceGoa : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceGoa ();
 		public string dup_account_id ();
+		[Version (since = "3.8")]
 		public string dup_calendar_url ();
+		[Version (since = "3.8")]
 		public string dup_contacts_url ();
 		public unowned string get_account_id ();
+		[Version (since = "3.8")]
 		public unowned string get_calendar_url ();
+		[Version (since = "3.8")]
 		public unowned string get_contacts_url ();
 		public void set_account_id (string? account_id);
+		[Version (since = "3.8")]
 		public void set_calendar_url (string? calendar_url);
+		[Version (since = "3.8")]
 		public void set_contacts_url (string? contacts_url);
 		public string account_id { get; set construct; }
 		public string calendar_url { get; set construct; }
@@ -485,6 +564,7 @@ namespace E {
 		public GLib.File custom_file { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mdn_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMDN : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMDN ();
@@ -493,19 +573,29 @@ namespace E {
 		public E.MdnResponsePolicy response_policy { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_account_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMailAccount : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceMailAccount ();
+		[Version (since = "3.16")]
 		public string dup_archive_folder ();
 		public string dup_identity_uid ();
+		[Version (since = "3.16")]
 		public unowned string get_archive_folder ();
 		public unowned string get_identity_uid ();
+		[Version (since = "3.20")]
+		public bool get_needs_initial_setup ();
+		[Version (since = "3.16")]
 		public void set_archive_folder (string? archive_folder);
 		public void set_identity_uid (string? identity_uid);
+		[Version (since = "3.20")]
+		public void set_needs_initial_setup (bool needs_initial_setup);
 		public string archive_folder { get; set construct; }
 		public string identity_uid { get; set construct; }
+		public bool needs_initial_setup { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_composition_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMailComposition : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailComposition ();
@@ -520,12 +610,14 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_cc ();
 		public unowned string get_drafts_folder ();
+		[Version (since = "3.20")]
 		public E.SourceMailCompositionReplyStyle get_reply_style ();
 		public bool get_sign_imip ();
 		public unowned string get_templates_folder ();
 		public void set_bcc (string? bcc);
 		public void set_cc (string? cc);
 		public void set_drafts_folder (string? drafts_folder);
+		[Version (since = "3.20")]
 		public void set_reply_style (E.SourceMailCompositionReplyStyle reply_style);
 		public void set_sign_imip (bool sign_imip);
 		public void set_templates_folder (string? templates_folder);
@@ -539,6 +631,7 @@ namespace E {
 		public string templates_folder { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_identity_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMailIdentity : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailIdentity ();
@@ -564,6 +657,7 @@ namespace E {
 		public string signature_uid { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_signature_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMailSignature : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailSignature ();
@@ -575,14 +669,17 @@ namespace E {
 		public string mime_type { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_submission_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMailSubmission : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailSubmission ();
 		public string dup_sent_folder ();
 		public string dup_transport_uid ();
+		[Version (since = "3.8")]
 		public bool get_replies_to_origin_folder ();
 		public unowned string get_sent_folder ();
 		public unowned string get_transport_uid ();
+		[Version (since = "3.8")]
 		public void set_replies_to_origin_folder (bool replies_to_origin_folder);
 		public void set_sent_folder (string? sent_folder);
 		public void set_transport_uid (string? transport_uid);
@@ -591,16 +688,19 @@ namespace E {
 		public string transport_uid { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_transport_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMailTransport : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceMailTransport ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_memo_list_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceMemoList : E.SourceSelectable {
 		[CCode (has_construct_function = false)]
 		protected SourceMemoList ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_offline_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceOffline : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceOffline ();
@@ -609,22 +709,27 @@ namespace E {
 		public bool stay_synchronized { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", lower_case_csuffix = "source_openpgp", type_id = "e_source_openpgp_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceOpenPGP : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceOpenPGP ();
 		public string dup_key_id ();
 		public string dup_signing_algorithm ();
 		public bool get_always_trust ();
+		[Version (since = "3.18")]
 		public bool get_encrypt_by_default ();
 		public bool get_encrypt_to_self ();
 		public unowned string get_key_id ();
+		[Version (since = "3.20")]
 		public bool get_prefer_inline ();
 		public bool get_sign_by_default ();
 		public unowned string get_signing_algorithm ();
 		public void set_always_trust (bool always_trust);
+		[Version (since = "3.18")]
 		public void set_encrypt_by_default (bool encrypt_by_default);
 		public void set_encrypt_to_self (bool encrypt_to_self);
 		public void set_key_id (string key_id);
+		[Version (since = "3.20")]
 		public void set_prefer_inline (bool prefer_inline);
 		public void set_sign_by_default (bool sign_by_default);
 		public void set_signing_algorithm (string signing_algorithm);
@@ -637,6 +742,7 @@ namespace E {
 		public string signing_algorithm { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_proxy_get_type ()")]
+	[Version (since = "3.12")]
 	public class SourceProxy : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceProxy ();
@@ -695,6 +801,7 @@ namespace E {
 		public uint socks_port { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_refresh_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceRefresh : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceRefresh ();
@@ -706,25 +813,31 @@ namespace E {
 		public uint interval_minutes { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_registry_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceRegistry : GLib.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cname = "e_source_registry_new", has_construct_function = false)]
 		public async SourceRegistry (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.8")]
 		public bool check_enabled (E.Source source);
 		public async bool commit_source (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool commit_source_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool create_sources (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool create_sources_sync (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void debug_dump (string? extension_name);
+		[Version (since = "3.16")]
 		public static bool debug_enabled ();
+		[Version (since = "3.8")]
 		public string dup_unique_display_name (E.Source source, string? extension_name);
 		public E.Source find_extension (E.Source source, string extension_name);
 		public static void free_display_tree (GLib.Node display_tree);
+		[Version (since = "3.10")]
 		public GLib.List<E.Source> list_enabled (string? extension_name);
 		public GLib.List<E.Source> list_sources (string? extension_name);
 		public E.Source ref_builtin_address_book ();
 		public E.Source ref_builtin_calendar ();
 		public E.Source ref_builtin_mail_account ();
 		public E.Source ref_builtin_memo_list ();
+		[Version (since = "3.12")]
 		public E.Source ref_builtin_proxy ();
 		public E.Source ref_builtin_task_list ();
 		public E.Source ref_default_address_book ();
@@ -764,6 +877,7 @@ namespace E {
 		public virtual signal void source_removed (E.Source source);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_resource_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceResource : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceResource ();
@@ -773,6 +887,7 @@ namespace E {
 		public string identity { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_revision_guards_get_type ()")]
+	[Version (since = "3.8")]
 	public class SourceRevisionGuards : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceRevisionGuards ();
@@ -781,6 +896,7 @@ namespace E {
 		public bool enabled { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_smime_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceSMIME : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceSMIME ();
@@ -807,6 +923,7 @@ namespace E {
 		public string signing_certificate { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_security_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceSecurity : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceSecurity ();
@@ -819,6 +936,7 @@ namespace E {
 		public bool secure { get; set; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_selectable_get_type ()")]
+	[Version (since = "3.6")]
 	public abstract class SourceSelectable : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceSelectable ();
@@ -831,11 +949,13 @@ namespace E {
 		public bool selected { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_task_list_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceTaskList : E.SourceSelectable {
 		[CCode (has_construct_function = false)]
 		protected SourceTaskList ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_uoa_get_type ()")]
+	[Version (since = "3.8")]
 	public class SourceUoa : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceUoa ();
@@ -856,6 +976,7 @@ namespace E {
 		public E.SourceWeatherUnits units { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_webdav_get_type ()")]
+	[Version (since = "3.6")]
 	public class SourceWebdav : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceWebdav ();
@@ -864,6 +985,7 @@ namespace E {
 		public string dup_resource_path ();
 		public string dup_resource_query ();
 		public Soup.URI dup_soup_uri ();
+		[Version (since = "3.8")]
 		public string dup_ssl_trust ();
 		public bool get_avoid_ifmatch ();
 		public bool get_calendar_auto_schedule ();
@@ -871,6 +993,7 @@ namespace E {
 		public unowned string get_email_address ();
 		public unowned string get_resource_path ();
 		public unowned string get_resource_query ();
+		[Version (since = "3.8")]
 		public unowned string get_ssl_trust ();
 		public void set_avoid_ifmatch (bool avoid_ifmatch);
 		public void set_calendar_auto_schedule (bool calendar_auto_schedule);
@@ -879,8 +1002,11 @@ namespace E {
 		public void set_resource_path (string? resource_path);
 		public void set_resource_query (string? resource_query);
 		public void set_soup_uri (Soup.URI soup_uri);
+		[Version (since = "3.8")]
 		public void set_ssl_trust (string? ssl_trust);
+		[Version (since = "3.8")]
 		public void unset_temporary_ssl_trust ();
+		[Version (since = "3.16")]
 		public void update_ssl_trust (string host, GLib.TlsCertificate cert, E.TrustPromptResponse response);
 		public E.TrustPromptResponse verify_ssl_trust (string host, GLib.TlsCertificate cert, GLib.TlsCertificateFlags cert_errors);
 		public bool avoid_ifmatch { get; set construct; }
@@ -915,11 +1041,13 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EExtensibleInterface", type_id = "e_extensible_get_type ()")]
 	public interface Extensible : GLib.Object {
+		[Version (since = "3.4")]
 		public GLib.List<weak E.Extension> list_extensions (GLib.Type extension_type);
+		[Version (since = "3.4")]
 		public void load_extensions ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 	public struct ClientErrorsList {
 		public weak string name;
 		public int err_code;
@@ -939,6 +1067,7 @@ namespace E {
 		public weak string color;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CLIENT_ERROR_", has_type_id = false)]
+	[Version (since = "3.2")]
 	public enum ClientError {
 		INVALID_ARG,
 		BUSY,
@@ -964,12 +1093,14 @@ namespace E {
 		OUT_OF_SYNC
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_MDN_RESPONSE_POLICY_", type_id = "e_mdn_response_policy_get_type ()")]
+	[Version (since = "3.6")]
 	public enum MdnResponsePolicy {
 		NEVER,
 		ALWAYS,
 		ASK
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_PROXY_METHOD_", type_id = "e_proxy_method_get_type ()")]
+	[Version (since = "3.12")]
 	public enum ProxyMethod {
 		DEFAULT,
 		MANUAL,
@@ -977,6 +1108,7 @@ namespace E {
 		NONE
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_AUTHENTICATION_", type_id = "e_source_authentication_result_get_type ()")]
+	[Version (since = "3.6")]
 	public enum SourceAuthenticationResult {
 		ERROR,
 		ERROR_SSL_FAILED,
@@ -985,6 +1117,7 @@ namespace E {
 		REQUIRED
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CONNECTION_STATUS_", type_id = "e_source_connection_status_get_type ()")]
+	[Version (since = "3.16")]
 	public enum SourceConnectionStatus {
 		DISCONNECTED,
 		AWAITING_CREDENTIALS,
@@ -993,6 +1126,7 @@ namespace E {
 		CONNECTED
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CREDENTIALS_REASON_", type_id = "e_source_credentials_reason_get_type ()")]
+	[Version (since = "3.16")]
 	public enum SourceCredentialsReason {
 		UNKNOWN,
 		REQUIRED,
@@ -1001,23 +1135,27 @@ namespace E {
 		ERROR
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_AUTHENTICATION_", type_id = "e_source_ldap_authentication_get_type ()")]
+	[Version (since = "3.18")]
 	public enum SourceLDAPAuthentication {
 		NONE,
 		EMAIL,
 		BINDDN
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SCOPE_", type_id = "e_source_ldap_scope_get_type ()")]
+	[Version (since = "3.18")]
 	public enum SourceLDAPScope {
 		ONELEVEL,
 		SUBTREE
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SECURITY_", type_id = "e_source_ldap_security_get_type ()")]
+	[Version (since = "3.18")]
 	public enum SourceLDAPSecurity {
 		NONE,
 		LDAPS,
 		STARTTLS
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_MAIL_COMPOSITION_REPLY_STYLE_", type_id = "e_source_mail_composition_reply_style_get_type ()")]
+	[Version (since = "3.20")]
 	public enum SourceMailCompositionReplyStyle {
 		DEFAULT,
 		QUOTED,
@@ -1026,6 +1164,7 @@ namespace E {
 		OUTLOOK
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_WEATHER_UNITS_", type_id = "e_source_weather_units_get_type ()")]
+	[Version (since = "3.18")]
 	public enum SourceWeatherUnits {
 		FAHRENHEIT,
 		CENTIGRADE,
@@ -1038,6 +1177,7 @@ namespace E {
 		INVALID
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TRUST_PROMPT_RESPONSE_", type_id = "e_trust_prompt_response_get_type ()")]
+	[Version (since = "3.8")]
 	public enum TrustPromptResponse {
 		UNKNOWN,
 		REJECT,
@@ -1075,18 +1215,23 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
 	public delegate string FreeFormExpBuildSexpFunc (string word, string options, string hint);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
+	[Version (since = "3.6")]
 	public delegate void SourceRefreshFunc (E.Source source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
+	[Version (since = "3.4")]
 	public delegate void TypeFunc (GLib.Type type);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
 	public delegate void XmlHashFunc (string key, string value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
 	public delegate bool XmlHashRemoveFunc (string key, string value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_CAL_QUERIES")]
+	[Version (since = "2.32")]
 	public const string DEBUG_LOG_DOMAIN_CAL_QUERIES;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_GLOG")]
+	[Version (since = "2.32")]
 	public const string DEBUG_LOG_DOMAIN_GLOG;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_USER")]
+	[Version (since = "2.32")]
 	public const string DEBUG_LOG_DOMAIN_USER;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_ACCESS_TOKEN")]
 	public const string GOOGLE_SECRET_ACCESS_TOKEN;
@@ -1097,150 +1242,207 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_GOOGLE_SECRET")]
 	public const string SOURCE_CREDENTIAL_GOOGLE_SECRET;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_PASSWORD")]
+	[Version (since = "3.16")]
 	public const string SOURCE_CREDENTIAL_PASSWORD;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_SSL_TRUST")]
+	[Version (since = "3.16")]
 	public const string SOURCE_CREDENTIAL_SSL_TRUST;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_USERNAME")]
+	[Version (since = "3.16")]
 	public const string SOURCE_CREDENTIAL_USERNAME;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_ADDRESS_BOOK")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_ADDRESS_BOOK;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_ALARMS")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_ALARMS;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_AUTHENTICATION")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_AUTHENTICATION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_AUTOCOMPLETE")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_AUTOCOMPLETE;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_CALENDAR")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_CALENDAR;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_COLLECTION")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_COLLECTION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_CONTACTS_BACKEND")]
 	public const string SOURCE_EXTENSION_CONTACTS_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_GOA")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_GOA;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_LDAP_BACKEND")]
 	public const string SOURCE_EXTENSION_LDAP_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_LOCAL_BACKEND")]
 	public const string SOURCE_EXTENSION_LOCAL_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_ACCOUNT")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MAIL_ACCOUNT;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_COMPOSITION")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MAIL_COMPOSITION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_IDENTITY")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MAIL_IDENTITY;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_SIGNATURE")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MAIL_SIGNATURE;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_SUBMISSION")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MAIL_SUBMISSION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_TRANSPORT")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MAIL_TRANSPORT;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MDN")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MDN;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MEMO_LIST")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_MEMO_LIST;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_OFFLINE")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_OFFLINE;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_OPENPGP")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_OPENPGP;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_PROXY")]
+	[Version (since = "3.12")]
 	public const string SOURCE_EXTENSION_PROXY;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_REFRESH")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_REFRESH;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_RESOURCE")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_RESOURCE;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_REVISION_GUARDS")]
+	[Version (since = "3.8")]
 	public const string SOURCE_EXTENSION_REVISION_GUARDS;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_SECURITY")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_SECURITY;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_SMIME")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_SMIME;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_TASK_LIST")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_TASK_LIST;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_UOA")]
+	[Version (since = "3.8")]
 	public const string SOURCE_EXTENSION_UOA;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEATHER_BACKEND")]
 	public const string SOURCE_EXTENSION_WEATHER_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEBDAV_BACKEND")]
+	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_WEBDAV_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_PARAM_SETTING")]
+	[Version (since = "3.6")]
 	public const int SOURCE_PARAM_SETTING;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property (void* source, string source_property, void* target, string target_property, GLib.BindingFlags flags);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property_full (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.BindingTransformFunc? transform_to, owned GLib.BindingTransformFunc? transform_from);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property_with_closures (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.Closure transform_to, GLib.Closure transform_from);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.4")]
 	public static bool binding_transform_enum_nick_to_value (GLib.Binding binding, GLib.Value source_value, GLib.Value target_value, void* not_used);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.4")]
 	public static bool binding_transform_enum_value_to_nick (GLib.Binding binding, GLib.Value source_value, GLib.Value target_value, void* not_used);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_add (string category, string unused, string icon_file, bool searchable);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static string categories_dup_icon_file_for (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static GLib.List<string> categories_dup_list ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_exist (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.16")]
+	[Version (deprecated = true, deprecated_since = "3.16")]
 	public static unowned string categories_get_icon_file_for (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.16")]
+	[Version (deprecated = true, deprecated_since = "3.16")]
 	public static GLib.List<weak string> categories_get_list ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool categories_is_searchable (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.24")]
 	public static void categories_register_change_listener ([CCode (scope = "async")] owned GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_remove (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_set_icon_file_for (string category, string icon_file);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.24")]
 	public static void categories_unregister_change_listener ([CCode (scope = "async")] owned GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.0")]
 	public static int data_server_util_get_dbus_call_timeout ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.0")]
 	public static void data_server_util_set_dbus_call_timeout (int timeout_msec);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static void debug_log_clear ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static void debug_log_disable_domains (string domains, int n_domains);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static bool debug_log_dump (string filename) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static bool debug_log_dump_to_dated_file () throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static void debug_log_enable_domains (string domains, int n_domains);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static int debug_log_get_max_lines ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static bool debug_log_is_domain_enabled (string domain);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static bool debug_log_load_configuration (string filename) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static void debug_log_set_max_lines (int num_lines);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.8")]
 	public static bool enum_from_string (GLib.Type enum_type, string string, int enum_value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.8")]
 	public static unowned string enum_to_string (GLib.Type enum_type, int enum_value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.6")]
 	public static async bool file_recursive_delete (GLib.File file, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.6")]
 	public static bool file_recursive_delete_sync (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void filename_make_safe (string string);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.4")]
 	public static string filename_mkdir_encoded (string basepath, string fileprefix, string filename, int fileindex);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static string free_form_exp_to_sexp (string free_form_exp, E.FreeFormExpSymbol symbols);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static unowned string get_user_cache_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static unowned string get_user_config_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static unowned string get_user_data_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void localtime_with_offset (long tt, [CCode (type = "tm*")] Posix.tm tm, int offset);
@@ -1259,14 +1461,19 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.8")]
 	public static void queue_transfer (GLib.Queue src_queue, GLib.Queue dst_queue);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.18")]
 	public static bool secret_store_delete_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.18")]
 	public static bool secret_store_lookup_sync (string uid, out string out_secret, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.18")]
 	public static bool secret_store_store_sync (string uid, string secret, string label, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static void soup_ssl_trust_connect (Soup.Message soup_message, E.Source source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t strftime (string string, size_t max, string fmt, [CCode (type = "const tm*")] Posix.tm tm);
@@ -1275,70 +1482,88 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void time_format_time ([CCode (type = "tm*")] Posix.tm date_tm, bool use_24_hour_format, bool show_zero_seconds, string buffer, int buffer_size);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.22")]
 	public static string time_get_d_fmt_with_4digit_year ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static E.TimeParseStatus time_parse_date (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static E.TimeParseStatus time_parse_date_and_time (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.22")]
 	public static E.TimeParseStatus time_parse_date_and_time_ex (string value, [CCode (type = "tm*")] Posix.tm result, bool two_digit_year);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.22")]
 	public static E.TimeParseStatus time_parse_date_ex (string value, [CCode (type = "tm*")] Posix.tm result, bool two_digit_year);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static E.TimeParseStatus time_parse_time (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.12")]
 	public static uint timeout_add_seconds_with_name (int priority, uint interval, string? name, owned GLib.SourceFunc function);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.12")]
 	public static uint timeout_add_with_name (int priority, uint interval, string? name, owned GLib.SourceFunc function);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.4")]
 	public static void type_traverse (GLib.Type parent_type, E.TypeFunc func);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string uid_new ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t utf8_strftime (string string, size_t max, string fmt, [CCode (type = "const tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
 	public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
 	public static GLib.SList<string> util_copy_string_slist (GLib.SList<string>? copy_to, GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.0")]
 	public static unowned string util_ensure_gdbus_string (string str, string gdbus_str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.6")]
 	public static void util_free_nullable_object_slist (GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
 	public static void util_free_object_slist (GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Deprecated (since = "3.8")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
 	public static void util_free_string_slist (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_get_source_full_name (void* registry, void* source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool util_get_source_oauth2_access_token_sync (void* source, E.NamedParameters credentials, out string out_access_token, out int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.32")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.16")]
 	public static void util_safe_free_string (string str);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.4")]
 	public static string[] util_slist_to_strv (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.6")]
 	public static string util_strdup_strip (string? string);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_strstrcase (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.12")]
 	public static bool util_strv_equal (void* v1, void* v2);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.4")]
 	public static GLib.SList<string> util_strv_to_slist (string strv);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_unicode_get_utf8 (string text, unichar @out);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.6")]
 	public static string util_utf8_data_make_valid (string data, size_t data_bytes);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.0")]
 	public static string util_utf8_make_valid (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.8")]
 	public static string util_utf8_normalize (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "2.28")]
 	public static string util_utf8_remove_accents (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int util_utf8_strcasecmp (string s1, string s2);
@@ -1347,12 +1572,16 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.10")]
 	public static void weak_ref_free (GLib.WeakRef weak_ref);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.18")]
 	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource> discovered_sources);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.18")]
 	public static async bool webdav_discover_sources (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.18")]
 	public static bool webdav_discover_sources_sync (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);

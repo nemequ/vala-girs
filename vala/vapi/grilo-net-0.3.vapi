@@ -10,10 +10,14 @@ namespace GrlNet {
 		public void flush_delayed_requests ();
 		public async bool request_async (string uri, GLib.Cancellable? cancellable, out unowned string content, out size_t length) throws GLib.Error;
 		[CCode (finish_name = "grl_net_wc_request_finish")]
+		[Version (since = "0.2.2")]
 		public async bool request_with_headers_async (string uri, GLib.Cancellable? cancellable, ..., out unowned string content, out size_t length) throws GLib.Error;
 		[CCode (finish_name = "grl_net_wc_request_finish")]
+		[Version (since = "0.2.2")]
 		public async bool request_with_headers_hash_async (string uri, GLib.HashTable<string,string>? headers, GLib.Cancellable? cancellable, out unowned string content, out size_t length) throws GLib.Error;
+		[Version (since = "0.1.12")]
 		public void set_cache (bool use_cache);
+		[Version (since = "0.1.12")]
 		public void set_cache_size (uint cache_size);
 		public void set_log_level (uint log_level);
 		public void set_throttling (uint throttling);

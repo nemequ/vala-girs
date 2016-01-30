@@ -125,10 +125,13 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h", cname = "NM_UTILS_HWADDR_LEN_MAX")]
 		public const int HWADDR_LEN_MAX;
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.8")]
 		public static bool ap_mode_security_valid (NM.Utils.SecurityType type, NM.DeviceWifiCapabilities wifi_caps);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static string bin2hexstr (string bytes, int len, int final_len);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static bool check_virtual_device_compatibility (GLib.Type virtual_type, GLib.Type other_type);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static void deinit ();
@@ -141,27 +144,33 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static GLib.HashTable<weak string,weak GLib.Value?> gvalue_hash_dup (GLib.HashTable<void*,void*> hash);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static int hex2byte (string hex);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static string hexstr2bin (string hex, size_t len);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static GLib.ByteArray hwaddr_atoba (string asc, int type);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static uint8 hwaddr_aton (string asc, int type, void* buffer);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static uint8 hwaddr_aton_len (string asc, void* buffer, size_t length);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static int hwaddr_len (int type);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static string hwaddr_ntoa (void* addr, int type);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static string hwaddr_ntoa_len (void* addr, size_t length);
 		[CCode (cheader_filename = "nm-utils.h")]
-		[Deprecated]
+		[Version (deprecated = true)]
 		public static int hwaddr_type (int len);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.10")]
 		public static bool hwaddr_valid (string asc);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.8")]
 		public static bool iface_valid_name (string name);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static bool init () throws GLib.Error;
@@ -190,6 +199,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static bool is_empty_ssid (uint8 ssid, int len);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.8")]
 		public static bool is_uuid (string str);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static GLib.ByteArray rsa_key_encrypt (GLib.ByteArray data, string? in_password, out string out_password) throws GLib.Error;
@@ -206,6 +216,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static string uuid_generate_from_string (string s);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.8")]
 		public static bool wep_key_valid (string key, NM.WepKeyType wep_type);
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static uint32 wifi_channel_to_freq (uint32 channel, string band);
@@ -216,6 +227,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-utils.h")]
 		public static bool wifi_is_channel_valid (uint32 channel, string band);
 		[CCode (cheader_filename = "nm-utils.h")]
+		[Version (since = "0.9.8")]
 		public static bool wpa_psk_valid (string psk);
 	}
 	namespace VPN {
@@ -297,8 +309,10 @@ namespace NM {
 		public void for_each_setting_value (NM.SettingValueIterFn func);
 		[CCode (has_construct_function = false)]
 		public Connection.from_hash (GLib.HashTable<string,GLib.HashTable<void*,void*>> hash) throws GLib.Error;
+		[Version (since = "0.9.10")]
 		public unowned string get_connection_type ();
 		public unowned string get_id ();
+		[Version (since = "1.0")]
 		public unowned string get_interface_name ();
 		public unowned string get_path ();
 		public unowned NM.Setting get_setting (GLib.Type setting_type);
@@ -311,7 +325,9 @@ namespace NM {
 		public unowned NM.Setting get_setting_by_name (string name);
 		public unowned NM.SettingCdma get_setting_cdma ();
 		public unowned NM.SettingConnection get_setting_connection ();
+		[Version (since = "0.9.10")]
 		public unowned NM.SettingDcb get_setting_dcb ();
+		[Version (since = "0.9.10")]
 		public unowned NM.SettingGeneric get_setting_generic ();
 		public unowned NM.SettingGsm get_setting_gsm ();
 		public unowned NM.SettingInfiniband get_setting_infiniband ();
@@ -321,7 +337,9 @@ namespace NM {
 		public unowned NM.SettingPPP get_setting_ppp ();
 		public unowned NM.SettingPPPOE get_setting_pppoe ();
 		public unowned NM.SettingSerial get_setting_serial ();
+		[Version (since = "0.9.10")]
 		public unowned NM.SettingTeam get_setting_team ();
+		[Version (since = "0.9.10")]
 		public unowned NM.SettingTeamPort get_setting_team_port ();
 		public unowned NM.SettingVlan get_setting_vlan ();
 		public unowned NM.SettingVPN get_setting_vpn ();
@@ -330,21 +348,25 @@ namespace NM {
 		public unowned NM.SettingWireless get_setting_wireless ();
 		public unowned NM.SettingWirelessSecurity get_setting_wireless_security ();
 		public unowned string get_uuid ();
+		[Version (since = "0.9.10")]
 		public string get_virtual_device_description ();
 		public unowned string get_virtual_iface_name ();
 		public bool is_type (string type);
 		public static GLib.Type lookup_setting_type (string name);
 		public static GLib.Type lookup_setting_type_by_quark (GLib.Quark error_quark);
 		public unowned string need_secrets (out GLib.GenericArray<weak string> hints);
+		[Version (since = "1.0")]
 		public bool normalize (GLib.HashTable<string,void*>? parameters, out bool modified) throws GLib.Error;
 		public void remove_setting (GLib.Type setting_type);
 		public bool replace_settings (GLib.HashTable<string,GLib.HashTable<void*,void*>> new_settings) throws GLib.Error;
+		[Version (since = "0.9.10")]
 		public bool replace_settings_from_connection (NM.Connection new_connection) throws GLib.Error;
 		public void set_path (string path);
 		public GLib.HashTable<string,GLib.HashTable<void*,void*>> to_hash (NM.SettingHashFlags flags);
 		public bool update_secrets (string setting_name, GLib.HashTable<string,GLib.Value?> secrets) throws GLib.Error;
 		public bool verify () throws GLib.Error;
 		public string path { get; set construct; }
+		[Version (since = "0.9.10")]
 		public signal void changed ();
 		public signal void secrets_cleared ();
 		public virtual signal void secrets_updated (string setting);
@@ -583,10 +605,13 @@ namespace NM {
 		public unowned string get_subject_match ();
 		public bool get_system_ca_certs ();
 		public void remove_altsubject_match (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_altsubject_match_by_value (string altsubject_match);
 		public void remove_eap_method (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_eap_method_by_value (string eap);
 		public void remove_phase2_altsubject_match (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_phase2_altsubject_match_by_value (string phase2_altsubject_match);
 		public bool set_ca_cert (string cert_path, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
 		public bool set_client_cert (string cert_path, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
@@ -759,6 +784,7 @@ namespace NM {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_valid_options ();
 		public bool remove_option (string name);
+		[Version (since = "0.9.10")]
 		public static bool validate_option (string name, string value);
 		[NoAccessorMethod]
 		public string interface_name { owned get; set; }
@@ -792,42 +818,65 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-bridge.h", cname = "NM_SETTING_BRIDGE_STP")]
 		public const string STP;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "0.9.8")]
 		public SettingBridge ();
+		[Version (since = "0.9.8")]
 		public uint32 get_ageing_time ();
+		[Version (since = "0.9.8")]
 		public uint16 get_forward_delay ();
+		[Version (since = "0.9.8")]
 		public uint16 get_hello_time ();
+		[Version (since = "0.9.8")]
 		public unowned string get_interface_name ();
+		[Version (since = "0.9.10")]
 		public unowned GLib.ByteArray get_mac_address ();
+		[Version (since = "0.9.8")]
 		public uint16 get_max_age ();
+		[Version (since = "0.9.8")]
 		public uint16 get_priority ();
+		[Version (since = "0.9.8")]
 		public bool get_stp ();
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint ageing_time { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint forward_delay { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint hello_time { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public string interface_name { owned get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint max_age { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint priority { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public bool stp { get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", type_id = "nm_setting_bridge_port_get_type ()")]
 	public class SettingBridgePort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "0.9.8")]
 		public SettingBridgePort ();
+		[Version (since = "0.9.8")]
 		public bool get_hairpin_mode ();
+		[Version (since = "0.9.8")]
 		public uint16 get_path_cost ();
+		[Version (since = "0.9.8")]
 		public uint16 get_priority ();
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public bool hairpin_mode { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint path_cost { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public uint priority { get; set construct; }
 	}
 	[CCode (cheader_filename = "nm-setting-cdma.h", type_id = "nm_setting_cdma_get_type ()")]
@@ -890,17 +939,22 @@ namespace NM {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingConnection ();
 		public bool add_permission (string ptype, string pitem, string? detail);
+		[Version (since = "0.9.8")]
 		public bool add_secondary (string sec_uuid);
 		public bool get_autoconnect ();
 		public unowned string get_connection_type ();
+		[Version (since = "0.9.10")]
 		public uint32 get_gateway_ping_timeout ();
 		public unowned string get_id ();
+		[Version (since = "0.9.10")]
 		public unowned string get_interface_name ();
 		public unowned string get_master ();
 		public uint32 get_num_permissions ();
+		[Version (since = "0.9.8")]
 		public uint32 get_num_secondaries ();
 		public bool get_permission (uint32 idx, string out_ptype, string out_pitem, string out_detail);
 		public bool get_read_only ();
+		[Version (since = "0.9.8")]
 		public unowned string get_secondary (uint32 idx);
 		public unowned string get_slave_type ();
 		public uint64 get_timestamp ();
@@ -909,16 +963,21 @@ namespace NM {
 		public bool is_slave_type (string type);
 		public bool permissions_user_allowed (string uname);
 		public void remove_permission (uint32 idx);
+		[Version (since = "0.9.10")]
 		public bool remove_permission_by_value (string ptype, string pitem, string? detail);
+		[Version (since = "0.9.8")]
 		public void remove_secondary (uint32 idx);
+		[Version (since = "0.9.10")]
 		public bool remove_secondary_by_value (string sec_uuid);
 		[NoAccessorMethod]
 		public bool autoconnect { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public uint gateway_ping_timeout { get; set construct; }
 		[NoAccessorMethod]
 		public string id { owned get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public string interface_name { owned get; set; }
 		[NoAccessorMethod]
 		public string master { owned get; set; }
@@ -938,45 +997,75 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager-1.0.h", type_id = "nm_setting_dcb_get_type ()")]
 	public class SettingDcb : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "0.9.10")]
 		public SettingDcb ();
+		[Version (since = "0.9.10")]
 		public NM.SettingDcbFlags get_app_fcoe_flags ();
+		[Version (since = "0.9.10")]
 		public unowned string get_app_fcoe_mode ();
+		[Version (since = "0.9.10")]
 		public int get_app_fcoe_priority ();
+		[Version (since = "0.9.10")]
 		public NM.SettingDcbFlags get_app_fip_flags ();
+		[Version (since = "0.9.10")]
 		public int get_app_fip_priority ();
+		[Version (since = "0.9.10")]
 		public NM.SettingDcbFlags get_app_iscsi_flags ();
+		[Version (since = "0.9.10")]
 		public int get_app_iscsi_priority ();
+		[Version (since = "0.9.10")]
 		public uint get_priority_bandwidth (uint user_priority);
+		[Version (since = "0.9.10")]
 		public bool get_priority_flow_control (uint user_priority);
+		[Version (since = "0.9.10")]
 		public NM.SettingDcbFlags get_priority_flow_control_flags ();
+		[Version (since = "0.9.10")]
 		public uint get_priority_group_bandwidth (uint group_id);
+		[Version (since = "0.9.10")]
 		public NM.SettingDcbFlags get_priority_group_flags ();
+		[Version (since = "0.9.10")]
 		public uint get_priority_group_id (uint user_priority);
+		[Version (since = "0.9.10")]
 		public bool get_priority_strict_bandwidth (uint user_priority);
+		[Version (since = "0.9.10")]
 		public uint get_priority_traffic_class (uint user_priority);
+		[Version (since = "0.9.10")]
 		public void set_priority_bandwidth (uint user_priority, uint bandwidth_percent);
+		[Version (since = "0.9.10")]
 		public void set_priority_flow_control (uint user_priority, bool enabled);
+		[Version (since = "0.9.10")]
 		public void set_priority_group_bandwidth (uint group_id, uint bandwidth_percent);
+		[Version (since = "0.9.10")]
 		public void set_priority_group_id (uint user_priority, uint group_id);
+		[Version (since = "0.9.10")]
 		public void set_priority_strict_bandwidth (uint user_priority, bool strict);
 		public void set_priority_traffic_class (uint user_priority, uint traffic_class);
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public uint app_fcoe_flags { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public string app_fcoe_mode { owned get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public int app_fcoe_priority { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public uint app_fip_flags { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public int app_fip_priority { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public uint app_iscsi_flags { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public int app_iscsi_priority { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public uint priority_flow_control_flags { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.9.10")]
 		public uint priority_group_flags { get; set; }
 	}
 	[CCode (cheader_filename = "nm-setting-generic.h", type_id = "nm_setting_generic_get_type ()")]
@@ -984,6 +1073,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-generic.h", cname = "NM_SETTING_GENERIC_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "0.9.10")]
 		public SettingGeneric ();
 	}
 	[CCode (cheader_filename = "nm-setting-gsm.h", type_id = "nm_setting_gsm_get_type ()")]
@@ -993,7 +1083,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-gsm.h", cname = "NM_SETTING_GSM_APN")]
 		public const string APN;
 		[CCode (cheader_filename = "nm-setting-gsm.h", cname = "NM_SETTING_GSM_BANDS_MAX")]
-		[Deprecated (since = "0.9.10")]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public const int BANDS_MAX;
 		[CCode (cheader_filename = "nm-setting-gsm.h", cname = "NM_SETTING_GSM_HOME_ONLY")]
 		public const string HOME_ONLY;
@@ -1017,12 +1107,12 @@ namespace NM {
 		public const string USERNAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingGsm ();
-		[Deprecated (since = "0.9.10")]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public uint32 get_allowed_bands ();
 		public unowned string get_apn ();
 		public bool get_home_only ();
 		public unowned string get_network_id ();
-		[Deprecated (since = "0.9.10")]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public int get_network_type ();
 		public unowned string get_number ();
 		public unowned string get_password ();
@@ -1030,8 +1120,8 @@ namespace NM {
 		public unowned string get_pin ();
 		public NM.SettingSecretFlags get_pin_flags ();
 		public unowned string get_username ();
-		[Deprecated (since = "0.9.10")]
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public uint allowed_bands { get; set construct; }
 		[NoAccessorMethod]
 		public string apn { owned get; set; }
@@ -1039,8 +1129,8 @@ namespace NM {
 		public bool home_only { get; set; }
 		[NoAccessorMethod]
 		public string network_id { owned get; set; }
-		[Deprecated (since = "0.9.10")]
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public int network_type { get; set construct; }
 		[NoAccessorMethod]
 		public string number { owned get; set; }
@@ -1084,14 +1174,18 @@ namespace NM {
 		public uint32 get_num_dns_searches ();
 		public uint32 get_num_routes ();
 		public NM.IP4Route get_route (uint32 i);
+		[Version (since = "1.0")]
 		public int64 get_route_metric ();
 		public void remove_address (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_address_by_value (NM.IP4Address address);
 		public void remove_dns (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_dns_by_value (uint32 dns);
 		public void remove_dns_search (uint32 i);
 		public bool remove_dns_search_by_value (string dns_search);
 		public void remove_route (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_route_by_value (NM.IP4Route route);
 		[NoAccessorMethod]
 		public string dhcp_client_id { owned get; set; }
@@ -1112,6 +1206,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public bool never_default { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "1.0")]
 		public int64 route_metric { get; set construct; }
 	}
 	[CCode (cheader_filename = "nm-setting-ip6-config.h", type_id = "nm_setting_ip6_config_get_type ()")]
@@ -1127,6 +1222,7 @@ namespace NM {
 		public void clear_dns_searches ();
 		public void clear_routes ();
 		public NM.IP6Address get_address (uint32 i);
+		[Version (since = "0.9.8")]
 		public unowned string get_dhcp_hostname ();
 		public void* get_dns (uint32 i);
 		public unowned string get_dns_search (uint32 i);
@@ -1141,16 +1237,21 @@ namespace NM {
 		public uint32 get_num_dns_searches ();
 		public uint32 get_num_routes ();
 		public NM.IP6Route get_route (uint32 i);
+		[Version (since = "1.0")]
 		public int64 get_route_metric ();
 		public void remove_address (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_address_by_value (NM.IP6Address address);
 		public void remove_dns (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_dns_by_value (void* dns);
 		public void remove_dns_search (uint32 i);
 		public bool remove_dns_search_by_value (string dns_search);
 		public void remove_route (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_route_by_value (NM.IP6Route route);
 		[NoAccessorMethod]
+		[Version (since = "0.9.8")]
 		public string dhcp_hostname { owned get; set; }
 		[NoAccessorMethod]
 		public bool ignore_auto_dns { get; set construct; }
@@ -1165,6 +1266,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public bool never_default { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "1.0")]
 		public int64 route_metric { get; set construct; }
 	}
 	[CCode (cheader_filename = "nm-setting-infiniband.h", type_id = "nm_setting_infiniband_get_type ()")]
@@ -1376,8 +1478,11 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-team.h", cname = "NM_SETTING_TEAM_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "0.9.10")]
 		public SettingTeam ();
+		[Version (since = "0.9.10")]
 		public unowned string get_config ();
+		[Version (since = "0.9.10")]
 		public unowned string get_interface_name ();
 		[NoAccessorMethod]
 		public string config { owned get; set; }
@@ -1387,7 +1492,9 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager-1.0.h", type_id = "nm_setting_team_port_get_type ()")]
 	public class SettingTeamPort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "0.9.10")]
 		public SettingTeamPort ();
+		[Version (since = "0.9.10")]
 		public unowned string get_config ();
 		[NoAccessorMethod]
 		public string config { owned get; set; }
@@ -1444,7 +1551,9 @@ namespace NM {
 		public unowned string get_parent ();
 		public bool get_priority (NM.VlanPriorityMap map, uint32 idx, out uint32 out_from, out uint32 out_to);
 		public void remove_priority (NM.VlanPriorityMap map, uint32 idx);
+		[Version (since = "0.9.10")]
 		public bool remove_priority_by_value (NM.VlanPriorityMap map, uint32 from, uint32 to);
+		[Version (since = "0.9.10")]
 		public bool remove_priority_str_by_value (NM.VlanPriorityMap map, string str);
 		[NoAccessorMethod]
 		public uint flags { get; set construct; }
@@ -1464,14 +1573,14 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-wimax.h", cname = "NM_SETTING_WIMAX_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
-		[Deprecated (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.2")]
 		public SettingWimax ();
-		[Deprecated (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.2")]
 		public unowned GLib.ByteArray get_mac_address ();
-		[Deprecated (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.2")]
 		public unowned string get_network_name ();
-		[Deprecated (since = "1.2")]
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.2")]
 		public string network_name { owned get; set; }
 	}
 	[CCode (cheader_filename = "nm-setting-wired.h", type_id = "nm_setting_wired_get_type ()")]
@@ -1502,16 +1611,20 @@ namespace NM {
 		public const string SPEED;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWired ();
+		[Version (since = "0.9.10")]
 		public bool add_mac_blacklist_item (string mac);
 		public bool add_s390_option (string key, string value);
+		[Version (since = "0.9.10")]
 		public void clear_mac_blacklist_items ();
 		public bool get_auto_negotiate ();
 		public unowned GLib.ByteArray get_cloned_mac_address ();
 		public unowned string get_duplex ();
 		public unowned GLib.ByteArray get_mac_address ();
 		public unowned GLib.SList<GLib.ByteArray> get_mac_address_blacklist ();
+		[Version (since = "0.9.10")]
 		public unowned string get_mac_blacklist_item (uint32 idx);
 		public uint32 get_mtu ();
+		[Version (since = "0.9.10")]
 		public uint32 get_num_mac_blacklist_items ();
 		public uint32 get_num_s390_options ();
 		public unowned string get_port ();
@@ -1521,8 +1634,11 @@ namespace NM {
 		public unowned GLib.GenericArray<string> get_s390_subchannels ();
 		public uint32 get_speed ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "0.9.10")]
 		public unowned string[] get_valid_s390_options ();
+		[Version (since = "0.9.10")]
 		public void remove_mac_blacklist_item (uint32 idx);
+		[Version (since = "0.9.10")]
 		public bool remove_mac_blacklist_item_by_value (string mac);
 		public bool remove_s390_option (string key);
 		[NoAccessorMethod]
@@ -1559,6 +1675,7 @@ namespace NM {
 		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_MODE_ADHOC")]
 		public const string MODE_ADHOC;
 		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_MODE_AP")]
+		[Version (since = "0.9.8")]
 		public const string MODE_AP;
 		[CCode (cheader_filename = "nm-setting-wireless.h", cname = "NM_SETTING_WIRELESS_MODE_INFRA")]
 		public const string MODE_INFRA;
@@ -1580,9 +1697,11 @@ namespace NM {
 		public const string TX_POWER;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWireless ();
+		[Version (since = "0.9.10")]
 		public bool add_mac_blacklist_item (string mac);
 		public bool add_seen_bssid (string bssid);
 		public bool ap_security_compatible (NM.SettingWirelessSecurity s_wireless_sec, NM.80211ApFlags ap_flags, NM.80211ApSecurityFlags ap_wpa, NM.80211ApSecurityFlags ap_rsn, NM.80211Mode ap_mode);
+		[Version (since = "0.9.10")]
 		public void clear_mac_blacklist_items ();
 		public unowned string get_band ();
 		public unowned GLib.ByteArray get_bssid ();
@@ -1591,19 +1710,24 @@ namespace NM {
 		public bool get_hidden ();
 		public unowned GLib.ByteArray get_mac_address ();
 		public unowned GLib.SList<GLib.ByteArray> get_mac_address_blacklist ();
+		[Version (since = "0.9.10")]
 		public unowned string get_mac_blacklist_item (uint32 idx);
 		public unowned string get_mode ();
 		public uint32 get_mtu ();
+		[Version (since = "0.9.10")]
 		public uint32 get_num_mac_blacklist_items ();
 		public uint32 get_num_seen_bssids ();
+		[Version (since = "1.2")]
 		public uint32 get_powersave ();
 		public uint32 get_rate ();
-		[Deprecated (since = "0.9.10")]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public unowned string get_security ();
 		public unowned string get_seen_bssid (uint32 i);
 		public unowned GLib.ByteArray get_ssid ();
 		public uint32 get_tx_power ();
+		[Version (since = "0.9.10")]
 		public void remove_mac_blacklist_item (uint32 idx);
+		[Version (since = "0.9.10")]
 		public bool remove_mac_blacklist_item_by_value (string mac);
 		[NoAccessorMethod]
 		public string band { owned get; set; }
@@ -1616,11 +1740,12 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint mtu { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "1.2")]
 		public uint powersave { get; set; }
 		[NoAccessorMethod]
 		public uint rate { get; set construct; }
-		[Deprecated (since = "0.9.10")]
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.9.10")]
 		public string security { owned get; set; }
 		[NoAccessorMethod]
 		public uint tx_power { get; set construct; }
@@ -1689,10 +1814,13 @@ namespace NM {
 		public NM.WepKeyType get_wep_key_type ();
 		public uint32 get_wep_tx_keyidx ();
 		public void remove_group (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_group_by_value (string group);
 		public void remove_pairwise (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_pairwise_by_value (string pairwise);
 		public void remove_proto (uint32 i);
+		[Version (since = "0.9.10")]
 		public bool remove_proto_by_value (string proto);
 		public void set_wep_key (uint32 idx, string key);
 		[NoAccessorMethod]
@@ -1768,6 +1896,7 @@ namespace NM {
 		NAP
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_CONNECTIVITY_", has_type_id = false)]
+	[Version (since = "0.9.8.6")]
 	public enum ConnectivityState {
 		UNKNOWN,
 		NONE,
@@ -1937,6 +2066,7 @@ namespace NM {
 		DIFF_RESULT_NO_DEFAULT
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_DCB_FLAG_", type_id = "nm_setting_dcb_flags_get_type ()")]
+	[Version (since = "0.9.10")]
 	public enum SettingDcbFlags {
 		NONE,
 		ENABLE,
@@ -1952,7 +2082,7 @@ namespace NM {
 		IN_B_DEFAULT
 	}
 	[CCode (cheader_filename = "nm-setting-gsm.h", cprefix = "NM_SETTING_GSM_BAND_", type_id = "nm_setting_gsm_network_band_get_type ()")]
-	[Deprecated (since = "0.9.10")]
+	[Version (deprecated = true, deprecated_since = "0.9.10")]
 	public enum SettingGsmNetworkBand {
 		UNKNOWN,
 		ANY,
@@ -1971,7 +2101,7 @@ namespace NM {
 		U2600
 	}
 	[CCode (cheader_filename = "nm-setting-gsm.h", cprefix = "NM_SETTING_GSM_NETWORK_TYPE_", type_id = "nm_setting_gsm_network_type_get_type ()")]
-	[Deprecated (since = "0.9.10")]
+	[Version (deprecated = true, deprecated_since = "0.9.10")]
 	public enum SettingGsmNetworkType {
 		ANY,
 		UMTS_HSPA,
@@ -2137,6 +2267,7 @@ namespace NM {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-setting-bridge.h", cprefix = "NM_SETTING_BRIDGE_ERROR_")]
+	[Version (since = "0.9.8")]
 	public errordomain SettingBridgeError {
 		[CCode (cname = "NM_SETTING_BRIDGE_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -2148,6 +2279,7 @@ namespace NM {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_BRIDGE_PORT_ERROR_")]
+	[Version (since = "0.9.8")]
 	public errordomain SettingBridgePortError {
 		[CCode (cname = "NM_SETTING_BRIDGE_PORT_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -2193,6 +2325,7 @@ namespace NM {
 		INVALIDPROPERTY,
 		[CCode (cname = "NM_SETTING_DCB_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
+		[Version (since = "0.9.10")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-setting.h", cprefix = "NM_SETTING_ERROR_")]
@@ -2209,6 +2342,7 @@ namespace NM {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-setting-generic.h", cprefix = "NM_SETTING_GENERIC_ERROR_")]
+	[Version (since = "0.9.10")]
 	public errordomain SettingGenericError {
 		[CCode (cname = "NM_SETTING_GENERIC_ERROR_UNKNOWN")]
 		UNKNOWNERROR,
@@ -2328,6 +2462,7 @@ namespace NM {
 		[CCode (cname = "NM_SETTING_TEAM_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
 		[CCode (cheader_filename = "nm-setting-team.h")]
+		[Version (since = "0.9.10")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cprefix = "NM_SETTING_TEAM_PORT_ERROR_")]
@@ -2338,6 +2473,7 @@ namespace NM {
 		INVALIDPROPERTY,
 		[CCode (cname = "NM_SETTING_TEAM_PORT_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
+		[Version (since = "0.9.10")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-setting-vlan.h", cprefix = "NM_SETTING_VLAN_ERROR_")]
@@ -2372,7 +2508,7 @@ namespace NM {
 		[CCode (cname = "NM_SETTING_WIMAX_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY;
 		[CCode (cheader_filename = "nm-setting-wimax.h")]
-		[Deprecated (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.2")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "nm-setting-wired.h", cprefix = "NM_SETTING_WIRED_ERROR_")]
@@ -2525,8 +2661,10 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_APP_ISCSI_PRIORITY")]
 	public const string SETTING_DCB_APP_ISCSI_PRIORITY;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_FCOE_MODE_FABRIC")]
+	[Version (since = "0.9.10")]
 	public const string SETTING_DCB_FCOE_MODE_FABRIC;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_FCOE_MODE_VN2VN")]
+	[Version (since = "0.9.10")]
 	public const string SETTING_DCB_FCOE_MODE_VN2VN;
 	[CCode (cheader_filename = "NetworkManager-1.0.h", cname = "NM_SETTING_DCB_PRIORITY_BANDWIDTH")]
 	public const string SETTING_DCB_PRIORITY_BANDWIDTH;

@@ -22,54 +22,57 @@ namespace Gedit {
 	public class Document : Gtk.SourceBuffer {
 		[CCode (has_construct_function = false)]
 		public Document ();
-		[Deprecated (since = "3.14")]
+		[Version (deprecated = true, deprecated_since = "3.14")]
 		public Gtk.SourceCompressionType get_compression_type ();
 		public string get_content_type ();
-		[Deprecated (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.18")]
 		public bool get_deleted ();
-		[Deprecated (since = "3.14")]
+		[Version (deprecated = true, deprecated_since = "3.14")]
 		public unowned Gtk.SourceEncoding get_encoding ();
+		[Version (since = "3.14")]
 		public unowned Gtk.SourceFile get_file ();
 		public unowned Gtk.SourceLanguage get_language ();
-		[Deprecated (since = "3.14")]
+		[Version (deprecated = true, deprecated_since = "3.14")]
 		public GLib.File? get_location ();
 		public string get_metadata (string key);
 		public string get_mime_type ();
-		[Deprecated (since = "3.14")]
+		[Version (deprecated = true, deprecated_since = "3.14")]
 		public Gtk.SourceNewlineType get_newline_type ();
-		[Deprecated (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.18")]
 		public bool get_readonly ();
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
 		public string get_uri_for_display ();
 		public bool goto_line (int line);
 		public bool goto_line_offset (int line, int line_offset);
-		[Deprecated (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.18")]
 		public bool is_local ();
 		public bool is_untitled ();
 		public bool is_untouched ();
-		[Deprecated (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.18")]
 		public void set_content_type (string? content_type);
 		public void set_language (Gtk.SourceLanguage? lang);
-		[Deprecated (since = "3.14")]
+		[Version (deprecated = true, deprecated_since = "3.14")]
 		public void set_location (GLib.File location);
 		public void set_search_context (Gtk.SourceSearchContext? search_context);
-		[Deprecated (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.18")]
 		public void set_short_name_for_display (string? short_name);
 		public string content_type { owned get; set; }
 		[NoAccessorMethod]
 		public bool empty_search { get; }
 		public string mime_type { owned get; }
-		[Deprecated (since = "3.18")]
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "3.18")]
 		public bool read_only { get; }
 		[NoAccessorMethod]
 		public string shortname { owned get; set; }
 		[NoAccessorMethod]
 		public bool use_gvfs_metadata { get; construct; }
 		public virtual signal void cursor_moved ();
+		[Version (since = "2.22")]
 		public virtual signal void load ();
 		public virtual signal void loaded ();
+		[Version (since = "2.20")]
 		public virtual signal void save ();
 		public virtual signal void saved ();
 	}
@@ -314,12 +317,14 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_save_document (Gedit.Window window, Gedit.Document document);
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
+	[Version (since = "3.14")]
 	public static async bool commands_save_document_async (Gedit.Document document, Gedit.Window window, GLib.Cancellable? cancellable);
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
 	public static void debug (Gedit.DebugSection section, string file, int line, string function);
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
 	public static void debug_init ();
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
+	[Version (since = "3.4")]
 	public static void debug_plugin_message (string file, int line, string function, string message);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_basename_for_display (GLib.File location);
@@ -328,7 +333,7 @@ namespace Gedit {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "gedit/gedit-utils.h")]
 	public static string[] utils_drop_get_uris (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Deprecated (since = "3.18")]
+	[Version (deprecated = true, deprecated_since = "3.18")]
 	public static string utils_escape_underscores (string text, ssize_t length);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static Gtk.SourceCompressionType utils_get_compression_type_from_content_type (string content_type);
@@ -343,7 +348,7 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_location_get_dirname_for_display (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Deprecated (since = "3.18")]
+	[Version (deprecated = true, deprecated_since = "3.18")]
 	public static string utils_make_canonical_uri_from_shell_arg (string str);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_make_valid_utf8 (string name);
@@ -366,6 +371,6 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_str_middle_truncate (string string, uint truncate_length);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Deprecated (since = "3.18")]
+	[Version (deprecated = true, deprecated_since = "3.18")]
 	public static string utils_uri_get_dirname (string uri);
 }

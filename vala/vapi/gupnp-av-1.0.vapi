@@ -126,11 +126,11 @@ namespace GUPnP {
 		public unowned string get_album ();
 		public unowned string get_album_art ();
 		public string get_album_xml_string ();
-		[Deprecated (since = "0.5.3")]
+		[Version (deprecated = true, deprecated_since = "0.5.3")]
 		public unowned string get_artist ();
 		public GLib.List<GUPnP.DIDLLiteContributor> get_artists ();
 		public string get_artists_xml_string ();
-		[Deprecated (since = "0.5.3")]
+		[Version (deprecated = true, deprecated_since = "0.5.3")]
 		public unowned string get_author ();
 		public GLib.List<GUPnP.DIDLLiteContributor> get_authors ();
 		public GUPnP.DIDLLiteResource get_compat_resource (string sink_protocol_info, bool lenient);
@@ -164,9 +164,9 @@ namespace GUPnP {
 		public bool is_restricted_set ();
 		public void set_album (string album);
 		public void set_album_art (string album_art);
-		[Deprecated (since = "0.5.3")]
+		[Version (deprecated = true, deprecated_since = "0.5.3")]
 		public void set_artist (string artist);
-		[Deprecated (since = "0.5.3")]
+		[Version (deprecated = true, deprecated_since = "0.5.3")]
 		public void set_author (string author);
 		public void set_creator (string creator);
 		public void set_date (string date);
@@ -186,9 +186,9 @@ namespace GUPnP {
 		public bool update_id_is_set ();
 		public string album { get; set; }
 		public string album_art { get; set; }
-		[Deprecated (since = "0.5.3")]
+		[Version (deprecated = true, deprecated_since = "0.5.3")]
 		public string artist { get; set; }
-		[Deprecated (since = "0.5.3")]
+		[Version (deprecated = true, deprecated_since = "0.5.3")]
 		public string author { get; set; }
 		public string creator { get; set; }
 		public string date { get; set; }
@@ -238,7 +238,9 @@ namespace GUPnP {
 		public int get_sample_freq ();
 		public long get_size ();
 		public int64 get_size64 ();
+		[Version (since = "0.12.4")]
 		public unowned string get_subtitle_file_type ();
+		[Version (since = "0.12.4")]
 		public unowned string get_subtitle_file_uri ();
 		public uint get_track_total ();
 		public uint get_update_count ();
@@ -258,7 +260,9 @@ namespace GUPnP {
 		public void set_sample_freq (int sample_freq);
 		public void set_size (long size);
 		public void set_size64 (int64 size);
+		[Version (since = "0.12.4")]
 		public void set_subtitle_file_type (string? type);
+		[Version (since = "0.12.4")]
 		public void set_subtitle_file_uri (string? uri);
 		public void set_track_total (uint track_total);
 		public void set_update_count (uint update_count);

@@ -4206,23 +4206,6 @@ project, pass %NULL for @project.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="dual_new_name"
-              c:identifier="glade_name_context_dual_new_name">
-        <return-value transfer-ownership="full">
-          <type name="utf8" c:type="gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="NameContext" c:type="GladeNameContext*"/>
-          </instance-parameter>
-          <parameter name="another_context" transfer-ownership="none">
-            <type name="NameContext" c:type="GladeNameContext*"/>
-          </parameter>
-          <parameter name="base_name" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="has_name" c:identifier="glade_name_context_has_name">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -5575,7 +5558,9 @@ exists, then %TRUE is returned and no backup is made.</doc>
       <method name="new_widget_name"
               c:identifier="glade_project_new_widget_name">
         <doc xml:space="preserve">Creates a new name for a widget that doesn't collide with any of the names
-already in @project. This name will start with @base_name.</doc>
+already in @project. This name will start with @base_name.
+
+Note the @widget parameter is ignored and preserved only for historical reasons.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a string containing the new name, %NULL if there is not enough
          memory for this string</doc>
@@ -5587,7 +5572,7 @@ already in @project. This name will start with @base_name.</doc>
             <type name="Project" c:type="GladeProject*"/>
           </instance-parameter>
           <parameter name="widget" transfer-ownership="none">
-            <doc xml:space="preserve">the #GladeWidget intended to recieve a new name</doc>
+            <doc xml:space="preserve">the #GladeWidget intended to recieve a new name, or %NULL</doc>
             <type name="Widget" c:type="GladeWidget*"/>
           </parameter>
           <parameter name="base_name" transfer-ownership="none">
@@ -6200,6 +6185,17 @@ and generates a string to show in the UI describing why.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="writing_preview"
+              c:identifier="glade_project_writing_preview">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="project" transfer-ownership="none">
+            <type name="Project" c:type="GladeProject*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="add-item" transfer-ownership="none">
         <type name="WidgetAdaptor"/>
       </property>
@@ -6639,6 +6635,7 @@ by GladeProject</doc>
               value="6"
               c:identifier="GLADE_PROJECT_MODEL_N_COLUMNS"
               glib:nick="n-columns">
+        <doc xml:space="preserve">Number of columns</doc>
       </member>
     </enumeration>
     <record name="ProjectPrivate" c:type="GladeProjectPrivate" disguised="1">
@@ -10323,6 +10320,11 @@ and also to update the UI for undo/redo items etc.</doc>
               glib:nick="yes-or-no">
       </member>
     </enumeration>
+    <constant name="UNNAMED_PREFIX"
+              value="__glade_unnamed_"
+              c:type="GLADE_UNNAMED_PREFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <enumeration name="UtilFileDialogType"
                  glib:type-name="GladeUtilFileDialogType"
                  glib:get-type="glade_util_file_dialog_type_get_type"
@@ -10974,6 +10976,22 @@ properties that are not saved to the glade file are ignored.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="ensure_name" c:identifier="glade_widget_ensure_name">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="widget" transfer-ownership="none">
+            <type name="Widget" c:type="GladeWidget*"/>
+          </instance-parameter>
+          <parameter name="project" transfer-ownership="none">
+            <type name="Project" c:type="GladeProject*"/>
+          </parameter>
+          <parameter name="use_command" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="event" c:identifier="glade_widget_event">
         <doc xml:space="preserve">Feed an event to be handled on the project GladeWidget
 hierarchy.</doc>
@@ -11093,6 +11111,24 @@ exposed for Glade configuration&lt;/para&gt;&lt;/note&gt;</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_display_name"
+              c:identifier="glade_widget_get_display_name">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to @widget's displayable name
+
+This should be used to display the widget's ID in
+the UI, it will automatically return an "(unnamed)"
+string if the widget is not intended to be serialized
+with an ID (i.e. the user did not provide a name).</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="widget" transfer-ownership="none">
+            <doc xml:space="preserve">a #GladeWidget</doc>
+            <type name="Widget" c:type="GladeWidget*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_internal" c:identifier="glade_widget_get_internal">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the internal name of @widget</doc>
@@ -11134,7 +11170,10 @@ with gtk_widget_class_set_template().</doc>
       </method>
       <method name="get_name" c:identifier="glade_widget_get_name">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a pointer to @widget's name</doc>
+          <doc xml:space="preserve">a pointer to @widget's name
+
+This is what will be serialized as the widget's ID, unless
+the name currently carries the %GLADE_UNNAMED_PREFIX.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -11371,6 +11410,28 @@ must call g_list_free() to free the list.</doc>
             <doc xml:space="preserve">a  #GType</doc>
             <type name="GType" c:type="GType"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="has_name" c:identifier="glade_widget_has_name">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the user has named this widget with an ID</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="widget" transfer-ownership="none">
+            <doc xml:space="preserve">a #GladeWidget</doc>
+            <type name="Widget" c:type="GladeWidget*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="has_prop_refs" c:identifier="glade_widget_has_prop_refs">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="widget" transfer-ownership="none">
+            <type name="Widget" c:type="GladeWidget*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="hide" c:identifier="glade_widget_hide">
