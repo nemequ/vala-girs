@@ -1029,9 +1029,9 @@ namespace E {
 		[CCode (cname = "e_xmlhash_destroy")]
 		public static void xmlhash_destroy (E.XmlHash hash);
 		[CCode (cname = "e_xmlhash_foreach_key")]
-		public static void xmlhash_foreach_key (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashFunc func);
+		public static void xmlhash_foreach_key (E.XmlHash hash, [CCode (scope = "async")] E.XmlHashFunc func);
 		[CCode (cname = "e_xmlhash_foreach_key_remove")]
-		public static void xmlhash_foreach_key_remove (E.XmlHash hash, [CCode (scope = "async")] owned E.XmlHashRemoveFunc func);
+		public static void xmlhash_foreach_key_remove (E.XmlHash hash, [CCode (scope = "async")] E.XmlHashRemoveFunc func);
 		[CCode (cname = "e_xmlhash_new")]
 		public static E.XmlHash xmlhash_new (string filename);
 		[CCode (cname = "e_xmlhash_remove")]
@@ -1374,14 +1374,14 @@ namespace E {
 	public static bool categories_is_searchable (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.24")]
-	public static void categories_register_change_listener ([CCode (scope = "async")] owned GLib.Callback listener);
+	public static void categories_register_change_listener ([CCode (scope = "async")] GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_remove (string category);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void categories_set_icon_file_for (string category, string icon_file);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.24")]
-	public static void categories_unregister_change_listener ([CCode (scope = "async")] owned GLib.Callback listener);
+	public static void categories_unregister_change_listener ([CCode (scope = "async")] GLib.Callback listener);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.0")]
 	public static int data_server_util_get_dbus_call_timeout ();

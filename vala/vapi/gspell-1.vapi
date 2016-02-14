@@ -27,10 +27,10 @@ namespace Gspell {
 		[NoAccessorMethod]
 		public Gspell.Navigator spell_navigator { owned get; construct; }
 	}
-	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_inline_checker_text_get_type ()")]
-	public class InlineCheckerText : GLib.Object {
+	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_inline_checker_text_view_get_type ()")]
+	public class InlineCheckerTextView : GLib.Object {
 		[CCode (has_construct_function = false)]
-		protected InlineCheckerText ();
+		protected InlineCheckerTextView ();
 		public bool get_enabled ();
 		public void set_enabled (bool enabled);
 		public bool enabled { get; set; }
@@ -59,10 +59,10 @@ namespace Gspell {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public LanguageChooserDialog (Gtk.Window parent, Gspell.Language? current_language, Gtk.DialogFlags flags);
 	}
-	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_navigator_text_get_type ()")]
-	public class NavigatorText : GLib.Object, Gspell.Navigator {
+	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_navigator_text_view_get_type ()")]
+	public class NavigatorTextView : GLib.Object, Gspell.Navigator {
 		[CCode (has_construct_function = false)]
-		protected NavigatorText ();
+		protected NavigatorTextView ();
 		public static Gspell.Navigator @new (Gtk.TextView view);
 		[NoAccessorMethod]
 		public Gtk.TextView view { owned get; construct; }
@@ -96,5 +96,5 @@ namespace Gspell {
 	[CCode (cheader_filename = "gspell/gspell.h")]
 	public static void text_buffer_set_spell_checker (Gtk.TextBuffer buffer, Gspell.Checker? checker);
 	[CCode (cheader_filename = "gspell/gspell.h")]
-	public static unowned Gspell.InlineCheckerText text_view_get_inline_checker (Gtk.TextView view);
+	public static unowned Gspell.InlineCheckerTextView text_view_get_inline_checker (Gtk.TextView view);
 }

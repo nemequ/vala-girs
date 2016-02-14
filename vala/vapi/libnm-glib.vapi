@@ -174,8 +174,8 @@ namespace NM {
 		public const string WWAN_HARDWARE_ENABLED;
 		[CCode (has_construct_function = false)]
 		public Client ();
-		public void activate_connection (NM.Connection? connection, NM.Device? device, string? specific_object, [CCode (scope = "async")] owned NM.ClientActivateFn? callback);
-		public void add_and_activate_connection (NM.Connection? partial, NM.Device device, string? specific_object, [CCode (scope = "async")] owned NM.ClientAddActivateFn? callback);
+		public void activate_connection (NM.Connection? connection, NM.Device? device, string? specific_object, [CCode (scope = "async")] NM.ClientActivateFn? callback);
+		public void add_and_activate_connection (NM.Connection? partial, NM.Device device, string? specific_object, [CCode (scope = "async")] NM.ClientAddActivateFn? callback);
 		[Version (since = "0.9.8.6")]
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.9.8.6")]
@@ -327,11 +327,11 @@ namespace NM {
 		public virtual bool connection_compatible (NM.Connection connection) throws GLib.Error;
 		public bool connection_valid (NM.Connection connection);
 		[Version (since = "1.0")]
-		public void @delete ([CCode (scope = "async")] owned NM.DeviceCallbackFn? callback);
+		public void @delete ([CCode (scope = "async")] NM.DeviceCallbackFn? callback);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "0.9.10")]
 		public static string[] disambiguate_names ([CCode (array_length_cname = "num_devices", array_length_pos = 1.1)] NM.Device[] devices);
-		public void disconnect ([CCode (scope = "async")] owned NM.DeviceCallbackFn? callback);
+		public void disconnect ([CCode (scope = "async")] NM.DeviceCallbackFn? callback);
 		public GLib.SList<weak NM.Connection> filter_connections (GLib.SList<NM.Connection> connections);
 		public unowned NM.ActiveConnection get_active_connection ();
 		public bool get_autoconnect ();
@@ -627,7 +627,7 @@ namespace NM {
 		public NM.80211Mode get_mode ();
 		public unowned string get_permanent_hw_address ();
 		[Version (since = "0.9.8")]
-		public void request_scan_simple ([CCode (scope = "async")] owned NM.DeviceWifiRequestScanFn? callback);
+		public void request_scan_simple ([CCode (scope = "async")] NM.DeviceWifiRequestScanFn? callback);
 		[Version (since = "0.9.10")]
 		public NM.ObjectArray access_points { get; }
 		public NM.AccessPoint active_access_point { get; }
@@ -816,15 +816,15 @@ namespace NM {
 		public const string UPDATED;
 		[CCode (has_construct_function = false)]
 		public RemoteConnection (DBus.Connection bus, string path);
-		public void commit_changes ([CCode (scope = "async")] owned NM.RemoteConnectionResultFunc? callback);
+		public void commit_changes ([CCode (scope = "async")] NM.RemoteConnectionResultFunc? callback);
 		[Version (since = "0.9.10")]
-		public void commit_changes_unsaved ([CCode (scope = "async")] owned NM.RemoteConnectionResultFunc? callback);
-		public void @delete ([CCode (scope = "async")] owned NM.RemoteConnectionResultFunc? callback);
-		public void get_secrets (string setting_name, [CCode (scope = "async")] owned NM.RemoteConnectionGetSecretsFunc callback);
+		public void commit_changes_unsaved ([CCode (scope = "async")] NM.RemoteConnectionResultFunc? callback);
+		public void @delete ([CCode (scope = "async")] NM.RemoteConnectionResultFunc? callback);
+		public void get_secrets (string setting_name, [CCode (scope = "async")] NM.RemoteConnectionGetSecretsFunc callback);
 		[Version (since = "0.9.10")]
 		public bool get_unsaved ();
 		[Version (since = "0.9.10")]
-		public void save ([CCode (scope = "async")] owned NM.RemoteConnectionResultFunc? callback);
+		public void save ([CCode (scope = "async")] NM.RemoteConnectionResultFunc? callback);
 		public string dbus_path { construct; }
 		[Version (since = "0.9.10")]
 		public bool unsaved { get; }
@@ -848,9 +848,9 @@ namespace NM {
 		public const string SERVICE_RUNNING;
 		[CCode (has_construct_function = false)]
 		public RemoteSettings (DBus.Connection? bus);
-		public bool add_connection (NM.Connection connection, [CCode (scope = "async")] owned NM.RemoteSettingsAddConnectionFunc callback);
+		public bool add_connection (NM.Connection connection, [CCode (scope = "async")] NM.RemoteSettingsAddConnectionFunc callback);
 		[Version (since = "0.9.10")]
-		public bool add_connection_unsaved (NM.Connection connection, [CCode (scope = "async")] owned NM.RemoteSettingsAddConnectionFunc callback);
+		public bool add_connection_unsaved (NM.Connection connection, [CCode (scope = "async")] NM.RemoteSettingsAddConnectionFunc callback);
 		[Version (since = "0.9.10")]
 		public unowned NM.RemoteConnection get_connection_by_id (string id);
 		public unowned NM.RemoteConnection get_connection_by_path (string path);
@@ -861,7 +861,7 @@ namespace NM {
 		public static async NM.RemoteSettings new_async (DBus.Connection? bus, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.9.10")]
 		public bool reload_connections () throws GLib.Error;
-		public bool save_hostname (string hostname, [CCode (scope = "async")] owned NM.RemoteSettingsSaveHostnameFunc? callback);
+		public bool save_hostname (string hostname, [CCode (scope = "async")] NM.RemoteSettingsSaveHostnameFunc? callback);
 		[NoAccessorMethod]
 		public bool can_modify { get; }
 		[NoAccessorMethod]
@@ -887,11 +887,11 @@ namespace NM {
 		protected SecretAgent ();
 		[NoWrapper]
 		public virtual void cancel_get_secrets (string connection_path, string setting_name);
-		public virtual void delete_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] owned NM.SecretAgentDeleteSecretsFunc callback);
+		public virtual void delete_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] NM.SecretAgentDeleteSecretsFunc callback);
 		public bool get_registered ();
-		public virtual void get_secrets (NM.Connection connection, string connection_path, string setting_name, [CCode (array_length = false, array_null_terminated = true)] string[] hints, NM.SecretAgentGetSecretsFlags flags, [CCode (scope = "async")] owned NM.SecretAgentGetSecretsFunc callback);
+		public virtual void get_secrets (NM.Connection connection, string connection_path, string setting_name, [CCode (array_length = false, array_null_terminated = true)] string[] hints, NM.SecretAgentGetSecretsFlags flags, [CCode (scope = "async")] NM.SecretAgentGetSecretsFunc callback);
 		public bool register ();
-		public virtual void save_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] owned NM.SecretAgentSaveSecretsFunc callback);
+		public virtual void save_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] NM.SecretAgentSaveSecretsFunc callback);
 		public bool unregister ();
 		[NoAccessorMethod]
 		public bool auto_register { get; set construct; }

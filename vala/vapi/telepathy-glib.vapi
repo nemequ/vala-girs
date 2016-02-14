@@ -2987,7 +2987,7 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_target = false)]
 	public delegate bool PresenceMixinStatusAvailableFunc (GLib.Object obj, uint which);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", instance_pos = 3.9)]
-	public delegate void ProxyPrepareAsync (TelepathyGLib.Proxy proxy, TelepathyGLib.ProxyFeature feature, [CCode (delegate_target_pos = 0, scope = "async")] owned GLib.AsyncReadyCallback? callback);
+	public delegate void ProxyPrepareAsync (TelepathyGLib.Proxy proxy, TelepathyGLib.ProxyFeature feature, [CCode (delegate_target_pos = 0, scope = "async")] GLib.AsyncReadyCallback? callback);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", instance_pos = 6.9)]
 	[Version (since = "0.11.5")]
 	public delegate void SimpleApproverAddDispatchOperationImpl (TelepathyGLib.SimpleApprover approver, TelepathyGLib.Account account, TelepathyGLib.Connection connection, GLib.List<TelepathyGLib.Channel> channels, TelepathyGLib.ChannelDispatchOperation? dispatch_operation, TelepathyGLib.AddDispatchOperationContext context);

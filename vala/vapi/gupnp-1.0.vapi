@@ -223,9 +223,9 @@ namespace GUPnP {
 		public string get_id ();
 		[Version (deprecated = true, deprecated_since = "0.20.15.")]
 		public GUPnP.ServiceIntrospection? get_introspection () throws GLib.Error;
-		public void get_introspection_async ([CCode (scope = "async")] owned GUPnP.ServiceIntrospectionCallback callback);
+		public void get_introspection_async ([CCode (scope = "async")] GUPnP.ServiceIntrospectionCallback callback);
 		[Version (since = "0.20.9.")]
-		public void get_introspection_async_full ([CCode (delegate_target_pos = 2.1, scope = "async")] owned GUPnP.ServiceIntrospectionCallback callback, GLib.Cancellable? cancellable);
+		public void get_introspection_async_full ([CCode (delegate_target_pos = 2.1, scope = "async")] GUPnP.ServiceIntrospectionCallback callback, GLib.Cancellable? cancellable);
 		public unowned string get_location ();
 		public string get_scpd_url ();
 		public unowned string get_service_type ();
@@ -252,16 +252,14 @@ namespace GUPnP {
 	public class ServiceProxy : GUPnP.ServiceInfo {
 		[CCode (has_construct_function = false)]
 		protected ServiceProxy ();
-		public bool add_notify (string variable, GLib.Type type, [CCode (scope = "async")] owned GUPnP.ServiceProxyNotifyCallback callback);
+		public bool add_notify (string variable, GLib.Type type, [CCode (scope = "async")] GUPnP.ServiceProxyNotifyCallback callback);
 		[Version (since = "0.20.12")]
 		public bool add_notify_full (string variable, GLib.Type type, owned GUPnP.ServiceProxyNotifyCallback callback);
 		[Version (since = "0.20.12")]
 		public bool add_raw_notify (owned GUPnP.ServiceProxyNotifyCallback callback);
-		public unowned GUPnP.ServiceProxyAction begin_action (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] owned GUPnP.ServiceProxyActionCallback callback, ...);
-		[Version (deprecated = true, deprecated_since = "0.20.9")]
-		public unowned GUPnP.ServiceProxyAction begin_action_hash (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] owned GUPnP.ServiceProxyActionCallback callback, GLib.HashTable<string,GLib.Value?> hash);
+		public unowned GUPnP.ServiceProxyAction begin_action (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] GUPnP.ServiceProxyActionCallback callback, ...);
 		[Version (since = "0.13.3")]
-		public unowned GUPnP.ServiceProxyAction begin_action_list (string action, GLib.List<string> in_names, GLib.List<GLib.Value?> in_values, [CCode (scope = "async")] owned GUPnP.ServiceProxyActionCallback callback);
+		public unowned GUPnP.ServiceProxyAction begin_action_list (string action, GLib.List<string> in_names, GLib.List<GLib.Value?> in_values, [CCode (scope = "async")] GUPnP.ServiceProxyActionCallback callback);
 		public void cancel_action (GUPnP.ServiceProxyAction action);
 		public bool end_action (GUPnP.ServiceProxyAction action, ...) throws GLib.Error;
 		public bool end_action_hash (GUPnP.ServiceProxyAction action, [CCode (pos = -0.9)] GLib.HashTable<string,weak GLib.Value*> hash) throws GLib.Error;
@@ -276,7 +274,7 @@ namespace GUPnP {
 		public bool subscribed { get; set; }
 		public virtual signal void subscription_lost (GLib.Error reason);
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_service_proxy_action_get_type ()")]
 	[Compact]
 	public class ServiceProxyAction {
 	}
