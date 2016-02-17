@@ -3869,6 +3869,31 @@ should do with the dropped data.</doc>
         <doc xml:space="preserve">Ask the user what to do with the data.</doc>
       </member>
     </bitfield>
+    <enumeration name="DragCancelReason"
+                 version="3.20"
+                 glib:type-name="GdkDragCancelReason"
+                 glib:get-type="gdk_drag_cancel_reason_get_type"
+                 c:type="GdkDragCancelReason">
+      <doc xml:space="preserve">Used in #GdkDragContext to the reason of a cancelled DND operation.</doc>
+      <member name="no_target"
+              value="0"
+              c:identifier="GDK_DRAG_CANCEL_NO_TARGET"
+              glib:nick="no-target">
+        <doc xml:space="preserve">There is no suitable drop target.</doc>
+      </member>
+      <member name="user_cancelled"
+              value="1"
+              c:identifier="GDK_DRAG_CANCEL_USER_CANCELLED"
+              glib:nick="user-cancelled">
+        <doc xml:space="preserve">Drag cancelled by the user</doc>
+      </member>
+      <member name="error"
+              value="2"
+              c:identifier="GDK_DRAG_CANCEL_ERROR"
+              glib:nick="error">
+        <doc xml:space="preserve">Unspecified error.</doc>
+      </member>
+    </enumeration>
     <class name="DragContext"
            c:symbol-prefix="drag_context"
            c:type="GdkDragContext"
@@ -4109,7 +4134,7 @@ for more information.</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="cancel" when="first" version="3.20">
+      <glib:signal name="cancel" when="last" version="3.20">
         <doc xml:space="preserve">The drag and drop operation was cancelled.
 
 This signal will only be emitted if the #GdkDragContext manages
@@ -4118,6 +4143,11 @@ for more information.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="DragCancelReason"/>
+          </parameter>
+        </parameters>
       </glib:signal>
       <glib:signal name="dnd-finished" when="last" version="3.20">
         <doc xml:space="preserve">The drag and drop operation was finished, the drag destination
@@ -25071,7 +25101,11 @@ for @success may trigger a drag cancellation animation.
 
 This function is called by the drag source, and should
 be the last call before dropping the reference to the
-@context.</doc>
+@context.
+
+The #GdkDragContext will only take the first gdk_drag_drop_done()
+call as effective, if this function is called multiple times,
+all subsequent calls will be ignored.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
