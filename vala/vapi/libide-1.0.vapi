@@ -123,7 +123,7 @@ namespace Ide {
 		public signal void buffer_loaded (Ide.Buffer buffer);
 		public signal void buffer_saved (Ide.Buffer buffer);
 		public signal Ide.Buffer? create_buffer (Ide.File file);
-		public signal void load_buffer (Ide.Buffer buffer);
+		public signal void load_buffer (Ide.Buffer buffer, bool reloading);
 		public signal void save_buffer (Ide.Buffer buffer);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_build_result_get_type ()")]
@@ -149,6 +149,8 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		protected Builder ();
 		public virtual async Ide.BuildResult build_async (Ide.BuilderBuildFlags flags, out unowned Ide.BuildResult result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public unowned Ide.Configuration get_configuration ();
+		public Ide.Configuration configuration { get; construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_completion_item_get_type ()")]
 	public abstract class CompletionItem : GLib.Object {
@@ -172,6 +174,66 @@ namespace Ide {
 		public void take_proposal (owned Ide.CompletionItem proposal);
 		public string query { get; construct; }
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_configuration_get_type ()")]
+	public class Configuration : Ide.Object {
+		[CCode (has_construct_function = false)]
+		public Configuration (Ide.Context context, string id, string device_id, string runtime_id);
+		public Ide.Configuration duplicate ();
+		public unowned string get_config_opts ();
+		public bool get_debug ();
+		public unowned Ide.Device? get_device ();
+		public unowned string get_device_id ();
+		public bool get_dirty ();
+		public unowned string get_display_name ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_environ ();
+		public unowned Ide.Environment get_environment ();
+		public unowned string get_id ();
+		public int get_parallelism ();
+		public unowned string get_prefix ();
+		public unowned Ide.Runtime? get_runtime ();
+		public unowned string get_runtime_id ();
+		public unowned string getenv (string key);
+		public void set_config_opts (string config_opts);
+		public void set_debug (bool debug);
+		public void set_device (Ide.Device device);
+		public void set_device_id (string device_id);
+		public void set_dirty (bool dirty);
+		public void set_display_name (string display_name);
+		public void set_parallelism (int parallelism);
+		public void set_prefix (string prefix);
+		public void set_runtime (Ide.Runtime runtime);
+		public void set_runtime_id (string runtime_id);
+		public void setenv (string key, string value);
+		public string config_opts { get; set; }
+		public bool debug { get; set; }
+		public Ide.Device device { get; set; }
+		public string device_id { get; set; }
+		public bool dirty { get; set; }
+		public string display_name { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] environ { owned get; }
+		public string id { get; construct; }
+		public int parallelism { get; set; }
+		public string prefix { get; set; }
+		public Ide.Runtime runtime { get; set; }
+		public string runtime_id { get; set; }
+		public signal void changed ();
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_configuration_manager_get_type ()")]
+	public class ConfigurationManager : Ide.Object, GLib.AsyncInitable, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected ConfigurationManager ();
+		public void add (Ide.Configuration configuration);
+		public unowned Ide.Configuration? get_configuration (string id);
+		public unowned Ide.Configuration get_current ();
+		public void remove (Ide.Configuration configuration);
+		public async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_current (Ide.Configuration configuration);
+		public Ide.Configuration current { get; set; }
+		[NoAccessorMethod]
+		public string current_display_name { owned get; }
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_context_get_type ()")]
 	public class Context : GLib.Object, GLib.AsyncInitable {
 		[CCode (cname = "ide_context_new_async", has_construct_function = false)]
@@ -179,11 +241,13 @@ namespace Ide {
 		public unowned Ide.BackForwardList get_back_forward_list ();
 		public unowned Ide.BufferManager get_buffer_manager ();
 		public unowned Ide.BuildSystem get_build_system ();
+		public unowned Ide.ConfigurationManager get_configuration_manager ();
 		public unowned Ide.DeviceManager get_device_manager ();
 		public unowned Ide.Project get_project ();
 		public unowned GLib.File get_project_file ();
 		public unowned Gtk.RecentManager get_recent_manager ();
 		public unowned string get_root_build_dir ();
+		public unowned Ide.RuntimeManager get_runtime_manager ();
 		public unowned Ide.ScriptManager get_script_manager ();
 		public unowned Ide.SearchEngine get_search_engine ();
 		public void* get_service_typed (GLib.Type service_type);
@@ -200,10 +264,12 @@ namespace Ide {
 		public Ide.BackForwardList back_forward_list { get; }
 		public Ide.BufferManager buffer_manager { get; }
 		public Ide.BuildSystem build_system { get; }
+		public Ide.ConfigurationManager configuration_manager { get; }
 		public Ide.DeviceManager device_manager { get; }
 		public Ide.Project project { get; }
 		public GLib.File project_file { get; construct; }
 		public string root_build_dir { get; set; }
+		public Ide.RuntimeManager runtime_manager { get; }
 		public Ide.ScriptManager script_manager { get; }
 		public Ide.SearchEngine search_engine { get; }
 		[NoAccessorMethod]
@@ -221,10 +287,10 @@ namespace Ide {
 	public abstract class Device : Ide.Object {
 		[CCode (has_construct_function = false)]
 		protected Device ();
-		public virtual unowned GLib.KeyFile? get_config ();
 		public unowned string? get_display_name ();
 		public unowned string get_id ();
 		public virtual unowned string get_system_type ();
+		public virtual void prepare_configuration (Ide.Configuration configuration);
 		public void set_display_name (string display_name);
 		public void set_id (string id);
 		public string display_name { get; set; }
@@ -347,6 +413,8 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		protected EditorPerspective ();
 		public void focus_location (Ide.SourceLocation location);
+		public signal void view_added (Gtk.Widget object);
+		public signal void view_removed (Gtk.Widget object);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_editor_view_get_type ()")]
 	public class EditorView : Ide.LayoutView, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
@@ -355,6 +423,47 @@ namespace Ide {
 		public unowned Ide.Buffer get_document ();
 		public Ide.Buffer document { get; construct; }
 		public signal void request_documentation (string object);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_get_type ()")]
+	public class Environment : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		public Environment ();
+		public void append (Ide.EnvironmentVariable variable);
+		public Ide.Environment copy ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_environ ();
+		public unowned string getenv (string key);
+		public void remove (Ide.EnvironmentVariable variable);
+		public void setenv (string key, string value);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_editor_get_type ()")]
+	public class EnvironmentEditor : Gtk.ListBox, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public EnvironmentEditor ();
+		public unowned Ide.Environment? get_environment ();
+		public void set_environment (Ide.Environment environment);
+		public Ide.Environment environment { get; set; }
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_editor_row_get_type ()")]
+	public class EnvironmentEditorRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected EnvironmentEditorRow ();
+		public unowned Ide.EnvironmentVariable? get_variable ();
+		public void set_variable (Ide.EnvironmentVariable variable);
+		public void start_editing ();
+		public Ide.EnvironmentVariable variable { get; set; }
+		public signal void @delete ();
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_variable_get_type ()")]
+	public class EnvironmentVariable : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public EnvironmentVariable (string key, string value);
+		public unowned string get_key ();
+		public unowned string get_value ();
+		public void set_key (string key);
+		public void set_value (string value);
+		public string key { get; set; }
+		public string value { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_extension_adapter_get_type ()")]
 	public class ExtensionAdapter : Ide.Object {
@@ -527,6 +636,7 @@ namespace Ide {
 		public unowned Ide.LayoutStack? get_stack_after (Ide.LayoutStack stack);
 		public unowned Ide.LayoutStack? get_stack_before (Ide.LayoutStack stack);
 		public GLib.List<weak Ide.LayoutStack> get_stacks ();
+		public signal void empty ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_pane_get_type ()")]
 	public class LayoutPane : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -722,6 +832,30 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h")]
 	[Compact]
 	public class RefactoryInterface {
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_runtime_get_type ()")]
+	public class Runtime : Ide.Object {
+		[CCode (has_construct_function = false)]
+		public Runtime (Ide.Context context, string id, string title);
+		public virtual bool contains_program_in_path (string program, GLib.Cancellable? cancellable = null);
+		public virtual Ide.SubprocessLauncher create_launcher () throws GLib.Error;
+		public unowned string get_display_name ();
+		public unowned string get_id ();
+		public virtual async bool postbuild_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async bool prebuild_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual void prepare_configuration (Ide.Configuration configuration);
+		public void set_display_name (string display_name);
+		public void set_id (string id);
+		public string display_name { get; set construct; }
+		public string id { get; set construct; }
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_runtime_manager_get_type ()")]
+	public class RuntimeManager : Ide.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected RuntimeManager ();
+		public void add (Ide.Runtime runtime);
+		public unowned Ide.Runtime get_runtime (string id);
+		public void remove (Ide.Runtime runtime);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_script_get_type ()")]
 	public abstract class Script : Ide.Object, GLib.AsyncInitable {
@@ -1137,6 +1271,28 @@ namespace Ide {
 		public signal void toggle_overwrite ();
 		public signal void undo ();
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_subprocess_launcher_get_type ()")]
+	public class SubprocessLauncher : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public SubprocessLauncher (GLib.SubprocessFlags flags);
+		public unowned string get_cwd ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_environ ();
+		public GLib.SubprocessFlags get_flags ();
+		public void overlay_environment (Ide.Environment environment);
+		public void push_args (string args);
+		public void push_argv (string argv);
+		public void set_cwd (string cwd);
+		public void set_environ (string environ_);
+		public void set_flags (GLib.SubprocessFlags flags);
+		public void setenv (string key, string value, bool replace);
+		public virtual async GLib.Subprocess spawn_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual GLib.Subprocess spawn_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string cwd { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] environ { get; set; }
+		public GLib.SubprocessFlags flags { get; set construct; }
+	}
 	[CCode (cheader_filename = "ide.h", ref_function = "ide_symbol_ref", type_id = "ide_symbol_get_type ()", unref_function = "ide_symbol_unref")]
 	[Compact]
 	public class Symbol {
@@ -1180,8 +1336,8 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h")]
 	[Compact]
 	public class ThreadPool {
-		public static void push (Ide.ThreadPoolKind kind, [CCode (scope = "async")] owned Ide.ThreadFunc func);
-		public static void push_task (Ide.ThreadPoolKind kind, GLib.Task task, [CCode (scope = "async")] owned GLib.TaskThreadFunc func);
+		public static void push (Ide.ThreadPoolKind kind, [CCode (scope = "async")] Ide.ThreadFunc func);
+		public static void push_task (Ide.ThreadPoolKind kind, GLib.Task task, [CCode (scope = "async")] GLib.TaskThreadFunc func);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_tree_get_type ()")]
 	public class Tree : Gtk.TreeView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
@@ -1400,7 +1556,7 @@ namespace Ide {
 	public interface BuildSystem : Ide.Object {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public abstract async string[] get_build_flags_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
-		public abstract Ide.Builder get_builder (GLib.KeyFile? config, Ide.Device device) throws GLib.Error;
+		public abstract Ide.Builder get_builder (Ide.Configuration configuration) throws GLib.Error;
 		public abstract int get_priority ();
 		public static async Ide.BuildSystem new_async (Ide.Context context, GLib.File project_file, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoAccessorMethod]
@@ -1501,6 +1657,7 @@ namespace Ide {
 		public abstract uint add_radio (string page_name, string group_name, string schema_id, string key, string path, string variant_string, string title, string subtitle, string keywords, int priority);
 		public abstract uint add_spin_button (string page_name, string group_name, string schema_id, string key, string path, string title, string subtitle, string keywords, int priority);
 		public abstract uint add_switch (string page_name, string group_name, string schema_id, string key, string? path, string? variant_string, string? title, string? subtitle, string? keywords, int priority);
+		public abstract bool remove_id (uint widget_id);
 		public abstract void set_page (string page_name, GLib.HashTable<void*,void*> map);
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdePreferencesAddinInterface", type_id = "ide_preferences_addin_get_type ()")]
@@ -1527,6 +1684,11 @@ namespace Ide {
 		public abstract string[] get_languages ();
 		public abstract string get_name ();
 		public abstract unowned Gtk.Widget get_widget ();
+	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeRuntimeProviderInterface", type_id = "ide_runtime_provider_get_type ()")]
+	public interface RuntimeProvider : GLib.Object {
+		public abstract void load (Ide.RuntimeManager manager);
+		public abstract void unload (Ide.RuntimeManager manager);
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeSearchProviderInterface", type_id = "ide_search_provider_get_type ()")]
 	public interface SearchProvider : Ide.Object {
@@ -1620,6 +1782,7 @@ namespace Ide {
 		NONE,
 		ADDED,
 		CHANGED,
+		DELETED,
 		ERROR,
 		WARNING,
 		NOTE
@@ -1633,8 +1796,10 @@ namespace Ide {
 	[Flags]
 	public enum BuilderBuildFlags {
 		NONE,
-		FORCE_REBUILD,
-		CLEAN
+		FORCE_BOOTSTRAP,
+		FORCE_CLEAN,
+		NO_BUILD,
+		NO_CONFIGURE
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_DIAGNOSTIC_", type_id = "ide_diagnostic_severity_get_type ()")]
 	public enum DiagnosticSeverity {

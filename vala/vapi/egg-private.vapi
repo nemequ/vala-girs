@@ -85,7 +85,7 @@ namespace Egg {
 		public SignalGroup (GLib.Type target_type);
 		public void block ();
 		public void connect_data (string detailed_signal, [CCode (delegate_target_pos = 2.33333, destroy_notify_pos = 2.66667)] owned GLib.Callback c_handler, GLib.ConnectFlags flags);
-		public void connect_swapped (string detailed_signal, [CCode (scope = "async")] owned GLib.Callback c_handler);
+		public void connect_swapped (string detailed_signal, [CCode (scope = "async")] GLib.Callback c_handler);
 		public unowned GLib.Object? get_target ();
 		public void set_target (GLib.Object? target);
 		public void unblock ();

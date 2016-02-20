@@ -7,7 +7,7 @@ namespace Vte {
 		[CCode (has_construct_function = false)]
 		protected Pty ();
 		public void child_setup ();
-		[Deprecated (since = "0.42")]
+		[Version (deprecated = true, deprecated_since = "0.42")]
 		public void close ();
 		[CCode (has_construct_function = false)]
 		public Pty.foreign_sync (int fd, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -35,8 +35,9 @@ namespace Vte {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Terminal ();
 		public void copy_primary ();
-		[Deprecated (since = "0.44")]
+		[Version (deprecated = true, deprecated_since = "0.44", since = "0.44")]
 		public bool event_check_gregex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] GLib.Regex[] regexes, GLib.RegexMatchFlags match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
+		[Version (since = "0.44")]
 		public bool event_check_regex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] Vte.Regex[] regexes, uint32 match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
 		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[] data);
 		public void feed_child (string text, ssize_t length);
@@ -67,16 +68,18 @@ namespace Vte {
 		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public string get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public unowned string get_window_title ();
+		[Version (since = "0.40")]
 		public unowned string get_word_char_exceptions ();
-		[Deprecated (since = "0.44")]
+		[Version (deprecated = true, deprecated_since = "0.44")]
 		public int match_add_gregex (GLib.Regex gregex, GLib.RegexMatchFlags gflags);
+		[Version (since = "0.44")]
 		public int match_add_regex (Vte.Regex regex, uint32 flags);
-		[Deprecated (since = "0.44")]
+		[Version (deprecated = true, deprecated_since = "0.44")]
 		public string match_check (long column, long row, out int tag);
 		public string match_check_event (Gdk.Event event, out int tag);
 		public void match_remove (int tag);
 		public void match_remove_all ();
-		[Deprecated (since = "0.40")]
+		[Version (deprecated = true, deprecated_since = "0.40")]
 		public void match_set_cursor (int tag, Gdk.Cursor? cursor);
 		public void match_set_cursor_name (int tag, string cursor_name);
 		public void match_set_cursor_type (int tag, Gdk.CursorType cursor_type);
@@ -85,12 +88,14 @@ namespace Vte {
 		public void reset (bool clear_tabstops, bool clear_history);
 		public bool search_find_next ();
 		public bool search_find_previous ();
-		[Deprecated (since = "0.44")]
+		[Version (deprecated = true, deprecated_since = "0.44")]
 		public unowned GLib.Regex search_get_gregex ();
+		[Version (since = "0.44")]
 		public unowned Vte.Regex search_get_regex ();
 		public bool search_get_wrap_around ();
-		[Deprecated (since = "0.44")]
+		[Version (deprecated = true, deprecated_since = "0.44")]
 		public void search_set_gregex (GLib.Regex? gregex, GLib.RegexMatchFlags gflags);
+		[Version (since = "0.44")]
 		public void search_set_regex (Vte.Regex? regex, uint32 flags);
 		public void search_set_wrap_around (bool wrap_around);
 		public void select_all ();
@@ -101,6 +106,7 @@ namespace Vte {
 		public void set_color_background (Gdk.RGBA background);
 		public void set_color_bold (Gdk.RGBA? bold);
 		public void set_color_cursor (Gdk.RGBA? cursor_background);
+		[Version (since = "0.44")]
 		public void set_color_cursor_foreground (Gdk.RGBA? cursor_foreground);
 		public void set_color_foreground (Gdk.RGBA foreground);
 		public void set_color_highlight (Gdk.RGBA? highlight_background);
@@ -122,6 +128,7 @@ namespace Vte {
 		public void set_scroll_on_output (bool scroll);
 		public void set_scrollback_lines (long lines);
 		public void set_size (long columns, long rows);
+		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void unselect_all ();
@@ -156,6 +163,7 @@ namespace Vte {
 		[NoAccessorMethod]
 		public uint scrollback_lines { get; set; }
 		public string window_title { get; }
+		[Version (since = "0.40")]
 		public string word_char_exceptions { get; }
 		public virtual signal void bell ();
 		public virtual signal void char_size_changed (uint char_width, uint char_height);
@@ -234,6 +242,7 @@ namespace Vte {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_REGEX_ERROR_")]
+	[Version (since = "0.44")]
 	public errordomain RegexError {
 		INCOMPATIBLE,
 		NOT_SUPPORTED;
@@ -252,12 +261,16 @@ namespace Vte {
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
 	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (since = "0.40")]
 	public static unowned string get_features ();
 	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (since = "0.40")]
 	public static uint get_major_version ();
 	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (since = "0.40")]
 	public static uint get_micro_version ();
 	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (since = "0.40")]
 	public static uint get_minor_version ();
 	[CCode (cheader_filename = "vte/vte.h")]
 	public static string get_user_shell ();

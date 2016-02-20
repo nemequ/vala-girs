@@ -6,6 +6,7 @@ and/or use gtk-doc annotations.  -->
             xmlns="http://www.gtk.org/introspection/core/1.0"
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="Egg" version="1.0"/>
   <include name="Gio" version="2.0"/>
   <include name="GtkSource" version="3.0"/>
   <include name="Peas" version="1.0"/>
@@ -1428,18 +1429,23 @@ diagnostics and line changes have been recalculated.</doc>
               c:identifier="IDE_BUFFER_LINE_FLAGS_CHANGED"
               glib:nick="changed">
       </member>
-      <member name="error"
+      <member name="deleted"
               value="4"
+              c:identifier="IDE_BUFFER_LINE_FLAGS_DELETED"
+              glib:nick="deleted">
+      </member>
+      <member name="error"
+              value="8"
               c:identifier="IDE_BUFFER_LINE_FLAGS_ERROR"
               glib:nick="error">
       </member>
       <member name="warning"
-              value="8"
+              value="16"
               c:identifier="IDE_BUFFER_LINE_FLAGS_WARNING"
               glib:nick="warning">
       </member>
       <member name="note"
-              value="16"
+              value="32"
               c:identifier="IDE_BUFFER_LINE_FLAGS_NOTE"
               glib:nick="note">
       </member>
@@ -1874,7 +1880,10 @@ The first handler of this signal is responsible for returning an
       </glib:signal>
       <glib:signal name="load-buffer" when="last">
         <doc xml:space="preserve">This signal is emitted when a request has been made to load a buffer from storage. You might
-connect to this signal to be notified when loading of a buffer has begun.</doc>
+connect to this signal to be notified when loading of a buffer has begun.
+
+If @reloading is %TRUE, then the buffer is being force-reloaded due to changes
+from the host file-system.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1882,6 +1891,10 @@ connect to this signal to be notified when loading of a buffer has begun.</doc>
           <parameter name="buffer" transfer-ownership="none">
             <doc xml:space="preserve">an #IdeBuffer.</doc>
             <type name="Buffer"/>
+          </parameter>
+          <parameter name="reloading" transfer-ownership="none">
+            <doc xml:space="preserve">if the buffer is being reloaded</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -2398,9 +2411,10 @@ with clang.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="get_builder" invoker="get_builder" throws="1">
-        <doc xml:space="preserve">This function should return an #IdeBuilder that can be used to perform a
-build of the project using the configuration specified. @device may be
-a non-local device, for which cross-compilation may be necessary.</doc>
+        <doc xml:space="preserve">This function returns an #IdeBuilder that can be used to perform a
+build of the project using the configuration specified.
+
+See ide_builder_build_async() for more information.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">An #IdeBuilder or %NULL and @error is set.</doc>
           <type name="Builder" c:type="IdeBuilder*"/>
@@ -2410,16 +2424,9 @@ a non-local device, for which cross-compilation may be necessary.</doc>
             <doc xml:space="preserve">The #IdeBuildSystem to perform the build.</doc>
             <type name="BuildSystem" c:type="IdeBuildSystem*"/>
           </instance-parameter>
-          <parameter name="config"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">The configuration options for the build.</doc>
-            <type name="GLib.KeyFile" c:type="GKeyFile*"/>
-          </parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">The #IdeDevice the result should be able to run on.</doc>
-            <type name="Device" c:type="IdeDevice*"/>
+          <parameter name="configuration" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration.</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -2493,9 +2500,10 @@ with clang.</doc>
       <method name="get_builder"
               c:identifier="ide_build_system_get_builder"
               throws="1">
-        <doc xml:space="preserve">This function should return an #IdeBuilder that can be used to perform a
-build of the project using the configuration specified. @device may be
-a non-local device, for which cross-compilation may be necessary.</doc>
+        <doc xml:space="preserve">This function returns an #IdeBuilder that can be used to perform a
+build of the project using the configuration specified.
+
+See ide_builder_build_async() for more information.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">An #IdeBuilder or %NULL and @error is set.</doc>
           <type name="Builder" c:type="IdeBuilder*"/>
@@ -2505,16 +2513,9 @@ a non-local device, for which cross-compilation may be necessary.</doc>
             <doc xml:space="preserve">The #IdeBuildSystem to perform the build.</doc>
             <type name="BuildSystem" c:type="IdeBuildSystem*"/>
           </instance-parameter>
-          <parameter name="config"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">The configuration options for the build.</doc>
-            <type name="GLib.KeyFile" c:type="GKeyFile*"/>
-          </parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">The #IdeDevice the result should be able to run on.</doc>
-            <type name="Device" c:type="IdeDevice*"/>
+          <parameter name="configuration" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration.</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
           </parameter>
         </parameters>
       </method>
@@ -2570,16 +2571,9 @@ a non-local device, for which cross-compilation may be necessary.</doc>
               <doc xml:space="preserve">The #IdeBuildSystem to perform the build.</doc>
               <type name="BuildSystem" c:type="IdeBuildSystem*"/>
             </parameter>
-            <parameter name="config"
-                       transfer-ownership="none"
-                       nullable="1"
-                       allow-none="1">
-              <doc xml:space="preserve">The configuration options for the build.</doc>
-              <type name="GLib.KeyFile" c:type="GKeyFile*"/>
-            </parameter>
-            <parameter name="device" transfer-ownership="none">
-              <doc xml:space="preserve">The #IdeDevice the result should be able to run on.</doc>
-              <type name="Device" c:type="IdeDevice*"/>
+            <parameter name="configuration" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeConfiguration.</doc>
+              <type name="Configuration" c:type="IdeConfiguration*"/>
             </parameter>
           </parameters>
         </callback>
@@ -2762,6 +2756,26 @@ a non-local device, for which cross-compilation may be necessary.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_configuration"
+              c:identifier="ide_builder_get_configuration">
+        <doc xml:space="preserve">Gets the configuration to use for the builder.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeConfiguration.</doc>
+          <type name="Configuration" c:type="IdeConfiguration*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeBuilder.</doc>
+            <type name="Builder" c:type="IdeBuilder*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="configuration"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Configuration"/>
+      </property>
       <field name="parent_instance">
         <type name="Object" c:type="IdeObject"/>
       </field>
@@ -2771,13 +2785,21 @@ a non-local device, for which cross-compilation may be necessary.</doc>
               value="0"
               c:identifier="IDE_BUILDER_BUILD_FLAGS_NONE">
       </member>
-      <member name="force_rebuild"
+      <member name="force_bootstrap"
               value="1"
-              c:identifier="IDE_BUILDER_BUILD_FLAGS_FORCE_REBUILD">
+              c:identifier="IDE_BUILDER_BUILD_FLAGS_FORCE_BOOTSTRAP">
       </member>
-      <member name="clean"
+      <member name="force_clean"
               value="2"
-              c:identifier="IDE_BUILDER_BUILD_FLAGS_CLEAN">
+              c:identifier="IDE_BUILDER_BUILD_FLAGS_FORCE_CLEAN">
+      </member>
+      <member name="no_build"
+              value="4"
+              c:identifier="IDE_BUILDER_BUILD_FLAGS_NO_BUILD">
+      </member>
+      <member name="no_configure"
+              value="8"
+              c:identifier="IDE_BUILDER_BUILD_FLAGS_NO_CONFIGURE">
       </member>
     </bitfield>
     <record name="BuilderClass"
@@ -3211,6 +3233,565 @@ it will be set to zero.</doc>
         </callback>
       </field>
     </record>
+    <class name="Configuration"
+           c:symbol-prefix="configuration"
+           c:type="IdeConfiguration"
+           parent="Object"
+           glib:type-name="IdeConfiguration"
+           glib:get-type="ide_configuration_get_type"
+           glib:type-struct="ConfigurationClass">
+      <constructor name="new" c:identifier="ide_configuration_new">
+        <return-value transfer-ownership="full">
+          <type name="Configuration" c:type="IdeConfiguration*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="IdeContext*"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="device_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="runtime_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="duplicate" c:identifier="ide_configuration_duplicate">
+        <doc xml:space="preserve">Copies the configuration into a new configuration.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An #IdeConfiguration.</doc>
+          <type name="Configuration" c:type="IdeConfiguration*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_config_opts"
+              c:identifier="ide_configuration_get_config_opts">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_debug" c:identifier="ide_configuration_get_debug">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_device" c:identifier="ide_configuration_get_device">
+        <doc xml:space="preserve">Gets the device for the configuration.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeDevice.</doc>
+          <type name="Device" c:type="IdeDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_device_id"
+              c:identifier="ide_configuration_get_device_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_dirty" c:identifier="ide_configuration_get_dirty">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_display_name"
+              c:identifier="ide_configuration_get_display_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_environ" c:identifier="ide_configuration_get_environ">
+        <doc xml:space="preserve">Gets the environment to use when spawning processes.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An array of key=value environment variables.</doc>
+          <array c:type="gchar**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_environment"
+              c:identifier="ide_configuration_get_environment">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeEnvironment.</doc>
+          <type name="Environment" c:type="IdeEnvironment*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="ide_configuration_get_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_parallelism"
+              c:identifier="ide_configuration_get_parallelism">
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_prefix" c:identifier="ide_configuration_get_prefix">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runtime" c:identifier="ide_configuration_get_runtime">
+        <doc xml:space="preserve">Gets the runtime for the configuration.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeRuntime</doc>
+          <type name="Runtime" c:type="IdeRuntime*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runtime_id"
+              c:identifier="ide_configuration_get_runtime_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="getenv" c:identifier="ide_configuration_getenv">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_config_opts"
+              c:identifier="ide_configuration_set_config_opts">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="config_opts" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_debug" c:identifier="ide_configuration_set_debug">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="debug" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_device" c:identifier="ide_configuration_set_device">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="IdeDevice*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_device_id"
+              c:identifier="ide_configuration_set_device_id">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="device_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_dirty" c:identifier="ide_configuration_set_dirty">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="dirty" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_display_name"
+              c:identifier="ide_configuration_set_display_name">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="display_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_parallelism"
+              c:identifier="ide_configuration_set_parallelism">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="parallelism" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_prefix" c:identifier="ide_configuration_set_prefix">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="prefix" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_runtime" c:identifier="ide_configuration_set_runtime">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="runtime" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_runtime_id"
+              c:identifier="ide_configuration_set_runtime_id">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="runtime_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="setenv" c:identifier="ide_configuration_setenv">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="config-opts" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="debug" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="device" writable="1" transfer-ownership="none">
+        <type name="Device"/>
+      </property>
+      <property name="device-id" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="dirty" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="display-name" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="environ" transfer-ownership="none">
+        <array>
+          <type name="utf8"/>
+        </array>
+      </property>
+      <property name="id"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="parallelism" writable="1" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="prefix" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="runtime" writable="1" transfer-ownership="none">
+        <type name="Runtime"/>
+      </property>
+      <property name="runtime-id" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <glib:signal name="changed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="ConfigurationClass"
+            c:type="IdeConfigurationClass"
+            glib:is-gtype-struct-for="Configuration">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+    </record>
+    <class name="ConfigurationManager"
+           c:symbol-prefix="configuration_manager"
+           c:type="IdeConfigurationManager"
+           parent="Object"
+           glib:type-name="IdeConfigurationManager"
+           glib:get-type="ide_configuration_manager_get_type"
+           glib:type-struct="ConfigurationManagerClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.ListModel"/>
+      <method name="add" c:identifier="ide_configuration_manager_add">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_configuration"
+              c:identifier="ide_configuration_manager_get_configuration">
+        <doc xml:space="preserve">Gets the #IdeConfiguration by id. See ide_configuration_get_id().</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeConfiguration or %NULL if
+  the configuration could not be found.</doc>
+          <type name="Configuration" c:type="IdeConfiguration*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfigurationManager</doc>
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">The string identifier of the configuration</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_current"
+              c:identifier="ide_configuration_manager_get_current">
+        <doc xml:space="preserve">Gets the current configuration to use for building.
+
+Many systems allow you to pass a configuration in instead of relying on the
+default configuration. This sets the default configuration that various
+background items might use, such as tags builders which need to discover
+settings.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeConfiguration</doc>
+          <type name="Configuration" c:type="IdeConfiguration*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfigurationManager</doc>
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove" c:identifier="ide_configuration_manager_remove">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_async"
+              c:identifier="ide_configuration_manager_save_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_finish"
+              c:identifier="ide_configuration_manager_save_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_current"
+              c:identifier="ide_configuration_manager_set_current">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationManager"
+                  c:type="IdeConfigurationManager*"/>
+          </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="current" writable="1" transfer-ownership="none">
+        <type name="Configuration"/>
+      </property>
+      <property name="current-display-name" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="ConfigurationManagerClass"
+            c:type="IdeConfigurationManagerClass"
+            glib:is-gtype-struct-for="ConfigurationManager">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+    </record>
     <class name="Context"
            c:symbol-prefix="context"
            c:type="IdeContext"
@@ -3310,6 +3891,25 @@ to hook into the load and save process.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_configuration_manager"
+              c:identifier="ide_context_get_configuration_manager">
+        <doc xml:space="preserve">Gets the #IdeConfigurationManager for the context.
+
+The configuration manager is responsible for loading and saving
+configurations. Configurations consist of information about how to
+perform a particular build. Such information includes the target
+#IdeDevice, the #IdeRuntime to use, and various other build options.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeConfigurationManager.</doc>
+          <type name="ConfigurationManager" c:type="IdeConfigurationManager*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeContext</doc>
+            <type name="Context" c:type="IdeContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_device_manager"
               c:identifier="ide_context_get_device_manager">
         <doc xml:space="preserve">Retrieves the "device-manager" property. The device manager is responsible
@@ -3375,6 +3975,24 @@ that will contain builds made for various devices.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="IdeContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runtime_manager"
+              c:identifier="ide_context_get_runtime_manager">
+        <doc xml:space="preserve">Gets the #IdeRuntimeManager for the LibIDE context.
+
+The runtime manager provies access to #IdeRuntime instances via the
+#GListModel interface. These can provide support for building projects
+in various runtimes such as xdg-app.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeRuntimeManager.</doc>
+          <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeContext</doc>
             <type name="Context" c:type="IdeContext*"/>
           </instance-parameter>
         </parameters>
@@ -3652,6 +4270,24 @@ ide_context_release() have been called.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="warning"
+              c:identifier="ide_context_warning"
+              introspectable="0">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="IdeContext*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="back-forward-list" transfer-ownership="none">
         <type name="BackForwardList"/>
       </property>
@@ -3660,6 +4296,9 @@ ide_context_release() have been called.</doc>
       </property>
       <property name="build-system" transfer-ownership="none">
         <type name="BuildSystem"/>
+      </property>
+      <property name="configuration-manager" transfer-ownership="none">
+        <type name="ConfigurationManager"/>
       </property>
       <property name="device-manager" transfer-ownership="none">
         <type name="DeviceManager"/>
@@ -3675,6 +4314,9 @@ ide_context_release() have been called.</doc>
       </property>
       <property name="root-build-dir" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="runtime-manager" transfer-ownership="none">
+        <type name="RuntimeManager"/>
       </property>
       <property name="script-manager" transfer-ownership="none">
         <type name="ScriptManager"/>
@@ -3750,21 +4392,6 @@ startup.</doc>
            glib:type-name="IdeDevice"
            glib:get-type="ide_device_get_type"
            glib:type-struct="DeviceClass">
-      <virtual-method name="get_config" invoker="get_config">
-        <doc xml:space="preserve">Retrieves any custom configuration that is required to build for the
-device. Such values might include additional options to autoconf
-or paths to cross-compilers.</doc>
-        <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">A #GKeyFile or %NULL.</doc>
-          <type name="GLib.KeyFile" c:type="GKeyFile*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">A #IdeDevice.</doc>
-            <type name="Device" c:type="IdeDevice*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
       <virtual-method name="get_system_type" invoker="get_system_type">
         <doc xml:space="preserve">This is the description of the system we are building for. Commonly, this
 is referred to as a "system_type". A combination of the machine architecture
@@ -3776,26 +4403,25 @@ such as x86_64, the operating system, and the libc.
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <method name="get_config" c:identifier="ide_device_get_config">
-        <doc xml:space="preserve">Retrieves any custom configuration that is required to build for the
-device. Such values might include additional options to autoconf
-or paths to cross-compilers.</doc>
-        <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">A #GKeyFile or %NULL.</doc>
-          <type name="GLib.KeyFile" c:type="GKeyFile*"/>
+      <virtual-method name="prepare_configuration"
+                      invoker="prepare_configuration">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">A #IdeDevice.</doc>
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
         </parameters>
-      </method>
+      </virtual-method>
       <method name="get_display_name"
               c:identifier="ide_device_get_display_name">
         <doc xml:space="preserve">This function returns the name of the device. If no name has been set, then
@@ -3808,7 +4434,7 @@ has been probed from the device.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
         </parameters>
@@ -3821,7 +4447,7 @@ user friendly name as it is often a guid.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
         </parameters>
@@ -3837,9 +4463,23 @@ such as x86_64, the operating system, and the libc.
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="prepare_configuration"
+              c:identifier="ide_device_prepare_configuration">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Device" c:type="IdeDevice*"/>
+          </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_display_name"
@@ -3848,7 +4488,7 @@ such as x86_64, the operating system, and the libc.
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
           <parameter name="display_name" transfer-ownership="none">
@@ -3861,7 +4501,7 @@ such as x86_64, the operating system, and the libc.
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="Device" c:type="IdeDevice*"/>
           </instance-parameter>
           <parameter name="id" transfer-ownership="none">
@@ -3888,20 +4528,6 @@ such as x86_64, the operating system, and the libc.
       <field name="parent">
         <type name="ObjectClass" c:type="IdeObjectClass"/>
       </field>
-      <field name="get_config">
-        <callback name="get_config">
-          <return-value transfer-ownership="none" nullable="1">
-            <doc xml:space="preserve">A #GKeyFile or %NULL.</doc>
-            <type name="GLib.KeyFile" c:type="GKeyFile*"/>
-          </return-value>
-          <parameters>
-            <parameter name="device" transfer-ownership="none">
-              <doc xml:space="preserve">A #IdeDevice.</doc>
-              <type name="Device" c:type="IdeDevice*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
       <field name="get_system_type">
         <callback name="get_system_type">
           <return-value transfer-ownership="none">
@@ -3909,8 +4535,23 @@ such as x86_64, the operating system, and the libc.
             <type name="utf8" c:type="const gchar*"/>
           </return-value>
           <parameters>
-            <parameter name="device" transfer-ownership="none">
+            <parameter name="self" transfer-ownership="none">
               <type name="Device" c:type="IdeDevice*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_configuration">
+        <callback name="prepare_configuration">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Device" c:type="IdeDevice*"/>
+            </parameter>
+            <parameter name="configuration" transfer-ownership="none">
+              <type name="Configuration" c:type="IdeConfiguration*"/>
             </parameter>
           </parameters>
         </callback>
@@ -5177,6 +5818,26 @@ instances.</doc>
           </parameter>
         </parameters>
       </method>
+      <glib:signal name="view-added" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gtk.Widget"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="view-removed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gtk.Widget"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="EditorPerspectiveClass"
             c:type="IdeEditorPerspectiveClass"
@@ -5326,6 +5987,309 @@ instances.</doc>
             glib:is-gtype-struct-for="EditorView">
       <field name="parent_class">
         <type name="LayoutViewClass" c:type="IdeLayoutViewClass"/>
+      </field>
+    </record>
+    <class name="Environment"
+           c:symbol-prefix="environment"
+           c:type="IdeEnvironment"
+           parent="GObject.Object"
+           glib:type-name="IdeEnvironment"
+           glib:get-type="ide_environment_get_type"
+           glib:type-struct="EnvironmentClass">
+      <implements name="Gio.ListModel"/>
+      <constructor name="new" c:identifier="ide_environment_new">
+        <return-value transfer-ownership="full">
+          <type name="Environment" c:type="IdeEnvironment*"/>
+        </return-value>
+      </constructor>
+      <method name="append" c:identifier="ide_environment_append">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </instance-parameter>
+          <parameter name="variable" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="copy" c:identifier="ide_environment_copy">
+        <doc xml:space="preserve">Copies the contents of #IdeEnvironment into a newly allocated #IdeEnvironment.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An #IdeEnvironment.</doc>
+          <type name="Environment" c:type="IdeEnvironment*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeEnvironment</doc>
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_environ" c:identifier="ide_environment_get_environ">
+        <doc xml:space="preserve">Gets the environment as a set of key=value pairs, suitable for use
+in various GLib process functions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly allocated string array.</doc>
+          <array c:type="gchar**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeEnvironment</doc>
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="getenv" c:identifier="ide_environment_getenv">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove" c:identifier="ide_environment_remove">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </instance-parameter>
+          <parameter name="variable" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="setenv" c:identifier="ide_environment_setenv">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="EnvironmentClass"
+            c:type="IdeEnvironmentClass"
+            glib:is-gtype-struct-for="Environment">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="EnvironmentEditor"
+           c:symbol-prefix="environment_editor"
+           c:type="IdeEnvironmentEditor"
+           parent="Gtk.ListBox"
+           glib:type-name="IdeEnvironmentEditor"
+           glib:get-type="ide_environment_editor_get_type"
+           glib:type-struct="EnvironmentEditorClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <constructor name="new" c:identifier="ide_environment_editor_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+      <method name="get_environment"
+              c:identifier="ide_environment_editor_get_environment">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeEnvironment or %NULL.</doc>
+          <type name="Environment" c:type="IdeEnvironment*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentEditor" c:type="IdeEnvironmentEditor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_environment"
+              c:identifier="ide_environment_editor_set_environment">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentEditor" c:type="IdeEnvironmentEditor*"/>
+          </instance-parameter>
+          <parameter name="environment" transfer-ownership="none">
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="environment" writable="1" transfer-ownership="none">
+        <type name="Environment"/>
+      </property>
+    </class>
+    <record name="EnvironmentEditorClass"
+            c:type="IdeEnvironmentEditorClass"
+            glib:is-gtype-struct-for="EnvironmentEditor">
+      <field name="parent_class">
+        <type name="Gtk.ListBoxClass" c:type="GtkListBoxClass"/>
+      </field>
+    </record>
+    <class name="EnvironmentEditorRow"
+           c:symbol-prefix="environment_editor_row"
+           c:type="IdeEnvironmentEditorRow"
+           parent="Gtk.ListBoxRow"
+           glib:type-name="IdeEnvironmentEditorRow"
+           glib:get-type="ide_environment_editor_row_get_type"
+           glib:type-struct="EnvironmentEditorRowClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <method name="get_variable"
+              c:identifier="ide_environment_editor_row_get_variable">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeEnvironmentVariable.</doc>
+          <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentEditorRow"
+                  c:type="IdeEnvironmentEditorRow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_variable"
+              c:identifier="ide_environment_editor_row_set_variable">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentEditorRow"
+                  c:type="IdeEnvironmentEditorRow*"/>
+          </instance-parameter>
+          <parameter name="variable" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="start_editing"
+              c:identifier="ide_environment_editor_row_start_editing">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentEditorRow"
+                  c:type="IdeEnvironmentEditorRow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="variable" writable="1" transfer-ownership="none">
+        <type name="EnvironmentVariable"/>
+      </property>
+      <glib:signal name="delete" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="EnvironmentEditorRowClass"
+            c:type="IdeEnvironmentEditorRowClass"
+            glib:is-gtype-struct-for="EnvironmentEditorRow">
+      <field name="parent_class">
+        <type name="Gtk.ListBoxRowClass" c:type="GtkListBoxRowClass"/>
+      </field>
+    </record>
+    <class name="EnvironmentVariable"
+           c:symbol-prefix="environment_variable"
+           c:type="IdeEnvironmentVariable"
+           parent="GObject.Object"
+           glib:type-name="IdeEnvironmentVariable"
+           glib:get-type="ide_environment_variable_get_type"
+           glib:type-struct="EnvironmentVariableClass">
+      <constructor name="new" c:identifier="ide_environment_variable_new">
+        <return-value transfer-ownership="full">
+          <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_key" c:identifier="ide_environment_variable_get_key">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_value"
+              c:identifier="ide_environment_variable_get_value">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_key" c:identifier="ide_environment_variable_set_key">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_value"
+              c:identifier="ide_environment_variable_set_value">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="key" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="value" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="EnvironmentVariableClass"
+            c:type="IdeEnvironmentVariableClass"
+            glib:is-gtype-struct-for="EnvironmentVariable">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
     <interface name="Executable"
@@ -7343,6 +8307,11 @@ freed with g_list_free().</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <glib:signal name="empty" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
     </class>
     <record name="LayoutGridClass"
             c:type="IdeLayoutGridClass"
@@ -9136,6 +10105,19 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="remove_id" invoker="remove_id">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Preferences" c:type="IdePreferences*"/>
+          </instance-parameter>
+          <parameter name="widget_id" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="set_page" invoker="set_page">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -9411,6 +10393,19 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
           </parameter>
           <parameter name="priority" transfer-ownership="none">
             <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_id" c:identifier="ide_preferences_remove_id">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Preferences" c:type="IdePreferences*"/>
+          </instance-parameter>
+          <parameter name="widget_id" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </method>
@@ -9855,6 +10850,21 @@ the plugin is unloaded.</doc>
             </parameter>
             <parameter name="priority" transfer-ownership="none">
               <type name="gint" c:type="gint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remove_id">
+        <callback name="remove_id">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Preferences" c:type="IdePreferences*"/>
+            </parameter>
+            <parameter name="widget_id" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
             </parameter>
           </parameters>
         </callback>
@@ -11516,6 +12526,693 @@ the project.</doc>
     <record name="RefactoryInterface"
             c:type="IdeRefactoryInterface"
             disguised="1">
+    </record>
+    <class name="Runtime"
+           c:symbol-prefix="runtime"
+           c:type="IdeRuntime"
+           parent="Object"
+           glib:type-name="IdeRuntime"
+           glib:get-type="ide_runtime_get_type"
+           glib:type-struct="RuntimeClass">
+      <constructor name="new" c:identifier="ide_runtime_new">
+        <return-value transfer-ownership="full">
+          <type name="Runtime" c:type="IdeRuntime*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="IdeContext*"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="contains_program_in_path"
+                      invoker="contains_program_in_path">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="program" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="create_launcher"
+                      invoker="create_launcher"
+                      throws="1">
+        <doc xml:space="preserve">Creates a launcher for the runtime.
+
+This can be used to execute a command within a runtime.
+If you are doing a build, you probably want to ensure you call
+ide_runtime_prebuild_async() before using the launcher.
+
+It is important that this function can be run from a thread without
+side effects.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An #IdeSubprocessLauncher or %NULL upon failure.</doc>
+          <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="postbuild_async" invoker="postbuild_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="2">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="postbuild_finish"
+                      invoker="postbuild_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prebuild_async" invoker="prebuild_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="2">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prebuild_finish"
+                      invoker="prebuild_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prepare_configuration"
+                      invoker="prepare_configuration">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="contains_program_in_path"
+              c:identifier="ide_runtime_contains_program_in_path">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="program" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_launcher"
+              c:identifier="ide_runtime_create_launcher"
+              throws="1">
+        <doc xml:space="preserve">Creates a launcher for the runtime.
+
+This can be used to execute a command within a runtime.
+If you are doing a build, you probably want to ensure you call
+ide_runtime_prebuild_async() before using the launcher.
+
+It is important that this function can be run from a thread without
+side effects.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An #IdeSubprocessLauncher or %NULL upon failure.</doc>
+          <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_display_name"
+              c:identifier="ide_runtime_get_display_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="ide_runtime_get_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="postbuild_async"
+              c:identifier="ide_runtime_postbuild_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="postbuild_finish"
+              c:identifier="ide_runtime_postbuild_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prebuild_async" c:identifier="ide_runtime_prebuild_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prebuild_finish"
+              c:identifier="ide_runtime_prebuild_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_configuration"
+              c:identifier="ide_runtime_prepare_configuration">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="configuration" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_display_name"
+              c:identifier="ide_runtime_set_display_name">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="display_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_id" c:identifier="ide_runtime_set_id">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="display-name"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="id" writable="1" construct="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Object" c:type="IdeObject"/>
+      </field>
+    </class>
+    <record name="RuntimeClass"
+            c:type="IdeRuntimeClass"
+            glib:is-gtype-struct-for="Runtime">
+      <field name="parent">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+      <field name="prebuild_async">
+        <callback name="prebuild_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="3">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prebuild_finish">
+        <callback name="prebuild_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="postbuild_async">
+        <callback name="postbuild_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="3">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="postbuild_finish">
+        <callback name="postbuild_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="contains_program_in_path">
+        <callback name="contains_program_in_path">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="program" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="create_launcher">
+        <callback name="create_launcher" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">An #IdeSubprocessLauncher or %NULL upon failure.</doc>
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_configuration">
+        <callback name="prepare_configuration">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="configuration" transfer-ownership="none">
+              <type name="Configuration" c:type="IdeConfiguration*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="RuntimeManager"
+           c:symbol-prefix="runtime_manager"
+           c:type="IdeRuntimeManager"
+           parent="Object"
+           glib:type-name="IdeRuntimeManager"
+           glib:get-type="ide_runtime_manager_get_type"
+           glib:type-struct="RuntimeManagerClass">
+      <implements name="Gio.ListModel"/>
+      <method name="add" c:identifier="ide_runtime_manager_add">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </instance-parameter>
+          <parameter name="runtime" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_runtime"
+              c:identifier="ide_runtime_manager_get_runtime">
+        <doc xml:space="preserve">Gets the runtime by it's internal identifier.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeRuntime.</doc>
+          <type name="Runtime" c:type="IdeRuntime*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeRuntimeManager</doc>
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">the identifier of the runtime</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove" c:identifier="ide_runtime_manager_remove">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </instance-parameter>
+          <parameter name="runtime" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="RuntimeManagerClass"
+            c:type="IdeRuntimeManagerClass"
+            glib:is-gtype-struct-for="RuntimeManager">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+    </record>
+    <interface name="RuntimeProvider"
+               c:symbol-prefix="runtime_provider"
+               c:type="IdeRuntimeProvider"
+               glib:type-name="IdeRuntimeProvider"
+               glib:get-type="ide_runtime_provider_get_type"
+               glib:type-struct="RuntimeProviderInterface">
+      <virtual-method name="load" invoker="load">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RuntimeProvider" c:type="IdeRuntimeProvider*"/>
+          </instance-parameter>
+          <parameter name="manager" transfer-ownership="none">
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="unload" invoker="unload">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RuntimeProvider" c:type="IdeRuntimeProvider*"/>
+          </instance-parameter>
+          <parameter name="manager" transfer-ownership="none">
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="load" c:identifier="ide_runtime_provider_load">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RuntimeProvider" c:type="IdeRuntimeProvider*"/>
+          </instance-parameter>
+          <parameter name="manager" transfer-ownership="none">
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unload" c:identifier="ide_runtime_provider_unload">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RuntimeProvider" c:type="IdeRuntimeProvider*"/>
+          </instance-parameter>
+          <parameter name="manager" transfer-ownership="none">
+            <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="RuntimeProviderInterface"
+            c:type="IdeRuntimeProviderInterface"
+            glib:is-gtype-struct-for="RuntimeProvider">
+      <field name="parent">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="load">
+        <callback name="load">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="RuntimeProvider" c:type="IdeRuntimeProvider*"/>
+            </parameter>
+            <parameter name="manager" transfer-ownership="none">
+              <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="unload">
+        <callback name="unload">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="RuntimeProvider" c:type="IdeRuntimeProvider*"/>
+            </parameter>
+            <parameter name="manager" transfer-ownership="none">
+              <type name="RuntimeManager" c:type="IdeRuntimeManager*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
     </record>
     <constant name="SCRIPT_EXTENSION_POINT"
               value="org.gnome.libide.extensions.script"
@@ -17426,6 +19123,385 @@ First adjust the repeat and then perform the "movement" action.</doc>
         <doc xml:space="preserve">shrink from selection location.</doc>
       </member>
     </enumeration>
+    <class name="SubprocessLauncher"
+           c:symbol-prefix="subprocess_launcher"
+           c:type="IdeSubprocessLauncher"
+           parent="GObject.Object"
+           glib:type-name="IdeSubprocessLauncher"
+           glib:get-type="ide_subprocess_launcher_get_type"
+           glib:type-struct="SubprocessLauncherClass">
+      <constructor name="new" c:identifier="ide_subprocess_launcher_new">
+        <return-value transfer-ownership="full">
+          <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+        </return-value>
+        <parameters>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="Gio.SubprocessFlags" c:type="GSubprocessFlags"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="spawn_async" invoker="spawn_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="2">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="spawn_finish" invoker="spawn_finish" throws="1">
+        <doc xml:space="preserve">Complete a request to asynchronously spawn a process.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GSubprocess or %NULL upon error.</doc>
+          <type name="Gio.Subprocess" c:type="GSubprocess*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="spawn_sync" invoker="spawn_sync" throws="1">
+        <doc xml:space="preserve">Synchronously spawn a process using the internal state.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GSubprocess or %NULL upon error.</doc>
+          <type name="Gio.Subprocess" c:type="GSubprocess*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_cwd" c:identifier="ide_subprocess_launcher_get_cwd">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_environ"
+              c:identifier="ide_subprocess_launcher_get_environ">
+        <return-value transfer-ownership="none">
+          <array c:type="const gchar* const*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flags"
+              c:identifier="ide_subprocess_launcher_get_flags">
+        <return-value transfer-ownership="none">
+          <type name="Gio.SubprocessFlags" c:type="GSubprocessFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="overlay_environment"
+              c:identifier="ide_subprocess_launcher_overlay_environment">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="environment" transfer-ownership="none">
+            <type name="Environment" c:type="IdeEnvironment*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="push_args"
+              c:identifier="ide_subprocess_launcher_push_args">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="args" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="push_argv"
+              c:identifier="ide_subprocess_launcher_push_argv">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="argv" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_cwd" c:identifier="ide_subprocess_launcher_set_cwd">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="cwd" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_environ"
+              c:identifier="ide_subprocess_launcher_set_environ">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="environ_" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_flags"
+              c:identifier="ide_subprocess_launcher_set_flags">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="Gio.SubprocessFlags" c:type="GSubprocessFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="setenv" c:identifier="ide_subprocess_launcher_setenv">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="replace" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="spawn_async"
+              c:identifier="ide_subprocess_launcher_spawn_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="spawn_finish"
+              c:identifier="ide_subprocess_launcher_spawn_finish"
+              throws="1">
+        <doc xml:space="preserve">Complete a request to asynchronously spawn a process.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GSubprocess or %NULL upon error.</doc>
+          <type name="Gio.Subprocess" c:type="GSubprocess*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="spawn_sync"
+              c:identifier="ide_subprocess_launcher_spawn_sync"
+              throws="1">
+        <doc xml:space="preserve">Synchronously spawn a process using the internal state.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GSubprocess or %NULL upon error.</doc>
+          <type name="Gio.Subprocess" c:type="GSubprocess*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="cwd" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="environ" writable="1" transfer-ownership="none">
+        <array>
+          <type name="utf8"/>
+        </array>
+      </property>
+      <property name="flags"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="Gio.SubprocessFlags"/>
+      </property>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="SubprocessLauncherClass"
+            c:type="IdeSubprocessLauncherClass"
+            glib:is-gtype-struct-for="SubprocessLauncher">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="spawn_sync">
+        <callback name="spawn_sync" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A #GSubprocess or %NULL upon error.</doc>
+            <type name="Gio.Subprocess" c:type="GSubprocess*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="spawn_async">
+        <callback name="spawn_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="3">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="spawn_finish">
+        <callback name="spawn_finish" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A #GSubprocess or %NULL upon error.</doc>
+            <type name="Gio.Subprocess" c:type="GSubprocess*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <record name="Symbol"
             c:type="IdeSymbol"
             glib:type-name="IdeSymbol"
