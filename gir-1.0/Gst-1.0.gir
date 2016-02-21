@@ -1377,7 +1377,7 @@ Buffers are usually created with gst_buffer_new(). After a buffer has been
 created one will typically allocate memory for it and add it to the buffer.
 The following example creates a buffer that can hold a given video frame
 with a given width, height and bits per plane.
-|[
+|[&lt;!-- language="C" --&gt;
   GstBuffer *buffer;
   GstMemory *memory;
   gint size, width, height, bpp;
@@ -5010,7 +5010,7 @@ function. This function describes the possible types that the pad can
 handle or produce at runtime.
 
 A #GstCaps can be constructed with the following code fragment:
-|[
+|[&lt;!-- language="C" --&gt;
   GstCaps *caps = gst_caps_new_simple ("video/x-raw",
      "format", G_TYPE_STRING, "I420",
      "framerate", GST_TYPE_FRACTION, 25, 1,
@@ -5271,7 +5271,11 @@ The caps must be mutable.</doc>
       <method name="fixate" c:identifier="gst_caps_fixate">
         <doc xml:space="preserve">Modifies the given @caps into a representation with only fixed
 values. First the caps will be truncated and then the first structure will be
-fixated with gst_structure_fixate().</doc>
+fixated with gst_structure_fixate().
+
+This function takes ownership of @caps and will call gst_caps_make_writable()
+on it so you must not use @caps afterwards unless you keep an additional
+reference to it with gst_caps_ref().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the fixated caps</doc>
           <type name="Caps" c:type="GstCaps*"/>
@@ -5708,7 +5712,9 @@ If either caps is ANY, the resulting caps will be ANY.</doc>
 @caps, but contains no lists.  Each list is expanded into separate
 @GstStructures.
 
-This function takes ownership of @caps.</doc>
+This function takes ownership of @caps and will call gst_caps_make_writable()
+on it so you must not use @caps afterwards unless you keep an additional
+reference to it with gst_caps_ref().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the normalized #GstCaps</doc>
           <type name="Caps" c:type="GstCaps*"/>
@@ -5836,6 +5842,10 @@ same set of formats, but in a simpler form.  Component structures that are
 identical are merged.  Component structures that have values that can be
 merged are also merged.
 
+This function takes ownership of @caps and will call gst_caps_make_writable()
+on it if necessary, so you must not use @caps afterwards unless you keep an
+additional reference to it with gst_caps_ref().
+
 This method does not preserve the original order of @caps.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">The simplified caps.</doc>
@@ -5891,7 +5901,7 @@ are included on one caps and omitted on the other.&lt;/note&gt;</doc>
 can be converted back to a #GstCaps by gst_caps_from_string().
 
 For debugging purposes its easier to do something like this:
-|[
+|[&lt;!-- language="C" --&gt;
 GST_LOG ("caps are %" GST_PTR_FORMAT, caps);
 ]|
 This prints the caps in human readable form.
@@ -5911,7 +5921,11 @@ when there are nested #GstCaps / #GstStructure deeper than one level.</doc>
       </method>
       <method name="truncate" c:identifier="gst_caps_truncate">
         <doc xml:space="preserve">Discard all but the first structure from @caps. Useful when
-fixating.</doc>
+fixating.
+
+This function takes ownership of @caps and will call gst_caps_make_writable()
+on it if necessary, so you must not use @caps afterwards unless you keep an
+additional reference to it with gst_caps_ref().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">truncated caps</doc>
           <type name="Caps" c:type="GstCaps*"/>
@@ -6328,7 +6342,7 @@ the MT Refcounting section of the design documents.</doc>
         <doc xml:space="preserve">Converts @features to a human-readable string representation.
 
 For debugging purposes its easier to do something like this:
-|[
+|[&lt;!-- language="C" --&gt;
 GST_LOG ("features is %" GST_PTR_FORMAT, features);
 ]|
 This prints the features in human readable form.
@@ -7516,13 +7530,18 @@ This function is the reverse of gst_clock_unadjust_unlocked().</doc>
 using the passed calibration parameters. This function performs the
 same calculation as gst_clock_adjust_unlocked() when called using the
 current calibration parameters, but doesn't ensure a monotonically
-increasing result as gst_clock_adjust_unlocked() does.</doc>
+increasing result as gst_clock_adjust_unlocked() does.
+
+Note: The @clock parameter is unused and can be NULL</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the converted time of the clock.</doc>
           <type name="ClockTime" c:type="GstClockTime"/>
         </return-value>
         <parameters>
-          <instance-parameter name="clock" transfer-ownership="none">
+          <instance-parameter name="clock"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GstClock to use</doc>
             <type name="Clock" c:type="GstClock*"/>
           </instance-parameter>
@@ -7976,6 +7995,50 @@ This function is the reverse of gst_clock_adjust_unlocked().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="unadjust_with_calibration"
+              c:identifier="gst_clock_unadjust_with_calibration"
+              version="1.8">
+        <doc xml:space="preserve">Converts the given @external_target clock time to the internal time,
+using the passed calibration parameters. This function performs the
+same calculation as gst_clock_unadjust_unlocked() when called using the
+current calibration parameters.
+
+Note: The @clock parameter is unused and can be NULL</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the converted time of the clock.</doc>
+          <type name="ClockTime" c:type="GstClockTime"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clock"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #GstClock to use</doc>
+            <type name="Clock" c:type="GstClock*"/>
+          </instance-parameter>
+          <parameter name="external_target" transfer-ownership="none">
+            <doc xml:space="preserve">a clock time</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="cinternal" transfer-ownership="none">
+            <doc xml:space="preserve">a reference internal time</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="cexternal" transfer-ownership="none">
+            <doc xml:space="preserve">a reference external time</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="cnum" transfer-ownership="none">
+            <doc xml:space="preserve">the numerator of the rate of the clock relative to its
+       internal time</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="cdenom" transfer-ownership="none">
+            <doc xml:space="preserve">the denominator of the rate of the clock</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="wait_for_sync"
               c:identifier="gst_clock_wait_for_sync"
               version="1.6">
@@ -8406,7 +8469,13 @@ order until one step succeeds:
 
 Bins will catch GST_MESSAGE_NEED_CONTEXT messages and will set any previously
 known context on the element that asks for it if possible. Otherwise the
-application should provide one if it can.</doc>
+application should provide one if it can.
+
+#GstContext&lt;!-- --&gt;s can be persistent.
+A persistent #GstContext is kept in elements when they reach
+%GST_STATE_NULL, non-persistent ones will be removed.
+Also, a non-persistent context won't override a previous persistent
+context set to an element.</doc>
       <constructor name="new" c:identifier="gst_context_new" version="1.2">
         <doc xml:space="preserve">Create a new context.</doc>
         <return-value transfer-ownership="full">
@@ -8496,8 +8565,8 @@ free it and that the pointer becomes invalid when you free the context.</doc>
         <doc xml:space="preserve">Get a writable version of the structure.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">The structure of the context. The structure is still
-owned by the event, which means that you should not free it and
-that the pointer becomes invalid when you free the event.
+owned by the context, which means that you should not free it and
+that the pointer becomes invalid when you free the context.
 This function checks if @context is writable.</doc>
           <type name="Structure" c:type="GstStructure*"/>
         </return-value>
@@ -9010,7 +9079,8 @@ For implementing a new #GstControlSource one has to implement
 #GstControlSourceGetValue and #GstControlSourceGetValueArray functions.
 These are then used by gst_control_source_get_value() and
 gst_control_source_get_value_array() to get values for specific timestamps.</doc>
-      <method name="get_value" c:identifier="gst_control_source_get_value">
+      <method name="control_source_get_value"
+              c:identifier="gst_control_source_get_value">
         <doc xml:space="preserve">Gets the value for this #GstControlSource at a given timestamp.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%FALSE if the value couldn't be returned, %TRUE otherwise.</doc>
@@ -9025,13 +9095,16 @@ gst_control_source_get_value_array() to get values for specific timestamps.</doc
             <doc xml:space="preserve">the time for which the value should be returned</doc>
             <type name="ClockTime" c:type="GstClockTime"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">the value</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="get_value_array"
+      <method name="control_source_get_value_array"
               c:identifier="gst_control_source_get_value_array">
         <doc xml:space="preserve">Gets an array of values for for this #GstControlSource. Values that are
 undefined contain NANs.</doc>
@@ -9072,7 +9145,7 @@ undefined contain NANs.</doc>
         <type name="ControlSourceGetValue" c:type="GstControlSourceGetValue"/>
       </field>
       <field name="get_value_array">
-        <doc xml:space="preserve">Function for returning a #GstValueArray for a given timestamp</doc>
+        <doc xml:space="preserve">Function for returning a values array for a given timestamp</doc>
         <type name="ControlSourceGetValueArray"
               c:type="GstControlSourceGetValueArray"/>
       </field>
@@ -9112,7 +9185,7 @@ undefined contain NANs.</doc>
           <type name="ClockTime" c:type="GstClockTime"/>
         </parameter>
         <parameter name="value" transfer-ownership="none">
-          <doc xml:space="preserve">a #GValue which will be set to the result. It must be initialized to the correct type.</doc>
+          <doc xml:space="preserve">a value which will be set to the result.</doc>
           <type name="gdouble" c:type="gdouble*"/>
         </parameter>
       </parameters>
@@ -10400,7 +10473,7 @@ classes of the #GstDeviceProvider that produced this device.</doc>
             <type name="Device" c:type="GstDevice*"/>
           </instance-parameter>
           <parameter name="classes" transfer-ownership="none">
-            <doc xml:space="preserve">a "/" separate list of device classes to match, only match if
+            <doc xml:space="preserve">a "/"-separated list of device classes to match, only match if
  all classes are matched</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -10420,8 +10493,8 @@ classes of the #GstDeviceProvider that produced this device.</doc>
             <type name="Device" c:type="GstDevice*"/>
           </instance-parameter>
           <parameter name="classes" transfer-ownership="none">
-            <doc xml:space="preserve">a %NULL terminated array of classes to match, only match if all
-  classes are matched</doc>
+            <doc xml:space="preserve">a %NULL terminated array of classes
+  to match, only match if all classes are matched</doc>
             <array c:type="gchar**">
               <type name="utf8" c:type="gchar*"/>
             </array>
@@ -10632,7 +10705,14 @@ The basic use pattern of a device monitor is as follows:
               c:identifier="gst_device_monitor_add_filter"
               version="1.4">
         <doc xml:space="preserve">Adds a filter for which #GstDevice will be monitored, any device that matches
-all classes and the #GstCaps will be returned.
+all these classes and the #GstCaps will be returned.
+
+If this function is called multiple times to add more filters, each will be
+matched independently. That is, adding more filters will not further restrict
+what devices are matched.
+
+The #GstCaps supported by the device as returned by gst_device_get_caps() are
+not intersected with caps filters added using this function.
 
 Filters must be added before the #GstDeviceMonitor is started.</doc>
         <return-value transfer-ownership="none">
@@ -12617,6 +12697,65 @@ Pads from compatible templates can be linked together.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_context"
+              c:identifier="gst_element_get_context"
+              version="1.8">
+        <doc xml:space="preserve">Gets the context with @context_type set on the element or NULL.
+
+MT safe.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GstContext or NULL</doc>
+          <type name="Context" c:type="GstContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement to get the context of.</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="context_type" transfer-ownership="none">
+            <doc xml:space="preserve">a name of a context to retrieve</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_context_unlocked"
+              c:identifier="gst_element_get_context_unlocked"
+              version="1.8">
+        <doc xml:space="preserve">Gets the context with @context_type set on the element or NULL.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GstContext or NULL</doc>
+          <type name="Context" c:type="GstContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement to get the context of.</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="context_type" transfer-ownership="none">
+            <doc xml:space="preserve">a name of a context to retrieve</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_contexts"
+              c:identifier="gst_element_get_contexts"
+              version="1.8">
+        <doc xml:space="preserve">Gets the contexts set on the element.
+
+MT safe.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">List of #GstContext</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Context"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement to set the context of.</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_factory" c:identifier="gst_element_get_factory">
         <doc xml:space="preserve">Retrieves the factory that was used to create this element.</doc>
         <return-value transfer-ownership="none">
@@ -13864,8 +14003,13 @@ state will yield the running_time against the clock.</doc>
         <doc xml:space="preserve">updated whenever the a pad is added or removed</doc>
         <type name="guint32" c:type="guint32"/>
       </field>
+      <field name="contexts">
+        <type name="GLib.List" c:type="GList*">
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="3">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -14945,7 +15089,7 @@ Most of the event API is used inside plugins. Applications usually only
 construct and use seek events.
 To do that gst_event_new_seek() is used to create a seek event. It takes
 the needed parameters to specify seeking time and mode.
-|[
+|[&lt;!-- language="C" --&gt;
   GstEvent *event;
   gboolean result;
   ...
@@ -17201,7 +17345,7 @@ object will not be increased. Your code is responsible for taking a reference
 if it wants to continue using it later.
 
 The basic use pattern of an iterator is as follows:
-|[
+|[&lt;!-- language="C" --&gt;
   GstIterator *it = _get_iterator(object);
   GValue item = G_VALUE_INIT;
   done = FALSE;
@@ -18527,7 +18671,7 @@ made when this memory needs to be shared between buffers.</doc>
               value="128"
               c:identifier="GST_MEMORY_FLAG_PHYSICALLY_CONTIGUOUS"
               glib:nick="physically-contiguous">
-        <doc xml:space="preserve">the memory is physically contiguous. (Since 2.2)</doc>
+        <doc xml:space="preserve">the memory is physically contiguous. (Since 1.2)</doc>
       </member>
       <member name="not_mappable"
               value="256"
@@ -18678,7 +18822,7 @@ Messages are posted by objects in the pipeline and are passed to the
 application using the #GstBus.
 
 The basic use pattern of posting a message on a #GstBus is as follows:
-|[
+|[&lt;!-- language="C" --&gt;
   gst_bus_post (bus, gst_message_new_eos());
 ]|
 
@@ -19972,7 +20116,7 @@ disappearance of monitored devices.</doc>
 in the output arguments are copies; the caller must free them when done.
 
 Typical usage of this function might be:
-|[
+|[&lt;!-- language="C" --&gt;
   ...
   switch (GST_MESSAGE_TYPE (msg)) {
     case GST_MESSAGE_ERROR: {
@@ -20458,7 +20602,7 @@ MT safe.</doc>
         <doc xml:space="preserve">Extracts the old and new states from the GstMessage.
 
 Typical usage of this function might be:
-|[
+|[&lt;!-- language="C" --&gt;
   ...
   switch (GST_MESSAGE_TYPE (msg)) {
     case GST_MESSAGE_STATE_CHANGED: {
@@ -20739,7 +20883,7 @@ MT safe.</doc>
 output argument is a copy; the caller must free it when done.
 
 Typical usage of this function might be:
-|[
+|[&lt;!-- language="C" --&gt;
   ...
   switch (GST_MESSAGE_TYPE (msg)) {
     case GST_MESSAGE_TAG: {
@@ -23271,7 +23415,14 @@ MT safe.</doc>
       </method>
       <method name="add_probe" c:identifier="gst_pad_add_probe">
         <doc xml:space="preserve">Be notified of different states of pads. The provided callback is called for
-every state that matches @mask.</doc>
+every state that matches @mask.
+
+Probes are called in groups: First GST_PAD_PROBE_TYPE_BLOCK probes are
+called, then others, then finally GST_PAD_PROBE_TYPE_IDLE. The only
+exception here are GST_PAD_PROBE_TYPE_IDLE probes that are called
+immediately if the pad is already idle while calling gst_pad_add_probe().
+In each of the groups, probes are called in the order in which they were
+added.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an id or 0 if no probe is pending. The id can be used to remove the
 probe with gst_pad_remove_probe(). When using GST_PAD_PROBE_TYPE_IDLE it can
@@ -24863,6 +25014,40 @@ No locking is performed in this function.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_event_full_function_full"
+              c:identifier="gst_pad_set_event_full_function_full"
+              version="1.8">
+        <doc xml:space="preserve">Sets the given event handler for the pad.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pad" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPad of either direction.</doc>
+            <type name="Pad" c:type="GstPad*"/>
+          </instance-parameter>
+          <parameter name="event"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">the #GstPadEventFullFunction to set.</doc>
+            <type name="PadEventFullFunction"
+                  c:type="GstPadEventFullFunction"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user_data passed to @notify</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">notify called when @event will not be used anymore.</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_event_function_full"
               c:identifier="gst_pad_set_event_function_full">
         <doc xml:space="preserve">Sets the given event handler for the pad.</doc>
@@ -25397,6 +25582,10 @@ be renegotiated to something else.</doc>
           <field name="last_flowret" writable="1">
             <type name="FlowReturn" c:type="GstFlowReturn"/>
           </field>
+          <field name="eventfullfunc" writable="1">
+            <type name="PadEventFullFunction"
+                  c:type="GstPadEventFullFunction"/>
+          </field>
         </record>
       </union>
       <glib:signal name="linked" when="last">
@@ -25601,6 +25790,39 @@ post an error on the bus and return an appropriate #GstFlowReturn value.</doc>
         <doc xml:space="preserve">the pad is a sink pad.</doc>
       </member>
     </enumeration>
+    <callback name="PadEventFullFunction"
+              c:type="GstPadEventFullFunction"
+              version="1.8">
+      <doc xml:space="preserve">Function signature to handle an event for the pad.
+
+This variant is for specific elements that will take into account the
+last downstream flow return (from a pad push), in which case they can
+return it.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%GST_FLOW_OK if the event was handled properly, or any other
+#GstFlowReturn dependent on downstream state.</doc>
+        <type name="FlowReturn" c:type="GstFlowReturn"/>
+      </return-value>
+      <parameters>
+        <parameter name="pad" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstPad to handle the event.</doc>
+          <type name="Pad" c:type="GstPad*"/>
+        </parameter>
+        <parameter name="parent"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the parent of @pad. If the #GST_PAD_FLAG_NEED_PARENT
+         flag is set, @parent is guaranteed to be not-%NULL and remain valid
+         during the execution of this function.</doc>
+          <type name="Object" c:type="GstObject*"/>
+        </parameter>
+        <parameter name="event" transfer-ownership="full">
+          <doc xml:space="preserve">the #GstEvent to handle.</doc>
+          <type name="Event" c:type="GstEvent*"/>
+        </parameter>
+      </parameters>
+    </callback>
     <callback name="PadEventFunction" c:type="GstPadEventFunction">
       <doc xml:space="preserve">Function signature to handle an event for the pad.</doc>
       <return-value transfer-ownership="none">
@@ -26119,7 +26341,7 @@ The callback is allowed to modify the data pointer in @info.</doc>
       <method name="get_buffer_list"
               c:identifier="gst_pad_probe_info_get_buffer_list">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The #GstBufferlist from the probe</doc>
+          <doc xml:space="preserve">The #GstBufferList from the probe</doc>
           <type name="BufferList" c:type="GstBufferList*"/>
         </return-value>
         <parameters>
@@ -26447,7 +26669,7 @@ or gst_pad_new_from_static_template ()) or to add to an element class
 (see gst_element_class_add_pad_template ()).
 
 The following code example shows the code to create a pad from a padtemplate.
-|[
+|[&lt;!-- language="C" --&gt;
   GstStaticPadTemplate my_template =
   GST_STATIC_PAD_TEMPLATE (
     "sink",          // the name of the pad
@@ -26469,7 +26691,7 @@ The following code example shows the code to create a pad from a padtemplate.
 
 The following example shows you how to add the padtemplate to an
 element class, this is usually done in the class_init of the class:
-|[
+|[&lt;!-- language="C" --&gt;
   static void
   my_element_class_init (GstMyElementClass *klass)
   {
@@ -26837,6 +27059,12 @@ of %GST_PARSE_ERROR_NO_SUCH_ELEMENT was returned.</doc>
               c:identifier="GST_PARSE_ERROR_EMPTY"
               glib:nick="empty">
         <doc xml:space="preserve">An empty description was specified</doc>
+      </member>
+      <member name="delayed_link"
+              value="7"
+              c:identifier="GST_PARSE_ERROR_DELAYED_LINK"
+              glib:nick="delayed-link">
+        <doc xml:space="preserve">A delayed link did not get resolved.</doc>
       </member>
       <function name="quark" c:identifier="gst_parse_error_quark">
         <doc xml:space="preserve">Get the error quark used by the parsing subsystem.</doc>
@@ -27821,6 +28049,14 @@ The cache is flushed every time the registry is rebuilt.</doc>
         filename argument as filter suffix and check all matching files in
         the directory</doc>
       </member>
+      <member name="file_name_is_prefix"
+              value="8"
+              c:identifier="GST_PLUGIN_DEPENDENCY_FLAG_FILE_NAME_IS_PREFIX"
+              glib:nick="file-name-is-prefix">
+        <doc xml:space="preserve">interpret
+        filename argument as filter prefix and check all matching files in
+        the directory. Since 1.8.</doc>
+      </member>
     </bitfield>
     <record name="PluginDesc" c:type="GstPluginDesc">
       <doc xml:space="preserve">A plugin should export a variable of this type called plugin_desc. The plugin
@@ -28080,7 +28316,7 @@ ranks are equal but the name of p2 comes before the name of p1</doc>
 unaffected; use the return value instead.
 
 Normally this function is used like this:
-|[
+|[&lt;!-- language="C" --&gt;
 GstPluginFeature *loaded_feature;
 
 loaded_feature = gst_plugin_feature_load (feature);
@@ -28651,7 +28887,9 @@ The default implementation supports presets located in a system directory,
 application specific directory and in the users home directory. When getting
 a list of presets individual presets are read and overlaid in 1) system,
 2) application and 3) user order. Whenever an earlier entry is newer, the
-later entries will be updated.</doc>
+later entries will be updated. Since 1.8 you can also provide extra paths
+where to find presets through the GST_PRESET_PATH environment variable.
+Presets found in those paths will be concidered as "app presets".</doc>
       <function name="get_app_dir" c:identifier="gst_preset_get_app_dir">
         <doc xml:space="preserve">Gets the directory for application specific presets if set by the
 application.</doc>
@@ -29469,7 +29707,7 @@ Query values can be set using gst_query_set_*(), and parsed using
 gst_query_parse_*() helpers.
 
 The following example shows how to query the duration of a pipeline:
-|[
+|[&lt;!-- language="C" --&gt;
   GstQuery *query;
   gboolean res;
   query = gst_query_new_duration (GST_FORMAT_TIME);
@@ -29885,8 +30123,8 @@ start position of the array should be inferior to @start.</doc>
       <method name="find_allocation_meta"
               c:identifier="gst_query_find_allocation_meta">
         <doc xml:space="preserve">Check if @query has metadata @api set. When this function returns %TRUE,
-@index will contain the index where the requested API and the flags can be
-found.</doc>
+@index will contain the index where the requested API and the parameters
+can be found.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE when @api is in the list of metadata.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -30518,7 +30756,7 @@ at @index of the metadata API array.</doc>
                      transfer-ownership="none"
                      optional="1"
                      allow-none="1">
-            <doc xml:space="preserve">API specific flags</doc>
+            <doc xml:space="preserve">API specific parameters</doc>
             <type name="Structure" c:type="const GstStructure**"/>
           </parameter>
         </parameters>
@@ -32825,7 +33063,7 @@ info to stream time (which is always between 0 and the duration of the stream).<
         <type name="SegmentFlags" c:type="GstSegmentFlags"/>
       </field>
       <field name="rate" writable="1">
-        <doc xml:space="preserve">the rate of the segment</doc>
+        <doc xml:space="preserve">the playback rate of the segment</doc>
         <type name="gdouble" c:type="gdouble"/>
       </field>
       <field name="applied_rate" writable="1">
@@ -32837,28 +33075,29 @@ info to stream time (which is always between 0 and the duration of the stream).<
         <type name="Format" c:type="GstFormat"/>
       </field>
       <field name="base" writable="1">
-        <doc xml:space="preserve">the base of the segment</doc>
+        <doc xml:space="preserve">the running time (plus elapsed time, see offset) of the segment start</doc>
         <type name="guint64" c:type="guint64"/>
       </field>
       <field name="offset" writable="1">
-        <doc xml:space="preserve">the offset to apply to @start or @stop</doc>
+        <doc xml:space="preserve">the amount (in buffer timestamps) that has already been elapsed in
+    the segment</doc>
         <type name="guint64" c:type="guint64"/>
       </field>
       <field name="start" writable="1">
-        <doc xml:space="preserve">the start of the segment</doc>
+        <doc xml:space="preserve">the start of the segment in buffer timestamp time (PTS)</doc>
         <type name="guint64" c:type="guint64"/>
       </field>
       <field name="stop" writable="1">
-        <doc xml:space="preserve">the stop of the segment</doc>
+        <doc xml:space="preserve">the stop of the segment in buffer timestamp time (PTS)</doc>
         <type name="guint64" c:type="guint64"/>
       </field>
       <field name="time" writable="1">
-        <doc xml:space="preserve">the stream time of the segment</doc>
+        <doc xml:space="preserve">the stream time of the segment start</doc>
         <type name="guint64" c:type="guint64"/>
       </field>
       <field name="position" writable="1">
-        <doc xml:space="preserve">the position in the segment (used internally by elements
-    such as sources, demuxers or parsers to track progress)</doc>
+        <doc xml:space="preserve">the buffer timestamp position in the segment (used internally by
+    elements such as sources, demuxers or parsers to track progress)</doc>
         <type name="guint64" c:type="guint64"/>
       </field>
       <field name="duration" writable="1">
@@ -33116,6 +33355,138 @@ returned, @offset is not in @segment.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="position_from_running_time"
+              c:identifier="gst_segment_position_from_running_time"
+              version="1.8">
+        <doc xml:space="preserve">Convert @running_time into a position in the segment so that
+gst_segment_to_running_time() with that position returns @running_time.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the position in the segment for @running_time. This function returns
+-1 when @running_time is -1 or when it is not inside @segment.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="segment" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSegment structure.</doc>
+            <type name="Segment" c:type="const GstSegment*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format of the segment.</doc>
+            <type name="Format" c:type="GstFormat"/>
+          </parameter>
+          <parameter name="running_time" transfer-ownership="none">
+            <doc xml:space="preserve">the running_time in the segment</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="position_from_running_time_full"
+              c:identifier="gst_segment_position_from_running_time_full"
+              version="1.8">
+        <doc xml:space="preserve">Translate @running_time to the segment position using the currently configured
+segment. Compared to gst_segment_position_from_running_time() this function can
+return negative segment position.
+
+This function is typically used by elements that need to synchronize buffers
+against the clock or each other.
+
+@running_time can be any value and the result of this function for values
+outside of the segment is extrapolated.
+
+When 1 is returned, @running_time resulted in a positive position returned
+in @position.
+
+When this function returns -1, the returned @position should be negated
+to get the real negative segment position.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a 1 or -1 on success, 0 on failure.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="segment" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSegment structure.</doc>
+            <type name="Segment" c:type="const GstSegment*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format of the segment.</doc>
+            <type name="Format" c:type="GstFormat"/>
+          </parameter>
+          <parameter name="running_time" transfer-ownership="none">
+            <doc xml:space="preserve">the running-time</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:space="preserve">the resulting position in the segment</doc>
+            <type name="guint64" c:type="guint64*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="position_from_stream_time"
+              c:identifier="gst_segment_position_from_stream_time"
+              version="1.8">
+        <doc xml:space="preserve">Convert @stream_time into a position in the segment so that
+gst_segment_to_stream_time() with that position returns @stream_time.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the position in the segment for @stream_time. This function returns
+-1 when @stream_time is -1 or when it is not inside @segment.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="segment" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSegment structure.</doc>
+            <type name="Segment" c:type="const GstSegment*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format of the segment.</doc>
+            <type name="Format" c:type="GstFormat"/>
+          </parameter>
+          <parameter name="stream_time" transfer-ownership="none">
+            <doc xml:space="preserve">the stream_time in the segment</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="position_from_stream_time_full"
+              c:identifier="gst_segment_position_from_stream_time_full"
+              version="1.8">
+        <doc xml:space="preserve">Translate @stream_time to the segment position using the currently configured
+segment. Compared to gst_segment_position_from_stream_time() this function can
+return negative segment position.
+
+This function is typically used by elements that need to synchronize buffers
+against the clock or each other.
+
+@stream_time can be any value and the result of this function for values outside
+of the segment is extrapolated.
+
+When 1 is returned, @stream_time resulted in a positive position returned
+in @position.
+
+When this function returns -1, the returned @position should be negated
+to get the real negative segment position.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a 1 or -1 on success, 0 on failure.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="segment" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSegment structure.</doc>
+            <type name="Segment" c:type="const GstSegment*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format of the segment.</doc>
+            <type name="Format" c:type="GstFormat"/>
+          </parameter>
+          <parameter name="stream_time" transfer-ownership="none">
+            <doc xml:space="preserve">the stream-time</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:space="preserve">the resulting position in the segment</doc>
+            <type name="guint64" c:type="guint64*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_running_time"
               c:identifier="gst_segment_set_running_time">
         <doc xml:space="preserve">Adjust the start/stop and base values of @segment such that the next valid
@@ -33145,7 +33516,9 @@ returned, @running_time is -1 or not in @segment.</doc>
 gst_segment_to_running_time() with that position returns @running_time.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the position in the segment for @running_time. This function returns
--1 when @running_time is -1 or when it is not inside @segment.</doc>
+-1 when @running_time is -1 or when it is not inside @segment.
+
+Deprecated. Use gst_segment_position_from_running_time() instead.</doc>
           <type name="guint64" c:type="guint64"/>
         </return-value>
         <parameters>
@@ -33235,7 +33608,9 @@ to get the real negative running time.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="to_stream_time" c:identifier="gst_segment_to_stream_time">
+      <method name="to_stream_time"
+              c:identifier="gst_segment_to_stream_time"
+              version="1.8">
         <doc xml:space="preserve">Translate @position to stream time using the currently configured
 segment. The @position value must be between @segment start and
 stop value.
@@ -33263,6 +33638,47 @@ was given.</doc>
           <parameter name="position" transfer-ownership="none">
             <doc xml:space="preserve">the position in the segment</doc>
             <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="to_stream_time_full"
+              c:identifier="gst_segment_to_stream_time_full"
+              version="1.8">
+        <doc xml:space="preserve">Translate @position to the total stream time using the currently configured
+segment. Compared to gst_segment_to_stream_time() this function can return
+negative stream-time.
+
+This function is typically used by elements that need to synchronize buffers
+against the clock or eachother.
+
+@position can be any value and the result of this function for values outside
+of the segment is extrapolated.
+
+When 1 is returned, @position resulted in a positive stream-time returned
+in @stream_time.
+
+When this function returns -1, the returned @stream_time should be negated
+to get the real negative stream time.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a 1 or -1 on success, 0 on failure.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="segment" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSegment structure.</doc>
+            <type name="Segment" c:type="const GstSegment*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format of the segment.</doc>
+            <type name="Format" c:type="GstFormat"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:space="preserve">the position in the segment</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+          <parameter name="stream_time" transfer-ownership="none">
+            <doc xml:space="preserve">result stream-time</doc>
+            <type name="guint64" c:type="guint64*"/>
           </parameter>
         </parameters>
       </method>
@@ -35394,7 +35810,7 @@ value is replaced and freed. The function will take ownership of @value.</doc>
         <doc xml:space="preserve">Converts @structure to a human-readable string representation.
 
 For debugging purposes its easier to do something like this:
-|[
+|[&lt;!-- language="C" --&gt;
 GST_LOG ("structure is %" GST_PTR_FORMAT, structure);
 ]|
 This prints the structure in human readable form.
@@ -36064,6 +36480,22 @@ different from this target bitrate.</doc>
 (sample) (sample taglist should specify the content type)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="TAG_PRIVATE_DATA"
+              value="private-data"
+              c:type="GST_TAG_PRIVATE_DATA"
+              version="1.8">
+      <doc xml:space="preserve">Any private data that may be contained in tags (sample).
+
+It is represented by #GstSample in which #GstBuffer contains the
+binary data and the sample's info #GstStructure may contain any
+extra information that identifies the origin or meaning of the data.
+
+Private frames in ID3v2 tags ('PRIV' frames) will be represented
+using this tag, in which case the GstStructure will be named
+"ID3PrivateFrame" and contain a field named "owner" of type string
+which contains the owner-identification string from the tag.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="TAG_PUBLISHER"
               value="publisher"
               c:type="GST_TAG_PUBLISHER"
@@ -36175,7 +36607,7 @@ The higher the value, the more the user likes this media
 the matching arguments.
 
 Example:
-|[
+|[&lt;!-- language="C" --&gt;
 printf("%" GST_TIME_FORMAT "\n", GST_TIME_ARGS(ts));
 ]|</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -37661,7 +38093,7 @@ Elements implementing the #GstTagSetter interface often have to merge
 any tags received from upstream and the tags set by the application via
 the interface. This can be done like this:
 
-|[
+|[&lt;!-- language="C" --&gt;
 GstTagMergeMode merge_mode;
 const GstTagList *application_tags;
 const GstTagList *event_tags;
@@ -39371,6 +39803,161 @@ unreffed before setting a new one.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
     </record>
+    <class name="Tracer"
+           c:symbol-prefix="tracer"
+           c:type="GstTracer"
+           parent="Object"
+           abstract="1"
+           glib:type-name="GstTracer"
+           glib:get-type="gst_tracer_get_type"
+           glib:type-struct="TracerClass">
+      <doc xml:space="preserve">Tracing modules will subclass #GstTracer and register through
+gst_tracing_register(). Modules can attach to various hook-types - see
+gst_tracing_register_hook(). When invoked they receive hook specific
+contextual data, which they must not modify.</doc>
+      <property name="params"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent">
+        <type name="Object" c:type="GstObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="TracerPrivate" c:type="GstTracerPrivate*"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </class>
+    <record name="TracerClass"
+            c:type="GstTracerClass"
+            glib:is-gtype-struct-for="Tracer">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="GstObjectClass"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <class name="TracerFactory"
+           c:symbol-prefix="tracer_factory"
+           c:type="GstTracerFactory"
+           version="1.8"
+           parent="PluginFeature"
+           glib:type-name="GstTracerFactory"
+           glib:get-type="gst_tracer_factory_get_type"
+           glib:type-struct="TracerFactoryClass">
+      <doc xml:space="preserve">Use gst_tracer_factory_get_list() to get a list of tracer factories known to
+GStreamer.</doc>
+      <function name="get_list"
+                c:identifier="gst_tracer_factory_get_list"
+                version="1.8">
+        <doc xml:space="preserve">Gets the list of all registered tracer factories. You must free the
+list using gst_plugin_feature_list_free().
+
+The returned factories are sorted by factory name.
+
+Free-function: gst_plugin_feature_list_free</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the list of all
+    registered #GstTracerFactory.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="TracerFactory"/>
+          </type>
+        </return-value>
+      </function>
+    </class>
+    <record name="TracerFactoryClass"
+            c:type="GstTracerFactoryClass"
+            disguised="1"
+            glib:is-gtype-struct-for="TracerFactory">
+    </record>
+    <record name="TracerPrivate" c:type="GstTracerPrivate" disguised="1">
+    </record>
+    <class name="TracerRecord"
+           c:symbol-prefix="tracer_record"
+           c:type="GstTracerRecord"
+           parent="Object"
+           glib:type-name="GstTracerRecord"
+           glib:get-type="gst_tracer_record_get_type"
+           glib:type-struct="TracerRecordClass">
+      <doc xml:space="preserve">Tracing modules will create instances of this class to announce the data they
+will log and create a log formatter.</doc>
+    </class>
+    <record name="TracerRecordClass"
+            c:type="GstTracerRecordClass"
+            disguised="1"
+            glib:is-gtype-struct-for="TracerRecord">
+    </record>
+    <bitfield name="TracerValueFlags"
+              glib:type-name="GstTracerValueFlags"
+              glib:get-type="gst_tracer_value_flags_get_type"
+              c:type="GstTracerValueFlags">
+      <doc xml:space="preserve">Flag that describe the value. These flags help applications processing the
+logs to understand the values.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_TRACER_VALUE_FLAGS_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no flags</doc>
+      </member>
+      <member name="optional"
+              value="1"
+              c:identifier="GST_TRACER_VALUE_FLAGS_OPTIONAL"
+              glib:nick="optional">
+        <doc xml:space="preserve">the value is optional. When using this flag
+  one need to have an additional boolean arg before this value in the
+  var-args list passed to  gst_tracer_record_log().</doc>
+      </member>
+      <member name="aggregated"
+              value="2"
+              c:identifier="GST_TRACER_VALUE_FLAGS_AGGREGATED"
+              glib:nick="aggregated">
+        <doc xml:space="preserve">the value is combined since the start of
+  tracing</doc>
+      </member>
+    </bitfield>
+    <enumeration name="TracerValueScope"
+                 version="1.8"
+                 glib:type-name="GstTracerValueScope"
+                 glib:get-type="gst_tracer_value_scope_get_type"
+                 c:type="GstTracerValueScope">
+      <doc xml:space="preserve">Tracing record will contain fields that contain a meassured value or extra
+meta-data. One such meta data are values that tell where a measurement was
+taken. This enumerating declares to which scope such a meta data field
+relates to. If it is e.g. %GST_TRACER_VALUE_SCOPE_PAD, then each of the log
+events may contain values for different #GstPads.</doc>
+      <member name="process"
+              value="0"
+              c:identifier="GST_TRACER_VALUE_SCOPE_PROCESS"
+              glib:nick="process">
+        <doc xml:space="preserve">the value is related to the process</doc>
+      </member>
+      <member name="thread"
+              value="1"
+              c:identifier="GST_TRACER_VALUE_SCOPE_THREAD"
+              glib:nick="thread">
+        <doc xml:space="preserve">the value is related to a thread</doc>
+      </member>
+      <member name="element"
+              value="2"
+              c:identifier="GST_TRACER_VALUE_SCOPE_ELEMENT"
+              glib:nick="element">
+        <doc xml:space="preserve">the value is related to an #GstElement</doc>
+      </member>
+      <member name="pad"
+              value="3"
+              c:identifier="GST_TRACER_VALUE_SCOPE_PAD"
+              glib:nick="pad">
+        <doc xml:space="preserve">the value is related to a #GstPad</doc>
+      </member>
+    </enumeration>
     <record name="TypeFind" c:type="GstTypeFind">
       <doc xml:space="preserve">The following functions allow you to detect the media type of an unknown
 stream.</doc>
@@ -39623,7 +40210,7 @@ the section &lt;link linkend="gstreamer-Writing-typefind-functions"&gt;
 The following example shows how to write a very simple typefinder that
 identifies the given data. You can get quite a bit more complicated than
 that though.
-|[
+|[&lt;!-- language="C" --&gt;
   typedef struct {
     guint8 *data;
     guint size;
@@ -41137,15 +41724,15 @@ determine a order for the two provided values.</doc>
       <doc xml:space="preserve">The major version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MICRO" value="1" c:type="GST_VERSION_MICRO">
+    <constant name="VERSION_MICRO" value="2" c:type="GST_VERSION_MICRO">
       <doc xml:space="preserve">The micro version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MINOR" value="6" c:type="GST_VERSION_MINOR">
+    <constant name="VERSION_MINOR" value="7" c:type="GST_VERSION_MINOR">
       <doc xml:space="preserve">The minor version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_NANO" value="0" c:type="GST_VERSION_NANO">
+    <constant name="VERSION_NANO" value="1" c:type="GST_VERSION_NANO">
       <doc xml:space="preserve">The nano version of GStreamer at compile time:
 Actual releases have 0, GIT versions have 1, prerelease versions have 2-...</doc>
       <type name="gint" c:type="gint"/>
@@ -42244,6 +42831,91 @@ is unknown.</doc>
         <parameter name="format" transfer-ownership="none">
           <doc xml:space="preserve">the format to find</doc>
           <type name="Format" c:type="GstFormat"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="info_strdup_printf"
+              c:identifier="gst_info_strdup_printf"
+              version="1.8"
+              introspectable="0">
+      <doc xml:space="preserve">Allocates, fills and returns a null terminated string from the printf style
+@format string and corresponding arguments.
+
+See gst_info_vasprintf() for when this function is required.
+
+Free with g_free().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated null terminated string or %NULL on any error</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">a printf style format string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">the printf arguments for @format</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="info_strdup_vprintf"
+              c:identifier="gst_info_strdup_vprintf"
+              version="1.8"
+              introspectable="0">
+      <doc xml:space="preserve">Allocates, fills and returns a null terminated string from the printf style
+@format string and @args.
+
+See gst_info_vasprintf() for when this function is required.
+
+Free with g_free().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated null terminated string or %NULL on any error</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">a printf style format string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="args" transfer-ownership="none">
+          <doc xml:space="preserve">the va_list of printf arguments for @format</doc>
+          <type name="va_list" c:type="va_list"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="info_vasprintf"
+              c:identifier="gst_info_vasprintf"
+              version="1.8"
+              introspectable="0">
+      <doc xml:space="preserve">Allocates and fills a string large enough (including the terminating null
+byte) to hold the specified printf style @format and @args.
+
+This function deals with the GStreamer specific printf specifiers
+#GST_PTR_FORMAT and #GST_SEGMENT_FORMAT.  If you do not have these specifiers
+in your @format string, you do not need to use this function and can use
+alternatives such as g_vasprintf().
+
+Free @result with g_free().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the length of the string allocated into @result or -1 on any error</doc>
+        <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="result"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">the resulting string</doc>
+          <type name="utf8" c:type="gchar**"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">a printf style format string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="args" transfer-ownership="none">
+          <doc xml:space="preserve">the va_list of printf arguments for @format</doc>
+          <type name="va_list" c:type="va_list"/>
         </parameter>
       </parameters>
     </function>
@@ -45036,7 +45708,7 @@ and @numerator_end/@denominator_end.</doc>
     </function>
     <function name="value_set_structure"
               c:identifier="gst_value_set_structure">
-      <doc xml:space="preserve">Sets the contents of @value to @structure.  The actual</doc>
+      <doc xml:space="preserve">Sets the contents of @value to @structure.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

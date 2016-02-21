@@ -22,6 +22,30 @@ and/or use gtk-doc annotations.  -->
       <doc xml:space="preserve">Maximum range of allowed channels, for use in template caps strings.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="AUDIO_CONVERTER_OPT_DITHER_METHOD"
+              value="GstAudioConverter.dither-method"
+              c:type="GST_AUDIO_CONVERTER_OPT_DITHER_METHOD">
+      <doc xml:space="preserve">#GST_TYPE_AUDIO_DITHER_METHOD, The dither method to use when
+changing bit depth.
+Default is #GST_AUDIO_DITHER_NONE.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="AUDIO_CONVERTER_OPT_NOISE_SHAPING_METHOD"
+              value="GstAudioConverter.noise-shaping-method"
+              c:type="GST_AUDIO_CONVERTER_OPT_NOISE_SHAPING_METHOD">
+      <doc xml:space="preserve">#GST_TYPE_AUDIO_NOISE_SHAPING_METHOD, The noise shaping method to use
+to mask noise from quantization errors.
+Default is #GST_AUDIO_NOISE_SHAPING_NONE.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="AUDIO_CONVERTER_OPT_QUANTIZATION"
+              value="GstAudioConverter.quantization"
+              c:type="GST_AUDIO_CONVERTER_OPT_QUANTIZATION">
+      <doc xml:space="preserve">#G_TYPE_UINT, The quantization amount. Components will be
+quantized to multiples of this value.
+Default is 1</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="AUDIO_DECODER_MAX_ERRORS"
               value="10"
               c:type="GST_AUDIO_DECODER_MAX_ERRORS">
@@ -1077,6 +1101,141 @@ on the pipeline's #GstBus instead.</doc>
         </array>
       </field>
     </record>
+    <record name="AudioChannelMixer"
+            c:type="GstAudioChannelMixer"
+            disguised="1">
+      <method name="free" c:identifier="gst_audio_channel_mixer_free">
+        <doc xml:space="preserve">Free memory allocated by @mix.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="mix" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioChannelMixer</doc>
+            <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_passthrough"
+              c:identifier="gst_audio_channel_mixer_is_passthrough">
+        <doc xml:space="preserve">Check if @mix is in passthrough.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE is @mix is passthrough.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="mix" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioChannelMixer</doc>
+            <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="samples" c:identifier="gst_audio_channel_mixer_samples">
+        <doc xml:space="preserve">In case the samples are interleaved, @in and @out must point to an
+array with a single element pointing to a block of interleaved samples.
+
+If non-interleaved samples are used, @in and @out must point to an
+array with pointers to memory blocks, one for each channel.
+
+Perform channel mixing on @in_data and write the result to @out_data.
+@in_data and @out_data need to be in @format and @layout.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="mix" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioChannelMixer</doc>
+            <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+          </instance-parameter>
+          <parameter name="in"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">input samples</doc>
+            <type name="gpointer" c:type="const gpointer"/>
+          </parameter>
+          <parameter name="out"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output samples</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="samples" transfer-ownership="none">
+            <doc xml:space="preserve">number of samples</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <function name="new"
+                c:identifier="gst_audio_channel_mixer_new"
+                introspectable="0">
+        <doc xml:space="preserve">Create a new channel mixer object for the given parameters.</doc>
+        <return-value>
+          <doc xml:space="preserve">a new #GstAudioChannelMixer object. Free with gst_audio_channel_mixer_free()
+after usage.</doc>
+          <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GstAudioChannelMixerFlags</doc>
+            <type name="AudioChannelMixerFlags"
+                  c:type="GstAudioChannelMixerFlags"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="AudioFormat" c:type="GstAudioFormat"/>
+          </parameter>
+          <parameter name="in_channels" transfer-ownership="none">
+            <doc xml:space="preserve">number of input channels</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="in_position" transfer-ownership="none">
+            <doc xml:space="preserve">positions of input channels</doc>
+            <type name="AudioChannelPosition"
+                  c:type="GstAudioChannelPosition*"/>
+          </parameter>
+          <parameter name="out_channels" transfer-ownership="none">
+            <doc xml:space="preserve">number of output channels</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="out_position" transfer-ownership="none">
+            <doc xml:space="preserve">positions of output channels</doc>
+            <type name="AudioChannelPosition"
+                  c:type="GstAudioChannelPosition*"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <bitfield name="AudioChannelMixerFlags"
+              glib:type-name="GstAudioChannelMixerFlags"
+              glib:get-type="gst_audio_channel_mixer_flags_get_type"
+              c:type="GstAudioChannelMixerFlags">
+      <doc xml:space="preserve">Flags passed to gst_audio_channel_mixer_new()</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_AUDIO_CHANNEL_MIXER_FLAGS_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no flag</doc>
+      </member>
+      <member name="non_interleaved"
+              value="1"
+              c:identifier="GST_AUDIO_CHANNEL_MIXER_FLAGS_NON_INTERLEAVED"
+              glib:nick="non-interleaved">
+        <doc xml:space="preserve">channels are not interleaved</doc>
+      </member>
+      <member name="unpositioned_in"
+              value="2"
+              c:identifier="GST_AUDIO_CHANNEL_MIXER_FLAGS_UNPOSITIONED_IN"
+              glib:nick="unpositioned-in">
+        <doc xml:space="preserve">input channels are explicitly unpositioned</doc>
+      </member>
+      <member name="unpositioned_out"
+              value="4"
+              c:identifier="GST_AUDIO_CHANNEL_MIXER_FLAGS_UNPOSITIONED_OUT"
+              glib:nick="unpositioned-out">
+        <doc xml:space="preserve">output channels are explicitly unpositioned</doc>
+      </member>
+    </bitfield>
     <enumeration name="AudioChannelPosition"
                  glib:type-name="GstAudioChannelPosition"
                  glib:get-type="gst_audio_channel_position_get_type"
@@ -1295,6 +1454,43 @@ channel.</doc>
         <doc xml:space="preserve">Surround right (between rear right and side right)</doc>
       </member>
     </enumeration>
+    <record name="AudioClippingMeta"
+            c:type="GstAudioClippingMeta"
+            version="1.8">
+      <doc xml:space="preserve">Extra buffer metadata describing how much audio has to be clipped from
+the start or end of a buffer. This is used for compressed formats, where
+the first frame usually has some additional samples due to encoder and
+decoder delays, and the last frame usually has some additional samples to
+be able to fill the complete last frame.
+
+This is used to ensure that decoded data in the end has the same amount of
+samples, and multiply decoded streams can be gaplessly concatenated.
+
+Note: If clipping of the start is done by adjusting the segment, this meta
+has to be dropped from buffers as otherwise clipping could happen twice.</doc>
+      <field name="meta" writable="1">
+        <doc xml:space="preserve">parent #GstMeta</doc>
+        <type name="Gst.Meta" c:type="GstMeta"/>
+      </field>
+      <field name="format" writable="1">
+        <doc xml:space="preserve">GstFormat of @start and @stop, GST_FORMAT_DEFAULT is samples</doc>
+        <type name="Gst.Format" c:type="GstFormat"/>
+      </field>
+      <field name="start" writable="1">
+        <doc xml:space="preserve">Amount of audio to clip from start of buffer</doc>
+        <type name="guint64" c:type="guint64"/>
+      </field>
+      <field name="end" writable="1">
+        <doc xml:space="preserve">Amount of  to clip from end of buffer</doc>
+        <type name="guint64" c:type="guint64"/>
+      </field>
+      <function name="get_info"
+                c:identifier="gst_audio_clipping_meta_get_info">
+        <return-value transfer-ownership="none">
+          <type name="Gst.MetaInfo" c:type="const GstMetaInfo*"/>
+        </return-value>
+      </function>
+    </record>
     <class name="AudioClock"
            c:symbol-prefix="audio_clock"
            c:type="GstAudioClock"
@@ -1470,6 +1666,262 @@ be used.</doc>
         </parameter>
       </parameters>
     </callback>
+    <record name="AudioConverter" c:type="GstAudioConverter" disguised="1">
+      <method name="free" c:identifier="gst_audio_converter_free">
+        <doc xml:space="preserve">Free a previously allocated @convert instance.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_config" c:identifier="gst_audio_converter_get_config">
+        <doc xml:space="preserve">Get the current configuration of @convert.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstStructure that remains valid for as long as @convert is valid
+  or until gst_audio_converter_update_config() is called.</doc>
+          <type name="Gst.Structure" c:type="const GstStructure*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+          <parameter name="in_rate" transfer-ownership="none">
+            <doc xml:space="preserve">result input rate</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+          <parameter name="out_rate" transfer-ownership="none">
+            <doc xml:space="preserve">result output rate</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_in_frames"
+              c:identifier="gst_audio_converter_get_in_frames">
+        <doc xml:space="preserve">Calculate how many input frames are currently needed by @convert to produce
+@out_frames of output frames.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of input frames</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+          <parameter name="out_frames" transfer-ownership="none">
+            <doc xml:space="preserve">number of output frames</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_max_latency"
+              c:identifier="gst_audio_converter_get_max_latency">
+        <doc xml:space="preserve">Get the maximum number of input frames that the converter would
+need before producing output.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the latency of @convert as expressed in the number of
+frames.</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_out_frames"
+              c:identifier="gst_audio_converter_get_out_frames">
+        <doc xml:space="preserve">Calculate how many output frames can be produced when @in_frames input
+frames are given to @convert.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of output frames</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+          <parameter name="in_frames" transfer-ownership="none">
+            <doc xml:space="preserve">number of input frames</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reset" c:identifier="gst_audio_converter_reset">
+        <doc xml:space="preserve">Reset @convert to the state it was when it was first created, clearing
+any history it might currently have.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="samples" c:identifier="gst_audio_converter_samples">
+        <doc xml:space="preserve">Perform the conversion with @in_frames in @in to @out_frames in @out
+using @convert.
+
+In case the samples are interleaved, @in and @out must point to an
+array with a single element pointing to a block of interleaved samples.
+
+If non-interleaved samples are used, @in and @out must point to an
+array with pointers to memory blocks, one for each channel.
+
+@in may be %NULL, in which case @in_frames of silence samples are processed
+by the converter.
+
+This function always produces @out_frames of output and consumes @in_frames of
+input. Use gst_audio_converter_get_out_frames() and
+gst_audio_converter_get_in_frames() to make sure @in_frames and @out_frames
+are matching and @in and @out point to enough memory.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE is the conversion could be performed.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">extra #GstAudioConverterFlags</doc>
+            <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
+          </parameter>
+          <parameter name="in"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">input frames</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="in_frames" transfer-ownership="none">
+            <doc xml:space="preserve">number of input frames</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="out"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output frames</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="out_frames" transfer-ownership="none">
+            <doc xml:space="preserve">number of output frames</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_config"
+              c:identifier="gst_audio_converter_update_config">
+        <doc xml:space="preserve">Set @in_rate, @out_rate and @config as extra configuration for @convert.
+
+in_rate and @out_rate specify the new sample rates of input and output
+formats. A value of 0 leaves the sample rate unchanged.
+
+@config can be %NULL, in which case, the current configuration is not
+changed.
+
+If the parameters in @config can not be set exactly, this function returns
+%FALSE and will try to update as much state as possible. The new state can
+then be retrieved and refined with gst_audio_converter_get_config().
+
+Look at the #GST_AUDIO_CONVERTER_OPT_* fields to check valid configuration
+option and values.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE when the new parameters could be set</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioConverter</doc>
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+          <parameter name="in_rate" transfer-ownership="none">
+            <doc xml:space="preserve">input rate</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="out_rate" transfer-ownership="none">
+            <doc xml:space="preserve">output rate</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="config"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstStructure or %NULL</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <function name="new"
+                c:identifier="gst_audio_converter_new"
+                introspectable="0">
+        <doc xml:space="preserve">Create a new #GstAudioConverter that is able to convert between @in and @out
+audio formats.
+
+@config contains extra configuration options, see #GST_VIDEO_CONVERTER_OPT_*
+parameters for details about the options and values.</doc>
+        <return-value>
+          <doc xml:space="preserve">a #GstAudioConverter or %NULL if conversion is not possible.</doc>
+          <type name="AudioConverter" c:type="GstAudioConverter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GstAudioConverterFlags</doc>
+            <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
+          </parameter>
+          <parameter name="in_info" transfer-ownership="none">
+            <doc xml:space="preserve">a source #GstAudioInfo</doc>
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="out_info" transfer-ownership="none">
+            <doc xml:space="preserve">a destination #GstAudioInfo</doc>
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="config" transfer-ownership="full">
+            <doc xml:space="preserve">a #GstStructure with configuration options</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <bitfield name="AudioConverterFlags"
+              glib:type-name="GstAudioConverterFlags"
+              glib:get-type="gst_audio_converter_flags_get_type"
+              c:type="GstAudioConverterFlags">
+      <doc xml:space="preserve">Extra flags passed to gst_audio_converter_new() and gst_audio_converter_samples().</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_AUDIO_CONVERTER_FLAG_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no flag</doc>
+      </member>
+      <member name="in_writable"
+              value="1"
+              c:identifier="GST_AUDIO_CONVERTER_FLAG_IN_WRITABLE"
+              glib:nick="in-writable">
+        <doc xml:space="preserve">the input sample arrays are writable and can be
+   used as temporary storage during conversion.</doc>
+      </member>
+      <member name="variable_rate"
+              value="2"
+              c:identifier="GST_AUDIO_CONVERTER_FLAG_VARIABLE_RATE"
+              glib:nick="variable-rate">
+        <doc xml:space="preserve">allow arbitrary rate updates with
+   gst_audio_converter_update_config().</doc>
+      </member>
+    </bitfield>
     <class name="AudioDecoder"
            c:symbol-prefix="audio_decoder"
            c:type="GstAudioDecoder"
@@ -2728,6 +3180,36 @@ overridden.</doc>
             c:type="GstAudioDecoderPrivate"
             disguised="1">
     </record>
+    <enumeration name="AudioDitherMethod"
+                 glib:type-name="GstAudioDitherMethod"
+                 glib:get-type="gst_audio_dither_method_get_type"
+                 c:type="GstAudioDitherMethod">
+      <doc xml:space="preserve">Set of available dithering methods.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_AUDIO_DITHER_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">No dithering</doc>
+      </member>
+      <member name="rpdf"
+              value="1"
+              c:identifier="GST_AUDIO_DITHER_RPDF"
+              glib:nick="rpdf">
+        <doc xml:space="preserve">Rectangular dithering</doc>
+      </member>
+      <member name="tpdf"
+              value="2"
+              c:identifier="GST_AUDIO_DITHER_TPDF"
+              glib:nick="tpdf">
+        <doc xml:space="preserve">Triangular dithering (default)</doc>
+      </member>
+      <member name="tpdf_hf"
+              value="3"
+              c:identifier="GST_AUDIO_DITHER_TPDF_HF"
+              glib:nick="tpdf-hf">
+        <doc xml:space="preserve">High frequency triangular dithering</doc>
+      </member>
+    </enumeration>
     <record name="AudioDownmixMeta" c:type="GstAudioDownmixMeta">
       <doc xml:space="preserve">Extra buffer metadata describing audio downmixing matrix. This metadata is
 attached to audio buffers and contains a matrix to downmix the buffer number
@@ -3484,7 +3966,10 @@ MT safe.</doc>
       <method name="set_frame_max"
               c:identifier="gst_audio_encoder_set_frame_max">
         <doc xml:space="preserve">Sets max number of frames accepted at once (assumed minimally 1).
-Requires @frame_samples_min and @frame_samples_max to be the equal.</doc>
+Requires @frame_samples_min and @frame_samples_max to be the equal.
+
+Note: This value will be reset to 0 every time before
+GstAudioEncoder::set_format() is called.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3505,7 +3990,10 @@ Requires @frame_samples_min and @frame_samples_max to be the equal.</doc>
 at most or will be handed all available if 0.
 
 If an exact number of samples is required, gst_audio_encoder_set_frame_samples_min()
-must be called with the same number.</doc>
+must be called with the same number.
+
+Note: This value will be reset to 0 every time before
+GstAudioEncoder::set_format() is called.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3526,7 +4014,10 @@ must be called with the same number.</doc>
 at least or will be handed all available if 0.
 
 If an exact number of samples is required, gst_audio_encoder_set_frame_samples_max()
-must be called with the same number.</doc>
+must be called with the same number.
+
+Note: This value will be reset to 0 every time before
+GstAudioEncoder::set_format() is called.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3618,7 +4109,10 @@ MT safe.</doc>
       </method>
       <method name="set_lookahead"
               c:identifier="gst_audio_encoder_set_lookahead">
-        <doc xml:space="preserve">Sets encoder lookahead (in units of input rate samples)</doc>
+        <doc xml:space="preserve">Sets encoder lookahead (in units of input rate samples)
+
+Note: This value will be reset to 0 every time before
+GstAudioEncoder::set_format() is called.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -4880,10 +5374,46 @@ Note: This initializes @info first, no values are preserved.</doc>
         <doc xml:space="preserve">non-interleaved audio</doc>
       </member>
     </enumeration>
-    <enumeration name="AudioPackFlags"
-                 glib:type-name="GstAudioPackFlags"
-                 glib:get-type="gst_audio_pack_flags_get_type"
-                 c:type="GstAudioPackFlags">
+    <enumeration name="AudioNoiseShapingMethod"
+                 glib:type-name="GstAudioNoiseShapingMethod"
+                 glib:get-type="gst_audio_noise_shaping_method_get_type"
+                 c:type="GstAudioNoiseShapingMethod">
+      <doc xml:space="preserve">Set of available noise shaping methods</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_AUDIO_NOISE_SHAPING_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">No noise shaping (default)</doc>
+      </member>
+      <member name="error_feedback"
+              value="1"
+              c:identifier="GST_AUDIO_NOISE_SHAPING_ERROR_FEEDBACK"
+              glib:nick="error-feedback">
+        <doc xml:space="preserve">Error feedback</doc>
+      </member>
+      <member name="simple"
+              value="2"
+              c:identifier="GST_AUDIO_NOISE_SHAPING_SIMPLE"
+              glib:nick="simple">
+        <doc xml:space="preserve">Simple 2-pole noise shaping</doc>
+      </member>
+      <member name="medium"
+              value="3"
+              c:identifier="GST_AUDIO_NOISE_SHAPING_MEDIUM"
+              glib:nick="medium">
+        <doc xml:space="preserve">Medium 5-pole noise shaping</doc>
+      </member>
+      <member name="high"
+              value="4"
+              c:identifier="GST_AUDIO_NOISE_SHAPING_HIGH"
+              glib:nick="high">
+        <doc xml:space="preserve">High 8-pole noise shaping</doc>
+      </member>
+    </enumeration>
+    <bitfield name="AudioPackFlags"
+              glib:type-name="GstAudioPackFlags"
+              glib:get-type="gst_audio_pack_flags_get_type"
+              c:type="GstAudioPackFlags">
       <doc xml:space="preserve">The different flags that can be used when packing and unpacking.</doc>
       <member name="none"
               value="0"
@@ -4891,7 +5421,143 @@ Note: This initializes @info first, no values are preserved.</doc>
               glib:nick="none">
         <doc xml:space="preserve">No flag</doc>
       </member>
-    </enumeration>
+      <member name="truncate_range"
+              value="1"
+              c:identifier="GST_AUDIO_PACK_FLAG_TRUNCATE_RANGE"
+              glib:nick="truncate-range">
+        <doc xml:space="preserve">When the source has a smaller depth
+  than the target format, set the least significant bits of the target
+  to 0. This is likely sightly faster but less accurate. When this flag
+  is not specified, the most significant bits of the source are duplicated
+  in the least significant bits of the destination.</doc>
+      </member>
+    </bitfield>
+    <record name="AudioQuantize" c:type="GstAudioQuantize" disguised="1">
+      <method name="free" c:identifier="gst_audio_quantize_free">
+        <doc xml:space="preserve">Free a #GstAudioQuantize.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="quant" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioQuantize</doc>
+            <type name="AudioQuantize" c:type="GstAudioQuantize*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reset" c:identifier="gst_audio_quantize_reset">
+        <doc xml:space="preserve">Reset @quant to the state is was when created, clearing any
+history it might have.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="quant" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioQuantize</doc>
+            <type name="AudioQuantize" c:type="GstAudioQuantize*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="samples" c:identifier="gst_audio_quantize_samples">
+        <doc xml:space="preserve">Perform quantization on @samples in @in and write the result to @out.
+
+In case the samples are interleaved, @in and @out must point to an
+array with a single element pointing to a block of interleaved samples.
+
+If non-interleaved samples are used, @in and @out must point to an
+array with pointers to memory blocks, one for each channel.
+
+@in and @out may point to the same memory location, in which case samples will be
+modified in-place.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="quant" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioQuantize</doc>
+            <type name="AudioQuantize" c:type="GstAudioQuantize*"/>
+          </instance-parameter>
+          <parameter name="in"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">input samples</doc>
+            <type name="gpointer" c:type="const gpointer"/>
+          </parameter>
+          <parameter name="out"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output samples</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="samples" transfer-ownership="none">
+            <doc xml:space="preserve">number of samples</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <function name="new"
+                c:identifier="gst_audio_quantize_new"
+                introspectable="0">
+        <doc xml:space="preserve">Create a new quantizer object with the given parameters.
+
+Output samples will be quantized to a multiple of @quantizer. Better
+performance is achieved when @quantizer is a power of 2.
+
+Dithering and noise-shaping can be performed during quantization with
+the @dither and @ns parameters.</doc>
+        <return-value>
+          <doc xml:space="preserve">a new #GstAudioQuantize. Free with gst_audio_quantize_free().</doc>
+          <type name="AudioQuantize" c:type="GstAudioQuantize*"/>
+        </return-value>
+        <parameters>
+          <parameter name="dither" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioDitherMethod</doc>
+            <type name="AudioDitherMethod" c:type="GstAudioDitherMethod"/>
+          </parameter>
+          <parameter name="ns" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioNoiseShapingMethod</doc>
+            <type name="AudioNoiseShapingMethod"
+                  c:type="GstAudioNoiseShapingMethod"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GstAudioQuantizeFlags</doc>
+            <type name="AudioQuantizeFlags" c:type="GstAudioQuantizeFlags"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstAudioFormat of the samples</doc>
+            <type name="AudioFormat" c:type="GstAudioFormat"/>
+          </parameter>
+          <parameter name="channels" transfer-ownership="none">
+            <doc xml:space="preserve">the amount of channels in the samples</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="quantizer" transfer-ownership="none">
+            <doc xml:space="preserve">the quantizer to use</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <bitfield name="AudioQuantizeFlags"
+              glib:type-name="GstAudioQuantizeFlags"
+              glib:get-type="gst_audio_quantize_flags_get_type"
+              c:type="GstAudioQuantizeFlags">
+      <doc xml:space="preserve">Extra flags that can be passed to gst_audio_quantize_new()</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_AUDIO_QUANTIZE_FLAG_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no flags</doc>
+      </member>
+      <member name="non_interleaved"
+              value="1"
+              c:identifier="GST_AUDIO_QUANTIZE_FLAG_NON_INTERLEAVED"
+              glib:nick="non-interleaved">
+        <doc xml:space="preserve">samples are non-interleaved</doc>
+      </member>
+    </bitfield>
     <class name="AudioRingBuffer"
            c:symbol-prefix="audio_ring_buffer"
            c:type="GstAudioRingBuffer"
@@ -6775,6 +7441,13 @@ functionality.</doc>
       <doc xml:space="preserve">This metadata stays relevant as long as channels are unchanged.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="META_TAG_AUDIO_RATE_STR"
+              value="rate"
+              c:type="GST_META_TAG_AUDIO_RATE_STR"
+              version="1.8">
+      <doc xml:space="preserve">This metadata stays relevant as long as sample rate is unchanged.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="META_TAG_AUDIO_STR"
               value="audio"
               c:type="GST_META_TAG_AUDIO_STR"
@@ -7000,6 +7673,62 @@ positions and the same positions, only in a different order.
         </parameter>
       </parameters>
     </function>
+    <function name="audio_channel_get_fallback_mask"
+              c:identifier="gst_audio_channel_get_fallback_mask"
+              version="1.8">
+      <doc xml:space="preserve">Get the fallback channel-mask for the given number of channels.
+
+This function returns a reasonable fallback channel-mask and should be
+called as a last resort when the specific channel map is unknown.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">a fallback channel-mask for @channels or 0 when there is no
+mask.</doc>
+        <type name="guint64" c:type="guint64"/>
+      </return-value>
+      <parameters>
+        <parameter name="channels" transfer-ownership="none">
+          <doc xml:space="preserve">the number of channels</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="audio_channel_mixer_new"
+              c:identifier="gst_audio_channel_mixer_new"
+              moved-to="AudioChannelMixer.new"
+              introspectable="0">
+      <doc xml:space="preserve">Create a new channel mixer object for the given parameters.</doc>
+      <return-value>
+        <doc xml:space="preserve">a new #GstAudioChannelMixer object. Free with gst_audio_channel_mixer_free()
+after usage.</doc>
+        <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+      </return-value>
+      <parameters>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">#GstAudioChannelMixerFlags</doc>
+          <type name="AudioChannelMixerFlags"
+                c:type="GstAudioChannelMixerFlags"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <type name="AudioFormat" c:type="GstAudioFormat"/>
+        </parameter>
+        <parameter name="in_channels" transfer-ownership="none">
+          <doc xml:space="preserve">number of input channels</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="in_position" transfer-ownership="none">
+          <doc xml:space="preserve">positions of input channels</doc>
+          <type name="AudioChannelPosition" c:type="GstAudioChannelPosition*"/>
+        </parameter>
+        <parameter name="out_channels" transfer-ownership="none">
+          <doc xml:space="preserve">number of output channels</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="out_position" transfer-ownership="none">
+          <doc xml:space="preserve">positions of output channels</doc>
+          <type name="AudioChannelPosition" c:type="GstAudioChannelPosition*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="audio_channel_positions_from_mask"
               c:identifier="gst_audio_channel_positions_from_mask">
       <doc xml:space="preserve">Convert the @channels present in @channel_mask to a @position array
@@ -7122,6 +7851,51 @@ checks if the channels are in the order required by GStreamer.</doc>
         <parameter name="force_order" transfer-ownership="none">
           <doc xml:space="preserve">Only consider the GStreamer channel order.</doc>
           <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="audio_clipping_meta_api_get_type"
+              c:identifier="gst_audio_clipping_meta_api_get_type">
+      <return-value transfer-ownership="none">
+        <type name="GType" c:type="GType"/>
+      </return-value>
+    </function>
+    <function name="audio_clipping_meta_get_info"
+              c:identifier="gst_audio_clipping_meta_get_info"
+              moved-to="AudioClippingMeta.get_info">
+      <return-value transfer-ownership="none">
+        <type name="Gst.MetaInfo" c:type="const GstMetaInfo*"/>
+      </return-value>
+    </function>
+    <function name="audio_converter_new"
+              c:identifier="gst_audio_converter_new"
+              moved-to="AudioConverter.new"
+              introspectable="0">
+      <doc xml:space="preserve">Create a new #GstAudioConverter that is able to convert between @in and @out
+audio formats.
+
+@config contains extra configuration options, see #GST_VIDEO_CONVERTER_OPT_*
+parameters for details about the options and values.</doc>
+      <return-value>
+        <doc xml:space="preserve">a #GstAudioConverter or %NULL if conversion is not possible.</doc>
+        <type name="AudioConverter" c:type="GstAudioConverter*"/>
+      </return-value>
+      <parameters>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">#GstAudioConverterFlags</doc>
+          <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
+        </parameter>
+        <parameter name="in_info" transfer-ownership="none">
+          <doc xml:space="preserve">a source #GstAudioInfo</doc>
+          <type name="AudioInfo" c:type="GstAudioInfo*"/>
+        </parameter>
+        <parameter name="out_info" transfer-ownership="none">
+          <doc xml:space="preserve">a destination #GstAudioInfo</doc>
+          <type name="AudioInfo" c:type="GstAudioInfo*"/>
+        </parameter>
+        <parameter name="config" transfer-ownership="full">
+          <doc xml:space="preserve">a #GstStructure with configuration options</doc>
+          <type name="Gst.Structure" c:type="GstStructure*"/>
         </parameter>
       </parameters>
     </function>
@@ -7342,6 +8116,49 @@ otherwise.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="audio_quantize_new"
+              c:identifier="gst_audio_quantize_new"
+              moved-to="AudioQuantize.new"
+              introspectable="0">
+      <doc xml:space="preserve">Create a new quantizer object with the given parameters.
+
+Output samples will be quantized to a multiple of @quantizer. Better
+performance is achieved when @quantizer is a power of 2.
+
+Dithering and noise-shaping can be performed during quantization with
+the @dither and @ns parameters.</doc>
+      <return-value>
+        <doc xml:space="preserve">a new #GstAudioQuantize. Free with gst_audio_quantize_free().</doc>
+        <type name="AudioQuantize" c:type="GstAudioQuantize*"/>
+      </return-value>
+      <parameters>
+        <parameter name="dither" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstAudioDitherMethod</doc>
+          <type name="AudioDitherMethod" c:type="GstAudioDitherMethod"/>
+        </parameter>
+        <parameter name="ns" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstAudioNoiseShapingMethod</doc>
+          <type name="AudioNoiseShapingMethod"
+                c:type="GstAudioNoiseShapingMethod"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">#GstAudioQuantizeFlags</doc>
+          <type name="AudioQuantizeFlags" c:type="GstAudioQuantizeFlags"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstAudioFormat of the samples</doc>
+          <type name="AudioFormat" c:type="GstAudioFormat"/>
+        </parameter>
+        <parameter name="channels" transfer-ownership="none">
+          <doc xml:space="preserve">the amount of channels in the samples</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="quantizer" transfer-ownership="none">
+          <doc xml:space="preserve">the quantizer to use</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="audio_reorder_channels"
               c:identifier="gst_audio_reorder_channels">
       <doc xml:space="preserve">Reorders @data from the channel positions @from to the channel
@@ -7384,6 +8201,33 @@ positions and the same positions, only in a different order.</doc>
             <type name="AudioChannelPosition"
                   c:type="GstAudioChannelPosition"/>
           </array>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="buffer_add_audio_clipping_meta"
+              c:identifier="gst_buffer_add_audio_clipping_meta"
+              version="1.8">
+      <doc xml:space="preserve">Attaches #GstAudioClippingMeta metadata to @buffer with the given parameters.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstAudioClippingMeta on @buffer.</doc>
+        <type name="AudioClippingMeta" c:type="GstAudioClippingMeta*"/>
+      </return-value>
+      <parameters>
+        <parameter name="buffer" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">GstFormat of @start and @stop, GST_FORMAT_DEFAULT is samples</doc>
+          <type name="Gst.Format" c:type="GstFormat"/>
+        </parameter>
+        <parameter name="start" transfer-ownership="none">
+          <doc xml:space="preserve">Amount of audio to clip from start of buffer</doc>
+          <type name="guint64" c:type="guint64"/>
+        </parameter>
+        <parameter name="end" transfer-ownership="none">
+          <doc xml:space="preserve">Amount of  to clip from end of buffer</doc>
+          <type name="guint64" c:type="guint64"/>
         </parameter>
       </parameters>
     </function>

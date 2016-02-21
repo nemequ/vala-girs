@@ -43,6 +43,184 @@ and/or use gtk-doc annotations.  -->
     <alias name="EncodingTargetClass" c:type="GstEncodingTargetClass">
       <type name="GObject.ObjectClass" c:type="GObjectClass"/>
     </alias>
+    <record name="AudioVisualizer" c:type="GstAudioVisualizer">
+      <doc xml:space="preserve">A baseclass for scopes (visualizers). It takes care of re-fitting the
+audio-rate to video-rate and handles renegotiation (downstream video size
+changes).
+
+It also provides several background shading effects. These effects are
+applied to a previous picture before the render() implementation can draw a
+new frame.</doc>
+      <field name="parent" writable="1">
+        <type name="Gst.Element" c:type="GstElement"/>
+      </field>
+      <field name="req_spf" writable="1">
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="vinfo" writable="1">
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
+      </field>
+      <field name="ainfo" writable="1">
+        <type name="GstAudio.AudioInfo" c:type="GstAudioInfo"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="AudioVisualizerPrivate"
+              c:type="GstAudioVisualizerPrivate*"/>
+      </field>
+    </record>
+    <class name="AudioVisualizer-BaseExtLibvisual"
+           c:symbol-prefix="audio_visualizer"
+           parent="Gst.Element"
+           abstract="1"
+           glib:type-name="GstAudioVisualizer-BaseExtLibvisual"
+           glib:get-type="gst_audio_visualizer_get_type">
+      <property name="shade-amount" writable="1" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="shader"
+                introspectable="0"
+                writable="1"
+                transfer-ownership="none">
+        <type/>
+      </property>
+    </class>
+    <record name="AudioVisualizerClass" c:type="GstAudioVisualizerClass">
+      <field name="parent_class" writable="1">
+        <type name="Gst.ElementClass" c:type="GstElementClass"/>
+      </field>
+      <field name="setup">
+        <callback name="setup">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="scope" transfer-ownership="none">
+              <type name="AudioVisualizer" c:type="GstAudioVisualizer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="render">
+        <callback name="render">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="scope" transfer-ownership="none">
+              <type name="AudioVisualizer" c:type="GstAudioVisualizer*"/>
+            </parameter>
+            <parameter name="audio" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+            <parameter name="video" transfer-ownership="none">
+              <type name="GstVideo.VideoFrame" c:type="GstVideoFrame*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="decide_allocation">
+        <callback name="decide_allocation">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="scope" transfer-ownership="none">
+              <type name="AudioVisualizer" c:type="GstAudioVisualizer*"/>
+            </parameter>
+            <parameter name="query" transfer-ownership="none">
+              <type name="Gst.Query" c:type="GstQuery*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <record name="AudioVisualizerPrivate"
+            c:type="GstAudioVisualizerPrivate"
+            disguised="1">
+    </record>
+    <enumeration name="AudioVisualizerShader"
+                 glib:type-name="GstAudioVisualizerShader"
+                 glib:get-type="gst_audio_visualizer_shader_get_type"
+                 c:type="GstAudioVisualizerShader">
+      <doc xml:space="preserve">Different types of supported background shading functions.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no shading</doc>
+      </member>
+      <member name="fade"
+              value="1"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE"
+              glib:nick="fade">
+        <doc xml:space="preserve">plain fading</doc>
+      </member>
+      <member name="fade_and_move_up"
+              value="2"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_UP"
+              glib:nick="fade-and-move-up">
+        <doc xml:space="preserve">fade and move up</doc>
+      </member>
+      <member name="fade_and_move_down"
+              value="3"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_DOWN"
+              glib:nick="fade-and-move-down">
+        <doc xml:space="preserve">fade and move down</doc>
+      </member>
+      <member name="fade_and_move_left"
+              value="4"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_LEFT"
+              glib:nick="fade-and-move-left">
+        <doc xml:space="preserve">fade and move left</doc>
+      </member>
+      <member name="fade_and_move_right"
+              value="5"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_RIGHT"
+              glib:nick="fade-and-move-right">
+        <doc xml:space="preserve">fade and move right</doc>
+      </member>
+      <member name="fade_and_move_horiz_out"
+              value="6"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_HORIZ_OUT"
+              glib:nick="fade-and-move-horiz-out">
+        <doc xml:space="preserve">fade and move horizontally out</doc>
+      </member>
+      <member name="fade_and_move_horiz_in"
+              value="7"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_HORIZ_IN"
+              glib:nick="fade-and-move-horiz-in">
+        <doc xml:space="preserve">fade and move horizontally in</doc>
+      </member>
+      <member name="fade_and_move_vert_out"
+              value="8"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_VERT_OUT"
+              glib:nick="fade-and-move-vert-out">
+        <doc xml:space="preserve">fade and move vertically out</doc>
+      </member>
+      <member name="fade_and_move_vert_in"
+              value="9"
+              c:identifier="GST_AUDIO_VISUALIZER_SHADER_FADE_AND_MOVE_VERT_IN"
+              glib:nick="fade-and-move-vert-in">
+        <doc xml:space="preserve">fade and move vertically in</doc>
+      </member>
+    </enumeration>
+    <callback name="AudioVisualizerShaderFunc"
+              c:type="GstAudioVisualizerShaderFunc">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="scope" transfer-ownership="none">
+          <type name="AudioVisualizer" c:type="GstAudioVisualizer*"/>
+        </parameter>
+        <parameter name="s" transfer-ownership="none">
+          <type name="GstVideo.VideoFrame" c:type="const GstVideoFrame*"/>
+        </parameter>
+        <parameter name="d" transfer-ownership="none">
+          <type name="GstVideo.VideoFrame" c:type="GstVideoFrame*"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="Discoverer"
            c:symbol-prefix="discoverer"
            c:type="GstDiscoverer"
@@ -1425,7 +1603,8 @@ information like name, description, format and preset.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="profilename" transfer-ownership="none">
-            <doc xml:space="preserve">The name of the profile</doc>
+            <doc xml:space="preserve">(allow-none): The name of the profile, if %NULL
+provided, it will default to the encoding profile called `default`.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="category"
@@ -2437,19 +2616,19 @@ in debugging.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="PLUGINS_BASE_VERSION_MICRO"
-              value="3"
+              value="2"
               c:type="GST_PLUGINS_BASE_VERSION_MICRO">
       <doc xml:space="preserve">The micro version of GStreamer's gst-plugins-base libraries at compile time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="PLUGINS_BASE_VERSION_MINOR"
-              value="6"
+              value="7"
               c:type="GST_PLUGINS_BASE_VERSION_MINOR">
       <doc xml:space="preserve">The minor version of GStreamer's gst-plugins-base libraries at compile time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="PLUGINS_BASE_VERSION_NANO"
-              value="0"
+              value="1"
               c:type="GST_PLUGINS_BASE_VERSION_NANO">
       <doc xml:space="preserve">The nano version of GStreamer's gst-plugins-base libraries at compile time.
 Actual releases have 0, GIT versions have 1, prerelease versions have 2-...</doc>
@@ -2866,6 +3045,199 @@ object sequence start code. Only the first byte
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">Length of the data available in @sps.</doc>
           <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="codec_utils_opus_create_caps"
+              c:identifier="gst_codec_utils_opus_create_caps"
+              version="1.8">
+      <doc xml:space="preserve">Creates Opus caps from the given parameters.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The #GstCaps.</doc>
+        <type name="Gst.Caps" c:type="GstCaps*"/>
+      </return-value>
+      <parameters>
+        <parameter name="rate" transfer-ownership="none">
+          <doc xml:space="preserve">the sample rate</doc>
+          <type name="guint32" c:type="guint32"/>
+        </parameter>
+        <parameter name="channels" transfer-ownership="none">
+          <doc xml:space="preserve">the number of channels</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="channel_mapping_family" transfer-ownership="none">
+          <doc xml:space="preserve">the channel mapping family</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="stream_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of independent streams</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="coupled_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of stereo streams</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="channel_mapping"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the mapping between the streams</doc>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="codec_utils_opus_create_caps_from_header"
+              c:identifier="gst_codec_utils_opus_create_caps_from_header"
+              version="1.8">
+      <doc xml:space="preserve">Creates Opus caps from the given OpusHead @header and comment header
+@comments.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The #GstCaps.</doc>
+        <type name="Gst.Caps" c:type="GstCaps*"/>
+      </return-value>
+      <parameters>
+        <parameter name="header" transfer-ownership="none">
+          <doc xml:space="preserve">OpusHead header</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+        <parameter name="comments"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">Comment header or NULL</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="codec_utils_opus_create_header"
+              c:identifier="gst_codec_utils_opus_create_header"
+              version="1.8">
+      <doc xml:space="preserve">Creates OpusHead header from the given parameters.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The #GstBuffer containing the OpusHead.</doc>
+        <type name="Gst.Buffer" c:type="GstBuffer*"/>
+      </return-value>
+      <parameters>
+        <parameter name="rate" transfer-ownership="none">
+          <doc xml:space="preserve">the sample rate</doc>
+          <type name="guint32" c:type="guint32"/>
+        </parameter>
+        <parameter name="channels" transfer-ownership="none">
+          <doc xml:space="preserve">the number of channels</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="channel_mapping_family" transfer-ownership="none">
+          <doc xml:space="preserve">the channel mapping family</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="stream_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of independent streams</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="coupled_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of stereo streams</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="channel_mapping"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the mapping between the streams</doc>
+          <type name="guint8" c:type="const guint8*"/>
+        </parameter>
+        <parameter name="pre_skip" transfer-ownership="none">
+          <doc xml:space="preserve">Pre-skip in 48kHz samples or 0</doc>
+          <type name="guint16" c:type="guint16"/>
+        </parameter>
+        <parameter name="output_gain" transfer-ownership="none">
+          <doc xml:space="preserve">Output gain or 0</doc>
+          <type name="gint16" c:type="gint16"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="codec_utils_opus_parse_caps"
+              c:identifier="gst_codec_utils_opus_parse_caps"
+              version="1.8">
+      <doc xml:space="preserve">Parses Opus caps and fills the different fields with defaults if possible.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if parsing was successful, %FALSE otherwise.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="caps" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstCaps to which the level and profile are to be added</doc>
+          <type name="Gst.Caps" c:type="GstCaps*"/>
+        </parameter>
+        <parameter name="rate" transfer-ownership="none">
+          <doc xml:space="preserve">the sample rate</doc>
+          <type name="guint32" c:type="guint32*"/>
+        </parameter>
+        <parameter name="channels" transfer-ownership="none">
+          <doc xml:space="preserve">the number of channels</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="channel_mapping_family" transfer-ownership="none">
+          <doc xml:space="preserve">the channel mapping family</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="stream_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of independent streams</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="coupled_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of stereo streams</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="channel_mapping" transfer-ownership="none">
+          <doc xml:space="preserve">the mapping between the streams</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="codec_utils_opus_parse_header"
+              c:identifier="gst_codec_utils_opus_parse_header"
+              version="1.8">
+      <doc xml:space="preserve">Parses the OpusHead header.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if parsing was successful, %FALSE otherwise.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="header" transfer-ownership="none">
+          <doc xml:space="preserve">the OpusHead #GstBuffer</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+        <parameter name="rate" transfer-ownership="none">
+          <doc xml:space="preserve">the sample rate</doc>
+          <type name="guint32" c:type="guint32*"/>
+        </parameter>
+        <parameter name="channels" transfer-ownership="none">
+          <doc xml:space="preserve">the number of channels</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="channel_mapping_family" transfer-ownership="none">
+          <doc xml:space="preserve">the channel mapping family</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="stream_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of independent streams</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="coupled_count" transfer-ownership="none">
+          <doc xml:space="preserve">the number of stereo streams</doc>
+          <type name="guint8" c:type="guint8*"/>
+        </parameter>
+        <parameter name="channel_mapping" transfer-ownership="none">
+          <doc xml:space="preserve">the mapping between the streams</doc>
+          <type name="guint8" c:type="guint8"/>
+        </parameter>
+        <parameter name="pre_skip" transfer-ownership="none">
+          <doc xml:space="preserve">Pre-skip in 48kHz samples or 0</doc>
+          <type name="guint16" c:type="guint16*"/>
+        </parameter>
+        <parameter name="output_gain" transfer-ownership="none">
+          <doc xml:space="preserve">Output gain or 0</doc>
+          <type name="gint16" c:type="gint16*"/>
         </parameter>
       </parameters>
     </function>

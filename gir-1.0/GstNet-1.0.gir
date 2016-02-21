@@ -69,7 +69,7 @@ If you set a #GstBus on the clock via the "bus" object property, it will
 send @GST_MESSAGE_ELEMENT messages with an attached #GstStructure containing
 statistics about clock accuracy and network traffic.</doc>
       <constructor name="new" c:identifier="gst_net_client_clock_new">
-        <doc xml:space="preserve">Create a new #GstNetClientClock that will report the time
+        <doc xml:space="preserve">Create a new #GstNetClientInternalClock that will report the time
 provided by the #GstNetTimeProvider on @remote_address and
 @remote_port.</doc>
         <return-value transfer-ownership="none">
@@ -83,7 +83,7 @@ clock.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="remote_address" transfer-ownership="none">
-            <doc xml:space="preserve">the address of the remote clock provider</doc>
+            <doc xml:space="preserve">the address or hostname of the remote clock provider</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="remote_port" transfer-ownership="none">
@@ -321,6 +321,7 @@ After creating the object, a client clock such as #GstNetClientClock can
 query the exposed clock over the network for its values.
 
 The #GstNetTimeProvider typically wraps the clock used by a #GstPipeline.</doc>
+      <implements name="Gio.Initable"/>
       <constructor name="new" c:identifier="gst_net_time_provider_new">
         <doc xml:space="preserve">Allows network clients to get the current time of @clock.</doc>
         <return-value transfer-ownership="none">
@@ -349,13 +350,22 @@ The #GstNetTimeProvider typically wraps the clock used by a #GstPipeline.</doc>
       <property name="active" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="address" writable="1" transfer-ownership="none">
+      <property name="address"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="clock" writable="1" transfer-ownership="none">
+      <property name="clock"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
         <type name="Gst.Clock"/>
       </property>
-      <property name="port" writable="1" transfer-ownership="none">
+      <property name="port"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
       <field name="parent">
@@ -408,7 +418,7 @@ clock.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="remote_address" transfer-ownership="none">
-            <doc xml:space="preserve">the address of the remote clock provider</doc>
+            <doc xml:space="preserve">the address or hostname of the remote clock provider</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="remote_port" transfer-ownership="none">
@@ -534,11 +544,16 @@ gst_clock_is_synced().</doc>
                 transfer-ownership="none">
         <type name="guint" c:type="guint"/>
       </property>
+      <property name="grandmaster-clock-id" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
       <property name="internal-clock" transfer-ownership="none">
         <type name="Gst.Clock"/>
       </property>
+      <property name="master-clock-id" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
       <field name="clock">
-        <doc xml:space="preserve">parented to #GstSystemClock</doc>
         <type name="Gst.SystemClock" c:type="GstSystemClock"/>
       </field>
       <field name="priv" readable="0" private="1">
@@ -659,6 +674,21 @@ If %FALSE is returned, the callback is removed and never called again.</doc>
           <doc xml:space="preserve">a @GSocketControlMessage to attach to @buffer</doc>
           <type name="Gio.SocketControlMessage"
                 c:type="GSocketControlMessage*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="buffer_get_net_address_meta"
+              c:identifier="gst_buffer_get_net_address_meta">
+      <doc xml:space="preserve">Find the #GstNetAddressMeta on @buffer.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstNetAddressMeta or %NULL when there
+is no such metadata on @buffer.</doc>
+        <type name="NetAddressMeta" c:type="GstNetAddressMeta*"/>
+      </return-value>
+      <parameters>
+        <parameter name="buffer" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </parameter>
       </parameters>
     </function>

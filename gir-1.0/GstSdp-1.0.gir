@@ -176,6 +176,25 @@ protocol sessions.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_from_caps"
+                   c:identifier="gst_mikey_message_new_from_caps"
+                   version="1.8">
+        <doc xml:space="preserve">Makes mikey message including:
+ - Security Policy Payload
+ - Key Data Transport Payload
+ - Key Data Sub-Payload</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstMIKEYMessage,
+or %NULL if there is no srtp information in the caps.</doc>
+          <type name="MIKEYMessage" c:type="GstMIKEYMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstCaps, including SRTP parameters (srtp/srtcp cipher, authorization, key data)</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_from_data"
                    c:identifier="gst_mikey_message_new_from_data"
                    version="1.4"
@@ -356,6 +375,20 @@ in NTP-UTC format.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMIKEYMessage</doc>
+            <type name="MIKEYMessage" c:type="GstMIKEYMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="base64_encode"
+              c:identifier="gst_mikey_message_base64_encode"
+              version="1.8">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #gchar, base64-encoded data</doc>
+          <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="msg" transfer-ownership="none">
@@ -1772,6 +1805,25 @@ keys.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="attributes_to_caps"
+              c:identifier="gst_sdp_media_attributes_to_caps"
+              version="1.8">
+        <doc xml:space="preserve">Mapping of attributes of #GstSDPMedia to #GstCaps</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstSDPResult.</doc>
+          <type name="SDPResult" c:type="GstSDPResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="media" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSDPMedia</doc>
+            <type name="SDPMedia" c:type="const GstSDPMedia*"/>
+          </instance-parameter>
+          <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstCaps</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="bandwidths_len"
               c:identifier="gst_sdp_media_bandwidths_len">
         <doc xml:space="preserve">Get the number of bandwidth fields in @media.</doc>
@@ -1920,6 +1972,31 @@ allocated with gst_sdp_media_new().</doc>
           <parameter name="idx" transfer-ownership="none">
             <doc xml:space="preserve">an index</doc>
             <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_caps_from_media"
+              c:identifier="gst_sdp_media_get_caps_from_media"
+              version="1.8">
+        <doc xml:space="preserve">Mapping of caps from SDP fields:
+
+a=rtpmap:(payload) (encoding_name)/(clock_rate)[/(encoding_params)]
+
+a=framesize:(payload) (width)-(height)
+
+a=fmtp:(payload) (param)[=(value)];...</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstCaps, or %NULL if an error happened</doc>
+          <type name="Gst.Caps" c:type="GstCaps*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="media" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSDPMedia</doc>
+            <type name="SDPMedia" c:type="const GstSDPMedia*"/>
+          </instance-parameter>
+          <parameter name="pt" transfer-ownership="none">
+            <doc xml:space="preserve">a payload type</doc>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </method>
@@ -2444,6 +2521,31 @@ stack and initialized with gst_sdp_media_init().</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="set_media_from_caps"
+                c:identifier="gst_sdp_media_set_media_from_caps"
+                version="1.8">
+        <doc xml:space="preserve">Mapping of caps to SDP fields:
+
+a=rtpmap:(payload) (encoding_name) or (clock_rate)[or (encoding_params)]
+
+a=framesize:(payload) (width)-(height)
+
+a=fmtp:(payload) (param)[=(value)];...</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstSDPResult.</doc>
+          <type name="SDPResult" c:type="GstSDPResult"/>
+        </return-value>
+        <parameters>
+          <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstCaps</doc>
+            <type name="Gst.Caps" c:type="const GstCaps*"/>
+          </parameter>
+          <parameter name="media" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSDPMedia</doc>
+            <type name="SDPMedia" c:type="GstSDPMedia*"/>
+          </parameter>
+        </parameters>
+      </function>
     </record>
     <record name="SDPMessage"
             c:type="GstSDPMessage"
@@ -2696,6 +2798,25 @@ gst_sdp_media_init() before it can be used again.</doc>
             <doc xml:space="preserve">a #GstSDPMessage</doc>
             <type name="SDPMessage" c:type="const GstSDPMessage*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="attributes_to_caps"
+              c:identifier="gst_sdp_message_attributes_to_caps"
+              version="1.8">
+        <doc xml:space="preserve">Mapping of attributes of #GstSDPMessage to #GstCaps</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstSDPResult.</doc>
+          <type name="SDPResult" c:type="GstSDPResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstSDPMessage</doc>
+            <type name="SDPMessage" c:type="const GstSDPMessage*"/>
+          </instance-parameter>
+          <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstCaps</doc>
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="bandwidths_len"
@@ -3963,6 +4084,25 @@ time.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="sdp_make_keymgmt"
+              c:identifier="gst_sdp_make_keymgmt"
+              version="1.8">
+      <doc xml:space="preserve">Makes key management data</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a #gchar key-mgmt data,</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="uri" transfer-ownership="none">
+          <doc xml:space="preserve">a #gchar URI</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="base64" transfer-ownership="none">
+          <doc xml:space="preserve">a #gchar base64-encoded key data</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="sdp_media_new"
               c:identifier="gst_sdp_media_new"
               moved-to="SDPMedia.new">
@@ -3978,6 +4118,32 @@ time.</doc>
                    transfer-ownership="full">
           <doc xml:space="preserve">pointer to new #GstSDPMedia</doc>
           <type name="SDPMedia" c:type="GstSDPMedia**"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="sdp_media_set_media_from_caps"
+              c:identifier="gst_sdp_media_set_media_from_caps"
+              moved-to="SDPMedia.set_media_from_caps"
+              version="1.8">
+      <doc xml:space="preserve">Mapping of caps to SDP fields:
+
+a=rtpmap:(payload) (encoding_name) or (clock_rate)[or (encoding_params)]
+
+a=framesize:(payload) (width)-(height)
+
+a=fmtp:(payload) (param)[=(value)];...</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">a #GstSDPResult.</doc>
+        <type name="SDPResult" c:type="GstSDPResult"/>
+      </return-value>
+      <parameters>
+        <parameter name="caps" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstCaps</doc>
+          <type name="Gst.Caps" c:type="const GstCaps*"/>
+        </parameter>
+        <parameter name="media" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstSDPMedia</doc>
+          <type name="SDPMedia" c:type="GstSDPMedia*"/>
         </parameter>
       </parameters>
     </function>
