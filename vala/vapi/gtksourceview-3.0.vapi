@@ -42,9 +42,9 @@ namespace Gtk {
 		public unowned Gtk.SourceStyleScheme? get_style_scheme ();
 		public unowned Gtk.SourceUndoManager? get_undo_manager ();
 		[Version (since = "2.10")]
-		public bool iter_backward_to_context_class_toggle (ref Gtk.TextIter iter, string context_class);
+		public bool iter_backward_to_context_class_toggle (Gtk.TextIter iter, string context_class);
 		[Version (since = "2.10")]
-		public bool iter_forward_to_context_class_toggle (ref Gtk.TextIter iter, string context_class);
+		public bool iter_forward_to_context_class_toggle (Gtk.TextIter iter, string context_class);
 		[Version (since = "2.10")]
 		public bool iter_has_context_class (Gtk.TextIter iter, string context_class);
 		[Version (since = "3.16")]

@@ -418,6 +418,7 @@ namespace GVirConfig {
 		public GVirConfig.DomainGraphicsSpiceImageCompression get_image_compression ();
 		public int get_port ();
 		public void set_autoport (bool autoport);
+		public void set_gl (bool gl);
 		public void set_image_compression (GVirConfig.DomainGraphicsSpiceImageCompression compression);
 		public void set_password (string password);
 		public void set_port (int port);
@@ -691,6 +692,7 @@ namespace GVirConfig {
 		public DomainVideo ();
 		[CCode (has_construct_function = false)]
 		public DomainVideo.from_xml (string xml) throws GLib.Error;
+		public void set_accel3d (bool accel3d);
 		public void set_heads (uint head_count);
 		public void set_model (GVirConfig.DomainVideoModel model);
 		public void set_ram (uint kbytes);
@@ -1126,7 +1128,8 @@ namespace GVirConfig {
 		VMVGA,
 		XEN,
 		VBOX,
-		QXL
+		QXL,
+		VIRTIO
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIRT_", type_id = "gvir_config_domain_virt_type_get_type ()")]
 	public enum DomainVirtType {

@@ -232,6 +232,7 @@ namespace Champlain {
 		public uint max_zoom_level { get; construct; }
 		public uint min_zoom_level { get; construct; }
 		public string name { get; construct; }
+		public Champlain.MapProjection projection { get; construct; }
 		public uint tile_size { get; construct; }
 		public string uri_format { get; construct; }
 	}
@@ -274,7 +275,7 @@ namespace Champlain {
 		public signal void drag_motion (double dx, double dy, Clutter.Event event);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_marker_layer_get_type ()")]
-	public class MarkerLayer : Champlain.Layer, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
+	public class MarkerLayer : Champlain.Layer, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		public MarkerLayer ();
 		public void add_marker (Champlain.Marker marker);
@@ -294,6 +295,7 @@ namespace Champlain {
 		public void set_selection_mode (Champlain.SelectionMode mode);
 		public void show_all_markers ();
 		public void unselect_all_markers ();
+		public Champlain.SelectionMode selection_mode { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_memory_cache_get_type ()")]
 	public class MemoryCache : Champlain.TileCache {
@@ -318,6 +320,8 @@ namespace Champlain {
 		public string api_uri { get; set; }
 		[NoAccessorMethod]
 		public string proxy_uri { owned get; set; }
+		[NoAccessorMethod]
+		public Champlain.State state { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_network_tile_source_get_type ()")]
 	public class NetworkTileSource : Champlain.TileSource {
@@ -376,7 +380,7 @@ namespace Champlain {
 		public bool visible { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_point_get_type ()")]
-	public class Point : Champlain.Marker, Atk.Implementor, Champlain.Location, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
+	public class Point : Champlain.Marker, Atk.Implementor, Champlain.Exportable, Champlain.Location, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public Point ();
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
@@ -406,6 +410,7 @@ namespace Champlain {
 		public void set_max_width (uint value);
 		public void set_unit (Champlain.Unit unit);
 		public uint max_width { get; set; }
+		public Champlain.Unit unit { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_tile_get_type ()")]
 	public class Tile : Clutter.Actor, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
@@ -436,6 +441,7 @@ namespace Champlain {
 		public string etag { get; set; }
 		public bool fade_in { get; set; }
 		public uint size { get; set; }
+		public Champlain.State state { get; set; }
 		public uint x { get; set; }
 		public uint y { get; set; }
 		public uint zoom_level { get; set; }
@@ -476,6 +482,8 @@ namespace Champlain {
 		public uint min_zoom_level { get; set construct; }
 		[NoAccessorMethod]
 		public string name { owned get; set construct; }
+		[NoAccessorMethod]
+		public Champlain.MapProjection projection { get; set construct; }
 		[NoAccessorMethod]
 		public uint tile_size { get; set construct; }
 	}
@@ -548,6 +556,7 @@ namespace Champlain {
 		public Champlain.MapSource map_source { get; set; }
 		public uint max_zoom_level { get; set; }
 		public uint min_zoom_level { get; set; }
+		public Champlain.State state { get; }
 		public Champlain.BoundingBox world { get; set; }
 		public uint zoom_level { get; set; }
 		public bool zoom_on_double_click { get; set; }
@@ -592,25 +601,24 @@ namespace Champlain {
 		[NoAccessorMethod]
 		public abstract double longitude { get; set; }
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_MAP_PROJECTION_", has_type_id = false)]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_MAP_PROJECTION_", type_id = "champlain_map_projection_get_type ()")]
 	public enum MapProjection {
-		[CCode (cname = "CHAMPLAIN_MAP_PROJECTION_MERCATOR")]
-		MAP_PROJECTION_MERCATOR
+		MERCATOR
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_SELECTION_", has_type_id = false)]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_SELECTION_", type_id = "champlain_selection_mode_get_type ()")]
 	public enum SelectionMode {
 		NONE,
 		SINGLE,
 		MULTIPLE
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_STATE_", has_type_id = false)]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_STATE_", type_id = "champlain_state_get_type ()")]
 	public enum State {
 		NONE,
 		LOADING,
 		LOADED,
 		DONE
 	}
-	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_UNIT_", has_type_id = false)]
+	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_UNIT_", type_id = "champlain_unit_get_type ()")]
 	public enum Unit {
 		KM,
 		MILES

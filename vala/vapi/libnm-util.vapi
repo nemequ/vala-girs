@@ -2023,7 +2023,10 @@ namespace NM {
 		GENERIC,
 		TEAM,
 		TUN,
-		IP_TUNNEL
+		IP_TUNNEL,
+		MACVLAN,
+		VXLAN,
+		VETH
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", has_type_id = false)]
 	[Flags]
