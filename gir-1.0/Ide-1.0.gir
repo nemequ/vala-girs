@@ -3420,6 +3420,26 @@ it will be set to zero.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_sequence"
+              c:identifier="ide_configuration_get_sequence">
+        <doc xml:space="preserve">This returns a sequence number for the configuration. This is useful
+for build systems that want to clear the "dirty" bit on the configuration
+so that they need not bootstrap a second time. This should be done by
+checking the sequence number before executing the bootstrap, and only
+cleared if the sequence number matches after performing the bootstrap.
+This indicates no changes have been made to the configuration in the
+mean time.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A monotonic sequence number.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="getenv" c:identifier="ide_configuration_getenv">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -5794,6 +5814,9 @@ instances.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
+    <constant name="ENABLE_TRACE" value="0" c:type="IDE_ENABLE_TRACE">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <class name="EditorPerspective"
            c:symbol-prefix="editor_perspective"
            c:type="IdeEditorPerspective"
@@ -5804,6 +5827,20 @@ instances.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Perspective"/>
+      <method name="focus_buffer_in_current_stack"
+              c:identifier="ide_editor_perspective_focus_buffer_in_current_stack">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="focus_location"
               c:identifier="ide_editor_perspective_focus_location">
         <return-value transfer-ownership="none">
@@ -5856,6 +5893,18 @@ instances.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
+      <method name="get_active_source_view"
+              c:identifier="ide_editor_view_get_active_source_view">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeSourceView.</doc>
+          <type name="SourceView" c:type="IdeSourceView*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorView" c:type="IdeEditorView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_document" c:identifier="ide_editor_view_get_document">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">An #IdeBuffer.</doc>
@@ -7076,6 +7125,14 @@ settled.</doc>
       <property name="newline-type-set" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="overwrite-braces" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="overwrite-braces-set"
+                writable="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="right-margin-position"
                 writable="1"
                 transfer-ownership="none">
@@ -8080,6 +8137,12 @@ returned then ide_indenter_format() will be called.</doc>
         </callback>
       </field>
     </record>
+    <constant name="LOG_LEVEL_TRACE"
+              value="1"
+              c:type="IDE_LOG_LEVEL_TRACE"
+              introspectable="0">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <record name="Language" c:type="IdeLanguage" disguised="1">
     </record>
     <class name="Layout"
@@ -8953,6 +9016,53 @@ If the view does not support splits, %NULL will be returned.</doc>
         </callback>
       </field>
     </record>
+    <record name="LineReader" c:type="IdeLineReader">
+      <field name="contents" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="length" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="pos" writable="1">
+        <type name="gssize" c:type="gssize"/>
+      </field>
+      <method name="init" c:identifier="ide_line_reader_init">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="reader" transfer-ownership="none">
+            <type name="LineReader" c:type="IdeLineReader*"/>
+          </instance-parameter>
+          <parameter name="contents" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next" c:identifier="ide_line_reader_next">
+        <doc xml:space="preserve">Moves forward to the beginning of the next line in the buffer. No changes to the buffer
+are made, and the result is a pointer within the string passed as @contents in
+ide_line_reader_init(). Since the line most likely will not be terminated with a NULL byte,
+you must provide @length to determine the length of the line.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The beginning of the line within the buffer.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="reader" transfer-ownership="none">
+            <doc xml:space="preserve">the #IdeLineReader</doc>
+            <type name="LineReader" c:type="IdeLineReader*"/>
+          </instance-parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:space="preserve">a location for the length of the line in bytes.</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </record>
     <class name="LocalDevice"
            c:symbol-prefix="local_device"
            c:type="IdeLocalDevice"
@@ -9232,6 +9342,410 @@ context is not already in shutdown.</doc>
             </parameter>
           </parameters>
         </callback>
+      </field>
+    </record>
+    <class name="OmniSearchDisplay"
+           c:symbol-prefix="omni_search_display"
+           c:type="IdeOmniSearchDisplay"
+           parent="Gtk.Box"
+           glib:type-name="IdeOmniSearchDisplay"
+           glib:get-type="ide_omni_search_display_get_type"
+           glib:type-struct="OmniSearchDisplayClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <method name="get_context"
+              c:identifier="ide_omni_search_display_get_context">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An IdeSearchContext.</doc>
+          <type name="SearchContext" c:type="IdeSearchContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchDisplay" c:type="IdeOmniSearchDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_count"
+              c:identifier="ide_omni_search_display_get_count">
+        <return-value transfer-ownership="none">
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchDisplay" c:type="IdeOmniSearchDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="move_next_result"
+              c:identifier="ide_omni_search_display_move_next_result">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchDisplay" c:type="IdeOmniSearchDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="move_previous_result"
+              c:identifier="ide_omni_search_display_move_previous_result">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchDisplay" c:type="IdeOmniSearchDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_context"
+              c:identifier="ide_omni_search_display_set_context">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchDisplay" c:type="IdeOmniSearchDisplay*"/>
+          </instance-parameter>
+          <parameter name="context" transfer-ownership="none">
+            <type name="SearchContext" c:type="IdeSearchContext*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="context" writable="1" transfer-ownership="none">
+        <type name="SearchContext"/>
+      </property>
+      <glib:signal name="activate" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="result-activated" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="SearchResult"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="OmniSearchDisplayClass"
+            c:type="IdeOmniSearchDisplayClass"
+            glib:is-gtype-struct-for="OmniSearchDisplay">
+      <field name="parent_class">
+        <type name="Gtk.BinClass" c:type="GtkBinClass"/>
+      </field>
+    </record>
+    <class name="OmniSearchEntry"
+           c:symbol-prefix="omni_search_entry"
+           c:type="IdeOmniSearchEntry"
+           parent="Gtk.Entry"
+           glib:type-name="IdeOmniSearchEntry"
+           glib:get-type="ide_omni_search_entry_get_type"
+           glib:type-struct="OmniSearchEntryClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.CellEditable"/>
+      <implements name="Gtk.Editable"/>
+      <constructor name="new" c:identifier="ide_omni_search_entry_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+      <method name="get_search_engine"
+              c:identifier="ide_omni_search_entry_get_search_engine">
+        <doc xml:space="preserve">Gets the search engine to use with the current workbench.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeSearchEngine.</doc>
+          <type name="SearchEngine" c:type="IdeSearchEngine*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeOmniSearchEntry.</doc>
+            <type name="OmniSearchEntry" c:type="IdeOmniSearchEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_search_engine"
+              c:identifier="ide_omni_search_entry_set_search_engine">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchEntry" c:type="IdeOmniSearchEntry*"/>
+          </instance-parameter>
+          <parameter name="search_engine" transfer-ownership="none">
+            <type name="SearchEngine" c:type="IdeSearchEngine*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <glib:signal name="clear-search" when="first" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="move-next-result" when="first" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="move-previous-result" when="first" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="OmniSearchEntryClass"
+            c:type="IdeOmniSearchEntryClass"
+            glib:is-gtype-struct-for="OmniSearchEntry">
+      <field name="parent_class">
+        <type name="Gtk.EntryClass" c:type="GtkEntryClass"/>
+      </field>
+    </record>
+    <class name="OmniSearchGroup"
+           c:symbol-prefix="omni_search_group"
+           c:type="IdeOmniSearchGroup"
+           parent="Gtk.Box"
+           glib:type-name="IdeOmniSearchGroup"
+           glib:get-type="ide_omni_search_group_get_type"
+           glib:type-struct="OmniSearchGroupClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <method name="activate" c:identifier="ide_omni_search_group_activate">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="add_result"
+              c:identifier="ide_omni_search_group_add_result">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="SearchResult" c:type="IdeSearchResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear" c:identifier="ide_omni_search_group_clear">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_count" c:identifier="ide_omni_search_group_get_count">
+        <return-value transfer-ownership="none">
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_first" c:identifier="ide_omni_search_group_get_first">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeSearchResult or %NULL.</doc>
+          <type name="SearchResult" c:type="IdeSearchResult*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_provider"
+              c:identifier="ide_omni_search_group_get_provider">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeSearchProvider</doc>
+          <type name="SearchProvider" c:type="IdeSearchProvider*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="has_selection"
+              c:identifier="ide_omni_search_group_has_selection">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="move_next" c:identifier="ide_omni_search_group_move_next">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="move_previous"
+              c:identifier="ide_omni_search_group_move_previous">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_result"
+              c:identifier="ide_omni_search_group_remove_result">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="SearchResult" c:type="IdeSearchResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="select_first"
+              c:identifier="ide_omni_search_group_select_first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="select_last"
+              c:identifier="ide_omni_search_group_select_last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unselect" c:identifier="ide_omni_search_group_unselect">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OmniSearchGroup" c:type="IdeOmniSearchGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="provider"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="SearchProvider"/>
+      </property>
+      <glib:signal name="result-activated" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gtk.Widget"/>
+          </parameter>
+          <parameter name="p0" transfer-ownership="none">
+            <type name="SearchResult"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="result-selected" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="SearchResult"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="OmniSearchGroupClass"
+            c:type="IdeOmniSearchGroupClass"
+            glib:is-gtype-struct-for="OmniSearchGroup">
+      <field name="parent_class">
+        <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
+      </field>
+    </record>
+    <class name="OmniSearchRow"
+           c:symbol-prefix="omni_search_row"
+           c:type="IdeOmniSearchRow"
+           parent="Gtk.ListBoxRow"
+           glib:type-name="IdeOmniSearchRow"
+           glib:get-type="ide_omni_search_row_get_type"
+           glib:type-struct="OmniSearchRowClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <method name="get_result" c:identifier="ide_omni_search_row_get_result">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeSearchResult.</doc>
+          <type name="SearchResult" c:type="IdeSearchResult*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="row" transfer-ownership="none">
+            <type name="OmniSearchRow" c:type="IdeOmniSearchRow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_result" c:identifier="ide_omni_search_row_set_result">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="row" transfer-ownership="none">
+            <type name="OmniSearchRow" c:type="IdeOmniSearchRow*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="SearchResult" c:type="IdeSearchResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="icon-name"
+                readable="0"
+                writable="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="result" writable="1" transfer-ownership="none">
+        <type name="SearchResult"/>
+      </property>
+    </class>
+    <record name="OmniSearchRowClass"
+            c:type="IdeOmniSearchRowClass"
+            glib:is-gtype-struct-for="OmniSearchRow">
+      <field name="parent_class">
+        <type name="Gtk.ListBoxRowClass" c:type="GtkListBoxRowClass"/>
       </field>
     </record>
     <record name="PatternSpec"
@@ -10555,6 +11069,312 @@ the plugin is unloaded.</doc>
         </callback>
       </field>
     </record>
+    <class name="PreferencesBin"
+           c:symbol-prefix="preferences_bin"
+           c:type="IdePreferencesBin"
+           parent="Gtk.Bin"
+           glib:type-name="IdePreferencesBin"
+           glib:get-type="ide_preferences_bin_get_type"
+           glib:type-struct="PreferencesBinClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <virtual-method name="connect">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesBin" c:type="IdePreferencesBin*"/>
+          </instance-parameter>
+          <parameter name="settings" transfer-ownership="none">
+            <type name="Gio.Settings" c:type="GSettings*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="disconnect">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesBin" c:type="IdePreferencesBin*"/>
+          </instance-parameter>
+          <parameter name="settings" transfer-ownership="none">
+            <type name="Gio.Settings" c:type="GSettings*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="matches">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesBin" c:type="IdePreferencesBin*"/>
+          </instance-parameter>
+          <parameter name="spec" transfer-ownership="none">
+            <type name="PatternSpec" c:type="IdePatternSpec*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <property name="keywords"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="path"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="priority"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="schema-id"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Gtk.Bin" c:type="GtkBin"/>
+      </field>
+    </class>
+    <record name="PreferencesBinClass"
+            c:type="IdePreferencesBinClass"
+            glib:is-gtype-struct-for="PreferencesBin">
+      <field name="parent_class">
+        <type name="Gtk.BinClass" c:type="GtkBinClass"/>
+      </field>
+      <field name="connect">
+        <callback name="connect">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="PreferencesBin" c:type="IdePreferencesBin*"/>
+            </parameter>
+            <parameter name="settings" transfer-ownership="none">
+              <type name="Gio.Settings" c:type="GSettings*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="disconnect">
+        <callback name="disconnect">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="PreferencesBin" c:type="IdePreferencesBin*"/>
+            </parameter>
+            <parameter name="settings" transfer-ownership="none">
+              <type name="Gio.Settings" c:type="GSettings*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="matches">
+        <callback name="matches">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="PreferencesBin" c:type="IdePreferencesBin*"/>
+            </parameter>
+            <parameter name="spec" transfer-ownership="none">
+              <type name="PatternSpec" c:type="IdePatternSpec*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="PreferencesEntry"
+           c:symbol-prefix="preferences_entry"
+           c:type="IdePreferencesEntry"
+           parent="PreferencesBin"
+           glib:type-name="IdePreferencesEntry"
+           glib:get-type="ide_preferences_entry_get_type"
+           glib:type-struct="PreferencesEntryClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <method name="get_title_widget"
+              c:identifier="ide_preferences_entry_get_title_widget">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesEntry" c:type="IdePreferencesEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="text" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent_instance">
+        <type name="PreferencesBin" c:type="IdePreferencesBin"/>
+      </field>
+      <glib:signal name="activate" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="changed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="PreferencesEntryClass"
+            c:type="IdePreferencesEntryClass"
+            glib:is-gtype-struct-for="PreferencesEntry">
+      <field name="parent_class">
+        <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
+      </field>
+    </record>
+    <class name="PreferencesFlowBox"
+           c:symbol-prefix="preferences_flow_box"
+           c:type="IdePreferencesFlowBox"
+           parent="Egg.ColumnLayout"
+           glib:type-name="IdePreferencesFlowBox"
+           glib:get-type="ide_preferences_flow_box_get_type"
+           glib:type-struct="PreferencesFlowBoxClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <constructor name="new" c:identifier="ide_preferences_flow_box_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+    </class>
+    <record name="PreferencesFlowBoxClass"
+            c:type="IdePreferencesFlowBoxClass"
+            glib:is-gtype-struct-for="PreferencesFlowBox">
+      <field name="parent_class">
+        <type name="Egg.ColumnLayoutClass" c:type="EggColumnLayoutClass"/>
+      </field>
+    </record>
+    <class name="PreferencesFontButton"
+           c:symbol-prefix="preferences_font_button"
+           c:type="IdePreferencesFontButton"
+           parent="PreferencesBin"
+           glib:type-name="IdePreferencesFontButton"
+           glib:get-type="ide_preferences_font_button_get_type"
+           glib:type-struct="PreferencesFontButtonClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <property name="key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <glib:signal name="activate" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="PreferencesFontButtonClass"
+            c:type="IdePreferencesFontButtonClass"
+            glib:is-gtype-struct-for="PreferencesFontButton">
+      <field name="parent_class">
+        <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
+      </field>
+    </record>
+    <class name="PreferencesGroup"
+           c:symbol-prefix="preferences_group"
+           c:type="IdePreferencesGroup"
+           parent="Gtk.Bin"
+           glib:type-name="IdePreferencesGroup"
+           glib:get-type="ide_preferences_group_get_type"
+           glib:type-struct="PreferencesGroupClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <method name="add" c:identifier="ide_preferences_group_add">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesGroup" c:type="IdePreferencesGroup*"/>
+          </instance-parameter>
+          <parameter name="widget" transfer-ownership="none">
+            <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_priority"
+              c:identifier="ide_preferences_group_get_priority">
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesGroup" c:type="IdePreferencesGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_title" c:identifier="ide_preferences_group_get_title">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesGroup" c:type="IdePreferencesGroup*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="is-list"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="priority"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="title"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="PreferencesGroupClass"
+            c:type="IdePreferencesGroupClass"
+            glib:is-gtype-struct-for="PreferencesGroup">
+      <field name="parent_class">
+        <type name="Gtk.BinClass" c:type="GtkBinClass"/>
+      </field>
+    </record>
     <record name="PreferencesInterface"
             c:type="IdePreferencesInterface"
             glib:is-gtype-struct-for="Preferences">
@@ -10868,6 +11688,139 @@ the plugin is unloaded.</doc>
             </parameter>
           </parameters>
         </callback>
+      </field>
+    </record>
+    <class name="PreferencesPage"
+           c:symbol-prefix="preferences_page"
+           c:type="IdePreferencesPage"
+           parent="Gtk.Bin"
+           glib:type-name="IdePreferencesPage"
+           glib:get-type="ide_preferences_page_get_type"
+           glib:type-struct="PreferencesPageClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <method name="add_group" c:identifier="ide_preferences_page_add_group">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesPage" c:type="IdePreferencesPage*"/>
+          </instance-parameter>
+          <parameter name="group" transfer-ownership="none">
+            <type name="PreferencesGroup" c:type="IdePreferencesGroup*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_group" c:identifier="ide_preferences_page_get_group">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdePreferencesGroup or %NULL.</doc>
+          <type name="PreferencesGroup" c:type="IdePreferencesGroup*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesPage" c:type="IdePreferencesPage*"/>
+          </instance-parameter>
+          <parameter name="group_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="priority" writable="1" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+    </class>
+    <record name="PreferencesPageClass"
+            c:type="IdePreferencesPageClass"
+            glib:is-gtype-struct-for="PreferencesPage">
+      <field name="parent_class">
+        <type name="Gtk.BinClass" c:type="GtkBinClass"/>
+      </field>
+    </record>
+    <class name="PreferencesSpinButton"
+           c:symbol-prefix="preferences_spin_button"
+           c:type="IdePreferencesSpinButton"
+           parent="PreferencesBin"
+           glib:type-name="IdePreferencesSpinButton"
+           glib:get-type="ide_preferences_spin_button_get_type"
+           glib:type-struct="PreferencesSpinButtonClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <property name="key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="subtitle"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <glib:signal name="activate" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="PreferencesSpinButtonClass"
+            c:type="IdePreferencesSpinButtonClass"
+            glib:is-gtype-struct-for="PreferencesSpinButton">
+      <field name="parent_class">
+        <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
+      </field>
+    </record>
+    <class name="PreferencesSwitch"
+           c:symbol-prefix="preferences_switch"
+           c:type="IdePreferencesSwitch"
+           parent="PreferencesBin"
+           glib:type-name="IdePreferencesSwitch"
+           glib:get-type="ide_preferences_switch_get_type"
+           glib:type-struct="PreferencesSwitchClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <property name="is-radio"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="subtitle" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="target"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="GLib.Variant"/>
+      </property>
+      <property name="title" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <glib:signal name="activated" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="PreferencesSwitchClass"
+            c:type="IdePreferencesSwitchClass"
+            glib:is-gtype-struct-for="PreferencesSwitch">
+      <field name="parent_class">
+        <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
       </field>
     </record>
     <interface name="Process"
@@ -12416,6 +13369,9 @@ the project.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="RecentProjects" c:type="IdeRecentProjects*"/>
           </instance-parameter>
+          <parameter name="recent_only" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -12427,7 +13383,7 @@ the project.</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="2">
+                     closure="3">
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -13915,6 +14871,78 @@ If @providers is %NULL, all registered providers will be used.</doc>
           </parameters>
         </callback>
       </field>
+    </record>
+    <record name="SearchReducer" c:type="IdeSearchReducer">
+      <field name="context" writable="1">
+        <type name="SearchContext" c:type="IdeSearchContext*"/>
+      </field>
+      <field name="provider" writable="1">
+        <type name="SearchProvider" c:type="IdeSearchProvider*"/>
+      </field>
+      <field name="sequence" writable="1">
+        <type name="GLib.Sequence" c:type="GSequence*"/>
+      </field>
+      <field name="max_results" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="count" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <method name="accepts" c:identifier="ide_search_reducer_accepts">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="reducer" transfer-ownership="none">
+            <type name="SearchReducer" c:type="IdeSearchReducer*"/>
+          </instance-parameter>
+          <parameter name="score" transfer-ownership="none">
+            <type name="gfloat" c:type="gfloat"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="destroy" c:identifier="ide_search_reducer_destroy">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="reducer" transfer-ownership="none">
+            <type name="SearchReducer" c:type="IdeSearchReducer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init" c:identifier="ide_search_reducer_init">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="reducer" transfer-ownership="none">
+            <type name="SearchReducer" c:type="IdeSearchReducer*"/>
+          </instance-parameter>
+          <parameter name="context" transfer-ownership="none">
+            <type name="SearchContext" c:type="IdeSearchContext*"/>
+          </parameter>
+          <parameter name="provider" transfer-ownership="none">
+            <type name="SearchProvider" c:type="IdeSearchProvider*"/>
+          </parameter>
+          <parameter name="max_results" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="push" c:identifier="ide_search_reducer_push">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="reducer" transfer-ownership="none">
+            <type name="SearchReducer" c:type="IdeSearchReducer*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="SearchResult" c:type="IdeSearchResult*"/>
+          </parameter>
+        </parameters>
+      </method>
     </record>
     <class name="SearchResult"
            c:symbol-prefix="search_result"
@@ -19262,7 +20290,10 @@ First adjust the repeat and then perform the "movement" action.</doc>
             <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
           </instance-parameter>
           <parameter name="args" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar* const*"/>
+            <doc xml:space="preserve">the arguments</doc>
+            <array c:type="gchar**">
+              <type name="utf8"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -23581,6 +24612,19 @@ the project files exist.</doc>
         </parameters>
       </function>
     </record>
+    <callback name="WidgetContextHandler" c:type="IdeWidgetContextHandler">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+        <parameter name="context" transfer-ownership="none">
+          <type name="Context" c:type="IdeContext*"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="Workbench"
            c:symbol-prefix="workbench"
            c:type="IdeWorkbench"
@@ -24699,6 +25743,37 @@ return %NULL.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="cairo_region_create_from_clip_extents"
+              c:identifier="ide_cairo_region_create_from_clip_extents">
+      <return-value transfer-ownership="full">
+        <type name="cairo.Region" c:type="cairo_region_t*"/>
+      </return-value>
+      <parameters>
+        <parameter name="cr" transfer-ownership="none">
+          <type name="cairo.Context" c:type="cairo_t*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="cairo_rounded_rectangle"
+              c:identifier="ide_cairo_rounded_rectangle">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="cr" transfer-ownership="none">
+          <type name="cairo.Context" c:type="cairo_t*"/>
+        </parameter>
+        <parameter name="rect" transfer-ownership="none">
+          <type name="Gdk.Rectangle" c:type="const GdkRectangle*"/>
+        </parameter>
+        <parameter name="x_radius" transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="y_radius" transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="completion_provider_context_current_word"
               c:identifier="ide_completion_provider_context_current_word"
               moved-to="CompletionProvider.context_current_word">
@@ -24750,6 +25825,23 @@ return %NULL.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="dnd_get_uri_list" c:identifier="ide_dnd_get_uri_list">
+      <doc xml:space="preserve">Create a list of valid uri's from a uri-list drop.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a string array which will hold the uris or
+  %NULL if there were no valid uris. g_strfreev should be used when
+  the string array is no longer used</doc>
+        <array c:type="gchar**">
+          <type name="utf8"/>
+        </array>
+      </return-value>
+      <parameters>
+        <parameter name="selection_data" transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkSelectionData from drag_data_received</doc>
+          <type name="Gtk.SelectionData" c:type="GtkSelectionData*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="doap_error_quark"
               c:identifier="ide_doap_error_quark"
               moved-to="DoapError.quark">
@@ -24760,6 +25852,17 @@ return %NULL.</doc>
     <function name="get_program_name" c:identifier="ide_get_program_name">
       <return-value transfer-ownership="none">
         <type name="utf8" c:type="const gchar*"/>
+      </return-value>
+    </function>
+    <function name="get_system_arch" c:identifier="ide_get_system_arch">
+      <return-value transfer-ownership="full">
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+    </function>
+    <function name="get_system_page_size"
+              c:identifier="ide_get_system_page_size">
+      <return-value transfer-ownership="none">
+        <type name="gsize" c:type="gsize"/>
       </return-value>
     </function>
     <function name="log_get_verbosity" c:identifier="ide_log_get_verbosity">
@@ -24775,7 +25878,7 @@ warning and above will be displayed.
 Calling this once will cause G_LOG_LEVEL_MESSAGE to be displayed.
 Calling this twice will cause G_LOG_LEVEL_INFO to be displayed.
 Calling this thrice will cause G_LOG_LEVEL_DEBUG to be displayed.
-Calling this four times will cause G_LOG_LEVEL_TRACE to be displayed.
+Calling this four times will cause IDE_LOG_LEVEL_TRACE to be displayed.
 
 Note that many DEBUG and TRACE level log messages are only compiled into
 debug builds, and therefore will not be available in release builds.
@@ -24820,6 +25923,34 @@ Calling this method more than four times is acceptable.</doc>
         <type name="none" c:type="void"/>
       </return-value>
     </function>
+    <function name="pango_font_description_to_css"
+              c:identifier="ide_pango_font_description_to_css">
+      <return-value transfer-ownership="full">
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="font_desc" transfer-ownership="none">
+          <type name="Pango.FontDescription"
+                c:type="const PangoFontDescription*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rgba_shade" c:identifier="ide_rgba_shade">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="rgba" transfer-ownership="none">
+          <type name="Gdk.RGBA" c:type="const GdkRGBA*"/>
+        </parameter>
+        <parameter name="dst" transfer-ownership="none">
+          <type name="Gdk.RGBA" c:type="GdkRGBA*"/>
+        </parameter>
+        <parameter name="k" transfer-ownership="none">
+          <type name="gdouble" c:type="gdouble"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="set_program_name" c:identifier="ide_set_program_name">
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
@@ -24827,6 +25958,23 @@ Calling this method more than four times is acceptable.</doc>
       <parameters>
         <parameter name="program_name" transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="source_style_scheme_apply_style"
+              c:identifier="ide_source_style_scheme_apply_style">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="style_scheme" transfer-ownership="none">
+          <type name="GtkSource.StyleScheme" c:type="GtkSourceStyleScheme*"/>
+        </parameter>
+        <parameter name="style" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="tag" transfer-ownership="none">
+          <type name="Gtk.TextTag" c:type="GtkTextTag*"/>
         </parameter>
       </parameters>
     </function>
@@ -25147,6 +26295,113 @@ the path is always present, though it may be an empty string).</doc>
       <parameters>
         <parameter name="uri_string" transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_action" c:identifier="ide_widget_action">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+        <parameter name="group" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="param" transfer-ownership="none">
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_action_with_string"
+              c:identifier="ide_widget_action_with_string">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+        <parameter name="group" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="param" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_find_child_typed"
+              c:identifier="ide_widget_find_child_typed">
+      <return-value transfer-ownership="none" nullable="1">
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+        <parameter name="type" transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_get_workbench"
+              c:identifier="ide_widget_get_workbench">
+      <doc xml:space="preserve">Gets the workbench @widget is associated with, if any.
+
+If no workbench is associated, NULL is returned.</doc>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve">An #IdeWorkbench</doc>
+        <type name="Workbench" c:type="IdeWorkbench*"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_hide_with_fade"
+              c:identifier="ide_widget_hide_with_fade">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_set_context_handler"
+              c:identifier="ide_widget_set_context_handler">
+      <doc xml:space="preserve">Calls @handler when the #IdeContext has been set for @widget.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget</doc>
+          <type name="Gtk.Widget" c:type="gpointer"/>
+        </parameter>
+        <parameter name="handler" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">A callback to handle the context</doc>
+          <type name="WidgetContextHandler" c:type="IdeWidgetContextHandler"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="widget_show_with_fade"
+              c:identifier="ide_widget_show_with_fade">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </parameter>
       </parameters>
     </function>

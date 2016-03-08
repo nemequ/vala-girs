@@ -100,7 +100,7 @@ namespace Gck {
 		public GLib.TlsInteraction? get_interaction ();
 		public GLib.Type get_object_type ();
 		public Gck.Object? next (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async GLib.List<Gck.Module> next_async (int max_objects, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async GLib.List<Gck.Object> next_async (int max_objects, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<Gck.Object> next_n (int max_objects, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_chained (Gck.Enumerator? chained);
 		public void set_interaction (GLib.TlsInteraction? interaction);
