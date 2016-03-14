@@ -357,9 +357,6 @@ gspell_checker_add_word_to_session().</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="gspell_checker_dialog_new">
-        <doc xml:space="preserve">Creates a new #GspellCheckerDialog. The #GspellCheckerDialog will own a
-reference to @navigator, so you can release your reference if you no longer
-need it.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a new #GspellCheckerDialog widget.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
@@ -375,6 +372,19 @@ need it.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="get_spell_navigator"
+              c:identifier="gspell_checker_dialog_get_spell_navigator">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GspellNavigator used.</doc>
+          <type name="Navigator" c:type="GspellNavigator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dialog" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellCheckerDialog.</doc>
+            <type name="CheckerDialog" c:type="GspellCheckerDialog*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="spell-navigator"
                 writable="1"
                 construct-only="1"
@@ -412,72 +422,6 @@ from a spell-checker-related function.</doc>
         <doc xml:space="preserve">no language set.</doc>
       </member>
     </enumeration>
-    <class name="InlineCheckerTextView"
-           c:symbol-prefix="inline_checker_text_view"
-           c:type="GspellInlineCheckerTextView"
-           parent="GObject.Object"
-           glib:type-name="GspellInlineCheckerTextView"
-           glib:get-type="gspell_inline_checker_text_view_get_type"
-           glib:type-struct="InlineCheckerTextViewClass">
-      <method name="get_enabled"
-              c:identifier="gspell_inline_checker_text_view_get_enabled">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">whether the inline spell checker is enabled.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="inline_checker" transfer-ownership="none">
-            <doc xml:space="preserve">a #GspellInlineCheckerTextView.</doc>
-            <type name="InlineCheckerTextView"
-                  c:type="GspellInlineCheckerTextView*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_enabled"
-              c:identifier="gspell_inline_checker_text_view_set_enabled">
-        <doc xml:space="preserve">Enables or disables the inline spell checker.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="inline_checker" transfer-ownership="none">
-            <doc xml:space="preserve">a #GspellInlineCheckerTextView.</doc>
-            <type name="InlineCheckerTextView"
-                  c:type="GspellInlineCheckerTextView*"/>
-          </instance-parameter>
-          <parameter name="enabled" transfer-ownership="none">
-            <doc xml:space="preserve">the new state.</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="enabled" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Whether the inline spell checker is enabled.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
-      <property name="view"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The #GtkTextView.</doc>
-        <type name="Gtk.TextView"/>
-      </property>
-      <field name="parent_instance">
-        <type name="GObject.Object" c:type="GObject"/>
-      </field>
-    </class>
-    <record name="InlineCheckerTextViewClass"
-            c:type="GspellInlineCheckerTextViewClass"
-            glib:is-gtype-struct-for="InlineCheckerTextView">
-      <field name="parent_class">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
-      </field>
-      <field name="padding">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
     <record name="Language"
             c:type="GspellLanguage"
             glib:type-name="GspellLanguage"
@@ -849,6 +793,7 @@ or if the selection has changed.</doc>
                glib:type-name="GspellNavigator"
                glib:get-type="gspell_navigator_get_type"
                glib:type-struct="NavigatorInterface">
+      <prerequisite name="GObject.InitiallyUnowned"/>
       <virtual-method name="change" invoker="change">
         <doc xml:space="preserve">Changes the current @word by @change_to in the text. @word must be the same
 as returned by the last call to gspell_navigator_goto_next().
@@ -1110,14 +1055,14 @@ checking is finished or if an error occurred.</doc>
     <class name="NavigatorTextView"
            c:symbol-prefix="navigator_text_view"
            c:type="GspellNavigatorTextView"
-           parent="GObject.Object"
+           parent="GObject.InitiallyUnowned"
            glib:type-name="GspellNavigatorTextView"
            glib:get-type="gspell_navigator_text_view_get_type"
            glib:type-struct="NavigatorTextViewClass">
       <implements name="Navigator"/>
       <function name="new" c:identifier="gspell_navigator_text_view_new">
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GspellNavigatorTextView object.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GspellNavigatorTextView floating object.</doc>
           <type name="Navigator" c:type="GspellNavigator*"/>
         </return-value>
         <parameters>
@@ -1127,6 +1072,19 @@ checking is finished or if an error occurred.</doc>
           </parameter>
         </parameters>
       </function>
+      <method name="get_view"
+              c:identifier="gspell_navigator_text_view_get_view">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkTextView.</doc>
+          <type name="Gtk.TextView" c:type="GtkTextView*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="navigator" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellNavigatorTextView.</doc>
+            <type name="NavigatorTextView" c:type="GspellNavigatorTextView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="view"
                 writable="1"
                 construct-only="1"
@@ -1136,12 +1094,196 @@ scroll to the misspelled words.</doc>
         <type name="Gtk.TextView"/>
       </property>
       <field name="parent_instance">
-        <type name="GObject.Object" c:type="GObject"/>
+        <type name="GObject.InitiallyUnowned" c:type="GInitiallyUnowned"/>
       </field>
     </class>
     <record name="NavigatorTextViewClass"
             c:type="GspellNavigatorTextViewClass"
             glib:is-gtype-struct-for="NavigatorTextView">
+      <field name="parent_class">
+        <type name="GObject.InitiallyUnownedClass"
+              c:type="GInitiallyUnownedClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <class name="TextBuffer"
+           c:symbol-prefix="text_buffer"
+           c:type="GspellTextBuffer"
+           parent="GObject.Object"
+           glib:type-name="GspellTextBuffer"
+           glib:get-type="gspell_text_buffer_get_type"
+           glib:type-struct="TextBufferClass">
+      <function name="get_from_gtk_text_buffer"
+                c:identifier="gspell_text_buffer_get_from_gtk_text_buffer">
+        <doc xml:space="preserve">Returns the #GspellTextBuffer of @gtk_buffer. The returned object is
+guaranteed to be the same for the lifetime of @gtk_buffer.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GspellTextBuffer of @gtk_buffer.</doc>
+          <type name="TextBuffer" c:type="GspellTextBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="gtk_buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkTextBuffer.</doc>
+            <type name="Gtk.TextBuffer" c:type="GtkTextBuffer*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_buffer" c:identifier="gspell_text_buffer_get_buffer">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkTextBuffer of @gspell_buffer.</doc>
+          <type name="Gtk.TextBuffer" c:type="GtkTextBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gspell_buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellTextBuffer.</doc>
+            <type name="TextBuffer" c:type="GspellTextBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_spell_checker"
+              c:identifier="gspell_text_buffer_get_spell_checker">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the #GspellChecker if one has been set,
+  or %NULL.</doc>
+          <type name="Checker" c:type="GspellChecker*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gspell_buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellTextBuffer.</doc>
+            <type name="TextBuffer" c:type="GspellTextBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_spell_checker"
+              c:identifier="gspell_text_buffer_set_spell_checker">
+        <doc xml:space="preserve">Sets a #GspellChecker to a #GspellTextBuffer. The @gspell_buffer will own a
+reference to @spell_checker, so you can release your reference to
+@spell_checker if you no longer need it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gspell_buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellTextBuffer.</doc>
+            <type name="TextBuffer" c:type="GspellTextBuffer*"/>
+          </instance-parameter>
+          <parameter name="spell_checker"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GspellChecker, or %NULL to unset the spell
+  checker.</doc>
+            <type name="Checker" c:type="GspellChecker*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="buffer"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GtkTextBuffer.</doc>
+        <type name="Gtk.TextBuffer"/>
+      </property>
+      <property name="spell-checker" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The #GspellChecker.</doc>
+        <type name="Checker"/>
+      </property>
+    </class>
+    <record name="TextBufferClass"
+            c:type="GspellTextBufferClass"
+            glib:is-gtype-struct-for="TextBuffer">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="TextView"
+           c:symbol-prefix="text_view"
+           c:type="GspellTextView"
+           parent="GObject.Object"
+           glib:type-name="GspellTextView"
+           glib:get-type="gspell_text_view_get_type"
+           glib:type-struct="TextViewClass">
+      <function name="get_from_gtk_text_view"
+                c:identifier="gspell_text_view_get_from_gtk_text_view">
+        <doc xml:space="preserve">Returns the #GspellTextView of @gtk_view. The returned object is guaranteed
+to be the same for the lifetime of @gtk_view.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GspellTextView of @gtk_view.</doc>
+          <type name="TextView" c:type="GspellTextView*"/>
+        </return-value>
+        <parameters>
+          <parameter name="gtk_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkTextView.</doc>
+            <type name="Gtk.TextView" c:type="GtkTextView*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_inline_spell_checking"
+              c:identifier="gspell_text_view_get_inline_spell_checking">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the inline spell checking is enabled.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gspell_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellTextView.</doc>
+            <type name="TextView" c:type="GspellTextView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_view" c:identifier="gspell_text_view_get_view">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkTextView of @gspell_view.</doc>
+          <type name="Gtk.TextView" c:type="GtkTextView*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gspell_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellTextView.</doc>
+            <type name="TextView" c:type="GspellTextView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_inline_spell_checking"
+              c:identifier="gspell_text_view_set_inline_spell_checking">
+        <doc xml:space="preserve">Enables or disables the inline spell checking.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gspell_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #GspellTextView.</doc>
+            <type name="TextView" c:type="GspellTextView*"/>
+          </instance-parameter>
+          <parameter name="enable" transfer-ownership="none">
+            <doc xml:space="preserve">the new state.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="inline-spell-checking"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the inline spell checking is enabled.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="view"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GtkTextView.</doc>
+        <type name="Gtk.TextView"/>
+      </property>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="TextViewClass"
+            c:type="GspellTextViewClass"
+            glib:is-gtype-struct-for="TextView">
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -1184,58 +1326,6 @@ are available.</doc>
         <parameter name="language_code" transfer-ownership="none">
           <doc xml:space="preserve">a language code.</doc>
           <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="text_buffer_get_spell_checker"
-              c:identifier="gspell_text_buffer_get_spell_checker">
-      <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">the associated #GspellChecker if one has
-been set, or %NULL.</doc>
-        <type name="Checker" c:type="GspellChecker*"/>
-      </return-value>
-      <parameters>
-        <parameter name="buffer" transfer-ownership="none">
-          <doc xml:space="preserve">a #GtkTextBuffer.</doc>
-          <type name="Gtk.TextBuffer" c:type="GtkTextBuffer*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="text_buffer_set_spell_checker"
-              c:identifier="gspell_text_buffer_set_spell_checker">
-      <doc xml:space="preserve">Associates a spell checker to a #GtkTextBuffer. The @buffer will own a
-reference to @checker, so you can release your reference to @checker if you
-no longer need it.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="buffer" transfer-ownership="none">
-          <doc xml:space="preserve">a #GtkTextBuffer.</doc>
-          <type name="Gtk.TextBuffer" c:type="GtkTextBuffer*"/>
-        </parameter>
-        <parameter name="checker"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">a #GspellChecker, or %NULL to unset the spell checker.</doc>
-          <type name="Checker" c:type="GspellChecker*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="text_view_get_inline_checker"
-              c:identifier="gspell_text_view_get_inline_checker">
-      <doc xml:space="preserve">Returns the #GspellInlineCheckerTextView of @view. The returned object is
-guaranteed to be the same for the lifetime of @view.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the #GspellInlineCheckerTextView of @view.</doc>
-        <type name="InlineCheckerTextView"
-              c:type="GspellInlineCheckerTextView*"/>
-      </return-value>
-      <parameters>
-        <parameter name="view" transfer-ownership="none">
-          <doc xml:space="preserve">a #GtkTextView.</doc>
-          <type name="Gtk.TextView" c:type="GtkTextView*"/>
         </parameter>
       </parameters>
     </function>
