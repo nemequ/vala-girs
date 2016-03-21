@@ -531,16 +531,16 @@ namespace Ggit {
 		public void free ();
 		public Ggit.MergeFileFavor get_file_favor ();
 		public Ggit.MergeFileFlags get_file_flags ();
+		public Ggit.MergeFlags get_flags ();
 		public uint get_rename_threshold ();
 		public unowned Ggit.DiffSimilarityMetric get_similarity_metric ();
 		public uint get_target_limit ();
-		public Ggit.MergeTreeFlags get_tree_flags ();
 		public void set_file_favor (Ggit.MergeFileFavor file_favor);
 		public void set_file_flags (Ggit.MergeFileFlags file_flags);
+		public void set_flags (Ggit.MergeFlags flags);
 		public void set_rename_threshold (uint rename_threshold);
 		public void set_similarity_metric (Ggit.DiffSimilarityMetric metric);
 		public void set_target_limit (uint target_limit);
-		public void set_tree_flags (Ggit.MergeTreeFlags tree_flags);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_native_get_type ()")]
 	public abstract class Native : Ggit.ObjectFactoryBase {
@@ -715,7 +715,7 @@ namespace Ggit {
 		public Remote (Ggit.Repository repository, string name, string url) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Remote.anonymous (Ggit.Repository repository, string url) throws GLib.Error;
-		public void connect (Ggit.Direction direction, Ggit.RemoteCallbacks callbacks) throws GLib.Error;
+		public void connect (Ggit.Direction direction, Ggit.RemoteCallbacks callbacks, string? custom_headers) throws GLib.Error;
 		public void disconnect ();
 		public bool download ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.FetchOptions fetch_options) throws GLib.Error;
 		public bool get_connected ();
@@ -1055,10 +1055,12 @@ namespace Ggit {
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CONFIG_LEVEL_", type_id = "ggit_config_level_get_type ()")]
 	public enum ConfigLevel {
+		PROGRAMDATA,
 		SYSTEM,
 		XDG,
 		GLOBAL,
 		LOCAL,
+		APP,
 		HIGHEST
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_CREATE_", type_id = "ggit_create_flags_get_type ()")]
@@ -1216,10 +1218,13 @@ namespace Ggit {
 		DIFF_PATIENCE,
 		DIFF_MINIMAL
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_MERGE_TREE_FIND_", type_id = "ggit_merge_tree_flags_get_type ()")]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_MERGE_", type_id = "ggit_merge_flags_get_type ()")]
 	[Flags]
-	public enum MergeTreeFlags {
-		RENAMES
+	public enum MergeFlags {
+		FIND_RENAMES,
+		FAIL_ON_CONFLICT,
+		SKIP_REUC,
+		NO_RECURSIVE
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_PACKBUILDER_STAGE_", type_id = "ggit_packbuilder_stage_get_type ()")]
 	public enum PackbuilderStage {

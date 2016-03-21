@@ -11908,6 +11908,11 @@ after you already have a reference to it.)</doc>
               c:type="NM_SETTING_802_1X_CLIENT_CERT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_802_1X_DOMAIN_SUFFIX_MATCH"
+              value="domain-suffix-match"
+              c:type="NM_SETTING_802_1X_DOMAIN_SUFFIX_MATCH">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_802_1X_EAP"
               value="eap"
               c:type="NM_SETTING_802_1X_EAP">
@@ -11986,6 +11991,11 @@ after you already have a reference to it.)</doc>
     <constant name="SETTING_802_1X_PHASE2_CLIENT_CERT"
               value="phase2-client-cert"
               c:type="NM_SETTING_802_1X_PHASE2_CLIENT_CERT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_802_1X_PHASE2_DOMAIN_SUFFIX_MATCH"
+              value="phase2-domain-suffix-match"
+              c:type="NM_SETTING_802_1X_PHASE2_DOMAIN_SUFFIX_MATCH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_802_1X_PHASE2_PRIVATE_KEY"
@@ -14510,6 +14520,20 @@ if %NM_SETTING_802_1X_CK_SCHEME_PATH, use nm_setting_802_1x_get_client_cert_path
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_domain_suffix_match"
+              c:identifier="nm_setting_802_1x_get_domain_suffix_match"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSetting8021x:domain-suffix-match property.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting8021x</doc>
+            <type name="Setting8021x" c:type="NMSetting8021x*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_eap_method"
               c:identifier="nm_setting_802_1x_get_eap_method">
         <doc xml:space="preserve">Returns the name of the allowed EAP method at index @i.</doc>
@@ -14869,6 +14893,20 @@ nm_setting_802_1x_get_client_cert_path().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">scheme used to store the "phase 2" client certificate (blob or path)</doc>
           <type name="Setting8021xCKScheme" c:type="NMSetting8021xCKScheme"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting8021x</doc>
+            <type name="Setting8021x" c:type="NMSetting8021x*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_phase2_domain_suffix_match"
+              c:identifier="nm_setting_802_1x_get_phase2_domain_suffix_match"
+              version="1.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSetting8021x:phase2-domain-suffix-match property.</doc>
+          <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -15576,6 +15614,17 @@ Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_client_cert() function instead.</doc>
         <type name="GLib.Bytes"/>
       </property>
+      <property name="domain-suffix-match"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Constraint for server domain name. If set, this FQDN is used as a suffix
+match requirement for dNSName element(s) of the certificate presented by
+the authentication server.  If a matching dNSName is found, this
+constraint is met.  If no dNSName values are present, this constraint is
+matched against SubjectName CN using same suffix match comparison.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="eap" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The allowed EAP method to be used when authenticating to the network with
 802.1x.  Valid methods are: "leap", "md5", "tls", "peap", "ttls", "pwd",
@@ -15718,6 +15767,18 @@ Setting this property directly is discouraged; use the
 nm_setting_802_1x_set_phase2_client_cert() function instead.</doc>
         <type name="GLib.Bytes"/>
       </property>
+      <property name="phase2-domain-suffix-match"
+                version="1.2"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Constraint for server domain name. If set, this FQDN is used as a suffix
+match requirement for dNSName element(s) of the certificate presented by
+the authentication server during the inner "phase 2" authentication.  If
+a matching dNSName is found, this constraint is met.  If no dNSName
+values are present, this constraint is matched against SubjectName CN
+using same suffix match comparison.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="phase2-private-key"
                 writable="1"
                 transfer-ownership="none">
@@ -15770,7 +15831,9 @@ function.</doc>
         <doc xml:space="preserve">Substring to be matched against the subject of the certificate presented
 by the authentication server during the inner "phase 2"
 authentication. When unset, no verification of the authentication server
-certificate's subject is performed.</doc>
+certificate's subject is performed.  This property provides little security,
+if any, and its use is deprecated in favor of
+NMSetting8021x:phase2-domain-suffix-match.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pin" writable="1" transfer-ownership="none">
@@ -15832,7 +15895,9 @@ property.</doc>
       <property name="subject-match" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Substring to be matched against the subject of the certificate presented
 by the authentication server. When unset, no verification of the
-authentication server certificate's subject is performed.</doc>
+authentication server certificate's subject is performed.  This property
+provides little security, if any, and its use is deprecated in favor of
+NMSetting8021x:domain-suffix-match.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="system-ca-certs"
@@ -19716,7 +19781,10 @@ configuration.  The #NMSettingIPConfig:ignore-auto-routes and
 #NMSettingIPConfig:ignore-auto-dns properties modify this behavior.
 
 For methods that imply no upstream network, such as "shared" or
-"link-local", these properties must be empty.</doc>
+"link-local", these properties must be empty.
+
+For IPv4 method "shared", the IP subnet can be configured by adding one
+manual IPv4 address or otherwise 10.42.x.0/24 is chosen.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="never-default"

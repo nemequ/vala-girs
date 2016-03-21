@@ -2829,29 +2829,41 @@ If the reference count drops to 0, @entry is freed.</doc>
       <doc xml:space="preserve">Priority level of a config file.
 These priority levels correspond to the natural escalation logic
 (from higher to lower) when searching for config entries in git.git.</doc>
-      <member name="system"
+      <member name="programdata"
               value="1"
+              c:identifier="GGIT_CONFIG_LEVEL_PROGRAMDATA"
+              glib:nick="programdata">
+        <doc xml:space="preserve">System-wide on Windows, for compatibility with portable git.</doc>
+      </member>
+      <member name="system"
+              value="2"
               c:identifier="GGIT_CONFIG_LEVEL_SYSTEM"
               glib:nick="system">
         <doc xml:space="preserve">System-wide configuration file.</doc>
       </member>
       <member name="xdg"
-              value="2"
+              value="3"
               c:identifier="GGIT_CONFIG_LEVEL_XDG"
               glib:nick="xdg">
         <doc xml:space="preserve">XDG compatible configuration file (.config/git/config).</doc>
       </member>
       <member name="global"
-              value="3"
+              value="4"
               c:identifier="GGIT_CONFIG_LEVEL_GLOBAL"
               glib:nick="global">
         <doc xml:space="preserve">User-specific configuration file, also called Global configuration file.</doc>
       </member>
       <member name="local"
-              value="4"
+              value="5"
               c:identifier="GGIT_CONFIG_LEVEL_LOCAL"
               glib:nick="local">
         <doc xml:space="preserve">Repository specific configuration file.</doc>
+      </member>
+      <member name="app"
+              value="6"
+              c:identifier="GGIT_CONFIG_LEVEL_APP"
+              glib:nick="app">
+        <doc xml:space="preserve">Application specific configuration file; freely defined by applications.</doc>
       </member>
       <member name="highest"
               value="-1"
@@ -7164,6 +7176,42 @@ GGIT_MERGE_FILE_DIFF_MINIMAL: Take extra time to find minimal diff.</doc>
               glib:nick="diff-minimal">
       </member>
     </bitfield>
+    <bitfield name="MergeFlags"
+              glib:type-name="GgitMergeFlags"
+              glib:get-type="ggit_merge_flags_get_type"
+              c:type="GgitMergeFlags">
+      <member name="find_renames"
+              value="1"
+              c:identifier="GGIT_MERGE_FIND_RENAMES"
+              glib:nick="find-renames">
+        <doc xml:space="preserve">detect renames that occur between the common
+ancestor and the "ours" side or the common ancestor and the "theirs" side.
+This will enable the ability to merge between a modified and renamed file.</doc>
+      </member>
+      <member name="fail_on_conflict"
+              value="2"
+              c:identifier="GGIT_MERGE_FAIL_ON_CONFLICT"
+              glib:nick="fail-on-conflict">
+        <doc xml:space="preserve">If a conflict occurs, exit immediately instead
+of attempting to continue resolving conflicts.  The merge operation will
+fail with @GGIT_EMERGECONFLICT and no index will be returned.</doc>
+      </member>
+      <member name="skip_reuc"
+              value="4"
+              c:identifier="GGIT_MERGE_SKIP_REUC"
+              glib:nick="skip-reuc">
+        <doc xml:space="preserve">do not write the REUC extension on the generated index.</doc>
+      </member>
+      <member name="no_recursive"
+              value="8"
+              c:identifier="GGIT_MERGE_NO_RECURSIVE"
+              glib:nick="no-recursive">
+        <doc xml:space="preserve">If the commits being merged have multiple merge bases,
+do not build a recursive merge base (by merging the multiple merge bases),
+instead simply use the first base.  This flag provides a similar
+merge base to `git-merge-resolve`.</doc>
+      </member>
+    </bitfield>
     <record name="MergeOptions"
             c:type="GgitMergeOptions"
             glib:type-name="GgitMergeOptions"
@@ -7230,6 +7278,19 @@ GGIT_MERGE_FILE_DIFF_MINIMAL: Take extra time to find minimal diff.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_flags" c:identifier="ggit_merge_options_get_flags">
+        <doc xml:space="preserve">Get the tree flags to use for merging.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the flags.</doc>
+          <type name="MergeFlags" c:type="GgitMergeFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_rename_threshold"
               c:identifier="ggit_merge_options_get_rename_threshold">
         <doc xml:space="preserve">Get the rename threshold (defaults to 50). If %GGIT_MERGE_TREE_FIND_RENAMES
@@ -7278,20 +7339,6 @@ this value, inexact rename detection is aborted.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_tree_flags"
-              c:identifier="ggit_merge_options_get_tree_flags">
-        <doc xml:space="preserve">Get the tree flags to use for merging.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the tree flags.</doc>
-          <type name="MergeTreeFlags" c:type="GgitMergeTreeFlags"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="merge_options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
-            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="set_file_favor"
               c:identifier="ggit_merge_options_set_file_favor">
         <doc xml:space="preserve">Set flags for handling conflicting content.</doc>
@@ -7323,6 +7370,19 @@ this value, inexact rename detection is aborted.</doc>
           <parameter name="file_flags" transfer-ownership="none">
             <doc xml:space="preserve">the file flags.</doc>
             <type name="MergeFileFlags" c:type="GgitMergeFileFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_flags" c:identifier="ggit_merge_options_set_flags">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="merge_options" transfer-ownership="none">
+            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="MergeFlags" c:type="GgitMergeFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -7383,35 +7443,7 @@ this value, inexact rename detection is aborted.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_tree_flags"
-              c:identifier="ggit_merge_options_set_tree_flags">
-        <doc xml:space="preserve">Set the tree flags to use for merging.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="merge_options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GgitMergeOptions.</doc>
-            <type name="MergeOptions" c:type="GgitMergeOptions*"/>
-          </instance-parameter>
-          <parameter name="tree_flags" transfer-ownership="none">
-            <doc xml:space="preserve">the tree flags.</doc>
-            <type name="MergeTreeFlags" c:type="GgitMergeTreeFlags"/>
-          </parameter>
-        </parameters>
-      </method>
     </record>
-    <bitfield name="MergeTreeFlags"
-              glib:type-name="GgitMergeTreeFlags"
-              glib:get-type="ggit_merge_tree_flags_get_type"
-              c:type="GgitMergeTreeFlags">
-      <member name="renames"
-              value="1"
-              c:identifier="GGIT_MERGE_TREE_FIND_RENAMES"
-              glib:nick="renames">
-        <doc xml:space="preserve">detect renames.</doc>
-      </member>
-    </bitfield>
     <class name="Native"
            c:symbol-prefix="native"
            c:type="GgitNative"
@@ -9391,6 +9423,13 @@ starts up a specific binary which can only do the one or the other.</doc>
           <parameter name="callbacks" transfer-ownership="none">
             <doc xml:space="preserve">the callbacks to use for this connection.</doc>
             <type name="RemoteCallbacks" c:type="GgitRemoteCallbacks*"/>
+          </parameter>
+          <parameter name="custom_headers"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">extra HTTP headers to use in this connection.</doc>
+            <type name="utf8" c:type="const gchar* const*"/>
           </parameter>
         </parameters>
       </method>
