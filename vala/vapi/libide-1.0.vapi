@@ -410,7 +410,7 @@ namespace Ide {
 		public string name { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_editor_perspective_get_type ()")]
-	public class EditorPerspective : Ide.Layout, Atk.Implementor, Gtk.Buildable, Ide.Perspective {
+	public class EditorPerspective : Ide.Layout, Atk.Implementor, Gtk.Buildable, Ide.Perspective, Pnl.Dock, Pnl.DockItem {
 		[CCode (has_construct_function = false)]
 		protected EditorPerspective ();
 		public void focus_buffer_in_current_stack (Ide.Buffer buffer);
@@ -618,19 +618,11 @@ namespace Ide {
 	public class Language {
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_get_type ()")]
-	public class Layout : Gtk.Overlay, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public Layout ();
+	public class Layout : Pnl.DockBin, Atk.Implementor, Gtk.Buildable, Pnl.Dock, Pnl.DockItem {
+		[CCode (has_construct_function = false)]
+		protected Layout ();
 		public unowned Gtk.Widget? get_active_view ();
-		public unowned Gtk.Widget get_bottom_pane ();
-		public unowned Gtk.Widget get_content_pane ();
-		public unowned Gtk.Widget get_left_pane ();
-		public unowned Gtk.Widget get_right_pane ();
 		public Gtk.Widget active_view { get; }
-		public Gtk.Widget bottom_pane { get; }
-		public Gtk.Widget content_pane { get; }
-		public Gtk.Widget left_pane { get; }
-		public Gtk.Widget right_pane { get; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_grid_get_type ()")]
 	public class LayoutGrid : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -646,14 +638,9 @@ namespace Ide {
 		public signal void empty ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_pane_get_type ()")]
-	public class LayoutPane : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public LayoutPane ();
-		public void add_page (Gtk.Widget page, string title, string? icon_name);
-		public Gtk.PositionType get_position ();
-		public void remove_page (Gtk.Widget page);
-		public void set_position (Gtk.PositionType position);
-		public Gtk.PositionType position { get; set; }
+	public class LayoutPane : Pnl.DockBinEdge, Atk.Implementor, Gtk.Buildable, Pnl.DockItem {
+		[CCode (has_construct_function = false)]
+		protected LayoutPane ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_stack_get_type ()")]
 	public class LayoutStack : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -799,6 +786,19 @@ namespace Ide {
 		public string title { owned get; set; }
 		public signal void activate ();
 		public signal void changed (string object);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_preferences_file_chooser_button_get_type ()")]
+	public class PreferencesFileChooserButton : Ide.PreferencesBin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected PreferencesFileChooserButton ();
+		[NoAccessorMethod]
+		public Gtk.FileChooserAction action { get; construct; }
+		[NoAccessorMethod]
+		public string key { owned get; construct; }
+		[NoAccessorMethod]
+		public string subtitle { owned get; construct; }
+		[NoAccessorMethod]
+		public string title { owned get; construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_preferences_flow_box_get_type ()")]
 	public class PreferencesFlowBox : Egg.ColumnLayout, Atk.Implementor, Gtk.Buildable {
@@ -1806,6 +1806,7 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_cname = "IdePreferencesInterface", type_id = "ide_preferences_get_type ()")]
 	public interface Preferences : GLib.Object {
 		public abstract uint add_custom (string page_name, string group_name, Gtk.Widget widget, string keywords, int priority);
+		public abstract uint add_file_chooser (string page_name, string group_name, string schema_id, string key, string path, string title, string subtitle, Gtk.FileChooserAction action, string keywords, int priority);
 		public abstract uint add_font_button (string page_name, string group_name, string schema_id, string key, string title, string keywords, int priority);
 		public abstract void add_group (string page_name, string group_name, string title, int priority);
 		public abstract void add_list_group (string page_name, string group_name, string title, int priority);

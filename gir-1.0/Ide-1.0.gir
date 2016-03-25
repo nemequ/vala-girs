@@ -10,6 +10,7 @@ and/or use gtk-doc annotations.  -->
   <include name="Gio" version="2.0"/>
   <include name="GtkSource" version="3.0"/>
   <include name="Peas" version="1.0"/>
+  <include name="Pnl" version="1.0"/>
   <include name="Template" version="1.0"/>
   <c:include name="ide.h"/>
   <namespace name="Ide"
@@ -5827,6 +5828,8 @@ instances.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Perspective"/>
+      <implements name="Pnl.Dock"/>
+      <implements name="Pnl.DockItem"/>
       <method name="focus_buffer_in_current_stack"
               c:identifier="ide_editor_perspective_focus_buffer_in_current_stack">
         <return-value transfer-ownership="none">
@@ -8148,17 +8151,14 @@ returned then ide_indenter_format() will be called.</doc>
     <class name="Layout"
            c:symbol-prefix="layout"
            c:type="IdeLayout"
-           parent="Gtk.Overlay"
+           parent="Pnl.DockBin"
            glib:type-name="IdeLayout"
            glib:get-type="ide_layout_get_type"
            glib:type-struct="LayoutClass">
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
-      <constructor name="new" c:identifier="ide_layout_new">
-        <return-value transfer-ownership="none">
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-      </constructor>
+      <implements name="Pnl.Dock"/>
+      <implements name="Pnl.DockItem"/>
       <method name="get_active_view" c:identifier="ide_layout_get_active_view">
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">An #IdeLayoutView or %NULL.</doc>
@@ -8170,75 +8170,18 @@ returned then ide_indenter_format() will be called.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_bottom_pane" c:identifier="ide_layout_get_bottom_pane">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A #GtkWidget.</doc>
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Layout" c:type="IdeLayout*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_content_pane"
-              c:identifier="ide_layout_get_content_pane">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A #GtkWidget.</doc>
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Layout" c:type="IdeLayout*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_left_pane" c:identifier="ide_layout_get_left_pane">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A #GtkWidget.</doc>
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Layout" c:type="IdeLayout*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_right_pane" c:identifier="ide_layout_get_right_pane">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A #GtkWidget.</doc>
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Layout" c:type="IdeLayout*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <property name="active-view" transfer-ownership="none">
         <type name="Gtk.Widget"/>
       </property>
-      <property name="bottom-pane" transfer-ownership="none">
-        <type name="Gtk.Widget"/>
-      </property>
-      <property name="content-pane" transfer-ownership="none">
-        <type name="Gtk.Widget"/>
-      </property>
-      <property name="left-pane" transfer-ownership="none">
-        <type name="Gtk.Widget"/>
-      </property>
-      <property name="right-pane" transfer-ownership="none">
-        <type name="Gtk.Widget"/>
-      </property>
       <field name="parent_instance">
-        <type name="Gtk.Overlay" c:type="GtkOverlay"/>
+        <type name="Pnl.DockBin" c:type="PnlDockBin"/>
       </field>
     </class>
     <record name="LayoutClass"
             c:type="IdeLayoutClass"
             glib:is-gtype-struct-for="Layout">
-      <field name="parent_instance">
-        <type name="Gtk.OverlayClass" c:type="GtkOverlayClass"/>
+      <field name="parent_class">
+        <type name="Pnl.DockBinClass" c:type="PnlDockBinClass"/>
       </field>
     </record>
     <class name="LayoutGrid"
@@ -8415,94 +8358,19 @@ freed with g_list_free().</doc>
     <class name="LayoutPane"
            c:symbol-prefix="layout_pane"
            c:type="IdeLayoutPane"
-           parent="Gtk.Bin"
+           parent="Pnl.DockBinEdge"
            glib:type-name="IdeLayoutPane"
            glib:get-type="ide_layout_pane_get_type"
            glib:type-struct="LayoutPaneClass">
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
-      <constructor name="new" c:identifier="ide_layout_pane_new">
-        <return-value transfer-ownership="none">
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-      </constructor>
-      <method name="add_page" c:identifier="ide_layout_pane_add_page">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">An #IdeLayoutPane</doc>
-            <type name="LayoutPane" c:type="IdeLayoutPane*"/>
-          </instance-parameter>
-          <parameter name="page" transfer-ownership="none">
-            <doc xml:space="preserve">A #GtkWidget</doc>
-            <type name="Gtk.Widget" c:type="GtkWidget*"/>
-          </parameter>
-          <parameter name="title" transfer-ownership="none">
-            <doc xml:space="preserve">the title for the page</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="icon_name"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the icon name</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_position" c:identifier="ide_layout_pane_get_position">
-        <return-value transfer-ownership="none">
-          <type name="Gtk.PositionType" c:type="GtkPositionType"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="LayoutPane" c:type="IdeLayoutPane*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="remove_page" c:identifier="ide_layout_pane_remove_page">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="LayoutPane" c:type="IdeLayoutPane*"/>
-          </instance-parameter>
-          <parameter name="page" transfer-ownership="none">
-            <type name="Gtk.Widget" c:type="GtkWidget*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_position" c:identifier="ide_layout_pane_set_position">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="LayoutPane" c:type="IdeLayoutPane*"/>
-          </instance-parameter>
-          <parameter name="position" transfer-ownership="none">
-            <type name="Gtk.PositionType" c:type="GtkPositionType"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="position" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The position at which to place the pane. This also dictates which
-direction that animations will occur.
-
-For example, setting to %GTK_POS_LEFT will result in the resize grip
-being placed on the right, and animations to and from the leftmost
-of the allocation.</doc>
-        <type name="Gtk.PositionType"/>
-      </property>
+      <implements name="Pnl.DockItem"/>
     </class>
     <record name="LayoutPaneClass"
             c:type="IdeLayoutPaneClass"
             glib:is-gtype-struct-for="LayoutPane">
       <field name="parent_class">
-        <type name="Gtk.BinClass" c:type="GtkBinClass"/>
+        <type name="Pnl.DockBinEdgeClass" c:type="PnlDockBinEdgeClass"/>
       </field>
     </record>
     <class name="LayoutStack"
@@ -10388,6 +10256,46 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="add_file_chooser" invoker="add_file_chooser">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Preferences" c:type="IdePreferences*"/>
+          </instance-parameter>
+          <parameter name="page_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="group_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="schema_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="subtitle" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="action" transfer-ownership="none">
+            <type name="Gtk.FileChooserAction" c:type="GtkFileChooserAction"/>
+          </parameter>
+          <parameter name="keywords" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="priority" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="add_font_button" invoker="add_font_button">
         <return-value transfer-ownership="none">
           <type name="guint" c:type="guint"/>
@@ -10667,6 +10575,47 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
           </parameter>
           <parameter name="widget" transfer-ownership="none">
             <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </parameter>
+          <parameter name="keywords" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="priority" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_file_chooser"
+              c:identifier="ide_preferences_add_file_chooser">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Preferences" c:type="IdePreferences*"/>
+          </instance-parameter>
+          <parameter name="page_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="group_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="schema_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="subtitle" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="action" transfer-ownership="none">
+            <type name="Gtk.FileChooserAction" c:type="GtkFileChooserAction"/>
           </parameter>
           <parameter name="keywords" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
@@ -11250,6 +11199,47 @@ the plugin is unloaded.</doc>
         <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
       </field>
     </record>
+    <class name="PreferencesFileChooserButton"
+           c:symbol-prefix="preferences_file_chooser_button"
+           c:type="IdePreferencesFileChooserButton"
+           parent="PreferencesBin"
+           glib:type-name="IdePreferencesFileChooserButton"
+           glib:get-type="ide_preferences_file_chooser_button_get_type"
+           glib:type-struct="PreferencesFileChooserButtonClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <property name="action"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Gtk.FileChooserAction"/>
+      </property>
+      <property name="key"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="subtitle"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="PreferencesFileChooserButtonClass"
+            c:type="IdePreferencesFileChooserButtonClass"
+            glib:is-gtype-struct-for="PreferencesFileChooserButton">
+      <field name="parent_class">
+        <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
+      </field>
+    </record>
     <class name="PreferencesFlowBox"
            c:symbol-prefix="preferences_flow_box"
            c:type="IdePreferencesFlowBox"
@@ -11637,6 +11627,49 @@ the plugin is unloaded.</doc>
             </parameter>
             <parameter name="subtitle" transfer-ownership="none">
               <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="keywords" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="priority" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="add_file_chooser">
+        <callback name="add_file_chooser">
+          <return-value transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Preferences" c:type="IdePreferences*"/>
+            </parameter>
+            <parameter name="page_name" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="group_name" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="schema_id" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="key" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="path" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="title" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="subtitle" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="action" transfer-ownership="none">
+              <type name="Gtk.FileChooserAction"
+                    c:type="GtkFileChooserAction"/>
             </parameter>
             <parameter name="keywords" transfer-ownership="none">
               <type name="utf8" c:type="const gchar*"/>
