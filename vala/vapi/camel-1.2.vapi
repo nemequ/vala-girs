@@ -344,6 +344,8 @@ namespace Camel {
 		public virtual bool is_frozen ();
 		[Version (since = "2.32")]
 		public void @lock ();
+		[Version (since = "3.22")]
+		public virtual void prepare_content_refresh ();
 		[Version (since = "3.4")]
 		public async bool purge_message_cache (string start_uid, string end_uid, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.4")]
@@ -2773,7 +2775,8 @@ namespace Camel {
 		RECURSIVE,
 		SUBSCRIBED,
 		NO_VIRTUAL,
-		SUBSCRIPTION_LIST
+		SUBSCRIPTION_LIST,
+		REFRESH
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_INFO_FOLDER_", type_id = "camel_store_info_flags_get_type ()")]
 	[Flags]

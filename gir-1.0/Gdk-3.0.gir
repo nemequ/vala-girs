@@ -279,13 +279,72 @@ GTK+ theme engines).</doc>
         </parameters>
       </function>
     </record>
+    <bitfield name="AxisFlags"
+              version="3.22"
+              glib:type-name="GdkAxisFlags"
+              glib:get-type="gdk_axis_flags_get_type"
+              c:type="GdkAxisFlags">
+      <doc xml:space="preserve">Flags describing the current capabilities of a device/tool.</doc>
+      <member name="x" value="2" c:identifier="GDK_AXIS_FLAG_X" glib:nick="x">
+        <doc xml:space="preserve">X axis is present</doc>
+      </member>
+      <member name="y" value="4" c:identifier="GDK_AXIS_FLAG_Y" glib:nick="y">
+        <doc xml:space="preserve">Y axis is present</doc>
+      </member>
+      <member name="pressure"
+              value="8"
+              c:identifier="GDK_AXIS_FLAG_PRESSURE"
+              glib:nick="pressure">
+        <doc xml:space="preserve">Pressure axis is present</doc>
+      </member>
+      <member name="xtilt"
+              value="16"
+              c:identifier="GDK_AXIS_FLAG_XTILT"
+              glib:nick="xtilt">
+        <doc xml:space="preserve">X tilt axis is present</doc>
+      </member>
+      <member name="ytilt"
+              value="32"
+              c:identifier="GDK_AXIS_FLAG_YTILT"
+              glib:nick="ytilt">
+        <doc xml:space="preserve">Y tilt axis is present</doc>
+      </member>
+      <member name="wheel"
+              value="64"
+              c:identifier="GDK_AXIS_FLAG_WHEEL"
+              glib:nick="wheel">
+        <doc xml:space="preserve">Wheel axis is present</doc>
+      </member>
+      <member name="distance"
+              value="128"
+              c:identifier="GDK_AXIS_FLAG_DISTANCE"
+              glib:nick="distance">
+        <doc xml:space="preserve">Distance axis is present</doc>
+      </member>
+      <member name="rotation"
+              value="256"
+              c:identifier="GDK_AXIS_FLAG_ROTATION"
+              glib:nick="rotation">
+        <doc xml:space="preserve">Z-axis rotation is present</doc>
+      </member>
+      <member name="slider"
+              value="512"
+              c:identifier="GDK_AXIS_FLAG_SLIDER"
+              glib:nick="slider">
+        <doc xml:space="preserve">Slider axis is present</doc>
+      </member>
+    </bitfield>
     <enumeration name="AxisUse"
                  glib:type-name="GdkAxisUse"
                  glib:get-type="gdk_axis_use_get_type"
                  c:type="GdkAxisUse">
       <doc xml:space="preserve">An enumeration describing the way in which a device
 axis (valuator) maps onto the predefined valuator
-types that GTK+ understands.</doc>
+types that GTK+ understands.
+
+Note that the X and Y axes are not really needed; pointer devices
+report their location via the x/y members of events regardless. Whether
+X and Y are present as axes depends on the GDK backend.</doc>
       <member name="ignore"
               value="0"
               c:identifier="GDK_AXIS_IGNORE"
@@ -322,8 +381,26 @@ types that GTK+ understands.</doc>
               glib:nick="wheel">
         <doc xml:space="preserve">the axis is used for wheel information.</doc>
       </member>
-      <member name="last"
+      <member name="distance"
               value="7"
+              c:identifier="GDK_AXIS_DISTANCE"
+              glib:nick="distance">
+        <doc xml:space="preserve">the axis is used for pen/tablet distance information. (Since: 3.22)</doc>
+      </member>
+      <member name="rotation"
+              value="8"
+              c:identifier="GDK_AXIS_ROTATION"
+              glib:nick="rotation">
+        <doc xml:space="preserve">the axis is used for pen rotation information. (Since: 3.22)</doc>
+      </member>
+      <member name="slider"
+              value="9"
+              c:identifier="GDK_AXIS_SLIDER"
+              glib:nick="slider">
+        <doc xml:space="preserve">the axis is used for pen slider information. (Since: 3.22)</doc>
+      </member>
+      <member name="last"
+              value="10"
               c:identifier="GDK_AXIS_LAST"
               glib:nick="last">
         <doc xml:space="preserve">a constant equal to the numerically highest axis value.</doc>
@@ -1497,6 +1574,20 @@ returned, as there is no associated device.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_axes"
+              c:identifier="gdk_device_get_axes"
+              version="3.22">
+        <doc xml:space="preserve">Returns the axes currently available on the device.</doc>
+        <return-value transfer-ownership="none">
+          <type name="AxisFlags" c:type="GdkAxisFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDevice</doc>
+            <type name="Device" c:type="GdkDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_axis"
               c:identifier="gdk_device_get_axis"
               introspectable="0">
@@ -2352,6 +2443,10 @@ for the color picker in the #GtkColorSelectionDialog.</doc>
 always come in keyboard/pointer pairs. Other device types will have a %NULL associated device.</doc>
         <type name="Device"/>
       </property>
+      <property name="axes" version="3.22" transfer-ownership="none">
+        <doc xml:space="preserve">The axes currently available for this device.</doc>
+        <type name="AxisFlags"/>
+      </property>
       <property name="device-manager"
                 version="3.0"
                 writable="1"
@@ -2425,6 +2520,9 @@ of touches is unknown.</doc>
         <doc xml:space="preserve">#GdkSeat of this device.</doc>
         <type name="Seat"/>
       </property>
+      <property name="tool" transfer-ownership="none">
+        <type name="DeviceTool"/>
+      </property>
       <property name="type"
                 version="3.0"
                 writable="1"
@@ -2452,6 +2550,19 @@ axes and keys.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+      </glib:signal>
+      <glib:signal name="tool-changed" when="last" version="3.22">
+        <doc xml:space="preserve">The ::tool-changed signal is emitted on pen/eraser
+#GdkDevice&lt;!-- --&gt;s whenever tools enter or leave proximity.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="tool" transfer-ownership="none">
+            <doc xml:space="preserve">The new current tool</doc>
+            <type name="DeviceTool"/>
+          </parameter>
+        </parameters>
       </glib:signal>
     </class>
     <class name="DeviceManager"
@@ -2570,7 +2681,11 @@ gdk_device_list_axes() will return the new device axes.
 
 Devices may also have associated “keys” or
 macro buttons. Such keys can be globally set to map into normal X
-keyboard events. The mapping is set using gdk_device_set_key().</doc>
+keyboard events. The mapping is set using gdk_device_set_key().
+
+In GTK+ 3.20, a new #GdkSeat object has been introduced that
+supersedes #GdkDeviceManager and should be preferred in newly
+written code.</doc>
       <method name="get_client_pointer"
               c:identifier="gdk_device_manager_get_client_pointer"
               version="3.0"
@@ -2697,6 +2812,119 @@ is unplugged.</doc>
         </parameters>
       </glib:signal>
     </class>
+    <class name="DeviceTool"
+           c:symbol-prefix="device_tool"
+           c:type="GdkDeviceTool"
+           parent="GObject.Object"
+           glib:type-name="GdkDeviceTool"
+           glib:get-type="gdk_device_tool_get_type">
+      <method name="get_serial"
+              c:identifier="gdk_device_tool_get_serial"
+              version="3.22">
+        <doc xml:space="preserve">Gets the serial of this tool, this value can be used to identify a
+physical tool (eg. a tablet pen) across program executions.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The serial ID for this tool</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tool" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDeviceTool</doc>
+            <type name="DeviceTool" c:type="GdkDeviceTool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tool_type"
+              c:identifier="gdk_device_tool_get_tool_type"
+              version="3.22">
+        <doc xml:space="preserve">Gets the #GdkDeviceToolType of the tool.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The physical type for this tool. This can be used to figure out what
+sort of pen is being used, such as an airbrush or a pencil.</doc>
+          <type name="DeviceToolType" c:type="GdkDeviceToolType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tool" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDeviceTool</doc>
+            <type name="DeviceTool" c:type="GdkDeviceTool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="axes"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="AxisFlags"/>
+      </property>
+      <property name="serial"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="tool-type"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="DeviceToolType"/>
+      </property>
+    </class>
+    <enumeration name="DeviceToolType"
+                 version="3.22"
+                 glib:type-name="GdkDeviceToolType"
+                 glib:get-type="gdk_device_tool_type_get_type"
+                 c:type="GdkDeviceToolType">
+      <doc xml:space="preserve">Indicates the specific type of tool being used being a tablet. Such as an
+airbrush, pencil, etc.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">Tool is of an unknown type.</doc>
+      </member>
+      <member name="pen"
+              value="1"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_PEN"
+              glib:nick="pen">
+        <doc xml:space="preserve">Tool is a standard tablet stylus.</doc>
+      </member>
+      <member name="eraser"
+              value="2"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_ERASER"
+              glib:nick="eraser">
+        <doc xml:space="preserve">Tool is standard tablet eraser.</doc>
+      </member>
+      <member name="brush"
+              value="3"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_BRUSH"
+              glib:nick="brush">
+        <doc xml:space="preserve">Tool is a brush stylus.</doc>
+      </member>
+      <member name="pencil"
+              value="4"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_PENCIL"
+              glib:nick="pencil">
+        <doc xml:space="preserve">Tool is a pencil stylus.</doc>
+      </member>
+      <member name="airbrush"
+              value="5"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_AIRBRUSH"
+              glib:nick="airbrush">
+        <doc xml:space="preserve">Tool is an airbrush stylus.</doc>
+      </member>
+      <member name="mouse"
+              value="6"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_MOUSE"
+              glib:nick="mouse">
+        <doc xml:space="preserve">Tool is a mouse.</doc>
+      </member>
+      <member name="lens"
+              value="7"
+              c:identifier="GDK_DEVICE_TOOL_TYPE_LENS"
+              glib:nick="lens">
+        <doc xml:space="preserve">Tool is a lens cursor.</doc>
+      </member>
+    </enumeration>
     <enumeration name="DeviceType"
                  glib:type-name="GdkDeviceType"
                  glib:get-type="gdk_device_type_get_type"
@@ -3000,6 +3228,88 @@ with gdk_event_free().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_monitor"
+              c:identifier="gdk_display_get_monitor"
+              version="3.22">
+        <doc xml:space="preserve">Gets a monitor associated with this display.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GdkMonitor, or %NULL if
+   @monitor_num is not a valid monitor number</doc>
+          <type name="Monitor" c:type="GdkMonitor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+          <parameter name="monitor_num" transfer-ownership="none">
+            <doc xml:space="preserve">number of the monitor</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_monitor_at_point"
+              c:identifier="gdk_display_get_monitor_at_point"
+              version="3.22">
+        <doc xml:space="preserve">Gets the monitor in which the point (@x, @y) is located,
+or a nearby monitor if the point is not in any monitor.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the monitor containing the point</doc>
+          <type name="Monitor" c:type="GdkMonitor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+          <parameter name="x" transfer-ownership="none">
+            <doc xml:space="preserve">the x coordinate of the point</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <doc xml:space="preserve">the y coordinate of the point</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_monitor_at_window"
+              c:identifier="gdk_display_get_monitor_at_window"
+              version="3.22">
+        <doc xml:space="preserve">Gets the monitor in which the largest area of @window
+resides, or a monitor close to @window if it is outside
+of all monitors.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the monitor with the largest overlap with @window</doc>
+          <type name="Monitor" c:type="GdkMonitor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dsplay" transfer-ownership="none">
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkWindow</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_n_monitors"
+              c:identifier="gdk_display_get_n_monitors"
+              version="3.22">
+        <doc xml:space="preserve">Gets the number of monitors that belong to @display.
+
+The returned number is valid until the next emission of the
+#GdkDisplay::monitor-added or #GdkDisplay::monitor-removed signal.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of monitors</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_n_screens"
               c:identifier="gdk_display_get_n_screens"
               version="2.2"
@@ -3087,6 +3397,27 @@ mask for a given display.</doc>
             <doc xml:space="preserve">location to store current modifier mask, or %NULL</doc>
             <type name="ModifierType" c:type="GdkModifierType*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_primary_monitor"
+              c:identifier="gdk_display_get_primary_monitor"
+              version="3.22">
+        <doc xml:space="preserve">Gets the primary monitor for the display.
+
+The primary monitor is considered the monitor where the “main desktop”
+lives. While normal application windows typically allow the window
+manager to place the windows, specialized desktop applications
+such as panels should place themselves on the primary monitor.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the primary monitor, or %NULL if no primary
+    monitor is configured by the user</doc>
+          <type name="Monitor" c:type="GdkMonitor*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_screen"
@@ -3648,6 +3979,32 @@ system for @display is closed.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="monitor-added" when="last" version="3.22">
+        <doc xml:space="preserve">The ::monitor-added signal is emitted whenever a monitor is
+added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">the monitor that was just added</doc>
+            <type name="Monitor"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="monitor-removed" when="last" version="3.22">
+        <doc xml:space="preserve">The ::monitor-removed signal is emitted whenever a monitor is
+removed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">the monitor that was just removed</doc>
+            <type name="Monitor"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="opened" when="last">
         <doc xml:space="preserve">The ::opened signal is emitted when the connection to the windowing
 system for @display is opened.</doc>
@@ -4156,7 +4513,8 @@ for more information.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="object" transfer-ownership="none">
+          <parameter name="reason" transfer-ownership="none">
+            <doc xml:space="preserve">The reason the context was cancelled</doc>
             <type name="DragCancelReason"/>
           </parameter>
         </parameters>
@@ -4636,6 +4994,28 @@ it, else it will return %NULL.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_device_tool"
+              c:identifier="gdk_event_get_device_tool"
+              version="3.22">
+        <doc xml:space="preserve">If the event was generated by a device that supports
+different tools (eg. a tablet), this function will
+return a #GdkDeviceTool representing the tool that
+caused the event. Otherwise, %NULL will be returned.
+
+Note: the #GdkDeviceTool&lt;!-- --&gt;s will be constant during
+the application lifetime, if settings must be stored
+persistently across runs, see gdk_device_tool_get_serial()</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The current device tool, or %NULL</doc>
+          <type name="DeviceTool" c:type="GdkDeviceTool*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkEvent</doc>
+            <type name="Event" c:type="const GdkEvent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_event_sequence"
               c:identifier="gdk_event_get_event_sequence"
               version="3.4">
@@ -4741,6 +5121,25 @@ to which the event belongs. Otherwise, return %NULL.</doc>
             <doc xml:space="preserve">location to put root window y coordinate</doc>
             <type name="gdouble" c:type="gdouble*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_scancode"
+              c:identifier="gdk_event_get_scancode"
+              version="3.22">
+        <doc xml:space="preserve">Gets the keyboard low-level scancode of a key event.
+
+This is usually hardware_keycode. On Windows this is the high
+word of WM_KEY{DOWN,UP} lParam which contains the scancode and
+some extended flags.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The associated keyboard scancode or 0</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkEvent</doc>
+            <type name="Event" c:type="GdkEvent*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_screen"
@@ -4958,6 +5357,27 @@ gdk_event_copy().</doc>
           <parameter name="device" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkDevice</doc>
             <type name="Device" c:type="GdkDevice*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_device_tool"
+              c:identifier="gdk_event_set_device_tool"
+              version="3.22">
+        <doc xml:space="preserve">Sets the device tool for this event, should be rarely used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkEvent</doc>
+            <type name="Event" c:type="GdkEvent*"/>
+          </instance-parameter>
+          <parameter name="tool"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">tool to set on the event, or %NULL</doc>
+            <type name="DeviceTool" c:type="GdkDeviceTool*"/>
           </parameter>
         </parameters>
       </method>
@@ -7329,6 +7749,21 @@ gdk_gl_context_set_required_version().</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_use_es"
+              c:identifier="gdk_gl_context_get_use_es"
+              version="3.22">
+        <doc xml:space="preserve">Checks whether the @context is using an OpenGL or OpenGL ES profile.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the #GdkGLContext is using an OpenGL ES profile</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_version"
               c:identifier="gdk_gl_context_get_version"
               version="3.16">
@@ -7509,6 +7944,31 @@ this function.</doc>
           <parameter name="minor" transfer-ownership="none">
             <doc xml:space="preserve">the minor version to request</doc>
             <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_use_es"
+              c:identifier="gdk_gl_context_set_use_es"
+              version="3.22">
+        <doc xml:space="preserve">Requests that GDK create a OpenGL ES context instead of an OpenGL one,
+if the platform and windowing system allows it.
+
+The @context must not have been realized.
+
+You should check the return value of gdk_gl_context_get_use_es() after
+calling gdk_gl_context_realize() to decide whether to use the OpenGL or
+OpenGL ES API, extensions, or shaders.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext:</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+          <parameter name="use_es" transfer-ownership="none">
+            <doc xml:space="preserve">whether the context should use OpenGL ES instead of OpenGL</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -17183,7 +17643,7 @@ Mod3,...) and set the corresponding bits in @state.
 This function is useful when matching key events against
 accelerators.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if no virtual modifiers were mapped to the
+          <doc xml:space="preserve">%FALSE if two virtual modifiers were mapped to the
     same non-virtual modifier. Note that %FALSE is also returned
     if a virtual modifier is mapped to a non-virtual modifier that
     was already set in @state.</doc>
@@ -17655,6 +18115,259 @@ be set.</doc>
         <doc xml:space="preserve">a mask covering all modifier types.</doc>
       </member>
     </bitfield>
+    <class name="Monitor"
+           c:symbol-prefix="monitor"
+           c:type="GdkMonitor"
+           parent="GObject.Object"
+           glib:type-name="GdkMonitor"
+           glib:get-type="gdk_monitor_get_type"
+           glib:type-struct="MonitorClass">
+      <doc xml:space="preserve">GdkMonitor objects represent the individual outputs that are
+associated with a #GdkDisplay. GdkDisplay has APIs to enumerate
+monitors with gdk_display_get_monitors() and to find particular
+monitors with gdk_display_get_primary_monitor() or
+gdk_display_get_monitor_at_window().
+
+GdkMonitor was introduced in GTK+ 3.22 and supersedes earlier
+APIs in GdkScreen to obtain monitor-related information.</doc>
+      <method name="get_display"
+              c:identifier="gdk_monitor_get_display"
+              version="3.22">
+        <doc xml:space="preserve">Gets the display that this monitor belongs to.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the display</doc>
+          <type name="Display" c:type="GdkDisplay*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_geometry"
+              c:identifier="gdk_monitor_get_geometry"
+              version="3.22">
+        <doc xml:space="preserve">Retrieves the size and position of an individual monitor within the
+display coordinate space. The returned geometry is in  ”application pixels”,
+not in ”device pixels” (see gdk_monitor_get_scale_factor()).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+          <parameter name="geometry"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkRectangle to be filled wiht the monitor geometry</doc>
+            <type name="Rectangle" c:type="GdkRectangle*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_height_mm"
+              c:identifier="gdk_monitor_get_height_mm"
+              version="3.22">
+        <doc xml:space="preserve">Gets the height in millimeters of the monitor.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the physical height of the monitor</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_manufacturer"
+              c:identifier="gdk_monitor_get_manufacturer">
+        <doc xml:space="preserve">Gets the name of the monitor's manufacturer, if available.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the name of the manufacturer, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_model" c:identifier="gdk_monitor_get_model">
+        <doc xml:space="preserve">Gets the a string identifying the monitor model, if available.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the monitor model, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_refresh_rate"
+              c:identifier="gdk_monitor_get_refresh_rate"
+              version="3.22">
+        <doc xml:space="preserve">Gets the refresh rate of the monitor, if available.
+
+The value is in milli-Hertz, so a refresh rate of 60Hz
+is returned as 60000.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the refresh rate in milli-Hertz, or 0</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_scale_factor"
+              c:identifier="gdk_monitor_get_scale_factor"
+              version="3.22">
+        <doc xml:space="preserve">Gets the internal scale factor that maps from monitor coordinates
+to the actual device pixels. On traditional systems this is 1, but
+on very high density outputs this can be a higher value (often 2).
+
+This can be used if you want to create pixel based data for a
+particular monitor, but most of the time you’re drawing to a window
+where it is better to use gdk_window_get_scale_factor() instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the scale factor</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_subpixel_layout"
+              c:identifier="gdk_monitor_get_subpixel_layout"
+              version="3.22">
+        <doc xml:space="preserve">Gets information about the layout of red, green and blue
+primaries for each pixel in this monitor, if available.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the subpixel layout</doc>
+          <type name="SubpixelLayout" c:type="GdkSubpixelLayout"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_width_mm"
+              c:identifier="gdk_monitor_get_width_mm"
+              version="3.22">
+        <doc xml:space="preserve">Gets the width in millimeters of the monitor.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the physical width of the monitor</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_workarea"
+              c:identifier="gdk_monitor_get_workarea"
+              version="3.22">
+        <doc xml:space="preserve">Retrieves the size and position of the “work area” on a monitor
+within the display coordinate space. The returned geometry is in
+”application pixels”, not in ”device pixels” (see
+gdk_monitor_get_scale_factor()).
+
+The work area should be considered when positioning menus and
+similar popups, to avoid placing them below panels, docks or other
+desktop components.
+
+Note that not all backends may have a concept of workarea. This
+function will return the monitor geometry if a workarea is not
+available, or does not apply.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+          <parameter name="geometry" transfer-ownership="none">
+            <type name="Rectangle" c:type="GdkRectangle*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_primary"
+              c:identifier="gdk_monitor_is_primary"
+              version="3.22">
+        <doc xml:space="preserve">Gets whether this monitor should be considered primary
+(see gdk_display_get_primary_monitor()).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @monitor is primary</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="monitor" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkMonitor</doc>
+            <type name="Monitor" c:type="GdkMonitor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="display"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Display"/>
+      </property>
+      <property name="geometry" transfer-ownership="none">
+        <type name="Rectangle"/>
+      </property>
+      <property name="height-mm" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="manufacturer" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="model" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="refresh-rate" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="scale-factor" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="subpixel-layout" transfer-ownership="none">
+        <type name="SubpixelLayout"/>
+      </property>
+      <property name="width-mm" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="workarea" transfer-ownership="none">
+        <type name="Rectangle"/>
+      </property>
+      <glib:signal name="invalidate" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="MonitorClass"
+            c:type="GdkMonitorClass"
+            disguised="1"
+            glib:is-gtype-struct-for="Monitor">
+    </record>
     <enumeration name="NotifyType"
                  glib:type-name="GdkNotifyType"
                  glib:get-type="gdk_notify_type_get_type"
@@ -19060,6 +19773,36 @@ input device is removed (e.g. unplugged).</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="tool-added" when="last" version="3.22">
+        <doc xml:space="preserve">The ::tool-added signal is emitted whenever a new tool
+is made known to the seat. The tool may later be assigned
+to a device (i.e. on proximity with a tablet). The device
+will emit the #GdkDevice::tool-changed signal accordingly.
+
+A same tool may be used by several devices.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="tool" transfer-ownership="none">
+            <doc xml:space="preserve">the new #GdkDeviceTool known to the seat</doc>
+            <type name="DeviceTool"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="tool-removed" when="last" version="3.22">
+        <doc xml:space="preserve">This signal is emitted whenever a tool is no longer known
+to this @seat.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="tool" transfer-ownership="none">
+            <doc xml:space="preserve">the just removed #GdkDeviceTool</doc>
+            <type name="DeviceTool"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <bitfield name="SeatCapabilities"
               version="3.20"
@@ -19189,6 +19932,50 @@ actions.</doc>
               value="-4"
               c:identifier="GDK_ERROR_MEM"
               glib:nick="error-mem">
+      </member>
+    </enumeration>
+    <enumeration name="SubpixelLayout"
+                 version="3.22"
+                 glib:type-name="GdkSubpixelLayout"
+                 glib:get-type="gdk_subpixel_layout_get_type"
+                 c:type="GdkSubpixelLayout">
+      <doc xml:space="preserve">This enumeration describes how the red, green and blue components
+of physical pixels on an output device are laid out.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="GDK_SUBPIXEL_LAYOUT_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">The layout is not known</doc>
+      </member>
+      <member name="none"
+              value="1"
+              c:identifier="GDK_SUBPIXEL_LAYOUT_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">Not organized in this way</doc>
+      </member>
+      <member name="horizontal_rgb"
+              value="2"
+              c:identifier="GDK_SUBPIXEL_LAYOUT_HORIZONTAL_RGB"
+              glib:nick="horizontal-rgb">
+        <doc xml:space="preserve">The layout is horizontal, the order is RGB</doc>
+      </member>
+      <member name="horizontal_bgr"
+              value="3"
+              c:identifier="GDK_SUBPIXEL_LAYOUT_HORIZONTAL_BGR"
+              glib:nick="horizontal-bgr">
+        <doc xml:space="preserve">The layout is horizontal, the order is BGR</doc>
+      </member>
+      <member name="vertical_rgb"
+              value="4"
+              c:identifier="GDK_SUBPIXEL_LAYOUT_VERTICAL_RGB"
+              glib:nick="vertical-rgb">
+        <doc xml:space="preserve">The layout is vertical, the order is RGB</doc>
+      </member>
+      <member name="vertical_bgr"
+              value="5"
+              c:identifier="GDK_SUBPIXEL_LAYOUT_VERTICAL_BGR"
+              glib:nick="vertical-bgr">
+        <doc xml:space="preserve">The layout is vertical, the order is BGR</doc>
       </member>
     </enumeration>
     <record name="TimeCoord" c:type="GdkTimeCoord">
@@ -19374,8 +20161,14 @@ The return value should not be freed.</doc>
       </function>
       <method name="get_bits_per_rgb"
               c:identifier="gdk_visual_get_bits_per_rgb"
-              version="2.22">
-        <doc xml:space="preserve">Returns the number of significant bits per red, green and blue value.</doc>
+              version="2.22"
+              deprecated="1"
+              deprecated-version="3.22.">
+        <doc xml:space="preserve">Returns the number of significant bits per red, green and blue value.
+
+Not all GDK backend provide a meaningful value for this function.</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_visual_get_red_pixel_details() and its variants to
+    learn about the pixel layout of TrueColor and DirectColor visuals</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The number of significant bits per color value for @visual.</doc>
           <type name="gint" c:type="gint"/>
@@ -19434,8 +20227,15 @@ to how much precision the pixel value contains for a particular primary.</doc>
       </method>
       <method name="get_byte_order"
               c:identifier="gdk_visual_get_byte_order"
-              version="2.22">
-        <doc xml:space="preserve">Returns the byte order of this visual.</doc>
+              version="2.22"
+              deprecated="1"
+              deprecated-version="3.22">
+        <doc xml:space="preserve">Returns the byte order of this visual.
+
+The information returned by this function is only relevant
+when working with XImages, and not all backends return
+meaningful information for this.</doc>
+        <doc-deprecated xml:space="preserve">This information is not useful</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">A #GdkByteOrder stating the byte order of @visual.</doc>
           <type name="ByteOrder" c:type="GdkByteOrder"/>
@@ -19449,8 +20249,14 @@ to how much precision the pixel value contains for a particular primary.</doc>
       </method>
       <method name="get_colormap_size"
               c:identifier="gdk_visual_get_colormap_size"
-              version="2.22">
-        <doc xml:space="preserve">Returns the size of a colormap for this visual.</doc>
+              version="2.22"
+              deprecated="1"
+              deprecated-version="3.22">
+        <doc xml:space="preserve">Returns the size of a colormap for this visual.
+
+You have to use platform-specific APIs to manipulate colormaps.</doc>
+        <doc-deprecated xml:space="preserve">This information is not useful, since GDK does not
+    provide APIs to operate on colormaps.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The size of a colormap that is suitable for @visual.</doc>
           <type name="gint" c:type="gint"/>
@@ -26024,6 +26830,33 @@ changes to the screen’s font rendering settings.</doc>
         <doc xml:space="preserve">a new #PangoContext for the default display</doc>
         <type name="Pango.Context" c:type="PangoContext*"/>
       </return-value>
+    </function>
+    <function name="pango_context_get_for_display"
+              c:identifier="gdk_pango_context_get_for_display"
+              version="3.22">
+      <doc xml:space="preserve">Creates a #PangoContext for @display.
+
+The context must be freed when you’re finished with it.
+
+When using GTK+, normally you should use gtk_widget_get_pango_context()
+instead of this function, to get the appropriate context for
+the widget you intend to render text onto.
+
+The newly created context will have the default font options
+(see #cairo_font_options_t) for the display; if these options
+change it will not be updated. Using gtk_widget_get_pango_context()
+is more convenient if you want to keep a context around and track
+changes to the font rendering settings.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a new #PangoContext for @display</doc>
+        <type name="Pango.Context" c:type="PangoContext*"/>
+      </return-value>
+      <parameters>
+        <parameter name="display" transfer-ownership="none">
+          <doc xml:space="preserve">the #GdkDisplay for which the context is to be created</doc>
+          <type name="Display" c:type="GdkDisplay*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="pango_context_get_for_screen"
               c:identifier="gdk_pango_context_get_for_screen"

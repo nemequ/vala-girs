@@ -12,6 +12,7 @@ namespace Ide {
 		public unowned Ide.RecentProjects get_recent_projects ();
 		public unowned GLib.DateTime get_started_at ();
 		public async GLib.DBusProxy get_worker_async (string plugin_name, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool open_project (GLib.File file);
 		public void show_projects_window ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_back_forward_item_get_type ()")]
@@ -2097,7 +2098,8 @@ namespace Ide {
 		FIELD,
 		ENUM,
 		ENUM_VALUE,
-		VARIABLE
+		VARIABLE,
+		HEADER
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_THREAD_POOL_", type_id = "ide_thread_pool_kind_get_type ()")]
 	public enum ThreadPoolKind {

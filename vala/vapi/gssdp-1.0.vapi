@@ -6,6 +6,7 @@ namespace GSSDP {
 	public class Client : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public Client (GLib.MainContext? main_context, string? iface) throws GLib.Error;
+		public void add_cache_entry (string ip_address, string user_agent);
 		public void append_header (string name, string value);
 		public void clear_headers ();
 		public bool get_active ();
@@ -14,6 +15,7 @@ namespace GSSDP {
 		public GLib.MainContext get_main_context ();
 		public unowned string get_network ();
 		public unowned string get_server_id ();
+		public unowned string guess_user_agent (string ip_address);
 		public void remove_header (string name);
 		public void set_network (string network);
 		public void set_server_id (string server_id);

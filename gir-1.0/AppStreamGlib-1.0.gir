@@ -1539,7 +1539,8 @@ entry set.</doc>
             <doc xml:space="preserve">a #AsApp instance.</doc>
             <type name="App" c:type="AsApp*"/>
           </instance-parameter>
-          <parameter name="permission" transfer-ownership="none">
+          <parameter name="desktop" transfer-ownership="none">
+            <doc xml:space="preserve">a desktop string, e.g. "GNOME"</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -2353,6 +2354,26 @@ trusted input.</doc>
               value="8"
               c:identifier="AS_APP_QUIRK_MATCH_ANY_PREFIX">
         <doc xml:space="preserve">Matches applications with any prefix</doc>
+      </member>
+      <member name="needs_reboot"
+              value="16"
+              c:identifier="AS_APP_QUIRK_NEEDS_REBOOT">
+        <doc xml:space="preserve">A reboot is required after the action</doc>
+      </member>
+      <member name="not_reviewable"
+              value="32"
+              c:identifier="AS_APP_QUIRK_NOT_REVIEWABLE">
+        <doc xml:space="preserve">The app is not reviewable</doc>
+      </member>
+      <member name="has_shortcut"
+              value="64"
+              c:identifier="AS_APP_QUIRK_HAS_SHORTCUT">
+        <doc xml:space="preserve">The app has a shortcut in the system</doc>
+      </member>
+      <member name="not_launchable"
+              value="128"
+              c:identifier="AS_APP_QUIRK_NOT_LAUNCHABLE">
+        <doc xml:space="preserve">The app is not launchable (run-able)</doc>
       </member>
     </bitfield>
     <enumeration name="AppSourceKind" c:type="AsAppSourceKind">
@@ -3844,6 +3865,21 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_locale"
+              c:identifier="as_image_get_locale"
+              version="0.5.14">
+        <doc xml:space="preserve">Gets the locale of the image.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">locale, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="image" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsImage instance.</doc>
+            <type name="Image" c:type="AsImage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_md5" c:identifier="as_image_get_md5" version="0.1.6">
         <doc xml:space="preserve">Gets the string representation of the pixbuf hash value.</doc>
         <return-value transfer-ownership="none">
@@ -4063,6 +4099,24 @@ using as_image_get_basename(). This can be overridden if required.</doc>
           <parameter name="kind" transfer-ownership="none">
             <doc xml:space="preserve">the #AsImageKind, e.g. %AS_IMAGE_KIND_THUMBNAIL.</doc>
             <type name="ImageKind" c:type="AsImageKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_locale"
+              c:identifier="as_image_set_locale"
+              version="0.5.14">
+        <doc xml:space="preserve">Sets the image locale.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="image" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsImage instance.</doc>
+            <type name="Image" c:type="AsImage*"/>
+          </instance-parameter>
+          <parameter name="locale" transfer-ownership="none">
+            <doc xml:space="preserve">the new image locale, e.g. "en_GB" or %NULL.</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -4339,7 +4393,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="13" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="15" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="5" c:type="AS_MINOR_VERSION">
@@ -5597,10 +5651,42 @@ image to make it fit.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_image_for_locale"
+              c:identifier="as_screenshot_get_image_for_locale"
+              version="0.5.14">
+        <doc xml:space="preserve">Gets the AsImage closest to the target size with the specified locale.
+The #AsImage may not actually be the requested size, and the application may
+have to pad / rescale the image to make it fit.
+
+FIXME: This function assumes the images are ordered in preference order, e.g.
+"en_GB -&gt; en -&gt; NULL"</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #AsImage, or %NULL</doc>
+          <type name="Image" c:type="AsImage*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="screenshot" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsScreenshot instance.</doc>
+            <type name="Screenshot" c:type="AsScreenshot*"/>
+          </instance-parameter>
+          <parameter name="locale" transfer-ownership="none">
+            <doc xml:space="preserve">locale, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">target width</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">target height</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_images"
               c:identifier="as_screenshot_get_images"
               version="0.1.0">
-        <doc xml:space="preserve">Gets the image sizes included in the screenshot.</doc>
+        <doc xml:space="preserve">Gets the images included in the screenshot of all sizes and locales.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an array</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
@@ -5612,6 +5698,26 @@ image to make it fit.</doc>
             <doc xml:space="preserve">a #AsScreenshot instance.</doc>
             <type name="Screenshot" c:type="AsScreenshot*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_images_for_locale"
+              c:identifier="as_screenshot_get_images_for_locale"
+              version="0.5.14">
+        <doc xml:space="preserve">Returns all images of all sizes that are compatible with a specific locale.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Image"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="screenshot" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsScreenshot instance.</doc>
+            <type name="Screenshot" c:type="AsScreenshot*"/>
+          </instance-parameter>
+          <parameter name="locale" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_kind"
@@ -6409,6 +6515,20 @@ taken place.</doc>
             <doc xml:space="preserve">an application id</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="remove_apps_with_veto"
+              c:identifier="as_store_remove_apps_with_veto"
+              version="0.5.13">
+        <doc xml:space="preserve">Removes any applications from the store if they have any vetos.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="remove_filter"

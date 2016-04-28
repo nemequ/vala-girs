@@ -685,6 +685,31 @@ namespace Gtk {
 		[Version (since = "2.2")]
 		public Gtk.WrapMode wrap_mode { get; set; }
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_region_get_type ()")]
+	[GIR (name = "Region")]
+	public class SourceRegion : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.22")]
+		public SourceRegion (Gtk.TextBuffer buffer);
+		[Version (since = "3.22")]
+		public void add (Gtk.TextIter _start, Gtk.TextIter _end);
+		[Version (since = "3.22")]
+		public bool get_bounds (out Gtk.TextIter start, out Gtk.TextIter end);
+		[Version (since = "3.22")]
+		public unowned Gtk.TextBuffer? get_buffer ();
+		[Version (since = "3.22")]
+		public Gtk.SourceRegionIter get_start_region_iter ();
+		[Version (since = "3.22")]
+		public Gtk.SourceRegion? intersect (Gtk.TextIter _start, Gtk.TextIter _end);
+		[Version (since = "3.22")]
+		public bool is_empty ();
+		[Version (since = "3.22")]
+		public void subtract (Gtk.TextIter _start, Gtk.TextIter _end);
+		[Version (since = "3.22")]
+		public string? to_string ();
+		[Version (since = "3.22")]
+		public Gtk.TextBuffer buffer { get; construct; }
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_search_context_get_type ()")]
 	[GIR (name = "SearchContext")]
 	public class SourceSearchContext : GLib.Object {
@@ -1044,6 +1069,14 @@ namespace Gtk {
 		[HasEmitter]
 		[Version (since = "2.10")]
 		public virtual signal void can_undo_changed ();
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", has_type_id = false)]
+	[GIR (name = "RegionIter")]
+	[Version (since = "3.22")]
+	public struct SourceRegionIter {
+		public bool get_subregion (out Gtk.TextIter start, out Gtk.TextIter end);
+		public bool is_end ();
+		public bool next ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_BACKGROUND_PATTERN_TYPE_", type_id = "gtk_source_background_pattern_type_get_type ()")]
 	[GIR (name = "BackgroundPatternType")]
