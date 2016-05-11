@@ -76,7 +76,7 @@ namespace Secret {
 		public async bool set_secret (Secret.Value value, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_secret_sync (Secret.Value value, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
-		public GLib.HashTable<weak string,weak string> attributes { owned get; set; }
+		public GLib.HashTable<string,string> attributes { owned get; set; }
 		[NoAccessorMethod]
 		public uint64 created { get; set; }
 		[NoAccessorMethod]

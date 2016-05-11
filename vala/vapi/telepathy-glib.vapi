@@ -140,7 +140,7 @@ namespace TelepathyGLib {
 		public string connection_error { owned get; }
 		[NoAccessorMethod]
 		[Version (since = "0.11.7")]
-		public GLib.HashTable<weak void*,weak void*> connection_error_details { owned get; }
+		public GLib.HashTable<void*,void*> connection_error_details { owned get; }
 		[Version (deprecated = true, since = "0.9.0")]
 		public string connection_manager { get; }
 		[NoAccessorMethod]
@@ -365,7 +365,7 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public string automatic_status_message { owned get; }
 		[NoAccessorMethod]
-		public GLib.Array<weak void*> avatar { owned get; }
+		public GLib.Array<void*> avatar { owned get; }
 		[NoAccessorMethod]
 		public string avatar_mime_type { owned get; }
 		[NoAccessorMethod]
@@ -412,7 +412,7 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public TelepathyGLib.Account account { owned get; construct; }
 		[NoAccessorMethod]
-		public GLib.GenericArray<weak void*> channels { owned get; construct; }
+		public GLib.GenericArray<void*> channels { owned get; construct; }
 		[NoAccessorMethod]
 		public TelepathyGLib.Connection connection { owned get; construct; }
 		[NoAccessorMethod]
@@ -609,7 +609,7 @@ namespace TelepathyGLib {
 		public async bool send_tones_async (string tones, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool set_queued_async () throws GLib.Error;
 		public async bool set_ringing_async () throws GLib.Error;
-		public GLib.GenericArray<weak void*> contents { get; }
+		public GLib.GenericArray<void*> contents { get; }
 		[NoAccessorMethod]
 		public uint flags { get; }
 		[NoAccessorMethod]
@@ -633,7 +633,7 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public uint state { get; }
 		[NoAccessorMethod]
-		public GLib.HashTable<weak void*,weak void*> state_details { owned get; }
+		public GLib.HashTable<void*,void*> state_details { owned get; }
 		[NoAccessorMethod]
 		public TelepathyGLib.CallStateReason state_reason { owned get; }
 		public signal void content_added (GLib.Object content);
@@ -662,7 +662,7 @@ namespace TelepathyGLib {
 		public uint disposition { get; }
 		public uint media_type { get; }
 		public string name { get; }
-		public GLib.GenericArray<weak void*> streams { get; }
+		public GLib.GenericArray<void*> streams { get; }
 		public signal void removed ();
 		public signal void streams_added (GLib.GenericArray<TelepathyGLib.CallStream> streams);
 		public signal void streams_removed (GLib.GenericArray<TelepathyGLib.CallStream> streams, TelepathyGLib.CallStateReason reason);
@@ -881,7 +881,7 @@ namespace TelepathyGLib {
 		[Version (since = "0.11.5")]
 		public TelepathyGLib.Account account { owned get; construct; }
 		[Version (since = "0.11.5")]
-		public GLib.GenericArray<weak void*> channels { get; construct; }
+		public GLib.GenericArray<void*> channels { get; construct; }
 		[NoAccessorMethod]
 		[Version (since = "0.11.5")]
 		public TelepathyGLib.Connection connection { owned get; construct; }
@@ -1092,7 +1092,7 @@ namespace TelepathyGLib {
 		public uint balance_scale { get; }
 		public string balance_uri { get; }
 		[Version (since = "0.17.0")]
-		public GLib.GenericArray<weak void*> blocked_contacts { get; }
+		public GLib.GenericArray<void*> blocked_contacts { get; }
 		[Version (since = "0.15.5")]
 		public bool can_change_contact_list { get; }
 		[NoAccessorMethod]
@@ -1530,11 +1530,11 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public TelepathyGLib.Account account { owned get; construct; }
 		[NoAccessorMethod]
-		public GLib.GenericArray<weak void*> channels { owned get; construct; }
+		public GLib.GenericArray<void*> channels { owned get; construct; }
 		[NoAccessorMethod]
 		public TelepathyGLib.Connection connection { owned get; construct; }
 		[NoAccessorMethod]
-		public GLib.GenericArray<weak void*> requests_satisfied { owned get; construct; }
+		public GLib.GenericArray<void*> requests_satisfied { owned get; construct; }
 		[NoAccessorMethod]
 		public int64 user_action_time { get; construct; }
 		public signal void done ();
@@ -1663,12 +1663,12 @@ namespace TelepathyGLib {
 		[NoAccessorMethod]
 		public TelepathyGLib.Account account { owned get; construct; }
 		[NoAccessorMethod]
-		public GLib.GenericArray<weak void*> channels { owned get; construct; }
+		public GLib.GenericArray<void*> channels { owned get; construct; }
 		[NoAccessorMethod]
 		public TelepathyGLib.Connection connection { owned get; construct; }
 		[NoAccessorMethod]
 		public TelepathyGLib.ChannelDispatchOperation dispatch_operation { owned get; construct; }
-		public GLib.GenericArray<weak void*> requests { owned get; construct; }
+		public GLib.GenericArray<void*> requests { owned get; construct; }
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "tp_presence_status_spec_get_type ()")]
 	[Compact]
@@ -1976,7 +1976,7 @@ namespace TelepathyGLib {
 		public TelepathyGLib.TLSCertificateState get_state ();
 		public static void init_known_interfaces ();
 		public async bool reject_async () throws GLib.Error;
-		public GLib.GenericArray<weak void*> cert_data { get; }
+		public GLib.GenericArray<void*> cert_data { get; }
 		public string cert_type { get; }
 		[NoAccessorMethod]
 		public TelepathyGLib.Proxy parent { owned get; construct; }

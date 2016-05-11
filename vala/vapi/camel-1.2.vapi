@@ -235,7 +235,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_filter_driver_get_type ()")]
 	public class FilterDriver : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public FilterDriver (void* session);
+		public FilterDriver (Camel.Session session);
 		public void add_rule (string name, string match, string action);
 		public int filter_folder (Camel.Folder folder, Camel.UIDCache cache, GLib.GenericArray<string> uids, bool remove, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int filter_mbox (string mbox, string original_source_url, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -790,8 +790,8 @@ namespace Camel {
 		[CCode (has_construct_function = false)]
 		public MimeFilter ();
 		public void backup (string data, size_t length);
-		public virtual void complete (string @in, size_t len, size_t prespace, string @out, size_t outlen, size_t outprespace);
-		public virtual void filter (string @in, size_t len, size_t prespace, string @out, size_t outlen, size_t outprespace);
+		public virtual void complete (string @in, size_t len, size_t prespace, out string @out, out size_t outlen, out size_t outprespace);
+		public virtual void filter (string @in, size_t len, size_t prespace, out string @out, out size_t outlen, out size_t outprespace);
 		public virtual void reset ();
 		public void set_size (size_t size, int keep);
 	}
@@ -1270,9 +1270,9 @@ namespace Camel {
 		[CCode (has_construct_function = false)]
 		protected Service ();
 		[Version (since = "3.4")]
-		public async Camel.AuthenticationResult authenticate (string mechanism, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.AuthenticationResult authenticate (string? mechanism, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.4")]
-		public virtual Camel.AuthenticationResult authenticate_sync (string mechanism, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.AuthenticationResult authenticate_sync (string? mechanism, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
 		public async bool connect (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.6")]
@@ -1342,9 +1342,9 @@ namespace Camel {
 		[Version (since = "3.2")]
 		public virtual Camel.Service add_service (string uid, string protocol, Camel.ProviderType type) throws GLib.Error;
 		[Version (since = "3.4")]
-		public async bool authenticate (Camel.Service service, string mechanism, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool authenticate (Camel.Service service, string? mechanism, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.4")]
-		public virtual bool authenticate_sync (Camel.Service service, string mechanism, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual bool authenticate_sync (Camel.Service service, string? mechanism, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual bool forget_password (Camel.Service service, string item) throws GLib.Error;
 		[Version (since = "3.6")]
 		public async bool forward_to (Camel.Folder folder, Camel.MimeMessage message, string address, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1380,7 +1380,7 @@ namespace Camel {
 		[Version (since = "3.2")]
 		public void set_junk_filter (Camel.JunkFilter junk_filter);
 		[Version (since = "2.22")]
-		public void set_junk_headers (string headers, string values, int len);
+		public void set_junk_headers ([CCode (array_length_cname = "len", array_length_pos = 2.1)] string[] headers, [CCode (array_length = false)] string[] values);
 		public void set_online (bool online);
 		[Version (since = "3.2")]
 		public void submit_job (string description, owned Camel.SessionCallback callback);
@@ -1937,7 +1937,7 @@ namespace Camel {
 		public int flush_in_memory_transactions (string folder_name) throws GLib.Error;
 		public static void free_sqlized_string (string string);
 		[Version (since = "3.4")]
-		public static Camel.DBKnownColumnNames get_column_ident (GLib.HashTable<void*,void*> hash, int index, int ncols, string col_names);
+		public static Camel.DBKnownColumnNames get_column_ident (ref GLib.HashTable<void*,void*> hash, int index, [CCode (array_length_cname = "ncols", array_length_pos = 2.5)] string[] col_names);
 		public static string get_column_name (string raw_name);
 		public GLib.GenericArray<string> get_folder_deleted_uids (string folder_name) throws GLib.Error;
 		public GLib.GenericArray<string> get_folder_junk_uids (string folder_name) throws GLib.Error;

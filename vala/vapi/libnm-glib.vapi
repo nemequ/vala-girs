@@ -218,7 +218,7 @@ namespace NM {
 		public void wwan_set_enabled (bool enabled);
 		[Version (since = "0.9.8.6")]
 		public NM.ActiveConnection activating_connection { get; }
-		public GLib.GenericArray<weak void*> active_connections { get; }
+		public GLib.GenericArray<void*> active_connections { get; }
 		[Version (since = "1.2")]
 		public NM.ObjectArray all_devices { get; }
 		[Version (since = "0.9.8.6")]
@@ -260,7 +260,7 @@ namespace NM {
 		public DHCP4Config (DBus.Connection connection, string object_path);
 		public unowned string get_one_option (string option);
 		public unowned GLib.HashTable<string,GLib.Value?> get_options ();
-		public GLib.HashTable<weak string,weak GLib.Value?> options { get; }
+		public GLib.HashTable<string,GLib.Value?> options { get; }
 	}
 	[CCode (cheader_filename = "nm-dhcp6-config.h", lower_case_csuffix = "dhcp6_config", type_id = "nm_dhcp6_config_get_type ()")]
 	public class DHCP6Config : NM.Object, GLib.AsyncInitable, GLib.Initable {
@@ -270,7 +270,7 @@ namespace NM {
 		public DHCP6Config (DBus.Connection connection, string object_path);
 		public unowned string get_one_option (string option);
 		public unowned GLib.HashTable<string,GLib.Value?> get_options ();
-		public GLib.HashTable<weak string,weak GLib.Value?> options { get; }
+		public GLib.HashTable<string,GLib.Value?> options { get; }
 	}
 	[CCode (cheader_filename = "nm-device.h", type_id = "nm_device_get_type ()")]
 	public class Device : NM.Object, GLib.AsyncInitable, GLib.Initable {
