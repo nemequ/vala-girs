@@ -423,6 +423,7 @@ namespace Cd {
 		public GLib.GenericArray<weak Cd.Spectrum> get_spectrum_array ();
 		public unowned Cd.Spectrum get_spectrum_by_id (string id);
 		public unowned string get_title ();
+		public unowned Cd.ColorXYZ get_xyz_for_rgb (double R, double G, double B, double delta);
 		public bool has_option (string option);
 		public bool load_from_data (string data, size_t size) throws GLib.Error;
 		public bool load_from_file (GLib.File file) throws GLib.Error;
@@ -440,6 +441,7 @@ namespace Cd {
 		public void set_title (string title);
 		public bool utils_calculate_ccmx (Cd.It8 it8_measured, Cd.It8 it8_ccmx) throws GLib.Error;
 		public bool utils_calculate_cri_from_cmf (Cd.It8 tcs, Cd.Spectrum illuminant, double value, double resolution) throws GLib.Error;
+		public bool utils_calculate_gamma (double gamma_y) throws GLib.Error;
 		public bool utils_calculate_xyz_from_cmf (Cd.Spectrum illuminant, Cd.Spectrum spectrum, Cd.ColorXYZ value, double resolution) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public It8.with_kind (Cd.It8Kind kind);
@@ -543,6 +545,8 @@ namespace Cd {
 		public async Cd.ColorXYZ get_sample (Cd.SensorCap cap, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Cd.ColorXYZ get_sample_sync (Cd.SensorCap cap, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned string get_serial ();
+		public async Cd.Spectrum get_spectrum (Cd.SensorCap cap, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Cd.Spectrum get_spectrum_sync (Cd.SensorCap cap, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public Cd.SensorState get_state ();
 		public unowned string get_vendor ();
 		public bool has_cap (Cd.SensorCap cap);
@@ -586,22 +590,37 @@ namespace Cd {
 		public double get_end ();
 		public unowned string get_id ();
 		public double get_norm ();
+		public double get_resolution ();
 		public uint get_size ();
 		public double get_start ();
 		public double get_value (uint idx);
 		public double get_value_for_nm (double wavelength);
+		public double get_value_max ();
+		public double get_value_min ();
+		public double get_value_raw (uint idx);
 		public double get_wavelength (uint idx);
+		public void get_wavelength_cal (double c1, double c2, double c3);
+		public void limit_max (double value);
+		public void limit_min (double value);
 		public Cd.Spectrum multiply (Cd.Spectrum s2, double resolution);
 		public void normalize (double wavelength, double value);
+		public void normalize_max (double value);
 		[CCode (cname = "cd_spectrum_planckian_new", has_construct_function = false)]
 		public Spectrum.planckian_new (double temperature);
+		[CCode (cname = "cd_spectrum_planckian_new_full", has_construct_function = false)]
+		public Spectrum.planckian_new_full (double temperature, double start, double end, double resolution);
+		public Cd.Spectrum resample (double start, double end, double resolution);
 		public void set_data (GLib.Array<double> value);
 		public void set_end (double end);
 		public void set_id (string id);
 		public void set_norm (double norm);
 		public void set_start (double start);
+		public void set_value (uint idx, double data);
+		public void set_wavelength_cal (double c1, double c2, double c3);
 		[CCode (cname = "cd_spectrum_sized_new", has_construct_function = false)]
 		public Spectrum.sized_new (uint reserved_size);
+		public Cd.Spectrum subtract (Cd.Spectrum s2, double resolution);
+		public string to_string (uint max_width, uint max_height);
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_transform_get_type ()")]
 	public class Transform : GLib.Object {
@@ -633,11 +652,75 @@ namespace Cd {
 		public uint output_pixel_format { get; set; }
 		public uint rendering_intent { get; set; }
 	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Client_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct ColorLab_autoptr {
+	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct ColorRGB8 {
 		public uint8 R;
 		public uint8 G;
 		public uint8 B;
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct ColorRGB_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct ColorSwatch_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct ColorUVW_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct ColorXYZ_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct ColorYxy_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Device_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Dom_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Edid_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct IccStore_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Icc_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct InterpAkima_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct InterpLinear_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Interp_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct It8_autoptr {
 	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct Mat3x3 {
@@ -656,6 +739,22 @@ namespace Cd {
 	public struct PixelFormat : uint32 {
 		public static Cd.PixelFormat from_string (string pixel_format);
 		public static unowned string to_string (Cd.PixelFormat pixel_format);
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Profile_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Sensor_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Spectrum_autoptr {
+	}
+	[CCode (cheader_filename = "colord.h")]
+	[SimpleType]
+	public struct Transform_autoptr {
 	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct Vec3 {
@@ -880,7 +979,10 @@ namespace Cd {
 		LCD_RGB_LED,
 		LCD_WHITE_LED,
 		WIDE_GAMUT_LCD_CCFL,
-		WIDE_GAMUT_LCD_RGB_LED
+		WIDE_GAMUT_LCD_RGB_LED,
+		SPECTRAL,
+		CALIBRATION_DARK,
+		CALIBRATION_IRRADIANCE
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_ERROR_", has_type_id = false)]
 	public enum SensorError {
@@ -892,7 +994,9 @@ namespace Cd {
 		IN_USE,
 		FAILED_TO_AUTHENTICATE,
 		REQUIRED_POSITION_CALIBRATE,
-		REQUIRED_POSITION_SURFACE
+		REQUIRED_POSITION_SURFACE,
+		REQUIRED_DARK_CALIBRATION,
+		REQUIRED_IRRADIANCE_CALIBRATION
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_KIND_", has_type_id = false)]
 	public enum SensorKind {
@@ -920,7 +1024,9 @@ namespace Cd {
 		I1_MONITOR,
 		SPYDER4,
 		COLOR_MUNKI_SMILE,
-		COLORHUG2
+		COLORHUG2,
+		SPYDER5,
+		SPARK
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_STATE_", has_type_id = false)]
 	public enum SensorState {
@@ -1189,6 +1295,8 @@ namespace Cd {
 	public static double mat33_determinant (Cd.Mat3x3 src);
 	[CCode (cheader_filename = "colord.h")]
 	public static double mat33_get_data (Cd.Mat3x3 src);
+	[CCode (cheader_filename = "colord.h")]
+	public static void mat33_init (Cd.Mat3x3 dest, double m00, double m01, double m02, double m10, double m11, double m12, double m20, double m21, double m22);
 	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_matrix_multiply (Cd.Mat3x3 mat_src1, Cd.Mat3x3 mat_src2, Cd.Mat3x3 mat_dest);
 	[CCode (cheader_filename = "colord.h")]

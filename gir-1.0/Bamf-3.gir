@@ -135,6 +135,25 @@ none exists, the result is NULL.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_window_for_xid"
+              c:identifier="bamf_application_get_window_for_xid"
+              version="0.5.2">
+        <doc xml:space="preserve">Used to fetch the application contains a Window with given @xid.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #BamfWindow for the passed @xid or %NULL if not found.</doc>
+          <type name="Window" c:type="BamfWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="application" transfer-ownership="none">
+            <doc xml:space="preserve">a #BamfApplication</doc>
+            <type name="Application" c:type="BamfApplication*"/>
+          </instance-parameter>
+          <parameter name="xid" transfer-ownership="none">
+            <doc xml:space="preserve">an X11 Window ID</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_windows" c:identifier="bamf_application_get_windows">
         <doc xml:space="preserve">Used to fetch all #BamfWindow's associated with the passed #BamfApplication.</doc>
         <return-value transfer-ownership="container">
@@ -599,6 +618,24 @@ running for nefarious purposes.</doc>
             <doc xml:space="preserve">a #BamfMatcher</doc>
             <type name="Matcher" c:type="BamfMatcher*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_window_for_xid"
+              c:identifier="bamf_matcher_get_window_for_xid">
+        <doc xml:space="preserve">Used to fetch the #BamfWindow that wraps the given @window.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #BamfWindow representing the xid passed, or NULL if none exists.</doc>
+          <type name="Window" c:type="BamfWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="matcher" transfer-ownership="none">
+            <doc xml:space="preserve">a #BamfMatcher</doc>
+            <type name="Matcher" c:type="BamfMatcher*"/>
+          </instance-parameter>
+          <parameter name="xid" transfer-ownership="none">
+            <doc xml:space="preserve">The X11 Window ID to search for</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_window_stack_for_monitor"
@@ -1110,6 +1147,11 @@ be prefered by bamf to system desktop files.</doc>
               c:type="BAMF_VIEW_SIGNAL_RUNNING_CHANGED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="VIEW_SIGNAL_STARTING_CHANGED"
+              value="starting-changed"
+              c:type="BAMF_VIEW_SIGNAL_STARTING_CHANGED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="VIEW_SIGNAL_URGENT_CHANGED"
               value="urgent-changed"
               c:type="BAMF_VIEW_SIGNAL_URGENT_CHANGED">
@@ -1276,6 +1318,18 @@ be prefered by bamf to system desktop files.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="is_starting" invoker="is_starting">
+        <doc xml:space="preserve">Determines if the view is currently starting. Useful for the startup animation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="view" transfer-ownership="none">
+            <doc xml:space="preserve">a #BamfView</doc>
+            <type name="View" c:type="BamfView*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="is_urgent" invoker="is_urgent">
         <doc xml:space="preserve">Determines if the view is currently requiring attention. Useful for a running window indicator.</doc>
         <return-value transfer-ownership="none">
@@ -1354,6 +1408,19 @@ is a concept relating to whether or not a window should be shown in a launcher t
             <type name="View" c:type="BamfView*"/>
           </instance-parameter>
           <parameter name="value" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="starting_changed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="view" transfer-ownership="none">
+            <type name="View" c:type="BamfView*"/>
+          </instance-parameter>
+          <parameter name="starting" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -1461,6 +1528,21 @@ descriptions should not be used to do casting as they are not considered stable.
           </instance-parameter>
         </parameters>
       </method>
+      <method name="has_child" c:identifier="bamf_view_has_child">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE whether the #BamfView @view has the specified @child.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="view" transfer-ownership="none">
+            <doc xml:space="preserve">a #BamfView</doc>
+            <type name="View" c:type="BamfView*"/>
+          </instance-parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="View" c:type="BamfView*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="is_active" c:identifier="bamf_view_is_active">
         <doc xml:space="preserve">Determines if the view is currently active and focused by the user. Useful for an active window indicator.</doc>
         <return-value transfer-ownership="none">
@@ -1487,6 +1569,18 @@ descriptions should not be used to do casting as they are not considered stable.
       </method>
       <method name="is_running" c:identifier="bamf_view_is_running">
         <doc xml:space="preserve">Determines if the view is currently running. Useful for a running window indicator.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="view" transfer-ownership="none">
+            <doc xml:space="preserve">a #BamfView</doc>
+            <type name="View" c:type="BamfView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_starting" c:identifier="bamf_view_is_starting">
+        <doc xml:space="preserve">Determines if the view is currently starting. Useful for the startup animation.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1534,6 +1628,25 @@ is a concept relating to whether or not a window should be shown in a launcher t
           </instance-parameter>
         </parameters>
       </method>
+      <method name="peek_children"
+              c:identifier="bamf_view_peek_children"
+              version="0.5.2">
+        <doc xml:space="preserve">Note: Makes sever dbus calls the first time this is called on a view.
+Dbus messaging is reduced afterwards.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Returns a list of #BamfView which
+          is owned by the #BamfView and should not freed or modified after usage.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="View"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="view" transfer-ownership="none">
+            <doc xml:space="preserve">a #BamfView</doc>
+            <type name="View" c:type="BamfView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="set_sticky" c:identifier="bamf_view_set_sticky">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1571,6 +1684,9 @@ is a concept relating to whether or not a window should be shown in a launcher t
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="running" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="starting" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="urgent" transfer-ownership="none">
@@ -1654,6 +1770,16 @@ is a concept relating to whether or not a window should be shown in a launcher t
         </parameters>
       </glib:signal>
       <glib:signal name="running-changed" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="starting-changed" when="first">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1993,22 +2119,36 @@ is a concept relating to whether or not a window should be shown in a launcher t
           </parameters>
         </callback>
       </field>
+      <field name="is_starting">
+        <callback name="is_starting">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="view" transfer-ownership="none">
+              <doc xml:space="preserve">a #BamfView</doc>
+              <type name="View" c:type="BamfView*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="starting_changed">
+        <callback name="starting_changed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="view" transfer-ownership="none">
+              <type name="View" c:type="BamfView*"/>
+            </parameter>
+            <parameter name="starting" transfer-ownership="none">
+              <type name="gboolean" c:type="gboolean"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_view_padding1" introspectable="0">
         <callback name="_view_padding1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_view_padding2" introspectable="0">
-        <callback name="_view_padding2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_view_padding3" introspectable="0">
-        <callback name="_view_padding3">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>

@@ -10,5 +10,8 @@ namespace Unity {
     
     [PrintfFormat]
     public static void log_object (GLib.Object obj, string format, ...);
+
+    [PrintfFormat]
+    public static void tracepoint (string format, ...);
   }
 }

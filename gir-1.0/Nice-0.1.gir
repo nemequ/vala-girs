@@ -400,7 +400,9 @@ returned stream ID is guaranteed to be positive on success.</doc>
               c:identifier="nice_agent_attach_recv"
               introspectable="0">
         <doc xml:space="preserve">Attaches the stream's component's sockets to the Glib Mainloop Context in
-order to be notified whenever data becomes available for a component.
+order to be notified whenever data becomes available for a component,
+and to enable #NiceAgent to receive STUN messages (during the
+establishment of ICE connectivity).
 
 This must not be used in combination with nice_agent_recv_messages() (or
 #NiceIOStream or #NiceInputStream) on the same stream/component pair.
@@ -433,7 +435,8 @@ function to unset @func, otherwise data loss of received packets may occur.</doc
           </parameter>
           <parameter name="func" transfer-ownership="none" closure="4">
             <doc xml:space="preserve">The callback function to be called when data is received on
-the stream's component</doc>
+the stream's component (will not be called for STUN messages that
+should be handled by #NiceAgent itself)</doc>
             <type name="AgentRecvFunc" c:type="NiceAgentRecvFunc"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
@@ -1066,6 +1069,11 @@ cancelled from another thread, or %NULL</doc>
 and written into @messages, the stream is closed by the other end or by
 calling nice_agent_remove_stream(), or @cancellable is cancelled.
 
+Any STUN packets received will not be added to @messages; instead,
+they'll be passed for processing to #NiceAgent itself. Since #NiceAgent
+does not poll for messages on its own, it's therefore essential to keep
+calling this function for ICE connection establishment to work.
+
 In the non-error case, in reliable mode, this will block until all buffers in
 all @n_messages have been filled with received data (i.e. @messages is
 treated as a large, flat array of buffers). In non-reliable mode, it will
@@ -1152,6 +1160,11 @@ will not block on filling (in reliable mode) or receiving (in non-reliable
 mode) exactly @n_messages messages. In reliable mode, it will receive bytes
 into @messages until it would block; in non-reliable mode, it will receive
 messages until it would block.
+
+Any STUN packets received will not be added to @messages; instead,
+they'll be passed for processing to #NiceAgent itself. Since #NiceAgent
+does not poll for messages on its own, it's therefore essential to keep
+calling this function for ICE connection establishment to work.
 
 As this function is non-blocking, @cancellable is included only for parity
 with nice_agent_recv_messages(). If @cancellable is cancelled before this
@@ -1439,6 +1452,42 @@ another thread, or %NULL</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_local_credentials"
+              c:identifier="nice_agent_set_local_credentials">
+        <doc xml:space="preserve">Sets the local credentials for stream @stream_id.
+
+ &lt;note&gt;
+   &lt;para&gt;
+     This is only effective before ICE negotiation has started.
+   &lt;/para&gt;
+ &lt;/note&gt;
+
+Since 0.1.11</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="agent" transfer-ownership="none">
+            <doc xml:space="preserve">The #NiceAgent Object</doc>
+            <type name="Agent" c:type="NiceAgent*"/>
+          </instance-parameter>
+          <parameter name="stream_id" transfer-ownership="none">
+            <doc xml:space="preserve">The ID of the stream</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="ufrag" transfer-ownership="none">
+            <doc xml:space="preserve">nul-terminated string containing an ICE username fragment
+   (length must be between 22 and 256 chars)</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="pwd" transfer-ownership="none">
+            <doc xml:space="preserve">nul-terminated string containing an ICE password
+   (length must be between 4 and 256 chars)</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_port_range" c:identifier="nice_agent_set_port_range">
         <doc xml:space="preserve">Sets a preferred port range for allocating host candidates.
 &lt;para&gt;
@@ -1574,6 +1623,13 @@ allocation error or invalid component)</doc>
    &lt;para&gt;
      Stream credentials do not override per-candidate credentials if set
    &lt;/para&gt;
+   &lt;para&gt;
+     Due to the native of peer-reflexive candidates, any agent using a per-stream
+     credentials (RFC5245, WLM2009, OC2007R2 and DRAFT19) instead of
+     per-candidate credentials (GOOGLE, MSN, OC2007), must
+     use the nice_agent_set_remote_credentials() API instead of setting the
+     username and password on the candidates.
+   &lt;/para&gt;
  &lt;/note&gt;</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success, %FALSE on error.</doc>
@@ -1589,12 +1645,12 @@ allocation error or invalid component)</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="ufrag" transfer-ownership="none">
-            <doc xml:space="preserve">NULL-terminated string containing an ICE username fragment
+            <doc xml:space="preserve">nul-terminated string containing an ICE username fragment
    (length must be between 22 and 256 chars)</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="pwd" transfer-ownership="none">
-            <doc xml:space="preserve">NULL-terminated string containing an ICE password
+            <doc xml:space="preserve">nul-terminated string containing an ICE password
    (length must be between 4 and 256 chars)</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -1703,8 +1759,12 @@ and #NICE_COMPATIBILITY_WLM2009 compatibility modes.
       <method name="set_stream_name"
               c:identifier="nice_agent_set_stream_name"
               version="0.1.4">
-        <doc xml:space="preserve">This function will assign a unique name to a stream.
-This is only useful when parsing and generating an SDP of the candidates.
+        <doc xml:space="preserve">This function will assign a media type to a stream. The only values
+that can be used to produce a valid SDP are: "audio", "video",
+"text", "application", "image" and "message".
+
+This is only useful when parsing and generating an SDP of the
+candidates.
 
 &lt;para&gt;See also: nice_agent_generate_local_sdp()&lt;/para&gt;
 &lt;para&gt;See also: nice_agent_parse_remote_sdp()&lt;/para&gt;
@@ -3147,13 +3207,23 @@ messages.</doc>
       </parameters>
     </function>
     <function name="debug_enable" c:identifier="nice_debug_enable">
-      <doc xml:space="preserve">Enables libnice debug output to the terminal</doc>
+      <doc xml:space="preserve">Enables libnice debug output to the terminal. Note that the
+`G_MESSAGES_DEBUG` and `NICE_DEBUG` environment variables must be set to the
+set of logging domains to print, in order for any output to be printed. Set
+them to `all` to print all debugging messages, or any of the following
+domains:
+- `libnice-stun`
+- `libnice-tests`
+- `libnice-socket`
+- `libnice`
+- `libnice-pseudotcp`
+- `libnice-pseudotcp-verbose`</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
         <parameter name="with_stun" transfer-ownership="none">
-          <doc xml:space="preserve">Also enable stun debugging messages</doc>
+          <doc xml:space="preserve">Also enable STUN debugging messages</doc>
           <type name="gboolean" c:type="gboolean"/>
         </parameter>
       </parameters>

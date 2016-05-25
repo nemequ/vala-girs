@@ -14,9 +14,7 @@
   General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with PulseAudio; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-  USA.
+  along with PulseAudio; if not, see <http://www.gnu.org/licenses/>.
 ***/
 
 using GLib;
@@ -1376,6 +1374,9 @@ namespace PulseAudio {
                 public string driver;
                 public int mute;
                 public Proplist proplist;
+                public int corked;
+                public int has_volume;
+                public int volume_writable;
         }
 
         [CCode (cname="pa_source_output_info", has_type_id=false)]
@@ -1392,6 +1393,11 @@ namespace PulseAudio {
                 public string resample_method;
                 public string driver;
                 public Proplist proplist;
+                public int corked;
+                public CVolume volume;
+                public int mute;
+                public int has_volume;
+                public int volume_writable;
         }
 
         [CCode (cname="pa_stat_info", has_type_id=false)]

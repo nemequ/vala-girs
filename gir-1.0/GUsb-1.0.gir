@@ -16,6 +16,18 @@ and/or use gtk-doc annotations.  -->
              shared-library="libgusb.so.2"
              c:identifier-prefixes="GUsb"
              c:symbol-prefixes="g_usb">
+    <alias name="Context_autoptr" c:type="GUsbContext_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
+    <alias name="DeviceList_autoptr" c:type="GUsbDeviceList_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
+    <alias name="Device_autoptr" c:type="GUsbDevice_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
+    <alias name="Interface_autoptr" c:type="GUsbInterface_autoptr">
+      <type name="gpointer" c:type="gpointer"/>
+    </alias>
     <class name="Context"
            c:symbol-prefix="context"
            c:type="GUsbContext"
@@ -23,6 +35,7 @@ and/or use gtk-doc annotations.  -->
            glib:type-name="GUsbContext"
            glib:get-type="g_usb_context_get_type"
            glib:type-struct="ContextClass">
+      <implements name="Gio.Initable"/>
       <constructor name="new"
                    c:identifier="g_usb_context_new"
                    version="0.1.0"
@@ -41,11 +54,153 @@ and/or use gtk-doc annotations.  -->
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
+      <virtual-method name="device_added">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GUsbDevice*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="device_removed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <type name="Device" c:type="GUsbDevice*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="enumerate"
+              c:identifier="g_usb_context_enumerate"
+              version="0.2.2">
+        <doc xml:space="preserve">Enumerates all the USB devices and adds them to the context.
+
+You only need to call this function once, and any subsequent calls
+are silently ignored.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="find_by_bus_address"
+              c:identifier="g_usb_context_find_by_bus_address"
+              version="0.2.2"
+              throws="1">
+        <doc xml:space="preserve">Finds a device based on its bus and address values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GUsbDevice, or %NULL if not found.</doc>
+          <type name="Device" c:type="GUsbDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="bus" transfer-ownership="none">
+            <doc xml:space="preserve">a bus number</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="address" transfer-ownership="none">
+            <doc xml:space="preserve">a bus address</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_by_platform_id"
+              c:identifier="g_usb_context_find_by_platform_id"
+              version="0.2.4"
+              throws="1">
+        <doc xml:space="preserve">Finds a device based on its platform id value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GUsbDevice, or %NULL if not found.</doc>
+          <type name="Device" c:type="GUsbDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="platform_id" transfer-ownership="none">
+            <doc xml:space="preserve">a platform id, e.g. "usb:00:03:03:02"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_by_vid_pid"
+              c:identifier="g_usb_context_find_by_vid_pid"
+              version="0.2.2"
+              throws="1">
+        <doc xml:space="preserve">Finds a device based on its bus and address values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GUsbDevice, or %NULL if not found.</doc>
+          <type name="Device" c:type="GUsbDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="vid" transfer-ownership="none">
+            <doc xml:space="preserve">a vendor ID</doc>
+            <type name="guint16" c:type="guint16"/>
+          </parameter>
+          <parameter name="pid" transfer-ownership="none">
+            <doc xml:space="preserve">a product ID</doc>
+            <type name="guint16" c:type="guint16"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_devices"
+              c:identifier="g_usb_context_get_devices"
+              version="0.2.2">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GPtrArray of #GUsbDevice's.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_main_context"
+              c:identifier="g_usb_context_get_main_context"
+              version="0.2.5">
+        <doc xml:space="preserve">Gets the internal GMainContext to use for syncronous methods.
+By default the value is set to the value of g_main_context_default()</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GMainContext</doc>
+          <type name="GLib.MainContext" c:type="GMainContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_source"
               c:identifier="g_usb_context_get_source"
               version="0.1.0">
-        <doc xml:space="preserve">Returns a source for this context. The first call actually creates
-the source and the result is returned in all future calls.</doc>
+        <doc xml:space="preserve">This function does nothing.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GUsbSource.</doc>
           <type name="Source" c:type="GUsbSource*"/>
@@ -82,13 +237,55 @@ else logs to standard error.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_main_context"
+              c:identifier="g_usb_context_set_main_context"
+              version="0.2.5">
+        <doc xml:space="preserve">Sets the internal GMainContext to use for syncronous methods.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="main_ctx" transfer-ownership="none">
+            <type name="GLib.MainContext" c:type="GMainContext*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="wait_for_replug"
+              c:identifier="g_usb_context_wait_for_replug"
+              version="0.2.9"
+              throws="1">
+        <doc xml:space="preserve">Waits for the device to be replugged.
+It may come back with a different VID:PID.
+
+Warning: This is syncronous and blocks until the device comes
+back or the timeout triggers.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GUsbDevice, or %NULL for invalid</doc>
+          <type name="Device" c:type="GUsbDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbContext</doc>
+            <type name="Context" c:type="GUsbContext*"/>
+          </instance-parameter>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </parameter>
+          <parameter name="timeout_ms" transfer-ownership="none">
+            <doc xml:space="preserve">timeout to wait</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="debug-level" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
-      <property name="libusb-context"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
+      <property name="libusb-context" transfer-ownership="none">
         <type name="gpointer" c:type="gpointer"/>
       </property>
       <field name="parent">
@@ -97,6 +294,30 @@ else logs to standard error.</doc>
       <field name="priv">
         <type name="ContextPrivate" c:type="GUsbContextPrivate*"/>
       </field>
+      <glib:signal name="device-added" when="last">
+        <doc xml:space="preserve">This signal is emitted when a USB device is added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">A #GUsbDevice</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="device-removed" when="last">
+        <doc xml:space="preserve">This signal is emitted when a USB device is removed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">A #GUsbDevice</doc>
+            <type name="Device"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="ContextClass"
             c:type="GUsbContextClass"
@@ -104,8 +325,38 @@ else logs to standard error.</doc>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
+      <field name="device_added">
+        <callback name="device_added">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="Context" c:type="GUsbContext*"/>
+            </parameter>
+            <parameter name="device" transfer-ownership="none">
+              <type name="Device" c:type="GUsbDevice*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="device_removed">
+        <callback name="device_removed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="Context" c:type="GUsbContext*"/>
+            </parameter>
+            <parameter name="device" transfer-ownership="none">
+              <type name="Device" c:type="GUsbDevice*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gusb_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gchar" fixed-size="64">
+        <array zero-terminated="0" c:type="gchar" fixed-size="62">
           <type name="gchar" c:type="gchar"/>
         </array>
       </field>
@@ -126,6 +377,7 @@ else logs to standard error.</doc>
            glib:type-name="GUsbDevice"
            glib:get-type="g_usb_device_get_type"
            glib:type-struct="DeviceClass">
+      <implements name="Gio.Initable"/>
       <function name="error_quark"
                 c:identifier="g_usb_device_error_quark"
                 version="0.1.0">
@@ -484,6 +736,23 @@ timeout, use 0.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_children"
+              c:identifier="g_usb_device_get_children"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the device children if any exist.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of #GUsbDevice</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice instance</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_configuration"
               c:identifier="g_usb_device_get_configuration"
               version="0.1.0"
@@ -494,6 +763,130 @@ Warning: this function is synchronous.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The bConfigurationValue of the active config, or -1 on error</doc>
           <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_custom_index"
+              c:identifier="g_usb_device_get_custom_index"
+              version="0.2.5"
+              throws="1">
+        <doc xml:space="preserve">Gets the string index from the vendor class interface descriptor.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a non-zero index, or 0x00 for failure</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+          <parameter name="class_id" transfer-ownership="none">
+            <doc xml:space="preserve">a device class, e.g. 0xff for VENDOR</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="subclass_id" transfer-ownership="none">
+            <doc xml:space="preserve">a device subclass</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="protocol_id" transfer-ownership="none">
+            <doc xml:space="preserve">a protocol number</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_device_class"
+              c:identifier="g_usb_device_get_device_class"
+              version="0.1.7">
+        <doc xml:space="preserve">Gets the device class, typically a #GUsbDeviceClassCode.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a device class number, e.g. 0x09 is a USB hub.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_device_protocol"
+              c:identifier="g_usb_device_get_device_protocol"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the device protocol qualified by the class and subclass numbers.
+See g_usb_device_get_device_class() and g_usb_device_get_device_subclass().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a device protocol number.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_device_subclass"
+              c:identifier="g_usb_device_get_device_subclass"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the device subclass qualified by the class number.
+See g_usb_device_get_device_class().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a device subclass number.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_interface"
+              c:identifier="g_usb_device_get_interface"
+              version="0.2.8"
+              throws="1">
+        <doc xml:space="preserve">Gets the first interface that matches the vendor class interface descriptor.
+If you want to find all the interfaces that match (there may be other
+'alternate' interfaces you have to use g_usb_device_get_interfaces() and
+check each one manally.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GUsbInterface or %NULL for not found</doc>
+          <type name="Interface" c:type="GUsbInterface*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+          <parameter name="class_id" transfer-ownership="none">
+            <doc xml:space="preserve">a device class, e.g. 0xff for VENDOR</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="subclass_id" transfer-ownership="none">
+            <doc xml:space="preserve">a device subclass</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="protocol_id" transfer-ownership="none">
+            <doc xml:space="preserve">a protocol number</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_interfaces"
+              c:identifier="g_usb_device_get_interfaces"
+              version="0.2.8"
+              throws="1">
+        <doc xml:space="preserve">Gets all the interfaces exported by the device.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">an array of interfaces or %NULL for error</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Interface"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
@@ -517,6 +910,21 @@ Warning: this function is synchronous.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_parent"
+              c:identifier="g_usb_device_get_parent"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the device parent if one exists.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">#GUsbDevice or %NULL</doc>
+          <type name="Device" c:type="GUsbDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice instance</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_pid"
               c:identifier="g_usb_device_get_pid"
               version="0.1.0">
@@ -532,14 +940,47 @@ Warning: this function is synchronous.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_pid_as_str"
+              c:identifier="g_usb_device_get_pid_as_str"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the product ID for the device as a string.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an string ID, or %NULL if not available.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_platform_id"
               c:identifier="g_usb_device_get_platform_id"
               version="0.1.1">
         <doc xml:space="preserve">Gets the platform identifier for the device.
-On Linux, this is the full sysfs path of the device</doc>
+On Linux, this is the full sysfs path of the device
+
+When the device is removed and then replugged, this value is not expected to
+be different.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The platform ID, or %NULL</doc>
+          <doc xml:space="preserve">The platform ID, e.g. "usb:02:00:03:01"</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_port_number"
+              c:identifier="g_usb_device_get_port_number"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the USB port number for the device.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The 8-bit port number</doc>
+          <type name="guint8" c:type="guint8"/>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
@@ -555,6 +996,21 @@ On Linux, this is the full sysfs path of the device</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a string descriptor index.</doc>
           <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_release"
+              c:identifier="g_usb_device_get_release"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the BCD firmware version number for the device.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a version number in BCD format.</doc>
+          <type name="guint16" c:type="guint16"/>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
@@ -605,6 +1061,21 @@ with g_free() when no longer needed.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an ID.</doc>
           <type name="guint16" c:type="guint16"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vid_as_str"
+              c:identifier="g_usb_device_get_vid_as_str"
+              version="0.2.4">
+        <doc xml:space="preserve">Gets the vendor ID for the device as a string.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an string ID, or %NULL if not available.</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
@@ -822,6 +1293,30 @@ Warning: this function is synchronous.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_interface_alt"
+              c:identifier="g_usb_device_set_interface_alt"
+              version="0.2.8"
+              throws="1">
+        <doc xml:space="preserve">Sets an alternate setting on an interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbDevice</doc>
+            <type name="Device" c:type="GUsbDevice*"/>
+          </instance-parameter>
+          <parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">bInterfaceNumber of the interface you wish to release</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="alt" transfer-ownership="none">
+            <doc xml:space="preserve">alternative setting number</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="context"
                 readable="0"
                 writable="1"
@@ -870,6 +1365,83 @@ g_usb_device_release_interface methods flags parameters.</doc>
         </array>
       </field>
     </record>
+    <enumeration name="DeviceClassCode" c:type="GUsbDeviceClassCode">
+      <doc xml:space="preserve">The USB device class.</doc>
+      <member name="interface_desc"
+              value="0"
+              c:identifier="G_USB_DEVICE_CLASS_INTERFACE_DESC">
+      </member>
+      <member name="audio" value="1" c:identifier="G_USB_DEVICE_CLASS_AUDIO">
+      </member>
+      <member name="communications"
+              value="2"
+              c:identifier="G_USB_DEVICE_CLASS_COMMUNICATIONS">
+      </member>
+      <member name="hid" value="3" c:identifier="G_USB_DEVICE_CLASS_HID">
+      </member>
+      <member name="physical"
+              value="5"
+              c:identifier="G_USB_DEVICE_CLASS_PHYSICAL">
+      </member>
+      <member name="image" value="6" c:identifier="G_USB_DEVICE_CLASS_IMAGE">
+      </member>
+      <member name="printer"
+              value="7"
+              c:identifier="G_USB_DEVICE_CLASS_PRINTER">
+      </member>
+      <member name="mass_storage"
+              value="8"
+              c:identifier="G_USB_DEVICE_CLASS_MASS_STORAGE">
+      </member>
+      <member name="hub" value="9" c:identifier="G_USB_DEVICE_CLASS_HUB">
+      </member>
+      <member name="cdc_data"
+              value="10"
+              c:identifier="G_USB_DEVICE_CLASS_CDC_DATA">
+      </member>
+      <member name="smart_card"
+              value="11"
+              c:identifier="G_USB_DEVICE_CLASS_SMART_CARD">
+      </member>
+      <member name="content_security"
+              value="13"
+              c:identifier="G_USB_DEVICE_CLASS_CONTENT_SECURITY">
+      </member>
+      <member name="video" value="14" c:identifier="G_USB_DEVICE_CLASS_VIDEO">
+      </member>
+      <member name="personal_healthcare"
+              value="15"
+              c:identifier="G_USB_DEVICE_CLASS_PERSONAL_HEALTHCARE">
+      </member>
+      <member name="audio_video"
+              value="16"
+              c:identifier="G_USB_DEVICE_CLASS_AUDIO_VIDEO">
+      </member>
+      <member name="billboard"
+              value="17"
+              c:identifier="G_USB_DEVICE_CLASS_BILLBOARD">
+      </member>
+      <member name="diagnostic"
+              value="220"
+              c:identifier="G_USB_DEVICE_CLASS_DIAGNOSTIC">
+      </member>
+      <member name="wireless_controller"
+              value="224"
+              c:identifier="G_USB_DEVICE_CLASS_WIRELESS_CONTROLLER">
+      </member>
+      <member name="miscellaneous"
+              value="239"
+              c:identifier="G_USB_DEVICE_CLASS_MISCELLANEOUS">
+      </member>
+      <member name="application_specific"
+              value="254"
+              c:identifier="G_USB_DEVICE_CLASS_APPLICATION_SPECIFIC">
+      </member>
+      <member name="vendor_specific"
+              value="255"
+              c:identifier="G_USB_DEVICE_CLASS_VENDOR_SPECIFIC">
+      </member>
+    </enumeration>
     <enumeration name="DeviceDirection" c:type="GUsbDeviceDirection">
       <doc xml:space="preserve">The message direction.</doc>
       <member name="device_to_host"
@@ -915,7 +1487,11 @@ g_usb_device_release_interface methods flags parameters.</doc>
       </member>
       <member name="failed" value="8" c:identifier="G_USB_DEVICE_ERROR_FAILED">
       </member>
-      <member name="last" value="9" c:identifier="G_USB_DEVICE_ERROR_LAST">
+      <member name="permission_denied"
+              value="9"
+              c:identifier="G_USB_DEVICE_ERROR_PERMISSION_DENIED">
+      </member>
+      <member name="last" value="10" c:identifier="G_USB_DEVICE_ERROR_LAST">
       </member>
     </enumeration>
     <class name="DeviceList"
@@ -972,10 +1548,7 @@ list of devices after creating a device list.</doc>
       <method name="coldplug"
               c:identifier="g_usb_device_list_coldplug"
               version="0.1.0">
-        <doc xml:space="preserve">Finds all the USB devices and adds them to the list.
-
-You only need to call this function once, and any subsequent calls
-are silently ignored.</doc>
+        <doc xml:space="preserve">This function does nothing.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1036,12 +1609,11 @@ are silently ignored.</doc>
       </method>
       <method name="get_devices"
               c:identifier="g_usb_device_list_get_devices"
-              version="0.1.0"
-              introspectable="0">
+              version="0.1.0">
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GPtrArray of #GUsbDevice's.</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="Device"/>
           </array>
         </return-value>
         <parameters>
@@ -1175,28 +1747,175 @@ are silently ignored.</doc>
               c:identifier="G_USB_DEVICE_REQUEST_TYPE_RESERVED">
       </member>
     </enumeration>
+    <class name="Interface"
+           c:symbol-prefix="interface"
+           c:type="GUsbInterface"
+           parent="GObject.Object"
+           glib:type-name="GUsbInterface"
+           glib:get-type="g_usb_interface_get_type"
+           glib:type-struct="InterfaceClass">
+      <method name="get_alternate"
+              c:identifier="g_usb_interface_get_alternate"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the alternate setting for the interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">alt setting, typically zero.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_class"
+              c:identifier="g_usb_interface_get_class"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the interface class, typically a #GUsbInterfaceClassCode.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a interface class number, e.g. 0x09 is a USB hub.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_extra"
+              c:identifier="g_usb_interface_get_extra"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets any extra data from the interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GBytes, or %NULL for failure</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_index"
+              c:identifier="g_usb_interface_get_index"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the index for the string descriptor.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a string descriptor index.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="g_usb_interface_get_kind"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the type of interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The 8-bit address</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_length"
+              c:identifier="g_usb_interface_get_length"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the USB bus number for the interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The 8-bit bus number</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_number"
+              c:identifier="g_usb_interface_get_number"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the interface number.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The interface ID</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_protocol"
+              c:identifier="g_usb_interface_get_protocol"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the interface protocol qualified by the class and subclass numbers.
+See g_usb_interface_get_class() and g_usb_interface_get_subclass().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a interface protocol number.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_subclass"
+              c:identifier="g_usb_interface_get_subclass"
+              version="0.2.8">
+        <doc xml:space="preserve">Gets the interface subclass qualified by the class number.
+See g_usb_interface_get_class().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a interface subclass number.</doc>
+          <type name="guint8" c:type="guint8"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="interface" transfer-ownership="none">
+            <doc xml:space="preserve">a #GUsbInterface</doc>
+            <type name="Interface" c:type="GUsbInterface*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="InterfaceClass"
+            c:type="GUsbInterfaceClass"
+            glib:is-gtype-struct-for="Interface">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
     <constant name="MAJOR_VERSION" value="0" c:type="G_USB_MAJOR_VERSION">
       <doc xml:space="preserve">The compile-time major version</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="7" c:type="G_USB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="9" c:type="G_USB_MICRO_VERSION">
       <doc xml:space="preserve">The compile-time micro version</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="1" c:type="G_USB_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="2" c:type="G_USB_MINOR_VERSION">
       <doc xml:space="preserve">The compile-time minor version</doc>
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="RESERVED_PADDING"
-              value="64"
-              c:type="G_USB_RESERVED_PADDING">
       <type name="gint" c:type="gint"/>
     </constant>
     <record name="Source" c:type="GUsbSource" disguised="1">
       <method name="set_callback"
               c:identifier="g_usb_source_set_callback"
               version="0.1.0">
-        <doc xml:space="preserve">Set a callback to be called when the source is dispatched.</doc>
+        <doc xml:space="preserve">This function does nothing.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>

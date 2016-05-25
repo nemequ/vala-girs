@@ -1253,6 +1253,13 @@ the display.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="destroy" when="last">
+        <doc xml:space="preserve">This signal is emitted when the buffer should be destroyed, as the
+#IdeBufferManager has reclaimed the buffer.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="line-flags-changed" when="last">
         <doc xml:space="preserve">This signal is emitted when the calculated line flags have changed. This occurs when
 diagnostics and line changes have been recalculated.</doc>
@@ -7568,6 +7575,16 @@ end location. [a,b)</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="clear" c:identifier="ide_highlight_engine_clear">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="HighlightEngine" c:type="IdeHighlightEngine*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_buffer" c:identifier="ide_highlight_engine_get_buffer">
         <doc xml:space="preserve">Gets the IdeHighlightEngine:buffer property.</doc>
         <return-value transfer-ownership="none">
@@ -8160,6 +8177,19 @@ returned then ide_indenter_format() will be called.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <record name="Language" c:type="IdeLanguage" disguised="1">
+      <function name="format_header" c:identifier="ide_language_format_header">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="language" transfer-ownership="none">
+            <type name="GtkSource.Language" c:type="GtkSourceLanguage*"/>
+          </parameter>
+          <parameter name="header" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
     </record>
     <class name="Layout"
            c:symbol-prefix="layout"
@@ -8506,6 +8536,16 @@ This should only be used by #IdeLayoutGrid.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
+      <virtual-method name="agree_to_close" invoker="agree_to_close">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="LayoutView" c:type="IdeLayoutView*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="create_split" invoker="create_split">
         <doc xml:space="preserve">Creates a new view similar to @self that can be displayed in a split.
 If the view does not support splits, %NULL will be returned.</doc>
@@ -8619,6 +8659,17 @@ If the view does not support splits, %NULL will be returned.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="agree_to_close"
+              c:identifier="ide_layout_view_agree_to_close">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="LayoutView" c:type="IdeLayoutView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="create_split" c:identifier="ide_layout_view_create_split">
         <doc xml:space="preserve">Creates a new view similar to @self that can be displayed in a split.
 If the view does not support splits, %NULL will be returned.</doc>
@@ -8895,6 +8946,23 @@ If the view does not support splits, %NULL will be returned.</doc>
             </parameter>
           </parameters>
         </callback>
+      </field>
+      <field name="agree_to_close">
+        <callback name="agree_to_close">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="LayoutView" c:type="IdeLayoutView*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
     </record>
     <record name="LineReader" c:type="IdeLineReader">
@@ -10540,6 +10608,20 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_widget" invoker="get_widget">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #GtkWidget or %NULL.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Preferences" c:type="IdePreferences*"/>
+          </instance-parameter>
+          <parameter name="widget_id" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="remove_id" invoker="remove_id">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -10869,6 +10951,20 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
           </parameter>
           <parameter name="priority" transfer-ownership="none">
             <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_widget" c:identifier="ide_preferences_get_widget">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #GtkWidget or %NULL.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Preferences" c:type="IdePreferences*"/>
+          </instance-parameter>
+          <parameter name="widget_id" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </method>
@@ -11735,6 +11831,22 @@ the plugin is unloaded.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="get_widget">
+        <callback name="get_widget">
+          <return-value transfer-ownership="none" nullable="1">
+            <doc xml:space="preserve">A #GtkWidget or %NULL.</doc>
+            <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Preferences" c:type="IdePreferences*"/>
+            </parameter>
+            <parameter name="widget_id" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
     </record>
     <class name="PreferencesPage"
            c:symbol-prefix="preferences_page"
@@ -11792,6 +11904,19 @@ the plugin is unloaded.</doc>
            glib:type-struct="PreferencesSpinButtonClass">
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
+      <method name="get_spin_button"
+              c:identifier="ide_preferences_spin_button_get_spin_button">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The actual spin button widget.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PreferencesSpinButton"
+                  c:type="IdePreferencesSpinButton*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="key"
                 writable="1"
                 construct-only="1"
@@ -12253,6 +12378,29 @@ ide_project_writer_unlock() when you are no longer modifiying the tree.</doc>
                 transfer-ownership="none">
         <type name="ProjectItem"/>
       </property>
+      <glib:signal name="file-renamed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gio.File"/>
+          </parameter>
+          <parameter name="p0" transfer-ownership="none">
+            <type name="Gio.File"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="file-trashed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Gio.File"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="ProjectClass"
             c:type="IdeProjectClass"
@@ -16956,7 +17104,7 @@ reaches zero, then the structure is freed.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="at_word_boundaries" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -18281,7 +18429,7 @@ If @use_count is %TRUE, then the character will be inserted
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="p4" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -18828,7 +18976,7 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
               <type name="gboolean" c:type="gboolean"/>
             </parameter>
             <parameter name="at_word_boundaries" transfer-ownership="none">
-              <type name="gboolean" c:type="gboolean"/>
+              <type name="gint" c:type="gint"/>
             </parameter>
           </parameters>
         </callback>
@@ -19505,7 +19653,7 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="p4" transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -20048,132 +20196,144 @@ First adjust the repeat and then perform the "movement" action.</doc>
               glib:nick="page-up">
         <doc xml:space="preserve">move a full page up.</doc>
       </member>
-      <member name="page_down"
+      <member name="page_up_lines"
               value="36"
+              c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PAGE_UP_LINES"
+              glib:nick="page-up-lines">
+        <doc xml:space="preserve">move a full page up, but extend to whole line.</doc>
+      </member>
+      <member name="page_down"
+              value="37"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PAGE_DOWN"
               glib:nick="page-down">
         <doc xml:space="preserve">move a full page down.</doc>
       </member>
+      <member name="page_down_lines"
+              value="38"
+              c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PAGE_DOWN_LINES"
+              glib:nick="page-down-lines">
+        <doc xml:space="preserve">move a full page down, but extend to whole line.</doc>
+      </member>
       <member name="screen_up"
-              value="37"
+              value="39"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_UP"
               glib:nick="screen-up">
         <doc xml:space="preserve">move to viewport up by visible line, adjusting cursor
   to stay on screen if necessary.</doc>
       </member>
       <member name="screen_down"
-              value="38"
+              value="40"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_DOWN"
               glib:nick="screen-down">
         <doc xml:space="preserve">move to viewport down by visible line, adjusting cursor
   to stay on screen if necessary.</doc>
       </member>
       <member name="screen_left"
-              value="39"
+              value="41"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_LEFT"
               glib:nick="screen-left">
         <doc xml:space="preserve">move to viewport left by visible char, adjusting cursor
   to stay on screen if necessary.</doc>
       </member>
       <member name="screen_right"
-              value="40"
+              value="42"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_RIGHT"
               glib:nick="screen-right">
         <doc xml:space="preserve">move to viewport right by visible char, adjusting cursor
   to stay on screen if necessary.</doc>
       </member>
       <member name="screen_top"
-              value="41"
+              value="43"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_TOP"
               glib:nick="screen-top">
         <doc xml:space="preserve">move to the top of the screen.</doc>
       </member>
       <member name="screen_middle"
-              value="42"
+              value="44"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_MIDDLE"
               glib:nick="screen-middle">
         <doc xml:space="preserve">move to the middle of the screen.</doc>
       </member>
       <member name="screen_bottom"
-              value="43"
+              value="45"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCREEN_BOTTOM"
               glib:nick="screen-bottom">
         <doc xml:space="preserve">move to the bottom of the screen.</doc>
       </member>
       <member name="match_special"
-              value="44"
+              value="46"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_MATCH_SPECIAL"
               glib:nick="match-special">
         <doc xml:space="preserve">move to match of brace, bracket, comment.</doc>
       </member>
       <member name="scroll_screen_top"
-              value="45"
+              value="47"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCROLL_SCREEN_TOP"
               glib:nick="scroll-screen-top">
         <doc xml:space="preserve">scroll until insert cursor or [count]th line is at screen top.</doc>
       </member>
       <member name="scroll_screen_center"
-              value="46"
+              value="48"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCROLL_SCREEN_CENTER"
               glib:nick="scroll-screen-center">
         <doc xml:space="preserve">scroll until insert cursor or [count]th line is at screen center.</doc>
       </member>
       <member name="scroll_screen_bottom"
-              value="47"
+              value="49"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCROLL_SCREEN_BOTTOM"
               glib:nick="scroll-screen-bottom">
         <doc xml:space="preserve">scroll until insert cursor or [count]th line is at screen bottom.</doc>
       </member>
       <member name="scroll_screen_left"
-              value="48"
+              value="50"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCROLL_SCREEN_LEFT"
               glib:nick="scroll-screen-left">
         <doc xml:space="preserve">scroll until insert cursor or [count]th char is at screen left.</doc>
       </member>
       <member name="scroll_screen_right"
-              value="49"
+              value="51"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_SCROLL_SCREEN_RIGHT"
               glib:nick="scroll-screen-right">
         <doc xml:space="preserve">scroll until insert cursor or [count]th char is at screen right.</doc>
       </member>
       <member name="previous_unmatched_brace"
-              value="50"
+              value="52"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PREVIOUS_UNMATCHED_BRACE"
               glib:nick="previous-unmatched-brace">
       </member>
       <member name="next_unmatched_brace"
-              value="51"
+              value="53"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_NEXT_UNMATCHED_BRACE"
               glib:nick="next-unmatched-brace">
       </member>
       <member name="previous_unmatched_paren"
-              value="52"
+              value="54"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PREVIOUS_UNMATCHED_PAREN"
               glib:nick="previous-unmatched-paren">
       </member>
       <member name="next_unmatched_paren"
-              value="53"
+              value="55"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_NEXT_UNMATCHED_PAREN"
               glib:nick="next-unmatched-paren">
       </member>
       <member name="next_match_modifier"
-              value="54"
+              value="56"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_NEXT_MATCH_MODIFIER"
               glib:nick="next-match-modifier">
       </member>
       <member name="previous_match_modifier"
-              value="55"
+              value="57"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PREVIOUS_MATCH_MODIFIER"
               glib:nick="previous-match-modifier">
       </member>
       <member name="next_match_search_char"
-              value="56"
+              value="58"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_NEXT_MATCH_SEARCH_CHAR"
               glib:nick="next-match-search-char">
         <doc xml:space="preserve">move to the next matching char according to f and t in vim.</doc>
       </member>
       <member name="previous_match_search_char"
-              value="57"
+              value="59"
               c:identifier="IDE_SOURCE_VIEW_MOVEMENT_PREVIOUS_MATCH_SEARCH_CHAR"
               glib:nick="previous-match-search-char">
         <doc xml:space="preserve">move to the previous matching char according to F and T in vim.</doc>
@@ -20324,6 +20484,16 @@ First adjust the repeat and then perform the "movement" action.</doc>
           <parameter name="environment" transfer-ownership="none">
             <type name="Environment" c:type="IdeEnvironment*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="pop_argv" c:identifier="ide_subprocess_launcher_pop_argv">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="push_args"
@@ -21756,6 +21926,16 @@ is assumed.</doc>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve">An #IdeTemplateBase</doc>
+            <type name="TemplateBase" c:type="IdeTemplateBase*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reset" c:identifier="ide_template_base_reset">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="TemplateBase" c:type="IdeTemplateBase*"/>
           </instance-parameter>
         </parameters>
@@ -24310,6 +24490,16 @@ the path is always present, though it may be an empty string).</doc>
           </parameter>
         </parameters>
       </function>
+      <virtual-method name="changed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Vcs" c:type="IdeVcs*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_buffer_change_monitor"
                       invoker="get_buffer_change_monitor">
         <doc xml:space="preserve">Gets an #IdeBufferChangeMonitor for the buffer provided. If the #IdeVcs implementation does not
@@ -24365,6 +24555,16 @@ the project files exist.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="emit_changed" c:identifier="ide_vcs_emit_changed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Vcs" c:type="IdeVcs*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_buffer_change_monitor"
               c:identifier="ide_vcs_get_buffer_change_monitor">
         <doc xml:space="preserve">Gets an #IdeBufferChangeMonitor for the buffer provided. If the #IdeVcs implementation does not
@@ -24427,7 +24627,211 @@ the project files exist.</doc>
                 transfer-ownership="none">
         <type name="Context"/>
       </property>
+      <glib:signal name="changed" when="last">
+        <doc xml:space="preserve">The "changed" signal should be emitted when the VCS has detected a change
+to the underlying VCS storage. This can be used by consumers to reload
+their respective data structures.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
     </interface>
+    <interface name="VcsInitializer"
+               c:symbol-prefix="vcs_initializer"
+               c:type="IdeVcsInitializer"
+               glib:type-name="IdeVcsInitializer"
+               glib:get-type="ide_vcs_initializer_get_type"
+               glib:type-struct="VcsInitializerInterface">
+      <virtual-method name="get_title" invoker="get_title">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="initialize_async" invoker="initialize_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+          </instance-parameter>
+          <parameter name="file" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="initialize_finish"
+                      invoker="initialize_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_title" c:identifier="ide_vcs_initializer_get_title">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="initialize_async"
+              c:identifier="ide_vcs_initializer_initialize_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+          </instance-parameter>
+          <parameter name="file" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="initialize_finish"
+              c:identifier="ide_vcs_initializer_initialize_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="VcsInitializerInterface"
+            c:type="IdeVcsInitializerInterface"
+            glib:is-gtype-struct-for="VcsInitializer">
+      <field name="parent">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="get_title">
+        <callback name="get_title">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="initialize_async">
+        <callback name="initialize_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+            </parameter>
+            <parameter name="file" transfer-ownership="none">
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="initialize_finish">
+        <callback name="initialize_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="VcsInitializer" c:type="IdeVcsInitializer*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <record name="VcsInterface"
             c:type="IdeVcsInterface"
             glib:is-gtype-struct-for="Vcs">
@@ -24483,6 +24887,18 @@ the project files exist.</doc>
         <callback name="get_priority">
           <return-value transfer-ownership="none">
             <type name="gint" c:type="gint"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Vcs" c:type="IdeVcs*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="changed">
+        <callback name="changed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
@@ -25915,6 +26331,47 @@ return %NULL.</doc>
       <return-value transfer-ownership="none">
         <type name="gsize" c:type="gsize"/>
       </return-value>
+    </function>
+    <function name="gtk_text_buffer_remove_tag"
+              c:identifier="ide_gtk_text_buffer_remove_tag">
+      <doc xml:space="preserve">Like gtk_text_buffer_remove_tag() but allows specifying that the tags
+should be removed one at a time to avoid over-damaging the views
+displaying @buffer.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="buffer" transfer-ownership="none">
+          <type name="Gtk.TextBuffer" c:type="GtkTextBuffer*"/>
+        </parameter>
+        <parameter name="tag" transfer-ownership="none">
+          <type name="Gtk.TextTag" c:type="GtkTextTag*"/>
+        </parameter>
+        <parameter name="start" transfer-ownership="none">
+          <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+        </parameter>
+        <parameter name="end" transfer-ownership="none">
+          <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+        </parameter>
+        <parameter name="minimal_damage" transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="language_format_header"
+              c:identifier="ide_language_format_header"
+              moved-to="Language.format_header">
+      <return-value transfer-ownership="full">
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="language" transfer-ownership="none">
+          <type name="GtkSource.Language" c:type="GtkSourceLanguage*"/>
+        </parameter>
+        <parameter name="header" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="log_get_verbosity" c:identifier="ide_log_get_verbosity">
       <return-value transfer-ownership="none">
