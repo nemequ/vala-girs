@@ -13,7 +13,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="camel/camel.h"/>
   <namespace name="Camel"
              version="1.2"
-             shared-library="libcamel-1.2.so.57"
+             shared-library="libcamel-1.2.so.58"
              c:identifier-prefixes="Camel,camel"
              c:symbol-prefixes="camel,camel">
     <alias name="_block_t" c:type="camel_block_t">
@@ -872,6 +872,14 @@ block will be freed.</doc>
         <type name="_block_t" c:type="camel_block_t"/>
       </field>
     </record>
+    <constant name="CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME"
+              value="photo-filename"
+              c:type="CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME"
+              version="3.22">
+      <doc xml:space="preserve">Name of the photo-filename property which can be stored
+on a #CamelCipherCertInfo.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <record name="Cert"
             c:type="CamelCert"
             glib:type-name="CamelCert"
@@ -1364,31 +1372,45 @@ as free the list itself.</doc>
       <field name="cert_data" writable="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="cert_data_free">
-        <callback name="cert_data_free">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="cert_data" transfer-ownership="none">
-              <type name="gpointer" c:type="gpointer"/>
-            </parameter>
-          </parameters>
-        </callback>
+      <field name="cert_data_free" writable="1">
+        <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
       </field>
-      <field name="cert_data_clone">
-        <callback name="cert_data_clone">
-          <return-value transfer-ownership="none">
-            <type name="gpointer" c:type="gpointer"/>
-          </return-value>
-          <parameters>
-            <parameter name="cert_data" transfer-ownership="none">
-              <type name="gpointer" c:type="gpointer"/>
-            </parameter>
-          </parameters>
-        </callback>
+      <field name="cert_data_clone" writable="1">
+        <type name="CipherCloneFunc" c:type="CamelCipherCloneFunc"/>
+      </field>
+      <field name="properties" writable="1">
+        <type name="GLib.SList" c:type="GSList*">
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
       </field>
     </record>
+    <record name="CipherCertInfoProperty" c:type="CamelCipherCertInfoProperty">
+      <field name="name" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="value" writable="1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="value_free" writable="1">
+        <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+      </field>
+      <field name="value_clone" writable="1">
+        <type name="CipherCloneFunc" c:type="CamelCipherCloneFunc"/>
+      </field>
+    </record>
+    <callback name="CipherCloneFunc" c:type="CamelCipherCloneFunc">
+      <return-value transfer-ownership="none" nullable="1">
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="value"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="CipherContext"
            c:symbol-prefix="cipher_context"
            c:type="CamelCipherContext"
@@ -2336,7 +2358,8 @@ execute at all</doc>
               c:identifier="camel_cipher_validity_add_certinfo">
         <doc xml:space="preserve">Add a cert info to the signer or encrypter info.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">Index of the added certinfo; -1 on error</doc>
+          <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <instance-parameter name="vin" transfer-ownership="none">
@@ -2356,10 +2379,12 @@ execute at all</doc>
       </method>
       <method name="add_certinfo_ex"
               c:identifier="camel_cipher_validity_add_certinfo_ex"
-              version="2.30">
+              version="2.30"
+              introspectable="0">
         <doc xml:space="preserve">Add a cert info to the signer or encrypter info, with extended data set.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">Index of the added certinfo; -1 on error</doc>
+          <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
           <instance-parameter name="vin" transfer-ownership="none">
@@ -2383,15 +2408,11 @@ execute at all</doc>
           </parameter>
           <parameter name="cert_data_free"
                      transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <type name="gpointer" c:type="gpointer*"/>
+                     scope="async">
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
-          <parameter name="cert_data_clone"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <type name="gpointer" c:type="gpointer*"/>
+          <parameter name="cert_data_clone" transfer-ownership="none">
+            <type name="CipherCloneFunc" c:type="CamelCipherCloneFunc"/>
           </parameter>
         </parameters>
       </method>
@@ -2440,6 +2461,36 @@ another one.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_certinfo_property"
+              c:identifier="camel_cipher_validity_get_certinfo_property"
+              version="3.22">
+        <doc xml:space="preserve">Gets a named property @name value for the given @info_index of the @mode validity part.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">Value of a named property of a #CamelCipherCertInfo, or %NULL when no such
+   property exists. The returned value is owned by the associated #CamelCipherCertInfo
+   and is valid until the cert info is freed.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vin" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelCipherValidity</doc>
+            <type name="CipherValidity" c:type="CamelCipherValidity*"/>
+          </instance-parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">which cipher validity part to use</doc>
+            <type name="_cipher_validity_mode_t"
+                  c:type="camel_cipher_validity_mode_t"/>
+          </parameter>
+          <parameter name="info_index" transfer-ownership="none">
+            <doc xml:space="preserve">a 0-based index of the requested #CamelCipherCertInfo</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a property name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_description"
               c:identifier="camel_cipher_validity_get_description">
         <return-value transfer-ownership="full">
@@ -2469,6 +2520,59 @@ another one.</doc>
           <instance-parameter name="validity" transfer-ownership="none">
             <type name="CipherValidity" c:type="CamelCipherValidity*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_certinfo_property"
+              c:identifier="camel_cipher_validity_set_certinfo_property"
+              version="3.22"
+              introspectable="0">
+        <doc xml:space="preserve">Sets a named property @name value @value for the given @info_index
+of the @mode validity part. If the @value is %NULL, then the property
+is removed. With a non-%NULL @value also @value_free and @value_clone
+functions cannot be %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vin" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelCipherValidity</doc>
+            <type name="CipherValidity" c:type="CamelCipherValidity*"/>
+          </instance-parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">which cipher validity part to use</doc>
+            <type name="_cipher_validity_mode_t"
+                  c:type="camel_cipher_validity_mode_t"/>
+          </parameter>
+          <parameter name="info_index" transfer-ownership="none">
+            <doc xml:space="preserve">a 0-based index of the requested #CamelCipherCertInfo</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a property name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a property value, or %NULL</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="value_free"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">a free function for the @value</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="value_clone"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a clone function for the @value</doc>
+            <type name="CipherCloneFunc" c:type="CamelCipherCloneFunc"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_description"
@@ -21205,6 +21309,23 @@ the local machine for offline availability.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="can_downsync"
+              c:identifier="camel_offline_folder_can_downsync"
+              version="3.22">
+        <doc xml:space="preserve">Checks whether the @folder can run downsync according to its
+settings (camel_offline_folder_get_offline_sync()) and to
+the parent's #CamelOfflineStore settings (camel_offline_settings_get_stay_synchronized()).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE, when the @folder can be synchronized for offline; %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelOfflineFolder</doc>
+            <type name="OfflineFolder" c:type="CamelOfflineFolder*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="downsync"
               c:identifier="camel_offline_folder_downsync"
               version="3.0">
@@ -21309,7 +21430,7 @@ the local machine for offline availability.</doc>
               c:identifier="camel_offline_folder_get_offline_sync"
               version="2.32">
         <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
+          <type name="ThreeState" c:type="CamelThreeState"/>
         </return-value>
         <parameters>
           <instance-parameter name="folder" transfer-ownership="none">
@@ -21321,6 +21442,7 @@ the local machine for offline availability.</doc>
       <method name="set_offline_sync"
               c:identifier="camel_offline_folder_set_offline_sync"
               version="2.32">
+        <doc xml:space="preserve">The %CAMEL_THREE_STATE_INCONSISTENT means what the parent store has set.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21330,13 +21452,13 @@ the local machine for offline availability.</doc>
             <type name="OfflineFolder" c:type="CamelOfflineFolder*"/>
           </instance-parameter>
           <parameter name="offline_sync" transfer-ownership="none">
-            <doc xml:space="preserve">whether to synchronize for offline use</doc>
-            <type name="gboolean" c:type="gboolean"/>
+            <doc xml:space="preserve">whether to synchronize for offline use, as a #CamelThreeState enum</doc>
+            <type name="ThreeState" c:type="CamelThreeState"/>
           </parameter>
         </parameters>
       </method>
       <property name="offline-sync" writable="1" transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
+        <type name="ThreeState"/>
       </property>
       <field name="parent">
         <type name="Folder" c:type="CamelFolder"/>
@@ -32033,6 +32155,31 @@ the operation.</doc>
             c:type="CamelTextIndexPrivate"
             disguised="1">
     </record>
+    <enumeration name="ThreeState"
+                 version="3.22"
+                 glib:type-name="CamelThreeState"
+                 glib:get-type="camel_three_state_get_type"
+                 c:type="CamelThreeState">
+      <doc xml:space="preserve">Describes a three-state value, which can be either Off, On or Inconsistent.</doc>
+      <member name="off"
+              value="0"
+              c:identifier="CAMEL_THREE_STATE_OFF"
+              glib:nick="off">
+        <doc xml:space="preserve">the three-state value is Off</doc>
+      </member>
+      <member name="on"
+              value="1"
+              c:identifier="CAMEL_THREE_STATE_ON"
+              glib:nick="on">
+        <doc xml:space="preserve">the three-state value is On</doc>
+      </member>
+      <member name="inconsistent"
+              value="2"
+              c:identifier="CAMEL_THREE_STATE_INCONSISTENT"
+              glib:nick="inconsistent">
+        <doc xml:space="preserve">the three-state value is neither On, nor Off</doc>
+      </member>
+    </enumeration>
     <enumeration name="TransferEncoding"
                  glib:type-name="CamelTransferEncoding"
                  glib:get-type="camel_transfer_encoding_get_type"
@@ -34839,6 +34986,14 @@ documentation for more information on arguments and return value.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="cipher_can_load_photos"
+              c:identifier="camel_cipher_can_load_photos"
+              version="3.22">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Whether ciphers can load photos, as being setup by the user.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+    </function>
     <function name="cipher_canonical_to_stream"
               c:identifier="camel_cipher_canonical_to_stream"
               throws="1">
@@ -34868,6 +35023,70 @@ The transfer encoding paramaters for the part may be changed by this function.</
                    allow-none="1">
           <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="cipher_certinfo_get_property"
+              c:identifier="camel_cipher_certinfo_get_property"
+              version="3.22">
+      <doc xml:space="preserve">Gets a named property @name value for the given @cert_info.</doc>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve">Value of a named property of the @cert_info, or %NULL when no such
+   property exists. The returned value is owned by the @cert_info
+   and is valid until the @cert_info is freed.</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="cert_info" transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelCipherCertInfo</doc>
+          <type name="CipherCertInfo" c:type="CamelCipherCertInfo*"/>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <doc xml:space="preserve">a property name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="cipher_certinfo_set_property"
+              c:identifier="camel_cipher_certinfo_set_property"
+              version="3.22"
+              introspectable="0">
+      <doc xml:space="preserve">Sets a named property @name value @value for the given @cert_info.
+If the @value is %NULL, then the property is removed. With a non-%NULL
+@value also @value_free and @value_clone functions cannot be %NULL.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="cert_info" transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelCipherCertInfo</doc>
+          <type name="CipherCertInfo" c:type="CamelCipherCertInfo*"/>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <doc xml:space="preserve">a property name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="value"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a property value, or %NULL</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="value_free"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="async">
+          <doc xml:space="preserve">a free function for the @value</doc>
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+        <parameter name="value_clone"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a clone function for the @value</doc>
+          <type name="CipherCloneFunc" c:type="CamelCipherCloneFunc"/>
         </parameter>
       </parameters>
     </function>
@@ -37099,6 +37318,23 @@ Unreference the returned string with camel_pstring_free().</doc>
           <doc xml:space="preserve">whether the string pool will own the memory pointed to by
       @string, if @string is not yet in the pool</doc>
           <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="pstring_contains"
+              c:identifier="camel_pstring_contains"
+              version="3.22">
+      <doc xml:space="preserve">Returns whether the @string exists in the string pool.
+
+The %NULL and empty strings are special cased to constant values.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Whether the @string exists in the string pool</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="string" transfer-ownership="none">
+          <doc xml:space="preserve">string to look up in the string pool</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>

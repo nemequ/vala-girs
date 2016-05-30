@@ -1834,6 +1834,22 @@ takes no @root argument.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <virtual-method name="child_updated">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="indexing_tree" transfer-ownership="none">
+            <type name="IndexingTree" c:type="TrackerIndexingTree*"/>
+          </instance-parameter>
+          <parameter name="root" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="directory_added">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2127,6 +2143,34 @@ If the return value is non-%NULL, @directory_flags would contain the
           </instance-parameter>
         </parameters>
       </method>
+      <method name="notify_update"
+              c:identifier="tracker_indexing_tree_notify_update"
+              version="1.10">
+        <doc xml:space="preserve">Signals either #TrackerIndexingTree::directory-updated or
+#TrackerIndexingTree::child-updated on the given file and
+returns #TRUE. If @file is not indexed according to the
+#TrackerIndexingTree, #FALSE is returned.
+
+If @recursive is #TRUE, #TrackerIndexingTree::directory-updated
+will be emitted on the indexing roots that are contained in @file.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#TRUE if a signal is emitted.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tree" transfer-ownership="none">
+            <doc xml:space="preserve">a #TrackerIndexingTree</doc>
+            <type name="IndexingTree" c:type="TrackerIndexingTree*"/>
+          </instance-parameter>
+          <parameter name="root" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="recursive" transfer-ownership="none">
+            <doc xml:space="preserve">Whether contained indexing roots are affected by the update</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parent_is_indexable"
               c:identifier="tracker_indexing_tree_parent_is_indexable">
         <doc xml:space="preserve">returns %TRUE if @parent should be indexed based on its contents.</doc>
@@ -2269,11 +2313,10 @@ called.</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="directory-updated" when="last" version="0.14.0">
-        <doc xml:space="preserve">the ::directory-updated signal is emitted when @directory
-that was previously added has had its indexing flags
-updated due to another directory that is a parent of
-@directory changing. This tends to happen uppon
-tracker_indexing_tree_add() API calls.</doc>
+        <doc xml:space="preserve">The ::directory-updated signal is emitted on a root
+when either its indexing flags change (e.g. due to consecutive
+calls to tracker_indexing_tree_add()), or anytime an update is
+requested through tracker_indexing_tree_notify_update().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2338,9 +2381,27 @@ tracker_indexing_tree_add() API calls.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="child_updated">
+        <callback name="child_updated">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="indexing_tree" transfer-ownership="none">
+              <type name="IndexingTree" c:type="TrackerIndexingTree*"/>
+            </parameter>
+            <parameter name="root" transfer-ownership="none">
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+            <parameter name="child" transfer-ownership="none">
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="padding">
         <doc xml:space="preserve">Reserved for future API improvements.</doc>
-        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="9">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>

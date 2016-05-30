@@ -1919,6 +1919,11 @@ namespace Ide {
 		public abstract Ide.Context context { construct; }
 		public virtual signal void changed ();
 	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeVcsConfigInterface", type_id = "ide_vcs_config_get_type ()")]
+	public interface VcsConfig : GLib.Object {
+		public abstract void get_config (Ide.VcsConfigType type, GLib.Value value);
+		public abstract void set_config (Ide.VcsConfigType type, GLib.Value value);
+	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeVcsInitializerInterface", type_id = "ide_vcs_initializer_get_type ()")]
 	public interface VcsInitializer : GLib.Object {
 		public abstract string get_title ();
@@ -2143,6 +2148,11 @@ namespace Ide {
 	public enum UriToStringFlags {
 		AUTH_PARAMS,
 		FRAGMENT
+	}
+	[CCode (cheader_filename = "ide.h", cprefix = "IDE_VCS_CONFIG_", type_id = "ide_vcs_config_type_get_type ()")]
+	public enum VcsConfigType {
+		FULL_NAME,
+		EMAIL
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_DOAP_ERROR_INVALID_")]
 	public errordomain DoapError {

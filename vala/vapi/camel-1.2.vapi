@@ -131,13 +131,13 @@ namespace Camel {
 		public weak GLib.Queue children;
 		[CCode (has_construct_function = false)]
 		public CipherValidity ();
-		public void add_certinfo (Camel._cipher_validity_mode_t mode, string name, string email);
-		[Version (since = "2.30")]
-		public void add_certinfo_ex (Camel._cipher_validity_mode_t mode, string name, string email, void* cert_data, void* cert_data_free, void* cert_data_clone);
+		public int add_certinfo (Camel._cipher_validity_mode_t mode, string name, string email);
 		public void clear ();
 		public Camel.CipherValidity clone ();
 		public void envelope (Camel.CipherValidity valid);
 		public void free ();
+		[Version (since = "3.22")]
+		public void* get_certinfo_property (Camel._cipher_validity_mode_t mode, int info_index, string name);
 		public string get_description ();
 		public bool get_valid ();
 		public void init ();
@@ -1098,15 +1098,17 @@ namespace Camel {
 	public class OfflineFolder : Camel.Folder {
 		[CCode (has_construct_function = false)]
 		protected OfflineFolder ();
+		[Version (since = "3.22")]
+		public bool can_downsync ();
 		[Version (since = "3.0")]
 		public async bool downsync (string expression, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
 		public virtual bool downsync_sync (string expression, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.32")]
-		public bool get_offline_sync ();
+		public Camel.ThreeState get_offline_sync ();
 		[Version (since = "2.32")]
-		public void set_offline_sync (bool offline_sync);
-		public bool offline_sync { get; set; }
+		public void set_offline_sync (Camel.ThreeState offline_sync);
+		public Camel.ThreeState offline_sync { get; set; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_offline_settings_get_type ()")]
 	[Version (since = "3.2")]
@@ -1905,8 +1907,16 @@ namespace Camel {
 		public weak string name;
 		public weak string email;
 		public void* cert_data;
-		public weak global::cert_data_free cert_data_free;
-		public weak global::cert_data_clone cert_data_clone;
+		public weak GLib.DestroyNotify cert_data_free;
+		public weak Camel.CipherCloneFunc cert_data_clone;
+		public weak GLib.SList<void*> properties;
+	}
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
+	public struct CipherCertInfoProperty {
+		public weak string name;
+		public void* value;
+		public weak GLib.DestroyNotify value_free;
+		public weak Camel.CipherCloneFunc value_clone;
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Version (since = "2.24")]
@@ -2808,6 +2818,13 @@ namespace Camel {
 		WRITE,
 		MODE
 	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_THREE_STATE_", type_id = "camel_three_state_get_type ()")]
+	[Version (since = "3.22")]
+	public enum ThreeState {
+		OFF,
+		ON,
+		INCONSISTENT
+	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_TRANSFER_", type_id = "camel_transfer_encoding_get_type ()")]
 	public enum TransferEncoding {
 		ENCODING_DEFAULT,
@@ -2916,6 +2933,8 @@ namespace Camel {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_target = false)]
+	public delegate void* CipherCloneFunc (void* value);
+	[CCode (cheader_filename = "camel/camel.h", has_target = false)]
 	public delegate void* CopyFunc (void* object);
 	[CCode (cheader_filename = "camel/camel.h", has_target = false)]
 	[Version (since = "2.24")]
@@ -2956,6 +2975,9 @@ namespace Camel {
 	public const int BLOCK_SIZE;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_BLOCK_SIZE_BITS")]
 	public const int BLOCK_SIZE_BITS;
+	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME")]
+	[Version (since = "3.22")]
+	public const string CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_DB_FILE")]
 	[Version (since = "2.24")]
 	public const string DB_FILE;
@@ -3092,7 +3114,13 @@ namespace Camel {
 	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property_with_closures (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.Closure transform_to, GLib.Closure transform_from);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static bool cipher_can_load_photos ();
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static int cipher_canonical_to_stream (Camel.MimePart part, uint32 flags, Camel.Stream ostream, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static void* cipher_certinfo_get_property (Camel.CipherCertInfo cert_info, string name);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static void content_info_dump (Camel.MessageContentInfo ci, int depth);
 	[CCode (cheader_filename = "camel/camel.h")]
@@ -3307,6 +3335,9 @@ namespace Camel {
 	public static void pointer_tracker_untrack (void* ptr);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string pstring_add (string string, bool own);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static bool pstring_contains (string string);
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.6")]
 	public static void pstring_dump_stat ();
