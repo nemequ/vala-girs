@@ -28,8 +28,8 @@ namespace Grl {
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_config_get_type ()")]
 	public class Config : GLib.Object {
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak void*[] _grl_reserved;
+		[CCode (array_length = false)]
+		public weak void* _grl_reserved[8];
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.1.4")]
 		public Config (string plugin, string? source);
@@ -95,8 +95,8 @@ namespace Grl {
 	}
 	[CCode (cheader_filename = "grilo.h", type_id = "grl_data_get_type ()")]
 	public class Data : GLib.Object {
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak void*[] _grl_reserved;
+		[CCode (array_length = false)]
+		public weak void* _grl_reserved[8];
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.1.4")]
 		public Data ();

@@ -37,8 +37,8 @@ namespace Camel {
 		public weak string path;
 		public Camel.BlockRoot root;
 		public Camel.Block root_block;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak char[] version;
+		[CCode (array_length = false)]
+		public weak char version[8];
 		[CCode (has_construct_function = false)]
 		public BlockFile (string path, int flags, char version, size_t block_size);
 		public void attach_block (Camel.Block bl);
@@ -271,8 +271,8 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_folder_get_type ()")]
 	public abstract class Folder : Camel.Object {
 		public Camel.FolderFlags folder_flags;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak void*[] later;
+		[CCode (array_length = false)]
+		public weak void* later[4];
 		public Camel.MessageFlags permanent_flags;
 		public weak Camel.FolderSummary summary;
 		[CCode (has_construct_function = false)]
@@ -458,8 +458,8 @@ namespace Camel {
 	public class FolderSummary : GLib.Object {
 		public weak string collate;
 		public Camel.FolderSummaryFlags flags;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak void*[] later;
+		[CCode (array_length = false)]
+		public weak void* later[4];
 		public weak string sort_by;
 		public long time;
 		public uint32 version;
@@ -1371,6 +1371,8 @@ namespace Camel {
 		public virtual bool lookup_addressbook (string name);
 		[Version (since = "3.8")]
 		public GLib.MainContext ref_main_context ();
+		[Version (since = "3.22")]
+		public GLib.NetworkMonitor ref_network_monitor ();
 		[Version (since = "3.6")]
 		public Camel.Service ref_service (string uid);
 		[Version (since = "3.6")]
@@ -1383,6 +1385,8 @@ namespace Camel {
 		public void set_junk_filter (Camel.JunkFilter junk_filter);
 		[Version (since = "2.22")]
 		public void set_junk_headers ([CCode (array_length_cname = "len", array_length_pos = 2.1)] string[] headers, [CCode (array_length = false)] string[] values);
+		[Version (since = "3.22")]
+		public void set_network_monitor (GLib.NetworkMonitor? network_monitor);
 		public void set_online (bool online);
 		[Version (since = "3.2")]
 		public void submit_job (string description, owned Camel.SessionCallback callback);
@@ -1391,6 +1395,8 @@ namespace Camel {
 		public Camel.JunkFilter junk_filter { get; set; }
 		[NoAccessorMethod]
 		public GLib.MainContext main_context { owned get; }
+		[NoAccessorMethod]
+		public GLib.NetworkMonitor network_monitor { owned get; set; }
 		public bool online { get; set construct; }
 		[NoAccessorMethod]
 		public string user_cache_dir { owned get; set construct; }
@@ -1417,8 +1423,8 @@ namespace Camel {
 		public void* cdb_w;
 		public Camel.StoreFlags flags;
 		public weak Camel.ObjectBag folders;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak void*[] later;
+		[CCode (array_length = false)]
+		public weak void* later[4];
 		public Camel.StorePermissionFlags mode;
 		[CCode (has_construct_function = false)]
 		protected Store ();
@@ -1880,13 +1886,13 @@ namespace Camel {
 		public Camel.BlockFlags flags;
 		public uint32 refcount;
 		public uint32 align00;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak uint8[] data;
+		[CCode (array_length = false)]
+		public weak uint8 data[1024];
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct BlockRoot {
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak char[] version;
+		[CCode (array_length = false)]
+		public weak char version[8];
 		public uint32 flags;
 		public uint32 block_size;
 		public Camel._block_t free;
@@ -1995,8 +2001,8 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct Flag {
 		public void* next;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak char[] name;
+		[CCode (array_length = false)]
+		public weak char name[1];
 		public static bool @get (Camel.Flag list, string name);
 		public static bool list_copy (Camel.Flag to, Camel.Flag from);
 		public static void list_free (Camel.Flag list);
@@ -2059,10 +2065,10 @@ namespace Camel {
 	public struct KeyBlock {
 		public Camel._block_t next;
 		public uint32 used;
-		[CCode (array_length = false, array_null_terminated = true, cname = "u.keys")]
+		[CCode (array_length = false, cname = "u.keys")]
 		public weak void*[] u_keys;
-		[CCode (array_length = false, array_null_terminated = true, cname = "u.keydata")]
-		public weak char[] u_keydata;
+		[CCode (array_length = false, cname = "u.keydata")]
+		public weak char u_keydata[1016];
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct KeyRootBlock {
@@ -2157,7 +2163,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct PartitionKeyBlock {
 		public uint32 used;
-		[CCode (array_length = false, array_null_terminated = true)]
+		[CCode (array_length = false)]
 		public weak void*[] keys;
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
@@ -2169,7 +2175,7 @@ namespace Camel {
 	public struct PartitionMapBlock {
 		public Camel._block_t next;
 		public uint32 used;
-		[CCode (array_length = false, array_null_terminated = true)]
+		[CCode (array_length = false)]
 		public weak void*[] partition;
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
@@ -2182,7 +2188,7 @@ namespace Camel {
 		public Camel.ProviderURLFlags url_flags;
 		public Camel.ProviderConfEntry extra_conf;
 		public Camel.ProviderPortEntry port_entries;
-		[CCode (array_length = false, array_null_terminated = true)]
+		[CCode (array_length = false)]
 		public weak GLib.Type[] object_types;
 		public weak GLib.List<void*> authtypes;
 		public weak GLib.HashFunc url_hash;
@@ -2257,7 +2263,7 @@ namespace Camel {
 		public Camel.SExpSymbol value_var;
 		[CCode (cname = "value.func.sym")]
 		public Camel.SExpSymbol value_func_sym;
-		[CCode (array_length = false, array_null_terminated = true, cname = "value.func.terms")]
+		[CCode (array_length = false, cname = "value.func.terms")]
 		public void*[] value_func_terms;
 		[CCode (cname = "value.func.termcount")]
 		public int value_func_termcount;
@@ -2283,8 +2289,8 @@ namespace Camel {
 	public struct SummaryMessageID {
 		[CCode (cname = "id.id")]
 		public uint64 id_id;
-		[CCode (array_length = false, array_null_terminated = true, cname = "id.hash")]
-		public weak uint8[] id_hash;
+		[CCode (array_length = false, cname = "id.hash")]
+		public weak uint8 id_hash[8];
 		[CCode (cname = "id.part.hi")]
 		public uint32 id_part_hi;
 		[CCode (cname = "id.part.lo")]
@@ -2293,15 +2299,15 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct SummaryReferences {
 		public int size;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak Camel.SummaryMessageID[] references;
+		[CCode (array_length = false)]
+		public weak Camel.SummaryMessageID references[1];
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct Tag {
 		public void* next;
 		public weak string value;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak char[] name;
+		[CCode (array_length = false)]
+		public weak char name[1];
 		public static unowned string @get (Camel.Tag list, string name);
 		public static bool list_copy (Camel.Tag to, Camel.Tag from);
 		public static void list_free (Camel.Tag list);

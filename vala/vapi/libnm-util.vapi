@@ -413,9 +413,9 @@ namespace NM {
 		public bool compare (NM.IP6Address other);
 		public NM.IP6Address dup ();
 		[CCode (array_length = false)]
-		public unowned uint8[] get_address ();
+		public unowned uint8 get_address ();
 		[CCode (array_length = false)]
-		public unowned uint8[] get_gateway ();
+		public unowned uint8 get_gateway ();
 		public uint32 get_prefix ();
 		public void @ref ();
 		public void set_address (void* addr);
@@ -431,10 +431,10 @@ namespace NM {
 		public bool compare (NM.IP6Route other);
 		public NM.IP6Route dup ();
 		[CCode (array_length = false)]
-		public unowned uint8[] get_dest ();
+		public unowned uint8 get_dest ();
 		public uint32 get_metric ();
 		[CCode (array_length = false)]
-		public unowned uint8[] get_next_hop ();
+		public unowned uint8 get_next_hop ();
 		public uint32 get_prefix ();
 		public void @ref ();
 		public void set_dest (void* dest);

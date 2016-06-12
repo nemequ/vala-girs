@@ -280,8 +280,8 @@ namespace GVir {
 		public uint cpus;
 		public ulong memory;
 		public uint mhz;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak char[] model;
+		[CCode (array_length = false)]
+		public weak char model[32];
 		public uint nodes;
 		public uint sockets;
 		public uint threads;

@@ -768,7 +768,7 @@ namespace NM {
 		public unowned string get_gateway ();
 		[CCode (array_length = false)]
 		[Version (since = "0.9.10")]
-		public unowned uint8[] get_nameserver (uint32 idx);
+		public unowned uint8 get_nameserver (uint32 idx);
 		[Version (since = "0.9.10")]
 		public uint32 get_num_nameservers ();
 		public unowned GLib.SList<NM.IP6Route> get_routes ();
@@ -961,6 +961,8 @@ namespace NM {
 		SETTINGS_MODIFY_SYSTEM,
 		SETTINGS_MODIFY_OWN,
 		SETTINGS_MODIFY_HOSTNAME,
+		SETTINGS_MODIFY_GLOBAL_DNS,
+		RELOAD,
 		LAST
 	}
 	[CCode (cheader_filename = "nm-client.h", cprefix = "NM_CLIENT_PERMISSION_RESULT_", type_id = "nm_client_permission_result_get_type ()")]

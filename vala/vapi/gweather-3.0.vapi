@@ -29,7 +29,7 @@ namespace GWeather {
 		public string get_temp_max ();
 		public string get_temp_min ();
 		public string get_temp_summary ();
-		public bool get_upcoming_moonphases ([CCode (array_length = false)] out ulong[] phases);
+		public bool get_upcoming_moonphases ([CCode (array_length = false)] out ulong phases[4]);
 		public string get_update ();
 		public bool get_value_apparent (GWeather.TemperatureUnit unit, out double value);
 		public bool get_value_conditions (out GWeather.ConditionPhenomenon phenomenon, out GWeather.ConditionQualifier qualifier);

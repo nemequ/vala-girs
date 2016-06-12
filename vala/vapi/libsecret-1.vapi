@@ -97,8 +97,8 @@ namespace Secret {
 	[CCode (cheader_filename = "libsecret/secret.h", ref_function = "secret_schema_ref", type_id = "secret_schema_get_type ()", unref_function = "secret_schema_unref")]
 	[Compact]
 	public class Schema {
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak Secret.SchemaAttribute[] attributes;
+		[CCode (array_length = false)]
+		public weak Secret.SchemaAttribute attributes[32];
 		public Secret.SchemaFlags flags;
 		public weak string name;
 		[CCode (has_construct_function = false)]

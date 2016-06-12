@@ -4605,6 +4605,111 @@ which DND is done.</doc>
         <doc xml:space="preserve">Wayland DND protocol.</doc>
       </member>
     </enumeration>
+    <class name="DrawingContext"
+           c:symbol-prefix="drawing_context"
+           c:type="GdkDrawingContext"
+           parent="GObject.Object"
+           glib:type-name="GdkDrawingContext"
+           glib:get-type="gdk_drawing_context_get_type"
+           glib:type-struct="DrawingContextClass">
+      <doc xml:space="preserve">#GdkDrawingContext is an object that represents the current drawing
+state of a #GdkWindow.
+
+It's possible to use a #GdkDrawingContext to draw on a #GdkWindow
+via rendering API like Cairo or OpenGL.
+
+A #GdkDrawingContext can only be created by calling gdk_window_begin_draw_frame()
+and will be valid until a call to gdk_window_end_draw_frame().
+
+#GdkDrawingContext is available since GDK 3.22</doc>
+      <method name="get_cairo_context"
+              c:identifier="gdk_drawing_context_get_cairo_context"
+              version="3.22">
+        <doc xml:space="preserve">Retrieves a Cairo context to be used to draw on the #GdkWindow
+that created the #GdkDrawingContext.
+
+The returned context is guaranteed to be valid as long as the
+#GdkDrawingContext is valid, that is between a call to
+gdk_window_begin_draw_frame() and gdk_window_end_draw_frame().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a Cairo context to be used to draw
+  the contents of the #GdkWindow. The context is owned by the
+  #GdkDrawingContext and should not be destroyed</doc>
+          <type name="cairo.Context" c:type="cairo_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_clip"
+              c:identifier="gdk_drawing_context_get_clip"
+              version="3.22">
+        <doc xml:space="preserve">Retrieves a copy of the clip region used when creating the @context.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a Cairo region</doc>
+          <type name="cairo.Region" c:type="cairo_region_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawingContext</doc>
+            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_window"
+              c:identifier="gdk_drawing_context_get_window"
+              version="3.22">
+        <doc xml:space="preserve">Retrieves the window that created the drawing @context.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkWindow</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawingContext</doc>
+            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_valid"
+              c:identifier="gdk_drawing_context_is_valid"
+              version="3.22">
+        <doc xml:space="preserve">Checks whether the given #GdkDrawingContext is valid.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the context is valid</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawingContext</doc>
+            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="clip"
+                version="3.22"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The clip region applied to the drawing context.</doc>
+        <type name="cairo.Region"/>
+      </property>
+      <property name="window"
+                version="3.22"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkWindow that created the drawing context.</doc>
+        <type name="Window"/>
+      </property>
+    </class>
+    <record name="DrawingContextClass"
+            c:type="GdkDrawingContextClass"
+            disguised="1"
+            glib:is-gtype-struct-for="DrawingContext">
+    </record>
     <constant name="EVENT_PROPAGATE"
               value="false"
               c:type="GDK_EVENT_PROPAGATE"
@@ -8220,7 +8325,7 @@ indicate success or the reason for the failure of the grab attempt.</doc>
               value="5"
               c:identifier="GDK_GRAB_FAILED"
               glib:nick="failed">
-        <doc xml:space="preserve">the grab failed for some other reason.</doc>
+        <doc xml:space="preserve">the grab failed for some other reason. Since 3.16</doc>
       </member>
     </enumeration>
     <enumeration name="Gravity"
@@ -8372,6 +8477,13 @@ specification for more details.</doc>
               glib:nick="touchpad">
         <doc xml:space="preserve">the device is an indirect touch device, such
     as a touchpad. This device type has been added in 3.4.</doc>
+      </member>
+      <member name="trackpoint"
+              value="7"
+              c:identifier="GDK_SOURCE_TRACKPOINT"
+              glib:nick="trackpoint">
+        <doc xml:space="preserve">the device is a trackpoint. This device type has been
+    added in 3.22</doc>
       </member>
     </enumeration>
     <constant name="KEY_0" value="48" c:type="GDK_KEY_0">
@@ -20853,6 +20965,53 @@ the display just as gdk_display_beep().</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="begin_draw_frame"
+              c:identifier="gdk_window_begin_draw_frame"
+              version="3.22">
+        <doc xml:space="preserve">Indicates that you are beginning the process of redrawing @region
+on @window, and provides you with a #GdkDrawingContext.
+
+If @window is a top level #GdkWindow, backed by a native window
+implementation, a backing store (offscreen buffer) large enough to
+contain @region will be created. The backing store will be initialized
+with the background color or background surface for @window. Then, all
+drawing operations performed on @window will be diverted to the
+backing store. When you call gdk_window_end_frame(), the contents of
+the backing store will be copied to @window, making it visible
+on screen. Only the part of @window contained in @region will be
+modified; that is, drawing operations are clipped to @region.
+
+The net result of all this is to remove flicker, because the user
+sees the finished product appear all at once when you call
+gdk_window_end_draw_frame(). If you draw to @window directly without
+calling gdk_window_begin_draw_frame(), the user may see flicker
+as individual drawing operations are performed in sequence.
+
+When using GTK+, the widget system automatically places calls to
+gdk_window_begin_draw_frame() and gdk_window_end_draw_frame() around
+emissions of the `GtkWidget::draw` signal. That is, if you’re
+drawing the contents of the widget yourself, you can assume that the
+widget has a cleared background, is already set as the clip region,
+and already has a backing store. Therefore in most cases, application
+code in GTK does not need to call gdk_window_begin_draw_frame()
+explicitly.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDrawingContext context that should be
+  used to draw the contents of the window; the returned context is owned
+  by GDK.</doc>
+          <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkWindow</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </instance-parameter>
+          <parameter name="region" transfer-ownership="none">
+            <doc xml:space="preserve">a Cairo region</doc>
+            <type name="cairo.Region" c:type="const cairo_region_t*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="begin_move_drag" c:identifier="gdk_window_begin_move_drag">
         <doc xml:space="preserve">Begins a window move operation (for a toplevel window).
 
@@ -20924,10 +21083,13 @@ but has a fallback implementation for other window managers.</doc>
         </parameters>
       </method>
       <method name="begin_paint_rect"
-              c:identifier="gdk_window_begin_paint_rect">
+              c:identifier="gdk_window_begin_paint_rect"
+              deprecated="1"
+              deprecated-version="3.22">
         <doc xml:space="preserve">A convenience wrapper around gdk_window_begin_paint_region() which
 creates a rectangular region for you. See
 gdk_window_begin_paint_region() for details.</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_window_begin_draw_frame() instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -20943,7 +21105,9 @@ gdk_window_begin_paint_region() for details.</doc>
         </parameters>
       </method>
       <method name="begin_paint_region"
-              c:identifier="gdk_window_begin_paint_region">
+              c:identifier="gdk_window_begin_paint_region"
+              deprecated="1"
+              deprecated-version="3.22">
         <doc xml:space="preserve">Indicates that you are beginning the process of redrawing @region.
 A backing store (offscreen buffer) large enough to contain @region
 will be created. The backing store will be initialized with the
@@ -20982,6 +21146,7 @@ the stack, and pops the stack. All drawing operations affect only
 the topmost backing store in the stack. One matching call to
 gdk_window_end_paint() is required for each call to
 gdk_window_begin_paint_region().</doc>
+        <doc-deprecated xml:space="preserve">Use gdk_window_begin_draw_frame() instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21373,6 +21538,30 @@ reaches zero. You must call this function yourself before that happens.</doc>
             <doc xml:space="preserve">a toplevel #GdkWindow</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="end_draw_frame"
+              c:identifier="gdk_window_end_draw_frame"
+              version="3.22">
+        <doc xml:space="preserve">Indicates that the drawing of the contents of @window started with
+gdk_window_begin_frame() has been completed.
+
+This function will take care of destroying the #GdkDrawingContext.
+
+It is an error to call this function without a matching
+gdk_window_begin_frame() first.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkWindow</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </instance-parameter>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">the #GdkDrawingContext created by gdk_window_begin_draw_frame()</doc>
+            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="end_paint" c:identifier="gdk_window_end_paint">
@@ -25469,11 +25658,23 @@ GTK+ theme engines).</doc>
     </function>
     <function name="cairo_create"
               c:identifier="gdk_cairo_create"
-              version="2.8">
+              version="2.8"
+              deprecated="1"
+              deprecated-version="3.22">
       <doc xml:space="preserve">Creates a Cairo context for drawing to @window.
 
 Note that calling cairo_reset_clip() on the resulting #cairo_t will
-produce undefined results, so avoid it at all costs.</doc>
+produce undefined results, so avoid it at all costs.
+
+Typically, this function is used to draw on a #GdkWindow out of the paint
+cycle of the toolkit; this should be avoided, as it breaks various assumptions
+and optimizations.
+
+If you are drawing on a native #GdkWindow in response to a %GDK_EXPOSE event
+you should use gdk_window_begin_draw_frame() and gdk_drawing_context_get_cairo_context()
+instead. GTK will automatically do this for you when drawing a widget.</doc>
+      <doc-deprecated xml:space="preserve">Use gdk_window_begin_draw_frame() and
+  gdk_drawing_context_get_cairo_context() instead</doc-deprecated>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">A newly created Cairo context. Free with
  cairo_destroy() when you are done drawing.</doc>
@@ -25570,6 +25771,22 @@ a boolean indicating if a clip area exists.</doc>
                    allow-none="1">
           <doc xml:space="preserve">return location for the clip, or %NULL</doc>
           <type name="Rectangle" c:type="GdkRectangle*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="cairo_get_drawing_context"
+              c:identifier="gdk_cairo_get_drawing_context"
+              version="3.22">
+      <doc xml:space="preserve">Retrieves the #GdkDrawingContext that created the Cairo
+context @cr.</doc>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve">a #GdkDrawingContext, if any is set</doc>
+        <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+      </return-value>
+      <parameters>
+        <parameter name="cr" transfer-ownership="none">
+          <doc xml:space="preserve">a Cairo context</doc>
+          <type name="cairo.Context" c:type="cairo_t*"/>
         </parameter>
       </parameters>
     </function>

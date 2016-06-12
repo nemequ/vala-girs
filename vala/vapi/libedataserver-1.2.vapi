@@ -180,6 +180,18 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public global::string[] to_strv ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_network_monitor_get_type ()")]
+	[Version (since = "3.22")]
+	public class NetworkMonitor : GLib.Object, GLib.Initable, GLib.NetworkMonitor {
+		[CCode (has_construct_function = false)]
+		protected NetworkMonitor ();
+		public string dup_gio_name ();
+		public static unowned GLib.NetworkMonitor get_default ();
+		public GLib.SList<string> list_gio_names ();
+		public void set_gio_name (string? gio_name);
+		[NoAccessorMethod]
+		public string gio_name { owned get; set; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Compact]
 	[Version (since = "3.2")]
@@ -1239,6 +1251,8 @@ namespace E {
 	public const string GOOGLE_SECRET_EXPIRES_AFTER;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_REFRESH_TOKEN")]
 	public const string GOOGLE_SECRET_REFRESH_TOKEN;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_NETWORK_MONITOR_ALWAYS_ONLINE_NAME")]
+	public const string NETWORK_MONITOR_ALWAYS_ONLINE_NAME;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_GOOGLE_SECRET")]
 	public const string SOURCE_CREDENTIAL_GOOGLE_SECRET;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_PASSWORD")]

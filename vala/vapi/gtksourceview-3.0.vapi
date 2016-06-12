@@ -716,14 +716,22 @@ namespace Gtk {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.10")]
 		public SourceSearchContext (Gtk.SourceBuffer buffer, Gtk.SourceSearchSettings? settings);
-		[Version (since = "3.10")]
+		[Version (deprecated = true, deprecated_since = "3.22", since = "3.10")]
 		public bool backward (Gtk.TextIter iter, out Gtk.TextIter match_start, out Gtk.TextIter match_end);
+		[Version (since = "3.22")]
+		public bool backward2 (Gtk.TextIter iter, out Gtk.TextIter match_start, out Gtk.TextIter match_end, out bool has_wrapped_around);
 		[Version (since = "3.10")]
 		public async bool backward_async (Gtk.TextIter iter, GLib.Cancellable? cancellable, out Gtk.TextIter match_start, out Gtk.TextIter match_end) throws GLib.Error;
-		[Version (since = "3.10")]
+		[Version (since = "3.22")]
+		public bool backward_finish2 (GLib.AsyncResult result, out Gtk.TextIter match_start, out Gtk.TextIter match_end, out bool has_wrapped_around) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "3.22", since = "3.10")]
 		public bool forward (Gtk.TextIter iter, out Gtk.TextIter match_start, out Gtk.TextIter match_end);
+		[Version (since = "3.22")]
+		public bool forward2 (Gtk.TextIter iter, out Gtk.TextIter match_start, out Gtk.TextIter match_end, out bool has_wrapped_around);
 		[Version (since = "3.10")]
 		public async bool forward_async (Gtk.TextIter iter, GLib.Cancellable? cancellable, out Gtk.TextIter match_start, out Gtk.TextIter match_end) throws GLib.Error;
+		[Version (since = "3.22")]
+		public bool forward_finish2 (GLib.AsyncResult result, out Gtk.TextIter match_start, out Gtk.TextIter match_end, out bool has_wrapped_around) throws GLib.Error;
 		[Version (since = "3.10")]
 		public unowned Gtk.SourceBuffer get_buffer ();
 		[Version (since = "3.10")]
@@ -738,8 +746,10 @@ namespace Gtk {
 		public GLib.Error? get_regex_error ();
 		[Version (since = "3.10")]
 		public unowned Gtk.SourceSearchSettings get_settings ();
-		[Version (since = "3.10")]
+		[Version (deprecated = true, deprecated_since = "3.22", since = "3.10")]
 		public bool replace (Gtk.TextIter match_start, Gtk.TextIter match_end, string replace, int replace_length) throws GLib.Error;
+		[Version (since = "3.22")]
+		public bool replace2 (Gtk.TextIter match_start, Gtk.TextIter match_end, string replace, int replace_length) throws GLib.Error;
 		[Version (since = "3.10")]
 		public uint replace_all (string replace, int replace_length) throws GLib.Error;
 		[Version (since = "3.10")]
@@ -803,6 +813,8 @@ namespace Gtk {
 	public class SourceStyle : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected SourceStyle ();
+		[Version (since = "3.22")]
+		public void apply (Gtk.TextTag tag);
 		[Version (since = "2.0")]
 		public Gtk.SourceStyle copy ();
 		[NoAccessorMethod]
