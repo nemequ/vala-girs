@@ -110,7 +110,7 @@ namespace Ide {
 		public uint get_n_buffers ();
 		public unowned Gtk.SourceCompletionWords get_word_completion ();
 		public bool has_file (GLib.File file);
-		public async Ide.Buffer load_file_async (Ide.File file, bool force_reload, out Ide.Progress? progress, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Ide.Buffer load_file_async (Ide.File file, bool force_reload, Ide.WorkbenchOpenFlags flags, out Ide.Progress? progress, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool save_all_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool save_file_async (Ide.Buffer buffer, Ide.File file, Ide.Progress progress, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_focus_buffer (Ide.Buffer buffer);
@@ -125,7 +125,7 @@ namespace Ide {
 		public signal void buffer_loaded (Ide.Buffer buffer);
 		public signal void buffer_saved (Ide.Buffer buffer);
 		public signal Ide.Buffer? create_buffer (Ide.File file);
-		public signal void load_buffer (Ide.Buffer buffer, bool reloading);
+		public signal void load_buffer (Ide.Buffer buffer, bool create_new_view);
 		public signal void save_buffer (Ide.Buffer buffer);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_build_result_get_type ()")]
@@ -281,10 +281,17 @@ namespace Ide {
 		public Ide.Vcs vcs { get; }
 		public signal void loaded ();
 	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_deployer_get_type ()")]
-	public abstract class Deployer : Ide.Object {
-		[CCode (has_construct_function = false)]
-		protected Deployer ();
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Debugger {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class DebuggerInterface {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Deployer {
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_device_get_type ()")]
 	public abstract class Device : Ide.Object {
@@ -441,24 +448,6 @@ namespace Ide {
 		public void remove (Ide.EnvironmentVariable variable);
 		public void setenv (string key, string value);
 	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_editor_get_type ()")]
-	public class EnvironmentEditor : Gtk.ListBox, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public EnvironmentEditor ();
-		public unowned Ide.Environment? get_environment ();
-		public void set_environment (Ide.Environment environment);
-		public Ide.Environment environment { get; set; }
-	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_editor_row_get_type ()")]
-	public class EnvironmentEditorRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
-		protected EnvironmentEditorRow ();
-		public unowned Ide.EnvironmentVariable? get_variable ();
-		public void set_variable (Ide.EnvironmentVariable variable);
-		public void start_editing ();
-		public Ide.EnvironmentVariable variable { get; set; }
-		public signal void @delete ();
-	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_environment_variable_get_type ()")]
 	public class EnvironmentVariable : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -469,6 +458,22 @@ namespace Ide {
 		public void set_value (string value);
 		public string key { get; set; }
 		public string value { get; set; }
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Executable {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class ExecutableInterface {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Executer {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class ExecuterInterface {
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_extension_adapter_get_type ()")]
 	public class ExtensionAdapter : Ide.Object {
@@ -656,14 +661,14 @@ namespace Ide {
 		public void set_active_view (Gtk.Widget active_view);
 		public Ide.LayoutView active_view { get; set; }
 		public signal void empty ();
-		public signal void split (Ide.LayoutView view, int split_type);
+		public signal void split (Ide.LayoutView view, int split_type, GLib.File file);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_view_get_type ()")]
 	public class LayoutView : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		protected LayoutView ();
 		public virtual bool agree_to_close ();
-		public virtual Ide.LayoutView create_split ();
+		public virtual Ide.LayoutView create_split (GLib.File file);
 		public virtual bool get_can_preview ();
 		public virtual bool get_can_split ();
 		public unowned Gtk.Widget? get_controls ();
@@ -870,6 +875,14 @@ namespace Ide {
 		public string title { owned get; set; }
 		public signal void activated ();
 	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Process {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class ProcessInterface {
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_progress_get_type ()")]
 	public class Progress : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -988,10 +1001,9 @@ namespace Ide {
 		public GLib.GenericArray<weak Ide.ProjectInfo> get_projects ();
 		public void remove (GLib.List<Ide.ProjectInfo> project_infos);
 	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_refactory_get_type ()")]
-	public abstract class Refactory : GLib.Object {
-		[CCode (has_construct_function = false)]
-		protected Refactory ();
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Refactory {
 	}
 	[CCode (cheader_filename = "ide.h")]
 	[Compact]
@@ -1194,6 +1206,7 @@ namespace Ide {
 	public class SourceSnippetContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SourceSnippetContext ();
+		public void add_shared_variable (string key, string value);
 		public void add_variable (string key, string value);
 		public void clear_variables ();
 		public void dump ();
@@ -1318,6 +1331,7 @@ namespace Ide {
 		public virtual signal void cycle_completion (Gtk.DirectionType direction);
 		public virtual signal void decrease_font_size ();
 		public virtual signal void delete_selection ();
+		public signal void duplicate_entire_line ();
 		public virtual signal void end_macro ();
 		public signal void end_user_action ();
 		public virtual signal void focus_location (Ide.SourceLocation location);
@@ -1388,6 +1402,7 @@ namespace Ide {
 		public signal void decrease_font_size ();
 		public signal void delete_from_cursor (Gtk.DeleteType object, int p0);
 		public signal void delete_selection ();
+		public signal void duplicate_entire_line ();
 		public signal void end_macro ();
 		public signal void end_user_action ();
 		public signal void goto_definition ();
@@ -1487,6 +1502,14 @@ namespace Ide {
 		[NoAccessorMethod]
 		public string name { owned get; set; }
 	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class Target {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class TargetInterface {
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_template_base_get_type ()")]
 	public abstract class TemplateBase : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -1498,6 +1521,22 @@ namespace Ide {
 		public void reset ();
 		public void set_locator (Template.TemplateLocator locator);
 		public Template.TemplateLocator locator { get; set; }
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class TestCase {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class TestCaseInterface {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class TestSuite {
+	}
+	[CCode (cheader_filename = "ide.h")]
+	[Compact]
+	public class TestSuiteInterface {
 	}
 	[CCode (cheader_filename = "ide.h")]
 	[Compact]
@@ -1682,9 +1721,9 @@ namespace Ide {
 		public unowned Ide.Perspective? get_perspective_by_name (string name);
 		public unowned Ide.Perspective get_visible_perspective ();
 		public unowned string get_visible_perspective_name ();
-		public async bool open_files_async (GLib.File files, uint n_files, string hint, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool open_files_async (GLib.File files, uint n_files, string hint, Ide.WorkbenchOpenFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool open_project_async (GLib.File file_or_directory, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool open_uri_async (Ide.Uri uri, string hint, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool open_uri_async (Ide.Uri uri, string hint, Ide.WorkbenchOpenFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void remove_perspective (Ide.Perspective perspective);
 		public async bool save_all_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_fullscreen (bool fullscreen);
@@ -1739,9 +1778,6 @@ namespace Ide {
 		public abstract void set_context (Ide.Context context);
 		public abstract Ide.Context context { construct; }
 	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeDebuggerInterface", type_id = "ide_debugger_get_type ()")]
-	public interface Debugger : Ide.Object {
-	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeDeviceProviderInterface", type_id = "ide_device_provider_get_type ()")]
 	public interface DeviceProvider : Ide.Object {
 		public void emit_device_added (Ide.Device device);
@@ -1768,12 +1804,6 @@ namespace Ide {
 		public abstract void load (Ide.EditorView view);
 		[NoWrapper]
 		public abstract void unload (Ide.EditorView view);
-	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeExecutableInterface", type_id = "ide_executable_get_type ()")]
-	public interface Executable : Ide.Object {
-	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeExecuterInterface", type_id = "ide_executer_get_type ()")]
-	public interface Executer : Ide.Object {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeGenesisAddinInterface", type_id = "ide_genesis_addin_get_type ()")]
 	public interface GenesisAddin : GLib.Object {
@@ -1832,9 +1862,6 @@ namespace Ide {
 	public interface PreferencesAddin : GLib.Object {
 		public abstract void load (Ide.Preferences preferences);
 		public abstract void unload (Ide.Preferences preferences);
-	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeProcessInterface", type_id = "ide_process_get_type ()")]
-	public interface Process : Ide.Object {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeProjectMinerInterface", type_id = "ide_project_miner_get_type ()")]
 	public interface ProjectMiner : GLib.Object {
@@ -1895,23 +1922,15 @@ namespace Ide {
 	public interface TagsBuilder : GLib.Object {
 		public abstract async bool build_async (GLib.File directory_or_flie, bool asynchronous, GLib.Cancellable? cancellable) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeTargetInterface", type_id = "ide_target_get_type ()")]
-	public interface Target : Ide.Object {
-	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeTemplateProviderInterface", type_id = "ide_template_provider_get_type ()")]
 	public interface TemplateProvider : GLib.Object {
 		public abstract GLib.List<Ide.ProjectTemplate> get_project_templates ();
-	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeTestCaseInterface", type_id = "ide_test_case_get_type ()")]
-	public interface TestCase : Ide.Object {
-	}
-	[CCode (cheader_filename = "ide.h", type_cname = "IdeTestSuiteInterface", type_id = "ide_test_suite_get_type ()")]
-	public interface TestSuite : Ide.Object {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeVcsInterface", type_id = "ide_vcs_get_type ()")]
 	public interface Vcs : Ide.Object {
 		public void emit_changed ();
 		public abstract Ide.BufferChangeMonitor? get_buffer_change_monitor (Ide.Buffer buffer);
+		public abstract Ide.VcsConfig? get_config ();
 		public abstract int get_priority ();
 		public abstract unowned GLib.File get_working_directory ();
 		public abstract bool is_ignored (GLib.File file) throws GLib.Error;
@@ -1934,7 +1953,8 @@ namespace Ide {
 		public abstract bool can_open (Ide.Uri uri, string? content_type, out int priority);
 		public abstract string get_id ();
 		public abstract void load (Ide.Workbench workbench);
-		public abstract async bool open_async (Ide.Uri uri, string content_type, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract async bool open_async (Ide.Uri uri, string content_type, Ide.WorkbenchOpenFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract void perspective_set (Ide.Perspective perspective);
 		public abstract void unload (Ide.Workbench workbench);
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeWorkerInterface", type_id = "ide_worker_get_type ()")]
@@ -2153,6 +2173,11 @@ namespace Ide {
 	public enum VcsConfigType {
 		FULL_NAME,
 		EMAIL
+	}
+	[CCode (cheader_filename = "ide.h", cprefix = "WORKBENCH_OPEN_FLAGS_", has_type_id = false)]
+	public enum WorkbenchOpenFlags {
+		NONE,
+		BG
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_DOAP_ERROR_INVALID_")]
 	public errordomain DoapError {

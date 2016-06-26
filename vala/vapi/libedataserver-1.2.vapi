@@ -30,7 +30,7 @@ namespace E {
 		public unowned GLib.SList<string> get_capabilities ();
 		public unowned E.Source get_source ();
 		public bool is_online ();
-		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2.")]
+		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public bool is_opened ();
 		public bool is_readonly ();
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]

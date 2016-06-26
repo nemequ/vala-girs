@@ -25827,6 +25827,19 @@ as you could for nm_vpn_editor_plugin_load().</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_vt">
+        <return-value transfer-ownership="none">
+          <type name="VpnEditorPluginVT" c:type="const NMVpnEditorPluginVT*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="plugin" transfer-ownership="none">
+            <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+          </instance-parameter>
+          <parameter name="out_vt_size" transfer-ownership="none">
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="import_from_file" introspectable="0" throws="1">
         <return-value>
           <type name="Connection" c:type="NMConnection*"/>
@@ -25837,6 +25850,22 @@ as you could for nm_vpn_editor_plugin_load().</doc>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
             <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="notify_plugin_info_set">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="plugin" transfer-ownership="none">
+            <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+          </instance-parameter>
+          <parameter name="plugin_info"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="_NMVpnPluginInfo*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -25888,6 +25917,20 @@ as you could for nm_vpn_editor_plugin_load().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_plugin_info"
+              c:identifier="nm_vpn_editor_plugin_get_plugin_info"
+              version="1.4">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">if set, return the #NMVpnPluginInfo instance.</doc>
+          <type name="gpointer" c:type="_NMVpnPluginInfo*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditorPlugin instance</doc>
+            <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_suggested_filename"
               c:identifier="nm_vpn_editor_plugin_get_suggested_filename">
         <return-value transfer-ownership="full">
@@ -25899,6 +25942,37 @@ as you could for nm_vpn_editor_plugin_load().</doc>
           </instance-parameter>
           <parameter name="connection" transfer-ownership="none">
             <type name="Connection" c:type="NMConnection*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_vt"
+              c:identifier="nm_vpn_editor_plugin_get_vt"
+              version="1.4">
+        <doc xml:space="preserve">Returns an opaque VT function table for the plugin to extend
+functionality. The actual meaning of NMVpnEditorPluginVT is not
+defined in public API of libnm, instead it must be agreed by
+both the plugin and the caller. See the header-only file
+'nm-vpn-editor-plugin-call.h' which defines the meaning.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the actual size of the @plugin's virtual function table.</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditorPlugin</doc>
+            <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+          </instance-parameter>
+          <parameter name="vt"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">buffer to be filled with the VT table of the plugin</doc>
+            <type name="VpnEditorPluginVT" c:type="NMVpnEditorPluginVT*"/>
+          </parameter>
+          <parameter name="vt_size" transfer-ownership="none">
+            <doc xml:space="preserve">the size of the buffer. Can be 0 to only query the
+  size of plugin's VT.</doc>
+            <type name="gsize" c:type="gsize"/>
           </parameter>
         </parameters>
       </method>
@@ -25918,6 +25992,26 @@ on error or if the file at @path was not recognized by this plugin</doc>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve">full path to the file to attempt to read into a new #NMConnection</doc>
             <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_plugin_info"
+              c:identifier="nm_vpn_editor_plugin_set_plugin_info"
+              version="1.4">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnEditorPlugin instance</doc>
+            <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+          </instance-parameter>
+          <parameter name="plugin_info"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #NMVpnPluginInfo instance or %NULL</doc>
+            <type name="gpointer" c:type="_NMVpnPluginInfo*"/>
           </parameter>
         </parameters>
       </method>
@@ -26051,6 +26145,44 @@ on error or if the file at @path was not recognized by this plugin</doc>
           </parameters>
         </callback>
       </field>
+      <field name="notify_plugin_info_set">
+        <callback name="notify_plugin_info_set">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="plugin" transfer-ownership="none">
+              <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+            </parameter>
+            <parameter name="plugin_info"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="gpointer" c:type="_NMVpnPluginInfo*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_vt">
+        <callback name="get_vt">
+          <return-value transfer-ownership="none">
+            <type name="VpnEditorPluginVT"
+                  c:type="const NMVpnEditorPluginVT*"/>
+          </return-value>
+          <parameters>
+            <parameter name="plugin" transfer-ownership="none">
+              <type name="VpnEditorPlugin" c:type="NMVpnEditorPlugin*"/>
+            </parameter>
+            <parameter name="out_vt_size" transfer-ownership="none">
+              <type name="gsize" c:type="gsize*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <record name="VpnEditorPluginVT"
+            c:type="NMVpnEditorPluginVT"
+            disguised="1">
     </record>
     <callback name="VpnIterFunc" c:type="NMVpnIterFunc">
       <return-value transfer-ownership="none">
@@ -26341,8 +26473,73 @@ to add duplicate plugins.</doc>
             </type>
           </parameter>
           <parameter name="service" transfer-ownership="none">
-            <doc xml:space="preserve">service to search</doc>
+            <doc xml:space="preserve">service to search. This can be the main service-type
+  or one of the provided aliases.</doc>
             <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="list_find_service_type"
+                c:identifier="nm_vpn_plugin_info_list_find_service_type"
+                version="1.4"
+                introspectable="0">
+        <doc xml:space="preserve">A VPN plugin provides one or several service-types, like org.freedesktop.NetworkManager.libreswan
+Certain plugins provide more then one service type, via aliases (org.freedesktop.NetworkManager.openswan).
+This function looks up a service-type (or an alias) based on a name.
+
+Preferably, the name can be a full service-type/alias of an installed
+plugin. Otherwise, it can be the name of a VPN plugin (in which case, the
+primary, non-aliased service-type is returned). Otherwise, it can be
+one of several well known short-names (which is a hard-coded list of
+types in libnm). On success, this returns a full qualified service-type
+(or an alias). It doesn't say, that such an plugin is actually available,
+but it could be retrieved via nm_vpn_plugin_info_list_find_by_service().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the resolved service-type or %NULL on failure.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">a possibly empty #GSList of #NMVpnPluginInfo instances</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a name to lookup the service-type.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="list_get_service_types"
+                c:identifier="nm_vpn_plugin_info_list_get_service_types"
+                version="1.4"
+                introspectable="0">
+        <return-value>
+          <doc xml:space="preserve">a %NULL terminated strv list of strings.
+  The list itself and the values must be freed with g_strfreev().</doc>
+          <array c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">a possibly empty #GSList of #NMVpnPluginInfo</doc>
+            <type name="GLib.SList" c:type="GSList*">
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="only_existing" transfer-ownership="none">
+            <doc xml:space="preserve">only include results that are actually in @list.
+  Otherwise, the result is extended with a hard-code list or
+  well-known plugins</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="with_abbreviations" transfer-ownership="none">
+            <doc xml:space="preserve">if %FALSE, only full service types are returned.
+  Otherwise, this also includes abbreviated names that can be used
+  with nm_vpn_plugin_info_list_find_service_type().</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </function>
@@ -26394,6 +26591,23 @@ is valid according to that pattern.</doc>
           </parameter>
         </parameters>
       </function>
+      <method name="get_aliases"
+              c:identifier="nm_vpn_plugin_info_get_aliases"
+              version="1.4">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">
+  the aliases from the name-file.</doc>
+          <array c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">plugin info instance</doc>
+            <type name="VpnPluginInfo" c:type="NMVpnPluginInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_auth_dialog"
               c:identifier="nm_vpn_plugin_info_get_auth_dialog"
               version="1.4">

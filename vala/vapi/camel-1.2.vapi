@@ -763,19 +763,55 @@ namespace Camel {
 		public void dump ();
 		[CCode (has_construct_function = false)]
 		public MessageInfo.from_header (Camel.FolderSummary summary, void* header);
-		[CCode (cname = "camel_message_info_ptr")]
+		[Version (since = "3.22")]
+		public unowned string get_cc ();
+		[Version (since = "3.22")]
+		public unowned Camel.MessageContentInfo? get_content ();
+		[Version (since = "3.22")]
+		public long get_date_received ();
+		[Version (since = "3.22")]
+		public long get_date_sent ();
+		[Version (since = "3.22")]
+		public uint32 get_flags ();
+		[Version (since = "3.22")]
+		public unowned string get_from ();
+		[Version (since = "3.22")]
+		public unowned Camel.HeaderParam? get_headers ();
+		[Version (since = "3.22")]
+		public unowned Camel.SummaryMessageID? get_message_id ();
+		[Version (since = "3.22")]
+		public unowned string get_mlist ();
+		[Version (since = "3.22")]
+		public unowned string get_preview ();
+		[Version (since = "3.22")]
 		public void* get_ptr (int id);
-		[CCode (cname = "camel_message_info_time")]
-		public Posix.tm? get_time (int id);
-		[CCode (cname = "camel_message_info_uint32")]
+		[Version (since = "3.22")]
+		public unowned Camel.SummaryReferences? get_references ();
+		[Version (since = "3.22")]
+		public uint32 get_size ();
+		[Version (since = "3.22")]
+		public unowned string get_subject ();
+		[Version (since = "3.22")]
+		public long get_time (int id);
+		[Version (since = "3.22")]
+		public unowned string get_to ();
+		[Version (since = "3.22")]
+		public unowned string get_uid ();
+		[Version (since = "3.22")]
 		public uint32 get_uint32 (int id);
+		[Version (since = "3.22")]
+		public bool get_user_flag (string id);
+		[Version (since = "3.22")]
+		public unowned Camel.Flag? get_user_flags ();
+		[Version (since = "3.22")]
+		public unowned string get_user_tag (string id);
+		[Version (since = "3.22")]
+		public unowned Camel.Tag? get_user_tags ();
 		public Camel.MessageInfo @ref ();
 		public bool set_flags (Camel.MessageFlags flags, uint32 @set);
 		public bool set_user_flag (string id, bool state);
 		public bool set_user_tag (string id, string val);
 		public void unref ();
-		public bool user_flag (string id);
-		public unowned string user_tag (string id);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_mime_filter_get_type ()")]
 	public abstract class MimeFilter : GLib.Object {
@@ -1153,7 +1189,7 @@ namespace Camel {
 		public weak GLib.Queue partition;
 		public Camel._block_t rootid;
 		[CCode (has_construct_function = false)]
-		public PartitionTable (void* bs, Camel._block_t root);
+		public PartitionTable (Camel.BlockFile bs, Camel._block_t root);
 		public int add (string key, Camel._key_t keyid);
 		public Camel._key_t lookup (string key);
 		public bool remove (string key);

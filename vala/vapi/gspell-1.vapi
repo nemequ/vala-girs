@@ -10,7 +10,6 @@ namespace Gspell {
 		public void add_word_to_session (string word, ssize_t word_length);
 		public bool check_word (string word, ssize_t word_length) throws GLib.Error;
 		public void clear_session ();
-		public static GLib.Quark error_quark ();
 		public unowned Gspell.Language? get_language ();
 		public GLib.SList<string> get_suggestions (string word, ssize_t word_length);
 		public void set_correction (string word, ssize_t word_length, string replacement, ssize_t replacement_length);
@@ -104,9 +103,10 @@ namespace Gspell {
 		public abstract void change_all (string word, string change_to);
 		public abstract bool goto_next (out string word, out Gspell.Checker spell_checker) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "gspell/gspell.h", cprefix = "GSPELL_CHECKER_ERROR_", has_type_id = false)]
-	public enum CheckerError {
+	[CCode (cheader_filename = "gspell/gspell.h", cprefix = "GSPELL_CHECKER_ERROR_")]
+	public errordomain CheckerError {
 		DICTIONARY,
-		NO_LANGUAGE_SET
+		NO_LANGUAGE_SET;
+		public static GLib.Quark quark ();
 	}
 }

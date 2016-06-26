@@ -1532,7 +1532,7 @@ Buffers are generally not added to the buffer list until they have been loaded.<
       </method>
       <method name="get_focus_buffer"
               c:identifier="ide_buffer_manager_get_focus_buffer">
-        <doc xml:space="preserve">Gets the #IdeBufferManager:focus-buffer property. This the buffer behind
+        <doc xml:space="preserve">Gets the #IdeBufferManager:focus-buffer property. This is the buffer behind
 the current selected view.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">An #IdeBuffer or %NULL.</doc>
@@ -1628,6 +1628,9 @@ See ide_buffer_manager_load_file_finish() for how to complete this asynchronous 
           <parameter name="force_reload" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags"/>
+          </parameter>
           <parameter name="progress"
                      direction="out"
                      caller-allocates="0"
@@ -1647,7 +1650,7 @@ See ide_buffer_manager_load_file_finish() for how to complete this asynchronous 
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="5">
+                     closure="6">
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -1663,9 +1666,9 @@ See ide_buffer_manager_load_file_finish() for how to complete this asynchronous 
               throws="1">
         <doc xml:space="preserve">Completes an asynchronous request to load a file via ide_buffer_manager_load_file_async().
 If the buffer was already loaded, this function will return a reference to the previous buffer
-with it's reference count incremented by one.</doc>
+with its reference count incremented by one.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">An #IdeBuffer if successf; otherwise %NULL and @error is set.</doc>
+          <doc xml:space="preserve">An #IdeBuffer if successful; otherwise %NULL and @error is set.</doc>
           <type name="Buffer" c:type="IdeBuffer*"/>
         </return-value>
         <parameters>
@@ -1903,18 +1906,18 @@ The first handler of this signal is responsible for returning an
         <doc xml:space="preserve">This signal is emitted when a request has been made to load a buffer from storage. You might
 connect to this signal to be notified when loading of a buffer has begun.
 
-If @reloading is %TRUE, then the buffer is being force-reloaded due to changes
-from the host file-system.</doc>
+If @create_new_view is %FALSE, then the buffer is probably being force-reloaded due to
+changes from the host file-system.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <parameter name="buffer" transfer-ownership="none">
-            <doc xml:space="preserve">an #IdeBuffer.</doc>
+            <doc xml:space="preserve">An #IdeBuffer.</doc>
             <type name="Buffer"/>
           </parameter>
-          <parameter name="reloading" transfer-ownership="none">
-            <doc xml:space="preserve">if the buffer is being reloaded</doc>
+          <parameter name="create_new_view" transfer-ownership="none">
+            <doc xml:space="preserve">Whether to create a new #IdeEditorView for the buffer.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -4391,39 +4394,13 @@ startup.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
-    <interface name="Debugger"
-               c:symbol-prefix="debugger"
-               c:type="IdeDebugger"
-               glib:type-name="IdeDebugger"
-               glib:get-type="ide_debugger_get_type"
-               glib:type-struct="DebuggerInterface">
-      <prerequisite name="Object"/>
-    </interface>
+    <record name="Debugger" c:type="IdeDebugger" disguised="1">
+    </record>
     <record name="DebuggerInterface"
             c:type="IdeDebuggerInterface"
-            glib:is-gtype-struct-for="Debugger">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+            disguised="1">
     </record>
-    <class name="Deployer"
-           c:symbol-prefix="deployer"
-           c:type="IdeDeployer"
-           parent="Object"
-           abstract="1"
-           glib:type-name="IdeDeployer"
-           glib:get-type="ide_deployer_get_type"
-           glib:type-struct="DeployerClass">
-      <field name="parent_instance">
-        <type name="Object" c:type="IdeObject"/>
-      </field>
-    </class>
-    <record name="DeployerClass"
-            c:type="IdeDeployerClass"
-            glib:is-gtype-struct-for="Deployer">
-      <field name="parent">
-        <type name="ObjectClass" c:type="IdeObjectClass"/>
-      </field>
+    <record name="Deployer" c:type="IdeDeployer" disguised="1">
     </record>
     <class name="Device"
            c:symbol-prefix="device"
@@ -6166,122 +6143,6 @@ in various GLib process functions.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
-    <class name="EnvironmentEditor"
-           c:symbol-prefix="environment_editor"
-           c:type="IdeEnvironmentEditor"
-           parent="Gtk.ListBox"
-           glib:type-name="IdeEnvironmentEditor"
-           glib:get-type="ide_environment_editor_get_type"
-           glib:type-struct="EnvironmentEditorClass">
-      <implements name="Atk.ImplementorIface"/>
-      <implements name="Gtk.Buildable"/>
-      <constructor name="new" c:identifier="ide_environment_editor_new">
-        <return-value transfer-ownership="none">
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-      </constructor>
-      <method name="get_environment"
-              c:identifier="ide_environment_editor_get_environment">
-        <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">An #IdeEnvironment or %NULL.</doc>
-          <type name="Environment" c:type="IdeEnvironment*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="EnvironmentEditor" c:type="IdeEnvironmentEditor*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_environment"
-              c:identifier="ide_environment_editor_set_environment">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="EnvironmentEditor" c:type="IdeEnvironmentEditor*"/>
-          </instance-parameter>
-          <parameter name="environment" transfer-ownership="none">
-            <type name="Environment" c:type="IdeEnvironment*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="environment" writable="1" transfer-ownership="none">
-        <type name="Environment"/>
-      </property>
-    </class>
-    <record name="EnvironmentEditorClass"
-            c:type="IdeEnvironmentEditorClass"
-            glib:is-gtype-struct-for="EnvironmentEditor">
-      <field name="parent_class">
-        <type name="Gtk.ListBoxClass" c:type="GtkListBoxClass"/>
-      </field>
-    </record>
-    <class name="EnvironmentEditorRow"
-           c:symbol-prefix="environment_editor_row"
-           c:type="IdeEnvironmentEditorRow"
-           parent="Gtk.ListBoxRow"
-           glib:type-name="IdeEnvironmentEditorRow"
-           glib:get-type="ide_environment_editor_row_get_type"
-           glib:type-struct="EnvironmentEditorRowClass">
-      <implements name="Atk.ImplementorIface"/>
-      <implements name="Gtk.Buildable"/>
-      <method name="get_variable"
-              c:identifier="ide_environment_editor_row_get_variable">
-        <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">An #IdeEnvironmentVariable.</doc>
-          <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="EnvironmentEditorRow"
-                  c:type="IdeEnvironmentEditorRow*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_variable"
-              c:identifier="ide_environment_editor_row_set_variable">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="EnvironmentEditorRow"
-                  c:type="IdeEnvironmentEditorRow*"/>
-          </instance-parameter>
-          <parameter name="variable" transfer-ownership="none">
-            <type name="EnvironmentVariable" c:type="IdeEnvironmentVariable*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="start_editing"
-              c:identifier="ide_environment_editor_row_start_editing">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="EnvironmentEditorRow"
-                  c:type="IdeEnvironmentEditorRow*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <property name="variable" writable="1" transfer-ownership="none">
-        <type name="EnvironmentVariable"/>
-      </property>
-      <glib:signal name="delete" when="last">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-    </class>
-    <record name="EnvironmentEditorRowClass"
-            c:type="IdeEnvironmentEditorRowClass"
-            glib:is-gtype-struct-for="EnvironmentEditorRow">
-      <field name="parent_class">
-        <type name="Gtk.ListBoxRowClass" c:type="GtkListBoxRowClass"/>
-      </field>
-    </record>
     <class name="EnvironmentVariable"
            c:symbol-prefix="environment_variable"
            c:type="IdeEnvironmentVariable"
@@ -6364,35 +6225,17 @@ in various GLib process functions.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
-    <interface name="Executable"
-               c:symbol-prefix="executable"
-               c:type="IdeExecutable"
-               glib:type-name="IdeExecutable"
-               glib:get-type="ide_executable_get_type"
-               glib:type-struct="ExecutableInterface">
-      <prerequisite name="Object"/>
-    </interface>
+    <record name="Executable" c:type="IdeExecutable" disguised="1">
+    </record>
     <record name="ExecutableInterface"
             c:type="IdeExecutableInterface"
-            glib:is-gtype-struct-for="Executable">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+            disguised="1">
     </record>
-    <interface name="Executer"
-               c:symbol-prefix="executer"
-               c:type="IdeExecuter"
-               glib:type-name="IdeExecuter"
-               glib:get-type="ide_executer_get_type"
-               glib:type-struct="ExecuterInterface">
-      <prerequisite name="Object"/>
-    </interface>
+    <record name="Executer" c:type="IdeExecuter" disguised="1">
+    </record>
     <record name="ExecuterInterface"
             c:type="IdeExecuterInterface"
-            glib:is-gtype-struct-for="Executer">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+            disguised="1">
     </record>
     <class name="ExtensionAdapter"
            c:symbol-prefix="extension_adapter"
@@ -8516,6 +8359,11 @@ This should only be used by #IdeLayoutGrid.</doc>
             <doc xml:space="preserve">A #IdeLayoutGridSplit.</doc>
             <type name="gint"/>
           </parameter>
+          <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">A #GFile to be opened in the split, or %NULL to use the existing file. If given,
+the @file should have already been loaded by the buffer manager.</doc>
+            <type name="Gio.File"/>
+          </parameter>
         </parameters>
       </glib:signal>
     </class>
@@ -8547,8 +8395,8 @@ This should only be used by #IdeLayoutGrid.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="create_split" invoker="create_split">
-        <doc xml:space="preserve">Creates a new view similar to @self that can be displayed in a split.
-If the view does not support splits, %NULL will be returned.</doc>
+        <doc xml:space="preserve">Creates a new view that can be displayed in a split, potentially with a different
+buffer. If the view does not support splits, %NULL will be returned.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A #IdeLayoutView.</doc>
           <type name="LayoutView" c:type="IdeLayoutView*"/>
@@ -8558,6 +8406,11 @@ If the view does not support splits, %NULL will be returned.</doc>
             <doc xml:space="preserve">A #IdeLayoutView.</doc>
             <type name="LayoutView" c:type="IdeLayoutView*"/>
           </instance-parameter>
+          <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">A #GFile already loaded by the #IdeBufferManager, or %NULL to use the
+existing buffer.</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="get_can_preview" invoker="get_can_preview">
@@ -8671,8 +8524,8 @@ If the view does not support splits, %NULL will be returned.</doc>
         </parameters>
       </method>
       <method name="create_split" c:identifier="ide_layout_view_create_split">
-        <doc xml:space="preserve">Creates a new view similar to @self that can be displayed in a split.
-If the view does not support splits, %NULL will be returned.</doc>
+        <doc xml:space="preserve">Creates a new view that can be displayed in a split, potentially with a different
+buffer. If the view does not support splits, %NULL will be returned.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A #IdeLayoutView.</doc>
           <type name="LayoutView" c:type="IdeLayoutView*"/>
@@ -8682,6 +8535,11 @@ If the view does not support splits, %NULL will be returned.</doc>
             <doc xml:space="preserve">A #IdeLayoutView.</doc>
             <type name="LayoutView" c:type="IdeLayoutView*"/>
           </instance-parameter>
+          <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">A #GFile already loaded by the #IdeBufferManager, or %NULL to use the
+existing buffer.</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_can_preview"
@@ -8896,6 +8754,11 @@ If the view does not support splits, %NULL will be returned.</doc>
             <parameter name="self" transfer-ownership="none">
               <doc xml:space="preserve">A #IdeLayoutView.</doc>
               <type name="LayoutView" c:type="IdeLayoutView*"/>
+            </parameter>
+            <parameter name="file" transfer-ownership="none">
+              <doc xml:space="preserve">A #GFile already loaded by the #IdeBufferManager, or %NULL to use the
+existing buffer.</doc>
+              <type name="Gio.File" c:type="GFile*"/>
             </parameter>
           </parameters>
         </callback>
@@ -11994,20 +11857,9 @@ the plugin is unloaded.</doc>
         <type name="PreferencesBinClass" c:type="IdePreferencesBinClass"/>
       </field>
     </record>
-    <interface name="Process"
-               c:symbol-prefix="process"
-               c:type="IdeProcess"
-               glib:type-name="IdeProcess"
-               glib:get-type="ide_process_get_type"
-               glib:type-struct="ProcessInterface">
-      <prerequisite name="Object"/>
-    </interface>
-    <record name="ProcessInterface"
-            c:type="IdeProcessInterface"
-            glib:is-gtype-struct-for="Process">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+    <record name="Process" c:type="IdeProcess" disguised="1">
+    </record>
+    <record name="ProcessInterface" c:type="IdeProcessInterface" disguised="1">
     </record>
     <class name="Progress"
            c:symbol-prefix="progress"
@@ -13654,24 +13506,7 @@ the project.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
-    <class name="Refactory"
-           c:symbol-prefix="refactory"
-           c:type="IdeRefactory"
-           parent="GObject.Object"
-           abstract="1"
-           glib:type-name="IdeRefactory"
-           glib:get-type="ide_refactory_get_type"
-           glib:type-struct="RefactoryClass">
-      <field name="parent_instance">
-        <type name="Object" c:type="IdeObject"/>
-      </field>
-    </class>
-    <record name="RefactoryClass"
-            c:type="IdeRefactoryClass"
-            glib:is-gtype-struct-for="Refactory">
-      <field name="parent">
-        <type name="ObjectClass" c:type="IdeObjectClass"/>
-      </field>
+    <record name="Refactory" c:type="IdeRefactory" disguised="1">
     </record>
     <record name="RefactoryInterface"
             c:type="IdeRefactoryInterface"
@@ -16497,6 +16332,24 @@ reaches zero, then the structure is freed.</doc>
           <type name="SourceSnippetContext" c:type="IdeSourceSnippetContext*"/>
         </return-value>
       </constructor>
+      <method name="add_shared_variable"
+              c:identifier="ide_source_snippet_context_add_shared_variable">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="SourceSnippetContext"
+                  c:type="IdeSourceSnippetContext*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_variable"
               c:identifier="ide_source_snippet_context_add_variable">
         <return-value transfer-ownership="none">
@@ -18322,6 +18175,11 @@ Use of this signal is not recommended except in very specific cases.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
+      <glib:signal name="duplicate-entire-line" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="end-macro" when="last" action="1">
         <doc xml:space="preserve">You should call #IdeSourceView::begin-macro before emitting this signal.
 
@@ -19529,6 +19387,11 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
         </parameters>
       </glib:signal>
       <glib:signal name="delete-selection" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="duplicate-entire-line" when="last" action="1">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21803,20 +21666,9 @@ is assumed.</doc>
         </callback>
       </field>
     </record>
-    <interface name="Target"
-               c:symbol-prefix="target"
-               c:type="IdeTarget"
-               glib:type-name="IdeTarget"
-               glib:get-type="ide_target_get_type"
-               glib:type-struct="TargetInterface">
-      <prerequisite name="Object"/>
-    </interface>
-    <record name="TargetInterface"
-            c:type="IdeTargetInterface"
-            glib:is-gtype-struct-for="Target">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+    <record name="Target" c:type="IdeTarget" disguised="1">
+    </record>
+    <record name="TargetInterface" c:type="IdeTargetInterface" disguised="1">
     </record>
     <class name="TemplateBase"
            c:symbol-prefix="template_base"
@@ -22043,35 +21895,17 @@ the project creation workflow.</doc>
         </callback>
       </field>
     </record>
-    <interface name="TestCase"
-               c:symbol-prefix="test_case"
-               c:type="IdeTestCase"
-               glib:type-name="IdeTestCase"
-               glib:get-type="ide_test_case_get_type"
-               glib:type-struct="TestCaseInterface">
-      <prerequisite name="Object"/>
-    </interface>
+    <record name="TestCase" c:type="IdeTestCase" disguised="1">
+    </record>
     <record name="TestCaseInterface"
             c:type="IdeTestCaseInterface"
-            glib:is-gtype-struct-for="TestCase">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+            disguised="1">
     </record>
-    <interface name="TestSuite"
-               c:symbol-prefix="test_suite"
-               c:type="IdeTestSuite"
-               glib:type-name="IdeTestSuite"
-               glib:get-type="ide_test_suite_get_type"
-               glib:type-struct="TestSuiteInterface">
-      <prerequisite name="Object"/>
-    </interface>
+    <record name="TestSuite" c:type="IdeTestSuite" disguised="1">
+    </record>
     <record name="TestSuiteInterface"
             c:type="IdeTestSuiteInterface"
-            glib:is-gtype-struct-for="TestSuite">
-      <field name="parent">
-        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
+            disguised="1">
     </record>
     <callback name="ThreadFunc" c:type="IdeThreadFunc">
       <return-value transfer-ownership="none">
@@ -24517,6 +24351,19 @@ support change monitoring, or cannot for the current file, then %NULL is returne
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_config" invoker="get_config">
+        <doc xml:space="preserve">Retrieves an #IdeVcsConfig for the #IdeVcs provided. If the #IdeVcs implementation does not
+support access to configuration, then %NULL is returned.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">An #IdeVcsConfig or %NULL.</doc>
+          <type name="VcsConfig" c:type="IdeVcsConfig*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Vcs" c:type="IdeVcs*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_priority" invoker="get_priority">
         <return-value transfer-ownership="none">
           <type name="gint" c:type="gint"/>
@@ -24580,6 +24427,19 @@ support change monitoring, or cannot for the current file, then %NULL is returne
           <parameter name="buffer" transfer-ownership="none">
             <type name="Buffer" c:type="IdeBuffer*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_config" c:identifier="ide_vcs_get_config">
+        <doc xml:space="preserve">Retrieves an #IdeVcsConfig for the #IdeVcs provided. If the #IdeVcs implementation does not
+support access to configuration, then %NULL is returned.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">An #IdeVcsConfig or %NULL.</doc>
+          <type name="VcsConfig" c:type="IdeVcsConfig*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Vcs" c:type="IdeVcs*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_priority" c:identifier="ide_vcs_get_priority">
@@ -25036,6 +24896,19 @@ their respective data structures.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="get_config">
+        <callback name="get_config">
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">An #IdeVcsConfig or %NULL.</doc>
+            <type name="VcsConfig" c:type="IdeVcsConfig*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Vcs" c:type="IdeVcs*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
     </record>
     <record name="VcsUri"
             c:type="IdeVcsUri"
@@ -25337,26 +25210,38 @@ ide_perspective_get_id().</doc>
       </method>
       <method name="open_files_async"
               c:identifier="ide_workbench_open_files_async">
+        <doc xml:space="preserve">Starts the process of loading the buffers for the given @files, possibly
+creating an #IdeEditorView for each depending on @flags.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeWorkbench.</doc>
             <type name="Workbench" c:type="IdeWorkbench*"/>
           </instance-parameter>
           <parameter name="files" transfer-ownership="none">
+            <doc xml:space="preserve">An array of #GFile objects to be opened.</doc>
             <type name="Gio.File" c:type="GFile**"/>
           </parameter>
           <parameter name="n_files" transfer-ownership="none">
+            <doc xml:space="preserve">The number of files given.</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="hint" transfer-ownership="none">
+            <doc xml:space="preserve">The id of an #IdeWorkbenchAddin that should be preferred as a loader.</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">A #IdeWorkbenchOpenFlags (if WORKBENCH_OPEN_FLAGS_BG is set, the buffer is loaded
+but not made visible in the UI).</doc>
+            <type name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">A #GCancellable.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -25364,13 +25249,15 @@ ide_perspective_get_id().</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="5">
+                     closure="6">
+            <doc xml:space="preserve">A #GASyncReadyCallback.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">A #gpointer to hold user data.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -25454,6 +25341,9 @@ ide_perspective_get_id().</doc>
           <parameter name="hint" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -25465,7 +25355,7 @@ ide_perspective_get_id().</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="4">
+                     closure="5">
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -25779,6 +25669,9 @@ or the workbench is in the destruction process.</doc>
           <parameter name="content_type" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -25790,14 +25683,14 @@ or the workbench is in the destruction process.</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="4">
+                     closure="5">
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1"
-                     closure="4">
+                     closure="5">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -25812,6 +25705,25 @@ or the workbench is in the destruction process.</doc>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="perspective_set" invoker="perspective_set">
+        <doc xml:space="preserve">This function is called when the workbench changes the perspective.
+
+Addins that wish to add buttons to the header bar may want to show or
+hide the widgets in this vfunc.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an #IdeWorkbenchAddin</doc>
+            <type name="WorkbenchAddin" c:type="IdeWorkbenchAddin*"/>
+          </instance-parameter>
+          <parameter name="perspective" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdePerspective</doc>
+            <type name="Perspective" c:type="IdePerspective*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -25921,6 +25833,9 @@ or the workbench is in the destruction process.</doc>
           <parameter name="content_type" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <type name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -25932,7 +25847,7 @@ or the workbench is in the destruction process.</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="4">
+                     closure="5">
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -25955,6 +25870,26 @@ or the workbench is in the destruction process.</doc>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="perspective_set"
+              c:identifier="ide_workbench_addin_perspective_set">
+        <doc xml:space="preserve">This function is called when the workbench changes the perspective.
+
+Addins that wish to add buttons to the header bar may want to show or
+hide the widgets in this vfunc.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">an #IdeWorkbenchAddin</doc>
+            <type name="WorkbenchAddin" c:type="IdeWorkbenchAddin*"/>
+          </instance-parameter>
+          <parameter name="perspective" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdePerspective</doc>
+            <type name="Perspective" c:type="IdePerspective*"/>
           </parameter>
         </parameters>
       </method>
@@ -26080,6 +26015,9 @@ destruction process.</doc>
             <parameter name="content_type" transfer-ownership="none">
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
+            <parameter name="flags" transfer-ownership="none">
+              <type name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags"/>
+            </parameter>
             <parameter name="cancellable"
                        transfer-ownership="none"
                        nullable="1"
@@ -26091,7 +26029,7 @@ destruction process.</doc>
                        nullable="1"
                        allow-none="1"
                        scope="async"
-                       closure="5">
+                       closure="6">
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -26099,7 +26037,7 @@ destruction process.</doc>
                        transfer-ownership="none"
                        nullable="1"
                        allow-none="1"
-                       closure="5">
+                       closure="6">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -26116,6 +26054,23 @@ destruction process.</doc>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="perspective_set">
+        <callback name="perspective_set">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">an #IdeWorkbenchAddin</doc>
+              <type name="WorkbenchAddin" c:type="IdeWorkbenchAddin*"/>
+            </parameter>
+            <parameter name="perspective" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdePerspective</doc>
+              <type name="Perspective" c:type="IdePerspective*"/>
             </parameter>
           </parameters>
         </callback>
@@ -26164,7 +26119,37 @@ destruction process.</doc>
       <field name="parent">
         <type name="Gtk.HeaderBarClass" c:type="GtkHeaderBarClass"/>
       </field>
+      <field name="_reserved1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved2">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved3">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved4">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved5">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved6">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved7">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved8">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
     </record>
+    <enumeration name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags">
+      <member name="none" value="0" c:identifier="WORKBENCH_OPEN_FLAGS_NONE">
+      </member>
+      <member name="bg" value="1" c:identifier="WORKBENCH_OPEN_FLAGS_BG">
+      </member>
+    </enumeration>
     <interface name="Worker"
                c:symbol-prefix="worker"
                c:type="IdeWorker"

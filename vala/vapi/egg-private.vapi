@@ -112,15 +112,6 @@ namespace Egg {
 		public void set_label (string label);
 		public string label { get; set; }
 	}
-	[CCode (cheader_filename = "egg-private.h", type_id = "egg_scrolled_window_get_type ()")]
-	public class ScrolledWindow : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public ScrolledWindow ();
-		[NoAccessorMethod]
-		public int max_content_height { get; set; }
-		[NoAccessorMethod]
-		public int max_content_width { get; set; }
-	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_search_bar_get_type ()")]
 	public class SearchBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
@@ -287,8 +278,8 @@ namespace Egg {
 	[CCode (cheader_filename = "egg-private.h", has_type_id = false)]
 	public struct CounterValue {
 		public int64 value;
-		[CCode (array_length = false, array_null_terminated = true)]
-		public weak int64[] padding;
+		[CCode (array_length = false)]
+		public weak int64 padding[7];
 	}
 	[CCode (cheader_filename = "egg-private.h", cprefix = "EGG_ANIMATION_", type_id = "egg_animation_mode_get_type ()")]
 	public enum AnimationMode {
