@@ -91,6 +91,18 @@ last seen timestamp and the amount of bytes since.  Additionally, the
 gst_adapter_prev_pts_at_offset() can be used to determine the last
 seen timestamp at a particular offset in the adapter.
 
+The adapter will also keep track of the offset of the buffers
+(#GST_BUFFER_OFFSET) that were pushed. The last seen offset before the
+current position can be queried with gst_adapter_prev_offset(). This function
+can optionally return the number of bytes between the start of the buffer
+that carried the offset and the current adapter position.
+
+Additionally the adapter also keeps track of the PTS, DTS and buffer offset
+at the last discontinuity, which can be retrieved with
+gst_adapter_pts_at_discont(), gst_adapter_dts_at_discont() and
+gst_adapter_offset_at_discont(). The number of bytes that were consumed
+since then can be queried with gst_adapter_distance_from_discont().
+
 A last thing to note is that while #GstAdapter is pretty optimized,
 merging buffers still might be an operation that requires a malloc() and
 memcpy() operation, and these operations are not the fastest. Because of
@@ -224,6 +236,33 @@ the value of the @size argument an empty #GBytes structure may be returned.</doc
             <doc xml:space="preserve">the number of bytes to copy</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="distance_from_discont"
+              c:identifier="gst_adapter_distance_from_discont">
+        <return-value transfer-ownership="none">
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="adapter" transfer-ownership="none">
+            <type name="Adapter" c:type="GstAdapter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="dts_at_discont"
+              c:identifier="gst_adapter_dts_at_discont"
+              version="1.10">
+        <doc xml:space="preserve">Get the DTS that was on the last buffer with the GST_BUFFER_FLAG_DISCONT
+flag, or GST_CLOCK_TIME_NONE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The DTS at the last discont or GST_CLOCK_TIME_NONE.</doc>
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="adapter" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAdapter</doc>
+            <type name="Adapter" c:type="GstAdapter*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="flush" c:identifier="gst_adapter_flush">
@@ -501,6 +540,22 @@ enough data (offset+size bytes) in the adapter.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="offset_at_discont"
+              c:identifier="gst_adapter_offset_at_discont"
+              version="1.10">
+        <doc xml:space="preserve">Get the offset that was on the last buffer with the GST_BUFFER_FLAG_DISCONT
+flag, or GST_BUFFER_OFFSET_NONE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The offset at the last discont or GST_BUFFER_OFFSET_NONE.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="adapter" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAdapter</doc>
+            <type name="Adapter" c:type="GstAdapter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="prev_dts" c:identifier="gst_adapter_prev_dts">
         <doc xml:space="preserve">Get the dts that was before the current byte in the adapter. When
 @distance is given, the amount of bytes between the dts and the current
@@ -561,6 +616,37 @@ and distance returned are GST_CLOCK_TIME_NONE and 0 respectively.</doc>
                      optional="1"
                      allow-none="1">
             <doc xml:space="preserve">pointer to location for distance, or %NULL</doc>
+            <type name="guint64" c:type="guint64*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prev_offset"
+              c:identifier="gst_adapter_prev_offset"
+              version="1.10">
+        <doc xml:space="preserve">Get the offset that was before the current byte in the adapter. When
+@distance is given, the amount of bytes between the offset and the current
+position is returned.
+
+The offset is reset to GST_BUFFER_OFFSET_NONE and the distance is set to 0
+when the adapter is first created or when it is cleared. This also means that
+before the first byte with an offset is removed from the adapter, the offset
+and distance returned are GST_BUFFER_OFFSET_NONE and 0 respectively.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The previous seen offset.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="adapter" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAdapter</doc>
+            <type name="Adapter" c:type="GstAdapter*"/>
+          </instance-parameter>
+          <parameter name="distance"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to a location for distance, or %NULL</doc>
             <type name="guint64" c:type="guint64*"/>
           </parameter>
         </parameters>
@@ -627,6 +713,22 @@ and distance returned are GST_CLOCK_TIME_NONE and 0 respectively.</doc>
             <doc xml:space="preserve">pointer to location for distance, or %NULL</doc>
             <type name="guint64" c:type="guint64*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="pts_at_discont"
+              c:identifier="gst_adapter_pts_at_discont"
+              version="1.10">
+        <doc xml:space="preserve">Get the PTS that was on the last buffer with the GST_BUFFER_FLAG_DISCONT
+flag, or GST_CLOCK_TIME_NONE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The PTS at the last discont or GST_CLOCK_TIME_NONE.</doc>
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="adapter" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAdapter</doc>
+            <type name="Adapter" c:type="GstAdapter*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="push" c:identifier="gst_adapter_push">
@@ -1994,8 +2096,7 @@ my_element_class_init (GstMyElementClass *klass)
 
   // sinktemplate should be a #GstStaticPadTemplate with direction
   // %GST_PAD_SINK and name "sink"
-  gst_element_class_add_pad_template (gstelement_class,
-      gst_static_pad_template_get (&amp;amp;sinktemplate));
+  gst_element_class_add_static_pad_template (gstelement_class, &amp;amp;sinktemplate);
 
   gst_element_class_set_static_metadata (gstelement_class,
       "Sink name",
@@ -3384,8 +3485,7 @@ my_element_class_init (GstMyElementClass *klass)
   GstElementClass *gstelement_class = GST_ELEMENT_CLASS (klass);
   // srctemplate should be a #GstStaticPadTemplate with direction
   // %GST_PAD_SRC and name "src"
-  gst_element_class_add_pad_template (gstelement_class,
-      gst_static_pad_template_get (&amp;amp;srctemplate));
+  gst_element_class_add_static_pad_template (gstelement_class, &amp;amp;srctemplate);
 
   gst_element_class_set_static_metadata (gstelement_class,
      "Source name",
@@ -10208,7 +10308,7 @@ returned immediatelly from the gst_flow_combiner_update_flow() function.</doc>
       <method name="reset"
               c:identifier="gst_flow_combiner_reset"
               version="1.6">
-        <doc xml:space="preserve">Removes all pads from a #GstFlowCombiner and resets it to its initial state.</doc>
+        <doc xml:space="preserve">Reset flow combiner and all pads to their initial state without removing pads.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>

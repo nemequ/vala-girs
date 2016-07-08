@@ -1003,6 +1003,16 @@ Bluetooth device.</doc>
               c:type="NM_CLIENT_ACTIVE_CONNECTIONS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_ACTIVE_CONNECTION_ADDED"
+              value="active-connection-added"
+              c:type="NM_CLIENT_ACTIVE_CONNECTION_ADDED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_ACTIVE_CONNECTION_REMOVED"
+              value="active-connection-removed"
+              c:type="NM_CLIENT_ACTIVE_CONNECTION_REMOVED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_ALL_DEVICES"
               value="all-devices"
               c:type="NM_CLIENT_ALL_DEVICES">
@@ -2710,6 +2720,30 @@ see nm_client_get_primary_connection() for more details.</doc>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
+      <glib:signal name="active-connection-added" when="first">
+        <doc xml:space="preserve">Notifies that a #NMActiveConnection has been added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="active_connection" transfer-ownership="none">
+            <doc xml:space="preserve">the new active connection</doc>
+            <type name="ActiveConnection"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="active-connection-removed" when="first">
+        <doc xml:space="preserve">Notifies that a #NMActiveConnection has been removed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="active_connection" transfer-ownership="none">
+            <doc xml:space="preserve">the removed active connection</doc>
+            <type name="ActiveConnection"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="any-device-added" when="first">
         <doc xml:space="preserve">Notifies that a #NMDevice is added.  This signal is emitted for both
 regular devices and placeholder devices.</doc>
@@ -12507,6 +12541,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               c:type="NM_SETTING_CONNECTION_SLAVE_TYPE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_CONNECTION_STABLE_ID"
+              value="stable-id"
+              c:type="NM_SETTING_CONNECTION_STABLE_ID">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_CONNECTION_TIMESTAMP"
               value="timestamp"
               c:type="NM_SETTING_CONNECTION_TIMESTAMP">
@@ -13505,6 +13544,11 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_WIRED_DUPLEX">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_WIRED_GENERATE_MAC_ADDRESS_MASK"
+              value="generate-mac-address-mask"
+              c:type="NM_SETTING_WIRED_GENERATE_MAC_ADDRESS_MASK">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_WIRED_MAC_ADDRESS"
               value="mac-address"
               c:type="NM_SETTING_WIRED_MAC_ADDRESS">
@@ -13578,6 +13622,11 @@ supported for IPv6)</doc>
     <constant name="SETTING_WIRELESS_CLONED_MAC_ADDRESS"
               value="cloned-mac-address"
               c:type="NM_SETTING_WIRELESS_CLONED_MAC_ADDRESS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_WIRELESS_GENERATE_MAC_ADDRESS_MASK"
+              value="generate-mac-address-mask"
+              c:type="NM_SETTING_WIRELESS_GENERATE_MAC_ADDRESS_MASK">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_WIRELESS_HIDDEN"
@@ -17515,6 +17564,21 @@ of this setting.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_stable_id"
+              c:identifier="nm_setting_connection_get_stable_id"
+              version="1.4">
+        <doc xml:space="preserve">Returns the #NMSettingConnection:stable_id property of the connection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the stable-id for the connection</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingConnection</doc>
+            <type name="SettingConnection" c:type="NMSettingConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_timestamp"
               c:identifier="nm_setting_connection_get_timestamp">
         <doc xml:space="preserve">Returns the #NMSettingConnection:timestamp property of the connection.</doc>
@@ -17794,6 +17858,19 @@ supported.</doc>
         <doc xml:space="preserve">Setting name of the device type of this slave's master connection (eg,
 %NM_SETTING_BOND_SETTING_NAME), or %NULL if this connection is not a
 slave.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="stable-id"
+                version="1.4"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">This token to generate stable IDs for the connection. If unset,
+the UUID will be used instead.
+
+The stable-id is used instead of the connection UUID for generating
+IPv6 stable private addresses with ipv6.addr-gen-mode=stable-privacy.
+It is also used to seed the generated cloned MAC address for
+ethernet.cloned-mac-address=stable and wifi.cloned-mac-address=stable.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="timestamp"
@@ -23014,6 +23091,20 @@ list, %FALSE if it was not.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_generate_mac_address_mask"
+              c:identifier="nm_setting_wired_get_generate_mac_address_mask"
+              version="1.4">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingWired:generate-mac-address-mask property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWired</doc>
+            <type name="SettingWired" c:type="NMSettingWired*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_mac_address"
               c:identifier="nm_setting_wired_get_mac_address">
         <return-value transfer-ownership="none">
@@ -23337,12 +23428,59 @@ list, %FALSE if it was not.</doc>
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">If specified, request that the device use this MAC address instead of its
-permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
+permanent MAC address.  This is known as MAC cloning or spoofing.
+
+Beside explicitly specifing a MAC address, the special values "preserve", "permanent",
+"random" and "stable" are supported.
+"preserve" means not to touch the MAC address on activation.
+"permanent" means to use the permanent hardware address of the device.
+"random" creates a random MAC address on each connect.
+"stable" creates a hashed MAC address based on connection.stable-id (or
+the connection's UUID) and a machine dependent key.
+
+If unspecified, the value can be overwritten via global defaults, see manual
+of NetworkManager.conf. If still unspecified, it defaults to "permanent".
+
+On D-Bus, this field is expressed as "assigned-mac-address" or the deprecated
+"cloned-mac-address".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="duplex" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, request that the device only use the specified duplex mode.
 Either "half" or "full".</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="generate-mac-address-mask"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">With #NMSettingWired:cloned-mac-address setting "random" or "stable",
+by default all bits of the MAC address are scrambled and a locally-administered,
+unicast MAC address is created. This property allows to specify that certain bits
+are fixed. Note that the least significant bit of the first MAC address will
+always be unset to create a unicast MAC address.
+
+If the property is %NULL, it is eligible to be overwritten by a default
+connection setting. If the value is still %NULL or an empty string, the
+default is to create a locally-administered, unicast MAC address.
+
+If the value contains one MAC address, this address is used as mask. The set
+bits of the mask are to be filled with the current MAC address of the device,
+while the unset bits are subject to randomization.
+Setting "FE:FF:FF:00:00:00" means to preserve the OUI of the current MAC address
+and only randomize the lower 3 bytes using the "random" or "stable" algorithm.
+
+If the value contains one additional MAC address after the mask,
+this address is used instead of the current MAC address to fill the bits
+that shall not be randomized. For example, a value of
+"FE:FF:FF:00:00:00 68:F7:28:00:00:00" will set the OUI of the MAC address
+to 68:F7:28, while the lower bits are randomized. A value of
+"02:00:00:00:00:00 00:00:00:00:00:00" will create a fully scrambled
+globally-administered, burned-in MAC address.
+
+If the value contains more then one additional MAC addresses, one of
+them is chosen randomly. For example, "02:00:00:00:00:00 00:00:00:00:00:00 02:00:00:00:00:00"
+will create a fully scrambled MAC address, randomly locally or globally
+administered.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="mac-address" writable="1" transfer-ownership="none">
@@ -23668,6 +23806,20 @@ capabilities</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_generate_mac_address_mask"
+              c:identifier="nm_setting_wireless_get_generate_mac_address_mask"
+              version="1.4">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingWireless:generate-mac-address-mask property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWireless</doc>
+            <type name="SettingWireless" c:type="NMSettingWireless*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_hidden" c:identifier="nm_setting_wireless_get_hidden">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWireless:hidden property of the setting</doc>
@@ -23925,8 +24077,55 @@ also requires the "band" property to be set.</doc>
       <property name="cloned-mac-address"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If specified, request that the Wi-Fi device use this MAC address instead
-of its permanent MAC address.  This is known as MAC cloning or spoofing.</doc>
+        <doc xml:space="preserve">If specified, request that the device use this MAC address instead of its
+permanent MAC address.  This is known as MAC cloning or spoofing.
+
+Beside explicitly specifing a MAC address, the special values "preserve", "permanent",
+"random" and "stable" are supported.
+"preserve" means not to touch the MAC address on activation.
+"permanent" means to use the permanent hardware address of the device.
+"random" creates a random MAC address on each connect.
+"stable" creates a hashed MAC address based on connection.stable-id (or
+the connection's UUID) and a machine dependent key.
+
+If unspecified, the value can be overwritten via global defaults, see manual
+of NetworkManager.conf. If still unspecified, it defaults to "permanent".
+
+On D-Bus, this field is expressed as "assigned-mac-address" or the deprecated
+"cloned-mac-address".</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="generate-mac-address-mask"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">With #NMSettingWireless:cloned-mac-address setting "random" or "stable",
+by default all bits of the MAC address are scrambled and a locally-administered,
+unicast MAC address is created. This property allows to specify that certain bits
+are fixed. Note that the least significant bit of the first MAC address will
+always be unset to create a unicast MAC address.
+
+If the property is %NULL, it is eligible to be overwritten by a default
+connection setting. If the value is still %NULL or an empty string, the
+default is to create a locally-administered, unicast MAC address.
+
+If the value contains one MAC address, this address is used as mask. The set
+bits of the mask are to be filled with the current MAC address of the device,
+while the unset bits are subject to randomization.
+Setting "FE:FF:FF:00:00:00" means to preserve the OUI of the current MAC address
+and only randomize the lower 3 bytes using the "random" or "stable" algorithm.
+
+If the value contains one additional MAC address after the mask,
+this address is used instead of the current MAC address to fill the bits
+that shall not be randomized. For example, a value of
+"FE:FF:FF:00:00:00 68:F7:28:00:00:00" will set the OUI of the MAC address
+to 68:F7:28, while the lower bits are randomized. A value of
+"02:00:00:00:00:00 00:00:00:00:00:00" will create a fully scrambled
+globally-administered, burned-in MAC address.
+
+If the value contains more then one additional MAC addresses, one of
+them is chosen randomly. For example, "02:00:00:00:00:00 00:00:00:00:00:00 02:00:00:00:00:00"
+will create a fully scrambled MAC address, randomly locally or globally
+administered.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="hidden" writable="1" transfer-ownership="none">
@@ -23955,6 +24154,8 @@ standard hex-digits-and-colons notation (eg "00:11:22:33:44:55").</doc>
       </property>
       <property name="mac-address-randomization"
                 version="1.2"
+                deprecated="1"
+                deprecated-version="1.4"
                 writable="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">One of %NM_SETTING_MAC_RANDOMIZATION_DEFAULT (never randomize unless
@@ -23962,6 +24163,7 @@ the user has set a global default to randomize and the supplicant
 supports randomization),  %NM_SETTING_MAC_RANDOMIZATION_NEVER (never
 randomize the MAC address), or %NM_SETTING_MAC_RANDOMIZATION_ALWAYS
 (always randomize the MAC address).</doc>
+        <doc-deprecated xml:space="preserve">Deprecated by NMSettingWireless:cloned-mac-address property</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="mode" writable="1" transfer-ownership="none">
@@ -25178,6 +25380,11 @@ generating the dynamic WEP keys automatically</doc>
               c:type="NM_VPN_PLUGIN_IP4_CONFIG_PREFIX">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="VPN_PLUGIN_IP4_CONFIG_PRESERVE_ROUTES"
+              value="preserve-routes"
+              c:type="NM_VPN_PLUGIN_IP4_CONFIG_PRESERVE_ROUTES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="VPN_PLUGIN_IP4_CONFIG_PTP"
               value="ptp"
               c:type="NM_VPN_PLUGIN_IP4_CONFIG_PTP">
@@ -25226,6 +25433,11 @@ generating the dynamic WEP keys automatically</doc>
     <constant name="VPN_PLUGIN_IP6_CONFIG_PREFIX"
               value="prefix"
               c:type="NM_VPN_PLUGIN_IP6_CONFIG_PREFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="VPN_PLUGIN_IP6_CONFIG_PRESERVE_ROUTES"
+              value="preserve-routes"
+              c:type="NM_VPN_PLUGIN_IP6_CONFIG_PRESERVE_ROUTES">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="VPN_PLUGIN_IP6_CONFIG_PTP"

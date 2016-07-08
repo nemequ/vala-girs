@@ -1643,7 +1643,7 @@ Default is 0: let the resampler choose a good value.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="VIDEO_FORMATS_ALL"
-              value="{ I420, YV12, YUY2, UYVY, AYUV, RGBx, BGRx, xRGB, xBGR, RGBA, BGRA, ARGB, ABGR, RGB, BGR, Y41B, Y42B, YVYU, Y444, v210, v216, NV12, NV21, NV16, NV61, NV24, GRAY8, GRAY16_BE, GRAY16_LE, v308, RGB16, BGR16, RGB15, BGR15, UYVP, A420, RGB8P, YUV9, YVU9, IYU1, ARGB64, AYUV64, r210, I420_10LE, I420_10BE, I422_10LE, I422_10BE,  Y444_10LE, Y444_10BE, GBR, GBR_10LE, GBR_10BE, NV12_64Z32, A420_10LE,  A420_10BE, A422_10LE, A422_10BE, A444_10LE, A444_10BE }"
+              value="{ I420, YV12, YUY2, UYVY, AYUV, RGBx, BGRx, xRGB, xBGR, RGBA, BGRA, ARGB, ABGR, RGB, BGR, Y41B, Y42B, YVYU, Y444, v210, v216, NV12, NV21, NV16, NV61, NV24, GRAY8, GRAY16_BE, GRAY16_LE, v308, IYU2, RGB16, BGR16, RGB15, BGR15, UYVP, A420, RGB8P, YUV9, YVU9, IYU1, ARGB64, AYUV64, r210, I420_10LE, I420_10BE, I422_10LE, I422_10BE, Y444_10LE, Y444_10BE, GBR, GBR_10LE, GBR_10BE, NV12_64Z32, A420_10LE, A420_10BE, A422_10LE, A422_10BE, A444_10LE, A444_10BE, P010_10LE, P010_10BE }"
               c:type="GST_VIDEO_FORMATS_ALL">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -2415,7 +2415,7 @@ Decoders and encoders can set the downstream state, by using the
         <type name="VideoInfo" c:type="GstVideoInfo"/>
       </field>
       <field name="caps" writable="1">
-        <doc xml:space="preserve">The #GstCaps</doc>
+        <doc xml:space="preserve">The #GstCaps used in the caps negotiation of the pad.</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </field>
       <field name="codec_data" writable="1">
@@ -2423,8 +2423,13 @@ Decoders and encoders can set the downstream state, by using the
     'codec_data' field of a stream, or NULL.</doc>
         <type name="Gst.Buffer" c:type="GstBuffer*"/>
       </field>
+      <field name="allocation_caps" writable="1">
+        <doc xml:space="preserve">The #GstCaps for allocation query and pool
+    negotiation. Since: 1.10</doc>
+        <type name="Gst.Caps" c:type="GstCaps*"/>
+      </field>
       <field name="padding" readable="0" private="1">
-        <array zero-terminated="0" c:type="void" fixed-size="20">
+        <array zero-terminated="0" c:type="void" fixed-size="19">
           <type name="gpointer" c:type="void*"/>
         </array>
       </field>
@@ -5857,7 +5862,7 @@ to implement frame dropping.
               value="28"
               c:identifier="GST_VIDEO_FORMAT_v308"
               glib:nick="v308">
-        <doc xml:space="preserve">packed 4:4:4 YUV</doc>
+        <doc xml:space="preserve">packed 4:4:4 YUV (Y-U-V ...)</doc>
       </member>
       <member name="rgb16"
               value="29"
@@ -6050,6 +6055,24 @@ to implement frame dropping.
               c:identifier="GST_VIDEO_FORMAT_NV61"
               glib:nick="nv61">
         <doc xml:space="preserve">planar 4:2:2 YUV with interleaved VU plane (Since 1.6)</doc>
+      </member>
+      <member name="p010_10be"
+              value="61"
+              c:identifier="GST_VIDEO_FORMAT_P010_10BE"
+              glib:nick="p010-10be">
+        <doc xml:space="preserve">planar 4:2:0 YUV with interleaved UV plane, 10 bits per channel</doc>
+      </member>
+      <member name="p010_10le"
+              value="62"
+              c:identifier="GST_VIDEO_FORMAT_P010_10LE"
+              glib:nick="p010-10le">
+        <doc xml:space="preserve">planar 4:2:0 YUV with interleaved UV plane, 10 bits per channel</doc>
+      </member>
+      <member name="iyu2"
+              value="63"
+              c:identifier="GST_VIDEO_FORMAT_IYU2"
+              glib:nick="iyu2">
+        <doc xml:space="preserve">packed 4:4:4 YUV (U-Y-V ...) (Since 1.10)</doc>
       </member>
       <function name="from_fourcc" c:identifier="gst_video_format_from_fourcc">
         <doc xml:space="preserve">Converts a FOURCC value into the corresponding #GstVideoFormat.
@@ -6591,7 +6614,7 @@ to get to the pixels.
   if (gst_video_frame_map (&amp;amp;vframe, video_info, video_buffer)) {
     guint8 *pixels = GST_VIDEO_FRAME_PLANE_DATA (vframe, 0);
     guint stride = GST_VIDEO_FRAME_PLANE_STRIDE (vframe, 0);
-    guint pixel_stride = GST_VIDEO_FRAME_PLANE_PSTRIDE (vframe, 0);
+    guint pixel_stride = GST_VIDEO_FRAME_COMP_PSTRIDE (vframe, 0);
 
     for (h = 0; h &lt; height; ++h) {
       for (w = 0; w &lt; width; ++w) {
@@ -9656,11 +9679,11 @@ required to perform various kinds of resampling filtering.</doc>
         </parameters>
       </method>
     </record>
-    <enumeration name="VideoResamplerFlags"
-                 version="1.6"
-                 glib:type-name="GstVideoResamplerFlags"
-                 glib:get-type="gst_video_resampler_flags_get_type"
-                 c:type="GstVideoResamplerFlags">
+    <bitfield name="VideoResamplerFlags"
+              version="1.6"
+              glib:type-name="GstVideoResamplerFlags"
+              glib:get-type="gst_video_resampler_flags_get_type"
+              c:type="GstVideoResamplerFlags">
       <doc xml:space="preserve">Different resampler flags.</doc>
       <member name="none"
               value="0"
@@ -9668,7 +9691,15 @@ required to perform various kinds of resampling filtering.</doc>
               glib:nick="none">
         <doc xml:space="preserve">no flags</doc>
       </member>
-    </enumeration>
+      <member name="half_taps"
+              value="1"
+              c:identifier="GST_VIDEO_RESAMPLER_FLAG_HALF_TAPS"
+              glib:nick="half-taps">
+        <doc xml:space="preserve">when no taps are given, half the
+             number of calculated taps. This can be used when making scalers
+             for the different fields of an interlaced picture. Since 1.10</doc>
+      </member>
+    </bitfield>
     <enumeration name="VideoResamplerMethod"
                  version="1.6"
                  glib:type-name="GstVideoResamplerMethod"

@@ -698,6 +698,38 @@ returned. If no sinks are in the bin, the event handler will return %TRUE.
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="deep_element_added">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bin" transfer-ownership="none">
+            <type name="Bin" c:type="GstBin*"/>
+          </instance-parameter>
+          <parameter name="sub_bin" transfer-ownership="none">
+            <type name="Bin" c:type="GstBin*"/>
+          </parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="Element" c:type="GstElement*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="deep_element_removed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bin" transfer-ownership="none">
+            <type name="Bin" c:type="GstBin*"/>
+          </instance-parameter>
+          <parameter name="sub_bin" transfer-ownership="none">
+            <type name="Bin" c:type="GstBin*"/>
+          </parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="Element" c:type="GstElement*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="do_latency">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -1184,6 +1216,38 @@ forwarded message.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+      <glib:signal name="deep-element-added" when="first" version="1.10">
+        <doc xml:space="preserve">Will be emitted after the element was added to sub_bin.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="sub_bin" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstBin the element was added to</doc>
+            <type name="Bin"/>
+          </parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement that was added to @sub_bin</doc>
+            <type name="Element"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="deep-element-removed" when="first" version="1.10">
+        <doc xml:space="preserve">Will be emitted after the element was removed from sub_bin.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="sub_bin" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstBin the element was removed from</doc>
+            <type name="Bin"/>
+          </parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement that was removed from @sub_bin</doc>
+            <type name="Element"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="do-latency" when="last">
         <doc xml:space="preserve">Will be emitted when the bin needs to perform latency calculations. This
 signal is only emitted for toplevel bins or when async-handling is
@@ -1233,7 +1297,13 @@ update the list of children in the bin.
 
 The @handle_message method can be overridden to implement custom
 message handling.  @handle_message takes ownership of the message, just like
-#gst_element_post_message.</doc>
+#gst_element_post_message.
+
+The @element_added_deep vfunc will be called when a new element has been
+added to any bin inside this bin, so it will also be called if a new child
+was added to a sub-bin of this bin. #GstBin implementations that override
+this message should chain up to the parent class implementation so the
+element-added-deep signal is emitted on all parents.</doc>
       <field name="parent_class">
         <doc xml:space="preserve">bin parent class</doc>
         <type name="ElementClass" c:type="GstElementClass"/>
@@ -1328,8 +1398,44 @@ message handling.  @handle_message takes ownership of the message, just like
           </parameters>
         </callback>
       </field>
+      <field name="deep_element_added">
+        <callback name="deep_element_added">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="bin" transfer-ownership="none">
+              <type name="Bin" c:type="GstBin*"/>
+            </parameter>
+            <parameter name="sub_bin" transfer-ownership="none">
+              <type name="Bin" c:type="GstBin*"/>
+            </parameter>
+            <parameter name="child" transfer-ownership="none">
+              <type name="Element" c:type="GstElement*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="deep_element_removed">
+        <callback name="deep_element_removed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="bin" transfer-ownership="none">
+              <type name="Bin" c:type="GstBin*"/>
+            </parameter>
+            <parameter name="sub_bin" transfer-ownership="none">
+              <type name="Bin" c:type="GstBin*"/>
+            </parameter>
+            <parameter name="child" transfer-ownership="none">
+              <type name="Element" c:type="GstElement*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="2">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -2430,7 +2536,7 @@ data.</doc>
         <doc xml:space="preserve">Get the amount of memory blocks that this buffer has. This amount is never
 larger than what gst_buffer_get_max_memory() returns.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the amount of memory block in this buffer.</doc>
+          <doc xml:space="preserve">the number of memory blocks this buffer is made of.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -10327,7 +10433,7 @@ aggregated by #GstDeviceMonitor objects.</doc>
       <virtual-method name="create_element"
                       invoker="create_element"
                       version="1.4">
-        <doc xml:space="preserve">Creates the element with all of the required paramaters set to use
+        <doc xml:space="preserve">Creates the element with all of the required parameters set to use
 this device.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstElement configured to use this device</doc>
@@ -10376,7 +10482,7 @@ device in the PLAYING state.</doc>
       <method name="create_element"
               c:identifier="gst_device_create_element"
               version="1.4">
-        <doc xml:space="preserve">Creates the element with all of the required paramaters set to use
+        <doc xml:space="preserve">Creates the element with all of the required parameters set to use
 this device.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstElement configured to use this device</doc>
@@ -12526,6 +12632,105 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="add_property_deep_notify_watch"
+              c:identifier="gst_element_add_property_deep_notify_watch"
+              version="1.10">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a watch id, which can be used in connection with
+    gst_element_remove_property_notify_watch() to remove the watch again.</doc>
+          <type name="gulong" c:type="gulong"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement to watch (recursively) for property changes</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="property_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">name of property to watch for changes, or
+    NULL to watch all properties</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="include_value" transfer-ownership="none">
+            <doc xml:space="preserve">whether to include the new property value in the message</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_property_notify_watch"
+              c:identifier="gst_element_add_property_notify_watch"
+              version="1.10">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a watch id, which can be used in connection with
+    gst_element_remove_property_notify_watch() to remove the watch again.</doc>
+          <type name="gulong" c:type="gulong"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement to watch for property changes</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="property_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">name of property to watch for changes, or
+    NULL to watch all properties</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="include_value" transfer-ownership="none">
+            <doc xml:space="preserve">whether to include the new property value in the message</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_async"
+              c:identifier="gst_element_call_async"
+              version="1.10">
+        <doc xml:space="preserve">Calls @func from another thread and passes @user_data to it. This is to be
+used for cases when a state change has to be performed from a streaming
+thread, directly via gst_element_set_state() or indirectly e.g. via SEEK
+events.
+
+Calling those functions directly from the streaming thread will cause
+deadlocks in many situations, as they might involve waiting for the
+streaming thread to shut down from this very streaming thread.
+
+MT safe.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">Function to call asynchronously from another thread</doc>
+            <type name="ElementCallAsyncFunc"
+                  c:type="GstElementCallAsyncFunc"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Data to pass to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     scope="async">
+            <doc xml:space="preserve">GDestroyNotify for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="change_state" c:identifier="gst_element_change_state">
         <doc xml:space="preserve">Perform @transition on @element.
 
@@ -13513,6 +13718,23 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="remove_property_notify_watch"
+              c:identifier="gst_element_remove_property_notify_watch"
+              version="1.10">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement being watched for property changes</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="watch_id" transfer-ownership="none">
+            <doc xml:space="preserve">watch id to remove</doc>
+            <type name="gulong" c:type="gulong"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="request_pad" c:identifier="gst_element_request_pad">
         <doc xml:space="preserve">Retrieves a request pad from the element according to the provided template.
 Pad templates can be looked up using
@@ -14047,6 +14269,23 @@ gst_element_set_state() or gst_element_sync_state_with_parent().</doc>
         </parameters>
       </glib:signal>
     </class>
+    <callback name="ElementCallAsyncFunc" c:type="GstElementCallAsyncFunc">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="element" transfer-ownership="none">
+          <type name="Element" c:type="GstElement*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <record name="ElementClass"
             c:type="GstElementClass"
             glib:is-gtype-struct-for="Element">
@@ -15590,6 +15829,31 @@ finish playback of a segment as a result of a segment seek.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_select_streams"
+                   c:identifier="gst_event_new_select_streams"
+                   version="1.10">
+        <doc xml:space="preserve">Allocate a new select-streams event.
+
+The select-streams event requests the specified @streams to be activated.
+
+The list of @streams corresponds to the "Stream ID" of each stream to be
+activated. Those ID can be obtained via the #GstStream objects present
+in #GST_EVENT_STREAM_START, #GST_EVENT_STREAM_COLLECTION or
+#GST_MESSSAGE_STREAM_COLLECTION.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new select-streams event.</doc>
+          <type name="Event" c:type="GstEvent*"/>
+        </return-value>
+        <parameters>
+          <parameter name="streams" transfer-ownership="none">
+            <doc xml:space="preserve">the list of streams to
+activate</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="gchar"/>
+            </type>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_sink_message"
                    c:identifier="gst_event_new_sink_message">
         <doc xml:space="preserve">Create a new sink-message event. The purpose of the sink-message event is
@@ -15650,6 +15914,28 @@ part of a larger step operation.</doc>
           <parameter name="intermediate" transfer-ownership="none">
             <doc xml:space="preserve">intermediate steps</doc>
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_stream_collection"
+                   c:identifier="gst_event_new_stream_collection"
+                   version="1.10">
+        <doc xml:space="preserve">Create a new STREAM_COLLECTION event. The stream collection event can only
+travel downstream synchronized with the buffer flow.
+
+Source elements, demuxers and other elements that manage collections
+of streams and post #GstStreamCollection messages on the bus also send
+this event downstream on each pad involved in the collection, so that
+activation of a new collection can be tracked through the downstream
+data flow.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new STREAM_COLLECTION event.</doc>
+          <type name="Event" c:type="GstEvent*"/>
+        </return-value>
+        <parameters>
+          <parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">Active collection for this data flow</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -16199,6 +16485,29 @@ and make a copy if you want to modify it or store it for later use.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_select_streams"
+              c:identifier="gst_event_parse_select_streams"
+              version="1.10">
+        <doc xml:space="preserve">Parse the SELECT_STREAMS event and retrieve the contained streams.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">The event to parse</doc>
+            <type name="Event" c:type="GstEvent*"/>
+          </instance-parameter>
+          <parameter name="streams"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">the streams</doc>
+            <type name="GLib.List" c:type="GList**">
+              <type name="gchar"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_sink_message"
               c:identifier="gst_event_parse_sink_message">
         <doc xml:space="preserve">Parse the sink-message event. Unref @msg after usage.</doc>
@@ -16274,6 +16583,48 @@ and make a copy if you want to modify it or store it for later use.</doc>
             <doc xml:space="preserve">a pointer to store the intermediate
     boolean in</doc>
             <type name="gboolean" c:type="gboolean*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="parse_stream"
+              c:identifier="gst_event_parse_stream"
+              version="1.10">
+        <doc xml:space="preserve">Parse a stream-start @event and extract the #GstStream from it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a stream-start event</doc>
+            <type name="Event" c:type="GstEvent*"/>
+          </instance-parameter>
+          <parameter name="stream"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">adress of variable to store the stream</doc>
+            <type name="Stream" c:type="GstStream**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="parse_stream_collection"
+              c:identifier="gst_event_parse_stream_collection"
+              version="1.10">
+        <doc xml:space="preserve">Retrieve new #GstStreamCollection from STREAM_COLLECTION event @event.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a stream-collection event</doc>
+            <type name="Event" c:type="GstEvent*"/>
+          </instance-parameter>
+          <parameter name="collection"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">pointer to store the collection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection**"/>
           </parameter>
         </parameters>
       </method>
@@ -16457,6 +16808,24 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_stream"
+              c:identifier="gst_event_set_stream"
+              version="1.10">
+        <doc xml:space="preserve">Set the @stream on the stream-start @event</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a stream-start event</doc>
+            <type name="Event" c:type="GstEvent*"/>
+          </instance-parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">the stream object to set</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_stream_flags"
               c:identifier="gst_event_set_stream_flags"
               version="1.2">
@@ -16549,6 +16918,12 @@ Specific custom events are distinguished by the name of the structure.</doc>
                 converting buffer timestamps to running-time and
                 stream-time.</doc>
       </member>
+      <member name="stream_collection"
+              value="19230"
+              c:identifier="GST_EVENT_STREAM_COLLECTION"
+              glib:nick="stream-collection">
+        <doc xml:space="preserve">A new #GstStreamCollection is available (Since 1.10)</doc>
+      </member>
       <member name="tag"
               value="20510"
               c:identifier="GST_EVENT_TAG"
@@ -16575,7 +16950,8 @@ Specific custom events are distinguished by the name of the structure.</doc>
               c:identifier="GST_EVENT_EOS"
               glib:nick="eos">
         <doc xml:space="preserve">End-Of-Stream. No more data is to be expected to follow
-                without a SEGMENT event.</doc>
+                without either a STREAM_START event, or a FLUSH_STOP and a SEGMENT
+                event.</doc>
       </member>
       <member name="toc"
               value="30750"
@@ -16651,6 +17027,12 @@ Specific custom events are distinguished by the name of the structure.</doc>
               glib:nick="toc-select">
         <doc xml:space="preserve">A request for a new playback position based on TOC
                        entry's UID.</doc>
+      </member>
+      <member name="select_streams"
+              value="66561"
+              c:identifier="GST_EVENT_SELECT_STREAMS"
+              glib:nick="select-streams">
+        <doc xml:space="preserve">A request to select one or more streams (Since 1.10)</doc>
       </member>
       <member name="custom_upstream"
               value="69121"
@@ -19359,6 +19741,31 @@ to perform actions triggered by a state change.
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_property_notify"
+                   c:identifier="gst_message_new_property_notify"
+                   version="1.10">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GstMessage</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstObject whose property changed (may or may not be a #GstElement)</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property that changed</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="val"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">new property value, or %NULL</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_qos" c:identifier="gst_message_new_qos">
         <doc xml:space="preserve">A QOS message is posted on the bus whenever an element decides to drop a
 buffer because of QoS reasons or whenever it changes its processing strategy
@@ -19665,6 +20072,26 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_stream_collection"
+                   c:identifier="gst_message_new_stream_collection"
+                   version="1.10">
+        <doc xml:space="preserve">Creates a new stream-collection message. The message is used to announce new
+#GstStreamCollection</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GstMessage</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstObject that created the message</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstStreamCollection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_stream_start"
                    c:identifier="gst_message_new_stream_start">
         <doc xml:space="preserve">Create a new stream_start message. This message is generated and posted in
@@ -19708,6 +20135,34 @@ MT safe.</doc>
           <parameter name="owner" transfer-ownership="none">
             <doc xml:space="preserve">the owner element of @src.</doc>
             <type name="Element" c:type="GstElement*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_streams_selected"
+                   c:identifier="gst_message_new_streams_selected"
+                   version="1.10">
+        <doc xml:space="preserve">Creates a new steams-selected message. The message is used to announce
+that an array of streams has been selected. This is generally in response
+to a #GST_EVENT_SELECT_STREAMS event, or when an element (such as decodebin3)
+makes an initial selection of streams.
+
+The message also contains the #GstStreamCollection to which the various streams
+belong to.
+
+Users of gst_message_new_streams_selected() can add the selected streams with
+gst_message_streams_selected_add().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GstMessage</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstObject that created the message</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstStreamCollection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -20339,6 +20794,53 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_property_notify"
+              c:identifier="gst_message_parse_property_notify"
+              version="1.10">
+        <doc xml:space="preserve">Parses a property-notify message. These will be posted on the bus only
+when set up with gst_element_add_property_notify_watch() or
+gst_element_add_property_deep_notify_watch().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_PROPERTY_NOTIFY</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="object"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">location where to store a
+    pointer to the object whose property got changed, or %NULL</doc>
+            <type name="Object" c:type="GstObject**"/>
+          </parameter>
+          <parameter name="property_name"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for the name of the
+    property that got changed, or %NULL</doc>
+            <type name="utf8" c:type="const gchar**"/>
+          </parameter>
+          <parameter name="property_value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for the new value of
+    the property that got changed, or %NULL. This will only be set if the
+    property notify watch was told to include the value when it was set up</doc>
+            <type name="GObject.Value" c:type="const GValue**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_qos" c:identifier="gst_message_parse_qos">
         <doc xml:space="preserve">Extract the timestamps and live status from the QoS message.
 
@@ -20826,6 +21328,30 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_stream_collection"
+              c:identifier="gst_message_parse_stream_collection"
+              version="1.10">
+        <doc xml:space="preserve">Parses a stream-collection message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_STREAM_COLLECTION</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="collection"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location where to store a
+ pointer to the #GstStreamCollection, or %NULL</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_stream_status"
               c:identifier="gst_message_parse_stream_status">
         <doc xml:space="preserve">Extracts the stream status type and owner the GstMessage. The returned
@@ -20854,6 +21380,30 @@ MT safe.</doc>
                      transfer-ownership="none">
             <doc xml:space="preserve">The owner element of the message source</doc>
             <type name="Element" c:type="GstElement**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="parse_streams_selected"
+              c:identifier="gst_message_parse_streams_selected"
+              version="1.10">
+        <doc xml:space="preserve">Parses a streams-selected message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_STREAMS_SELECTED</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="collection"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location where to store a
+ pointer to the #GstStreamCollection, or %NULL</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection**"/>
           </parameter>
         </parameters>
       </method>
@@ -21160,6 +21710,58 @@ GstTask object but other objects might be added in the future.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="streams_selected_add"
+              c:identifier="gst_message_streams_selected_add"
+              version="1.10">
+        <doc xml:space="preserve">Adds the @stream to the @message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_STREAMS_SELECTED</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream to add to @message</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="streams_selected_get_size"
+              c:identifier="gst_message_streams_selected_get_size"
+              version="1.10">
+        <doc xml:space="preserve">Returns the number of streams contained in the @message.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of streams contained within.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_STREAMS_SELECTED</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="streams_selected_get_stream"
+              c:identifier="gst_message_streams_selected_get_stream"
+              version="1.10">
+        <doc xml:space="preserve">Retrieves the #GstStream with index @index from the @message.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #GstStream</doc>
+          <type name="Stream" c:type="GstStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_STREAMS_SELECTED</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">Index of the stream to retrieve</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
     </record>
     <bitfield name="MessageType"
               glib:type-name="GstMessageType"
@@ -21420,6 +22022,27 @@ was updated.</doc>
               glib:nick="device-removed">
         <doc xml:space="preserve">Message indicating a #GstDevice was removed
     from a #GstDeviceProvider (Since 1.4)</doc>
+      </member>
+      <member name="property_notify"
+              value="2147483651"
+              c:identifier="GST_MESSAGE_PROPERTY_NOTIFY"
+              glib:nick="property-notify">
+        <doc xml:space="preserve">Message indicating a #GObject property has
+    changed (Since 1.10)</doc>
+      </member>
+      <member name="stream_collection"
+              value="2147483652"
+              c:identifier="GST_MESSAGE_STREAM_COLLECTION"
+              glib:nick="stream-collection">
+        <doc xml:space="preserve">Message indicating a new #GstStreamCollection
+    is available (Since 1.10)</doc>
+      </member>
+      <member name="streams_selected"
+              value="2147483653"
+              c:identifier="GST_MESSAGE_STREAMS_SELECTED"
+              glib:nick="streams-selected">
+        <doc xml:space="preserve">Message indicating the active selection of
+    #GstStreams has changed (Since 1.10)</doc>
       </member>
       <member name="any"
               value="4294967295"
@@ -22249,6 +22872,14 @@ gst_mini_object_lock() and gst_mini_object_unlock().</doc>
               glib:nick="lock-readonly">
         <doc xml:space="preserve">the object is permanently locked in
 READONLY mode. Only read locks can be performed on the object.</doc>
+      </member>
+      <member name="may_be_leaked"
+              value="4"
+              c:identifier="GST_MINI_OBJECT_FLAG_MAY_BE_LEAKED"
+              glib:nick="may-be-leaked">
+        <doc xml:space="preserve">the object is expected to stay alive
+even after gst_deinit() has been called and so should be ignored by leak
+detection tools. (Since 1.10)</doc>
       </member>
       <member name="last"
               value="16"
@@ -23172,6 +23803,14 @@ the elements contained in that bin.</doc>
               glib:get-type="gst_object_flags_get_type"
               c:type="GstObjectFlags">
       <doc xml:space="preserve">The standard flags that an gstobject may have.</doc>
+      <member name="may_be_leaked"
+              value="1"
+              c:identifier="GST_OBJECT_FLAG_MAY_BE_LEAKED"
+              glib:nick="may-be-leaked">
+        <doc xml:space="preserve">the object is expected to stay alive even
+after gst_deinit() has been called and so should be ignored by leak
+detection tools. (Since 1.10)</doc>
+      </member>
       <member name="last"
               value="16"
               c:identifier="GST_OBJECT_FLAG_LAST"
@@ -23224,7 +23863,15 @@ system.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="PTR_FORMAT" value="paA" c:type="GST_PTR_FORMAT">
-      <doc xml:space="preserve">printf format type used to debug GStreamer types.
+      <doc xml:space="preserve">printf format type used to debug GStreamer types. You can use this in
+combination with GStreamer's debug logging system as well as the functions
+gst_info_vasprintf(), gst_info_strdup_vprintf() and gst_info_strdup_printf()
+to pretty-print the following types: #GstCaps, #GstStructure,
+#GstCapsFeatures, #GstTagList, #GstDateTime, #GstBuffer, #GstBufferList,
+#GstMessage, #GstEvent, #GstQuery, #GstContext, #GstPad, #GstObject. All
+#GObject types will be printed as typename plus pointer, and everything
+else will simply be printed as pointer address.
+
 This can only be used on types whose size is &gt;= sizeof(gpointer).</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -24013,6 +24660,26 @@ from the event.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_stream"
+              c:identifier="gst_pad_get_stream"
+              version="1.10">
+        <doc xml:space="preserve">Returns the current #GstStream for the @pad, or %NULL if none has been
+set yet, i.e. the pad has not received a stream-start event yet.
+
+This is a convenience wrapper around gst_pad_get_sticky_event() and
+gst_event_parse_stream().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the current #GstStream for @pad, or %NULL.
+    unref the returned stream when no longer needed.</doc>
+          <type name="Stream" c:type="GstStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pad" transfer-ownership="none">
+            <doc xml:space="preserve">A source #GstPad</doc>
+            <type name="Pad" c:type="GstPad*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_stream_id"
               c:identifier="gst_pad_get_stream_id"
               version="1.2">
@@ -24208,6 +24875,64 @@ MT Safe.</doc>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve">the checks to validate when linking</doc>
+            <type name="PadLinkCheck" c:type="GstPadLinkCheck"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="link_maybe_ghosting"
+              c:identifier="gst_pad_link_maybe_ghosting"
+              version="1.10">
+        <doc xml:space="preserve">Links @src to @sink, creating any #GstGhostPad's in between as necessary.
+
+This is a convenience function to save having to create and add intermediate
+#GstGhostPad's as required for linking across #GstBin boundaries.
+
+If @src or @sink pads don't have parent elements or do not share a common
+ancestor, the link will fail.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the link succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPad</doc>
+            <type name="Pad" c:type="GstPad*"/>
+          </instance-parameter>
+          <parameter name="sink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPad</doc>
+            <type name="Pad" c:type="GstPad*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="link_maybe_ghosting_full"
+              c:identifier="gst_pad_link_maybe_ghosting_full"
+              version="1.10">
+        <doc xml:space="preserve">Links @src to @sink, creating any #GstGhostPad's in between as necessary.
+
+This is a convenience function to save having to create and add intermediate
+#GstGhostPad's as required for linking across #GstBin boundaries.
+
+If @src or @sink pads don't have parent elements or do not share a common
+ancestor, the link will fail.
+
+Calling gst_pad_link_maybe_ghosting_full() with
+@flags == %GST_PAD_LINK_CHECK_DEFAULT is the recommended way of linking
+pads with safety checks applied.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the link succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPad</doc>
+            <type name="Pad" c:type="GstPad*"/>
+          </instance-parameter>
+          <parameter name="sink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPad</doc>
+            <type name="Pad" c:type="GstPad*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">some #GstPadLinkCheck flags</doc>
             <type name="PadLinkCheck" c:type="GstPadLinkCheck"/>
           </parameter>
         </parameters>
@@ -26688,7 +27413,7 @@ convenient GST_STATIC_PAD_TEMPLATE() macro.
 
 A padtemplate can be used to create a pad (see gst_pad_new_from_template()
 or gst_pad_new_from_static_template ()) or to add to an element class
-(see gst_element_class_add_pad_template ()).
+(see gst_element_class_add_static_pad_template ()).
 
 The following code example shows the code to create a pad from a padtemplate.
 |[&lt;!-- language="C" --&gt;
@@ -26719,8 +27444,7 @@ element class, this is usually done in the class_init of the class:
   {
     GstElementClass *gstelement_class = GST_ELEMENT_CLASS (klass);
 
-    gst_element_class_add_pad_template (gstelement_class,
-        gst_static_pad_template_get (&amp;amp;my_template));
+    gst_element_class_add_static_pad_template (gstelement_class, &amp;amp;my_template);
   }
 ]|</doc>
       <constructor name="new" c:identifier="gst_pad_template_new">
@@ -27121,6 +27845,14 @@ of %GST_PARSE_ERROR_NO_SUCH_ELEMENT was returned.</doc>
               glib:nick="no-single-element-bins">
         <doc xml:space="preserve">If a bin only has a single element,
     just return the element.</doc>
+      </member>
+      <member name="place_in_bin"
+              value="4"
+              c:identifier="GST_PARSE_FLAG_PLACE_IN_BIN"
+              glib:nick="place-in-bin">
+        <doc xml:space="preserve">If more than one toplevel element is described
+    by the pipeline description string, put them in a #GstBin instead of a
+    #GstPipeline. (Since 1.10)</doc>
       </member>
     </bitfield>
     <class name="Pipeline"
@@ -28692,11 +29424,14 @@ integrating with a GSource and GMainLoop.</doc>
       </method>
       <method name="read_control" c:identifier="gst_poll_read_control">
         <doc xml:space="preserve">Read a byte from the control socket of the controllable @set.
-This function is mostly useful for timer #GstPoll objects created with
+
+This function only works for timer #GstPoll objects created with
 gst_poll_new_timer().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success. %FALSE when @set is not controllable or when there
-was no byte to read.</doc>
+          <doc xml:space="preserve">%TRUE on success. %FALSE when when there was no byte to read or
+reading the byte failed. If there was no byte to read, and only then, errno
+will contain EWOULDBLOCK or EAGAIN. For all other values of errno this always signals a
+critical error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -28727,7 +29462,10 @@ was no byte to read.</doc>
         <doc xml:space="preserve">Restart any gst_poll_wait() that is in progress. This function is typically
 used after adding or removing descriptors to @set.
 
-If @set is not controllable, then this call will have no effect.</doc>
+If @set is not controllable, then this call will have no effect.
+
+This function only works for non-timer #GstPoll objects created with
+gst_poll_new().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -28741,7 +29479,10 @@ If @set is not controllable, then this call will have no effect.</doc>
       <method name="set_controllable" c:identifier="gst_poll_set_controllable">
         <doc xml:space="preserve">When @controllable is %TRUE, this function ensures that future calls to
 gst_poll_wait() will be affected by gst_poll_restart() and
-gst_poll_set_flushing().</doc>
+gst_poll_set_flushing().
+
+This function only works for non-timer #GstPoll objects created with
+gst_poll_new().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the controllability of @set could be updated.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -28761,7 +29502,10 @@ gst_poll_set_flushing().</doc>
         <doc xml:space="preserve">When @flushing is %TRUE, this function ensures that current and future calls
 to gst_poll_wait() will return -1, with errno set to EBUSY.
 
-Unsetting the flushing state will restore normal operation of @set.</doc>
+Unsetting the flushing state will restore normal operation of @set.
+
+This function only works for non-timer #GstPoll objects created with
+gst_poll_new().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -28812,10 +29556,14 @@ gst_poll_new_timer().
 It will make any current and future gst_poll_wait() function return with
 1, meaning the control socket is set. After an equal amount of calls to
 gst_poll_read_control() have been performed, calls to gst_poll_wait() will
-block again until their timeout expired.</doc>
+block again until their timeout expired.
+
+This function only works for timer #GstPoll objects created with
+gst_poll_new_timer().</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success. %FALSE when @set is not controllable or when the
-byte could not be written.</doc>
+          <doc xml:space="preserve">%TRUE on success. %FALSE when when the byte could not be written.
+errno contains the detailed error code but will never be EAGAIN, EINTR or
+EWOULDBLOCK. %FALSE always signals a critical error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -29755,7 +30503,7 @@ The following example shows how to query the duration of a pipeline:
                    c:identifier="gst_query_new_accept_caps">
         <doc xml:space="preserve">Constructs a new query object for querying if @caps are accepted.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29771,7 +30519,7 @@ Free-function: gst_query_unref</doc>
                    c:identifier="gst_query_new_allocation">
         <doc xml:space="preserve">Constructs a new query object for querying the allocation properties.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29791,7 +30539,7 @@ Free-function: gst_query_unref</doc>
         <doc xml:space="preserve">Constructs a new query object for querying the buffering status of
 a stream.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29823,7 +30571,7 @@ The @filter is used to restrict the result caps, only the caps matching
 @filter should be returned from the CAPS query. Specifying a filter might
 greatly reduce the amount of processing an element needs to do.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29840,7 +30588,7 @@ Free-function: gst_query_unref</doc>
                    version="1.2">
         <doc xml:space="preserve">Constructs a new query object for querying the pipeline-local context.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29857,7 +30605,7 @@ Free-function: gst_query_unref</doc>
 when done with it. A convert query is used to ask for a conversion between
 one format and another.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29881,7 +30629,7 @@ Free-function: gst_query_unref</doc>
         <doc xml:space="preserve">Constructs a new custom query object. Use gst_query_unref()
 when done with it.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29903,7 +30651,7 @@ Free-function: gst_query_unref</doc>
       <constructor name="new_drain" c:identifier="gst_query_new_drain">
         <doc xml:space="preserve">Constructs a new query object for querying the drain state.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29914,7 +30662,7 @@ Free-function: gst_query_unref</doc>
 Use gst_query_unref() when done with it. A duration query will give the
 total length of the stream.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29930,7 +30678,7 @@ Free-function: gst_query_unref</doc>
         <doc xml:space="preserve">Constructs a new query object for querying formats of
 the stream.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29942,7 +30690,7 @@ Use gst_query_unref() when done with it. A latency query is usually performed
 by sinks to compensate for additional latency introduced by elements in the
 pipeline.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29953,7 +30701,7 @@ Free-function: gst_query_unref</doc>
 when done with it. A position query is used to query the current position
 of playback in the streams, in some format.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29969,7 +30717,7 @@ Free-function: gst_query_unref</doc>
                    c:identifier="gst_query_new_scheduling">
         <doc xml:space="preserve">Constructs a new query object for querying the scheduling properties.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29979,7 +30727,7 @@ Free-function: gst_query_unref</doc>
         <doc xml:space="preserve">Constructs a new query object for querying seeking properties of
 the stream.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -29996,7 +30744,7 @@ Free-function: gst_query_unref</doc>
 when done with it. A segment query is used to discover information about the
 currently configured segment for playback.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -30013,7 +30761,7 @@ Free-function: gst_query_unref</doc>
 when done with it. An URI query is used to query the current URI
 that is used by the source or sink.
 
-Free-function: gst_query_unref</doc>
+Free-function: gst_query_unref()</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstQuery</doc>
           <type name="Query" c:type="GstQuery*"/>
@@ -30089,7 +30837,7 @@ Free-function: gst_query_unref</doc>
             <type name="BufferPool" c:type="GstBufferPool*"/>
           </parameter>
           <parameter name="size" transfer-ownership="none">
-            <doc xml:space="preserve">the size</doc>
+            <doc xml:space="preserve">the buffer size</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="min_buffers" transfer-ownership="none">
@@ -30360,7 +31108,10 @@ valid.</doc>
               c:identifier="gst_query_parse_allocation">
         <doc xml:space="preserve">Parse an allocation query, writing the requested caps in @caps and
 whether a pool is needed in @need_pool, if the respective parameters
-are non-%NULL.</doc>
+are non-%NULL.
+
+Pool details can be retrieved using gst_query_get_n_allocation_pools() and
+gst_query_parse_nth_allocation_pool().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -30851,7 +31602,7 @@ Unref @pool with gst_object_unref() when it's not needed any more.</doc>
                      transfer-ownership="full"
                      optional="1"
                      allow-none="1">
-            <doc xml:space="preserve">the size</doc>
+            <doc xml:space="preserve">the buffer size</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
           <parameter name="min_buffers"
@@ -32658,7 +33409,10 @@ both reading and writing, or either (but unspecified which).</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="SEGMENT_FORMAT" value="paB" c:type="GST_SEGMENT_FORMAT">
-      <doc xml:space="preserve">printf format type used to debug GStreamer segments.
+      <doc xml:space="preserve">printf format type used to debug GStreamer segments. You can use this in
+combination with GStreamer's debug logging system as well as the functions
+gst_info_vasprintf(), gst_info_strdup_vprintf() and gst_info_strdup_printf()
+to pretty-print #GstSegment structures.
 This can only be used on pointers to GstSegment structures.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -34082,6 +34836,474 @@ on the returned caps to modify it.</doc>
         </parameters>
       </method>
     </record>
+    <class name="Stream"
+           c:symbol-prefix="stream"
+           c:type="GstStream"
+           parent="Object"
+           glib:type-name="GstStream"
+           glib:get-type="gst_stream_get_type"
+           glib:type-struct="StreamClass">
+      <doc xml:space="preserve">A high-level object representing a single stream. It might be backed, or
+not, by an actual flow of data in a pipeline (#GstPad).
+
+A #GstStream does not care about data changes (such as decoding, encoding,
+parsing,...) as long as the underlying data flow corresponds to the same
+high-level flow (ex: a certain audio track).
+
+A #GstStream contains all the information pertinent to a stream, such as
+stream-id, tags, caps, type, ...
+
+Elements can subclass a #GstStream for internal usage (to contain information
+pertinent to streams of data).</doc>
+      <constructor name="new" c:identifier="gst_stream_new" version="1.10">
+        <doc xml:space="preserve">Create a new #GstStream for the given @stream_id, @caps, @type
+and @flags</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The new #GstStream</doc>
+          <type name="Stream" c:type="GstStream*"/>
+        </return-value>
+        <parameters>
+          <parameter name="stream_id"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the id for the new stream. If %NULL,
+a new one will be automatically generated</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #GstCaps of the stream</doc>
+            <type name="Caps" c:type="GstCaps*"/>
+          </parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstStreamType of the stream</doc>
+            <type name="StreamType" c:type="GstStreamType"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstStreamFlags of the stream</doc>
+            <type name="StreamFlags" c:type="GstStreamFlags"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_caps"
+              c:identifier="gst_stream_get_caps"
+              version="1.10">
+        <doc xml:space="preserve">Retrieve the caps for @stream, if any</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">The #GstCaps for @stream</doc>
+          <type name="Caps" c:type="GstCaps*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stream_flags"
+              c:identifier="gst_stream_get_stream_flags"
+              version="1.10">
+        <doc xml:space="preserve">Retrieve the current stream flags for @stream</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GstStreamFlags for @stream</doc>
+          <type name="StreamFlags" c:type="GstStreamFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stream_id"
+              c:identifier="gst_stream_get_stream_id"
+              version="1.10">
+        <doc xml:space="preserve">Returns the stream ID of @stream.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the stream ID of @stream. Only valid
+during the lifetime of @stream.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stream_type"
+              c:identifier="gst_stream_get_stream_type"
+              version="1.10">
+        <doc xml:space="preserve">Retrieve the stream type for @stream</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GstStreamType for @stream</doc>
+          <type name="StreamType" c:type="GstStreamType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tags"
+              c:identifier="gst_stream_get_tags"
+              version="1.10">
+        <doc xml:space="preserve">Retrieve the tags for @stream, if any</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">The #GstTagList for @stream</doc>
+          <type name="TagList" c:type="GstTagList*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_caps"
+              c:identifier="gst_stream_set_caps"
+              version="1.10">
+        <doc xml:space="preserve">Set the caps for the #GstStream</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+          <parameter name="caps"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstCaps</doc>
+            <type name="Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_stream_flags"
+              c:identifier="gst_stream_set_stream_flags"
+              version="1.10">
+        <doc xml:space="preserve">Set the @flags for the @stream.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">the flags to set on @stream</doc>
+            <type name="StreamFlags" c:type="GstStreamFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_stream_type"
+              c:identifier="gst_stream_set_stream_type"
+              version="1.10">
+        <doc xml:space="preserve">Set the stream type of @stream</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+          <parameter name="stream_type" transfer-ownership="none">
+            <doc xml:space="preserve">the type to set on @stream</doc>
+            <type name="StreamType" c:type="GstStreamType"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_tags"
+              c:identifier="gst_stream_set_tags"
+              version="1.10">
+        <doc xml:space="preserve">Set the tags for the #GstStream</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStream</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </instance-parameter>
+          <parameter name="tags"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstTagList</doc>
+            <type name="TagList" c:type="GstTagList*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="caps" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The #GstCaps of the #GstStream.</doc>
+        <type name="Caps"/>
+      </property>
+      <property name="stream-flags"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="StreamFlags"/>
+      </property>
+      <property name="stream-id"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The unique identifier of the #GstStream. Can only be set at construction
+time.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="stream-type"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GstStreamType of the #GstStream. Can only be set at construction time.</doc>
+        <type name="StreamType"/>
+      </property>
+      <property name="tags" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The #GstTagList of the #GstStream.</doc>
+        <type name="TagList"/>
+      </property>
+      <field name="object">
+        <type name="Object" c:type="GstObject"/>
+      </field>
+      <field name="stream_id">
+        <doc xml:space="preserve">The Stream Identifier for this #GstStream</doc>
+        <type name="utf8" c:type="const gchar*"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="StreamPrivate" c:type="GstStreamPrivate*"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </class>
+    <record name="StreamClass"
+            c:type="GstStreamClass"
+            glib:is-gtype-struct-for="Stream">
+      <doc xml:space="preserve">GstStream class structure</doc>
+      <field name="parent_class">
+        <doc xml:space="preserve">the parent class structure</doc>
+        <type name="ObjectClass" c:type="GstObjectClass"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <class name="StreamCollection"
+           c:symbol-prefix="stream_collection"
+           c:type="GstStreamCollection"
+           version="1.10"
+           parent="Object"
+           glib:type-name="GstStreamCollection"
+           glib:get-type="gst_stream_collection_get_type"
+           glib:type-struct="StreamCollectionClass">
+      <doc xml:space="preserve">A collection of #GstStream that are available.
+
+A #GstStreamCollection will be provided by elements that can make those
+streams available. Applications can use the collection to show the user
+what streams are available by using %gst_stream_collection_get_stream()
+
+Once posted, a #GstStreamCollection is immutable. Updates are made by sending
+a new #GstStreamCollection message, which may or may not share some of
+the #GstStream objects from the collection it replaces. The receiver can check
+the sender of a stream collection message to know which collection is
+obsoleted.
+
+Several elements in a pipeline can provide #GstStreamCollection.
+
+Applications can activate streams from a collection by using the
+#GST_EVENT_SELECT_STREAMS event on a pipeline, bin or element.</doc>
+      <constructor name="new"
+                   c:identifier="gst_stream_collection_new"
+                   version="1.10">
+        <doc xml:space="preserve">Create a new #GstStreamCollection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The new #GstStreamCollection.</doc>
+          <type name="StreamCollection" c:type="GstStreamCollection*"/>
+        </return-value>
+        <parameters>
+          <parameter name="upstream_id"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The stream id of the parent stream</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="stream_notify">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="collection" transfer-ownership="none">
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
+          </instance-parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <type name="Stream" c:type="GstStream*"/>
+          </parameter>
+          <parameter name="pspec" transfer-ownership="none">
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="add_stream"
+              c:identifier="gst_stream_collection_add_stream"
+              version="1.10">
+        <doc xml:space="preserve">Add the given @stream to the @collection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the @stream was properly added, else %FALSE</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStreamCollection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
+          </instance-parameter>
+          <parameter name="stream" transfer-ownership="full">
+            <doc xml:space="preserve">the #GstStream to add</doc>
+            <type name="Stream" c:type="GstStream*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_size"
+              c:identifier="gst_stream_collection_get_size"
+              version="1.10">
+        <doc xml:space="preserve">Get the number of streams this collection contains</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of streams that @collection contains</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStreamCollection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stream"
+              c:identifier="gst_stream_collection_get_stream"
+              version="1.10">
+        <doc xml:space="preserve">Retrieve the #GstStream with index @index from the collection.
+
+The caller should not modify the returned #GstStream</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GstStream</doc>
+          <type name="Stream" c:type="GstStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStreamCollection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">Index of the stream to retrieve</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_upstream_id"
+              c:identifier="gst_stream_collection_get_upstream_id"
+              version="1.10">
+        <doc xml:space="preserve">Returns the upstream id of the @collection.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The upstream id</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="collection" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStreamCollection</doc>
+            <type name="StreamCollection" c:type="GstStreamCollection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="upstream-id"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="object">
+        <type name="Object" c:type="GstObject"/>
+      </field>
+      <field name="upstream_id" readable="0" private="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="StreamCollectionPrivate"
+              c:type="GstStreamCollectionPrivate*"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+      <glib:signal name="stream-notify"
+                   when="first"
+                   no-recurse="1"
+                   detailed="1"
+                   no-hooks="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Stream"/>
+          </parameter>
+          <parameter name="p0" transfer-ownership="none">
+            <type name="GObject.ParamSpec"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="StreamCollectionClass"
+            c:type="GstStreamCollectionClass"
+            glib:is-gtype-struct-for="StreamCollection">
+      <doc xml:space="preserve">GstStreamCollection class structure</doc>
+      <field name="parent_class">
+        <doc xml:space="preserve">the parent class structure</doc>
+        <type name="ObjectClass" c:type="GstObjectClass"/>
+      </field>
+      <field name="stream_notify">
+        <callback name="stream_notify">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="collection" transfer-ownership="none">
+              <type name="StreamCollection" c:type="GstStreamCollection*"/>
+            </parameter>
+            <parameter name="stream" transfer-ownership="none">
+              <type name="Stream" c:type="GstStream*"/>
+            </parameter>
+            <parameter name="pspec" transfer-ownership="none">
+              <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="StreamCollectionPrivate"
+            c:type="GstStreamCollectionPrivate"
+            disguised="1">
+    </record>
     <enumeration name="StreamError"
                  glib:type-name="GstStreamError"
                  glib:get-type="gst_stream_error_get_type"
@@ -34227,6 +35449,8 @@ can't be decrypted because no suitable key is available.</doc>
    a director's commentary track).</doc>
       </member>
     </bitfield>
+    <record name="StreamPrivate" c:type="GstStreamPrivate" disguised="1">
+    </record>
     <enumeration name="StreamStatusType"
                  glib:type-name="GstStreamStatusType"
                  glib:get-type="gst_stream_status_type_get_type"
@@ -34276,6 +35500,58 @@ application of new streaming threads and their status.</doc>
         <doc xml:space="preserve">a thread is stopped</doc>
       </member>
     </enumeration>
+    <bitfield name="StreamType"
+              glib:type-name="GstStreamType"
+              glib:get-type="gst_stream_type_get_type"
+              c:type="GstStreamType">
+      <doc xml:space="preserve">#GstStreamType describes a high level classification set for
+flows of data in #GstStream objects.</doc>
+      <member name="unknown"
+              value="1"
+              c:identifier="GST_STREAM_TYPE_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">The stream is of unknown (unclassified) type.</doc>
+      </member>
+      <member name="audio"
+              value="2"
+              c:identifier="GST_STREAM_TYPE_AUDIO"
+              glib:nick="audio">
+        <doc xml:space="preserve">The stream is of audio data</doc>
+      </member>
+      <member name="video"
+              value="4"
+              c:identifier="GST_STREAM_TYPE_VIDEO"
+              glib:nick="video">
+        <doc xml:space="preserve">The stream carries video data</doc>
+      </member>
+      <member name="container"
+              value="8"
+              c:identifier="GST_STREAM_TYPE_CONTAINER"
+              glib:nick="container">
+        <doc xml:space="preserve">The stream is a muxed container type</doc>
+      </member>
+      <member name="text"
+              value="16"
+              c:identifier="GST_STREAM_TYPE_TEXT"
+              glib:nick="text">
+        <doc xml:space="preserve">The stream contains subtitle / subpicture data.</doc>
+      </member>
+      <function name="get_name"
+                c:identifier="gst_stream_type_get_name"
+                version="1.10">
+        <doc xml:space="preserve">Get a descriptive string for a given #GstStreamType</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A string describing the stream type</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="stype" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstStreamType</doc>
+            <type name="StreamType" c:type="GstStreamType"/>
+          </parameter>
+        </parameters>
+      </function>
+    </bitfield>
     <record name="Structure"
             c:type="GstStructure"
             glib:type-name="GstStructure"
@@ -41753,15 +43029,15 @@ determine a order for the two provided values.</doc>
       <doc xml:space="preserve">The major version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MICRO" value="2" c:type="GST_VERSION_MICRO">
+    <constant name="VERSION_MICRO" value="1" c:type="GST_VERSION_MICRO">
       <doc xml:space="preserve">The micro version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MINOR" value="8" c:type="GST_VERSION_MINOR">
+    <constant name="VERSION_MINOR" value="9" c:type="GST_VERSION_MINOR">
       <doc xml:space="preserve">The minor version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_NANO" value="0" c:type="GST_VERSION_NANO">
+    <constant name="VERSION_NANO" value="1" c:type="GST_VERSION_NANO">
       <doc xml:space="preserve">The nano version of GStreamer at compile time:
 Actual releases have 0, GIT versions have 1, prerelease versions have 2-...</doc>
       <type name="gint" c:type="gint"/>
@@ -43494,7 +44770,9 @@ can try to play the pipeline.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">a new element on success, %NULL on failure. If
    more than one toplevel element is specified by the @pipeline_description,
-   all elements are put into a #GstPipeline, which then is returned.</doc>
+   all elements are put into a #GstPipeline, which then is returned (unless
+   the GST_PARSE_FLAG_PLACE_IN_BIN flag is set, in which case they are put
+   in a #GstBin instead).</doc>
         <type name="Element" c:type="GstElement*"/>
       </return-value>
       <parameters>
@@ -43773,6 +45051,22 @@ the GStreamer core. See gst_segtrap_is_enabled() for more information.</doc>
       <return-value transfer-ownership="none">
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
+    </function>
+    <function name="stream_type_get_name"
+              c:identifier="gst_stream_type_get_name"
+              moved-to="StreamType.get_name"
+              version="1.10">
+      <doc xml:space="preserve">Get a descriptive string for a given #GstStreamType</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">A string describing the stream type</doc>
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="stype" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstStreamType</doc>
+          <type name="StreamType" c:type="GstStreamType"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="structure_from_string"
               c:identifier="gst_structure_from_string"

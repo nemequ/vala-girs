@@ -727,7 +727,7 @@ namespace Grl {
 		public void do_remove (Grl.Media media, Grl.SourceRemoveCb callback);
 		[CCode (cname = "grl_source_resolve")]
 		[Version (since = "0.2.0")]
-		public uint do_resolve (Grl.Media? media, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options, Grl.SourceResolveCb callback);
+		public uint do_resolve (owned Grl.Media? media, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options, Grl.SourceResolveCb callback);
 		[CCode (cname = "grl_source_search")]
 		[Version (since = "0.2.0")]
 		public uint do_search (string text, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options, Grl.SourceResultCb callback);
@@ -788,7 +788,7 @@ namespace Grl {
 		[NoWrapper]
 		public virtual void resolve (Grl.SourceResolveSpec ms);
 		[Version (since = "0.2.0")]
-		public Grl.Media resolve_sync (Grl.Media? media, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options) throws GLib.Error;
+		public Grl.Media resolve_sync (owned Grl.Media? media, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options) throws GLib.Error;
 		[NoWrapper]
 		public virtual void search (Grl.SourceSearchSpec ss);
 		[Version (since = "0.2.0")]
