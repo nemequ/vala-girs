@@ -12683,6 +12683,27 @@ a user data argument.</doc>
         </parameters>
       </function>
     </record>
+    <record name="LogField" c:type="GLogField" version="2.50">
+      <doc xml:space="preserve">Structure representing a single field in a structured log entry. See
+g_log_structured() for details.
+
+Log fields may contain arbitrary values, including binary with embedded nul
+bytes. If the field contains a string, the string must be UTF-8 encoded and
+have a trailing nul byte. Otherwise, @length must be set to a non-negative
+value.</doc>
+      <field name="key" writable="1">
+        <doc xml:space="preserve">field name (UTF-8 string)</doc>
+        <type name="utf8" c:type="const gchar*"/>
+      </field>
+      <field name="value" writable="1">
+        <doc xml:space="preserve">field value (arbitrary bytes)</doc>
+        <type name="gpointer" c:type="gconstpointer"/>
+      </field>
+      <field name="length" writable="1">
+        <doc xml:space="preserve">length of @value, in bytes, or -1 if it is nul-terminated</doc>
+        <type name="gssize" c:type="gssize"/>
+      </field>
+    </record>
     <callback name="LogFunc" c:type="GLogFunc">
       <doc xml:space="preserve">Specifies the prototype of log handler functions.
 
@@ -12763,6 +12784,64 @@ levels using g_log_set_handler() and g_log_set_fatal_mask().</doc>
         <doc xml:space="preserve">a mask including all log levels</doc>
       </member>
     </bitfield>
+    <callback name="LogWriterFunc" c:type="GLogWriterFunc" version="2.50">
+      <doc xml:space="preserve">Writer function for log entries. A log entry is a collection of one or more
+#GLogFields, using the standard [field names from journal
+specification](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html).
+See g_log_structured() for more information.
+
+Writer functions must ignore fields which they do not recognise, unless they
+can write arbitrary binary output, as field values may be arbitrary binary.
+
+@log_level is guaranteed to be included in @fields as the `PRIORITY` field,
+but is provided separately for convenience of deciding whether or where to
+output the log entry.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%G_LOG_WRITER_HANDLED if the log entry was handled successfully;
+   %G_LOG_WRITER_UNHANDLED otherwise</doc>
+        <type name="LogWriterOutput" c:type="GLogWriterOutput"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level of the message</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="fields" transfer-ownership="none">
+          <doc xml:space="preserve">fields forming the message</doc>
+          <array length="2" zero-terminated="0" c:type="GLogField*">
+            <type name="LogField" c:type="GLogField"/>
+          </array>
+        </parameter>
+        <parameter name="n_fields" transfer-ownership="none">
+          <doc xml:space="preserve">number of @fields</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
+          <doc xml:space="preserve">user data passed to g_log_set_writer_func()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <enumeration name="LogWriterOutput"
+                 version="2.50"
+                 c:type="GLogWriterOutput">
+      <doc xml:space="preserve">Return values from #GLogWriterFuncs to indicate whether the given log entry
+was successfully handled by the writer, or whether there was an error in
+handling it (and hence a fallback writer should be used).
+
+If a #GLogWriterFunc ignores a log entry, it should return
+%G_LOG_WRITER_HANDLED.</doc>
+      <member name="handled" value="1" c:identifier="G_LOG_WRITER_HANDLED">
+        <doc xml:space="preserve">Log writer has handled the log entry.</doc>
+      </member>
+      <member name="unhandled" value="0" c:identifier="G_LOG_WRITER_UNHANDLED">
+        <doc xml:space="preserve">Log writer could not handle the log entry.</doc>
+      </member>
+    </enumeration>
     <constant name="MAJOR_VERSION" value="2" c:type="GLIB_MAJOR_VERSION">
       <doc xml:space="preserve">The major version number of the GLib library.
 
@@ -30292,6 +30371,9 @@ If the array contains a nul terminator character somewhere other than
 the last byte then the returned string is the string, up to the first
 such nul character.
 
+g_variant_get_fixed_array() should be used instead if the array contains
+arbitrary data that could not be nul-terminated or could contain nul bytes.
+
 It is an error to call this function with a @value that is not an
 array of bytes.
 
@@ -31547,11 +31629,26 @@ following functions.
 
 #GVariantBuilder is not threadsafe in any way.  Do not attempt to
 access it from more than one thread.</doc>
-      <field name="x" readable="0" private="1">
-        <array zero-terminated="0" c:type="gsize" fixed-size="16">
-          <type name="gsize" c:type="gsize"/>
-        </array>
-      </field>
+      <union>
+        <record>
+          <field name="partial_magic" writable="1">
+            <type name="gsize" c:type="gsize"/>
+          </field>
+          <field name="type" writable="1">
+            <type name="VariantType" c:type="const GVariantType*"/>
+          </field>
+          <field name="y" writable="1">
+            <array zero-terminated="0" c:type="gsize" fixed-size="14">
+              <type name="gsize" c:type="gsize"/>
+            </array>
+          </field>
+        </record>
+        <field name="x" writable="1">
+          <array zero-terminated="0" c:type="gsize" fixed-size="16">
+            <type name="gsize" c:type="gsize"/>
+          </array>
+        </field>
+      </union>
       <constructor name="new"
                    c:identifier="g_variant_builder_new"
                    version="2.24">
@@ -32045,11 +32142,26 @@ key is not found.  Each returns the new dictionary as a floating
     return result;
   }
 ]|</doc>
-      <field name="x" readable="0" private="1">
-        <array zero-terminated="0" c:type="gsize" fixed-size="16">
-          <type name="gsize" c:type="gsize"/>
-        </array>
-      </field>
+      <union>
+        <record>
+          <field name="asv" writable="1">
+            <type name="Variant" c:type="GVariant*"/>
+          </field>
+          <field name="partial_magic" writable="1">
+            <type name="gsize" c:type="gsize"/>
+          </field>
+          <field name="y" writable="1">
+            <array zero-terminated="0" c:type="gsize" fixed-size="14">
+              <type name="gsize" c:type="gsize"/>
+            </array>
+          </field>
+        </record>
+        <field name="x" writable="1">
+          <array zero-terminated="0" c:type="gsize" fixed-size="16">
+            <type name="gsize" c:type="gsize"/>
+          </array>
+        </field>
+      </union>
       <constructor name="new" c:identifier="g_variant_dict_new" version="2.40">
         <doc xml:space="preserve">Allocates and initialises a new #GVariantDict.
 
@@ -35566,6 +35678,34 @@ The hexadecimal string returned will be in lower case.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="compute_hmac_for_bytes"
+              c:identifier="g_compute_hmac_for_bytes"
+              version="2.50">
+      <doc xml:space="preserve">Computes the HMAC for a binary @data. This is a
+convenience wrapper for g_hmac_new(), g_hmac_get_string()
+and g_hmac_unref().
+
+The hexadecimal string returned will be in lower case.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the HMAC of the binary data as a string in hexadecimal.
+  The returned string should be freed with g_free() when done using it.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="digest_type" transfer-ownership="none">
+          <doc xml:space="preserve">a #GChecksumType to use for the HMAC</doc>
+          <type name="ChecksumType" c:type="GChecksumType"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve">the key to use in the HMAC</doc>
+          <type name="Bytes" c:type="GBytes*"/>
+        </parameter>
+        <parameter name="data" transfer-ownership="none">
+          <doc xml:space="preserve">binary blob to compute the HMAC of</doc>
+          <type name="Bytes" c:type="GBytes*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="compute_hmac_for_data"
               c:identifier="g_compute_hmac_for_data"
               version="2.30">
@@ -35596,7 +35736,9 @@ The hexadecimal string returned will be in lower case.</doc>
         </parameter>
         <parameter name="data" transfer-ownership="none">
           <doc xml:space="preserve">binary blob to compute the HMAC of</doc>
-          <type name="guint8" c:type="const guchar*"/>
+          <array length="4" zero-terminated="0" c:type="guchar*">
+            <type name="guint8" c:type="guchar"/>
+          </array>
         </parameter>
         <parameter name="length" transfer-ownership="none">
           <doc xml:space="preserve">length of @data</doc>
@@ -39354,7 +39496,15 @@ You can only set the levels defined by GLib to be fatal.
 
 You can also make some message levels fatal at runtime by setting
 the `G_DEBUG` environment variable (see
-[Running GLib Applications](glib-running.html)).</doc>
+[Running GLib Applications](glib-running.html)).
+
+Libraries should not call this function, as it affects all messages logged
+by a process, including those from other libraries.
+
+Structured log messages (using g_log_structured() and
+g_log_structured_array()) are fatal only if the default log writer is used;
+otherwise it is up to the writer function to determine which log messages
+are fatal.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the old fatal mask</doc>
         <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
@@ -39395,7 +39545,12 @@ g_log_default_handler() as default log handler.</doc>
     </function>
     <function name="log_set_fatal_mask" c:identifier="g_log_set_fatal_mask">
       <doc xml:space="preserve">Sets the log levels which are fatal in the given domain.
-%G_LOG_LEVEL_ERROR is always fatal.</doc>
+%G_LOG_LEVEL_ERROR is always fatal.
+
+This has no effect on structured log messages (using g_log_structured() or
+g_log_structured_array()). To change the fatal behaviour for specific log
+messages, programs must install a custom log writer function using
+g_log_set_writer_func().</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the old fatal mask for the log domain</doc>
         <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
@@ -39518,6 +39673,389 @@ g_log_set_handler ("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
         <parameter name="destroy" transfer-ownership="none" scope="async">
           <doc xml:space="preserve">destroy notify for @user_data, or %NULL</doc>
           <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_set_writer_func"
+              c:identifier="g_log_set_writer_func"
+              version="2.50">
+      <doc xml:space="preserve">Set a writer function which will be called to format and write out each log
+message. Each program should set a writer function, or the default writer
+(g_log_writer_default()) will be used.
+
+Libraries **must not** call this function — only programs are allowed to
+install a writer function, as there must be a single, central point where
+log messages are formatted and outputted.
+
+There can only be one writer function. It is an error to set more than one.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="func"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="notified"
+                   closure="1"
+                   destroy="2">
+          <doc xml:space="preserve">log writer function, which must not be %NULL</doc>
+          <type name="LogWriterFunc" c:type="GLogWriterFunc"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="0">
+          <doc xml:space="preserve">user data to pass to @func</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="user_data_free"
+                   transfer-ownership="none"
+                   scope="async"
+                   destroy="0">
+          <doc xml:space="preserve">function to free @user_data once it’s
+   finished with, if non-%NULL</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_structured"
+              c:identifier="g_log_structured"
+              version="2.50"
+              introspectable="0">
+      <doc xml:space="preserve">Log a message with structured data. The message will be passed through to the
+log writer set by the application using g_log_set_writer_func(). If the
+message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
+be aborted at the end of this function.
+
+The structured data is provided as key–value pairs, where keys are UTF-8
+strings, and values are arbitrary pointers — typically pointing to UTF-8
+strings, but that is not a requirement. To pass binary (non-nul-terminated)
+structured data, use g_log_structured_array(). The keys for structured data
+should follow the [systemd journal
+fields](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html)
+specification. It is suggested that custom keys are namespaced according to
+the code which sets them. For example, custom keys from GLib all have a
+`GLIB_` prefix.
+
+The @log_domain will be converted into a `GLIB_DOMAIN` field. @log_level will
+be converted into a `PRIORITY` field. @format will have its placeholders
+substituted for the provided values and be converted into a `MESSAGE` field.
+
+Other fields you may commonly want to pass into this function:
+
+ * [`MESSAGE_ID`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#MESSAGE_ID=)
+ * [`CODE_FILE`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#CODE_FILE=)
+ * [`CODE_LINE`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#CODE_LINE=)
+ * [`CODE_FUNC`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#CODE_FUNC=)
+ * [`ERRNO`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#ERRNO=)
+
+Note that `CODE_FILE`, `CODE_LINE` and `CODE_FUNC` are automatically set by
+the logging macros, g_debug_structured(), G_DEBUG_HERE(),
+g_message_structured(), g_warning_structured(), g_critical_structured() and
+g_error_structured().
+
+For example:
+```
+g_log_structured (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
+                  "This is a debug message about pointer %p and integer %u.",
+                  some_pointer, some_integer,
+                  "MESSAGE_ID", "06d4df59e6c24647bfe69d2c27ef0b4e",
+                  "MY_APPLICATION_CUSTOM_FIELD", "some debug string",
+                  NULL);
+```
+
+Note that each `MESSAGE_ID` **must** be [uniquely and randomly
+generated](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#MESSAGE_ID=).
+If adding a `MESSAGE_ID`, consider shipping a [message
+catalog](https://www.freedesktop.org/wiki/Software/systemd/catalog/) with
+your software.
+
+To pass a user data pointer to the log writer function which is specific to
+this logging call, you must use g_log_structured_array() and pass the pointer
+as a field with #GLogField.length set to zero, otherwise it will be
+interpreted as a string.
+
+For example:
+```
+const GLogField fields[] = {
+  { "MESSAGE", "This is a debug message.", -1 },
+  { "MESSAGE_ID", "fcfb2e1e65c3494386b74878f1abf893", -1 },
+  { "MY_APPLICATION_CUSTOM_FIELD", "some debug string", -1 },
+  { "MY_APPLICATION_STATE", state_object, 0 },
+};
+g_log_structured_array (G_LOG_LEVEL_DEBUG, fields, G_N_ELEMENTS (fields));
+```
+
+Note also that, even if no structured fields are specified, the argument list
+**must** be %NULL-terminated.
+
+The default writer function for `stdout` and `stderr` will automatically
+append a new-line character to the @format, so you should not add one
+manually.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_domain" transfer-ownership="none">
+          <doc xml:space="preserve">log domain, usually %G_LOG_DOMAIN</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level, either from #GLogLevelFlags, or a user-defined
+   level</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">message format, in printf() style</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">parameters to insert into the format string, followed by key–value
+   pairs of structured data to add to the log message, terminated with a
+   %NULL</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_structured_array"
+              c:identifier="g_log_structured_array"
+              version="2.50">
+      <doc xml:space="preserve">Log a message with structured data. The message will be passed through to the
+log writer set by the application using g_log_set_writer_func(). If the
+message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
+be aborted at the end of this function.
+
+See g_log_structured() for more documentation.
+
+This assumes that @log_level is already present in @fields (typically as the
+`PRIORITY` field).</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level, either from #GLogLevelFlags, or a user-defined
+   level</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="fields" transfer-ownership="none">
+          <doc xml:space="preserve">key–value pairs of structured data to add
+   to the log message</doc>
+          <array length="2" zero-terminated="0" c:type="GLogField*">
+            <type name="LogField" c:type="GLogField"/>
+          </array>
+        </parameter>
+        <parameter name="n_fields" transfer-ownership="none">
+          <doc xml:space="preserve">number of elements in the @fields array</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_writer_default"
+              c:identifier="g_log_writer_default"
+              version="2.50">
+      <doc xml:space="preserve">Format a structured log message and output it to the default log destination
+for the platform. On Linux, this is typically the systemd journal, falling
+back to `stdout` or `stderr` if running from the terminal or if output is
+being redirected to a file.
+
+Support for other platform-specific logging mechanisms may be added in
+future. Distributors of GLib may modify this function to impose their own
+(documented) platform-specific log writing policies.
+
+This is suitable for use as a #GLogWriterFunc, and is the default writer used
+if no other is set using g_log_set_writer_func().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise</doc>
+        <type name="LogWriterOutput" c:type="GLogWriterOutput"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level, either from #GLogLevelFlags, or a user-defined
+   level</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="fields" transfer-ownership="none">
+          <doc xml:space="preserve">key–value pairs of structured data forming
+   the log message</doc>
+          <array length="2" zero-terminated="0" c:type="GLogField*">
+            <type name="LogField" c:type="GLogField"/>
+          </array>
+        </parameter>
+        <parameter name="n_fields" transfer-ownership="none">
+          <doc xml:space="preserve">number of elements in the @fields array</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data passed to g_log_set_writer_func()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_writer_format_fields"
+              c:identifier="g_log_writer_format_fields"
+              version="2.50">
+      <doc xml:space="preserve">Format a structured log message as a string suitable for outputting to the
+terminal (or elsewhere). This will include the values of all fields it knows
+how to interpret, which includes `MESSAGE` and `GLIB_DOMAIN` (see the
+documentation for g_log_structured()). It does not include values from
+unknown fields.
+
+The returned string does **not** have a trailing new-line character. It is
+encoded in the character set of the current locale, which is not necessarily
+UTF-8.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">string containing the formatted log message, in
+   the character set of the current locale</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level, either from #GLogLevelFlags, or a user-defined
+   level</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="fields" transfer-ownership="none">
+          <doc xml:space="preserve">key–value pairs of structured data forming
+   the log message</doc>
+          <array length="2" zero-terminated="0" c:type="GLogField*">
+            <type name="LogField" c:type="GLogField"/>
+          </array>
+        </parameter>
+        <parameter name="n_fields" transfer-ownership="none">
+          <doc xml:space="preserve">number of elements in the @fields array</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="use_color" transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE to use ANSI color escape sequences when formatting the
+   message, %FALSE to not</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_writer_is_journald"
+              c:identifier="g_log_writer_is_journald"
+              version="2.50">
+      <doc xml:space="preserve">Check whether the given @output_fd file descriptor is a connection to the
+systemd journal, or something else (like a log file or `stdout` or
+`stderr`).</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @output_fd points to the journal, %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="output_fd" transfer-ownership="none">
+          <doc xml:space="preserve">output file descriptor to check</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_writer_journald"
+              c:identifier="g_log_writer_journald"
+              version="2.50">
+      <doc xml:space="preserve">Format a structured log message and send it to the systemd journal as a set
+of key–value pairs. All fields are sent to the journal, but if a field has
+length zero (indicating program-specific data) then only its key will be
+sent.
+
+This is suitable for use as a #GLogWriterFunc.
+
+If GLib has been compiled without systemd support, this function is still
+defined, but will always return %G_LOG_WRITER_UNHANDLED.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise</doc>
+        <type name="LogWriterOutput" c:type="GLogWriterOutput"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level, either from #GLogLevelFlags, or a user-defined
+   level</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="fields" transfer-ownership="none">
+          <doc xml:space="preserve">key–value pairs of structured data forming
+   the log message</doc>
+          <array length="2" zero-terminated="0" c:type="GLogField*">
+            <type name="LogField" c:type="GLogField"/>
+          </array>
+        </parameter>
+        <parameter name="n_fields" transfer-ownership="none">
+          <doc xml:space="preserve">number of elements in the @fields array</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data passed to g_log_set_writer_func()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_writer_standard_streams"
+              c:identifier="g_log_writer_standard_streams"
+              version="2.50">
+      <doc xml:space="preserve">Format a structured log message and print it to either `stdout` or `stderr`,
+depending on its log level. %G_LOG_LEVEL_INFO and %G_LOG_LEVEL_DEBUG messages
+are sent to `stdout`; all other log levels are sent to `stderr`. Only fields
+which are understood by this function are included in the formatted string
+which is printed.
+
+If the output stream supports ANSI color escape sequences, they will be used
+in the output.
+
+A trailing new-line character is added to the log message when it is printed.
+
+This is suitable for use as a #GLogWriterFunc.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise</doc>
+        <type name="LogWriterOutput" c:type="GLogWriterOutput"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">log level, either from #GLogLevelFlags, or a user-defined
+   level</doc>
+          <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="fields" transfer-ownership="none">
+          <doc xml:space="preserve">key–value pairs of structured data forming
+   the log message</doc>
+          <array length="2" zero-terminated="0" c:type="GLogField*">
+            <type name="LogField" c:type="GLogField"/>
+          </array>
+        </parameter>
+        <parameter name="n_fields" transfer-ownership="none">
+          <doc xml:space="preserve">number of elements in the @fields array</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data passed to g_log_set_writer_func()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="log_writer_supports_color"
+              c:identifier="g_log_writer_supports_color"
+              version="2.50">
+      <doc xml:space="preserve">Check whether the given @output_fd file descriptor supports ANSI color
+escape sequences. If so, they can safely be used when formatting log
+messages.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if ANSI color escapes are supported, %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="output_fd" transfer-ownership="none">
+          <doc xml:space="preserve">output file descriptor to check</doc>
+          <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>
     </function>
@@ -44422,7 +44960,12 @@ Note that the handler is reset at the beginning of
 any test case, so you have to set it inside each test
 function which needs the special behavior.
 
-This handler has no effect on g_error messages.</doc>
+This handler has no effect on g_error messages.
+
+This handler also has no effect on structured log messages (using
+g_log_structured() or g_log_structured_array()). To change the fatal
+behaviour for specific log messages, programs must install a custom log
+writer function using g_log_set_writer_func().</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

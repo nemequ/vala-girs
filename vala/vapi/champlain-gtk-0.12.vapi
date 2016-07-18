@@ -3,6 +3,7 @@
 [CCode (cprefix = "GtkChamplain", gir_namespace = "GtkChamplain", gir_version = "0.12", lower_case_cprefix = "gtk_champlain_")]
 namespace GtkChamplain {
 	[CCode (cheader_filename = "champlain-gtk/champlain-gtk.h", type_id = "gtk_champlain_embed_get_type ()")]
+	[Version (since = "0.4")]
 	public class Embed : Gtk.Alignment, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Embed ();

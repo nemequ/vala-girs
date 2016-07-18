@@ -24,6 +24,7 @@ namespace Champlain {
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "champlain_bounding_box_get_type ()")]
 	[Compact]
+	[Version (since = "0.6")]
 	public class BoundingBox {
 		public double bottom;
 		public double left;
@@ -31,15 +32,20 @@ namespace Champlain {
 		public double top;
 		[CCode (has_construct_function = false)]
 		public BoundingBox ();
+		[Version (since = "0.10")]
 		public void compose (Champlain.BoundingBox other);
 		public Champlain.BoundingBox copy ();
+		[Version (since = "0.12.4")]
 		public bool covers (double latitude, double longitude);
+		[Version (since = "0.10")]
 		public void extend (double latitude, double longitude);
 		public void free ();
 		public void get_center (out double latitude, out double longitude);
+		[Version (since = "0.10")]
 		public bool is_valid ();
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_coordinate_get_type ()")]
+	[Version (since = "0.10")]
 	public class Coordinate : GLib.InitiallyUnowned, Champlain.Location {
 		[CCode (has_construct_function = false)]
 		public Coordinate ();
@@ -47,13 +53,13 @@ namespace Champlain {
 		public Coordinate.full (double latitude, double longitude);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_custom_marker_get_type ()")]
-	[Deprecated (since = "0.12.4")]
+	[Version (deprecated = true, deprecated_since = "0.12.4", since = "0.10")]
 	public class CustomMarker : Champlain.Marker, Atk.Implementor, Champlain.Location, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
-		[Deprecated (since = "0.12.4")]
 		public CustomMarker ();
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_error_tile_renderer_get_type ()")]
+	[Version (since = "0.8")]
 	public class ErrorTileRenderer : Champlain.Renderer {
 		[CCode (has_construct_function = false)]
 		public ErrorTileRenderer (uint tile_size);
@@ -62,20 +68,28 @@ namespace Champlain {
 		public uint tile_size { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_file_cache_get_type ()")]
+	[Version (since = "0.6")]
 	public class FileCache : Champlain.TileCache {
 		[CCode (has_construct_function = false)]
 		protected FileCache ();
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.8")]
 		public FileCache.full (uint size_limit, string? cache_dir, Champlain.Renderer renderer);
 		public unowned string get_cache_dir ();
+		[Version (since = "0.4")]
 		public uint get_size_limit ();
+		[Version (since = "0.4")]
 		public void purge ();
+		[Version (since = "0.4")]
 		public void purge_on_idle ();
+		[Version (since = "0.4")]
 		public void set_size_limit (uint size_limit);
 		public string cache_dir { get; construct; }
+		[Version (since = "0.4")]
 		public uint size_limit { get; set construct; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_file_tile_source_get_type ()")]
+	[Version (since = "0.8")]
 	public class FileTileSource : Champlain.TileSource {
 		[CCode (has_construct_function = false)]
 		protected FileTileSource ();
@@ -84,6 +98,7 @@ namespace Champlain {
 		public void load_map_data (string map_path);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_image_renderer_get_type ()")]
+	[Version (since = "0.8")]
 	public class ImageRenderer : Champlain.Renderer {
 		[CCode (has_construct_function = false)]
 		public ImageRenderer ();
@@ -102,6 +117,7 @@ namespace Champlain {
 		public signal void panning_completed ();
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_label_get_type ()")]
+	[Version (since = "0.10")]
 	public class Label : Champlain.Marker, Atk.Implementor, Champlain.Location, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public Label ();
@@ -113,6 +129,7 @@ namespace Champlain {
 		public Pango.AttrList get_attributes ();
 		public Clutter.Color? get_color ();
 		public bool get_draw_background ();
+		[Version (since = "0.12.10")]
 		public bool get_draw_shadow ();
 		public Pango.EllipsizeMode get_ellipsize ();
 		public unowned string get_font_name ();
@@ -127,6 +144,7 @@ namespace Champlain {
 		public void set_attributes (Pango.AttrList list);
 		public void set_color (Clutter.Color? color);
 		public void set_draw_background (bool background);
+		[Version (since = "0.12.10")]
 		public void set_draw_shadow (bool shadow);
 		public void set_ellipsize (Pango.EllipsizeMode mode);
 		public void set_font_name (string? font_name);
@@ -144,6 +162,7 @@ namespace Champlain {
 		public Pango.Alignment alignment { get; set; }
 		public Clutter.Color color { get; set; }
 		public bool draw_background { get; set; }
+		[Version (since = "0.12.10")]
 		public bool draw_shadow { get; set; }
 		public Pango.EllipsizeMode ellipsize { get; set; }
 		public string font_name { get; set; }
@@ -156,6 +175,7 @@ namespace Champlain {
 		public Pango.WrapMode wrap_mode { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_layer_get_type ()")]
+	[Version (since = "0.10")]
 	public abstract class Layer : Clutter.Actor, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		protected Layer ();
@@ -163,6 +183,7 @@ namespace Champlain {
 		public virtual void set_view (Champlain.View view);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_license_get_type ()")]
+	[Version (since = "0.10")]
 	public class License : Clutter.Actor, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public License ();
@@ -176,6 +197,7 @@ namespace Champlain {
 		public string extra_text { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_map_source_get_type ()")]
+	[Version (since = "0.4")]
 	public abstract class MapSource : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		protected MapSource ();
@@ -187,22 +209,30 @@ namespace Champlain {
 		public virtual unowned string get_license_uri ();
 		public double get_longitude (uint zoom_level, double x);
 		public virtual uint get_max_zoom_level ();
+		[Version (since = "0.4.3")]
 		public double get_meters_per_pixel (uint zoom_level, double latitude, double longitude);
 		public virtual uint get_min_zoom_level ();
 		public virtual unowned string get_name ();
+		[Version (since = "0.6")]
 		public unowned Champlain.MapSource get_next_source ();
 		public virtual Champlain.MapProjection get_projection ();
+		[Version (since = "0.8")]
 		public unowned Champlain.Renderer get_renderer ();
 		public uint get_row_count (uint zoom_level);
 		public virtual uint get_tile_size ();
 		public double get_x (uint zoom_level, double longitude);
 		public double get_y (uint zoom_level, double latitude);
+		[Version (since = "0.6")]
 		public void set_next_source (Champlain.MapSource next_source);
+		[Version (since = "0.8")]
 		public void set_renderer (Champlain.Renderer renderer);
+		[Version (since = "0.6")]
 		public Champlain.MapSource next_source { get; set; }
+		[Version (since = "0.8")]
 		public Champlain.Renderer renderer { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_map_source_chain_get_type ()")]
+	[Version (since = "0.6")]
 	public class MapSourceChain : Champlain.MapSource {
 		[CCode (has_construct_function = false)]
 		public MapSourceChain ();
@@ -210,6 +240,7 @@ namespace Champlain {
 		public void push (Champlain.MapSource map_source);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_map_source_desc_get_type ()")]
+	[Version (since = "0.10")]
 	public class MapSourceDesc : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MapSourceDesc ();
@@ -237,20 +268,27 @@ namespace Champlain {
 		public string uri_format { get; construct; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_map_source_factory_get_type ()")]
+	[Version (since = "0.4")]
 	public class MapSourceFactory : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MapSourceFactory ();
 		public unowned Champlain.MapSource create (string id);
+		[Version (since = "0.6")]
 		public unowned Champlain.MapSource create_cached_source (string id);
+		[Version (since = "0.8")]
 		public unowned Champlain.MapSource create_error_source (uint tile_size);
+		[Version (since = "0.12.5")]
 		public unowned Champlain.MapSource create_memcached_source (string id);
 		public static Champlain.MapSourceFactory dup_default ();
 		public GLib.SList<weak Champlain.MapSourceDesc> get_registered ();
+		[Version (since = "0.10")]
 		public bool register (Champlain.MapSourceDesc desc);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_marker_get_type ()")]
+	[Version (since = "0.10")]
 	public class Marker : Clutter.Actor, Atk.Implementor, Champlain.Location, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
+		[Version (since = "0.12.4")]
 		public Marker ();
 		public void animate_in ();
 		public void animate_in_with_delay (uint delay);
@@ -275,6 +313,7 @@ namespace Champlain {
 		public signal void drag_motion (double dx, double dy, Clutter.Event event);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_marker_layer_get_type ()")]
+	[Version (since = "0.10")]
 	public class MarkerLayer : Champlain.Layer, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		public MarkerLayer ();
@@ -298,6 +337,7 @@ namespace Champlain {
 		public Champlain.SelectionMode selection_mode { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_memory_cache_get_type ()")]
+	[Version (since = "0.8")]
 	public class MemoryCache : Champlain.TileCache {
 		[CCode (has_construct_function = false)]
 		protected MemoryCache ();
@@ -309,12 +349,14 @@ namespace Champlain {
 		public uint size_limit { get; set construct; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_network_bbox_tile_source_get_type ()")]
+	[Version (since = "0.8")]
 	public class NetworkBboxTileSource : Champlain.TileSource {
 		[CCode (has_construct_function = false)]
 		protected NetworkBboxTileSource ();
 		[CCode (has_construct_function = false)]
 		public NetworkBboxTileSource.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Champlain.MapProjection projection, Champlain.Renderer renderer);
 		public unowned string get_api_uri ();
+		[Version (since = "0.10")]
 		public void load_map_data (Champlain.BoundingBox bbox);
 		public void set_api_uri (string api_uri);
 		public string api_uri { get; set; }
@@ -324,22 +366,29 @@ namespace Champlain {
 		public Champlain.State state { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_network_tile_source_get_type ()")]
+	[Version (since = "0.6")]
 	public class NetworkTileSource : Champlain.TileSource {
 		[CCode (has_construct_function = false)]
 		protected NetworkTileSource ();
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.4")]
 		public NetworkTileSource.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Champlain.MapProjection projection, string uri_format, Champlain.Renderer renderer);
 		public bool get_offline ();
 		public unowned string get_proxy_uri ();
 		public unowned string get_uri_format ();
 		public void set_offline (bool offline);
 		public void set_proxy_uri (string proxy_uri);
+		[Version (since = "0.4")]
 		public void set_uri_format (string uri_format);
+		[Version (since = "0.4")]
 		public bool offline { get; set; }
+		[Version (since = "0.4")]
 		public string proxy_uri { get; set; }
+		[Version (since = "0.4")]
 		public string uri_format { get; set construct; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_null_tile_source_get_type ()")]
+	[Version (since = "0.8")]
 	public class NullTileSource : Champlain.TileSource {
 		[CCode (has_construct_function = false)]
 		protected NullTileSource ();
@@ -347,11 +396,13 @@ namespace Champlain {
 		public NullTileSource.full (Champlain.Renderer renderer);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_path_layer_get_type ()")]
+	[Version (since = "0.10")]
 	public class PathLayer : Champlain.Layer, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		public PathLayer ();
 		public void add_node (Champlain.Location location);
 		public bool get_closed ();
+		[Version (since = "0.12.4")]
 		public GLib.List<weak uint> get_dash ();
 		public bool get_fill ();
 		public Clutter.Color? get_fill_color ();
@@ -364,6 +415,7 @@ namespace Champlain {
 		public void remove_all ();
 		public void remove_node (Champlain.Location location);
 		public void set_closed (bool value);
+		[Version (since = "0.12.4")]
 		public void set_dash (GLib.List<uint> dash_pattern);
 		public void set_fill (bool value);
 		public void set_fill_color (Clutter.Color? color);
@@ -380,6 +432,7 @@ namespace Champlain {
 		public bool visible { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_point_get_type ()")]
+	[Version (since = "0.10")]
 	public class Point : Champlain.Marker, Atk.Implementor, Champlain.Exportable, Champlain.Location, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public Point ();
@@ -393,6 +446,7 @@ namespace Champlain {
 		public double size { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_renderer_get_type ()")]
+	[Version (since = "0.8")]
 	public class Renderer : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		protected Renderer ();
@@ -400,6 +454,7 @@ namespace Champlain {
 		public virtual void set_data (string data, uint size);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_scale_get_type ()")]
+	[Version (since = "0.10")]
 	public class Scale : Clutter.Actor, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public Scale ();
@@ -413,14 +468,17 @@ namespace Champlain {
 		public Champlain.Unit unit { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_tile_get_type ()")]
+	[Version (since = "0.4")]
 	public class Tile : Clutter.Actor, Atk.Implementor, Champlain.Exportable, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false)]
 		public Tile ();
+		[Version (since = "0.8")]
 		public void display_content ();
 		[CCode (has_construct_function = false)]
 		public Tile.full (uint x, uint y, uint size, uint zoom_level);
 		public unowned Clutter.Actor get_content ();
 		public unowned string get_etag ();
+		[Version (since = "0.6")]
 		public bool get_fade_in ();
 		public unowned GLib.TimeVal? get_modified_time ();
 		public uint get_size ();
@@ -430,6 +488,7 @@ namespace Champlain {
 		public uint get_zoom_level ();
 		public void set_content (Clutter.Actor actor);
 		public void set_etag (string etag);
+		[Version (since = "0.6")]
 		public void set_fade_in (bool fade_in);
 		public void set_modified_time (GLib.TimeVal time);
 		public void set_size (uint size);
@@ -439,15 +498,18 @@ namespace Champlain {
 		public void set_zoom_level (uint zoom_level);
 		public Clutter.Actor content { get; set; }
 		public string etag { get; set; }
+		[Version (since = "0.6")]
 		public bool fade_in { get; set; }
 		public uint size { get; set; }
 		public Champlain.State state { get; set; }
 		public uint x { get; set; }
 		public uint y { get; set; }
 		public uint zoom_level { get; set; }
+		[Version (since = "0.10")]
 		public signal void render_complete (void* data, uint size, bool error);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_tile_cache_get_type ()")]
+	[Version (since = "0.6")]
 	public abstract class TileCache : Champlain.MapSource {
 		[CCode (has_construct_function = false)]
 		protected TileCache ();
@@ -456,111 +518,183 @@ namespace Champlain {
 		public virtual void store_tile (Champlain.Tile tile, string contents, size_t size);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_tile_source_get_type ()")]
+	[Version (since = "0.6")]
 	public abstract class TileSource : Champlain.MapSource {
 		[CCode (has_construct_function = false)]
 		protected TileSource ();
 		public unowned Champlain.TileCache get_cache ();
 		public void set_cache (Champlain.TileCache cache);
+		[Version (since = "0.4")]
 		public void set_id (string id);
+		[Version (since = "0.4")]
 		public void set_license (string license);
+		[Version (since = "0.4")]
 		public void set_license_uri (string license_uri);
 		public void set_max_zoom_level (uint zoom_level);
 		public void set_min_zoom_level (uint zoom_level);
+		[Version (since = "0.4")]
 		public void set_name (string name);
+		[Version (since = "0.4")]
 		public void set_projection (Champlain.MapProjection projection);
 		public void set_tile_size (uint tile_size);
 		public Champlain.TileCache cache { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public string id { owned get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public string license { owned get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public string license_uri { owned get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public uint max_zoom_level { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public uint min_zoom_level { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public string name { owned get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public Champlain.MapProjection projection { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.4")]
 		public uint tile_size { get; set construct; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_view_get_type ()")]
+	[Version (since = "0.1")]
 	public class View : Clutter.Actor, Atk.Implementor, Clutter.Animatable, Clutter.Container, Clutter.Scriptable {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
+		[Version (since = "0.4")]
 		public View ();
+		[Version (since = "0.2")]
 		public void add_layer (Champlain.Layer layer);
+		[Version (since = "0.12.5")]
 		public void add_overlay_source (Champlain.MapSource map_source, uint8 opacity);
-		[Deprecated (since = "0.12.4")]
+		[Version (deprecated = true, deprecated_since = "0.12.4", since = "0.10")]
 		public void bin_layout_add (Clutter.Actor child, Clutter.BinAlignment x_align, Clutter.BinAlignment y_align);
 		public void center_on (double latitude, double longitude);
+		[Version (since = "0.10")]
 		public void ensure_layers_visible (bool animate);
+		[Version (since = "0.10")]
 		public void ensure_visible (Champlain.BoundingBox bbox, bool animate);
+		[Version (since = "0.12")]
 		public bool get_animate_zoom ();
+		[Version (since = "0.12.4")]
 		public unowned Clutter.Content get_background_pattern ();
+		[Version (since = "0.12.4")]
 		public Champlain.BoundingBox get_bounding_box ();
+		[Version (since = "0.12.6")]
 		public Champlain.BoundingBox get_bounding_box_for_zoom_level (uint zoom_level);
+		[Version (since = "0.10")]
 		public double get_center_latitude ();
+		[Version (since = "0.10")]
 		public double get_center_longitude ();
+		[Version (since = "0.4")]
 		public double get_deceleration ();
+		[Version (since = "0.4")]
 		public bool get_keep_center_on_resize ();
+		[Version (since = "0.10")]
 		public bool get_kinetic_mode ();
+		[Version (since = "0.10")]
 		public unowned Champlain.License get_license_actor ();
+		[Version (since = "0.4")]
 		public unowned Champlain.MapSource get_map_source ();
+		[Version (since = "0.4")]
 		public uint get_max_zoom_level ();
+		[Version (since = "0.4")]
 		public uint get_min_zoom_level ();
+		[Version (since = "0.12.5")]
 		public GLib.List<weak Champlain.MapSource> get_overlay_sources ();
+		[Version (since = "0.10")]
 		public Champlain.State get_state ();
+		[Version (since = "0.10")]
 		public void get_viewport_origin (out int x, out int y);
+		[Version (since = "0.12.11")]
 		public unowned Champlain.BoundingBox get_world ();
+		[Version (since = "0.4")]
 		public uint get_zoom_level ();
+		[Version (since = "0.4")]
 		public bool get_zoom_on_double_click ();
+		[Version (since = "0.4")]
 		public void go_to (double latitude, double longitude);
+		[Version (since = "0.10")]
 		public double latitude_to_y (double latitude);
+		[Version (since = "0.10")]
 		public double longitude_to_x (double longitude);
+		[Version (since = "0.8")]
 		public void reload_tiles ();
+		[Version (since = "0.4.1")]
 		public void remove_layer (Champlain.Layer layer);
+		[Version (since = "0.12.5")]
 		public void remove_overlay_source (Champlain.MapSource map_source);
+		[Version (since = "0.12")]
 		public void set_animate_zoom (bool value);
+		[Version (since = "0.12.4")]
 		public void set_background_pattern (Clutter.Content background);
+		[Version (since = "0.4")]
 		public void set_deceleration (double rate);
+		[Version (since = "0.4")]
 		public void set_keep_center_on_resize (bool value);
+		[Version (since = "0.10")]
 		public void set_kinetic_mode (bool kinetic);
+		[Version (since = "0.4")]
 		public void set_map_source (Champlain.MapSource map_source);
+		[Version (since = "0.4")]
 		public void set_max_zoom_level (uint zoom_level);
+		[Version (since = "0.4")]
 		public void set_min_zoom_level (uint zoom_level);
+		[Version (since = "0.12.11")]
 		public void set_world (Champlain.BoundingBox bbox);
+		[Version (since = "0.4")]
 		public void set_zoom_level (uint zoom_level);
+		[Version (since = "0.4")]
 		public void set_zoom_on_double_click (bool value);
+		[Version (since = "0.4")]
 		public void stop_go_to ();
 		public Cairo.Surface to_surface (bool include_layers);
+		[Version (since = "0.10")]
 		public double x_to_longitude (double x);
+		[Version (since = "0.10")]
 		public double y_to_latitude (double y);
 		public void zoom_in ();
 		public void zoom_out ();
+		[Version (since = "0.12")]
 		public bool animate_zoom { get; set; }
+		[Version (since = "0.12.4")]
 		public Clutter.Actor background_pattern { get; set; }
+		[Version (since = "0.10")]
 		public double deceleration { get; set; }
 		[NoAccessorMethod]
 		public uint goto_animation_duration { get; set; }
 		[NoAccessorMethod]
 		public Clutter.AnimationMode goto_animation_mode { get; set; }
+		[Version (since = "0.2.7")]
 		public bool keep_center_on_resize { get; set; }
+		[Version (since = "0.10")]
 		public bool kinetic_mode { get; set; }
 		[NoAccessorMethod]
 		public double latitude { get; set; }
 		[NoAccessorMethod]
 		public double longitude { get; set; }
+		[Version (since = "0.2")]
 		public Champlain.MapSource map_source { get; set; }
+		[Version (since = "0.4")]
 		public uint max_zoom_level { get; set; }
+		[Version (since = "0.4")]
 		public uint min_zoom_level { get; set; }
+		[Version (since = "0.4")]
 		public Champlain.State state { get; }
+		[Version (since = "0.12.11")]
 		public Champlain.BoundingBox world { get; set; }
 		public uint zoom_level { get; set; }
+		[Version (since = "0.4")]
 		public bool zoom_on_double_click { get; set; }
+		[Version (since = "0.4")]
 		public signal void animation_completed ();
+		[Version (since = "0.10")]
 		public signal void layer_relocated ();
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_viewport_get_type ()")]
@@ -587,18 +721,26 @@ namespace Champlain {
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_exportable_get_type ()")]
 	public interface Exportable : GLib.Object {
+		[Version (since = "0.12.12")]
 		public abstract unowned Cairo.Surface get_surface ();
+		[Version (since = "0.12.12")]
 		public abstract void set_surface (Cairo.Surface surface);
+		[Version (since = "0.12.12")]
 		public abstract Cairo.Surface surface { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_location_get_type ()")]
 	public interface Location : GLib.Object {
+		[Version (since = "0.10")]
 		public abstract double get_latitude ();
+		[Version (since = "0.10")]
 		public abstract double get_longitude ();
+		[Version (since = "0.10")]
 		public abstract void set_location (double latitude, double longitude);
 		[NoAccessorMethod]
+		[Version (since = "0.10")]
 		public abstract double latitude { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.10")]
 		public abstract double longitude { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", cprefix = "CHAMPLAIN_MAP_PROJECTION_", type_id = "champlain_map_projection_get_type ()")]
@@ -632,18 +774,20 @@ namespace Champlain {
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_MFF_RELIEF")]
 	public const string MAP_SOURCE_MFF_RELIEF;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OAM")]
-	[Deprecated]
+	[Version (deprecated = true)]
 	public const string MAP_SOURCE_OAM;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_AERIAL_MAP")]
+	[Version (deprecated = true)]
 	public const string MAP_SOURCE_OSM_AERIAL_MAP;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_CYCLE_MAP")]
 	public const string MAP_SOURCE_OSM_CYCLE_MAP;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_MAPNIK")]
 	public const string MAP_SOURCE_OSM_MAPNIK;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_MAPQUEST")]
+	[Version (deprecated = true)]
 	public const string MAP_SOURCE_OSM_MAPQUEST;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_OSMARENDER")]
-	[Deprecated]
+	[Version (deprecated = true)]
 	public const string MAP_SOURCE_OSM_OSMARENDER;
 	[CCode (cheader_filename = "champlain/champlain.h", cname = "CHAMPLAIN_MAP_SOURCE_OSM_TRANSPORT_MAP")]
 	public const string MAP_SOURCE_OSM_TRANSPORT_MAP;

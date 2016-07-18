@@ -82,6 +82,37 @@ namespace Egg {
 		public string subtitle { get; set; }
 		public string title { get; set; }
 	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_entry_box_get_type ()")]
+	public class EntryBox : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public EntryBox ();
+		[NoAccessorMethod]
+		public int max_width_chars { get; set; }
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_file_chooser_entry_get_type ()")]
+	public class FileChooserEntry : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public FileChooserEntry (string title, Gtk.FileChooserAction action);
+		public GLib.File? get_file ();
+		public void set_file (GLib.File file);
+		[NoAccessorMethod]
+		public Gtk.FileChooserAction action { get; set; }
+		[NoAccessorMethod]
+		public bool create_folders { get; set; }
+		[NoAccessorMethod]
+		public bool do_overwrite_confirmation { get; set; }
+		public GLib.File file { owned get; set; }
+		[NoAccessorMethod]
+		public Gtk.FileFilter filter { owned get; set; }
+		[NoAccessorMethod]
+		public bool local_only { get; set; }
+		[NoAccessorMethod]
+		public int max_width_chars { get; set; }
+		[NoAccessorMethod]
+		public bool show_hidden { get; set; }
+		[NoAccessorMethod]
+		public string title { owned get; set; }
+	}
 	[CCode (cheader_filename = "egg-private.h", ref_function = "egg_heap_ref", type_id = "egg_heap_get_type ()", unref_function = "egg_heap_unref")]
 	[Compact]
 	public class Heap {
@@ -94,6 +125,18 @@ namespace Egg {
 		public void insert_vals (void* data, uint len);
 		public Egg.Heap @ref ();
 		public void unref ();
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_list_box_get_type ()")]
+	public class ListBox : Gtk.ListBox, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		public ListBox (GLib.Type row_type, string property_name);
+		public unowned GLib.ListModel? get_model ();
+		public unowned string get_property_name ();
+		public GLib.Type get_row_type ();
+		public void set_model (GLib.ListModel model);
+		public string property_name { get; construct; }
+		public GLib.Type row_type { get; construct; }
+		public string row_type_name { construct; }
 	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_menu_manager_get_type ()")]
 	public class MenuManager : GLib.Object {
@@ -111,6 +154,30 @@ namespace Egg {
 		public unowned string get_label ();
 		public void set_label (string label);
 		public string label { get; set; }
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_priority_box_get_type ()")]
+	public class PriorityBox : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public PriorityBox ();
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_radio_box_get_type ()")]
+	public class RadioBox : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public RadioBox ();
+		public void add_item (string id, string text);
+		public unowned string get_active_id ();
+		public void set_active_id (string id);
+		public string active_id { get; set; }
+		[NoAccessorMethod]
+		public bool has_more { get; }
+		[NoAccessorMethod]
+		public bool show_more { get; set; }
+		public signal void changed ();
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_scrolled_window_get_type ()")]
+	public class ScrolledWindow : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected ScrolledWindow ();
 	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_search_bar_get_type ()")]
 	public class SearchBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {

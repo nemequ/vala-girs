@@ -131,13 +131,13 @@ namespace Camel {
 		public weak GLib.Queue children;
 		[CCode (has_construct_function = false)]
 		public CipherValidity ();
-		public int add_certinfo (Camel._cipher_validity_mode_t mode, string name, string email);
+		public int add_certinfo (Camel.CipherValidityMode mode, string name, string email);
 		public void clear ();
 		public Camel.CipherValidity clone ();
 		public void envelope (Camel.CipherValidity valid);
 		public void free ();
 		[Version (since = "3.22")]
-		public void* get_certinfo_property (Camel._cipher_validity_mode_t mode, int info_index, string name);
+		public void* get_certinfo_property (Camel.CipherValidityMode mode, int info_index, string name);
 		public string get_description ();
 		public bool get_valid ();
 		public void init ();
@@ -219,7 +219,7 @@ namespace Camel {
 		[Version (since = "3.2")]
 		public unowned GLib.ByteArray get_byte_array ();
 		public virtual string get_mime_type ();
-		public virtual Camel.ContentType get_mime_type_field ();
+		public virtual unowned Camel.ContentType get_mime_type_field ();
 		public virtual bool is_offline ();
 		public virtual void set_mime_type (string mime_type);
 		public virtual void set_mime_type_field (Camel.ContentType mime_type);
@@ -596,7 +596,7 @@ namespace Camel {
 		public unowned GLib.GenericArray<string> attr_list (ref GLib.GenericArray<string> values);
 		public unowned string left (int lenp);
 		public void set_data (string start, int len, int last);
-		public Camel._html_parser_t step (string datap, int lenp);
+		public Camel.HTMLParserState step (string datap, int lenp);
 		public unowned string tag ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", ref_function = "camel_header_address_ref", type_id = "camel_header_address_get_type ()", unref_function = "camel_header_address_unref")]
@@ -605,7 +605,7 @@ namespace Camel {
 		public weak string name;
 		public void* next;
 		public uint refcount;
-		public Camel._header_address_t type;
+		public Camel.HeaderAddressType type;
 		[CCode (cname = "v.addr")]
 		public weak string v_addr;
 		[CCode (cname = "v.members")]
@@ -826,8 +826,8 @@ namespace Camel {
 		[CCode (has_construct_function = false)]
 		public MimeFilter ();
 		public void backup (string data, size_t length);
-		public virtual void complete (string @in, size_t len, size_t prespace, out string @out, out size_t outlen, out size_t outprespace);
-		public virtual void filter (string @in, size_t len, size_t prespace, out string @out, out size_t outlen, out size_t outprespace);
+		public virtual void complete ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] string[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out string[] @out, out size_t outprespace);
+		public virtual void filter ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] string[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out string[] @out, out size_t outprespace);
 		public virtual void reset ();
 		public void set_size (size_t size, int keep);
 	}
@@ -994,15 +994,15 @@ namespace Camel {
 		public unowned string postface ();
 		[Version (since = "2.22")]
 		public unowned string preface ();
-		public void push_state (Camel._mime_parser_state_t newstate, string boundary);
-		public ssize_t read (string databuffer, ssize_t len) throws GLib.Error;
+		public void push_state (Camel.MimeParserState newstate, string boundary);
+		public ssize_t read ([CCode (array_length = false)] out string[] databuffer, ssize_t len) throws GLib.Error;
 		public void scan_from (bool scan_from);
 		public void scan_pre_from (bool scan_pre_from);
 		[Version (since = "2.22")]
 		public int64 seek (int64 offset, int whence);
 		public int set_header_regex (string matchstr);
-		public Camel._mime_parser_state_t state ();
-		public Camel._mime_parser_state_t step (string databuffer, size_t datalength);
+		public Camel.MimeParserState state ();
+		public Camel.MimeParserState step ([CCode (array_length_cname = "datalength", array_length_pos = 1.1)] ref string[]? databuffer);
 		public unowned Camel.Stream? stream ();
 		[Version (since = "2.22")]
 		public int64 tell ();
@@ -1031,12 +1031,12 @@ namespace Camel {
 		public unowned GLib.List<string> get_content_languages ();
 		public unowned string get_content_location ();
 		public unowned string get_content_md5 ();
-		public Camel.ContentType get_content_type ();
+		public unowned Camel.ContentType get_content_type ();
 		public unowned string get_description ();
 		public unowned string get_disposition ();
 		public Camel.TransferEncoding get_encoding ();
 		public unowned string get_filename ();
-		public void set_content (string data, int length, string type);
+		public void set_content ([CCode (array_length_cname = "length", array_length_pos = 1.5)] string[]? data, string? type);
 		public void set_content_id (string contentid);
 		public void set_content_languages (GLib.List<string> content_languages);
 		public void set_content_location (string location);
@@ -1225,7 +1225,7 @@ namespace Camel {
 		public SMIMEContext (Camel.Session session);
 		public uint32 describe_part (void* part);
 		public void set_encrypt_key (bool use, string key);
-		public void set_sign_mode (Camel._smime_sign_t type);
+		public void set_sign_mode (Camel.SMIMESign type);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_sasl_get_type ()")]
 	public abstract class Sasl : GLib.Object {
@@ -1583,12 +1583,12 @@ namespace Camel {
 	public class StreamBuffer : Camel.Stream, GLib.Seekable {
 		[CCode (has_construct_function = false, type = "CamelStream*")]
 		public StreamBuffer (Camel.Stream stream, Camel.StreamBufferMode mode);
-		public int gets (string buf, uint max, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public int gets ([CCode (array_length = false)] out string[] buf, uint max, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]
 		public virtual void init (Camel.Stream stream, Camel.StreamBufferMode mode);
 		[NoWrapper]
 		public virtual void init_vbuf (Camel.Stream stream, Camel.StreamBufferMode mode, string buf, uint32 size);
-		public string read_line (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string? read_line (GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_stream_filter_get_type ()")]
 	public class StreamFilter : Camel.Stream, GLib.Seekable {
@@ -1615,11 +1615,11 @@ namespace Camel {
 		public StreamMem ();
 		[Version (since = "2.32")]
 		public unowned GLib.ByteArray get_byte_array ();
-		public void set_buffer (string buffer, size_t len);
+		public void set_buffer ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] string[] buffer);
 		public void set_byte_array (GLib.ByteArray buffer);
 		public void set_secure ();
 		[CCode (has_construct_function = false, type = "CamelStream*")]
-		public StreamMem.with_buffer (string buffer, size_t len);
+		public StreamMem.with_buffer ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] string[] buffer);
 		[CCode (has_construct_function = false, type = "CamelStream*")]
 		public StreamMem.with_byte_array (GLib.ByteArray buffer);
 	}
@@ -1730,9 +1730,9 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_vtrash_folder_get_type ()")]
 	public class VTrashFolder : Camel.VeeFolder {
 		public uint32 bit;
-		public Camel._vtrash_folder_t type;
+		public Camel.VTrashFolderType type;
 		[CCode (has_construct_function = false, type = "CamelFolder*")]
-		public VTrashFolder (Camel.Store parent_store, Camel._vtrash_folder_t type);
+		public VTrashFolder (Camel.Store parent_store, Camel.VTrashFolderType type);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_vee_data_cache_get_type ()")]
 	[Version (since = "3.6")]
@@ -2472,6 +2472,26 @@ namespace Camel {
 		TIGER192,
 		HAVAL5160
 	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_CIPHER_VALIDITY_ENCRYPT_", has_type_id = false)]
+	public enum CipherValidityEncrypt {
+		NONE,
+		WEAK,
+		ENCRYPTED,
+		STRONG
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_CIPHER_VALIDITY_", has_type_id = false)]
+	public enum CipherValidityMode {
+		SIGN,
+		ENCRYPT
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_CIPHER_VALIDITY_SIGN_", has_type_id = false)]
+	public enum CipherValiditySign {
+		NONE,
+		GOOD,
+		BAD,
+		UNKNOWN,
+		NEED_PUBLIC_KEY
+	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_DB_COLUMN_", has_type_id = false)]
 	[Version (since = "3.4")]
 	public enum DBKnownColumnNames {
@@ -2581,6 +2601,29 @@ namespace Camel {
 		DIRTY,
 		IN_MEMORY_ONLY
 	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_HTML_PARSER_", has_type_id = false)]
+	public enum HTMLParserState {
+		DATA,
+		ENT,
+		ELEMENT,
+		TAG,
+		DTDENT,
+		COMMENT0,
+		COMMENT,
+		ATTR0,
+		ATTR,
+		VAL0,
+		VAL,
+		VAL_ENT,
+		EOD,
+		EOF
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_HEADER_ADDRESS_", has_type_id = false)]
+	public enum HeaderAddressType {
+		NONE,
+		NAME,
+		GROUP
+	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_JUNK_STATUS_", type_id = "camel_junk_status_get_type ()")]
 	public enum JunkStatus {
 		ERROR,
@@ -2663,6 +2706,25 @@ namespace Camel {
 	public enum MimeFilterYencDirection {
 		ENCODE,
 		DECODE
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_PARSER_STATE_", has_type_id = false)]
+	public enum MimeParserState {
+		INITIAL,
+		PRE_FROM,
+		FROM,
+		HEADER,
+		BODY,
+		MULTIPART,
+		MESSAGE,
+		PART,
+		END,
+		EOF,
+		PRE_FROM_END,
+		FROM_END,
+		HEADER_END,
+		BODY_END,
+		MULTIPART_END,
+		MESSAGE_END
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_NETWORK_SECURITY_METHOD_", type_id = "camel_network_security_method_get_type ()")]
 	[Version (since = "3.2")]
@@ -2757,6 +2819,19 @@ namespace Camel {
 		FUNC,
 		IFUNC,
 		VAR
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SMIME_", has_type_id = false)]
+	[Flags]
+	public enum SMIMEDescribe {
+		SIGNED,
+		ENCRYPTED,
+		CERTS,
+		CRLS
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SMIME_SIGN_", has_type_id = false)]
+	public enum SMIMESign {
+		CLEARSIGN,
+		ENVELOPED
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SASL_ANON_TRACE_", type_id = "camel_sasl_anon_trace_type_get_type ()")]
 	public enum SaslAnonTraceType {
@@ -2886,83 +2961,15 @@ namespace Camel {
 		PARAMS,
 		AUTH
 	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_cipher_validity_encrypt_t", cprefix = "CAMEL_CIPHER_VALIDITY_ENCRYPT_", has_type_id = false)]
-	public enum _cipher_validity_encrypt_t {
-		NONE,
-		WEAK,
-		ENCRYPTED,
-		STRONG
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_cipher_validity_mode_t", cprefix = "CAMEL_CIPHER_VALIDITY_", has_type_id = false)]
-	public enum _cipher_validity_mode_t {
-		SIGN,
-		ENCRYPT
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_cipher_validity_sign_t", cprefix = "CAMEL_CIPHER_VALIDITY_SIGN_", has_type_id = false)]
-	public enum _cipher_validity_sign_t {
-		NONE,
-		GOOD,
-		BAD,
-		UNKNOWN,
-		NEED_PUBLIC_KEY
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_header_address_t", cprefix = "CAMEL_HEADER_ADDRESS_", has_type_id = false)]
-	public enum _header_address_t {
-		NONE,
-		NAME,
-		GROUP
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_html_parser_t", cprefix = "CAMEL_HTML_PARSER_", has_type_id = false)]
-	public enum _html_parser_t {
-		DATA,
-		ENT,
-		ELEMENT,
-		TAG,
-		DTDENT,
-		COMMENT0,
-		COMMENT,
-		ATTR0,
-		ATTR,
-		VAL0,
-		VAL,
-		VAL_ENT,
-		EOD,
-		EOF
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_mime_parser_state_t", cprefix = "CAMEL_MIME_PARSER_STATE_", has_type_id = false)]
-	public enum _mime_parser_state_t {
-		INITIAL,
-		PRE_FROM,
-		FROM,
-		HEADER,
-		BODY,
-		MULTIPART,
-		MESSAGE,
-		PART,
-		END,
-		EOF,
-		PRE_FROM_END,
-		FROM_END,
-		HEADER_END,
-		BODY_END,
-		MULTIPART_END,
-		MESSAGE_END
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_smime_describe_t", cprefix = "CAMEL_SMIME_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_UUDECODE_STATE_", has_type_id = false)]
 	[Flags]
-	public enum _smime_describe_t {
-		SIGNED,
-		ENCRYPTED,
-		CERTS,
-		CRLS
+	public enum UUDecodeState {
+		INIT,
+		BEGIN,
+		END
 	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_smime_sign_t", cprefix = "CAMEL_SMIME_SIGN_", has_type_id = false)]
-	public enum _smime_sign_t {
-		CLEARSIGN,
-		ENVELOPED
-	}
-	[CCode (cheader_filename = "camel/camel.h", cname = "camel_vtrash_folder_t", cprefix = "CAMEL_VTRASH_FOLDER_", has_type_id = false)]
-	public enum _vtrash_folder_t {
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_VTRASH_FOLDER_", has_type_id = false)]
+	public enum VTrashFolderType {
 		TRASH,
 		JUNK,
 		LAST
@@ -3134,12 +3141,6 @@ namespace Camel {
 	public const int URL_PART_PORT;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_URL_PART_USER")]
 	public const int URL_PART_USER;
-	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_UUDECODE_STATE_BEGIN")]
-	public const int UUDECODE_STATE_BEGIN;
-	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_UUDECODE_STATE_END")]
-	public const int UUDECODE_STATE_END;
-	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_UUDECODE_STATE_INIT")]
-	public const int UUDECODE_STATE_INIT;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_UUDECODE_STATE_MASK")]
 	public const int UUDECODE_STATE_MASK;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_VJUNK_NAME")]
@@ -3391,11 +3392,11 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string pstring_strdup (string string);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t quoted_decode_step (uint8 @in, size_t len, uint8 @out, int savestate, int saveme);
+	public static size_t quoted_decode_step ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length_cname = "savestate", array_length_pos = 2.5)] ref int[] saveme);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t quoted_encode_close (uint8 @in, size_t len, uint8 @out, int state, int save);
+	public static size_t quoted_encode_close ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length_cname = "state", array_length_pos = 2.5)] ref int[] save);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t quoted_encode_step (uint8 @in, size_t len, uint8 @out, int state, int save);
+	public static size_t quoted_encode_step ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length_cname = "state", array_length_pos = 2.5)] ref int[] save);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static ssize_t read (int fd, string buf, size_t n, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "camel/camel.h")]
@@ -3443,11 +3444,11 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string utf8_utf7 (string ptr);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t uudecode_step (uint8 @in, size_t inlen, uint8 @out, int state, uint32 save);
+	public static size_t uudecode_step ([CCode (array_length_cname = "inlen", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length_cname = "state", array_length_pos = 2.5)] ref uint32[] save);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t uuencode_close (uint8 @in, size_t len, uint8 @out, uint8 uubuf, int state, uint32 save);
+	public static size_t uuencode_close ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length = false)] ref uint8 uubuf[60], [CCode (array_length_cname = "state", array_length_pos = 3.5)] ref uint32[] save);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t uuencode_step (uint8 @in, size_t len, uint8 @out, uint8 uubuf, int state, uint32 save);
+	public static size_t uuencode_step ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length = false)] ref uint8 uubuf[60], [CCode (array_length_cname = "state", array_length_pos = 3.5)] ref uint32[] save);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static ssize_t write (int fd, string buf, size_t n, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "camel/camel.h")]
