@@ -12148,6 +12148,21 @@ specific situations.</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="message_details_new"
+                c:identifier="gst_element_message_details_new"
+                introspectable="0">
+        <return-value transfer-ownership="full">
+          <type name="Structure" c:type="GstStructure*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <varargs/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="register" c:identifier="gst_element_register">
         <doc xml:space="preserve">Create a new elementfactory capable of instantiating objects of the
 @type and add the factory to @plugin.</doc>
@@ -13473,6 +13488,72 @@ MT safe.</doc>
           <parameter name="line" transfer-ownership="none">
             <doc xml:space="preserve">the source code line where the error was generated</doc>
             <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="message_full_with_details"
+              c:identifier="gst_element_message_full_with_details"
+              version="1.10">
+        <doc xml:space="preserve">Post an error, warning or info message on the bus from inside an element.
+
+@type must be of #GST_MESSAGE_ERROR, #GST_MESSAGE_WARNING or
+#GST_MESSAGE_INFO.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstElement to send message from</doc>
+            <type name="Element" c:type="GstElement*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstMessageType</doc>
+            <type name="MessageType" c:type="GstMessageType"/>
+          </parameter>
+          <parameter name="domain" transfer-ownership="none">
+            <doc xml:space="preserve">the GStreamer GError domain this message belongs to</doc>
+            <type name="GLib.Quark" c:type="GQuark"/>
+          </parameter>
+          <parameter name="code" transfer-ownership="none">
+            <doc xml:space="preserve">the GError code belonging to the domain</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="text"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an allocated text string to be used
+           as a replacement for the default message connected to code,
+           or %NULL</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="debug"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an allocated debug message to be
+           used as a replacement for the default debugging information,
+           or %NULL</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">the source code file where the error was generated</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="function" transfer-ownership="none">
+            <doc xml:space="preserve">the source code function where the error was generated</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="line" transfer-ownership="none">
+            <doc xml:space="preserve">the source code line where the error was generated</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="structure" transfer-ownership="full">
+            <doc xml:space="preserve">optional details structure</doc>
+            <type name="Structure" c:type="GstStructure*"/>
           </parameter>
         </parameters>
       </method>
@@ -15941,6 +16022,29 @@ data flow.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_stream_group_done"
+                   c:identifier="gst_event_new_stream_group_done"
+                   version="1.10">
+        <doc xml:space="preserve">Create a new Stream Group Done event. The stream-group-done event can
+only travel downstream synchronized with the buffer flow. Elements
+that receive the event on a pad should handle it mostly like EOS,
+and emit any data or pending buffers that would depend on more data
+arriving and unblock, since there won't be any more data.
+
+This event is followed by EOS at some point in the future, and is
+generally used when switching pads - to unblock downstream so that
+new pads can be exposed before sending EOS on the existing pads.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new stream-group-done event.</doc>
+          <type name="Event" c:type="GstEvent*"/>
+        </return-value>
+        <parameters>
+          <parameter name="group_id" transfer-ownership="none">
+            <doc xml:space="preserve">the group id of the stream group which is ending</doc>
+            <type name="guint" c:type="const guint"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_stream_start"
                    c:identifier="gst_event_new_stream_start">
         <doc xml:space="preserve">Create a new STREAM_START event. The stream start event can only
@@ -16650,6 +16754,28 @@ and make a copy if you want to modify it or store it for later use.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_stream_group_done"
+              c:identifier="gst_event_parse_stream_group_done"
+              version="1.10">
+        <doc xml:space="preserve">Parse a stream-group-done @event and store the result in the given
+@group_id location.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a stream-group-done event.</doc>
+            <type name="Event" c:type="GstEvent*"/>
+          </instance-parameter>
+          <parameter name="group_id"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">address of variable to store the group id into</doc>
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_stream_start"
               c:identifier="gst_event_parse_stream_start">
         <doc xml:space="preserve">Parse a stream-id @event and store the result in the given @stream_id
@@ -16946,6 +17072,14 @@ Specific custom events are distinguished by the name of the structure.</doc>
         <doc xml:space="preserve">An event that sinks turn into a message. Used to
                          send messages that should be emitted in sync with
                          rendering.</doc>
+      </member>
+      <member name="stream_group_done"
+              value="26894"
+              c:identifier="GST_EVENT_STREAM_GROUP_DONE"
+              glib:nick="stream-group-done">
+        <doc xml:space="preserve">Indicates that there is no more data for
+                the stream group ID in the message. Sent before EOS
+                in some instances and should be handled mostly the same. (Since 1.10)</doc>
       </member>
       <member name="eos"
               value="28174"
@@ -19596,6 +19730,42 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_error_with_details"
+                   c:identifier="gst_message_new_error_with_details"
+                   version="1.10">
+        <doc xml:space="preserve">Create a new error message. The message will copy @error and
+@debug. This message is posted by element when a fatal event
+occurred. The pipeline will probably (partially) stop. The application
+receiving this message should stop the pipeline.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new error message.</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The object originating the message.</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">The GError for this message.</doc>
+            <type name="GLib.Error" c:type="GError*"/>
+          </parameter>
+          <parameter name="debug" transfer-ownership="none">
+            <doc xml:space="preserve">A debugging string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="details" transfer-ownership="full">
+            <doc xml:space="preserve">(allow-none): A GstStructure with details</doc>
+            <type name="Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_have_context"
                    c:identifier="gst_message_new_have_context"
                    version="1.2">
@@ -19622,11 +19792,11 @@ MT safe.</doc>
       </constructor>
       <constructor name="new_info" c:identifier="gst_message_new_info">
         <doc xml:space="preserve">Create a new info message. The message will make copies of @error and
-@debug.
+@debug.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new info message.
 
 MT safe.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new info message.</doc>
           <type name="Message" c:type="GstMessage*"/>
         </return-value>
         <parameters>
@@ -19644,6 +19814,40 @@ MT safe.</doc>
           <parameter name="debug" transfer-ownership="none">
             <doc xml:space="preserve">A debugging string.</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_info_with_details"
+                   c:identifier="gst_message_new_info_with_details"
+                   version="1.10">
+        <doc xml:space="preserve">Create a new info message. The message will make copies of @error and
+@debug.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new warning message.</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The object originating the message.</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">The GError for this message.</doc>
+            <type name="GLib.Error" c:type="GError*"/>
+          </parameter>
+          <parameter name="debug" transfer-ownership="none">
+            <doc xml:space="preserve">A debugging string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="details" transfer-ownership="full">
+            <doc xml:space="preserve">(allow-none): A GstStructure with details</doc>
+            <type name="Structure" c:type="GstStructure*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -19812,6 +20016,63 @@ MT safe.</doc>
           <parameter name="duration" transfer-ownership="none">
             <doc xml:space="preserve">the duration of the buffer that generated the message</doc>
             <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_redirect"
+                   c:identifier="gst_message_new_redirect"
+                   version="1.10">
+        <doc xml:space="preserve">Creates a new redirect message and adds a new entry to it. Redirect messages
+are posted when an element detects that the actual data has to be retrieved
+from a different location. This is useful if such a redirection cannot be
+handled inside a source element, for example when HTTP 302/303 redirects
+return a non-HTTP URL.
+
+The redirect message can hold multiple entries. The first one is added
+when the redirect message is created, with the given location, tag_list,
+entry_struct arguments. Use gst_message_add_redirect_entry() to add more
+entries.
+
+Each entry has a location, a tag list, and a structure. All of these are
+optional. The tag list and structure are useful for additional metadata,
+such as bitrate statistics for the given location.
+
+By default, message recipients should treat entries in the order they are
+stored. The recipient should therefore try entry #0 first, and if this
+entry is not acceptable or working, try entry #1 etc. Senders must make
+sure that they add entries in this order. However, recipients are free to
+ignore the order and pick an entry that is "best" for them. One example
+would be a recipient that scans the entries for the one with the highest
+bitrate tag.
+
+The specified location string is copied. However, ownership over the tag
+list and structure are transferred to the message.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GstMessage</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstObject whose property changed (may or may not be a #GstElement)</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="location" transfer-ownership="none">
+            <doc xml:space="preserve">location string for the new entry</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="tag_list"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">tag list for the new entry</doc>
+            <type name="TagList" c:type="GstTagList*"/>
+          </parameter>
+          <parameter name="entry_struct"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">structure for the new entry</doc>
+            <type name="Structure" c:type="const GstStructure*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -20254,7 +20515,7 @@ MT safe.</doc>
         <doc xml:space="preserve">Create a new warning message. The message will make copies of @error and
 @debug.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The new warning message.
+          <doc xml:space="preserve">the new warning message.
 
 MT safe.</doc>
           <type name="Message" c:type="GstMessage*"/>
@@ -20277,6 +20538,89 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_warning_with_details"
+                   c:identifier="gst_message_new_warning_with_details"
+                   version="1.10">
+        <doc xml:space="preserve">Create a new warning message. The message will make copies of @error and
+@debug.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new warning message.</doc>
+          <type name="Message" c:type="GstMessage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="src"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The object originating the message.</doc>
+            <type name="Object" c:type="GstObject*"/>
+          </parameter>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">The GError for this message.</doc>
+            <type name="GLib.Error" c:type="GError*"/>
+          </parameter>
+          <parameter name="debug" transfer-ownership="none">
+            <doc xml:space="preserve">A debugging string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="details" transfer-ownership="full">
+            <doc xml:space="preserve">(allow-none): A GstStructure with details</doc>
+            <type name="Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_redirect_entry"
+              c:identifier="gst_message_add_redirect_entry"
+              version="1.10">
+        <doc xml:space="preserve">Creates and appends a new entry.
+
+The specified location string is copied. However, ownership over the tag
+list and structure are transferred to the message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_REDIRECT</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="location" transfer-ownership="none">
+            <doc xml:space="preserve">location string for the new entry</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="tag_list"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">tag list for the new entry</doc>
+            <type name="TagList" c:type="GstTagList*"/>
+          </parameter>
+          <parameter name="entry_struct"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">structure for the new entry</doc>
+            <type name="Structure" c:type="const GstStructure*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_num_redirect_entries"
+              c:identifier="gst_message_get_num_redirect_entries"
+              version="1.10">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of entries stored in the message</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_REDIRECT</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_seqnum" c:identifier="gst_message_get_seqnum">
         <doc xml:space="preserve">Retrieve the sequence number of a message.
 
@@ -20644,6 +20988,31 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_error_details"
+              c:identifier="gst_message_parse_error_details"
+              version="1.10">
+        <doc xml:space="preserve">Returns the optional details structure, may be NULL if none.
+The returned structure must not be freed.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">The message object</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="structure"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A pointer to the returned details</doc>
+            <type name="Structure" c:type="const GstStructure**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_group_id"
               c:identifier="gst_message_parse_group_id"
               version="1.2">
@@ -20728,6 +21097,31 @@ MT safe.</doc>
             <doc xml:space="preserve">location for the debug message,
     or %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="parse_info_details"
+              c:identifier="gst_message_parse_info_details"
+              version="1.10">
+        <doc xml:space="preserve">Returns the optional details structure, may be NULL if none
+The returned structure must not be freed.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">The message object</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="structure"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A pointer to the returned details structure</doc>
+            <type name="Structure" c:type="const GstStructure**"/>
           </parameter>
         </parameters>
       </method>
@@ -21004,6 +21398,56 @@ MT safe.</doc>
     specifies the current quality level of the element. The default
     maximum quality is 1000000.</doc>
             <type name="gint" c:type="gint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="parse_redirect_entry"
+              c:identifier="gst_message_parse_redirect_entry"
+              version="1.10">
+        <doc xml:space="preserve">Parses the location and/or structure from the entry with the given index.
+The index must be between 0 and gst_message_get_num_redirect_entries() - 1.
+Returned pointers are valid for as long as this message exists.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMessage of type %GST_MESSAGE_REDIRECT</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="entry_index" transfer-ownership="none">
+            <doc xml:space="preserve">index of the entry to parse</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="location"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for
+    the pointer to the entry's location string, or %NULL</doc>
+            <type name="utf8" c:type="const gchar**"/>
+          </parameter>
+          <parameter name="tag_list"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for
+    the pointer to the entry's tag list, or %NULL</doc>
+            <type name="TagList" c:type="GstTagList**"/>
+          </parameter>
+          <parameter name="entry_struct"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location
+    for the pointer to the entry's structure, or %NULL</doc>
+            <type name="Structure" c:type="const GstStructure**"/>
           </parameter>
         </parameters>
       </method>
@@ -21555,6 +21999,31 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_warning_details"
+              c:identifier="gst_message_parse_warning_details"
+              version="1.10">
+        <doc xml:space="preserve">Returns the optional details structure, may be NULL if none
+The returned structure must not be freed.</doc>
+        <doc-version xml:space="preserve">
+
+MT safe.</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">The message object</doc>
+            <type name="Message" c:type="GstMessage*"/>
+          </instance-parameter>
+          <parameter name="structure"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A pointer to the returned details structure</doc>
+            <type name="Structure" c:type="const GstStructure**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_buffering_stats"
               c:identifier="gst_message_set_buffering_stats">
         <doc xml:space="preserve">Configures the buffering stats values in @message.</doc>
@@ -22045,6 +22514,14 @@ was updated.</doc>
               glib:nick="streams-selected">
         <doc xml:space="preserve">Message indicating the active selection of
     #GstStreams has changed (Since 1.10)</doc>
+      </member>
+      <member name="redirect"
+              value="2147483654"
+              c:identifier="GST_MESSAGE_REDIRECT"
+              glib:nick="redirect">
+        <doc xml:space="preserve">Message indicating to request the application to
+    try to play the given URL(s). Useful if for example a HTTP 302/303
+    response is received with a non-HTTP URL inside. (Since 1.10)</doc>
       </member>
       <member name="any"
               value="4294967295"

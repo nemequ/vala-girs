@@ -6,7 +6,7 @@ namespace Vnc {
 	public class CairoFramebuffer : Vnc.BaseFramebuffer, Vnc.Framebuffer {
 		[CCode (has_construct_function = false)]
 		public CairoFramebuffer (uint16 width, uint16 height, Vnc.PixelFormat remoteFormat);
-		public Cairo.Surface get_surface ();
+		public unowned Cairo.Surface get_surface ();
 		public void* surface { get; construct; }
 	}
 	[CCode (cheader_filename = "gtk-vnc.h", type_id = "vnc_display_get_type ()")]
@@ -16,13 +16,15 @@ namespace Vnc {
 		public void client_cut_text (string text);
 		public void close ();
 		public void force_grab (bool enable);
+		public unowned Vnc.Connection get_connection ();
 		public Vnc.DisplayDepthColor get_depth ();
 		public bool get_force_size ();
 		public unowned Vnc.GrabSequence get_grab_keys ();
 		public int get_height ();
 		public bool get_keyboard_grab ();
 		public bool get_lossy_encoding ();
-		public static unowned GLib.OptionEntry? get_option_entries ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public static unowned GLib.OptionEntry[] get_option_entries ();
 		public static GLib.OptionGroup get_option_group ();
 		public Gdk.Pixbuf get_pixbuf ();
 		public bool get_pointer_grab ();
@@ -33,13 +35,13 @@ namespace Vnc {
 		public int get_width ();
 		public bool is_open ();
 		public bool is_pointer_absolute ();
-		public bool open_addr (GLib.SocketAddress addr, string hostname);
+		public bool open_addr (GLib.SocketAddress addr, string? hostname);
 		public bool open_fd (int fd);
-		public bool open_fd_with_hostname (int fd, string hostname);
+		public bool open_fd_with_hostname (int fd, string? hostname);
 		public bool open_host (string host, string port);
 		public bool request_update ();
 		public void send_keys ([CCode (array_length_cname = "nkeyvals", array_length_pos = 1.1)] uint[] keyvals);
-		public void send_keys_ex (uint keyvals, int nkeyvals, Vnc.DisplayKeyEvent kind);
+		public void send_keys_ex ([CCode (array_length_cname = "nkeyvals", array_length_pos = 1.5)] uint[] keyvals, Vnc.DisplayKeyEvent kind);
 		public void send_pointer (int x, int y, int button_mask);
 		public bool set_credential (int type, string data);
 		public void set_depth (Vnc.DisplayDepthColor depth);
@@ -52,8 +54,7 @@ namespace Vnc {
 		public void set_read_only (bool enable);
 		public bool set_scaling (bool enable);
 		public void set_shared_flag (bool shared);
-		[NoAccessorMethod]
-		public Vnc.Connection connection { owned get; }
+		public Vnc.Connection connection { get; }
 		public Vnc.DisplayDepthColor depth { get; set construct; }
 		public bool force_size { get; set construct; }
 		[NoAccessorMethod]

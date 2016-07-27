@@ -1393,11 +1393,8 @@ A #GstGLColorConvert can be created with gst_gl_color_convert_new().</doc>
       <field name="outbuf" readable="0" private="1">
         <type name="Gst.Buffer" c:type="GstBuffer*"/>
       </field>
-      <field name="fbo" introspectable="0" readable="0" private="1">
-        <type c:type="GLuint"/>
-      </field>
-      <field name="depth_buffer" introspectable="0" readable="0" private="1">
-        <type c:type="GLuint"/>
+      <field name="fbo" readable="0" private="1">
+        <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
       </field>
       <field name="shader" readable="0" private="1">
         <type name="GLShader" c:type="GstGLShader*"/>
@@ -1547,11 +1544,6 @@ returned.</doc>
             <type name="GLPlatform" c:type="GstGLPlatform"/>
           </parameter>
         </parameters>
-      </function>
-      <function name="get_error" c:identifier="gst_gl_context_get_error">
-        <return-value transfer-ownership="full">
-          <type name="utf8" c:type="gchar*"/>
-        </return-value>
       </function>
       <function name="get_proc_address_with_platform"
                 c:identifier="gst_gl_context_get_proc_address_with_platform">
@@ -1802,6 +1794,17 @@ version.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="clear_framebuffer"
+              c:identifier="gst_gl_context_clear_framebuffer">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="GLContext" c:type="GstGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="clear_shader" c:identifier="gst_gl_context_clear_shader">
         <doc xml:space="preserve">Clear's the currently set shader from the GL state machine.
 
@@ -1843,24 +1846,6 @@ Should only be called once.</doc>
                      allow-none="1">
             <doc xml:space="preserve">a #GstGLContext to share OpenGL objects with</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="del_fbo"
-              c:identifier="gst_gl_context_del_fbo"
-              introspectable="0">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="GLContext" c:type="GstGLContext*"/>
-          </instance-parameter>
-          <parameter name="fbo" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="depth_buffer" transfer-ownership="none">
-            <type c:type="GLuint"/>
           </parameter>
         </parameters>
       </method>
@@ -1909,30 +1894,6 @@ allow wrapped contexts to be used as regular #GstGLContext's.</doc>
             <doc xml:space="preserve">a #GstGLContext:</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="gen_fbo"
-              c:identifier="gst_gl_context_gen_fbo"
-              introspectable="0">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="GLContext" c:type="GstGLContext*"/>
-          </instance-parameter>
-          <parameter name="width" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="fbo" transfer-ownership="none">
-            <type c:type="GLuint*"/>
-          </parameter>
-          <parameter name="depthbuffer" transfer-ownership="none">
-            <type c:type="GLuint*"/>
-          </parameter>
         </parameters>
       </method>
       <method name="gen_shader" c:identifier="gst_gl_context_gen_shader">
@@ -2113,24 +2074,6 @@ be retrieved using this method.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_error"
-              c:identifier="gst_gl_context_set_error"
-              introspectable="0">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="GLContext" c:type="GstGLContext*"/>
-          </instance-parameter>
-          <parameter name="format" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="..." transfer-ownership="none">
-            <varargs/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_shared_with"
               c:identifier="gst_gl_context_set_shared_with"
               version="1.8">
@@ -2211,42 +2154,6 @@ MT-safe</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">user data to call @func with</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="use_fbo_v2"
-              c:identifier="gst_gl_context_use_fbo_v2"
-              introspectable="0">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="GLContext" c:type="GstGLContext*"/>
-          </instance-parameter>
-          <parameter name="texture_fbo_width" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="texture_fbo_height" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="fbo" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="depth_buffer" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="texture_fbo" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="cb" transfer-ownership="none">
-            <type c:type="GLCB_V2"/>
-          </parameter>
-          <parameter name="stuff"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2749,16 +2656,6 @@ display's object lock held.</doc>
     </record>
     <record name="GLDisplayPrivate" c:type="GstGLDisplayPrivate" disguised="1">
     </record>
-    <enumeration name="GLDisplayProjection" c:type="GstGLDisplayProjection">
-      <member name="ortho2d"
-              value="0"
-              c:identifier="GST_GL_DISPLAY_PROJECTION_ORTHO2D">
-      </member>
-      <member name="perspective"
-              value="1"
-              c:identifier="GST_GL_DISPLAY_PROJECTION_PERSPECTIVE">
-      </member>
-    </enumeration>
     <bitfield name="GLDisplayType" c:type="GstGLDisplayType">
       <member name="none" value="0" c:identifier="GST_GL_DISPLAY_TYPE_NONE">
         <doc xml:space="preserve">no display type</doc>
@@ -2887,10 +2784,10 @@ automatic download if needed.</doc>
             <type name="GLFilter" c:type="GstGLFilter*"/>
           </instance-parameter>
           <parameter name="in_tex" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
           <parameter name="out_tex" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -2939,10 +2836,12 @@ automatic download if needed.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="draw_texture"
-              c:identifier="gst_gl_filter_draw_texture"
-              introspectable="0">
-        <doc xml:space="preserve">Draws @texture into the OpenGL scene at the specified @width and @height.</doc>
+      <method name="draw_fullscreen_quad"
+              c:identifier="gst_gl_filter_draw_fullscreen_quad">
+        <doc xml:space="preserve">Render a fullscreen quad using the current GL state.  The only GL state this
+modifies is the necessary vertex/index buffers and, if necessary, a
+Vertex Array Object for drawing a fullscreen quad.  Framebuffer state,
+any shaders, viewport state, etc must be setup by the caller.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2951,18 +2850,6 @@ automatic download if needed.</doc>
             <doc xml:space="preserve">a #GstGLFilter</doc>
             <type name="GLFilter" c:type="GstGLFilter*"/>
           </instance-parameter>
-          <parameter name="texture" transfer-ownership="none">
-            <doc xml:space="preserve">the texture to draw</doc>
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="width" transfer-ownership="none">
-            <doc xml:space="preserve">width of @texture</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <doc xml:space="preserve">height of texture</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
         </parameters>
       </method>
       <method name="filter_texture"
@@ -2991,32 +2878,27 @@ automatic download if needed.</doc>
       <method name="render_to_target"
               c:identifier="gst_gl_filter_render_to_target"
               introspectable="0">
-        <doc xml:space="preserve">Transforms @input into @output using @func on through FBO.  @resize should
-only ever be %TRUE whenever @input is the input texture of @filter.</doc>
+        <doc xml:space="preserve">Transforms @input into @output using @func on through FBO.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">the return value of @func</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="filter" transfer-ownership="none">
             <doc xml:space="preserve">a #GstGLFilter</doc>
             <type name="GLFilter" c:type="GstGLFilter*"/>
           </instance-parameter>
-          <parameter name="resize" transfer-ownership="none">
-            <doc xml:space="preserve">whether to automatically resize the texture between the input size
-         and the output size</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
           <parameter name="input" transfer-ownership="none">
             <doc xml:space="preserve">the input texture</doc>
-            <type c:type="GLuint"/>
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
-          <parameter name="target" transfer-ownership="none">
+          <parameter name="output" transfer-ownership="none">
             <doc xml:space="preserve">the output texture</doc>
-            <type c:type="GLuint"/>
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
-          <parameter name="func" transfer-ownership="none">
+          <parameter name="func" transfer-ownership="none" closure="3">
             <doc xml:space="preserve">the function to transform @input into @output. called with @data</doc>
-            <type c:type="GLCB"/>
+            <type name="GLFilterRenderFunc" c:type="GstGLFilterRenderFunc"/>
           </parameter>
           <parameter name="data"
                      transfer-ownership="none"
@@ -3028,10 +2910,8 @@ only ever be %TRUE whenever @input is the input texture of @filter.</doc>
         </parameters>
       </method>
       <method name="render_to_target_with_shader"
-              c:identifier="gst_gl_filter_render_to_target_with_shader"
-              introspectable="0">
-        <doc xml:space="preserve">Transforms @input into @output using @shader on FBO.  @resize should
-only ever be %TRUE whenever @input is the input texture of @filter.
+              c:identifier="gst_gl_filter_render_to_target_with_shader">
+        <doc xml:space="preserve">Transforms @input into @output using @shader with a FBO.
 
 See also: gst_gl_filter_render_to_target()</doc>
         <return-value transfer-ownership="none">
@@ -3042,18 +2922,13 @@ See also: gst_gl_filter_render_to_target()</doc>
             <doc xml:space="preserve">a #GstGLFilter</doc>
             <type name="GLFilter" c:type="GstGLFilter*"/>
           </instance-parameter>
-          <parameter name="resize" transfer-ownership="none">
-            <doc xml:space="preserve">whether to automatically resize the texture between the input size
-         and the output size</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
           <parameter name="input" transfer-ownership="none">
             <doc xml:space="preserve">the input texture</doc>
-            <type c:type="GLuint"/>
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
-          <parameter name="target" transfer-ownership="none">
+          <parameter name="output" transfer-ownership="none">
             <doc xml:space="preserve">the output texture</doc>
-            <type c:type="GLuint"/>
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
           <parameter name="shader" transfer-ownership="none">
             <doc xml:space="preserve">the shader to use.</doc>
@@ -3075,13 +2950,18 @@ See also: gst_gl_filter_render_to_target()</doc>
       <field name="out_caps">
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </field>
-      <field name="fbo" introspectable="0" readable="0" private="1">
+      <field name="fbo">
         <doc xml:space="preserve">GL Framebuffer object used for transformations</doc>
-        <type c:type="GLuint"/>
+        <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
       </field>
-      <field name="depthbuffer" introspectable="0" readable="0" private="1">
-        <doc xml:space="preserve">GL renderbuffer attached to @fbo</doc>
-        <type c:type="GLuint"/>
+      <field name="gl_result" readable="0" private="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="inbuf" readable="0" private="1">
+        <type name="Gst.Buffer" c:type="GstBuffer*"/>
+      </field>
+      <field name="outbuf" readable="0" private="1">
+        <type name="Gst.Buffer" c:type="GstBuffer*"/>
       </field>
       <field name="default_shader" readable="0" private="1">
         <type name="GLShader" c:type="GstGLShader*"/>
@@ -3165,10 +3045,10 @@ See also: gst_gl_filter_render_to_target()</doc>
               <type name="GLFilter" c:type="GstGLFilter*"/>
             </parameter>
             <parameter name="in_tex" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
+              <type name="GLMemory" c:type="GstGLMemory*"/>
             </parameter>
             <parameter name="out_tex" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
+              <type name="GLMemory" c:type="GstGLMemory*"/>
             </parameter>
           </parameters>
         </callback>
@@ -3231,15 +3111,71 @@ See also: gst_gl_filter_render_to_target()</doc>
         </callback>
       </field>
     </record>
+    <callback name="GLFilterRenderFunc" c:type="GstGLFilterRenderFunc">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filter" transfer-ownership="none">
+          <type name="GLFilter" c:type="GstGLFilter*"/>
+        </parameter>
+        <parameter name="in_tex" transfer-ownership="none">
+          <type name="GLMemory" c:type="GstGLMemory*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <enumeration name="GLFormat" c:type="GstGLFormat">
+      <member name="luminance" value="6409" c:identifier="GST_GL_LUMINANCE">
+      </member>
+      <member name="alpha" value="6406" c:identifier="GST_GL_ALPHA">
+      </member>
+      <member name="luminance_alpha"
+              value="6410"
+              c:identifier="GST_GL_LUMINANCE_ALPHA">
+      </member>
+      <member name="red" value="6403" c:identifier="GST_GL_RED">
+      </member>
+      <member name="r8" value="33321" c:identifier="GST_GL_R8">
+      </member>
+      <member name="rg" value="33319" c:identifier="GST_GL_RG">
+      </member>
+      <member name="rg8" value="33323" c:identifier="GST_GL_RG8">
+      </member>
+      <member name="rgb" value="6407" c:identifier="GST_GL_RGB">
+      </member>
+      <member name="rgb8" value="32849" c:identifier="GST_GL_RGB8">
+      </member>
+      <member name="rgb565" value="36194" c:identifier="GST_GL_RGB565">
+      </member>
+      <member name="rgba" value="6408" c:identifier="GST_GL_RGBA">
+      </member>
+      <member name="rgba8" value="32856" c:identifier="GST_GL_RGBA8">
+      </member>
+      <member name="depth_component16"
+              value="33189"
+              c:identifier="GST_GL_DEPTH_COMPONENT16">
+      </member>
+      <member name="depth24_stencil8"
+              value="35056"
+              c:identifier="GST_GL_DEPTH24_STENCIL8">
+      </member>
+    </enumeration>
     <class name="GLFramebuffer"
            c:symbol-prefix="gl_framebuffer"
            c:type="GstGLFramebuffer"
-           parent="GObject.Object"
+           parent="Gst.Object"
            glib:type-name="GstGLFramebuffer"
            glib:get-type="gst_gl_framebuffer_get_type"
            glib:type-struct="GLFramebufferClass">
       <constructor name="new" c:identifier="gst_gl_framebuffer_new">
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none">
           <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
         </return-value>
         <parameters>
@@ -3248,73 +3184,66 @@ See also: gst_gl_filter_render_to_target()</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="delete" c:identifier="gst_gl_framebuffer_delete">
+      <constructor name="new_with_default_depth"
+                   c:identifier="gst_gl_framebuffer_new_with_default_depth">
+        <return-value transfer-ownership="none">
+          <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <type name="GLContext" c:type="GstGLContext*"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="attach" c:identifier="gst_gl_framebuffer_attach">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="frame" transfer-ownership="none">
+          <instance-parameter name="fb" transfer-ownership="none">
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
-          <parameter name="fbo" transfer-ownership="none">
+          <parameter name="attachment_point" transfer-ownership="none">
             <type name="guint" c:type="guint"/>
           </parameter>
-          <parameter name="depth" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
+          <parameter name="mem" transfer-ownership="none">
+            <type name="GLBaseMemory" c:type="GstGLBaseMemory*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="generate" c:identifier="gst_gl_framebuffer_generate">
+      <method name="bind" c:identifier="gst_gl_framebuffer_bind">
         <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="frame" transfer-ownership="none">
+          <instance-parameter name="fb" transfer-ownership="none">
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
-          <parameter name="width" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="fbo" transfer-ownership="none">
-            <type name="guint" c:type="guint*"/>
-          </parameter>
-          <parameter name="depthbuffer" transfer-ownership="none">
-            <type name="guint" c:type="guint*"/>
-          </parameter>
         </parameters>
       </method>
-      <method name="use_v2"
-              c:identifier="gst_gl_framebuffer_use_v2"
+      <method name="draw_to_texture"
+              c:identifier="gst_gl_framebuffer_draw_to_texture"
               introspectable="0">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="frame" transfer-ownership="none">
+          <instance-parameter name="fb" transfer-ownership="none">
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
-          <parameter name="texture_fbo_width" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
+          <parameter name="mem" transfer-ownership="none">
+            <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
-          <parameter name="texture_fbo_height" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
+          <parameter name="cb" transfer-ownership="none" closure="2">
+            <type name="GLFramebufferFunc" c:type="GstGLFramebufferFunc"/>
           </parameter>
-          <parameter name="fbo" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="depth_buffer" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="texture_fbo" transfer-ownership="none">
-            <type c:type="GLuint"/>
-          </parameter>
-          <parameter name="cb" transfer-ownership="none">
-            <type c:type="GLCB_V2"/>
-          </parameter>
-          <parameter name="stuff"
+          <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
@@ -3322,23 +3251,80 @@ See also: gst_gl_filter_render_to_target()</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_effective_dimensions"
+              c:identifier="gst_gl_framebuffer_get_effective_dimensions">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="fb" transfer-ownership="none">
+            <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
+          </instance-parameter>
+          <parameter name="width" transfer-ownership="none">
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="gst_gl_framebuffer_get_id">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="fb" transfer-ownership="none">
+            <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <field name="object">
-        <type name="GObject.Object" c:type="GObject"/>
+        <type name="Gst.Object" c:type="GstObject"/>
       </field>
       <field name="context" readable="0" private="1">
         <type name="GLContext" c:type="GstGLContext*"/>
+      </field>
+      <field name="fbo_id" readable="0" private="1">
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="attachments" readable="0" private="1">
+        <array name="GLib.Array" c:type="GArray*">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="GLFramebufferPrivate" c:type="GstGLFramebufferPrivate*"/>
       </field>
     </class>
+    <record name="GLFramebufferAllocator"
+            c:type="GstGLFramebufferAllocator"
+            disguised="1">
+    </record>
+    <record name="GLFramebufferAllocatorClass"
+            c:type="GstGLFramebufferAllocatorClass"
+            disguised="1">
+    </record>
     <record name="GLFramebufferClass"
             c:type="GstGLFramebufferClass"
             glib:is-gtype-struct-for="GLFramebuffer">
       <field name="object_class">
-        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+        <type name="Gst.ObjectClass" c:type="GstObjectClass"/>
       </field>
     </record>
+    <callback name="GLFramebufferFunc" c:type="GstGLFramebufferFunc">
+      <doc xml:space="preserve">callback definition for operating through a Framebuffer object</doc>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="stuff"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <record name="GLFramebufferPrivate"
             c:type="GstGLFramebufferPrivate"
             disguised="1">
@@ -8471,6 +8457,231 @@ mappings between texture formats.</doc>
       <member name="timestamp" value="2" c:identifier="GST_GL_QUERY_TIMESTAMP">
       </member>
     </enumeration>
+    <record name="GLRenderbuffer" c:type="GstGLRenderbuffer">
+      <doc xml:space="preserve">GstGLRenderbuffer is a #GstGLBaseMemory subclass providing support for
+OpenGL renderbuffers.
+
+#GstGLRenderbuffer is created or wrapped through gst_gl_base_memory_alloc()
+with #GstGLRenderbufferAllocationParams.</doc>
+      <field name="mem" writable="1">
+        <doc xml:space="preserve">the parent object</doc>
+        <type name="GLBaseMemory" c:type="GstGLBaseMemory"/>
+      </field>
+      <field name="renderbuffer_id" writable="1">
+        <doc xml:space="preserve">the GL texture id for this memory</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="renderbuffer_type" introspectable="0" writable="1">
+        <doc xml:space="preserve">the texture type</doc>
+        <type c:type="GstVideoGLTextureType"/>
+      </field>
+      <field name="width" writable="1">
+        <doc xml:space="preserve">the width</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="height" writable="1">
+        <doc xml:space="preserve">the height</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="renderbuffer_wrapped" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <method name="get_height"
+              c:identifier="gst_gl_renderbuffer_get_height"
+              version="1.8">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the configured height of @gl_mem</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gl_mem" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLRenderbuffer</doc>
+            <type name="GLRenderbuffer" c:type="GstGLRenderbuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id"
+              c:identifier="gst_gl_renderbuffer_get_id"
+              version="1.8">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the OpenGL renderbuffer handle of @gl_mem</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gl_mem" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLRenderbuffer</doc>
+            <type name="GLRenderbuffer" c:type="GstGLRenderbuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_type"
+              c:identifier="gst_gl_renderbuffer_get_type"
+              version="1.8"
+              introspectable="0">
+        <return-value>
+          <doc xml:space="preserve">the #GstVideoGLTextureType of @gl_mem</doc>
+          <type c:type="GstVideoGLTextureType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gl_mem" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLRenderbuffer</doc>
+            <type name="GLRenderbuffer" c:type="GstGLRenderbuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_width"
+              c:identifier="gst_gl_renderbuffer_get_width"
+              version="1.8">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the configured width of @gl_mem</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="gl_mem" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLRenderbuffer</doc>
+            <type name="GLRenderbuffer" c:type="GstGLRenderbuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="init_once"
+                c:identifier="gst_gl_renderbuffer_init_once"
+                version="1.4">
+        <doc xml:space="preserve">Initializes the GL Base Texture allocator. It is safe to call this function
+multiple times.  This must be called before any other GstGLRenderbuffer operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </function>
+    </record>
+    <record name="GLRenderbufferAllocationParams"
+            c:type="GstGLRenderbufferAllocationParams">
+      <field name="parent" writable="1">
+        <type name="GLAllocationParams" c:type="GstGLAllocationParams"/>
+      </field>
+      <field name="renderbuffer_type" introspectable="0" writable="1">
+        <type c:type="GstVideoGLTextureType"/>
+      </field>
+      <field name="width" writable="1">
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="height" writable="1">
+        <type name="guint" c:type="guint"/>
+      </field>
+      <function name="new"
+                c:identifier="gst_gl_renderbuffer_allocation_params_new"
+                version="1.10"
+                introspectable="0">
+        <return-value>
+          <doc xml:space="preserve">a new #GstGLRenderbufferAllocationParams for allocating #GstGLRenderbuffer's</doc>
+          <type name="GLRenderbufferAllocationParams"
+                c:type="GstGLRenderbufferAllocationParams*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
+            <type name="GLContext" c:type="GstGLContext*"/>
+          </parameter>
+          <parameter name="alloc_params"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #GstAllocationParams for sysmem mappings of the texture</doc>
+            <type name="Gst.AllocationParams" c:type="GstAllocationParams*"/>
+          </parameter>
+          <parameter name="renderbuffer_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstVideoGLTextureType for the created textures</doc>
+            <type c:type="GstVideoGLTextureType"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">the width of the renderbuffer</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">the height of the renderbuffer</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_wrapped"
+                c:identifier="gst_gl_renderbuffer_allocation_params_new_wrapped"
+                version="1.10"
+                introspectable="0">
+        <return-value>
+          <doc xml:space="preserve">a new #GstGLRenderbufferAllocationParams for wrapping @gl_handle as a
+         renderbuffer</doc>
+          <type name="GLRenderbufferAllocationParams"
+                c:type="GstGLRenderbufferAllocationParams*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
+            <type name="GLContext" c:type="GstGLContext*"/>
+          </parameter>
+          <parameter name="alloc_params"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #GstAllocationParams for @tex_id</doc>
+            <type name="Gst.AllocationParams" c:type="GstAllocationParams*"/>
+          </parameter>
+          <parameter name="renderbuffer_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstVideoGLTextureType for @tex_id</doc>
+            <type c:type="GstVideoGLTextureType"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">the width of the renderbuffer</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">the height of the renderbuffer</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="gl_handle"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the GL handle to wrap</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to call @notify with</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">a #GDestroyNotify</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <class name="GLRenderbufferAllocator"
+           c:symbol-prefix="gl_renderbuffer_allocator"
+           c:type="GstGLRenderbufferAllocator"
+           parent="GLBaseMemoryAllocator"
+           glib:type-name="GstGLRenderbufferAllocator"
+           glib:get-type="gst_gl_renderbuffer_allocator_get_type"
+           glib:type-struct="GLRenderbufferAllocatorClass">
+      <doc xml:space="preserve">Opaque #GstGLRenderbufferAllocator struct</doc>
+      <field name="parent">
+        <type name="GLBaseMemoryAllocator" c:type="GstGLBaseMemoryAllocator"/>
+      </field>
+    </class>
+    <record name="GLRenderbufferAllocatorClass"
+            c:type="GstGLRenderbufferAllocatorClass"
+            glib:is-gtype-struct-for="GLRenderbufferAllocator">
+      <doc xml:space="preserve">The #GstGLRenderbufferAllocatorClass only contains private data</doc>
+      <field name="parent_class">
+        <type name="GLBaseMemoryAllocatorClass"
+              c:type="GstGLBaseMemoryAllocatorClass"/>
+      </field>
+    </record>
     <enumeration name="GLSLError"
                  c:type="GstGLSLError"
                  glib:error-domain="gst-glsl-error">
@@ -10697,11 +10908,8 @@ Other memory types may define it to require a different type of parameter.</doc>
       <field name="reconfigure">
         <type name="gboolean" c:type="gboolean"/>
       </field>
-      <field name="fbo" introspectable="0">
-        <type c:type="GLuint"/>
-      </field>
-      <field name="depth_buffer" introspectable="0">
-        <type c:type="GLuint"/>
+      <field name="fbo">
+        <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
       </field>
       <field name="priv">
         <type name="GLViewConvertPrivate" c:type="GstGLViewConvertPrivate*"/>
@@ -12042,6 +12250,12 @@ require this to be called with a valid handle before drawing can commence.</doc>
               c:type="GST_GL_MEMORY_VIDEO_FORMATS_STR">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="GL_RENDERBUFFER_ALLOCATOR_NAME"
+              value="GLRenderbuffer"
+              c:type="GST_GL_RENDERBUFFER_ALLOCATOR_NAME">
+      <doc xml:space="preserve">The name of the GL renderbuffer allocator</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="GL_TEXTURE_TARGET_2D_STR"
               value="2D"
               c:type="GST_GL_TEXTURE_TARGET_2D_STR">
@@ -12492,6 +12706,16 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
         </parameter>
       </parameters>
     </function>
+    <function name="gl_renderbuffer_init_once"
+              c:identifier="gst_gl_renderbuffer_init_once"
+              moved-to="GLRenderbuffer.init_once"
+              version="1.4">
+      <doc xml:space="preserve">Initializes the GL Base Texture allocator. It is safe to call this function
+multiple times.  This must be called before any other GstGLRenderbuffer operation.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
     <function name="gl_run_query" c:identifier="gst_gl_run_query">
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
@@ -12856,6 +13080,20 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
               version="1.8">
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">whether the memory at @mem is a #GstGLMemoryPBO</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstMemory</doc>
+          <type name="Gst.Memory" c:type="GstMemory*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="is_gl_renderbuffer"
+              c:identifier="gst_is_gl_renderbuffer"
+              version="1.10">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">whether the memory at @mem is a #GstGLRenderbuffer</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>

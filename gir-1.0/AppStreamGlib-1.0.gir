@@ -15,6 +15,10 @@ and/or use gtk-doc annotations.  -->
              shared-library="libappstream-glib.so.8"
              c:identifier-prefixes="As"
              c:symbol-prefixes="as_">
+    <alias name="ImageAlphaFlags" c:type="AsImageAlphaFlags">
+      <doc xml:space="preserve">The flags used for reporting the alpha cutouts in the image.</doc>
+      <type name="guint" c:type="guint"/>
+    </alias>
     <alias name="Node" c:type="AsNode">
       <type name="GLib.Node" c:type="GNode"/>
     </alias>
@@ -473,6 +477,24 @@ and/or use gtk-doc annotations.  -->
           <parameter name="release" transfer-ownership="none">
             <doc xml:space="preserve">a #AsRelease instance.</doc>
             <type name="Release" c:type="AsRelease*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_review"
+              c:identifier="as_app_add_review"
+              version="0.5.18">
+        <doc xml:space="preserve">Adds a review to an application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview instance.</doc>
+            <type name="Review" c:type="AsReview*"/>
           </parameter>
         </parameters>
       </method>
@@ -1322,6 +1344,23 @@ becomes "gimp" and is used for cache directories.</doc>
           <doc xml:space="preserve">an array</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
             <type name="Release"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_reviews"
+              c:identifier="as_app_get_reviews"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets any reviews the application has defined.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Screenshot"/>
           </array>
         </return-value>
         <parameters>
@@ -3233,6 +3272,36 @@ parts, others may get nightmares.</doc>
         <doc xml:space="preserve">An intense amount</doc>
       </member>
     </enumeration>
+    <constant name="IMAGE_ALPHA_FLAG_BOTTOM"
+              value="2"
+              c:type="AS_IMAGE_ALPHA_FLAG_BOTTOM">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="IMAGE_ALPHA_FLAG_INTERNAL"
+              value="16"
+              c:type="AS_IMAGE_ALPHA_FLAG_INTERNAL">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="IMAGE_ALPHA_FLAG_LEFT"
+              value="4"
+              c:type="AS_IMAGE_ALPHA_FLAG_LEFT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="IMAGE_ALPHA_FLAG_NONE"
+              value="0"
+              c:type="AS_IMAGE_ALPHA_FLAG_NONE">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="IMAGE_ALPHA_FLAG_RIGHT"
+              value="8"
+              c:type="AS_IMAGE_ALPHA_FLAG_RIGHT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="IMAGE_ALPHA_FLAG_TOP"
+              value="1"
+              c:type="AS_IMAGE_ALPHA_FLAG_TOP">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="IMAGE_LARGE_HEIGHT"
               value="423"
               c:type="AS_IMAGE_LARGE_HEIGHT">
@@ -4191,31 +4260,6 @@ using as_image_get_basename(). This can be overridden if required.</doc>
         <type name="GObject.Object" c:type="GObject"/>
       </field>
     </class>
-    <enumeration name="ImageAlphaFlags" c:type="AsImageAlphaFlags">
-      <doc xml:space="preserve">The flags used for reporting the alpha cutouts in the image.</doc>
-      <member name="none" value="0" c:identifier="AS_IMAGE_ALPHA_FLAG_NONE">
-        <doc xml:space="preserve">No padding detected</doc>
-      </member>
-      <member name="top" value="1" c:identifier="AS_IMAGE_ALPHA_FLAG_TOP">
-        <doc xml:space="preserve">Padding detected at the image top</doc>
-      </member>
-      <member name="bottom"
-              value="2"
-              c:identifier="AS_IMAGE_ALPHA_FLAG_BOTTOM">
-        <doc xml:space="preserve">Padding detected at the image bottom</doc>
-      </member>
-      <member name="left" value="4" c:identifier="AS_IMAGE_ALPHA_FLAG_LEFT">
-        <doc xml:space="preserve">Padding detected at the image left side</doc>
-      </member>
-      <member name="right" value="8" c:identifier="AS_IMAGE_ALPHA_FLAG_RIGHT">
-        <doc xml:space="preserve">Padding detected at the image right side</doc>
-      </member>
-      <member name="internal"
-              value="16"
-              c:identifier="AS_IMAGE_ALPHA_FLAG_INTERNAL">
-        <doc xml:space="preserve">Internal alpha cut out areas detected</doc>
-      </member>
-    </enumeration>
     <record name="ImageClass"
             c:type="AsImageClass"
             glib:is-gtype-struct-for="Image">
@@ -5542,6 +5586,656 @@ NOTE: This is not stored in the XML file, and is only available in-memory.</doc>
         <doc xml:space="preserve">Release is available</doc>
       </member>
     </enumeration>
+    <class name="Review"
+           c:symbol-prefix="review"
+           c:type="AsReview"
+           parent="GObject.Object"
+           glib:type-name="AsReview"
+           glib:get-type="as_review_get_type"
+           glib:type-struct="ReviewClass">
+      <constructor name="new" c:identifier="as_review_new" version="0.5.18">
+        <doc xml:space="preserve">Creates a new #AsReview.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsReview</doc>
+          <type name="Review" c:type="AsReview*"/>
+        </return-value>
+      </constructor>
+      <method name="add_flags"
+              c:identifier="as_review_add_flags"
+              version="0.5.18">
+        <doc xml:space="preserve">Adds flags to an existing review without replacing the other flags.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReviewFlags, e.g. %AS_REVIEW_FLAG_SELF</doc>
+            <type name="ReviewFlags" c:type="AsReviewFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_metadata"
+              c:identifier="as_review_add_metadata"
+              version="0.5.18">
+        <doc xml:space="preserve">Adds metadata to the review object.
+It is left for the the plugin to use this method as required, but a
+typical use would be to store some secure authentication token.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">a string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="equal" c:identifier="as_review_equal" version="0.5.18">
+        <doc xml:space="preserve">Checks if two reviews are the same.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE for success</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review1" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview instance.</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="review2" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview instance.</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_date"
+              c:identifier="as_review_get_date"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the date the review was originally submitted.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GDateTime, or %NULL for unset</doc>
+          <type name="GLib.DateTime" c:type="GDateTime*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_description"
+              c:identifier="as_review_get_description"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the multi-line review text that forms the body of the review.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the string, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flags"
+              c:identifier="as_review_get_flags"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets any flags set on the review, for example if the user has already
+voted on the review or if the user wrote the review themselves.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #AsReviewFlags, e.g. %AS_REVIEW_FLAG_SELF</doc>
+          <type name="ReviewFlags" c:type="AsReviewFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="as_review_get_id" version="0.5.18">
+        <doc xml:space="preserve">Gets the review id.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the review identifier, e.g. "deadbeef"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_karma"
+              c:identifier="as_review_get_karma"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the karma for the review, where positive numbers indicate
+more positive feedback for the review.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the karma value, or 0 for unset.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_locale"
+              c:identifier="as_review_get_locale"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the locale for the review.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the string, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_metadata_item"
+              c:identifier="as_review_get_metadata_item"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets some metadata from a review object.
+It is left for the the plugin to use this method as required, but a
+typical use would be to retrieve some secure authentication token.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A string value, or %NULL for not found</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">a string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_priority"
+              c:identifier="as_review_get_priority"
+              version="0.5.18">
+        <doc xml:space="preserve">This allows the UI to sort reviews into the correct order.
+Higher numbers indicate a more important or relevant review.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the review priority, or 0 for unset.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rating"
+              c:identifier="as_review_get_rating"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the star rating of the review, where 100 is 5 stars.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">integer as a percentage, or 0 for unset</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_reviewer_id"
+              c:identifier="as_review_get_reviewer_id"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the name of the reviewer.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the reviewer ID, e.g. "deadbeef", or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_reviewer_name"
+              c:identifier="as_review_get_reviewer_name"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the name of the reviewer.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the reviewer name, e.g. "David Smith", or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_summary"
+              c:identifier="as_review_get_summary"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the review summary.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the one-line summary, e.g. "Awesome application"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_version"
+              c:identifier="as_review_get_version"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets the version string for the application being reviewed..</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the version string, e.g. "0.1.2", or %NULL for unset</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_date"
+              c:identifier="as_review_set_date"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the date the review was originally submitted.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="date" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDateTime, or %NULL</doc>
+            <type name="GLib.DateTime" c:type="GDateTime*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_description"
+              c:identifier="as_review_set_description"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the multi-line review text that forms the body of the review.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="description" transfer-ownership="none">
+            <doc xml:space="preserve">multi-line description</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_flags"
+              c:identifier="as_review_set_flags"
+              version="0.5.18">
+        <doc xml:space="preserve">Gets any flags set on the review, for example if the user has already
+voted on the review or if the user wrote the review themselves.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReviewFlags, e.g. %AS_REVIEW_FLAG_SELF</doc>
+            <type name="ReviewFlags" c:type="AsReviewFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_id" c:identifier="as_review_set_id" version="0.5.18">
+        <doc xml:space="preserve">Sets the review identifier that is unique to each review.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">review identifier, e.g. "deadbeef"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_karma"
+              c:identifier="as_review_set_karma"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the karma for the review, where positive numbers indicate
+more positive feedback for the review.
+
+Karma can be positive or negative, or 0 for unset.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="karma" transfer-ownership="none">
+            <doc xml:space="preserve">a karma value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_locale"
+              c:identifier="as_review_set_locale"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the locale for the review.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="locale" transfer-ownership="none">
+            <doc xml:space="preserve">locale, e.g. "en_GB"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_priority"
+              c:identifier="as_review_set_priority"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the priority for the review, where positive numbers indicate
+a better review for the specific user.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="priority" transfer-ownership="none">
+            <doc xml:space="preserve">a priority value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rating"
+              c:identifier="as_review_set_rating"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the star rating of the review, where 100 is 5 stars..</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="rating" transfer-ownership="none">
+            <doc xml:space="preserve">a integer as a percentage, or 0 for unset</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_reviewer_id"
+              c:identifier="as_review_set_reviewer_id"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the name of the reviewer, which can be left unset.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="reviewer_id" transfer-ownership="none">
+            <doc xml:space="preserve">the reviewer ID, e.g. "deadbeef"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_reviewer_name"
+              c:identifier="as_review_set_reviewer_name"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the name of the reviewer, which can be left unset.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="reviewer_name" transfer-ownership="none">
+            <doc xml:space="preserve">the reviewer name, e.g. "David Smith"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_summary"
+              c:identifier="as_review_set_summary"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the one-line summary that may be displayed in bold.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="summary" transfer-ownership="none">
+            <doc xml:space="preserve">a one-line summary, e.g. "Awesome application"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_version"
+              c:identifier="as_review_set_version"
+              version="0.5.18">
+        <doc xml:space="preserve">Sets the version string for the application being reviewed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="review" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsReview</doc>
+            <type name="Review" c:type="AsReview*"/>
+          </instance-parameter>
+          <parameter name="version" transfer-ownership="none">
+            <doc xml:space="preserve">a version string, e.g. "0.1.2"</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="date"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="Review"/>
+      </property>
+      <property name="description"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="flags"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="id"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="karma"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="locale"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="rating"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="reviewer-id"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="reviewer-name"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="summary"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="version"
+                version="0.5.18"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="ReviewClass"
+            c:type="AsReviewClass"
+            glib:is-gtype-struct-for="Review">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="_as_reserved1" introspectable="0">
+        <callback name="_as_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved2" introspectable="0">
+        <callback name="_as_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved3" introspectable="0">
+        <callback name="_as_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved4" introspectable="0">
+        <callback name="_as_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved5" introspectable="0">
+        <callback name="_as_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved6" introspectable="0">
+        <callback name="_as_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved7" introspectable="0">
+        <callback name="_as_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved8" introspectable="0">
+        <callback name="_as_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <bitfield name="ReviewFlags" version="0.5.18" c:type="AsReviewFlags">
+      <doc xml:space="preserve">The flags for the review.</doc>
+      <member name="none" value="0" c:identifier="AS_REVIEW_FLAG_NONE">
+        <doc xml:space="preserve">No special flags set</doc>
+      </member>
+      <member name="self" value="1" c:identifier="AS_REVIEW_FLAG_SELF">
+        <doc xml:space="preserve">The user wrote the review themselves</doc>
+      </member>
+      <member name="voted" value="2" c:identifier="AS_REVIEW_FLAG_VOTED">
+        <doc xml:space="preserve">The user voted on the review</doc>
+      </member>
+    </bitfield>
     <class name="Screenshot"
            c:symbol-prefix="screenshot"
            c:type="AsScreenshot"
@@ -5731,6 +6425,7 @@ FIXME: This function assumes the images are ordered in preference order, e.g.
             <type name="Screenshot" c:type="AsScreenshot*"/>
           </instance-parameter>
           <parameter name="locale" transfer-ownership="none">
+            <doc xml:space="preserve">a locale, e.g. `en_GB`</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -7087,6 +7782,23 @@ or removed from the store.</doc>
               c:identifier="AS_TAG_CONTENT_ATTRIBUTE">
         <doc xml:space="preserve">`content_attribute`</doc>
       </member>
+      <member name="version" value="51" c:identifier="AS_TAG_VERSION">
+        <doc xml:space="preserve">`version`</doc>
+      </member>
+      <member name="reviews" value="52" c:identifier="AS_TAG_REVIEWS">
+        <doc xml:space="preserve">`reviews`</doc>
+      </member>
+      <member name="review" value="53" c:identifier="AS_TAG_REVIEW">
+        <doc xml:space="preserve">`review`</doc>
+      </member>
+      <member name="reviewer_name"
+              value="54"
+              c:identifier="AS_TAG_REVIEWER_NAME">
+        <doc xml:space="preserve">`reviewer_name`</doc>
+      </member>
+      <member name="reviewer_id" value="55" c:identifier="AS_TAG_REVIEWER_ID">
+        <doc xml:space="preserve">`reviewer_id`</doc>
+      </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">
       <doc xml:space="preserve">The flags to use when matching %AsTag's.</doc>
@@ -7694,6 +8406,29 @@ than @line_len. Words are not split.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="node_add_attribute_as_uint"
+              c:identifier="as_node_add_attribute_as_uint"
+              version="0.5.18"
+              introspectable="0">
+      <doc xml:space="preserve">Adds a new attribute to a node.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="node" transfer-ownership="none">
+          <doc xml:space="preserve">a #AsNode</doc>
+          <type name="GLib.Node" c:type="GNode*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve">the attribute key</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">new data</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="node_error_quark"
               c:identifier="as_node_error_quark"
               version="0.1.0">
@@ -7825,6 +8560,25 @@ than @line_len. Words are not split.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">integer value, or %G_MAXINT for error</doc>
         <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="node" transfer-ownership="none">
+          <doc xml:space="preserve">a #AsNode</doc>
+          <type name="GLib.Node" c:type="const GNode*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve">the attribute key</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="node_get_attribute_as_uint"
+              c:identifier="as_node_get_attribute_as_uint"
+              version="0.5.18">
+      <doc xml:space="preserve">Gets a node attribute, e.g. 34</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">integer value, or %G_MAXINT for error</doc>
+        <type name="guint" c:type="guint"/>
       </return-value>
       <parameters>
         <parameter name="node" transfer-ownership="none">

@@ -41,7 +41,7 @@ namespace Vnc {
 	[CCode (cheader_filename = "gvnc.h", type_id = "vnc_base_framebuffer_get_type ()")]
 	public class BaseFramebuffer : GLib.Object, Vnc.Framebuffer {
 		[CCode (has_construct_function = false)]
-		public BaseFramebuffer (uint8 buffer, uint16 width, uint16 height, int rowstride, Vnc.PixelFormat localFormat, Vnc.PixelFormat remoteFormat);
+		public BaseFramebuffer ([CCode (array_length = false)] uint8[] buffer, uint16 width, uint16 height, int rowstride, Vnc.PixelFormat localFormat, Vnc.PixelFormat remoteFormat);
 		[NoAccessorMethod]
 		public void* buffer { get; construct; }
 		[NoAccessorMethod]
@@ -64,7 +64,7 @@ namespace Vnc {
 		public uint16 offset;
 		public uint16 size;
 		[CCode (has_construct_function = false)]
-		public ColorMap (uint16 offset, uint16 nentries);
+		public ColorMap (uint16 offset, uint16 size);
 		public Vnc.ColorMap copy ();
 		public void free ();
 		public bool lookup (uint16 idx, uint16 red, uint16 green, uint16 blue);
@@ -80,6 +80,7 @@ namespace Vnc {
 		public bool framebuffer_update_request (bool incremental, uint16 x, uint16 y, uint16 width, uint16 height);
 		public bool get_abs_pointer ();
 		public unowned Vnc.AudioFormat get_audio_format ();
+		public unowned Vnc.Cursor get_cursor ();
 		public bool get_ext_key_event ();
 		public int get_height ();
 		public int get_ledstate ();
@@ -91,8 +92,9 @@ namespace Vnc {
 		public bool is_initialized ();
 		public bool is_open ();
 		public bool key_event (bool down_flag, uint32 key, uint16 scancode);
+		public bool open_addr (GLib.SocketAddress addr, string? hostname);
 		public bool open_fd (int fd);
-		public bool open_fd_with_hostname (int fd, string hostname);
+		public bool open_fd_with_hostname (int fd, string? hostname);
 		public bool open_host (string host, string port);
 		public bool pointer_event (uint8 button_mask, uint16 x, uint16 y);
 		public bool set_audio (Vnc.Audio audio);
@@ -100,7 +102,7 @@ namespace Vnc {
 		public bool set_auth_subtype (uint type);
 		public bool set_auth_type (uint type);
 		public bool set_credential (int type, string data);
-		public bool set_encodings (int n_encoding, int32 encoding);
+		public bool set_encodings ([CCode (array_length_cname = "n_encoding", array_length_pos = 0.5)] int32[] encoding);
 		public bool set_framebuffer (Vnc.Framebuffer fb);
 		public bool set_pixel_format (Vnc.PixelFormat fmt);
 		public bool set_shared (bool sharedFlag);
@@ -127,8 +129,9 @@ namespace Vnc {
 	[CCode (cheader_filename = "gvnc.h", type_id = "vnc_cursor_get_type ()")]
 	public class Cursor : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Cursor (uint8 rgba24data, uint16 hotx, uint16 hoty, uint16 width, uint16 height);
-		public uint8 get_data ();
+		public Cursor ([CCode (array_length = false)] uint8[] data, uint16 hotx, uint16 hoty, uint16 width, uint16 height);
+		[CCode (array_length = false)]
+		public unowned uint8[] get_data ();
 		public uint16 get_height ();
 		public uint16 get_hotx ();
 		public uint16 get_hoty ();
@@ -175,7 +178,8 @@ namespace Vnc {
 	public interface Framebuffer : GLib.Object {
 		public abstract void blt (uint8 src, int rowstride, uint16 x, uint16 y, uint16 width, uint16 height);
 		public abstract void copyrect (uint16 srcx, uint16 srcy, uint16 dstx, uint16 dsty, uint16 width, uint16 height);
-		public abstract void fill (uint8 src, uint16 x, uint16 y, uint16 width, uint16 height);
+		public abstract void fill ([CCode (array_length = false)] uint8[] src, uint16 x, uint16 y, uint16 width, uint16 height);
+		[NoWrapper]
 		public abstract uint8 get_buffer ();
 		public abstract uint16 get_height ();
 		public abstract unowned Vnc.PixelFormat get_local_format ();
@@ -183,9 +187,9 @@ namespace Vnc {
 		public abstract int get_rowstride ();
 		public abstract uint16 get_width ();
 		public abstract bool perfect_format_match ();
-		public abstract void rgb24_blt (uint8 src, int rowstride, uint16 x, uint16 y, uint16 width, uint16 height);
+		public abstract void rgb24_blt ([CCode (array_length = false)] uint8[] src, int rowstride, uint16 x, uint16 y, uint16 width, uint16 height);
 		public abstract void set_color_map (Vnc.ColorMap map);
-		public abstract void set_pixel_at (uint8 src, uint16 x, uint16 y);
+		public abstract void set_pixel_at ([CCode (array_length = false)] uint8[] src, uint16 x, uint16 y);
 	}
 	[CCode (cheader_filename = "gvnc.h", has_type_id = false)]
 	public struct ColorMapEntry {

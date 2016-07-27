@@ -68,10 +68,24 @@ and/or use gtk-doc annotations.  -->
       <member name="limba" value="1" c:identifier="AS_BUNDLE_KIND_LIMBA">
         <doc xml:space="preserve">A Limba bundle</doc>
       </member>
-      <member name="xdg_app" value="2" c:identifier="AS_BUNDLE_KIND_XDG_APP">
-        <doc xml:space="preserve">An xdg-app bundle</doc>
+      <member name="flatpak" value="2" c:identifier="AS_BUNDLE_KIND_FLATPAK">
+        <doc xml:space="preserve">A Flatpak bundle</doc>
       </member>
     </enumeration>
+    <bitfield name="CacheFlags" c:type="AsCacheFlags">
+      <doc xml:space="preserve">Flags on how caching should be used.</doc>
+      <member name="none" value="0" c:identifier="AS_CACHE_FLAG_NONE">
+        <doc xml:space="preserve">Type invalid or not known</doc>
+      </member>
+      <member name="use_user" value="1" c:identifier="AS_CACHE_FLAG_USE_USER">
+        <doc xml:space="preserve">Create an user-specific metadata cache.</doc>
+      </member>
+      <member name="use_system"
+              value="2"
+              c:identifier="AS_CACHE_FLAG_USE_SYSTEM">
+        <doc xml:space="preserve">Use and - if possible - update the global metadata cache.</doc>
+      </member>
+    </bitfield>
     <class name="Category"
            c:symbol-prefix="category"
            c:type="AsCategory"
@@ -787,7 +801,7 @@ use the as_component_get_icons() function to get a list of all icons.</doc>
         </parameters>
       </method>
       <method name="get_id" c:identifier="as_component_get_id">
-        <doc xml:space="preserve">Set the unique identifier for this component.</doc>
+        <doc xml:space="preserve">Get the unique identifier for this component.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the unique identifier.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -1000,6 +1014,23 @@ provides.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_search_tokens"
+              c:identifier="as_component_get_search_tokens"
+              version="0.9.7">
+        <doc xml:space="preserve">Returns all search tokens for this component.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The string search tokens</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsComponent instance.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_source_pkgname"
               c:identifier="as_component_get_source_pkgname">
         <return-value transfer-ownership="none">
@@ -1125,6 +1156,25 @@ populated with useful data.</doc>
             <doc xml:space="preserve">a #AsComponent instance.</doc>
             <type name="Component" c:type="AsComponent*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="search_matches"
+              c:identifier="as_component_search_matches"
+              version="0.9.7">
+        <doc xml:space="preserve">Searches component data for a specific keyword.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a match scrore, where 0 is no match and 100 is the best match.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsComponent instance.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </instance-parameter>
+          <parameter name="search_term" transfer-ownership="none">
+            <doc xml:space="preserve">the search term.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_active_locale"
@@ -1662,6 +1712,62 @@ one locale is available.</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
+      <method name="add_component"
+              c:identifier="as_data_pool_add_component"
+              throws="1">
+        <doc xml:space="preserve">Register a new component in the AppStream metadata pool.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the new component was successfully added to the pool.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">The #AsComponent to add to the pool.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear" c:identifier="as_data_pool_clear">
+        <doc xml:space="preserve">Remove all metadat from the pool.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_cache_age" c:identifier="as_data_pool_get_cache_age">
+        <doc xml:space="preserve">Get the age of our internal cache.</doc>
+        <return-value transfer-ownership="none">
+          <type name="glong" c:type="time_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_cache_flags"
+              c:identifier="as_data_pool_get_cache_flags">
+        <doc xml:space="preserve">Get the #AsCacheFlags for this data pool.</doc>
+        <return-value transfer-ownership="none">
+          <type name="CacheFlags" c:type="AsCacheFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_component_by_id"
               c:identifier="as_data_pool_get_component_by_id">
         <doc xml:space="preserve">Get a specific component by its ID.</doc>
@@ -1682,17 +1788,83 @@ one locale is available.</doc>
       </method>
       <method name="get_components" c:identifier="as_data_pool_get_components">
         <doc xml:space="preserve">Get a list of found components.</doc>
-        <return-value transfer-ownership="container">
-          <doc xml:space="preserve">a list of #AsComponent instances, free with g_list_free()</doc>
-          <type name="GLib.List" c:type="GList*">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of #AsComponent instances.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
             <type name="Component"/>
-          </type>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="dpool" transfer-ownership="none">
             <doc xml:space="preserve">An instance of #AsDataPool.</doc>
             <type name="DataPool" c:type="AsDataPool*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_components_by_categories"
+              c:identifier="as_data_pool_get_components_by_categories">
+        <doc xml:space="preserve">Return a list of components which are in one of the categories.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of #AsComponent objects which have been found.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Component"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDatabase.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="categories" transfer-ownership="none">
+            <doc xml:space="preserve">A semicolon-separated list of XDG categories to include.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_components_by_kind"
+              c:identifier="as_data_pool_get_components_by_kind"
+              throws="1">
+        <doc xml:space="preserve">Return a list of all components in the pool which are of a certain kind.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of #AsComponent objects which have been found.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Component"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDatabase.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">An #AsComponentKind.</doc>
+            <type name="ComponentKind" c:type="AsComponentKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_components_by_provided_item"
+              c:identifier="as_data_pool_get_components_by_provided_item"
+              throws="1">
+        <doc xml:space="preserve">Find components in the AppStream data pool whcih provide a certain item.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of #AsComponent objects which have been found.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Component"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">An #AsProvidesKind</doc>
+            <type name="ProvidedKind" c:type="AsProvidedKind"/>
+          </parameter>
+          <parameter name="item" transfer-ownership="none">
+            <doc xml:space="preserve">The value of the provided item.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_locale" c:identifier="as_data_pool_get_locale">
@@ -1722,6 +1894,134 @@ one locale is available.</doc>
             <doc xml:space="preserve">An instance of #AsDataPool.</doc>
             <type name="DataPool" c:type="AsDataPool*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="load" c:identifier="as_data_pool_load" throws="1">
+        <doc xml:space="preserve">Builds an index of all found components in the watched locations.
+The function will try to get as much data into the pool as possible, so even if
+the update completes with %FALSE, it might still have added components to the pool.
+
+The function will load from all possible data sources, preferring caches if they
+are up to date.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if update completed without error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_cache_file"
+              c:identifier="as_data_pool_load_cache_file"
+              throws="1">
+        <doc xml:space="preserve">Load AppStream metadata from a cache file.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="fname" transfer-ownership="none">
+            <doc xml:space="preserve">Filename of the cache file to load into the pool.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_metadata" c:identifier="as_data_pool_load_metadata">
+        <doc xml:space="preserve">Load fresh metadata from AppStream directories.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="refresh_cache"
+              c:identifier="as_data_pool_refresh_cache"
+              throws="1">
+        <doc xml:space="preserve">Update the AppStream cache. There is normally no need to call this function manually, because cache updates are handled
+transparently in the background.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the cache was updated, %FALSE on error or if the cache update was not necessary and has been skipped.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="force" transfer-ownership="none">
+            <doc xml:space="preserve">Enforce refresh, even if source data has not changed.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="save_cache_file"
+              c:identifier="as_data_pool_save_cache_file"
+              throws="1">
+        <doc xml:space="preserve">Serialize AppStream metadata to a cache file.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="fname" transfer-ownership="none">
+            <doc xml:space="preserve">Filename of the cache file the pool contents should be dumped to.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="search" c:identifier="as_data_pool_search" version="0.9.7">
+        <doc xml:space="preserve">Search for a list of components matching the search terms.
+The list will be unordered.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of the found #AsComponent objects.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Component"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="term" transfer-ownership="none">
+            <doc xml:space="preserve">A search term/string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_cache_flags"
+              c:identifier="as_data_pool_set_cache_flags">
+        <doc xml:space="preserve">Set the #AsCacheFlags for this data pool.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="dpool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
+            <type name="DataPool" c:type="AsDataPool*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">The new #AsCacheFlags.</doc>
+            <type name="CacheFlags" c:type="AsCacheFlags"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_locale" c:identifier="as_data_pool_set_locale">
@@ -1763,16 +2063,11 @@ AppStream XML or DEP-11 YAML in it.</doc>
         </parameters>
       </method>
       <method name="update" c:identifier="as_data_pool_update" throws="1">
-        <doc xml:space="preserve">Builds an index of all found components in the watched locations.
-The function will try to get as much data into the pool as possible, so even if
-the updates completes with %FALSE, it might still add components to the pool.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if update completed without error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="dpool" transfer-ownership="none">
-            <doc xml:space="preserve">An instance of #AsDataPool.</doc>
             <type name="DataPool" c:type="AsDataPool*"/>
           </instance-parameter>
         </parameters>
@@ -1834,6 +2129,26 @@ the updates completes with %FALSE, it might still add components to the pool.</d
       <doc xml:space="preserve">A metadata pool error.</doc>
       <member name="failed" value="0" c:identifier="AS_DATA_POOL_ERROR_FAILED">
         <doc xml:space="preserve">Generic failure</doc>
+      </member>
+      <member name="target_not_writable"
+              value="1"
+              c:identifier="AS_DATA_POOL_ERROR_TARGET_NOT_WRITABLE">
+        <doc xml:space="preserve">We do not have write-access to the cache target location.</doc>
+      </member>
+      <member name="incomplete"
+              value="2"
+              c:identifier="AS_DATA_POOL_ERROR_INCOMPLETE">
+        <doc xml:space="preserve">The pool was loaded, but we had to ignore some metadata.</doc>
+      </member>
+      <member name="collision"
+              value="3"
+              c:identifier="AS_DATA_POOL_ERROR_COLLISION">
+        <doc xml:space="preserve">An AppStream-ID collision occured (a component with that ID already existed in the pool)</doc>
+      </member>
+      <member name="term_invalid"
+              value="4"
+              c:identifier="AS_DATA_POOL_ERROR_TERM_INVALID">
+        <doc xml:space="preserve">A search or selection term was invalid.</doc>
       </member>
     </enumeration>
     <class name="Database"
@@ -5126,6 +5441,17 @@ https://bugzilla.gnome.org/show_bug.cgi?id=760983</doc>
         <parameter name="url_kind" transfer-ownership="none">
           <doc xml:space="preserve">the %AsUrlKind.</doc>
           <type name="UrlKind" c:type="AsUrlKind"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_is_category_name"
+              c:identifier="as_utils_is_category_name">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="category_name" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>

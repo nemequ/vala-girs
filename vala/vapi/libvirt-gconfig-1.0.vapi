@@ -156,6 +156,11 @@ namespace GVirConfig {
 		public DomainAddressPci ();
 		[CCode (has_construct_function = false)]
 		public DomainAddressPci.from_xml (string xml) throws GLib.Error;
+		public int get_bus ();
+		public int get_domain ();
+		public int get_function ();
+		public bool get_multifunction ();
+		public int get_slot ();
 		public void set_bus (uint8 bus);
 		public void set_domain (uint16 pci_domain);
 		public void set_function (uint8 function);
@@ -437,6 +442,32 @@ namespace GVirConfig {
 		public void set_port (int port);
 		public void set_socket (string socket);
 	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_hostdev_get_type ()")]
+	public abstract class DomainHostdev : GVirConfig.DomainDevice {
+		[CCode (has_construct_function = false)]
+		protected DomainHostdev ();
+		public int get_boot_order ();
+		public bool get_readonly ();
+		public bool get_shareable ();
+		public void set_boot_order (int order);
+		public void set_readonly (bool readonly);
+		public void set_shareable (bool shareable);
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_hostdev_pci_get_type ()")]
+	public class DomainHostdevPci : GVirConfig.DomainHostdev {
+		[CCode (has_construct_function = false)]
+		public DomainHostdevPci ();
+		[CCode (has_construct_function = false)]
+		public DomainHostdevPci.from_xml (string xml) throws GLib.Error;
+		public GVirConfig.DomainAddressPci get_address ();
+		public bool get_managed ();
+		public bool get_rom_bar ();
+		public unowned string get_rom_file ();
+		public void set_address (GVirConfig.DomainAddressPci address);
+		public void set_managed (bool managed);
+		public void set_rom_bar (bool bar);
+		public void set_rom_file (string file);
+	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_input_get_type ()")]
 	public class DomainInput : GVirConfig.DomainDevice {
 		[CCode (has_construct_function = false)]
@@ -692,6 +723,7 @@ namespace GVirConfig {
 		public DomainVideo ();
 		[CCode (has_construct_function = false)]
 		public DomainVideo.from_xml (string xml) throws GLib.Error;
+		public GVirConfig.DomainVideoModel get_model ();
 		public void set_accel3d (bool accel3d);
 		public void set_heads (uint head_count);
 		public void set_model (GVirConfig.DomainVideoModel model);

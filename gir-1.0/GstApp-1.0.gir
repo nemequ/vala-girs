@@ -32,7 +32,9 @@ methods or by using the appsink action signals and properties.
 The normal way of retrieving samples from appsink is by using the
 gst_app_sink_pull_sample() and gst_app_sink_pull_preroll() methods.
 These methods block until a sample becomes available in the sink or when the
-sink is shut down or reaches EOS.
+sink is shut down or reaches EOS. There are also timed variants of these
+methods, gst_app_sink_try_pull_sample() and gst_app_sink_try_pull_preroll(),
+which accept a timeout parameter to limit the amount of time to wait.
 
 Appsink will internally use a queue to collect buffers from the streaming
 thread. If the application is not pulling samples fast enough, this queue
@@ -138,6 +140,73 @@ If an EOS event was received before any buffers, this function returns
             <doc xml:space="preserve">a #GstAppSink</doc>
             <type name="AppSink" c:type="GstAppSink*"/>
           </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="try_pull_preroll"
+                      invoker="try_pull_preroll"
+                      version="1.10">
+        <doc xml:space="preserve">Get the last preroll sample in @appsink. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.
+
+This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.
+
+Note that the preroll sample will also be returned as the first sample
+when calling gst_app_sink_pull_sample().
+
+If an EOS event was received before any buffers or the timeout expires,
+this function returns %NULL. Use gst_app_sink_is_eos () to check for the EOS
+condition.
+
+This function blocks until a preroll sample or EOS is received, the appsink
+element is set to the READY/NULL state, or the timeout expires.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.
+         Call gst_sample_unref() after usage.</doc>
+          <type name="Gst.Sample" c:type="GstSample*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="appsink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAppSink</doc>
+            <type name="AppSink" c:type="GstAppSink*"/>
+          </instance-parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum amount of time to wait for the preroll sample</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="try_pull_sample"
+                      invoker="try_pull_sample"
+                      version="1.10">
+        <doc xml:space="preserve">This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state or the timeout expires.
+
+This function will only return samples when the appsink is in the PLAYING
+state. All rendered buffers will be put in a queue so that the application
+can pull samples at its own rate. Note that when the application does not
+pull samples fast enough, the queued buffers could consume a lot of memory,
+especially when dealing with raw video frames.
+
+If an EOS event was received before any buffers or the timeout expires,
+this function returns %NULL. Use gst_app_sink_is_eos () to check for the EOS
+condition.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.
+Call gst_sample_unref() after usage.</doc>
+          <type name="Gst.Sample" c:type="GstSample*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="appsink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAppSink</doc>
+            <type name="AppSink" c:type="GstAppSink*"/>
+          </instance-parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum amount of time to wait for a sample</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
         </parameters>
       </virtual-method>
       <method name="get_caps" c:identifier="gst_app_sink_get_caps">
@@ -408,6 +477,73 @@ elements until a sample is pulled from @appsink.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="try_pull_preroll"
+              c:identifier="gst_app_sink_try_pull_preroll"
+              version="1.10">
+        <doc xml:space="preserve">Get the last preroll sample in @appsink. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.
+
+This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.
+
+Note that the preroll sample will also be returned as the first sample
+when calling gst_app_sink_pull_sample().
+
+If an EOS event was received before any buffers or the timeout expires,
+this function returns %NULL. Use gst_app_sink_is_eos () to check for the EOS
+condition.
+
+This function blocks until a preroll sample or EOS is received, the appsink
+element is set to the READY/NULL state, or the timeout expires.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.
+         Call gst_sample_unref() after usage.</doc>
+          <type name="Gst.Sample" c:type="GstSample*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="appsink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAppSink</doc>
+            <type name="AppSink" c:type="GstAppSink*"/>
+          </instance-parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum amount of time to wait for the preroll sample</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="try_pull_sample"
+              c:identifier="gst_app_sink_try_pull_sample"
+              version="1.10">
+        <doc xml:space="preserve">This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state or the timeout expires.
+
+This function will only return samples when the appsink is in the PLAYING
+state. All rendered buffers will be put in a queue so that the application
+can pull samples at its own rate. Note that when the application does not
+pull samples fast enough, the queued buffers could consume a lot of memory,
+especially when dealing with raw video frames.
+
+If an EOS event was received before any buffers or the timeout expires,
+this function returns %NULL. Use gst_app_sink_is_eos () to check for the EOS
+condition.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.
+Call gst_sample_unref() after usage.</doc>
+          <type name="Gst.Sample" c:type="GstSample*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="appsink" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAppSink</doc>
+            <type name="AppSink" c:type="GstAppSink*"/>
+          </instance-parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum amount of time to wait for a sample</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="caps" writable="1" transfer-ownership="none">
         <type name="Gst.Caps"/>
       </property>
@@ -517,6 +653,68 @@ If an EOS event was received before any buffers, this function returns
           <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS.</doc>
           <type name="Gst.Sample"/>
         </return-value>
+      </glib:signal>
+      <glib:signal name="try-pull-preroll"
+                   when="last"
+                   action="1"
+                   version="1.10">
+        <doc xml:space="preserve">Get the last preroll sample in @appsink. This was the sample that caused the
+appsink to preroll in the PAUSED state. This sample can be pulled many times
+and remains available to the application even after EOS.
+
+This function is typically used when dealing with a pipeline in the PAUSED
+state. Calling this function after doing a seek will give the sample right
+after the seek position.
+
+Note that the preroll sample will also be returned as the first sample
+when calling gst_app_sink_pull_sample() or the "pull-sample" action signal.
+
+If an EOS event was received before any buffers or the timeout expires,
+this function returns %NULL. Use gst_app_sink_is_eos () to check for the EOS
+condition.
+
+This function blocks until a preroll sample or EOS is received, the appsink
+element is set to the READY/NULL state, or the timeout expires.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.</doc>
+          <type name="Gst.Sample"/>
+        </return-value>
+        <parameters>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum amount of time to wait for the preroll sample</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="try-pull-sample"
+                   when="last"
+                   action="1"
+                   version="1.10">
+        <doc xml:space="preserve">This function blocks until a sample or EOS becomes available or the appsink
+element is set to the READY/NULL state or the timeout expires.
+
+This function will only return samples when the appsink is in the PLAYING
+state. All rendered samples will be put in a queue so that the application
+can pull samples at its own rate.
+
+Note that when the application does not pull samples fast enough, the
+queued samples could consume a lot of memory, especially when dealing with
+raw video frames. It's possible to control the behaviour of the queue with
+the "drop" and "max-buffers" properties.
+
+If an EOS event was received before any buffers or the timeout expires,
+this function returns %NULL. Use gst_app_sink_is_eos () to check
+for the EOS condition.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.</doc>
+          <type name="Gst.Sample"/>
+        </return-value>
+        <parameters>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the maximum amount of time to wait for a sample</doc>
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+        </parameters>
       </glib:signal>
     </class>
     <record name="AppSinkCallbacks"
@@ -659,8 +857,46 @@ gst_app_sink_set_callbacks().</doc>
           </parameters>
         </callback>
       </field>
+      <field name="try_pull_preroll">
+        <callback name="try_pull_preroll">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.
+         Call gst_sample_unref() after usage.</doc>
+            <type name="Gst.Sample" c:type="GstSample*"/>
+          </return-value>
+          <parameters>
+            <parameter name="appsink" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstAppSink</doc>
+              <type name="AppSink" c:type="GstAppSink*"/>
+            </parameter>
+            <parameter name="timeout" transfer-ownership="none">
+              <doc xml:space="preserve">the maximum amount of time to wait for the preroll sample</doc>
+              <type name="Gst.ClockTime" c:type="GstClockTime"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="try_pull_sample">
+        <callback name="try_pull_sample">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a #GstSample or NULL when the appsink is stopped or EOS or the timeout expires.
+Call gst_sample_unref() after usage.</doc>
+            <type name="Gst.Sample" c:type="GstSample*"/>
+          </return-value>
+          <parameters>
+            <parameter name="appsink" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstAppSink</doc>
+              <type name="AppSink" c:type="GstAppSink*"/>
+            </parameter>
+            <parameter name="timeout" transfer-ownership="none">
+              <doc xml:space="preserve">the maximum amount of time to wait for a sample</doc>
+              <type name="Gst.ClockTime" c:type="GstClockTime"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="2">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
