@@ -97,7 +97,7 @@ the gdk-pixbuf library.  Currently only RGB is supported.</doc>
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_MICRO" value="2" c:type="GDK_PIXBUF_MICRO">
+    <constant name="PIXBUF_MICRO" value="3" c:type="GDK_PIXBUF_MICRO">
       <doc xml:space="preserve">Micro version of gdk-pixbuf library, that is the "2" in
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
@@ -107,7 +107,7 @@ the gdk-pixbuf library.  Currently only RGB is supported.</doc>
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_VERSION" value="2.35.2" c:type="GDK_PIXBUF_VERSION">
+    <constant name="PIXBUF_VERSION" value="2.35.3" c:type="GDK_PIXBUF_VERSION">
       <doc xml:space="preserve">Contains the full version of the gdk-pixbuf header as a string.
 This is the version being compiled against; contrast with
 #gdk_pixbuf_version.</doc>
@@ -1153,7 +1153,8 @@ allocated for it.</doc>
       </method>
       <method name="copy" c:identifier="gdk_pixbuf_copy">
         <doc xml:space="preserve">Creates a new #GdkPixbuf with a copy of the information in the specified
-@pixbuf.</doc>
+@pixbuf. Note that this does not copy the options set on the original #GdkPixbuf,
+use gdk_pixbuf_copy_options() for this.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A newly-created pixbuf with a reference count of 1, or %NULL if
 not enough memory could be allocated.</doc>
@@ -1208,6 +1209,28 @@ Therefore, you can not use this function to scroll a pixbuf.</doc>
           <parameter name="dest_y" transfer-ownership="none">
             <doc xml:space="preserve">Y coordinate within @dest_pixbuf.</doc>
             <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="copy_options"
+              c:identifier="gdk_pixbuf_copy_options"
+              version="2.36">
+        <doc xml:space="preserve">Copy the key/value pair options attached to a #GdkPixbuf to another.
+This is useful to keep original metadata after having manipulated
+a file. However be careful to remove metadata which you've already
+applied, such as the "orientation" option after rotating the image.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src_pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPixbuf to copy options from</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </instance-parameter>
+          <parameter name="dest_pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">the #GdkPixbuf to copy options to</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
           </parameter>
         </parameters>
       </method>
@@ -1547,6 +1570,25 @@ pixbuf.</doc>
             <doc xml:space="preserve">A pixbuf.</doc>
             <type name="Pixbuf" c:type="GdkPixbuf*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_option"
+              c:identifier="gdk_pixbuf_remove_option"
+              version="2.36">
+        <doc xml:space="preserve">Remove the key/value pair option attached to a #GdkPixbuf.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if an option was removed, %FALSE if not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPixbuf</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">a nul-terminated string representing the key to remove.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="rotate_simple"
@@ -2257,6 +2299,31 @@ allocated for it.</doc>
           <parameter name="interp_type" transfer-ownership="none">
             <doc xml:space="preserve">the interpolation type for the transformation.</doc>
             <type name="InterpType" c:type="GdkInterpType"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_option"
+              c:identifier="gdk_pixbuf_set_option"
+              version="2.2">
+        <doc xml:space="preserve">Attaches a key/value pair as an option to a #GdkPixbuf. If @key already
+exists in the list of options attached to @pixbuf, the new value is
+ignored and %FALSE is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pixbuf" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPixbuf</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">a nul-terminated string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a nul-terminated string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -2990,6 +3057,27 @@ gdk_pixbuf_format_set_disabled().</doc>
             <doc xml:space="preserve">a #GdkPixbufFormat</doc>
             <type name="PixbufFormat" c:type="GdkPixbufFormat*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_save_option_supported"
+              c:identifier="gdk_pixbuf_format_is_save_option_supported"
+              version="2.36">
+        <doc xml:space="preserve">Returns %TRUE if the save option specified by @option_key is supported when
+saving a pixbuf using the module implementing @format.
+See gdk_pixbuf_save() for more information about option keys.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the specified option is supported</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPixbufFormat</doc>
+            <type name="PixbufFormat" c:type="GdkPixbufFormat*"/>
+          </instance-parameter>
+          <parameter name="option_key" transfer-ownership="none">
+            <doc xml:space="preserve">the name of an option</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="is_scalable"

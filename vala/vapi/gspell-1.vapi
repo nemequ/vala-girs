@@ -72,6 +72,8 @@ namespace Gspell {
 		[CCode (has_construct_function = false)]
 		protected TextView ();
 		[Version (since = "1.2")]
+		public void basic_setup ();
+		[Version (since = "1.2")]
 		public bool get_enable_language_menu ();
 		public static unowned Gspell.TextView get_from_gtk_text_view (Gtk.TextView gtk_view);
 		public bool get_inline_spell_checking ();

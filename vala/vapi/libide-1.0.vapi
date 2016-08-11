@@ -642,6 +642,7 @@ namespace Ide {
 	public class LayoutStack : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public LayoutStack ();
+		public void add_control (Gtk.Widget control, int priority);
 		public void foreach_view (Gtk.Callback callback);
 		public unowned Gtk.Widget? get_active_view ();
 		public void remove (Gtk.Widget view);
@@ -658,17 +659,16 @@ namespace Ide {
 		public virtual Ide.LayoutView create_split (GLib.File file);
 		public virtual bool get_can_preview ();
 		public virtual bool get_can_split ();
-		public unowned Gtk.Widget? get_controls ();
 		public virtual bool get_modified ();
-		public virtual unowned string get_special_title ();
-		public virtual unowned string get_title ();
+		public virtual string get_special_title ();
+		public virtual string get_title ();
 		public virtual void navigate_to (Ide.SourceLocation location);
 		public virtual void set_back_forward_list (Ide.BackForwardList back_forward_list);
 		public virtual void set_split_view (bool split_view);
 		public bool can_split { get; }
 		public bool modified { get; }
-		public string special_title { get; }
-		public string title { get; }
+		public string special_title { owned get; }
+		public string title { owned get; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_local_device_get_type ()")]
 	public class LocalDevice : Ide.Device {
@@ -1823,6 +1823,12 @@ namespace Ide {
 		[NoWrapper]
 		public abstract void set_context (Ide.Context context);
 		public abstract Ide.Context context { construct; }
+	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeLayoutStackAddinInterface", type_id = "ide_layout_stack_addin_get_type ()")]
+	public interface LayoutStackAddin : GLib.Object {
+		public abstract void load (Ide.LayoutStack stack);
+		public abstract void set_view (Ide.LayoutView? view);
+		public abstract void unload (Ide.LayoutStack stack);
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdePerspectiveInterface", type_id = "ide_perspective_get_type ()")]
 	public interface Perspective : GLib.Object {

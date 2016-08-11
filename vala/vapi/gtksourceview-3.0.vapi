@@ -692,7 +692,9 @@ namespace Gtk {
 		[Version (since = "3.22")]
 		public SourceRegion (Gtk.TextBuffer buffer);
 		[Version (since = "3.22")]
-		public void add (Gtk.TextIter _start, Gtk.TextIter _end);
+		public void add_region (Gtk.SourceRegion? region_to_add);
+		[Version (since = "3.22")]
+		public void add_subregion (Gtk.TextIter _start, Gtk.TextIter _end);
 		[Version (since = "3.22")]
 		public bool get_bounds (out Gtk.TextIter start, out Gtk.TextIter end);
 		[Version (since = "3.22")]
@@ -700,11 +702,15 @@ namespace Gtk {
 		[Version (since = "3.22")]
 		public Gtk.SourceRegionIter get_start_region_iter ();
 		[Version (since = "3.22")]
-		public Gtk.SourceRegion? intersect (Gtk.TextIter _start, Gtk.TextIter _end);
+		public Gtk.SourceRegion? intersect_region (Gtk.SourceRegion? region2);
+		[Version (since = "3.22")]
+		public Gtk.SourceRegion? intersect_subregion (Gtk.TextIter _start, Gtk.TextIter _end);
 		[Version (since = "3.22")]
 		public bool is_empty ();
 		[Version (since = "3.22")]
-		public void subtract (Gtk.TextIter _start, Gtk.TextIter _end);
+		public void subtract_region (Gtk.SourceRegion? region_to_subtract);
+		[Version (since = "3.22")]
+		public void subtract_subregion (Gtk.TextIter _start, Gtk.TextIter _end);
 		[Version (since = "3.22")]
 		public string? to_string ();
 		[Version (since = "3.22")]

@@ -22,6 +22,16 @@ and/or use gtk-doc annotations.  -->
     <alias name="Node" c:type="AsNode">
       <type name="GLib.Node" c:type="GNode"/>
     </alias>
+    <constant name="APP_SUBSUME_FLAG_DEDUPE"
+              value="0"
+              c:type="AS_APP_SUBSUME_FLAG_DEDUPE">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="APP_SUBSUME_FLAG_MERGE"
+              value="0"
+              c:type="AS_APP_SUBSUME_FLAG_MERGE">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <class name="App"
            c:symbol-prefix="app"
            c:type="AsApp"
@@ -86,6 +96,66 @@ and/or use gtk-doc annotations.  -->
           <parameter name="kind" transfer-ownership="none">
             <doc xml:space="preserve">the #AsAppKind.</doc>
             <type name="AppKind" c:type="AsAppKind"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="merge_kind_from_string"
+                c:identifier="as_app_merge_kind_from_string"
+                version="0.6.1">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #AsAppMergeKind, e.g. %AS_APP_MERGE_KIND_REPLACE.</doc>
+          <type name="AppMergeKind" c:type="AsAppMergeKind"/>
+        </return-value>
+        <parameters>
+          <parameter name="merge_kind" transfer-ownership="none">
+            <doc xml:space="preserve">a source kind string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="merge_kind_to_string"
+                c:identifier="as_app_merge_kind_to_string"
+                version="0.6.1">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @merge_kind, or %NULL for unknown</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="merge_kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsAppMergeKind, e.g. %AS_APP_MERGE_KIND_REPLACE</doc>
+            <type name="AppMergeKind" c:type="AsAppMergeKind"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="scope_from_string"
+                c:identifier="as_app_scope_from_string"
+                version="0.6.1">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #AsAppScope, e.g. %AS_APP_SCOPE_SYSTEM.</doc>
+          <type name="AppScope" c:type="AsAppScope"/>
+        </return-value>
+        <parameters>
+          <parameter name="scope" transfer-ownership="none">
+            <doc xml:space="preserve">a source kind string</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="scope_to_string"
+                c:identifier="as_app_scope_to_string"
+                version="0.6.1">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @scope, or %NULL for unknown</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="scope" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsAppScope, e.g. %AS_APP_SCOPE_SYSTEM</doc>
+            <type name="AppScope" c:type="AsAppScope"/>
           </parameter>
         </parameters>
       </function>
@@ -516,6 +586,24 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_suggest"
+              c:identifier="as_app_add_suggest"
+              version="0.6.1">
+        <doc xml:space="preserve">Adds a suggest to an application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="suggest" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsSuggest instance.</doc>
+            <type name="Suggest" c:type="AsSuggest*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_translation"
               c:identifier="as_app_add_translation"
               version="0.5.8">
@@ -597,6 +685,31 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="equal" c:identifier="as_app_equal" version="0.6.1">
+        <doc xml:space="preserve">Compare one application with another for equality using the following
+properties:
+
+ 1. scope, e.g. `system` or `user`
+ 2. bundle kind, e.g. `package` or `flatpak`
+ 3. origin, e.g. `fedora` or `gnome-apps-nightly`
+ 4. kind, e.g. `app` or `runtime`
+ 5. AppStream ID, e.g. `gimp.desktop`
+ 6. branch, e.g. `stable` or `master`</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the applications are equal</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app1" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="app2" transfer-ownership="none">
+            <doc xml:space="preserve">another #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_addons"
               c:identifier="as_app_get_addons"
               version="0.1.7">
@@ -624,6 +737,21 @@ if all architectures are supported.</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
             <type name="utf8"/>
           </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_branch"
+              c:identifier="as_app_get_branch"
+              version="0.6.1">
+        <doc xml:space="preserve">Gets the branch for the application.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string, or %NULL if unset</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="app" transfer-ownership="none">
@@ -1074,6 +1202,21 @@ becomes "gimp" and is used for cache directories.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_merge_kind"
+              c:identifier="as_app_get_merge_kind"
+              version="0.6.1">
+        <doc xml:space="preserve">Gets the merge_kind of the application.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">enumerated value</doc>
+          <type name="AppMergeKind" c:type="AsAppMergeKind"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_metadata"
               c:identifier="as_app_get_metadata"
               version="0.1.6">
@@ -1370,6 +1513,19 @@ becomes "gimp" and is used for cache directories.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_scope" c:identifier="as_app_get_scope" version="0.6.1">
+        <doc xml:space="preserve">Gets the scope of the application.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">enumerated value</doc>
+          <type name="AppScope" c:type="AsAppScope"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_screenshots"
               c:identifier="as_app_get_screenshots"
               version="0.1.0">
@@ -1449,6 +1605,23 @@ entry set.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_suggests"
+              c:identifier="as_app_get_suggests"
+              version="0.6.1">
+        <doc xml:space="preserve">Gets any suggests the application has defined.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Suggest"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_translations"
               c:identifier="as_app_get_translations"
               version="0.5.8">
@@ -1473,6 +1646,21 @@ entry set.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">bitfield</doc>
           <type name="AppTrustFlags" c:type="AsAppTrustFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_unique_id"
+              c:identifier="as_app_get_unique_id"
+              version="0.6.1">
+        <doc xml:space="preserve">Gets the unique ID value to represent the component.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the unique ID, e.g. `system/package/fedora/desktop/gimp.desktop/master`</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="app" transfer-ownership="none">
@@ -1762,6 +1950,24 @@ search as very short or common keywords will return a lot of matches.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_branch"
+              c:identifier="as_app_set_branch"
+              version="0.6.1">
+        <doc xml:space="preserve">Set the branch that the instance was sourced from.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="branch" transfer-ownership="none">
+            <doc xml:space="preserve">the branch, e.g. "master" or "3-16".</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_comment"
               c:identifier="as_app_set_comment"
               version="0.1.0">
@@ -1896,6 +2102,24 @@ search as very short or common keywords will return a lot of matches.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_merge_kind"
+              c:identifier="as_app_set_merge_kind"
+              version="0.6.1">
+        <doc xml:space="preserve">Sets the merge kind of the application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="merge_kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsAppMergeKind.</doc>
+            <type name="AppMergeKind" c:type="AsAppMergeKind"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_metadata_license"
               c:identifier="as_app_set_metadata_license"
               version="0.1.4">
@@ -2007,6 +2231,22 @@ are better than negative numbers.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_scope" c:identifier="as_app_set_scope" version="0.6.1">
+        <doc xml:space="preserve">Sets the scope of the application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="scope" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsAppScope.</doc>
+            <type name="AppScope" c:type="AsAppScope"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_source_file"
               c:identifier="as_app_set_source_file"
               version="0.2.2">
@@ -2091,7 +2331,7 @@ trusted input.</doc>
             <type name="App" c:type="AsApp*"/>
           </instance-parameter>
           <parameter name="trust_flags" transfer-ownership="none">
-            <doc xml:space="preserve">the #AsAppSourceKind.</doc>
+            <doc xml:space="preserve">the #AsAppTrustFlags.</doc>
             <type name="AppTrustFlags" c:type="AsAppTrustFlags"/>
           </parameter>
         </parameters>
@@ -2333,6 +2573,25 @@ trusted input.</doc>
         <doc xml:space="preserve">Localization data</doc>
       </member>
     </enumeration>
+    <enumeration name="AppMergeKind" c:type="AsAppMergeKind">
+      <doc xml:space="preserve">The component merge kind.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="AS_APP_MERGE_KIND_UNKNOWN">
+        <doc xml:space="preserve">Unknown merge type</doc>
+      </member>
+      <member name="none" value="1" c:identifier="AS_APP_MERGE_KIND_NONE">
+        <doc xml:space="preserve">No merge to be done</doc>
+      </member>
+      <member name="replace"
+              value="2"
+              c:identifier="AS_APP_MERGE_KIND_REPLACE">
+        <doc xml:space="preserve">Merge components, replacing</doc>
+      </member>
+      <member name="append" value="3" c:identifier="AS_APP_MERGE_KIND_APPEND">
+        <doc xml:space="preserve">Merge components, appending</doc>
+      </member>
+    </enumeration>
     <enumeration name="AppParseFlags" c:type="AsAppParseFlags">
       <doc xml:space="preserve">The flags to use when parsing resources.</doc>
       <member name="none" value="0" c:identifier="AS_APP_PARSE_FLAG_NONE">
@@ -2420,6 +2679,18 @@ trusted input.</doc>
         <doc xml:space="preserve">The app is not launchable (run-able)</doc>
       </member>
     </bitfield>
+    <enumeration name="AppScope" c:type="AsAppScope">
+      <doc xml:space="preserve">The application scope.</doc>
+      <member name="unknown" value="0" c:identifier="AS_APP_SCOPE_UNKNOWN">
+        <doc xml:space="preserve">Unknown scope</doc>
+      </member>
+      <member name="user" value="1" c:identifier="AS_APP_SCOPE_USER">
+        <doc xml:space="preserve">User scope</doc>
+      </member>
+      <member name="system" value="2" c:identifier="AS_APP_SCOPE_SYSTEM">
+        <doc xml:space="preserve">System scope</doc>
+      </member>
+    </enumeration>
     <enumeration name="AppSourceKind" c:type="AsAppSourceKind">
       <doc xml:space="preserve">The source kind.</doc>
       <member name="unknown"
@@ -2504,7 +2775,7 @@ trusted input.</doc>
         <doc xml:space="preserve">Application is being purchased</doc>
       </member>
     </enumeration>
-    <enumeration name="AppSubsumeFlags" c:type="AsAppSubsumeFlags">
+    <bitfield name="AppSubsumeFlags" c:type="AsAppSubsumeFlags">
       <doc xml:space="preserve">The flags to use when subsuming applications.</doc>
       <member name="none" value="0" c:identifier="AS_APP_SUBSUME_FLAG_NONE">
         <doc xml:space="preserve">No special actions to use</doc>
@@ -2522,9 +2793,165 @@ trusted input.</doc>
       <member name="partial"
               value="4"
               c:identifier="AS_APP_SUBSUME_FLAG_PARTIAL">
-        <doc xml:space="preserve">Only subsume a safe subset</doc>
+        <doc xml:space="preserve">Only subsume a safe subset (obsolete)</doc>
       </member>
-    </enumeration>
+      <member name="kind" value="8" c:identifier="AS_APP_SUBSUME_FLAG_KIND">
+        <doc xml:space="preserve">Copy the kind</doc>
+      </member>
+      <member name="state" value="16" c:identifier="AS_APP_SUBSUME_FLAG_STATE">
+        <doc xml:space="preserve">Copy the state</doc>
+      </member>
+      <member name="bundles"
+              value="32"
+              c:identifier="AS_APP_SUBSUME_FLAG_BUNDLES">
+        <doc xml:space="preserve">Copy the bundles</doc>
+      </member>
+      <member name="translations"
+              value="64"
+              c:identifier="AS_APP_SUBSUME_FLAG_TRANSLATIONS">
+        <doc xml:space="preserve">Copy the translations</doc>
+      </member>
+      <member name="releases"
+              value="128"
+              c:identifier="AS_APP_SUBSUME_FLAG_RELEASES">
+        <doc xml:space="preserve">Copy the releases</doc>
+      </member>
+      <member name="kudos"
+              value="256"
+              c:identifier="AS_APP_SUBSUME_FLAG_KUDOS">
+        <doc xml:space="preserve">Copy the kudos</doc>
+      </member>
+      <member name="categories"
+              value="512"
+              c:identifier="AS_APP_SUBSUME_FLAG_CATEGORIES">
+        <doc xml:space="preserve">Copy the categories</doc>
+      </member>
+      <member name="permissions"
+              value="1024"
+              c:identifier="AS_APP_SUBSUME_FLAG_PERMISSIONS">
+        <doc xml:space="preserve">Copy the permissions</doc>
+      </member>
+      <member name="extends"
+              value="2048"
+              c:identifier="AS_APP_SUBSUME_FLAG_EXTENDS">
+        <doc xml:space="preserve">Copy the extends</doc>
+      </member>
+      <member name="compulsory"
+              value="4096"
+              c:identifier="AS_APP_SUBSUME_FLAG_COMPULSORY">
+        <doc xml:space="preserve">Copy the compulsory-for-desktop</doc>
+      </member>
+      <member name="screenshots"
+              value="8192"
+              c:identifier="AS_APP_SUBSUME_FLAG_SCREENSHOTS">
+        <doc xml:space="preserve">Copy the screenshots</doc>
+      </member>
+      <member name="reviews"
+              value="16384"
+              c:identifier="AS_APP_SUBSUME_FLAG_REVIEWS">
+        <doc xml:space="preserve">Copy the reviews</doc>
+      </member>
+      <member name="content_ratings"
+              value="32768"
+              c:identifier="AS_APP_SUBSUME_FLAG_CONTENT_RATINGS">
+        <doc xml:space="preserve">Copy the content ratings</doc>
+      </member>
+      <member name="provides"
+              value="65536"
+              c:identifier="AS_APP_SUBSUME_FLAG_PROVIDES">
+        <doc xml:space="preserve">Copy the provides</doc>
+      </member>
+      <member name="icons"
+              value="131072"
+              c:identifier="AS_APP_SUBSUME_FLAG_ICONS">
+        <doc xml:space="preserve">Copy the icons</doc>
+      </member>
+      <member name="mimetypes"
+              value="262144"
+              c:identifier="AS_APP_SUBSUME_FLAG_MIMETYPES">
+        <doc xml:space="preserve">Copy the mimetypes</doc>
+      </member>
+      <member name="vetos"
+              value="524288"
+              c:identifier="AS_APP_SUBSUME_FLAG_VETOS">
+        <doc xml:space="preserve">Copy the vetos</doc>
+      </member>
+      <member name="languages"
+              value="1048576"
+              c:identifier="AS_APP_SUBSUME_FLAG_LANGUAGES">
+        <doc xml:space="preserve">Copy the languages</doc>
+      </member>
+      <member name="name"
+              value="2097152"
+              c:identifier="AS_APP_SUBSUME_FLAG_NAME">
+        <doc xml:space="preserve">Copy the name</doc>
+      </member>
+      <member name="comment"
+              value="4194304"
+              c:identifier="AS_APP_SUBSUME_FLAG_COMMENT">
+        <doc xml:space="preserve">Copy the comment
+@AS_APP_SUBSUME_FLAG_DEVELOPER_NAME	Copy the developer name</doc>
+      </member>
+      <member name="developer_name"
+              value="8388608"
+              c:identifier="AS_APP_SUBSUME_FLAG_DEVELOPER_NAME">
+      </member>
+      <member name="description"
+              value="16777216"
+              c:identifier="AS_APP_SUBSUME_FLAG_DESCRIPTION">
+        <doc xml:space="preserve">Copy the description</doc>
+      </member>
+      <member name="metadata"
+              value="33554432"
+              c:identifier="AS_APP_SUBSUME_FLAG_METADATA">
+        <doc xml:space="preserve">Copy the metadata</doc>
+      </member>
+      <member name="url"
+              value="67108864"
+              c:identifier="AS_APP_SUBSUME_FLAG_URL">
+        <doc xml:space="preserve">Copy the urls</doc>
+      </member>
+      <member name="keywords"
+              value="134217728"
+              c:identifier="AS_APP_SUBSUME_FLAG_KEYWORDS">
+        <doc xml:space="preserve">Copy the keywords</doc>
+      </member>
+      <member name="source_file"
+              value="268435456"
+              c:identifier="AS_APP_SUBSUME_FLAG_SOURCE_FILE">
+        <doc xml:space="preserve">Copy the source file</doc>
+      </member>
+      <member name="branch"
+              value="536870912"
+              c:identifier="AS_APP_SUBSUME_FLAG_BRANCH">
+        <doc xml:space="preserve">Copy the branch</doc>
+      </member>
+      <member name="origin"
+              value="1073741824"
+              c:identifier="AS_APP_SUBSUME_FLAG_ORIGIN">
+        <doc xml:space="preserve">Copy the origin</doc>
+      </member>
+      <member name="metadata_license"
+              value="2147483648"
+              c:identifier="AS_APP_SUBSUME_FLAG_METADATA_LICENSE">
+        <doc xml:space="preserve">Copy the metadata license</doc>
+      </member>
+      <member name="project_license"
+              value="4294967296"
+              c:identifier="AS_APP_SUBSUME_FLAG_PROJECT_LICENSE">
+        <doc xml:space="preserve">Copy the project license</doc>
+      </member>
+      <member name="project_group"
+              value="8589934592"
+              c:identifier="AS_APP_SUBSUME_FLAG_PROJECT_GROUP">
+        <doc xml:space="preserve">Copy the project group</doc>
+      </member>
+      <member name="source_kind"
+              value="17179869184"
+              c:identifier="AS_APP_SUBSUME_FLAG_SOURCE_KIND">
+        <doc xml:space="preserve">Copy the source kind</doc>
+      </member>
+    </bitfield>
     <enumeration name="AppTrustFlags" c:type="AsAppTrustFlags">
       <doc xml:space="preserve">The flags to use when checking input.</doc>
       <member name="complete"
@@ -2812,6 +3239,12 @@ trusted input.</doc>
       </member>
       <member name="flatpak" value="2" c:identifier="AS_BUNDLE_KIND_FLATPAK">
         <doc xml:space="preserve">Flatpak application deployment</doc>
+      </member>
+      <member name="snap" value="3" c:identifier="AS_BUNDLE_KIND_SNAP">
+        <doc xml:space="preserve">Snap application deployment</doc>
+      </member>
+      <member name="package" value="4" c:identifier="AS_BUNDLE_KIND_PACKAGE">
+        <doc xml:space="preserve">Package-based application deployment</doc>
       </member>
     </enumeration>
     <class name="Checksum"
@@ -6824,7 +7257,10 @@ icons are required.</doc>
       <method name="get_app_by_id"
               c:identifier="as_store_get_app_by_id"
               version="0.1.0">
-        <doc xml:space="preserve">Finds an application in the store by ID.</doc>
+        <doc xml:space="preserve">Finds an application in the store by ID.
+If more than one application exists matching the specific ID,
+(for instance when using %AS_STORE_ADD_FLAG_USE_UNIQUE_ID) then the
+first item that was added is returned.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #AsApp or %NULL</doc>
           <type name="App" c:type="AsApp*"/>
@@ -6939,6 +7375,30 @@ without us duplicating entries in the software center.</doc>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">the provide value, e.g. "com.hughski.ColorHug2.firmware"</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_app_by_unique_id"
+              c:identifier="as_store_get_app_by_unique_id"
+              version="0.6.1">
+        <doc xml:space="preserve">Finds an application in the store by matching the unique ID.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #AsApp or %NULL</doc>
+          <type name="App" c:type="AsApp*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="unique_id" transfer-ownership="none">
+            <doc xml:space="preserve">the application unique ID, e.g.
+     `user/flatpak/gnome-apps-nightly/app/gimp.desktop/master`</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="search_flags" transfer-ownership="none">
+            <doc xml:space="preserve">the search flags, e.g. %AS_STORE_SEARCH_FLAG_USE_WILDCARDS</doc>
+            <type name="StoreSearchFlags" c:type="AsStoreSearchFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -7413,7 +7873,7 @@ or removed from the store.</doc>
         </return-value>
       </glib:signal>
     </class>
-    <enumeration name="StoreAddFlags" c:type="AsStoreAddFlags">
+    <bitfield name="StoreAddFlags" c:type="AsStoreAddFlags">
       <doc xml:space="preserve">The flags to use when adding applications to the store.</doc>
       <member name="none" value="0" c:identifier="AS_STORE_ADD_FLAG_NONE">
         <doc xml:space="preserve">No extra flags to use</doc>
@@ -7423,7 +7883,17 @@ or removed from the store.</doc>
               c:identifier="AS_STORE_ADD_FLAG_PREFER_LOCAL">
         <doc xml:space="preserve">Local files will be used by default</doc>
       </member>
-    </enumeration>
+      <member name="use_unique_id"
+              value="2"
+              c:identifier="AS_STORE_ADD_FLAG_USE_UNIQUE_ID">
+        <doc xml:space="preserve">Allow multiple apps with the same AppStream ID</doc>
+      </member>
+      <member name="use_merge_heuristic"
+              value="4"
+              c:identifier="AS_STORE_ADD_FLAG_USE_MERGE_HEURISTIC">
+        <doc xml:space="preserve">Use a heuristic when adding merge components</doc>
+      </member>
+    </bitfield>
     <record name="StoreClass"
             c:type="AsStoreClass"
             glib:is-gtype-struct-for="Store">
@@ -7549,6 +8019,17 @@ or removed from the store.</doc>
         <doc xml:space="preserve">Ignore invalid files</doc>
       </member>
     </enumeration>
+    <enumeration name="StoreSearchFlags" c:type="AsStoreSearchFlags">
+      <doc xml:space="preserve">The flags to use when searching in the store.</doc>
+      <member name="none" value="0" c:identifier="AS_STORE_SEARCH_FLAG_NONE">
+        <doc xml:space="preserve">No extra flags to use</doc>
+      </member>
+      <member name="use_wildcards"
+              value="1"
+              c:identifier="AS_STORE_SEARCH_FLAG_USE_WILDCARDS">
+        <doc xml:space="preserve">Process the globs</doc>
+      </member>
+    </enumeration>
     <enumeration name="StoreWatchFlags" c:type="AsStoreWatchFlags">
       <doc xml:space="preserve">The flags to use when local files are added or removed from the store.</doc>
       <member name="none" value="0" c:identifier="AS_STORE_WATCH_FLAG_NONE">
@@ -7561,6 +8042,199 @@ or removed from the store.</doc>
               value="2"
               c:identifier="AS_STORE_WATCH_FLAG_REMOVED">
         <doc xml:space="preserve">Remove applications if files are changed or deleted</doc>
+      </member>
+    </enumeration>
+    <class name="Suggest"
+           c:symbol-prefix="suggest"
+           c:type="AsSuggest"
+           parent="GObject.Object"
+           glib:type-name="AsSuggest"
+           glib:get-type="as_suggest_get_type"
+           glib:type-struct="SuggestClass">
+      <constructor name="new" c:identifier="as_suggest_new" version="0.6.1">
+        <doc xml:space="preserve">Creates a new #AsSuggest.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsSuggest</doc>
+          <type name="Suggest" c:type="AsSuggest*"/>
+        </return-value>
+      </constructor>
+      <function name="kind_from_string"
+                c:identifier="as_suggest_kind_from_string"
+                version="0.6.1">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsSuggestKind, or %AS_SUGGEST_KIND_UNKNOWN for unknown.</doc>
+          <type name="SuggestKind" c:type="AsSuggestKind"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="kind_to_string"
+                c:identifier="as_suggest_kind_to_string"
+                version="0.6.1">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @kind</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsSuggestKind.</doc>
+            <type name="SuggestKind" c:type="AsSuggestKind"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="add_id" c:identifier="as_suggest_add_id" version="0.6.1">
+        <doc xml:space="preserve">Add a the suggest application ID.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="suggest" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsSuggest instance.</doc>
+            <type name="Suggest" c:type="AsSuggest*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_ids"
+              c:identifier="as_suggest_get_ids"
+              version="0.6.1"
+              introspectable="0">
+        <doc xml:space="preserve">Gets the suggest ids if set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GPtrArray, or %NULL</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="suggest" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsSuggest instance.</doc>
+            <type name="Suggest" c:type="AsSuggest*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="as_suggest_get_kind"
+              version="0.6.1">
+        <doc xml:space="preserve">Gets the suggest kind.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #AsSuggestKind</doc>
+          <type name="SuggestKind" c:type="AsSuggestKind"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="suggest" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsSuggest instance.</doc>
+            <type name="Suggest" c:type="AsSuggest*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_kind"
+              c:identifier="as_suggest_set_kind"
+              version="0.6.1">
+        <doc xml:space="preserve">Sets the suggest kind.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="suggest" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsSuggest instance.</doc>
+            <type name="Suggest" c:type="AsSuggest*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsSuggestKind, e.g. %AS_SUGGEST_KIND_UPSTREAM.</doc>
+            <type name="SuggestKind" c:type="AsSuggestKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="SuggestClass"
+            c:type="AsSuggestClass"
+            glib:is-gtype-struct-for="Suggest">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="_as_reserved1" introspectable="0">
+        <callback name="_as_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved2" introspectable="0">
+        <callback name="_as_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved3" introspectable="0">
+        <callback name="_as_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved4" introspectable="0">
+        <callback name="_as_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved5" introspectable="0">
+        <callback name="_as_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved6" introspectable="0">
+        <callback name="_as_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved7" introspectable="0">
+        <callback name="_as_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved8" introspectable="0">
+        <callback name="_as_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <enumeration name="SuggestKind" c:type="AsSuggestKind">
+      <doc xml:space="preserve">The suggest type.</doc>
+      <member name="unknown" value="0" c:identifier="AS_SUGGEST_KIND_UNKNOWN">
+        <doc xml:space="preserve">Type invalid or not known</doc>
+      </member>
+      <member name="upstream"
+              value="1"
+              c:identifier="AS_SUGGEST_KIND_UPSTREAM">
+        <doc xml:space="preserve">Upstream-specified suggestion</doc>
+      </member>
+      <member name="heuristic"
+              value="2"
+              c:identifier="AS_SUGGEST_KIND_HEURISTIC">
+        <doc xml:space="preserve">Suggestion from a heuristic</doc>
       </member>
     </enumeration>
     <enumeration name="Tag" c:type="AsTag">
@@ -7754,6 +8428,9 @@ or removed from the store.</doc>
       </member>
       <member name="reviewer_id" value="55" c:identifier="AS_TAG_REVIEWER_ID">
         <doc xml:space="preserve">`reviewer_id`</doc>
+      </member>
+      <member name="suggests" value="56" c:identifier="AS_TAG_SUGGESTS">
+        <doc xml:space="preserve">`suggests`</doc>
       </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">
@@ -8011,6 +8688,9 @@ or removed from the store.</doc>
       </member>
       <member name="missing" value="6" c:identifier="AS_URL_KIND_MISSING">
         <doc xml:space="preserve">The package is available, but missing</doc>
+      </member>
+      <member name="translate" value="7" c:identifier="AS_URL_KIND_TRANSLATE">
+        <doc xml:space="preserve">Application translation page</doc>
       </member>
     </enumeration>
     <enumeration name="UtilsError"
@@ -9386,6 +10066,76 @@ appended into single tokens where possible.</doc>
         </parameter>
         <parameter name="replace" transfer-ownership="none">
           <doc xml:space="preserve">The text to use for substitutions</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_unique_id_build"
+              c:identifier="as_utils_unique_id_build"
+              version="0.6.1">
+      <doc xml:space="preserve">Builds a valid unique ID using available data.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a unique name, or %NULL for error;</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="scope" transfer-ownership="none">
+          <doc xml:space="preserve">a #AsAppScope e.g. %AS_APP_SCOPE_SYSTEM</doc>
+          <type name="AppScope" c:type="AsAppScope"/>
+        </parameter>
+        <parameter name="bundle_kind" transfer-ownership="none">
+          <doc xml:space="preserve">System, e.g. 'package' or 'flatpak'</doc>
+          <type name="BundleKind" c:type="AsBundleKind"/>
+        </parameter>
+        <parameter name="origin" transfer-ownership="none">
+          <doc xml:space="preserve">Origin, e.g. 'fedora' or 'gnome-apps-nightly'</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="kind" transfer-ownership="none">
+          <doc xml:space="preserve">#AsAppKind, e.g. %AS_APP_KIND_DESKTOP</doc>
+          <type name="AppKind" c:type="AsAppKind"/>
+        </parameter>
+        <parameter name="id" transfer-ownership="none">
+          <doc xml:space="preserve">AppStream ID, e.g. 'gimp.desktop'</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="branch" transfer-ownership="none">
+          <doc xml:space="preserve">Branch, e.g. '3-20' or 'master'</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_unique_id_equal"
+              c:identifier="as_utils_unique_id_equal"
+              version="0.6.1">
+      <doc xml:space="preserve">Checks two unique IDs for equality allowing globs to match.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the ID's should be considered equal.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="unique_id1" transfer-ownership="none">
+          <doc xml:space="preserve">a unique ID</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="unique_id2" transfer-ownership="none">
+          <doc xml:space="preserve">another unique ID</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_unique_id_valid"
+              c:identifier="as_utils_unique_id_valid"
+              version="0.6.1">
+      <doc xml:space="preserve">Checks if a unique ID is valid i.e. has the correct number of
+sections.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the ID is valid</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="unique_id" transfer-ownership="none">
+          <doc xml:space="preserve">a unique ID</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

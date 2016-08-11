@@ -298,7 +298,6 @@ namespace Egg {
 	public class StateMachine : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public StateMachine ();
-		public GLib.Action action_new (string name);
 		public void add_binding (string state, void* source_object, string source_property, void* target_object, string target_property, GLib.BindingFlags flags);
 		public void add_propertyv (string state, void* object, string property, GLib.Value value);
 		public void add_style (string state, Gtk.Widget widget, string style);
@@ -306,13 +305,6 @@ namespace Egg {
 		public unowned string get_state ();
 		public void set_state (string state);
 		public string state { get; set; }
-	}
-	[CCode (cheader_filename = "egg-private.h", type_id = "egg_state_machine_action_get_type ()")]
-	public class StateMachineAction : GLib.Object, GLib.Action {
-		[CCode (has_construct_function = false)]
-		protected StateMachineAction ();
-		[NoAccessorMethod]
-		public Egg.StateMachine state_machine { owned get; construct; }
 	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_task_cache_get_type ()")]
 	public class TaskCache : GLib.Object {

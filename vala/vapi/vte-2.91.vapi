@@ -41,9 +41,9 @@ namespace Vte {
 		public bool event_check_gregex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] GLib.Regex[] regexes, GLib.RegexMatchFlags match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
 		[Version (since = "0.46")]
 		public bool event_check_regex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] Vte.Regex[] regexes, uint32 match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
-		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[] data);
-		public void feed_child (string text, ssize_t length);
-		public void feed_child_binary (uint8 data, size_t length);
+		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[]? data);
+		public void feed_child (string? text, ssize_t length);
+		public void feed_child_binary ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[]? data);
 		public bool get_allow_bold ();
 		public bool get_audible_bell ();
 		public long get_char_height ();

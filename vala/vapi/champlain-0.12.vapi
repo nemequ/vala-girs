@@ -373,13 +373,19 @@ namespace Champlain {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.4")]
 		public NetworkTileSource.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Champlain.MapProjection projection, string uri_format, Champlain.Renderer renderer);
+		[Version (since = "0.12.14")]
+		public int get_max_conns ();
 		public bool get_offline ();
 		public unowned string get_proxy_uri ();
 		public unowned string get_uri_format ();
+		[Version (since = "0.12.14")]
+		public void set_max_conns (int max_conns);
 		public void set_offline (bool offline);
 		public void set_proxy_uri (string proxy_uri);
 		[Version (since = "0.4")]
 		public void set_uri_format (string uri_format);
+		[Version (since = "0.12.14")]
+		public int max_conns { get; set; }
 		[Version (since = "0.4")]
 		public bool offline { get; set; }
 		[Version (since = "0.4")]
