@@ -11780,7 +11780,10 @@ AM_CPPFLAGS = -DG_LOG_DOMAIN=\"Gtk\"
       <type name="gchar" c:type="gchar"/>
     </constant>
     <constant name="LOG_FATAL_MASK" value="0" c:type="G_LOG_FATAL_MASK">
-      <doc xml:space="preserve">GLib log levels that are considered fatal by default.</doc>
+      <doc xml:space="preserve">GLib log levels that are considered fatal by default.
+
+This is not used if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="LOG_LEVEL_USER_SHIFT"
@@ -12711,7 +12714,10 @@ The default log handler, g_log_default_handler(), automatically appends a
 new-line character to @message when printing it. It is advised that any
 custom log handler functions behave similarly, so that logging calls in user
 code do not need modifying to add a new-line character to the message if the
-log handler is changed.</doc>
+log handler is changed.
+
+This is not used if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -12893,7 +12899,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="5" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -19355,7 +19361,11 @@ the initial setup of the #GRegex structure.</doc>
       <method name="get_compile_flags"
               c:identifier="g_regex_get_compile_flags"
               version="2.26">
-        <doc xml:space="preserve">Returns the compile options that @regex was created with.</doc>
+        <doc xml:space="preserve">Returns the compile options that @regex was created with.
+
+Depending on the version of PCRE that is used, this may or may not
+include flags set by option expressions such as `(?i)` found at the
+top-level within the compiled pattern.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">flags from #GRegexCompileFlags</doc>
           <type name="RegexCompileFlags" c:type="GRegexCompileFlags"/>
@@ -39387,7 +39397,10 @@ function is called to terminate the program.
 
 If g_log_default_handler() is used as the log handler function, a new-line
 character will automatically be appended to @..., and need not be entered
-manually.</doc>
+manually.
+
+If [structured logging is enabled][using-structured-logging] this will
+output via the structured log writer function (see g_log_set_writer_func()).</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -39437,7 +39450,10 @@ environment variables:
 
 stderr is used for levels %G_LOG_LEVEL_ERROR, %G_LOG_LEVEL_CRITICAL,
 %G_LOG_LEVEL_WARNING and %G_LOG_LEVEL_MESSAGE. stdout is used for
-the rest.</doc>
+the rest.
+
+This has no effect if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -39471,7 +39487,10 @@ default "" application domain</doc>
       </parameters>
     </function>
     <function name="log_remove_handler" c:identifier="g_log_remove_handler">
-      <doc xml:space="preserve">Removes the log handler.</doc>
+      <doc xml:space="preserve">Removes the log handler.
+
+This has no effect if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -39504,7 +39523,7 @@ by a process, including those from other libraries.
 Structured log messages (using g_log_structured() and
 g_log_structured_array()) are fatal only if the default log writer is used;
 otherwise it is up to the writer function to determine which log messages
-are fatal.</doc>
+are fatal. See [Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the old fatal mask</doc>
         <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
@@ -39524,7 +39543,10 @@ are fatal.</doc>
       <doc xml:space="preserve">Installs a default log handler which is used if no
 log handler has been set for the particular log domain
 and log level combination. By default, GLib uses
-g_log_default_handler() as default log handler.</doc>
+g_log_default_handler() as default log handler.
+
+This has no effect if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value>
         <doc xml:space="preserve">the previous default log handler</doc>
         <type name="LogFunc" c:type="GLogFunc"/>
@@ -39550,7 +39572,8 @@ g_log_default_handler() as default log handler.</doc>
 This has no effect on structured log messages (using g_log_structured() or
 g_log_structured_array()). To change the fatal behaviour for specific log
 messages, programs must install a custom log writer function using
-g_log_set_writer_func().</doc>
+g_log_set_writer_func(). See
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the old fatal mask for the log domain</doc>
         <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
@@ -39578,6 +39601,9 @@ bit flags.
 Note that since the #G_LOG_LEVEL_ERROR log level is always fatal, if
 you want to set a handler for this log level you must combine it with
 #G_LOG_FLAG_FATAL.
+
+This has no effect if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].
 
 Here is an example for adding a log handler for all warning messages
 in the default domain:
@@ -39634,7 +39660,10 @@ g_log_set_handler ("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
               c:identifier="g_log_set_handler_full"
               shadows="log_set_handler"
               version="2.46">
-      <doc xml:space="preserve">Like g_log_sets_handler(), but takes a destroy notify for the @user_data.</doc>
+      <doc xml:space="preserve">Like g_log_sets_handler(), but takes a destroy notify for the @user_data.
+
+This has no effect if structured logging is enabled; see
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the id of the new handler</doc>
         <type name="guint" c:type="guint"/>
@@ -40072,7 +40101,10 @@ function is called to terminate the program.
 
 If g_log_default_handler() is used as the log handler function, a new-line
 character will automatically be appended to @..., and need not be entered
-manually.</doc>
+manually.
+
+If [structured logging is enabled][using-structured-logging] this will
+output via the structured log writer function (see g_log_set_writer_func()).</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -41219,8 +41251,8 @@ its own new-line character.
 g_print() should not be used from within libraries for debugging
 messages, since it may be redirected by applications to special
 purpose message windows or even files. Instead, libraries should
-use g_log(), or the convenience functions g_message(), g_warning()
-and g_error().</doc>
+use g_log(), g_log_structured(), or the convenience macros g_message(),
+g_warning() and g_error().</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -41242,8 +41274,8 @@ a trailing new-line character. Typically, @format should end with its own
 new-line character.
 
 g_printerr() should not be used from within libraries.
-Instead g_log() should be used, or the convenience functions
-g_message(), g_warning() and g_error().</doc>
+Instead g_log() or g_log_structured() should be used, or the convenience
+macros g_message(), g_warning() and g_error().</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -44974,7 +45006,8 @@ This handler has no effect on g_error messages.
 This handler also has no effect on structured log messages (using
 g_log_structured() or g_log_structured_array()). To change the fatal
 behaviour for specific log messages, programs must install a custom log
-writer function using g_log_set_writer_func().</doc>
+writer function using g_log_set_writer_func().See
+[Using Structured Logging][using-structured-logging].</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

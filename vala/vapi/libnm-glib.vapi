@@ -963,6 +963,8 @@ namespace NM {
 		SETTINGS_MODIFY_HOSTNAME,
 		SETTINGS_MODIFY_GLOBAL_DNS,
 		RELOAD,
+		CHECKPOINT_ROLLBACK,
+		ENABLE_DISABLE_STATISTICS,
 		LAST
 	}
 	[CCode (cheader_filename = "nm-client.h", cprefix = "NM_CLIENT_PERMISSION_RESULT_", type_id = "nm_client_permission_result_get_type ()")]

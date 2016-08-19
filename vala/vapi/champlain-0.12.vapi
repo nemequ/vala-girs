@@ -600,6 +600,7 @@ namespace Champlain {
 		public double get_center_longitude ();
 		[Version (since = "0.4")]
 		public double get_deceleration ();
+		public bool get_horizontal_wrap ();
 		[Version (since = "0.4")]
 		public bool get_keep_center_on_resize ();
 		[Version (since = "0.10")]
@@ -616,6 +617,8 @@ namespace Champlain {
 		public GLib.List<weak Champlain.MapSource> get_overlay_sources ();
 		[Version (since = "0.10")]
 		public Champlain.State get_state ();
+		[Version (since = "0.12.14")]
+		public void get_viewport_anchor (out int anchor_x, out int anchor_y);
 		[Version (since = "0.10")]
 		public void get_viewport_origin (out int x, out int y);
 		[Version (since = "0.12.11")]
@@ -642,6 +645,7 @@ namespace Champlain {
 		public void set_background_pattern (Clutter.Content background);
 		[Version (since = "0.4")]
 		public void set_deceleration (double rate);
+		public void set_horizontal_wrap (bool wrap);
 		[Version (since = "0.4")]
 		public void set_keep_center_on_resize (bool value);
 		[Version (since = "0.10")]
@@ -677,6 +681,7 @@ namespace Champlain {
 		public uint goto_animation_duration { get; set; }
 		[NoAccessorMethod]
 		public Clutter.AnimationMode goto_animation_mode { get; set; }
+		public bool horizontal_wrap { get; set; }
 		[Version (since = "0.2.7")]
 		public bool keep_center_on_resize { get; set; }
 		[Version (since = "0.10")]

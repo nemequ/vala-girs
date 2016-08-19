@@ -278,7 +278,8 @@ namespace Ggit {
 		public bool find_similar (Ggit.DiffFindOptions? options) throws GLib.Error;
 		public void @foreach ([CCode (delegate_target_pos = 4.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 4.1)] Ggit.DiffBinaryCallback? binary_cb, [CCode (delegate_target_pos = 4.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
 		public string format_email (Ggit.DiffFormatEmailOptions options) throws GLib.Error;
-		public int get_num_deltas ();
+		public Ggit.DiffDelta get_delta (size_t index);
+		public size_t get_num_deltas ();
 		[CCode (has_construct_function = false)]
 		public Diff.index_to_workdir (Ggit.Repository repository, Ggit.Index? index, Ggit.DiffOptions? diff_options) throws GLib.Error;
 		public void merge (Ggit.Diff from) throws GLib.Error;

@@ -325,6 +325,16 @@ namespace Egg {
 		public void* value_copy_func { construct; }
 		public void* value_destroy_func { construct; }
 	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_widget_action_group_get_type ()")]
+	public class WidgetActionGroup : GLib.Object, GLib.ActionGroup {
+		[CCode (has_construct_function = false)]
+		protected WidgetActionGroup ();
+		public static void attach (Gtk.Widget widget, string group_name);
+		public static GLib.ActionGroup @new (Gtk.Widget widget);
+		public void set_action_enabled (string action_name, bool enabled);
+		[NoAccessorMethod]
+		public Gtk.Widget widget { owned get; construct; }
+	}
 	[CCode (cheader_filename = "egg-private.h", has_type_id = false)]
 	public struct Counter {
 		public Egg.CounterValue values;
@@ -370,8 +380,4 @@ namespace Egg {
 	public static uint frame_source_add (uint frames_per_sec, GLib.SourceFunc callback);
 	[CCode (cheader_filename = "egg-private.h")]
 	public static uint get_current_cpu_call ();
-	[CCode (cheader_filename = "egg-private.h")]
-	public static void widget_action_group_attach (void* instance, string source_view);
-	[CCode (cheader_filename = "egg-private.h")]
-	public static GLib.ActionGroup widget_action_group_new (Gtk.Widget widget);
 }

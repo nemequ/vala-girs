@@ -93,6 +93,7 @@ namespace Ide {
 		protected BufferChangeMonitor ();
 		public void emit_changed ();
 		public virtual Ide.BufferLineChange get_change (Gtk.TextIter iter);
+		public virtual void reload ();
 		[NoWrapper]
 		public virtual void set_buffer (Ide.Buffer buffer);
 		public Ide.Buffer buffer { construct; }

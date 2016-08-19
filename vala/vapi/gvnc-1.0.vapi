@@ -119,6 +119,7 @@ namespace Vnc {
 		public virtual signal void vnc_cursor_changed (Vnc.Cursor cursor);
 		public virtual signal void vnc_desktop_resize (int width, int height);
 		public virtual signal void vnc_disconnected ();
+		public virtual signal void vnc_error (string message);
 		public virtual signal void vnc_framebuffer_update (int x, int y, int width, int height);
 		public virtual signal void vnc_initialized ();
 		public virtual signal void vnc_led_state ();

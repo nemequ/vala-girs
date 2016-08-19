@@ -79,6 +79,7 @@ namespace Vnc {
 		public virtual signal void vnc_connected ();
 		public signal void vnc_desktop_resize (int object, int p0);
 		public virtual signal void vnc_disconnected ();
+		public signal void vnc_error (string object);
 		public virtual signal void vnc_initialized ();
 		public signal void vnc_keyboard_grab ();
 		public signal void vnc_keyboard_ungrab ();
