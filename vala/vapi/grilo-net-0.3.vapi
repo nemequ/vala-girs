@@ -8,13 +8,13 @@ namespace GrlNet {
 		public Wc ();
 		public static GLib.Quark error_quark ();
 		public void flush_delayed_requests ();
-		public async bool request_async (string uri, GLib.Cancellable? cancellable, out unowned string content, out size_t length) throws GLib.Error;
+		public async bool request_async (string uri, GLib.Cancellable? cancellable, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] out uint8[] content) throws GLib.Error;
 		[CCode (finish_name = "grl_net_wc_request_finish")]
 		[Version (since = "0.2.2")]
-		public async bool request_with_headers_async (string uri, GLib.Cancellable? cancellable, ..., out unowned string content, out size_t length) throws GLib.Error;
+		public async bool request_with_headers_async (string uri, GLib.Cancellable? cancellable, ..., [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] out uint8[] content) throws GLib.Error;
 		[CCode (finish_name = "grl_net_wc_request_finish")]
 		[Version (since = "0.2.2")]
-		public async bool request_with_headers_hash_async (string uri, GLib.HashTable<string,string>? headers, GLib.Cancellable? cancellable, out unowned string content, out size_t length) throws GLib.Error;
+		public async bool request_with_headers_hash_async (string uri, GLib.HashTable<string,string>? headers, GLib.Cancellable? cancellable, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] out uint8[] content) throws GLib.Error;
 		[Version (since = "0.1.12")]
 		public void set_cache (bool use_cache);
 		[Version (since = "0.1.12")]

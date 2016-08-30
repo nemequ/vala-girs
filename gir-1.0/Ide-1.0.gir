@@ -32,6 +32,16 @@ and/or use gtk-doc annotations.  -->
           <type name="Application" c:type="IdeApplication*"/>
         </return-value>
       </constructor>
+      <function name="get_main_thread"
+                c:identifier="ide_application_get_main_thread">
+        <doc xml:space="preserve">This function returns the thread-id of the main thread for the applicaiton.
+This is only really useful to determine if you are in the main UI thread.
+This is used by IDE_IS_MAIN_THREAD for assertion checks.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GThread</doc>
+          <type name="GLib.Thread" c:type="GThread*"/>
+        </return-value>
+      </function>
       <method name="get_keybindings_mode"
               c:identifier="ide_application_get_keybindings_mode">
         <return-value transfer-ownership="none">
@@ -4851,6 +4861,19 @@ applied to first, followed by global settings.</doc>
           <doc xml:space="preserve">An #IdeSourceSnippetsManager.</doc>
           <type name="SourceSnippetsManager"
                 c:type="IdeSourceSnippetsManager*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Context" c:type="IdeContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_transfer_manager"
+              c:identifier="ide_context_get_transfer_manager">
+        <doc xml:space="preserve">Gets the #IdeTransferManager for the context.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeTransferManager.</doc>
+          <type name="TransferManager" c:type="IdeTransferManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -14587,6 +14610,49 @@ the project.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
+    <class name="RunButton"
+           c:symbol-prefix="run_button"
+           c:type="IdeRunButton"
+           parent="Gtk.Box"
+           glib:type-name="IdeRunButton"
+           glib:get-type="ide_run_button_get_type"
+           glib:type-struct="RunButtonClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <constructor name="new" c:identifier="ide_run_button_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+    </class>
+    <record name="RunButtonClass"
+            c:type="IdeRunButtonClass"
+            glib:is-gtype-struct-for="RunButton">
+      <field name="parent_class">
+        <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
+      </field>
+    </record>
+    <callback name="RunHandler" c:type="IdeRunHandler">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="self" transfer-ownership="none">
+          <type name="RunManager" c:type="IdeRunManager*"/>
+        </parameter>
+        <parameter name="runner" transfer-ownership="none">
+          <type name="Runner" c:type="IdeRunner*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="RunManager"
            c:symbol-prefix="run_manager"
            c:type="IdeRunManager"
@@ -14594,9 +14660,113 @@ the project.</doc>
            glib:type-name="IdeRunManager"
            glib:get-type="ide_run_manager_get_type"
            glib:type-struct="RunManagerClass">
+      <implements name="Gio.ActionGroup"/>
+      <method name="add_handler" c:identifier="ide_run_manager_add_handler">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="icon_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="accel" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="run_handler"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="5"
+                     destroy="6">
+            <type name="RunHandler" c:type="IdeRunHandler"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data_destroy"
+                     transfer-ownership="none"
+                     scope="async">
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="cancel" c:identifier="ide_run_manager_cancel">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="discover_default_target_async"
+              c:identifier="ide_run_manager_discover_default_target_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="discover_default_target_finish"
+              c:identifier="ide_run_manager_discover_default_target_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeBuildTarget if successful; otherwise %NULL
+  and @error is set.</doc>
+          <type name="BuildTarget" c:type="IdeBuildTarget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_build_target"
+              c:identifier="ide_run_manager_get_build_target">
+        <doc xml:space="preserve">Gets the build target that will be executed by the run manager if a
+specific build target has not been specified to ide_run_manager_run_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeBuildTarget or %NULL if no build target
+  has been set.</doc>
+          <type name="BuildTarget" c:type="IdeBuildTarget*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -14612,6 +14782,30 @@ the project.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="RunManager" c:type="IdeRunManager*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_handler" c:identifier="ide_run_manager_get_handler">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_handler"
+              c:identifier="ide_run_manager_remove_handler">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="run_async" c:identifier="ide_run_manager_run_async">
@@ -14662,9 +14856,32 @@ the project.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_handler" c:identifier="ide_run_manager_set_handler">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="busy" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="handler" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <glib:signal name="stopped" when="last">
+        <doc xml:space="preserve">This signal is emitted when the run manager has stopped the currently
+executing inferior.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
     </class>
     <record name="RunManagerClass"
             c:type="IdeRunManagerClass"
@@ -14927,6 +15144,16 @@ the project.</doc>
       <field name="parent_instance">
         <type name="Object" c:type="IdeObject"/>
       </field>
+      <glib:signal name="spawned" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <interface name="RunnerAddin"
                c:symbol-prefix="runner_addin"
@@ -24006,6 +24233,464 @@ the project creation workflow.</doc>
               glib:nick="last">
       </member>
     </enumeration>
+    <interface name="Transfer"
+               c:symbol-prefix="transfer"
+               c:type="IdeTransfer"
+               glib:type-name="IdeTransfer"
+               glib:get-type="ide_transfer_get_type"
+               glib:type-struct="TransferInterface">
+      <virtual-method name="execute_async" invoker="execute_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="2">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="execute_finish"
+                      invoker="execute_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="execute_async" c:identifier="ide_transfer_execute_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="execute_finish"
+              c:identifier="ide_transfer_execute_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_progress" c:identifier="ide_transfer_get_progress">
+        <return-value transfer-ownership="none">
+          <type name="gdouble" c:type="gdouble"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="has_completed" c:identifier="ide_transfer_has_completed">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="icon-name" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="progress" transfer-ownership="none">
+        <type name="gdouble" c:type="gdouble"/>
+      </property>
+      <property name="status" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </interface>
+    <record name="TransferInterface"
+            c:type="IdeTransferInterface"
+            glib:is-gtype-struct-for="Transfer">
+      <field name="parent">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="execute_async">
+        <callback name="execute_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Transfer" c:type="IdeTransfer*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="3">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="execute_finish">
+        <callback name="execute_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Transfer" c:type="IdeTransfer*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="TransferManager"
+           c:symbol-prefix="transfer_manager"
+           c:type="IdeTransferManager"
+           parent="Object"
+           glib:type-name="IdeTransferManager"
+           glib:get-type="ide_transfer_manager_get_type"
+           glib:type-struct="TransferManagerClass">
+      <implements name="Gio.ListModel"/>
+      <method name="cancel" c:identifier="ide_transfer_manager_cancel">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+          <parameter name="transfer" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="cancel_all" c:identifier="ide_transfer_manager_cancel_all">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="clear" c:identifier="ide_transfer_manager_clear">
+        <doc xml:space="preserve">Removes all transfers from the manager that are completed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_has_active"
+              c:identifier="ide_transfer_manager_get_has_active">
+        <doc xml:space="preserve">Gets if there are active transfers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if there are active transfers.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_max_active"
+              c:identifier="ide_transfer_manager_get_max_active">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_progress"
+              c:identifier="ide_transfer_manager_get_progress">
+        <return-value transfer-ownership="none">
+          <type name="gdouble" c:type="gdouble"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="queue" c:identifier="ide_transfer_manager_queue">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+          <parameter name="transfer" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_max_active"
+              c:identifier="ide_transfer_manager_set_max_active">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+          <parameter name="max_active" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="has-active" transfer-ownership="none">
+        <doc xml:space="preserve">If there are transfers active, this will be set.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="max-active" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Sets the max number of transfers to have active at one time.
+Set to zero for a sensible default.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="progress" transfer-ownership="none">
+        <type name="gdouble" c:type="gdouble"/>
+      </property>
+      <glib:signal name="transfer-completed" when="last">
+        <doc xml:space="preserve">This signal is emitted when a transfer has completed successfully.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="transfer" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeTransfer</doc>
+            <type name="Transfer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="TransferManagerClass"
+            c:type="IdeTransferManagerClass"
+            glib:is-gtype-struct-for="TransferManager">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+    </record>
+    <class name="TransferRow"
+           c:symbol-prefix="transfer_row"
+           c:type="IdeTransferRow"
+           parent="Gtk.ListBoxRow"
+           glib:type-name="IdeTransferRow"
+           glib:get-type="ide_transfer_row_get_type"
+           glib:type-struct="TransferRowClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <method name="get_transfer" c:identifier="ide_transfer_row_get_transfer">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeTransfer or %NULL.</doc>
+          <type name="Transfer" c:type="IdeTransfer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferRow" c:type="IdeTransferRow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="pump" c:identifier="ide_transfer_row_pump">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferRow" c:type="IdeTransferRow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_transfer" c:identifier="ide_transfer_row_set_transfer">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferRow" c:type="IdeTransferRow*"/>
+          </instance-parameter>
+          <parameter name="transfer" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="transfer" writable="1" transfer-ownership="none">
+        <type name="Transfer"/>
+      </property>
+      <glib:signal name="cancelled" when="last">
+        <doc xml:space="preserve">This signal is emitted when the cancel button is clicked.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="TransferRowClass"
+            c:type="IdeTransferRowClass"
+            glib:is-gtype-struct-for="TransferRow">
+      <field name="parent_class">
+        <type name="Gtk.ListBoxRowClass" c:type="GtkListBoxRowClass"/>
+      </field>
+    </record>
+    <class name="TransfersButton"
+           c:symbol-prefix="transfers_button"
+           c:type="IdeTransfersButton"
+           parent="Gtk.MenuButton"
+           glib:type-name="IdeTransfersButton"
+           glib:get-type="ide_transfers_button_get_type"
+           glib:type-struct="TransfersButtonClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Actionable"/>
+      <implements name="Gtk.Activatable"/>
+      <implements name="Gtk.Buildable"/>
+      <constructor name="new" c:identifier="ide_transfers_button_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+    </class>
+    <record name="TransfersButtonClass"
+            c:type="IdeTransfersButtonClass"
+            glib:is-gtype-struct-for="TransfersButton">
+      <field name="parent_class">
+        <type name="Gtk.MenuButtonClass" c:type="GtkMenuButtonClass"/>
+      </field>
+    </record>
+    <class name="TransfersProgressIcon"
+           c:symbol-prefix="transfers_progress_icon"
+           c:type="IdeTransfersProgressIcon"
+           parent="Gtk.DrawingArea"
+           glib:type-name="IdeTransfersProgressIcon"
+           glib:get-type="ide_transfers_progress_icon_get_type"
+           glib:type-struct="TransfersProgressIconClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <constructor name="new" c:identifier="ide_transfers_progress_icon_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+      <method name="get_progress"
+              c:identifier="ide_transfers_progress_icon_get_progress">
+        <return-value transfer-ownership="none">
+          <type name="gdouble" c:type="gdouble"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransfersProgressIcon"
+                  c:type="IdeTransfersProgressIcon*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_progress"
+              c:identifier="ide_transfers_progress_icon_set_progress">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransfersProgressIcon"
+                  c:type="IdeTransfersProgressIcon*"/>
+          </instance-parameter>
+          <parameter name="progress" transfer-ownership="none">
+            <type name="gdouble" c:type="gdouble"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="progress" writable="1" transfer-ownership="none">
+        <type name="gdouble" c:type="gdouble"/>
+      </property>
+    </class>
+    <record name="TransfersProgressIconClass"
+            c:type="IdeTransfersProgressIconClass"
+            glib:is-gtype-struct-for="TransfersProgressIcon">
+      <field name="parent_class">
+        <type name="Gtk.DrawingAreaClass" c:type="GtkDrawingAreaClass"/>
+      </field>
+    </record>
     <class name="Tree"
            c:symbol-prefix="tree"
            c:type="IdeTree"

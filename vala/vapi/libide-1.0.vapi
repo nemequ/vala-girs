@@ -7,6 +7,7 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		public Application ();
 		public unowned string get_keybindings_mode ();
+		public static unowned GLib.Thread get_main_thread ();
 		public unowned GLib.Menu get_menu_by_id (string id);
 		public Ide.ApplicationMode get_mode ();
 		public unowned Ide.RecentProjects get_recent_projects ();
@@ -285,6 +286,7 @@ namespace Ide {
 		public void* get_service_typed (GLib.Type service_type);
 		public Ide.Settings get_settings (string schema_id, string relative_path);
 		public unowned Ide.SourceSnippetsManager get_snippets_manager ();
+		public unowned Ide.TransferManager get_transfer_manager ();
 		public unowned Ide.UnsavedFiles get_unsaved_files ();
 		public unowned Ide.Vcs get_vcs ();
 		public void hold ();
@@ -986,14 +988,27 @@ namespace Ide {
 		public GLib.GenericArray<weak Ide.ProjectInfo> get_projects ();
 		public void remove (GLib.List<Ide.ProjectInfo> project_infos);
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_run_button_get_type ()")]
+	public class RunButton : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public RunButton ();
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_run_manager_get_type ()")]
-	public class RunManager : Ide.Object {
+	public class RunManager : Ide.Object, GLib.ActionGroup {
 		[CCode (has_construct_function = false)]
 		protected RunManager ();
+		public void add_handler (string id, string title, string icon_name, string accel, owned Ide.RunHandler run_handler);
 		public void cancel ();
+		public async unowned Ide.BuildTarget discover_default_target_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public unowned Ide.BuildTarget get_build_target ();
 		public bool get_busy ();
+		public unowned string get_handler ();
+		public void remove_handler (string id);
 		public async bool run_async (Ide.BuildTarget build_target, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_handler (string id);
 		public bool busy { get; }
+		public string handler { get; }
+		public signal void stopped ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_runner_get_type ()")]
 	public class Runner : Ide.Object {
@@ -1011,6 +1026,7 @@ namespace Ide {
 		public void set_argv (string argv);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] argv { owned get; set; }
+		public signal void spawned (string object);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_runtime_get_type ()")]
 	public class Runtime : Ide.Object {
@@ -1525,6 +1541,46 @@ namespace Ide {
 		public static void push (Ide.ThreadPoolKind kind, [CCode (scope = "async")] Ide.ThreadFunc func);
 		public static void push_task (Ide.ThreadPoolKind kind, GLib.Task task, [CCode (scope = "async")] GLib.TaskThreadFunc func);
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_transfer_manager_get_type ()")]
+	public class TransferManager : Ide.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected TransferManager ();
+		public void cancel (Ide.Transfer transfer);
+		public void cancel_all ();
+		public void clear ();
+		public bool get_has_active ();
+		public uint get_max_active ();
+		public double get_progress ();
+		public void queue (Ide.Transfer transfer);
+		public void set_max_active (uint max_active);
+		public bool has_active { get; }
+		public uint max_active { get; set; }
+		public double progress { get; }
+		public signal void transfer_completed (Ide.Transfer transfer);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_transfer_row_get_type ()")]
+	public class TransferRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected TransferRow ();
+		public unowned Ide.Transfer? get_transfer ();
+		public void pump ();
+		public void set_transfer (Ide.Transfer transfer);
+		public Ide.Transfer transfer { get; set; }
+		public signal void cancelled ();
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_transfers_button_get_type ()")]
+	public class TransfersButton : Gtk.MenuButton, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public TransfersButton ();
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_transfers_progress_icon_get_type ()")]
+	public class TransfersProgressIcon : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public TransfersProgressIcon ();
+		public double get_progress ();
+		public void set_progress (double progress);
+		public double progress { get; set; }
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_tree_get_type ()")]
 	public class Tree : Gtk.TreeView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false)]
@@ -1936,6 +1992,20 @@ namespace Ide {
 	public interface TemplateProvider : GLib.Object {
 		public abstract GLib.List<Ide.ProjectTemplate> get_project_templates ();
 	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeTransferInterface", type_id = "ide_transfer_get_type ()")]
+	public interface Transfer : GLib.Object {
+		public abstract async bool execute_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public double get_progress ();
+		public bool has_completed ();
+		[NoAccessorMethod]
+		public abstract string icon_name { owned get; }
+		[ConcreteAccessor]
+		public abstract double progress { get; }
+		[NoAccessorMethod]
+		public abstract string status { owned get; }
+		[NoAccessorMethod]
+		public abstract string title { owned get; }
+	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeVcsInterface", type_id = "ide_vcs_get_type ()")]
 	public interface Vcs : Ide.Object {
 		public void emit_changed ();
@@ -2226,6 +2296,8 @@ namespace Ide {
 	public delegate void ExtensionSetAdapterForeachFunc (Ide.ExtensionSetAdapter @set, Peas.PluginInfo plugin_info, Peas.Extension extension);
 	[CCode (cheader_filename = "ide.h", has_target = false)]
 	public delegate Ide.HighlightResult HighlightCallback (Gtk.TextIter begin, Gtk.TextIter end, string style_name);
+	[CCode (cheader_filename = "ide.h", instance_pos = 2.9)]
+	public delegate void RunHandler (Ide.RunManager self, Ide.Runner runner);
 	[CCode (cheader_filename = "ide.h", instance_pos = 0.9)]
 	public delegate void ThreadFunc ();
 	[CCode (cheader_filename = "ide.h", instance_pos = 2.9)]
