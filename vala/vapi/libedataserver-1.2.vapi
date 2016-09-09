@@ -206,6 +206,8 @@ namespace E {
 	public class SoupAuthBearer : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected SoupAuthBearer ();
+		[Version (since = "3.24")]
+		public bool is_expired ();
 		public void set_access_token (string access_token, int expires_in_seconds);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_get_type ()")]

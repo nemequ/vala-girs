@@ -130,6 +130,26 @@ namespace Ide {
 		public signal void load_buffer (Ide.Buffer buffer, bool create_new_view);
 		public signal void save_buffer (Ide.Buffer buffer);
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_build_command_get_type ()")]
+	public class BuildCommand : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public BuildCommand ();
+		public virtual Ide.BuildCommand copy ();
+		public unowned string get_command_text ();
+		public virtual bool run (Ide.Runtime runtime, Ide.Environment environment, Ide.BuildResult build_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual async bool run_async (Ide.Runtime runtime, Ide.Environment environment, Ide.BuildResult build_result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_command_text (string command_text);
+		public string command_text { get; construct; }
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_build_command_queue_get_type ()")]
+	public class BuildCommandQueue : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		public BuildCommandQueue ();
+		public void append (Ide.BuildCommand command);
+		public Ide.BuildCommandQueue copy ();
+		public bool execute (Ide.Runtime runtime, Ide.Environment environment, Ide.BuildResult build_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool execute_async (Ide.Runtime runtime, Ide.Environment environment, Ide.BuildResult build_result, GLib.Cancellable? cancellable) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_build_manager_get_type ()")]
 	public class BuildManager : Ide.Object, GLib.ActionGroup {
 		[CCode (has_construct_function = false)]
@@ -220,6 +240,8 @@ namespace Ide {
 		public unowned Ide.Environment get_environment ();
 		public unowned string get_id ();
 		public int get_parallelism ();
+		public Ide.BuildCommandQueue get_postbuild ();
+		public Ide.BuildCommandQueue get_prebuild ();
 		public unowned string get_prefix ();
 		public unowned Ide.Runtime? get_runtime ();
 		public unowned string get_runtime_id ();
@@ -1018,6 +1040,7 @@ namespace Ide {
 		public virtual void force_quit ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_argv ();
+		public unowned Ide.Environment get_environment ();
 		public virtual GLib.OutputStream? get_stderr ();
 		public virtual GLib.InputStream? get_stdin ();
 		public virtual GLib.OutputStream? get_stdout ();
@@ -1026,6 +1049,8 @@ namespace Ide {
 		public void set_argv (string argv);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] argv { owned get; set; }
+		public Ide.Environment environment { get; }
+		public signal void exited ();
 		public signal void spawned (string object);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_runtime_get_type ()")]
@@ -1852,7 +1877,11 @@ namespace Ide {
 		[NoWrapper]
 		public abstract void load (Ide.EditorView view);
 		[NoWrapper]
+		public abstract void load_source_view (Ide.SourceView source_view);
+		[NoWrapper]
 		public abstract void unload (Ide.EditorView view);
+		[NoWrapper]
+		public abstract void unload_source_view (Ide.SourceView source_view);
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeGenesisAddinInterface", type_id = "ide_genesis_addin_get_type ()")]
 	public interface GenesisAddin : GLib.Object {
