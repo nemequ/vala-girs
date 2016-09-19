@@ -47,12 +47,15 @@ namespace Egg {
 		public ColumnLayout ();
 		public int get_column_spacing ();
 		public int get_column_width ();
+		public uint get_max_columns ();
 		public int get_row_spacing ();
 		public void set_column_spacing (int column_spacing);
 		public void set_column_width (int column_width);
+		public void set_max_columns (uint max_columns);
 		public void set_row_spacing (int row_spacing);
 		public int column_spacing { get; set; }
 		public int column_width { get; set; }
+		public uint max_columns { get; set; }
 		public int row_spacing { get; set; }
 	}
 	[CCode (cheader_filename = "egg-private.h", ref_function = "egg_counter_arena_ref", type_id = "egg_counter_arena_get_type ()", unref_function = "egg_counter_arena_unref")]
@@ -325,6 +328,15 @@ namespace Egg {
 		public void* value_copy_func { construct; }
 		public void* value_destroy_func { construct; }
 	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_three_grid_get_type ()")]
+	public class ThreeGrid : Gtk.Container, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public ThreeGrid ();
+		[NoAccessorMethod]
+		public uint column_spacing { get; set; }
+		[NoAccessorMethod]
+		public uint row_spacing { get; set; }
+	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_widget_action_group_get_type ()")]
 	public class WidgetActionGroup : GLib.Object, GLib.ActionGroup {
 		[CCode (has_construct_function = false)]
@@ -367,6 +379,12 @@ namespace Egg {
 		RIGHT,
 		BOTTOM,
 		LEFT
+	}
+	[CCode (cheader_filename = "egg-private.h", cprefix = "EGG_THREE_GRID_COLUMN_", type_id = "egg_three_grid_column_get_type ()")]
+	public enum ThreeGridColumn {
+		LEFT,
+		CENTER,
+		RIGHT
 	}
 	[CCode (cheader_filename = "egg-private.h", instance_pos = 1.9)]
 	public delegate void CounterForeachFunc (Egg.Counter counter);

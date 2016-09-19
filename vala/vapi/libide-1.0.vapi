@@ -182,7 +182,7 @@ namespace Ide {
 		public GLib.TimeSpan get_running_time ();
 		public unowned GLib.InputStream get_stderr_stream ();
 		public unowned GLib.InputStream? get_stdout_stream ();
-		public void log_subprocess (GLib.Subprocess subprocess);
+		public void log_subprocess (Ide.Subprocess subprocess);
 		public void set_failed (bool failed);
 		public void set_mode (string mode);
 		public void set_running (bool running);
@@ -851,6 +851,8 @@ namespace Ide {
 		public unowned string get_title ();
 		[NoAccessorMethod]
 		public bool is_list { get; construct; }
+		[NoAccessorMethod]
+		public Gtk.SelectionMode mode { get; set; }
 		public int priority { get; construct; }
 		public string title { get; construct; }
 	}
@@ -1040,16 +1042,23 @@ namespace Ide {
 		public virtual void force_quit ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_argv ();
+		public bool get_clear_env ();
 		public unowned Ide.Environment get_environment ();
+		public bool get_run_on_host ();
 		public virtual GLib.OutputStream? get_stderr ();
 		public virtual GLib.InputStream? get_stdin ();
 		public virtual GLib.OutputStream? get_stdout ();
 		public void prepend_argv (string param);
 		public virtual async bool run_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_argv (string argv);
+		public void set_clear_env (bool clear_env);
+		public void set_flags (GLib.SubprocessFlags flags);
+		public void set_run_on_host (bool run_on_host);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] argv { owned get; set; }
+		public bool clear_env { get; set; }
 		public Ide.Environment environment { get; }
+		public bool run_on_host { get; set; }
 		public signal void exited ();
 		public signal void spawned (string object);
 	}
@@ -1500,24 +1509,34 @@ namespace Ide {
 	public class SubprocessLauncher : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SubprocessLauncher (GLib.SubprocessFlags flags);
+		public bool get_clear_env ();
 		public unowned string get_cwd ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_environ ();
 		public GLib.SubprocessFlags get_flags ();
+		public bool get_run_on_host ();
 		public void overlay_environment (Ide.Environment environment);
 		public string pop_argv ();
 		public void push_args ([CCode (array_length = false, array_null_terminated = true)] string[] args);
 		public void push_argv (string argv);
+		public void set_clear_env (bool clear_env);
 		public void set_cwd (string cwd);
 		public void set_environ (string environ_);
 		public void set_flags (GLib.SubprocessFlags flags);
+		public void set_run_on_host (bool run_on_host);
 		public void setenv (string key, string value, bool replace);
-		public virtual async GLib.Subprocess spawn_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		public virtual GLib.Subprocess spawn_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual async Ide.Subprocess spawn_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual Ide.Subprocess spawn_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void take_stderr_fd (int stderr_fd);
+		public void take_stdin_fd (int stdin_fd);
+		public void take_stdout_fd (int stdout_fd);
+		[NoAccessorMethod]
+		public bool clean_env { get; set; }
 		public string cwd { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] environ { get; set; }
 		public GLib.SubprocessFlags flags { get; set construct; }
+		public bool run_on_host { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", ref_function = "ide_symbol_ref", type_id = "ide_symbol_get_type ()", unref_function = "ide_symbol_unref")]
 	[Compact]
@@ -1937,7 +1956,7 @@ namespace Ide {
 		public abstract uint add_file_chooser (string page_name, string group_name, string schema_id, string key, string path, string title, string subtitle, Gtk.FileChooserAction action, string keywords, int priority);
 		public abstract uint add_font_button (string page_name, string group_name, string schema_id, string key, string title, string keywords, int priority);
 		public abstract void add_group (string page_name, string group_name, string title, int priority);
-		public abstract void add_list_group (string page_name, string group_name, string title, int priority);
+		public abstract void add_list_group (string page_name, string group_name, string title, Gtk.SelectionMode mode, int priority);
 		public abstract void add_page (string page_name, string title, int priority);
 		public abstract uint add_radio (string page_name, string group_name, string schema_id, string key, string path, string variant_string, string title, string subtitle, string keywords, int priority);
 		public abstract uint add_spin_button (string page_name, string group_name, string schema_id, string key, string path, string title, string subtitle, string keywords, int priority);
@@ -1999,6 +2018,29 @@ namespace Ide {
 		public abstract void stop ();
 		public abstract Ide.Context context { construct; }
 		public virtual signal void context_loaded ();
+	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeSubprocessInterface", type_id = "ide_subprocess_get_type ()")]
+	public interface Subprocess : GLib.Object {
+		public bool check_exit_status () throws GLib.Error;
+		public abstract bool communicate (GLib.Bytes stdin_buf, GLib.Cancellable? cancellable, GLib.Bytes stdout_buf, GLib.Bytes stderr_buf) throws GLib.Error;
+		public abstract async bool communicate_async (GLib.Bytes stdin_buf, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract bool communicate_utf8 (string? stdin_buf, GLib.Cancellable? cancellable, out string? stdout_buf, out string? stderr_buf) throws GLib.Error;
+		public abstract void force_exit ();
+		public abstract int get_exit_status ();
+		public abstract unowned string get_identifier ();
+		public abstract bool get_if_exited ();
+		public abstract bool get_if_signaled ();
+		public abstract int get_status ();
+		public abstract unowned GLib.InputStream get_stderr_pipe ();
+		public abstract unowned GLib.OutputStream get_stdin_pipe ();
+		public abstract unowned GLib.InputStream get_stdout_pipe ();
+		public abstract bool get_successful ();
+		public abstract int get_term_sig ();
+		public abstract void send_signal (int signal_num);
+		public abstract bool wait (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public abstract async bool wait_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool wait_check (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool wait_check_async (GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeSymbolResolverInterface", type_id = "ide_symbol_resolver_get_type ()")]
 	public interface SymbolResolver : Ide.Object {
@@ -2365,6 +2407,14 @@ namespace Ide {
 	public static bool completion_provider_context_in_comment_or_string (Gtk.SourceCompletionContext context);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "ide.h")]
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
+	[CCode (cheader_filename = "ide.h")]
+	public static void g_task_return_boolean_from_main (GLib.Task task, bool value);
+	[CCode (cheader_filename = "ide.h")]
+	public static void g_task_return_error_from_main (GLib.Task task, owned GLib.Error error);
+	[CCode (cheader_filename = "ide.h")]
+	public static void g_task_return_int_from_main (GLib.Task task, int value);
+	[CCode (cheader_filename = "ide.h")]
+	public static void g_task_return_pointer_from_main (GLib.Task task, void* value, GLib.DestroyNotify notify);
 	[CCode (cheader_filename = "ide.h")]
 	public static unowned string get_program_name ();
 	[CCode (cheader_filename = "ide.h")]
