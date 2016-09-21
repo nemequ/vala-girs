@@ -2424,6 +2424,8 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h")]
 	public static void gtk_text_buffer_remove_tag (Gtk.TextBuffer buffer, Gtk.TextTag tag, Gtk.TextIter start, Gtk.TextIter end, bool minimal_damage);
 	[CCode (cheader_filename = "ide.h")]
+	public static bool is_flatpak ();
+	[CCode (cheader_filename = "ide.h")]
 	public static string language_format_header (Gtk.SourceLanguage language, string header);
 	[CCode (cheader_filename = "ide.h")]
 	public static int log_get_verbosity ();

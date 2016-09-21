@@ -13,9 +13,6 @@ and/or use gtk-doc annotations.  -->
              shared-library="libostree-1.so.1"
              c:identifier-prefixes="Ostree"
              c:symbol-prefixes="ostree">
-    <alias name="GpgVerifier_autoptr" c:type="OstreeGpgVerifier_autoptr">
-      <type name="gpointer" c:type="gpointer"/>
-    </alias>
     <class name="AsyncProgress"
            c:symbol-prefix="async_progress"
            c:type="OstreeAsyncProgress"
@@ -35,10 +32,16 @@ and/or use gtk-doc annotations.  -->
           <type name="AsyncProgress" c:type="OstreeAsyncProgress*"/>
         </return-value>
         <parameters>
-          <parameter name="changed" transfer-ownership="none">
+          <parameter name="changed"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gpointer*"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -51,7 +54,11 @@ and/or use gtk-doc annotations.  -->
           <instance-parameter name="self" transfer-ownership="none">
             <type name="AsyncProgress" c:type="OstreeAsyncProgress*"/>
           </instance-parameter>
-          <parameter name="user_data" transfer-ownership="none" closure="0">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="0">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -177,7 +184,11 @@ events will be queued.</doc>
             <parameter name="self" transfer-ownership="none">
               <type name="AsyncProgress" c:type="OstreeAsyncProgress*"/>
             </parameter>
-            <parameter name="user_data" transfer-ownership="none" closure="1">
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -619,7 +630,10 @@ events will be queued.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
-          <parameter name="v" transfer-ownership="none">
+          <parameter name="v"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
         </parameters>
@@ -1714,7 +1728,9 @@ ostree_object_name_deserialize().</doc>
           </instance-parameter>
           <parameter name="key_id" transfer-ownership="none">
             <doc xml:space="preserve">NULL-terminated array of GPG keys.</doc>
-            <type name="utf8" c:type="const gchar**"/>
+            <array c:type="gchar**">
+              <type name="utf8"/>
+            </array>
           </parameter>
           <parameter name="homedir"
                      transfer-ownership="none"
@@ -1757,6 +1773,57 @@ ostree_object_name_deserialize().</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #GCancellable</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="checkout_at"
+              c:identifier="ostree_repo_checkout_at"
+              throws="1">
+        <doc xml:space="preserve">Similar to ostree_repo_checkout_tree(), but uses directory-relative
+paths for the destination, uses a new `OstreeRepoCheckoutAtOptions`,
+and takes a commit checksum and optional subpath pair, rather than
+requiring use of `GFile` APIs for the caller.
+
+It also replaces ostree_repo_checkout_at() which was not safe to
+use with GObject introspection.
+
+Note in addition that unlike ostree_repo_checkout_tree(), the
+default is not to use the repository-internal uncompressed objects
+cache.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">Repo</doc>
+            <type name="Repo" c:type="OstreeRepo*"/>
+          </instance-parameter>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Options</doc>
+            <type name="RepoCheckoutAtOptions"
+                  c:type="OstreeRepoCheckoutAtOptions*"/>
+          </parameter>
+          <parameter name="destination_dfd" transfer-ownership="none">
+            <doc xml:space="preserve">Directory FD for destination</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="destination_path" transfer-ownership="none">
+            <doc xml:space="preserve">Directory for destination</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="commit" transfer-ownership="none">
+            <doc xml:space="preserve">Checksum for commit</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Cancellable</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1831,15 +1898,18 @@ files are checked out.</doc>
       </method>
       <method name="checkout_tree_at"
               c:identifier="ostree_repo_checkout_tree_at"
+              introspectable="0"
               throws="1">
         <doc xml:space="preserve">Similar to ostree_repo_checkout_tree(), but uses directory-relative
-paths for the destination, uses a new `OstreeRepoCheckoutOptions`,
+paths for the destination, uses a new `OstreeRepoCheckoutAtOptions`,
 and takes a commit checksum and optional subpath pair, rather than
 requiring use of `GFile` APIs for the caller.
 
 Note in addition that unlike ostree_repo_checkout_tree(), the
 default is not to use the repository-internal uncompressed objects
-cache.</doc>
+cache.
+
+This function is deprecated.  Use ostree_repo_checkout_at() instead.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1923,8 +1993,14 @@ that happened during this transaction.</doc>
         </parameters>
       </method>
       <method name="create" c:identifier="ostree_repo_create" throws="1">
-        <doc xml:space="preserve">Create the underlying structure on disk for the
-repository.</doc>
+        <doc xml:space="preserve">Create the underlying structure on disk for the repository, and call
+ostree_repo_open() on the result, preparing it for use.
+
+Since version 2016.8, this function will succeed on an existing
+repository, and finish creating any necessary files in a partially
+created repository.  However, this function cannot change the mode
+of an existing repository, and will silently ignore an attempt to
+do so.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1979,6 +2055,7 @@ is thrown if the object does not exist.</doc>
       </method>
       <method name="export_tree_to_archive"
               c:identifier="ostree_repo_export_tree_to_archive"
+              introspectable="0"
               throws="1">
         <doc xml:space="preserve">Import an archive file @archive into the repository, and write its
 file structure to @mtree.</doc>
@@ -1999,7 +2076,10 @@ file structure to @mtree.</doc>
             <doc xml:space="preserve">An #OstreeRepoFile for the base directory</doc>
             <type name="RepoFile" c:type="OstreeRepoFile*"/>
           </parameter>
-          <parameter name="archive" transfer-ownership="none">
+          <parameter name="archive"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">A `struct archive`, but specified as void to avoid a dependency on the libarchive headers</doc>
             <type name="gpointer" c:type="void*"/>
           </parameter>
@@ -2297,6 +2377,7 @@ the verifications using GPG keys in the keyrings of all remotes.</doc>
       </method>
       <method name="import_archive_to_mtree"
               c:identifier="ostree_repo_import_archive_to_mtree"
+              introspectable="0"
               throws="1">
         <doc xml:space="preserve">Import an archive file @archive into the repository, and write its
 file structure to @mtree.</doc>
@@ -2313,7 +2394,10 @@ file structure to @mtree.</doc>
             <type name="RepoImportArchiveOptions"
                   c:type="OstreeRepoImportArchiveOptions*"/>
           </parameter>
-          <parameter name="archive" transfer-ownership="none">
+          <parameter name="archive"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">Really this is "struct archive*"</doc>
             <type name="gpointer" c:type="void*"/>
           </parameter>
@@ -3110,8 +3194,8 @@ The following are currently defined:
             <doc xml:space="preserve">Repo</doc>
             <type name="Repo" c:type="OstreeRepo*"/>
           </instance-parameter>
-          <parameter name="remote_name" transfer-ownership="none">
-            <doc xml:space="preserve">Name of remote</doc>
+          <parameter name="remote_name_or_baseurl" transfer-ownership="none">
+            <doc xml:space="preserve">Name of remote or file:// url</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="options" transfer-ownership="none">
@@ -4624,7 +4708,10 @@ checksum @expected_checksum will be verified.</doc>
             <doc xml:space="preserve">Invoked when content is writed</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">User data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -4867,7 +4954,10 @@ the checksum @expected_checksum will be verified.</doc>
             <doc xml:space="preserve">Invoked when metadata is writed</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">Data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -5038,6 +5128,53 @@ is called.</doc>
         </parameters>
       </glib:signal>
     </class>
+    <record name="RepoCheckoutAtOptions" c:type="OstreeRepoCheckoutAtOptions">
+      <doc xml:space="preserve">An extensible options structure controlling checkout.  Ensure that
+you have entirely zeroed the structure, then set just the desired
+options.  This is used by ostree_repo_checkout_at() which
+supercedes previous separate enumeration usage in
+ostree_repo_checkout_tree() and ostree_repo_checkout_tree_at().</doc>
+      <field name="mode" writable="1">
+        <type name="RepoCheckoutMode" c:type="OstreeRepoCheckoutMode"/>
+      </field>
+      <field name="overwrite_mode" writable="1">
+        <type name="RepoCheckoutOverwriteMode"
+              c:type="OstreeRepoCheckoutOverwriteMode"/>
+      </field>
+      <field name="enable_uncompressed_cache" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="enable_fsync" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="process_whiteouts" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="no_copy_fallback" writable="1">
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="unused_bools" writable="1">
+        <array zero-terminated="0" c:type="gboolean" fixed-size="7">
+          <type name="gboolean" c:type="gboolean"/>
+        </array>
+      </field>
+      <field name="subpath" writable="1">
+        <type name="utf8" c:type="const char*"/>
+      </field>
+      <field name="devino_to_csum_cache" writable="1">
+        <type name="RepoDevInoCache" c:type="OstreeRepoDevInoCache*"/>
+      </field>
+      <field name="unused_ints" writable="1">
+        <array zero-terminated="0" c:type="int" fixed-size="6">
+          <type name="gint" c:type="int"/>
+        </array>
+      </field>
+      <field name="unused_ptrs" writable="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="7">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <enumeration name="RepoCheckoutMode" c:type="OstreeRepoCheckoutMode">
       <member name="none"
               value="0"
@@ -5050,7 +5187,9 @@ is called.</doc>
         <doc xml:space="preserve">Ignore uid/gid of files</doc>
       </member>
     </enumeration>
-    <record name="RepoCheckoutOptions" c:type="OstreeRepoCheckoutOptions">
+    <record name="RepoCheckoutOptions"
+            c:type="OstreeRepoCheckoutOptions"
+            introspectable="0">
       <doc xml:space="preserve">An extensible options structure controlling checkout.  Ensure that
 you have entirely zeroed the structure, then set just the desired
 options.  This is used by ostree_repo_checkout_tree_at() which
@@ -5127,7 +5266,11 @@ ostree_repo_checkout_tree().</doc>
           <doc xml:space="preserve">File information</doc>
           <type name="Gio.FileInfo" c:type="GFileInfo*"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
           <doc xml:space="preserve">User data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -5301,7 +5444,10 @@ repository.</doc>
             <doc xml:space="preserve">Destroy notification</doc>
             <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">Data for @callback:</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -5352,7 +5498,11 @@ repository.</doc>
         <parameter name="file_info" transfer-ownership="none">
           <type name="Gio.FileInfo" c:type="GFileInfo*"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -5560,7 +5710,10 @@ ostree_repo_commit_traverse_iter_clear().</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="p" transfer-ownership="none">
+          <parameter name="p"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="void*"/>
           </parameter>
         </parameters>
@@ -5577,7 +5730,7 @@ hardlinks in combination with a later
 ostree_repo_write_directory_to_mtree() using a (normally modified)
 directory.  In order for OSTree to optimally detect just the new
 files, use this function and fill in the `devino_to_csum_cache`
-member of `OstreeRepoCheckoutOptions`, then call
+member of `OstreeRepoCheckoutAtOptions`, then call
 ostree_repo_commit_set_devino_cache().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">Newly allocated cache</doc>
@@ -5606,7 +5759,8 @@ ostree_repo_commit_set_devino_cache().</doc>
       </method>
     </record>
     <record name="RepoExportArchiveOptions"
-            c:type="OstreeRepoExportArchiveOptions">
+            c:type="OstreeRepoExportArchiveOptions"
+            introspectable="0">
       <doc xml:space="preserve">An extensible options structure controlling archive creation.  Ensure that
 you have entirely zeroed the structure, then set just the desired
 options.  This is used by ostree_repo_export_tree_to_archive().</doc>
@@ -5836,7 +5990,8 @@ options.  This is used by ostree_repo_export_tree_to_archive().</doc>
       </field>
     </record>
     <record name="RepoImportArchiveOptions"
-            c:type="OstreeRepoImportArchiveOptions">
+            c:type="OstreeRepoImportArchiveOptions"
+            introspectable="0">
       <doc xml:space="preserve">An extensible options structure controlling archive import.  Ensure that
 you have entirely zeroed the structure, then set just the desired
 options.  This is used by ostree_repo_import_archive_to_mtree().</doc>
@@ -5879,6 +6034,11 @@ options.  This is used by ostree_repo_import_archive_to_mtree().</doc>
       </member>
       <member name="all" value="4" c:identifier="OSTREE_REPO_LIST_OBJECTS_ALL">
         <doc xml:space="preserve">List all objects</doc>
+      </member>
+      <member name="no_parents"
+              value="8"
+              c:identifier="OSTREE_REPO_LIST_OBJECTS_NO_PARENTS">
+        <doc xml:space="preserve">Only list objects in this repo, not parents</doc>
       </member>
     </bitfield>
     <enumeration name="RepoListRefsExtFlags"
@@ -6104,7 +6264,10 @@ in bytes, counting only content objects.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="unused" transfer-ownership="none">
+          <parameter name="unused"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="gpointer" c:type="void**"/>
           </parameter>
         </parameters>
@@ -6806,7 +6969,10 @@ be released if @self is deallocated.</doc>
             <doc xml:space="preserve">Callback</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">User data</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -7062,6 +7228,10 @@ this function will write the current origin of @deployment.</doc>
       <member name="not_default"
               value="2"
               c:identifier="OSTREE_SYSROOT_SIMPLE_WRITE_DEPLOYMENT_FLAGS_NOT_DEFAULT">
+      </member>
+      <member name="no_clean"
+              value="4"
+              c:identifier="OSTREE_SYSROOT_SIMPLE_WRITE_DEPLOYMENT_FLAGS_NO_CLEAN">
       </member>
     </bitfield>
     <class name="SysrootUpgrader"
@@ -7391,6 +7561,12 @@ from inside the tree such as package databases.</doc>
               c:identifier="OSTREE_SYSROOT_UPGRADER_PULL_FLAGS_ALLOW_OLDER">
       </member>
     </bitfield>
+    <constant name="TIMESTAMP" value="0" c:type="OSTREE_TIMESTAMP">
+      <doc xml:space="preserve">The mtime used for stored files.  This was originally 0, changed to 1 for
+a few releases, then was reverted due to regressions it introduced from
+users who had been using zero before.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="TREE_GVARIANT_STRING"
               value="(a(say)a(sayay))"
               c:type="OSTREE_TREE_GVARIANT_STRING">
@@ -7409,6 +7585,24 @@ from inside the tree such as package databases.</doc>
               c:type="OSTREE_WITH_AUTOCLEANUPS">
       <type name="gint" c:type="gint"/>
     </constant>
+    <function name="checksum_b64_from_bytes"
+              c:identifier="ostree_checksum_b64_from_bytes">
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">Modified base64 encoding of @csum
+
+The "modified" term refers to the fact that instead of '/', the '_'
+character is used.</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="csum" transfer-ownership="none">
+          <doc xml:space="preserve">An binary checksum of length 32</doc>
+          <array zero-terminated="0" c:type="guchar*" fixed-size="32">
+            <type name="guint8" c:type="guchar"/>
+          </array>
+        </parameter>
+      </parameters>
+    </function>
     <function name="checksum_b64_inplace_from_bytes"
               c:identifier="ostree_checksum_b64_inplace_from_bytes"
               introspectable="0">
@@ -7448,6 +7642,21 @@ character is used.</doc>
         <parameter name="buf" transfer-ownership="none">
           <doc xml:space="preserve">Output location, must be at least 45 bytes in length</doc>
           <type name="guint8" c:type="guint8*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="checksum_b64_to_bytes"
+              c:identifier="ostree_checksum_b64_to_bytes">
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">Binary version of @checksum.</doc>
+        <array zero-terminated="0" c:type="guchar*" fixed-size="32">
+          <type name="guint8" c:type="guchar"/>
+        </array>
+      </return-value>
+      <parameters>
+        <parameter name="checksum" transfer-ownership="none">
+          <doc xml:space="preserve">An ASCII checksum</doc>
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>
@@ -7553,7 +7762,10 @@ complete with ostree_checksum_file_async_finish().</doc>
           <doc xml:space="preserve">Invoked when operation is complete</doc>
           <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">Data for @callback</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
@@ -8041,7 +8253,10 @@ sets of #OstreeDiffItem in @modified, @removed, and @added.</doc>
         <type name="guint" c:type="guint"/>
       </return-value>
       <parameters>
-        <parameter name="a" transfer-ownership="none">
+        <parameter name="a"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">A #GVariant containing a serialized object</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
@@ -8303,7 +8518,10 @@ for writing data to an #OstreeRepo.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="p" transfer-ownership="none">
+        <parameter name="p"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <type name="gpointer" c:type="void*"/>
         </parameter>
       </parameters>
