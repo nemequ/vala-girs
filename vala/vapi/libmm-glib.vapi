@@ -468,6 +468,25 @@ namespace MM {
 		[CCode (has_construct_function = false, type = "MmGdbusSms*")]
 		public GdbusSmsSkeleton ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_kernel_event_properties_get_type ()")]
+	public class KernelEventProperties : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public KernelEventProperties ();
+		public MM.KernelEventProperties dup ();
+		[CCode (has_construct_function = false)]
+		public KernelEventProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public KernelEventProperties.from_string (string str) throws GLib.Error;
+		public unowned string get_action ();
+		public GLib.Variant get_dictionary ();
+		public unowned string get_name ();
+		public unowned string get_subsystem ();
+		public unowned string get_uid ();
+		public void set_action (string action);
+		public void set_name (string name);
+		public void set_subsystem (string subsystem);
+		public void set_uid (string uid);
+	}
 	[CCode (cheader_filename = "libmm-glib.h", lower_case_csuffix = "location_3gpp", type_id = "mm_location_3gpp_get_type ()")]
 	public class Location3gpp : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -525,6 +544,8 @@ namespace MM {
 		public async Manager (GLib.DBusConnection connection, GLib.DBusObjectManagerClientFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.DBusProxy get_proxy ();
 		public unowned GLib.DBusProxy peek_proxy ();
+		public async bool report_kernel_event (MM.KernelEventProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool report_kernel_event_sync (MM.KernelEventProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool scan_devices (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool scan_devices_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_logging (string level, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1492,14 +1513,18 @@ namespace MM {
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusOrgFreedesktopModemManager1", type_id = "mm_gdbus_org_freedesktop_modem_manager1_get_type ()")]
 	public interface GdbusOrgFreedesktopModemManager1 : GLib.Object {
+		public async bool call_report_kernel_event (GLib.Variant arg_properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_report_kernel_event_sync (GLib.Variant arg_properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_scan_devices (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_scan_devices_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_logging (string arg_level, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_logging_sync (string arg_level, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void complete_report_kernel_event (owned GLib.DBusMethodInvocation invocation);
 		public void complete_scan_devices (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_logging (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		public virtual signal bool handle_report_kernel_event (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
 		public virtual signal bool handle_scan_devices (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_set_logging (GLib.DBusMethodInvocation invocation, string arg_level);
 	}
@@ -2500,6 +2525,8 @@ namespace MM {
 	public const string DBUS_SERVICE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_REPORTKERNELEVENT")]
+	public const string MANAGER_METHOD_REPORTKERNELEVENT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_SCANDEVICES")]
 	public const string MANAGER_METHOD_SCANDEVICES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_SETLOGGING")]

@@ -3,44 +3,56 @@
 [CCode (cprefix = "Spice", gir_namespace = "SpiceClientGtk", gir_version = "3.0", lower_case_cprefix = "spice_")]
 namespace Spice {
 	[CCode (cheader_filename = "spice-widget.h", type_id = "spice_display_get_type ()")]
-	public class Display : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
+	public class Display : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
-		public Display (Spice.Session session, int id);
-		[Deprecated (since = "0.8")]
-		public void copy_to_guest ();
-		public Spice.GrabSequence get_grab_keys ();
+		public Display (Spice.Session session, int channel_id);
+		public unowned Spice.GrabSequence get_grab_keys ();
 		public Gdk.Pixbuf get_pixbuf ();
 		public void mouse_ungrab ();
-		[Deprecated (since = "0.8")]
-		public void paste_from_guest ();
-		public void send_keys (uint keyvals, int nkeyvals, Spice.DisplayKeyEvent kind);
+		public void send_keys ([CCode (array_length_cname = "nkeyvals", array_length_pos = 1.5)] uint[] keyvals, Spice.DisplayKeyEvent kind);
 		public void set_grab_keys (Spice.GrabSequence seq);
-		[Deprecated (since = "0.8")]
-		[NoAccessorMethod]
-		public bool auto_clipboard { get; set; }
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.13")]
+		public Display.with_monitor (Spice.Session session, int channel_id, int monitor_id);
 		[NoAccessorMethod]
 		public int channel_id { get; construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.8")]
 		public bool disable_inputs { get; set construct; }
 		[NoAccessorMethod]
 		public bool grab_keyboard { get; set construct; }
 		[NoAccessorMethod]
 		public bool grab_mouse { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.13")]
+		public uint keypress_delay { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "0.13")]
+		public int monitor_id { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "0.14")]
+		public bool only_downscale { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "0.13")]
+		public bool ready { get; }
+		[NoAccessorMethod]
 		public bool resize_guest { get; set construct; }
 		[NoAccessorMethod]
 		public bool scaling { get; set construct; }
 		[NoAccessorMethod]
 		public Spice.Session session { owned get; construct; }
+		[NoAccessorMethod]
+		[Version (since = "0.10")]
+		public int zoom_level { get; set construct; }
 		public signal void grab_keys_pressed ();
-		public virtual signal void keyboard_grab (int grabbed);
-		public virtual signal void mouse_grab (int grabbed);
+		public signal void keyboard_grab (int status);
+		public signal void mouse_grab (int status);
 	}
 	[CCode (cheader_filename = "spice-widget.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "spice_grab_sequence_get_type ()")]
 	[Compact]
 	public class GrabSequence {
 		[CCode (has_construct_function = false)]
-		public GrabSequence (uint nkeysyms, uint keysyms);
+		public GrabSequence ([CCode (array_length_cname = "nkeysyms", array_length_pos = 0.5, array_length_type = "guint")] uint[] keysyms);
 		public string as_string ();
 		public Spice.GrabSequence copy ();
 		public void free ();
@@ -55,19 +67,35 @@ namespace Spice {
 		public static unowned Spice.GtkSession @get (Spice.Session session);
 		public void paste_from_guest ();
 		[NoAccessorMethod]
+		[Version (since = "0.8")]
 		public bool auto_clipboard { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.8")]
 		public bool auto_usbredir { get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.27")]
+		public bool pointer_grabbed { get; }
+		[NoAccessorMethod]
+		[Version (since = "0.8")]
 		public Spice.Session session { owned get; construct; }
+		[NoAccessorMethod]
+		[Version (since = "0.32")]
+		public bool sync_modifiers { get; set construct; }
 	}
-	[CCode (cheader_filename = "spice-widget.h")]
+	[CCode (cheader_filename = "spice-widget.h", type_id = "spice_usb_device_widget_get_type ()")]
+	public class UsbDeviceWidget : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public UsbDeviceWidget (Spice.Session session, string? device_format_string);
+		[NoAccessorMethod]
+		public string device_format_string { owned get; construct; }
+		[NoAccessorMethod]
+		public Spice.Session session { owned get; construct; }
+		public signal void connect_failed (Spice.UsbDevice device, GLib.Error error);
+	}
+	[CCode (cheader_filename = "spice-widget.h", cprefix = "SPICE_DISPLAY_KEY_EVENT_", type_id = "spice_display_key_event_get_type ()")]
 	public enum DisplayKeyEvent {
-		[CCode (cname = "SPICE_DISPLAY_KEY_EVENT_PRESS")]
 		PRESS,
-		[CCode (cname = "SPICE_DISPLAY_KEY_EVENT_RELEASE")]
 		RELEASE,
-		[CCode (cname = "SPICE_DISPLAY_KEY_EVENT_CLICK")]
 		CLICK
 	}
 }

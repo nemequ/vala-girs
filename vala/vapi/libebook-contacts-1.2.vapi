@@ -854,6 +854,154 @@ namespace E {
 		TOO_LONG;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ADR")]
+	public const string EVC_ADR;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_BDAY")]
+	public const string EVC_BDAY;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_CALURI")]
+	public const string EVC_CALURI;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_CATEGORIES")]
+	public const string EVC_CATEGORIES;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_CL_UID")]
+	[Version (since = "3.2")]
+	public const string EVC_CL_UID;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_CONTACT_LIST")]
+	[Version (since = "3.2")]
+	public const string EVC_CONTACT_LIST;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_EMAIL")]
+	public const string EVC_EMAIL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ENCODING")]
+	public const string EVC_ENCODING;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_FBURL")]
+	public const string EVC_FBURL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_FN")]
+	public const string EVC_FN;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_GEO")]
+	[Version (since = "1.12")]
+	public const string EVC_GEO;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ICSCALENDAR")]
+	public const string EVC_ICSCALENDAR;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_KEY")]
+	public const string EVC_KEY;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_LABEL")]
+	public const string EVC_LABEL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_LOGO")]
+	public const string EVC_LOGO;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_MAILER")]
+	public const string EVC_MAILER;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_N")]
+	public const string EVC_N;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_NICKNAME")]
+	public const string EVC_NICKNAME;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_NOTE")]
+	public const string EVC_NOTE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ORG")]
+	public const string EVC_ORG;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_PARENT_CL")]
+	[Version (since = "3.2")]
+	public const string EVC_PARENT_CL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_PHOTO")]
+	public const string EVC_PHOTO;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_PRODID")]
+	public const string EVC_PRODID;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_QUOTEDPRINTABLE")]
+	public const string EVC_QUOTEDPRINTABLE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_REV")]
+	public const string EVC_REV;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ROLE")]
+	public const string EVC_ROLE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_TEL")]
+	public const string EVC_TEL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_TITLE")]
+	public const string EVC_TITLE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_TYPE")]
+	public const string EVC_TYPE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_UID")]
+	public const string EVC_UID;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_URL")]
+	public const string EVC_URL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_VALUE")]
+	public const string EVC_VALUE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_VERSION")]
+	public const string EVC_VERSION;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_AIM")]
+	public const string EVC_X_AIM;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_ANNIVERSARY")]
+	public const string EVC_X_ANNIVERSARY;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_ASSISTANT")]
+	public const string EVC_X_ASSISTANT;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_BIRTHDAY")]
+	public const string EVC_X_BIRTHDAY;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_BLOG_URL")]
+	public const string EVC_X_BLOG_URL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_BOOK_UID")]
+	[Version (since = "3.6")]
+	public const string EVC_X_BOOK_UID;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_CALLBACK")]
+	public const string EVC_X_CALLBACK;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_COMPANY")]
+	public const string EVC_X_COMPANY;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_DEST_CONTACT_UID")]
+	public const string EVC_X_DEST_CONTACT_UID;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_DEST_EMAIL")]
+	public const string EVC_X_DEST_EMAIL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_DEST_EMAIL_NUM")]
+	public const string EVC_X_DEST_EMAIL_NUM;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_DEST_HTML_MAIL")]
+	public const string EVC_X_DEST_HTML_MAIL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_DEST_NAME")]
+	public const string EVC_X_DEST_NAME;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_DEST_SOURCE_UID")]
+	public const string EVC_X_DEST_SOURCE_UID;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_E164")]
+	public const string EVC_X_E164;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_FILE_AS")]
+	public const string EVC_X_FILE_AS;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_GADUGADU")]
+	public const string EVC_X_GADUGADU;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_GOOGLE_TALK")]
+	[Version (since = "3.2")]
+	public const string EVC_X_GOOGLE_TALK;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_GROUPWISE")]
+	public const string EVC_X_GROUPWISE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_ICQ")]
+	public const string EVC_X_ICQ;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_JABBER")]
+	public const string EVC_X_JABBER;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_LIST")]
+	public const string EVC_X_LIST;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_LIST_NAME")]
+	[Version (since = "3.2")]
+	public const string EVC_X_LIST_NAME;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_LIST_SHOW_ADDRESSES")]
+	public const string EVC_X_LIST_SHOW_ADDRESSES;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_MANAGER")]
+	public const string EVC_X_MANAGER;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_MSN")]
+	public const string EVC_X_MSN;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_RADIO")]
+	public const string EVC_X_RADIO;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_SIP")]
+	[Version (since = "2.26")]
+	public const string EVC_X_SIP;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_SKYPE")]
+	[Version (since = "2.26")]
+	public const string EVC_X_SKYPE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_SPOUSE")]
+	public const string EVC_X_SPOUSE;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_TELEX")]
+	public const string EVC_X_TELEX;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_TTYTDD")]
+	public const string EVC_X_TTYTDD;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_TWITTER")]
+	[Version (since = "3.6")]
+	public const string EVC_X_TWITTER;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_VIDEO_URL")]
+	public const string EVC_X_VIDEO_URL;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_WANTS_HTML")]
+	public const string EVC_X_WANTS_HTML;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_YAHOO")]
+	public const string EVC_X_YAHOO;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_SOURCE_EXTENSION_BACKEND_SUMMARY_SETUP")]
 	[Version (since = "3.8")]
 	public const string SOURCE_EXTENSION_BACKEND_SUMMARY_SETUP;

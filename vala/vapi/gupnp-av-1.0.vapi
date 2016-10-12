@@ -62,7 +62,6 @@ namespace GUPnP {
 		public void set_role (string role);
 		public string name { get; set; }
 		public string role { get; set; }
-		public GUPnP.XMLDoc xml_doc { construct; }
 		public Xml.Node* xml_node { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_create_class_get_type ()")]
@@ -79,7 +78,6 @@ namespace GUPnP {
 		public string content { get; set; }
 		public string friendly_name { get; set; }
 		public bool include_derived { get; set; }
-		public GUPnP.XMLDoc xml_doc { construct; }
 		public Xml.Node* xml_node { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_descriptor_get_type ()")]
@@ -99,7 +97,6 @@ namespace GUPnP {
 		public string id { get; set; }
 		public string metadata_type { get; set; }
 		public string name_space { get; set; }
-		public GUPnP.XMLDoc xml_doc { construct; }
 		public Xml.Node* xml_node { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_item_get_type ()")]
@@ -207,7 +204,6 @@ namespace GUPnP {
 		public string upnp_class { get; set; }
 		public Xml.Ns* upnp_namespace { get; construct; }
 		public string write_status { get; set; }
-		public GUPnP.XMLDoc xml_doc { construct; }
 		public Xml.Node* xml_node { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_parser_get_type ()")]
@@ -293,7 +289,6 @@ namespace GUPnP {
 		public uint update_count { get; set; }
 		public string uri { get; set; }
 		public int width { get; set; }
-		public GUPnP.XMLDoc xml_doc { construct; }
 		public Xml.Node* xml_node { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h")]

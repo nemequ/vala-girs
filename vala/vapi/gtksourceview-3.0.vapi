@@ -821,6 +821,8 @@ namespace Gtk {
 		[Version (since = "3.24")]
 		public SourceSpaceDrawer ();
 		[Version (since = "3.24")]
+		public void bind_matrix_setting (GLib.Settings settings, string key, GLib.SettingsBindFlags flags);
+		[Version (since = "3.24")]
 		public bool get_enable_matrix ();
 		[Version (since = "3.24")]
 		public GLib.Variant get_matrix ();

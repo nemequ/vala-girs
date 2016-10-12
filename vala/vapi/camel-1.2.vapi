@@ -1144,7 +1144,6 @@ namespace Camel {
 		public Camel.ThreeState get_offline_sync ();
 		[Version (since = "2.32")]
 		public void set_offline_sync (Camel.ThreeState offline_sync);
-		public Camel.ThreeState offline_sync { get; set; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_offline_settings_get_type ()")]
 	[Version (since = "3.2")]
@@ -1360,7 +1359,6 @@ namespace Camel {
 		public void set_proxy_resolver (GLib.ProxyResolver proxy_resolver);
 		[Version (since = "3.2")]
 		public void set_settings (Camel.Settings settings);
-		public Camel.ServiceConnectionStatus connection_status { get; }
 		public string display_name { get; set construct; }
 		public string password { get; set construct; }
 		[NoAccessorMethod]
@@ -1428,6 +1426,8 @@ namespace Camel {
 		public void submit_job (string description, owned Camel.SessionCallback callback);
 		[Version (since = "3.8")]
 		public virtual Camel.CertTrust trust_prompt (Camel.Service service, GLib.TlsCertificate certificate, GLib.TlsCertificateFlags errors);
+		[Version (since = "3.12")]
+		public virtual void user_alert (Camel.Service service, Camel.SessionAlertType type, string message);
 		public Camel.JunkFilter junk_filter { get; set; }
 		[NoAccessorMethod]
 		public GLib.MainContext main_context { owned get; }
@@ -1440,8 +1440,6 @@ namespace Camel {
 		public string user_data_dir { owned get; set construct; }
 		public virtual signal void job_finished (GLib.Cancellable? cancellable, void* error);
 		public virtual signal void job_started (GLib.Cancellable? cancellable = null);
-		[HasEmitter]
-		public virtual signal void user_alert (Camel.Service service, Camel.SessionAlertType type, string message);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_settings_get_type ()")]
 	[Version (since = "3.2")]
@@ -1898,8 +1896,6 @@ namespace Camel {
 		public abstract string host { get; set construct; }
 		[ConcreteAccessor]
 		public abstract uint port { get; set construct; }
-		[ConcreteAccessor]
-		public abstract Camel.NetworkSecurityMethod security_method { get; set construct; }
 		[ConcreteAccessor]
 		public abstract string user { get; set construct; }
 	}
@@ -2403,6 +2399,17 @@ namespace Camel {
 		public weak string value;
 		public int offset;
 	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "_camel_search_word", has_type_id = false)]
+	public struct __search_word {
+		public Camel._search_word_t type;
+		public weak string word;
+	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "_camel_search_words", has_type_id = false)]
+	public struct __search_words {
+		public int len;
+		public Camel._search_word_t type;
+		public void* words;
+	}
 	[CCode (cheader_filename = "camel/camel.h", cname = "camel_block_t")]
 	[SimpleType]
 	public struct _block_t : uint32 {
@@ -2415,7 +2422,7 @@ namespace Camel {
 	[SimpleType]
 	public struct _key_t : uint32 {
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_AUTHENTICATION_", type_id = "camel_authentication_result_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_AUTHENTICATION_", has_type_id = false)]
 	[Version (since = "3.4")]
 	public enum AuthenticationResult {
 		ERROR,
@@ -2534,7 +2541,7 @@ namespace Camel {
 		VISIBLE_COUNT,
 		VUID
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FETCH_HEADERS_", type_id = "camel_fetch_headers_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FETCH_HEADERS_", has_type_id = false)]
 	[Version (since = "3.2")]
 	public enum FetchHeadersType {
 		BASIC,
@@ -2559,7 +2566,7 @@ namespace Camel {
 		INVALID_UID,
 		SUMMARY_INVALID
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_", type_id = "camel_folder_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_", has_type_id = false)]
 	[Flags]
 	public enum FolderFlags {
 		HAS_SUMMARY_CAPABILITY,
@@ -2569,7 +2576,7 @@ namespace Camel {
 		IS_JUNK,
 		FILTER_JUNK
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_", type_id = "camel_folder_info_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_", has_type_id = false)]
 	[Flags]
 	public enum FolderInfoFlags {
 		NOSELECT,
@@ -2593,7 +2600,8 @@ namespace Camel {
 		TYPE_MEMOS,
 		TYPE_TASKS,
 		READONLY,
-		FLAGGED
+		FLAGGED,
+		FLAGS_LAST
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_SUMMARY_", has_type_id = false)]
 	[Flags]
@@ -2624,7 +2632,7 @@ namespace Camel {
 		NAME,
 		GROUP
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_JUNK_STATUS_", type_id = "camel_junk_status_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_JUNK_STATUS_", has_type_id = false)]
 	public enum JunkStatus {
 		ERROR,
 		INCONCLUSIVE,
@@ -2662,7 +2670,7 @@ namespace Camel {
 		JUNK_LEARN,
 		USER
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_BASIC_", type_id = "camel_mime_filter_basic_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_BASIC_", has_type_id = false)]
 	public enum MimeFilterBasicType {
 		INVALID,
 		BASE64_ENC,
@@ -2672,22 +2680,22 @@ namespace Camel {
 		UU_ENC,
 		UU_DEC
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_CRLF_", type_id = "camel_mime_filter_crlf_direction_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_CRLF_", has_type_id = false)]
 	public enum MimeFilterCRLFDirection {
 		ENCODE,
 		DECODE
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_CRLF_MODE_CRLF_", type_id = "camel_mime_filter_crlf_mode_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_CRLF_MODE_CRLF_", has_type_id = false)]
 	public enum MimeFilterCRLFMode {
 		DOTS,
 		ONLY
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_GZIP_MODE_", type_id = "camel_mime_filter_gzip_mode_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_GZIP_MODE_", has_type_id = false)]
 	public enum MimeFilterGZipMode {
 		ZIP,
 		UNZIP
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_TOHTML_", type_id = "camel_mime_filter_to_html_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_TOHTML_", has_type_id = false)]
 	[Flags]
 	public enum MimeFilterToHTMLFlags {
 		PRE,
@@ -2702,7 +2710,7 @@ namespace Camel {
 		FORMAT_FLOWED,
 		QUOTE_CITATION
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_YENC_DIRECTION_", type_id = "camel_mime_filter_yenc_direction_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_YENC_DIRECTION_", has_type_id = false)]
 	public enum MimeFilterYencDirection {
 		ENCODE,
 		DECODE
@@ -2726,7 +2734,7 @@ namespace Camel {
 		MULTIPART_END,
 		MESSAGE_END
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_NETWORK_SECURITY_METHOD_", type_id = "camel_network_security_method_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_NETWORK_SECURITY_METHOD_", has_type_id = false)]
 	[Version (since = "3.2")]
 	public enum NetworkSecurityMethod {
 		NONE,
@@ -2740,7 +2748,7 @@ namespace Camel {
 		[CCode (cname = "CAMEL_PARAM_PERSISTENT")]
 		PARAM_PERSISTENT
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_CONF_", type_id = "camel_provider_conf_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_CONF_", has_type_id = false)]
 	public enum ProviderConfType {
 		END,
 		SECTION_START,
@@ -2752,7 +2760,7 @@ namespace Camel {
 		HIDDEN,
 		OPTIONS
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_", type_id = "camel_provider_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_", has_type_id = false)]
 	[Flags]
 	public enum ProviderFlags {
 		IS_REMOTE,
@@ -2769,10 +2777,11 @@ namespace Camel {
 		SUPPORTS_BATCH_FETCH,
 		SUPPORTS_PURGE_MESSAGE_CACHE
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_", type_id = "camel_provider_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_", has_type_id = false)]
 	public enum ProviderType {
-		STORE,
-		TRANSPORT
+		PROVIDER_STORE,
+		PROVIDER_TRANSPORT,
+		NUM_PROVIDER_TYPES
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_URL_", has_type_id = false)]
 	[Flags]
@@ -2833,13 +2842,13 @@ namespace Camel {
 		CLEARSIGN,
 		ENVELOPED
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SASL_ANON_TRACE_", type_id = "camel_sasl_anon_trace_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SASL_ANON_TRACE_", has_type_id = false)]
 	public enum SaslAnonTraceType {
 		EMAIL,
 		OPAQUE,
 		EMPTY
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SERVICE_", type_id = "camel_service_connection_status_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SERVICE_", has_type_id = false)]
 	[Version (since = "3.6")]
 	public enum ServiceConnectionStatus {
 		DISCONNECTED,
@@ -2856,13 +2865,13 @@ namespace Camel {
 		CANT_AUTHENTICATE,
 		NOT_CONNECTED
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SESSION_ALERT_", type_id = "camel_session_alert_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SESSION_ALERT_", has_type_id = false)]
 	public enum SessionAlertType {
 		INFO,
 		WARNING,
 		ERROR
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SORT_", type_id = "camel_sort_type_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SORT_", has_type_id = false)]
 	[Version (since = "3.2")]
 	public enum SortType {
 		ASCENDING,
@@ -2874,7 +2883,7 @@ namespace Camel {
 		INVALID,
 		NO_FOLDER
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_", type_id = "camel_store_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_", has_type_id = false)]
 	[Flags]
 	public enum StoreFlags {
 		VTRASH,
@@ -2895,7 +2904,7 @@ namespace Camel {
 		BODY_INDEX,
 		PRIVATE
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_FOLDER_INFO_", type_id = "camel_store_get_folder_info_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_FOLDER_INFO_", has_type_id = false)]
 	[Flags]
 	public enum StoreGetFolderInfoFlags {
 		FAST,
@@ -2905,7 +2914,7 @@ namespace Camel {
 		SUBSCRIPTION_LIST,
 		REFRESH
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_INFO_FOLDER_", type_id = "camel_store_info_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_INFO_FOLDER_", has_type_id = false)]
 	[Flags]
 	public enum StoreInfoFlags {
 		NOSELECT,
@@ -2919,9 +2928,10 @@ namespace Camel {
 		SHARED_TO_ME,
 		SHARED_BY_ME,
 		READONLY,
-		FLAGGED
+		FLAGGED,
+		LAST
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_", type_id = "camel_store_permission_flags_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_", has_type_id = false)]
 	[Flags]
 	public enum StorePermissionFlags {
 		READ,
@@ -2935,14 +2945,14 @@ namespace Camel {
 		WRITE,
 		MODE
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_THREE_STATE_", type_id = "camel_three_state_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_THREE_STATE_", has_type_id = false)]
 	[Version (since = "3.22")]
 	public enum ThreeState {
 		OFF,
 		ON,
 		INCONSISTENT
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_TRANSFER_", type_id = "camel_transfer_encoding_get_type ()")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_TRANSFER_", has_type_id = false)]
 	public enum TransferEncoding {
 		ENCODING_DEFAULT,
 		ENCODING_7BIT,
@@ -2973,6 +2983,38 @@ namespace Camel {
 		TRASH,
 		JUNK,
 		LAST
+	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "camel_search_flags_t", cprefix = "CAMEL_SEARCH_MATCH_", has_type_id = false)]
+	[Flags]
+	public enum _search_flags_t {
+		START,
+		END,
+		REGEX,
+		ICASE,
+		NEWLINE
+	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "camel_search_match_t", cprefix = "CAMEL_SEARCH_MATCH_", has_type_id = false)]
+	public enum _search_match_t {
+		EXACT,
+		CONTAINS,
+		WORD,
+		STARTS,
+		ENDS,
+		SOUNDEX
+	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "camel_search_t", cprefix = "CAMEL_SEARCH_TYPE_", has_type_id = false)]
+	public enum _search_t {
+		ASIS,
+		ENCODED,
+		ADDRESS,
+		ADDRESS_ENCODED,
+		MLIST
+	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "camel_search_word_t", cprefix = "CAMEL_SEARCH_WORD_", has_type_id = false)]
+	public enum _search_word_t {
+		SIMPLE,
+		COMPLEX,
+		@8BIT
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_ERROR_")]
 	[Version (since = "2.32")]
@@ -3020,6 +3062,10 @@ namespace Camel {
 	public delegate void TextIndexFunc (Camel.TextIndex idx, string word, string buffer);
 	[CCode (cheader_filename = "camel/camel.h", has_target = false)]
 	public delegate bool UrlScanFunc (string @in, string pos, string inend, Camel.UrlMatch match);
+	[CCode (cheader_filename = "camel/camel.h", cname = "AI_CANONNAME")]
+	public const int AI_CANONNAME;
+	[CCode (cheader_filename = "camel/camel.h", cname = "AI_NUMERICHOST")]
+	public const int AI_NUMERICHOST;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_BLOCK_SIZE")]
 	public const int BLOCK_SIZE;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_BLOCK_SIZE_BITS")]
@@ -3051,6 +3097,32 @@ namespace Camel {
 	public const string DEBUG_IMAP_FOLDER;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_DOT_LOCK_REFRESH")]
 	public const int DOT_LOCK_REFRESH;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_ADDRFAMILY")]
+	public const int EAI_ADDRFAMILY;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_AGAIN")]
+	public const int EAI_AGAIN;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_BADFLAGS")]
+	public const int EAI_BADFLAGS;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_FAIL")]
+	public const int EAI_FAIL;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_FAMILY")]
+	public const int EAI_FAMILY;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_MEMORY")]
+	public const int EAI_MEMORY;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_NODATA")]
+	public const int EAI_NODATA;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_NONAME")]
+	public const int EAI_NONAME;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_OVERFLOW")]
+	public const int EAI_OVERFLOW;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_SERVICE")]
+	public const int EAI_SERVICE;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_SOCKTYPE")]
+	public const int EAI_SOCKTYPE;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EAI_SYSTEM")]
+	public const int EAI_SYSTEM;
+	[CCode (cheader_filename = "camel/camel.h", cname = "EDS_CAMEL_PROVIDER_DIR")]
+	public const string EDS_CAMEL_PROVIDER_DIR;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_FOLDER_TYPE_BIT")]
 	public const int FOLDER_TYPE_BIT;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_FOLDER_TYPE_MASK")]
@@ -3097,6 +3169,18 @@ namespace Camel {
 	public const int MIME_YENCODE_CRC_INIT;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_MIME_YENCODE_STATE_INIT")]
 	public const int MIME_YENCODE_STATE_INIT;
+	[CCode (cheader_filename = "camel/camel.h", cname = "NI_DGRAM")]
+	public const int NI_DGRAM;
+	[CCode (cheader_filename = "camel/camel.h", cname = "NI_NAMEREQD")]
+	public const int NI_NAMEREQD;
+	[CCode (cheader_filename = "camel/camel.h", cname = "NI_NOFQDN")]
+	public const int NI_NOFQDN;
+	[CCode (cheader_filename = "camel/camel.h", cname = "NI_NUMERICHOST")]
+	public const int NI_NUMERICHOST;
+	[CCode (cheader_filename = "camel/camel.h", cname = "NI_NUMERICSERV")]
+	public const int NI_NUMERICSERV;
+	[CCode (cheader_filename = "camel/camel.h", cname = "O_BINARY")]
+	public const int O_BINARY;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_RECIPIENT_TYPE_BCC")]
 	public const string RECIPIENT_TYPE_BCC;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_RECIPIENT_TYPE_CC")]
@@ -3147,6 +3231,10 @@ namespace Camel {
 	public const string VJUNK_NAME;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_VTRASH_NAME")]
 	public const string VTRASH_NAME;
+	[CCode (cheader_filename = "camel/camel.h", cname = "bdata_extract_digit")]
+	public static int bdata_extract_digit (string part);
+	[CCode (cheader_filename = "camel/camel.h", cname = "bdata_extract_string")]
+	public static string bdata_extract_string (string part);
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property (void* source, string source_property, void* target, string target_property, GLib.BindingFlags flags);
@@ -3400,6 +3488,28 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static ssize_t read (int fd, string buf, size_t n, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "camel/camel.h")]
+	public static bool search_camel_header_soundex (string header, string match);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static string search_get_all_headers_decoded (Camel.MimeMessage message);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static unowned string search_get_default_charset_from_message (Camel.MimeMessage message);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static string search_get_header_decoded (string header_name, string header_value, string? default_charset);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.22")]
+	public static bool search_header_is_address (string header_name);
+	[CCode (cheader_filename = "camel/camel.h")]
+	public static bool search_header_match (string value, string match, Camel._search_match_t how, Camel._search_t type, string default_charset);
+	[CCode (cheader_filename = "camel/camel.h")]
+	public static void search_words_free (void* words);
+	[CCode (cheader_filename = "camel/camel.h")]
+	public static void* search_words_simple (void* words);
+	[CCode (cheader_filename = "camel/camel.h")]
+	public static void* search_words_split (uint8 @in);
+	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "2.24")]
 	public static void shutdown ();
 	[CCode (cheader_filename = "camel/camel.h")]
@@ -3428,6 +3538,8 @@ namespace Camel {
 	public static void unlock_flock (int fd);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static void unlock_folder (string path, int fd);
+	[CCode (cheader_filename = "camel/camel.h")]
+	public static unowned string ustrstrcase (string haystack, string needle);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string utf7_utf8 (string ptr);
 	[CCode (cheader_filename = "camel/camel.h")]

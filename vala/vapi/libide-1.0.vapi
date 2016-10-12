@@ -2429,6 +2429,8 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h")]
 	public static size_t get_system_page_size ();
 	[CCode (cheader_filename = "ide.h")]
+	public static unowned string gettext (string message);
+	[CCode (cheader_filename = "ide.h")]
 	public static void gtk_text_buffer_remove_tag (Gtk.TextBuffer buffer, Gtk.TextTag tag, Gtk.TextIter start, Gtk.TextIter end, bool minimal_damage);
 	[CCode (cheader_filename = "ide.h")]
 	public static bool is_flatpak ();

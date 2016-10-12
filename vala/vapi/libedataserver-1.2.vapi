@@ -216,9 +216,12 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
 		public int compare_by_display_name (E.Source source2);
+		public bool credentials_google_get_access_token_sync (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static bool credentials_google_is_supported ();
 		public static bool credentials_google_util_extract_from_credentials (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds);
 		public bool credentials_google_util_generate_secret_uid (string out_uid);
+		[NoWrapper]
+		public virtual void credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 		[Version (since = "3.12")]
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.12")]
@@ -313,7 +316,6 @@ namespace E {
 		public Source.with_uid (string uid, GLib.MainContext? main_context) throws GLib.Error;
 		public virtual async bool write (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool write_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public E.SourceConnectionStatus connection_status { get; }
 		public string display_name { get; set construct; }
 		public bool enabled { get; set construct; }
 		[NoAccessorMethod]
@@ -327,7 +329,6 @@ namespace E {
 		public virtual signal void authenticate (E.NamedParameters credentials);
 		[HasEmitter]
 		public virtual signal void changed ();
-		public virtual signal void credentials_required (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_address_book_get_type ()")]
 	[Version (since = "3.6")]
@@ -560,13 +561,10 @@ namespace E {
 		public void set_root_dn (string root_dn);
 		public void set_scope (E.SourceLDAPScope scope);
 		public void set_security (E.SourceLDAPSecurity security);
-		public E.SourceLDAPAuthentication authentication { get; set; }
 		public bool can_browse { get; set construct; }
 		public string filter { get; set construct; }
 		public uint limit { get; set construct; }
 		public string root_dn { get; set construct; }
-		public E.SourceLDAPScope scope { get; set construct; }
-		public E.SourceLDAPSecurity security { get; set; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_local_get_type ()")]
 	public class SourceLocal : E.SourceExtension {
@@ -584,7 +582,6 @@ namespace E {
 		protected SourceMDN ();
 		public E.MdnResponsePolicy get_response_policy ();
 		public void set_response_policy (E.MdnResponsePolicy response_policy);
-		public E.MdnResponsePolicy response_policy { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_account_get_type ()")]
 	[Version (since = "3.6")]
@@ -640,7 +637,6 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] cc { get; set construct; }
 		public string drafts_folder { get; set construct; }
-		public E.SourceMailCompositionReplyStyle reply_style { get; set construct; }
 		public bool sign_imip { get; set construct; }
 		public string templates_folder { get; set construct; }
 	}
@@ -810,7 +806,6 @@ namespace E {
 		public uint https_port { get; set construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] ignore_hosts { get; set construct; }
-		public E.ProxyMethod method { get; set construct; }
 		public string socks_host { get; set construct; }
 		public uint socks_port { get; set construct; }
 	}
@@ -837,6 +832,8 @@ namespace E {
 		public bool commit_source_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool create_sources (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool create_sources_sync (GLib.List<E.Source> list_of_sources, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[NoWrapper]
+		public virtual void credentials_required (E.Source source, E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 		public void debug_dump (string? extension_name);
 		[Version (since = "3.16")]
 		public static bool debug_enabled ();
@@ -883,7 +880,6 @@ namespace E {
 		public E.Source default_memo_list { owned get; set; }
 		[NoAccessorMethod]
 		public E.Source default_task_list { owned get; set; }
-		public virtual signal void credentials_required (E.Source source, E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error op_error);
 		public virtual signal void source_added (E.Source source);
 		public virtual signal void source_changed (E.Source source);
 		public virtual signal void source_disabled (E.Source source);
@@ -987,7 +983,6 @@ namespace E {
 		public void set_location (string location);
 		public void set_units (E.SourceWeatherUnits units);
 		public string location { get; set construct; }
-		public E.SourceWeatherUnits units { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_webdav_get_type ()")]
 	[Version (since = "3.6")]
@@ -1106,14 +1101,14 @@ namespace E {
 		NOT_OPENED,
 		OUT_OF_SYNC
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_MDN_RESPONSE_POLICY_", type_id = "e_mdn_response_policy_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_MDN_RESPONSE_POLICY_", has_type_id = false)]
 	[Version (since = "3.6")]
 	public enum MdnResponsePolicy {
 		NEVER,
 		ALWAYS,
 		ASK
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_PROXY_METHOD_", type_id = "e_proxy_method_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_PROXY_METHOD_", has_type_id = false)]
 	[Version (since = "3.12")]
 	public enum ProxyMethod {
 		DEFAULT,
@@ -1121,7 +1116,7 @@ namespace E {
 		AUTO,
 		NONE
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_AUTHENTICATION_", type_id = "e_source_authentication_result_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_AUTHENTICATION_", has_type_id = false)]
 	[Version (since = "3.6")]
 	public enum SourceAuthenticationResult {
 		ERROR,
@@ -1130,7 +1125,7 @@ namespace E {
 		REJECTED,
 		REQUIRED
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CONNECTION_STATUS_", type_id = "e_source_connection_status_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CONNECTION_STATUS_", has_type_id = false)]
 	[Version (since = "3.16")]
 	public enum SourceConnectionStatus {
 		DISCONNECTED,
@@ -1139,7 +1134,7 @@ namespace E {
 		CONNECTING,
 		CONNECTED
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CREDENTIALS_REASON_", type_id = "e_source_credentials_reason_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_CREDENTIALS_REASON_", has_type_id = false)]
 	[Version (since = "3.16")]
 	public enum SourceCredentialsReason {
 		UNKNOWN,
@@ -1148,27 +1143,27 @@ namespace E {
 		SSL_FAILED,
 		ERROR
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_AUTHENTICATION_", type_id = "e_source_ldap_authentication_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_AUTHENTICATION_", has_type_id = false)]
 	[Version (since = "3.18")]
 	public enum SourceLDAPAuthentication {
 		NONE,
 		EMAIL,
 		BINDDN
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SCOPE_", type_id = "e_source_ldap_scope_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SCOPE_", has_type_id = false)]
 	[Version (since = "3.18")]
 	public enum SourceLDAPScope {
 		ONELEVEL,
 		SUBTREE
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SECURITY_", type_id = "e_source_ldap_security_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_LDAP_SECURITY_", has_type_id = false)]
 	[Version (since = "3.18")]
 	public enum SourceLDAPSecurity {
 		NONE,
 		LDAPS,
 		STARTTLS
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_MAIL_COMPOSITION_REPLY_STYLE_", type_id = "e_source_mail_composition_reply_style_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_MAIL_COMPOSITION_REPLY_STYLE_", has_type_id = false)]
 	[Version (since = "3.20")]
 	public enum SourceMailCompositionReplyStyle {
 		DEFAULT,
@@ -1177,7 +1172,7 @@ namespace E {
 		ATTACH,
 		OUTLOOK
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_WEATHER_UNITS_", type_id = "e_source_weather_units_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_WEATHER_UNITS_", has_type_id = false)]
 	[Version (since = "3.18")]
 	public enum SourceWeatherUnits {
 		FAHRENHEIT,
@@ -1190,7 +1185,7 @@ namespace E {
 		NONE,
 		INVALID
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TRUST_PROMPT_RESPONSE_", type_id = "e_trust_prompt_response_get_type ()")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TRUST_PROMPT_RESPONSE_", has_type_id = false)]
 	[Version (since = "3.8")]
 	public enum TrustPromptResponse {
 		UNKNOWN,
@@ -1238,6 +1233,27 @@ namespace E {
 	public delegate void XmlHashFunc (string key, string value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
 	public delegate bool XmlHashRemoveFunc (string key, string value);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_CACHE_DIR")]
+	[Version (since = "3.2")]
+	public const string CLIENT_BACKEND_PROPERTY_CACHE_DIR;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_CAPABILITIES")]
+	[Version (since = "3.2")]
+	public const string CLIENT_BACKEND_PROPERTY_CAPABILITIES;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_ONLINE")]
+	[Version (since = "3.2")]
+	public const string CLIENT_BACKEND_PROPERTY_ONLINE;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_OPENED")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
+	public const string CLIENT_BACKEND_PROPERTY_OPENED;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_OPENING")]
+	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
+	public const string CLIENT_BACKEND_PROPERTY_OPENING;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_READONLY")]
+	[Version (since = "3.2")]
+	public const string CLIENT_BACKEND_PROPERTY_READONLY;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "CLIENT_BACKEND_PROPERTY_REVISION")]
+	[Version (since = "3.4")]
+	public const string CLIENT_BACKEND_PROPERTY_REVISION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_CAL_QUERIES")]
 	[Version (since = "2.32")]
 	public const string DEBUG_LOG_DOMAIN_CAL_QUERIES;
@@ -1247,6 +1263,12 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_DEBUG_LOG_DOMAIN_USER")]
 	[Version (since = "2.32")]
 	public const string DEBUG_LOG_DOMAIN_USER;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "EDS_MAJOR_VERSION")]
+	public const int EDS_MAJOR_VERSION;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "EDS_MICRO_VERSION")]
+	public const int EDS_MICRO_VERSION;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "EDS_MINOR_VERSION")]
+	public const int EDS_MINOR_VERSION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_ACCESS_TOKEN")]
 	public const string GOOGLE_SECRET_ACCESS_TOKEN;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_EXPIRES_AFTER")]
