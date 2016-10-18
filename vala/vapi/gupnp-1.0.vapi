@@ -224,7 +224,7 @@ namespace GUPnP {
 		[Version (deprecated = true, deprecated_since = "0.20.15.")]
 		public GUPnP.ServiceIntrospection? get_introspection () throws GLib.Error;
 		public void get_introspection_async ([CCode (scope = "async")] GUPnP.ServiceIntrospectionCallback callback);
-		[Version (since = "0.20.9.")]
+		[Version (since = "0.20.9")]
 		public void get_introspection_async_full ([CCode (delegate_target_pos = 2.1, scope = "async")] GUPnP.ServiceIntrospectionCallback callback, GLib.Cancellable? cancellable);
 		public unowned string get_location ();
 		public string get_scpd_url ();
@@ -248,7 +248,7 @@ namespace GUPnP {
 		public unowned GLib.List<string> list_state_variable_names ();
 		public unowned GLib.List<GUPnP.ServiceStateVariableInfo> list_state_variables ();
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_proxy_get_type ()")]
 	public class ServiceProxy : GUPnP.ServiceInfo {
 		[CCode (has_construct_function = false)]
 		protected ServiceProxy ();
@@ -330,7 +330,7 @@ namespace GUPnP {
 		[Version (since = "0.13.0")]
 		public XMLDoc.from_path (string path) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", type_cname = "GUPnPAclInterface")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", type_cname = "GUPnPAclInterface", type_id = "gupnp_acl_get_type ()")]
 	public interface Acl : GLib.Object {
 		[Version (since = "0.20.11")]
 		public abstract bool can_sync ();

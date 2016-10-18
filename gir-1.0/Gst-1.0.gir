@@ -1494,6 +1494,14 @@ and (un)set using GST_OBJECT_FLAG_SET () and GST_OBJECT_FLAG_UNSET ().</doc>
         <doc xml:space="preserve">don't resync a state change when elements are
             added or linked in the bin (Since 1.0.5)</doc>
       </member>
+      <member name="streams_aware"
+              value="32768"
+              c:identifier="GST_BIN_FLAG_STREAMS_AWARE"
+              glib:nick="streams-aware">
+        <doc xml:space="preserve">Indicates whether the bin can handle elements
+            that add/remove source pads at any point in time without
+            first posting a no-more-pads signal (Since 1.10)</doc>
+      </member>
       <member name="last"
               value="524288"
               c:identifier="GST_BIN_FLAG_LAST"
@@ -9121,11 +9129,19 @@ property, %FALSE otherwise</doc>
       <field name="disabled" readable="0" private="1">
         <type name="gboolean" c:type="gboolean"/>
       </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
+      <union name="ABI" c:type="ABI">
+        <record name="abi" c:type="abi">
+          <field name="priv" writable="1">
+            <type name="ControlBindingPrivate"
+                  c:type="GstControlBindingPrivate*"/>
+          </field>
+        </record>
+        <field name="_gst_reserved" writable="1">
+          <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </field>
+      </union>
     </class>
     <record name="ControlBindingClass"
             c:type="GstControlBindingClass"
@@ -9270,6 +9286,10 @@ or %NULL if the property isn't controlled.</doc>
         </parameter>
       </parameters>
     </callback>
+    <record name="ControlBindingPrivate"
+            c:type="GstControlBindingPrivate"
+            disguised="1">
+    </record>
     <class name="ControlSource"
            c:symbol-prefix="control_source"
            c:type="GstControlSource"
@@ -9280,7 +9300,7 @@ or %NULL if the property isn't controlled.</doc>
            glib:type-struct="ControlSourceClass">
       <doc xml:space="preserve">The #GstControlSource is a base class for control value sources that could
 be used to get timestamp-value pairs. A control source essentially is a
-function over time, returning float values between 0.0 and 1.0.
+function over time.
 
 A #GstControlSource is used by first getting an instance of a specific
 control-source, creating a binding for the control-source to the target property
@@ -23937,7 +23957,7 @@ better suites for bindings.</doc>
       </method>
       <method name="has_active_control_bindings"
               c:identifier="gst_object_has_active_control_bindings">
-        <doc xml:space="preserve">Check if the @object has an active controlled properties.</doc>
+        <doc xml:space="preserve">Check if the @object has active controlled properties.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the object has active controlled properties</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -36051,7 +36071,11 @@ application of new streaming threads and their status.</doc>
               glib:get-type="gst_stream_type_get_type"
               c:type="GstStreamType">
       <doc xml:space="preserve">#GstStreamType describes a high level classification set for
-flows of data in #GstStream objects.</doc>
+flows of data in #GstStream objects.
+
+Note that this is a flag, and therefore users should not assume it
+will be a single value. Do not use the equality operator for checking
+whether a stream is of a certain type.</doc>
       <member name="unknown"
               value="1"
               c:identifier="GST_STREAM_TYPE_UNKNOWN"

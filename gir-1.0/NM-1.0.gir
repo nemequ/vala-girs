@@ -3790,10 +3790,9 @@ connection contains one, otherwise %NULL</doc>
       </method>
       <method name="get_setting_proxy"
               c:identifier="nm_connection_get_setting_proxy"
-              version="1.6"
-              introspectable="0">
+              version="1.6">
         <doc xml:space="preserve">A shortcut to return any #NMSettingProxy the connection might contain.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">an #NMSettingProxy if the connection contains one, otherwise %NULL</doc>
           <type name="SettingProxy" c:type="NMSettingProxy*"/>
         </return-value>
@@ -12571,6 +12570,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
               c:type="NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MIN">
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="SETTING_CONNECTION_AUTOCONNECT_RETRIES"
+              value="autoconnect-retries"
+              c:type="NM_SETTING_CONNECTION_AUTOCONNECT_RETRIES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_CONNECTION_AUTOCONNECT_SLAVES"
               value="autoconnect-slaves"
               c:type="NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES">
@@ -17457,6 +17461,22 @@ The higher number, the higher priority.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_autoconnect_retries"
+              c:identifier="nm_setting_connection_get_autoconnect_retries"
+              version="1.6">
+        <doc xml:space="preserve">Returns the #NMSettingConnection:autoconnect-retries property of the connection.
+Zero means infinite, -1 means the global default value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the connection's autoconnect retries</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingConnection</doc>
+            <type name="SettingConnection" c:type="NMSettingConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_autoconnect_slaves"
               c:identifier="nm_setting_connection_get_autoconnect_slaves"
               version="1.2">
@@ -17871,6 +17891,15 @@ intervention to activate the connection.</doc>
         <doc xml:space="preserve">The autoconnect priority. If the connection is set to autoconnect,
 connections with higher priority will be preferred. Defaults to 0.
 The higher number means higher priority.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="autoconnect-retries"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The number of times a connection should be tried when autoctivating before
+giving up. Zero means forever, -1 means the global default (4 times if not
+overridden).</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="autoconnect-slaves"
@@ -28674,7 +28703,8 @@ number of known SSID-cloaking methods.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
-        <parameter name="json" transfer-ownership="none">
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">the JSON string to test</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>

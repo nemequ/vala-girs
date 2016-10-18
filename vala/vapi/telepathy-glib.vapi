@@ -444,7 +444,7 @@ namespace TelepathyGLib {
 		public uint minimum_width;
 		public uint recommended_height;
 		public uint recommended_width;
-		[CCode (array_length = false)]
+		[CCode (array_length = false, array_null_terminated = true)]
 		public weak string[] supported_mime_types;
 		[CCode (has_construct_function = false)]
 		public AvatarRequirements ([CCode (array_length = false, array_null_terminated = true)] string[] supported_mime_types, uint minimum_width, uint minimum_height, uint recommended_width, uint recommended_height, uint maximum_width, uint maximum_height, uint maximum_bytes);
@@ -1341,9 +1341,9 @@ namespace TelepathyGLib {
 	[Version (since = "0.11.7")]
 	public class ContactInfoField {
 		public weak string field_name;
-		[CCode (array_length = false)]
+		[CCode (array_length = false, array_null_terminated = true)]
 		public weak string[] field_value;
-		[CCode (array_length = false)]
+		[CCode (array_length = false, array_null_terminated = true)]
 		public weak string[] parameters;
 		[CCode (has_construct_function = false)]
 		public ContactInfoField (string field_name, [CCode (array_length = false, array_null_terminated = true)] string[] parameters, [CCode (array_length = false, array_null_terminated = true)] string[] field_value);
@@ -1355,7 +1355,7 @@ namespace TelepathyGLib {
 		public TelepathyGLib.ContactInfoFieldFlags flags;
 		public uint max;
 		public weak string name;
-		[CCode (array_length = false)]
+		[CCode (array_length = false, array_null_terminated = true)]
 		public weak string[] parameters;
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "tp_contact_info_list_get_type ()")]
@@ -1471,7 +1471,7 @@ namespace TelepathyGLib {
 		public string message { get; }
 		public GLib.DateTime time { get; }
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	public class DebugMessagePriv {
 	}
@@ -1539,7 +1539,7 @@ namespace TelepathyGLib {
 		public int64 user_action_time { get; construct; }
 		public signal void done ();
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	public class HandleRepoIfaceClass {
 	}
@@ -1800,12 +1800,12 @@ namespace TelepathyGLib {
 		public string object_path { get; construct; }
 		public signal void invalidated (uint domain, int code, string message);
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	public class ProxyPendingCall {
 		public void cancel ();
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	public class ProxySignalConnection {
 		public void disconnect ();
@@ -1827,7 +1827,7 @@ namespace TelepathyGLib {
 		public unowned string get_server ();
 		public unowned string get_subject ();
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	public class RoomInfoPriv {
 	}
@@ -1997,7 +1997,7 @@ namespace TelepathyGLib {
 		public GLib.Error error { get; construct; }
 		public uint reason { get; construct; }
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	public class TLSCertificateRejectionPriv {
 	}
@@ -2049,7 +2049,7 @@ namespace TelepathyGLib {
 		public signal void message_sent (TelepathyGLib.SignalledMessage message, uint flags, string token);
 		public signal void pending_message_removed (TelepathyGLib.SignalledMessage message);
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "0.11.3")]
 	public class WeakRef {

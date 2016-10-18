@@ -167,7 +167,7 @@ namespace Grl {
 		[Version (since = "0.1.4")]
 		public void set_string (Grl.KeyID key, string strvalue);
 	}
-	[CCode (cheader_filename = "grilo.h")]
+	[CCode (cheader_filename = "grilo.h", has_type_id = false)]
 	[Compact]
 	public class LogDomain {
 		[Version (since = "0.1.7")]

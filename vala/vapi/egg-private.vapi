@@ -81,6 +81,8 @@ namespace Egg {
 		public void set_subtitle (string title);
 		public void set_title (string title);
 		public string icon_name { get; set; }
+		[NoAccessorMethod]
+		public int pixel_size { get; set; }
 		public string resource { set; }
 		public string subtitle { get; set; }
 		public string title { get; set; }

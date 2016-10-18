@@ -6357,6 +6357,16 @@ This can be convenient when wanting to quickly display a diagnostic such as in a
           </instance-parameter>
         </parameters>
       </method>
+      <method name="hash" c:identifier="ide_diagnostic_hash">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Diagnostic" c:type="IdeDiagnostic*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="ref" c:identifier="ide_diagnostic_ref">
         <return-value transfer-ownership="full">
           <type name="Diagnostic" c:type="IdeDiagnostic*"/>
@@ -15421,7 +15431,7 @@ the project.</doc>
       <method name="discover_default_target_finish"
               c:identifier="ide_run_manager_discover_default_target_finish"
               throws="1">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">An #IdeBuildTarget if successful; otherwise %NULL
   and @error is set.</doc>
           <type name="BuildTarget" c:type="IdeBuildTarget*"/>
@@ -15437,8 +15447,9 @@ the project.</doc>
       </method>
       <method name="get_build_target"
               c:identifier="ide_run_manager_get_build_target">
-        <doc xml:space="preserve">Gets the build target that will be executed by the run manager if a
-specific build target has not been specified to ide_run_manager_run_async().</doc>
+        <doc xml:space="preserve">Gets the build target that will be executed by the run manager which
+was either specified to ide_run_manager_run_async() or determined by
+the build system.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">An #IdeBuildTarget or %NULL if no build target
   has been set.</doc>
@@ -15532,6 +15543,20 @@ specific build target has not been specified to ide_run_manager_run_async().</do
           </parameter>
         </parameters>
       </method>
+      <method name="set_build_target"
+              c:identifier="ide_run_manager_set_build_target">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="RunManager" c:type="IdeRunManager*"/>
+          </instance-parameter>
+          <parameter name="build_target" transfer-ownership="none">
+            <type name="BuildTarget" c:type="IdeBuildTarget*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_handler" c:identifier="ide_run_manager_set_handler">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -15545,6 +15570,9 @@ specific build target has not been specified to ide_run_manager_run_async().</do
           </parameter>
         </parameters>
       </method>
+      <property name="build-target" writable="1" transfer-ownership="none">
+        <type name="BuildTarget"/>
+      </property>
       <property name="busy" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -16528,6 +16556,52 @@ or "run unit test" inside the target runtime.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="postinstall_async" invoker="postinstall_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="2">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="postinstall_finish"
+                      invoker="postinstall_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="prebuild_async" invoker="prebuild_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -16701,6 +16775,52 @@ or "run unit test" inside the target runtime.</doc>
       </method>
       <method name="postbuild_finish"
               c:identifier="ide_runtime_postbuild_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="postinstall_async"
+              c:identifier="ide_runtime_postinstall_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="postinstall_finish"
+              c:identifier="ide_runtime_postinstall_finish"
               throws="1">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -16983,11 +17103,54 @@ or "run unit test" inside the target runtime.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_reserved1">
-        <type name="gpointer" c:type="gpointer"/>
+      <field name="postinstall_async">
+        <callback name="postinstall_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="3">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
-      <field name="_reserved2">
-        <type name="gpointer" c:type="gpointer"/>
+      <field name="postinstall_finish">
+        <callback name="postinstall_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runtime" c:type="IdeRuntime*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
       <field name="_reserved3">
         <type name="gpointer" c:type="gpointer"/>
@@ -17055,6 +17218,7 @@ or "run unit test" inside the target runtime.</doc>
            glib:type-name="IdeRuntimeManager"
            glib:get-type="ide_runtime_manager_get_type"
            glib:type-struct="RuntimeManagerClass">
+      <implements name="Gio.Initable"/>
       <implements name="Gio.ListModel"/>
       <method name="add" c:identifier="ide_runtime_manager_add">
         <return-value transfer-ownership="none">
@@ -18779,6 +18943,16 @@ offset provided.</doc>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve">A #IdeSourceLocation.</doc>
+            <type name="SourceLocation" c:type="IdeSourceLocation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="hash" c:identifier="ide_source_location_hash">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
             <type name="SourceLocation" c:type="IdeSourceLocation*"/>
           </instance-parameter>
         </parameters>

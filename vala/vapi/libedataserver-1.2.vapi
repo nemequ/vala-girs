@@ -2,7 +2,7 @@
 
 [CCode (cprefix = "E", gir_namespace = "EDataServer", gir_version = "1.2", lower_case_cprefix = "e_")]
 namespace E {
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "3.6")]
 	public class AsyncClosure {
@@ -121,7 +121,7 @@ namespace E {
 		public unowned E.Extensible get_extensible ();
 		public E.Extensible extensible { get; construct; }
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "1.12")]
 	public class Flag {
@@ -135,7 +135,7 @@ namespace E {
 		[Version (since = "3.8")]
 		public bool wait_until (int64 end_time);
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	public class MemChunk {
 	}
@@ -192,7 +192,7 @@ namespace E {
 		[NoAccessorMethod]
 		public string gio_name { owned get; set; }
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "3.2")]
 	public class OperationPool {
@@ -1028,7 +1028,7 @@ namespace E {
 		public Soup.URI soup_uri { owned get; set; }
 		public string ssl_trust { get; set construct; }
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	public class XmlHash {
 		[CCode (cname = "e_xmlhash_add")]

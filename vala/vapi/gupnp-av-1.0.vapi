@@ -291,7 +291,7 @@ namespace GUPnP {
 		public int width { get; set; }
 		public Xml.Node* xml_node { get; construct; }
 	}
-	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h")]
+	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_writer_get_type ()")]
 	public class DIDLLiteWriter : GLib.Object {
 		[CCode (cname = "GUPNP_DIDL_LITE_WRITER_NAMESPACE_DC")]
 		public const string NAMESPACE_DC;
@@ -328,7 +328,7 @@ namespace GUPnP {
 		public FeatureListParser ();
 		public GLib.List<GUPnP.Feature> parse_text (string text) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h")]
+	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_last_change_parser_get_type ()")]
 	public class LastChangeParser : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public LastChangeParser ();
@@ -388,7 +388,7 @@ namespace GUPnP {
 		public string[] play_speeds { get; set; }
 		public string protocol { get; set; }
 	}
-	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h")]
+	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_search_criteria_parser_get_type ()")]
 	public class SearchCriteriaParser : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SearchCriteriaParser ();

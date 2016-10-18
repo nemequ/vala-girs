@@ -190,11 +190,11 @@ namespace Spice {
 		[Version (since = "0.31")]
 		public signal void new_file_transfer (GLib.Object task);
 	}
-	[CCode (cheader_filename = "spice-client.h")]
+	[CCode (cheader_filename = "spice-client.h", has_type_id = false)]
 	[Compact]
 	public class MsgIn {
 	}
-	[CCode (cheader_filename = "spice-client.h")]
+	[CCode (cheader_filename = "spice-client.h", has_type_id = false)]
 	[Compact]
 	public class MsgOut {
 	}
@@ -370,7 +370,7 @@ namespace Spice {
 		public virtual signal void reader_added (Spice.VReader reader);
 		public virtual signal void reader_removed (Spice.VReader reader);
 	}
-	[CCode (cheader_filename = "spice-client.h")]
+	[CCode (cheader_filename = "spice-client.h", has_type_id = false)]
 	[Compact]
 	public class SmartcardReader {
 		public bool insert_card ();

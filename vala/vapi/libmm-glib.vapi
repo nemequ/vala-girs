@@ -667,7 +667,7 @@ namespace MM {
 		public GLib.List<MM.Modem3gppNetwork> scan_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static unowned string subscription_state_get_string (MM.Modem3gppSubscriptionState val);
 	}
-	[CCode (cheader_filename = "libmm-glib.h")]
+	[CCode (cheader_filename = "libmm-glib.h", has_type_id = false)]
 	[Compact]
 	public class Modem3gppNetwork {
 	}
@@ -882,6 +882,7 @@ namespace MM {
 		public GLib.Variant get_dictionary ();
 		public double get_ecio ();
 		public double get_io ();
+		public double get_rscp ();
 		public double get_rsrp ();
 		public double get_rsrq ();
 		public double get_rssi ();
@@ -889,6 +890,7 @@ namespace MM {
 		public double get_snr ();
 		public void set_ecio (double value);
 		public void set_io (double value);
+		public void set_rscp (double value);
 		public void set_rsrp (double value);
 		public void set_rsrq (double value);
 		public void set_rssi (double value);
@@ -1712,7 +1714,12 @@ namespace MM {
 		SEARCHING,
 		DENIED,
 		UNKNOWN,
-		ROAMING
+		ROAMING,
+		HOME_SMS_ONLY,
+		ROAMING_SMS_ONLY,
+		EMERGENCY_ONLY,
+		HOME_CSFB_NOT_PREFERRED,
+		ROAMING_CSFB_NOT_PREFERRED
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_SUBSCRIPTION_STATE_", type_id = "mm_modem_3gpp_subscription_state_get_type ()")]
 	public enum Modem3gppSubscriptionState {

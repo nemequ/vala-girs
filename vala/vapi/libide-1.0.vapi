@@ -376,6 +376,7 @@ namespace Ide {
 		public Ide.DiagnosticSeverity get_severity ();
 		public unowned string get_text ();
 		public string get_text_for_display ();
+		public uint hash ();
 		public Ide.Diagnostic @ref ();
 		public void take_fixit (owned Ide.Fixit fixit);
 		public void take_range (owned Ide.SourceRange range);
@@ -1023,13 +1024,15 @@ namespace Ide {
 		protected RunManager ();
 		public void add_handler (string id, string title, string icon_name, string accel, owned Ide.RunHandler run_handler);
 		public void cancel ();
-		public async unowned Ide.BuildTarget discover_default_target_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Ide.BuildTarget discover_default_target_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Ide.BuildTarget get_build_target ();
 		public bool get_busy ();
 		public unowned string get_handler ();
 		public void remove_handler (string id);
 		public async bool run_async (Ide.BuildTarget build_target, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_build_target (Ide.BuildTarget build_target);
 		public void set_handler (string id);
+		public Ide.BuildTarget build_target { get; set; }
 		public bool busy { get; }
 		public string handler { get; }
 		public signal void stopped ();
@@ -1072,6 +1075,7 @@ namespace Ide {
 		public unowned string get_display_name ();
 		public unowned string get_id ();
 		public virtual async bool postbuild_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async bool postinstall_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual async bool prebuild_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual void prepare_configuration (Ide.Configuration configuration);
 		public void set_display_name (string display_name);
@@ -1080,7 +1084,7 @@ namespace Ide {
 		public string id { get; set construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_runtime_manager_get_type ()")]
-	public class RuntimeManager : Ide.Object, GLib.ListModel {
+	public class RuntimeManager : Ide.Object, GLib.Initable, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		protected RuntimeManager ();
 		public void add (Ide.Runtime runtime);
@@ -1185,6 +1189,7 @@ namespace Ide {
 		public uint get_line_offset ();
 		public uint get_offset ();
 		public Ide.Uri get_uri ();
+		public uint hash ();
 		public Ide.SourceLocation @ref ();
 		public void unref ();
 	}
@@ -1579,7 +1584,7 @@ namespace Ide {
 		public void set_locator (Template.TemplateLocator locator);
 		public Template.TemplateLocator locator { get; set; }
 	}
-	[CCode (cheader_filename = "ide.h")]
+	[CCode (cheader_filename = "ide.h", has_type_id = false)]
 	[Compact]
 	public class ThreadPool {
 		public static void push (Ide.ThreadPoolKind kind, [CCode (scope = "async")] Ide.ThreadFunc func);

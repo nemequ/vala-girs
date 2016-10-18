@@ -17,7 +17,7 @@ namespace Camel {
 		public virtual void remove (int index);
 		public virtual int unformat (string raw);
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "3.12")]
 	public class AsyncClosure {
@@ -740,12 +740,12 @@ namespace Camel {
 		public virtual void set_header (string name, void* value);
 		public Camel.DataWrapper content { get; set; }
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "3.4")]
 	public class MemChunk {
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "2.32")]
 	public class MemPool {
@@ -1051,7 +1051,7 @@ namespace Camel {
 		public string description { get; set; }
 		public string disposition { get; set; }
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "2.24")]
 	public class MsgPort {
@@ -1117,7 +1117,7 @@ namespace Camel {
 		public virtual int state_write (void* fp);
 		public string state_filename { get; set construct; }
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	public class ObjectBag {
 		public void abort (void* key);
@@ -1670,7 +1670,7 @@ namespace Camel {
 		[Version (since = "3.0")]
 		public virtual bool send_to_sync (Camel.MimeMessage message, Camel.Address from, Camel.Address recipients, out bool out_sent_message_saved, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "2.24")]
 	public class Trie {
@@ -1718,7 +1718,7 @@ namespace Camel {
 		public static bool web_end (string @in, string pos, string inend, Camel.UrlMatch match);
 		public static bool web_start (string @in, string pos, string inend, Camel.UrlMatch match);
 	}
-	[CCode (cheader_filename = "camel/camel.h")]
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
 	public class UrlScanner {
 		public void add (Camel.UrlPattern pattern);
