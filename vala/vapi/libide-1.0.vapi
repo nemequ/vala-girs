@@ -54,14 +54,18 @@ namespace Ide {
 		public unowned Ide.Diagnostic? get_diagnostic_at_iter (Gtk.TextIter iter);
 		public unowned Ide.File get_file ();
 		public bool get_highlight_diagnostics ();
+		public Ide.SourceLocation get_insert_location ();
 		public void get_iter_at_source_location (out Gtk.TextIter iter, Ide.SourceLocation location);
+		public Ide.SourceLocation get_iter_location (Gtk.TextIter iter);
 		public Ide.BufferLineFlags get_line_flags (uint line);
 		public bool get_read_only ();
+		public unowned Ide.RenameProvider? get_rename_provider ();
 		public void get_selection_bounds (out Gtk.TextIter insert, out Gtk.TextIter selection);
 		public unowned string get_style_scheme_name ();
 		public async Ide.Symbol get_symbol_at_location_async (Gtk.TextIter location, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Ide.SymbolResolver? get_symbol_resolver ();
 		public unowned string get_title ();
+		public string get_uri ();
 		public string get_word_at_iter (Gtk.TextIter iter);
 		public void hold ();
 		public void rehighlight ();
@@ -104,6 +108,7 @@ namespace Ide {
 	public class BufferManager : Ide.Object, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		protected BufferManager ();
+		public async bool apply_edits_async (owned GLib.GenericArray<weak Ide.ProjectEdit> edits, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Ide.Buffer create_temporary_buffer ();
 		public unowned Ide.Buffer? find_buffer (GLib.File file);
 		public GLib.GenericArray<weak Ide.Buffer> get_buffers ();
@@ -126,6 +131,7 @@ namespace Ide {
 		public signal void buffer_focus_leave (Ide.Buffer buffer);
 		public signal void buffer_loaded (Ide.Buffer buffer);
 		public signal void buffer_saved (Ide.Buffer buffer);
+		public signal void buffer_unloaded (Ide.Buffer buffer);
 		public signal Ide.Buffer? create_buffer (Ide.File file);
 		public signal void load_buffer (Ide.Buffer buffer, bool create_new_view);
 		public signal void save_buffer (Ide.Buffer buffer);
@@ -305,7 +311,7 @@ namespace Ide {
 		public unowned Ide.RuntimeManager get_runtime_manager ();
 		public unowned Ide.ScriptManager get_script_manager ();
 		public unowned Ide.SearchEngine get_search_engine ();
-		public void* get_service_typed (GLib.Type service_type);
+		public unowned Ide.Service? get_service_typed (GLib.Type service_type);
 		public Ide.Settings get_settings (string schema_id, string relative_path);
 		public unowned Ide.SourceSnippetsManager get_snippets_manager ();
 		public unowned Ide.TransferManager get_transfer_manager ();
@@ -639,6 +645,60 @@ namespace Ide {
 		public Ide.HighlightIndex @ref ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_client_get_type ()")]
+	public class LangservClient : Ide.Object {
+		[CCode (has_construct_function = false)]
+		public LangservClient (Ide.Context context, GLib.IOStream io_stream);
+		public void add_language (string language_id);
+		public async bool call_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool get_diagnostics_async (GLib.File file, GLib.Cancellable? cancellable, out Ide.Diagnostics? diagnostics) throws GLib.Error;
+		public async bool notification_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void start ();
+		public void stop ();
+		[NoAccessorMethod]
+		public GLib.IOStream io_stream { owned get; construct; }
+		public virtual signal void notification (string method, Json.Node @params);
+		public virtual signal void published_diagnostics (GLib.File file, Ide.Diagnostics diagnostics);
+		public virtual signal bool supports_language (string language_id);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_completion_provider_get_type ()")]
+	public abstract class LangservCompletionProvider : Ide.Object, Gtk.SourceCompletionProvider, Ide.CompletionProvider {
+		[CCode (has_construct_function = false)]
+		protected LangservCompletionProvider ();
+		public unowned Ide.LangservClient? get_client ();
+		public void set_client (Ide.LangservClient client);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_diagnostic_provider_get_type ()")]
+	public abstract class LangservDiagnosticProvider : Ide.Object, Ide.DiagnosticProvider {
+		[CCode (has_construct_function = false)]
+		protected LangservDiagnosticProvider ();
+		public unowned Ide.LangservClient? get_client ();
+		public void set_client (Ide.LangservClient client);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_rename_provider_get_type ()")]
+	public abstract class LangservRenameProvider : Ide.Object, Ide.RenameProvider {
+		[CCode (has_construct_function = false)]
+		protected LangservRenameProvider ();
+		public unowned Ide.LangservClient? get_client ();
+		public void set_client (Ide.LangservClient client);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_node_get_type ()")]
+	public class LangservSymbolNode : Ide.SymbolNode {
+		[CCode (has_construct_function = false)]
+		public LangservSymbolNode (GLib.File file, string name, string parent_name, int kind, uint begin_line, uint begin_column, uint end_line, uint end_column);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_resolver_get_type ()")]
+	public abstract class LangservSymbolResolver : Ide.Object, Ide.SymbolResolver {
+		[CCode (has_construct_function = false)]
+		protected LangservSymbolResolver ();
+		public unowned Ide.LangservClient? get_client ();
+		public void set_client (Ide.LangservClient client);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_tree_get_type ()")]
+	public class LangservSymbolTree : GLib.Object, Ide.SymbolTree {
+		[CCode (has_construct_function = false)]
+		public LangservSymbolTree (owned GLib.GenericArray<weak Ide.LangservSymbolNode> symbols);
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_layout_get_type ()")]
 	public class Layout : Pnl.DockBin, Atk.Implementor, Gtk.Buildable, Pnl.Dock, Pnl.DockItem {
 		[CCode (has_construct_function = false)]
@@ -932,6 +992,17 @@ namespace Ide {
 		public signal void file_renamed (GLib.File object, GLib.File p0);
 		public signal void file_trashed (GLib.File object);
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_project_edit_get_type ()")]
+	public class ProjectEdit : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public ProjectEdit ();
+		public unowned Ide.SourceRange? get_range ();
+		public unowned string get_replacement ();
+		public void set_range (Ide.SourceRange range);
+		public void set_replacement (string replacement);
+		public Ide.SourceRange range { get; set; }
+		public string replacement { get; set; }
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_project_file_get_type ()")]
 	public class ProjectFile : Ide.ProjectItem {
 		[CCode (has_construct_function = false)]
@@ -1035,6 +1106,7 @@ namespace Ide {
 		public Ide.BuildTarget build_target { get; set; }
 		public bool busy { get; }
 		public string handler { get; }
+		public signal void run (Ide.Runner runner);
 		public signal void stopped ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_runner_get_type ()")]
@@ -1379,6 +1451,7 @@ namespace Ide {
 		public signal void action (string object, string p0, string p1);
 		public virtual signal void append_to_count (int digit);
 		public virtual signal void begin_macro ();
+		public virtual signal void begin_rename ();
 		public signal void begin_user_action ();
 		public virtual signal void capture_modifier ();
 		public virtual signal void clear_count ();
@@ -1447,6 +1520,7 @@ namespace Ide {
 		public signal void append_to_count (int object);
 		public signal void backspace ();
 		public signal void begin_macro ();
+		public signal void begin_rename ();
 		public signal void begin_user_action ();
 		public signal void capture_modifier ();
 		public signal void change_case (Gtk.SourceChangeCaseType object);
@@ -1543,6 +1617,20 @@ namespace Ide {
 		public GLib.SubprocessFlags flags { get; set construct; }
 		public bool run_on_host { get; set; }
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_subprocess_supervisor_get_type ()")]
+	public class SubprocessSupervisor : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public SubprocessSupervisor ();
+		public unowned Ide.SubprocessLauncher? get_launcher ();
+		public unowned Ide.Subprocess? get_subprocess ();
+		public void set_launcher (Ide.SubprocessLauncher launcher);
+		public void set_subprocess (Ide.Subprocess subprocess);
+		public void start ();
+		public void stop ();
+		public virtual signal void spawned (Ide.Subprocess subprocess);
+		public signal bool supervise (Ide.SubprocessLauncher object);
+		public signal bool unsupervise (Ide.SubprocessLauncher object);
+	}
 	[CCode (cheader_filename = "ide.h", ref_function = "ide_symbol_ref", type_id = "ide_symbol_get_type ()", unref_function = "ide_symbol_unref")]
 	[Compact]
 	public class Symbol {
@@ -1563,7 +1651,7 @@ namespace Ide {
 		protected SymbolNode ();
 		public Ide.SymbolFlags get_flags ();
 		public Ide.SymbolKind get_kind ();
-		public virtual Ide.SourceLocation? get_location ();
+		public virtual async Ide.SourceLocation? get_location_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned string get_name ();
 		[NoAccessorMethod]
 		public Ide.SymbolFlags flags { get; set; }
@@ -1999,6 +2087,13 @@ namespace Ide {
 		public abstract string get_name ();
 		public abstract unowned Gtk.Widget get_widget ();
 	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeRenameProviderInterface", type_id = "ide_rename_provider_get_type ()")]
+	public interface RenameProvider : Ide.Object {
+		public abstract async bool rename_async (Ide.SourceLocation location, string new_name, GLib.Cancellable? cancellable, out GLib.GenericArray<weak Ide.ProjectEdit>? edits) throws GLib.Error;
+		[NoWrapper]
+		public abstract void set_context (Ide.Context context);
+		public abstract Ide.Context context { construct; }
+	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeRunnerAddinInterface", type_id = "ide_runner_addin_get_type ()")]
 	public interface RunnerAddin : GLib.Object {
 		public abstract void load (Ide.Runner runner);
@@ -2299,17 +2394,29 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_SYMBOL_", type_id = "ide_symbol_kind_get_type ()")]
 	public enum SymbolKind {
 		NONE,
-		SCALAR,
+		ARRAY,
+		BOOLEAN,
 		CLASS,
-		FUNCTION,
-		METHOD,
-		STRUCT,
-		UNION,
-		FIELD,
+		CONSTANT,
+		CONSTRUCTOR,
 		ENUM,
 		ENUM_VALUE,
-		VARIABLE,
-		HEADER
+		FIELD,
+		FILE,
+		FUNCTION,
+		HEADER,
+		INTERFACE,
+		METHOD,
+		MODULE,
+		NAMESPACE,
+		NUMBER,
+		PACKAGE,
+		PROPERTY,
+		SCALAR,
+		STRING,
+		STRUCT,
+		UNION,
+		VARIABLE
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_THREAD_POOL_", type_id = "ide_thread_pool_kind_get_type ()")]
 	public enum ThreadPoolKind {
@@ -2397,6 +2504,8 @@ namespace Ide {
 	public const int ENABLE_TRACE;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_FILE_SETTINGS_EXTENSION_POINT")]
 	public const string FILE_SETTINGS_EXTENSION_POINT;
+	[CCode (cheader_filename = "ide.h", cname = "IDE_LANGSERV_COMPLETION_PROVIDER_PRIORITY")]
+	public const int LANGSERV_COMPLETION_PROVIDER_PRIORITY;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_BOOKMARK_FILENAME")]
 	public const string RECENT_PROJECTS_BOOKMARK_FILENAME;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_GROUP")]

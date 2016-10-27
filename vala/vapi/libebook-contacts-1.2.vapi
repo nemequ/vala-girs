@@ -2,6 +2,21 @@
 
 [CCode (cprefix = "E", gir_namespace = "EBookContacts", gir_version = "1.2", lower_case_cprefix = "e_")]
 namespace E {
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_address_western_get_type ()")]
+	[Compact]
+	public class AddressWestern {
+		public weak string country;
+		public weak string extended;
+		public weak string locality;
+		public weak string po_box;
+		public weak string postal_code;
+		public weak string region;
+		public weak string street;
+		[Version (since = "3.24")]
+		public E.AddressWestern copy ();
+		public void free ();
+		public static E.AddressWestern parse (string in_address);
+	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", ref_function = "e_book_query_ref", type_id = "e_book_query_get_type ()", unref_function = "e_book_query_unref")]
 	[Compact]
 	public class BookQuery {
@@ -342,6 +357,10 @@ namespace E {
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_attr_list_get_type ()")]
 	[Compact]
 	public class ContactAttrList {
+		[Version (since = "3.8")]
+		public static GLib.List<string> copy (GLib.List<string> list);
+		[Version (since = "3.8")]
+		public static void free (GLib.List<string> list);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_contact_cert_get_type ()")]
 	[Compact]
@@ -423,6 +442,21 @@ namespace E {
 		public void set_mime_type (string mime_type);
 		[Version (since = "3.2")]
 		public void set_uri (string uri);
+	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_name_western_get_type ()")]
+	[Compact]
+	public class NameWestern {
+		public weak string first;
+		public weak string full;
+		public weak string last;
+		public weak string middle;
+		public weak string nick;
+		public weak string prefix;
+		public weak string suffix;
+		[Version (since = "3.24")]
+		public E.NameWestern copy ();
+		public void free ();
+		public static E.NameWestern parse (string full_name);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_phone_number_get_type ()")]
 	[Compact]
@@ -526,32 +560,10 @@ namespace E {
 		public void remove_values ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", has_type_id = false)]
-	public struct AddressWestern {
-		public weak string po_box;
-		public weak string extended;
-		public weak string street;
-		public weak string locality;
-		public weak string region;
-		public weak string postal_code;
-		public weak string country;
-		public void free ();
-	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "3.2")]
 	public struct BookChange {
 		public E.BookChangeType change_type;
 		public weak E.Contact contact;
-	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", has_type_id = false)]
-	public struct NameWestern {
-		public weak string prefix;
-		public weak string first;
-		public weak string middle;
-		public weak string nick;
-		public weak string last;
-		public weak string suffix;
-		public weak string full;
-		public void free ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CHANGE_CARD_", type_id = "e_book_change_type_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "3.2")]

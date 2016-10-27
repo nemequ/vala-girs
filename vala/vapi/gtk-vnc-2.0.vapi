@@ -32,6 +32,7 @@ namespace Vnc {
 		public bool get_read_only ();
 		public bool get_scaling ();
 		public bool get_shared_flag ();
+		public bool get_smoothing ();
 		public int get_width ();
 		public bool is_open ();
 		public bool is_pointer_absolute ();
@@ -54,6 +55,7 @@ namespace Vnc {
 		public void set_read_only (bool enable);
 		public bool set_scaling (bool enable);
 		public void set_shared_flag (bool shared);
+		public void set_smoothing (bool enable);
 		public Vnc.Connection connection { get; }
 		public Vnc.DisplayDepthColor depth { get; set construct; }
 		public bool force_size { get; set construct; }
@@ -71,6 +73,7 @@ namespace Vnc {
 		[NoAccessorMethod]
 		public bool scaling { get; set construct; }
 		public bool shared_flag { get; set construct; }
+		public bool smoothing { get; set construct; }
 		public int width { get; }
 		public virtual signal void vnc_auth_credential (GLib.ValueArray credList);
 		public signal void vnc_auth_failure (string object);

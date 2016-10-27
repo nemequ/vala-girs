@@ -16,6 +16,7 @@ namespace Template {
 		public static global::Template.Expr from_string (global::string str) throws GLib.Error;
 		public global::Template.Expr new_getattr (global::string attr);
 		public global::Template.Expr new_gi_call (global::string name, global::Template.Expr @params);
+		public global::Template.Expr new_invert_boolean ();
 		public global::Template.Expr new_setattr (global::string attr, global::Template.Expr right);
 		[CCode (has_construct_function = false)]
 		public Expr.number (double value);
@@ -43,8 +44,14 @@ namespace Template {
 		public global::Template.Scope new_with_parent ();
 		public unowned global::Template.Symbol? peek (string name);
 		public global::Template.Scope @ref ();
-		public void @set (string name, global::Template.Symbol symbol);
+		public void @set (string name, global::Template.Symbol? symbol);
+		public void set_boolean (string name, bool value);
+		public void set_double (string name, double value);
+		public void set_object (string name, GLib.Object? value);
 		public void set_resolver (owned global::Template.ScopeResolver resolver);
+		public void set_string (string name, string? value);
+		public void set_value (string name, GLib.Value? value);
+		public void take (string name, owned global::Template.Symbol? symbol);
 		public void unref ();
 	}
 	[CCode (cheader_filename = "tmpl-glib.h", ref_function = "tmpl_symbol_ref", type_id = "tmpl_symbol_get_type ()", unref_function = "tmpl_symbol_unref")]
@@ -127,7 +134,8 @@ namespace Template {
 		GI_CALL,
 		REQUIRE,
 		AND,
-		OR
+		OR,
+		INVERT_BOOLEAN
 	}
 	[CCode (cheader_filename = "tmpl-glib.h", cprefix = "TMPL_SYMBOL_", type_id = "tmpl_symbol_type_get_type ()")]
 	public enum SymbolType {

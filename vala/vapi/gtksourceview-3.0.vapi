@@ -161,11 +161,29 @@ namespace Gtk {
 	[GIR (name = "CompletionItem")]
 	public class SourceCompletionItem : GLib.Object, Gtk.SourceCompletionProposal {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "3.24")]
 		public SourceCompletionItem (string label, string text, Gdk.Pixbuf? icon, string? info);
 		[CCode (has_construct_function = false)]
 		[Version (deprecated = true, deprecated_since = "3.10")]
 		public SourceCompletionItem.from_stock (string? label, string text, string stock, string? info);
+		[Version (since = "3.24")]
+		public static Gtk.SourceCompletionItem new2 ();
+		[Version (since = "3.24")]
+		public void set_gicon (GLib.Icon? gicon);
+		[Version (since = "3.24")]
+		public void set_icon (Gdk.Pixbuf? icon);
+		[Version (since = "3.24")]
+		public void set_icon_name (string? icon_name);
+		[Version (since = "3.24")]
+		public void set_info (string? info);
+		[Version (since = "3.24")]
+		public void set_label (string? label);
+		[Version (since = "3.24")]
+		public void set_markup (string? markup);
+		[Version (since = "3.24")]
+		public void set_text (string? text);
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "3.24")]
 		public SourceCompletionItem.with_markup (string markup, string text, Gdk.Pixbuf? icon, string? info);
 		[NoAccessorMethod]
 		[Version (since = "3.18")]
@@ -369,8 +387,12 @@ namespace Gtk {
 		[Version (deprecated = true, deprecated_since = "3.12")]
 		public void get_padding (int xpad, int ypad);
 		public unowned Gtk.SourceGutterRenderer? get_renderer_at_pos (int x, int y);
+		[Version (since = "3.24")]
+		public unowned Gtk.SourceView get_view ();
 		[Version (deprecated = true, deprecated_since = "3.12", since = "2.8")]
 		public unowned Gdk.Window get_window ();
+		[Version (since = "3.24")]
+		public Gtk.TextWindowType get_window_type ();
 		[Version (since = "3.0")]
 		public bool insert (Gtk.SourceGutterRenderer renderer, int position);
 		[Version (since = "2.8")]
@@ -381,9 +403,7 @@ namespace Gtk {
 		public void reorder (Gtk.SourceGutterRenderer renderer, int position);
 		[Version (deprecated = true, deprecated_since = "3.12")]
 		public void set_padding (int xpad, int ypad);
-		[NoAccessorMethod]
-		public Gtk.SourceView view { owned get; construct; }
-		[NoAccessorMethod]
+		public Gtk.SourceView view { get; construct; }
 		public Gtk.TextWindowType window_type { get; construct; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "3.12")]
@@ -762,7 +782,7 @@ namespace Gtk {
 		public void set_highlight (bool highlight);
 		[Version (since = "3.16")]
 		public void set_match_style (Gtk.SourceStyle? match_style);
-		[Version (since = "3.10")]
+		[Version (deprecated = true, deprecated_since = "3.24", since = "3.10")]
 		public void set_settings (Gtk.SourceSearchSettings? settings);
 		[Version (since = "3.10")]
 		public Gtk.SourceBuffer buffer { get; construct; }
