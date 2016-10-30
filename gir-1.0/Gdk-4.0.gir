@@ -3453,6 +3453,57 @@ to be processed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_composited"
+              c:identifier="gdk_display_is_composited"
+              version="3.90">
+        <doc xml:space="preserve">Returns whether windows can reasonably be expected to have
+their alpha channel drawn correctly on the screen. Check
+gdk_display_is_rgba() for wether the display supports an
+alpha channel.
+
+On X11 this function returns whether a compositing manager is
+compositing on @display.
+
+On modern displays, this value is always %TRUE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether windows with RGBA visuals can reasonably be
+expected to have their alpha channels drawn correctly on the screen.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_rgba" c:identifier="gdk_display_is_rgba" version="3.90">
+        <doc xml:space="preserve">Returns wether windows on this @display are created with an
+alpha channel.
+
+Even if a %TRUE is returned, it is possible that the
+window’s alpha channel won’t be honored when displaying the
+window on the screen: in particular, for X an appropriate
+windowing manager and compositing manager must be running to
+provide appropriate display. Use gdk_display_is_composited()
+to check if that is the case.
+
+For setting an overall opacity for a top-level window, see
+gdk_window_set_opacity().
+
+On modern displays, this value is always %TRUE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if windows are created with an alpha channel or
+    %FALSE if the display does not support this functionality.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="list_seats"
               c:identifier="gdk_display_list_seats"
               version="3.20">
@@ -3761,6 +3812,16 @@ handled synchronously, this function will do nothing.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="composited" version="3.90" transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the display properly composits the alpha channel.
+See gdk_display_is_composited() for details.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="rgba" version="3.90" transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the display supports an alpha channel. See gdk_display_is_rgba()
+for details.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <glib:signal name="closed" when="last" version="2.2">
         <doc xml:space="preserve">The ::closed signal is emitted when the connection to the windowing
 system for @display is closed.</doc>
@@ -19037,27 +19098,6 @@ its elements need not be freed.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="is_composited"
-              c:identifier="gdk_screen_is_composited"
-              version="2.10">
-        <doc xml:space="preserve">Returns whether windows with an RGBA visual can reasonably
-be expected to have their alpha channel drawn correctly on
-the screen.
-
-On X11 this function returns whether a compositing manager is
-compositing @screen.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">Whether windows with RGBA visuals can reasonably be
-expected to have their alpha channels drawn correctly on the screen.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="screen" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkScreen</doc>
-            <type name="Screen" c:type="GdkScreen*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="list_visuals"
               c:identifier="gdk_screen_list_visuals"
               version="2.2">
@@ -19106,13 +19146,6 @@ font will be 13 units high. (10 * 96. / 72. = 13.3).</doc>
       <property name="resolution" writable="1" transfer-ownership="none">
         <type name="gdouble" c:type="gdouble"/>
       </property>
-      <glib:signal name="composited-changed" when="last" version="2.10">
-        <doc xml:space="preserve">The ::composited-changed signal is emitted when the composited
-status of the screen changes</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
       <glib:signal name="monitors-changed" when="last" version="2.14">
         <doc xml:space="preserve">The ::monitors-changed signal is emitted when the number, size
 or position of the monitors attached to the screen change.
@@ -19688,93 +19721,6 @@ See also #GdkEventTouchpadSwipe and #GdkEventTouchpadPinch.</doc>
            glib:get-type="gdk_visual_get_type">
       <doc xml:space="preserve">A #GdkVisual contains information about
 a particular visual.</doc>
-      <function name="get_best" c:identifier="gdk_visual_get_best">
-        <doc xml:space="preserve">Get the visual with the most available colors for the default
-GDK screen. The return value should not be freed.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">best visual</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
-        </return-value>
-      </function>
-      <function name="get_best_depth" c:identifier="gdk_visual_get_best_depth">
-        <doc xml:space="preserve">Get the best available depth for the default GDK screen.  “Best”
-means “largest,” i.e. 32 preferred over 24 preferred over 8 bits
-per pixel.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">best available depth</doc>
-          <type name="gint" c:type="gint"/>
-        </return-value>
-      </function>
-      <function name="get_best_type" c:identifier="gdk_visual_get_best_type">
-        <doc xml:space="preserve">Return the best available visual type for the default GDK screen.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">best visual type</doc>
-          <type name="VisualType" c:type="GdkVisualType"/>
-        </return-value>
-      </function>
-      <function name="get_best_with_both"
-                c:identifier="gdk_visual_get_best_with_both">
-        <doc xml:space="preserve">Combines gdk_visual_get_best_with_depth() and
-gdk_visual_get_best_with_type().</doc>
-        <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">best visual with both @depth
-    and @visual_type, or %NULL if none</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
-        </return-value>
-        <parameters>
-          <parameter name="depth" transfer-ownership="none">
-            <doc xml:space="preserve">a bit depth</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="visual_type" transfer-ownership="none">
-            <doc xml:space="preserve">a visual type</doc>
-            <type name="VisualType" c:type="GdkVisualType"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="get_best_with_depth"
-                c:identifier="gdk_visual_get_best_with_depth">
-        <doc xml:space="preserve">Get the best visual with depth @depth for the default GDK screen.
-Color visuals and visuals with mutable colormaps are preferred
-over grayscale or fixed-colormap visuals. The return value should
-not be freed. %NULL may be returned if no visual supports @depth.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">best visual for the given depth</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
-        </return-value>
-        <parameters>
-          <parameter name="depth" transfer-ownership="none">
-            <doc xml:space="preserve">a bit depth</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="get_best_with_type"
-                c:identifier="gdk_visual_get_best_with_type">
-        <doc xml:space="preserve">Get the best visual of the given @visual_type for the default GDK screen.
-Visuals with higher color depths are considered better. The return value
-should not be freed. %NULL may be returned if no visual has type
-@visual_type.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">best visual of the given type</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
-        </return-value>
-        <parameters>
-          <parameter name="visual_type" transfer-ownership="none">
-            <doc xml:space="preserve">a visual type</doc>
-            <type name="VisualType" c:type="GdkVisualType"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="get_system" c:identifier="gdk_visual_get_system">
-        <doc xml:space="preserve">Get the system’s default visual for the default GDK screen.
-This is the visual for the root window of the display.
-The return value should not be freed.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">system visual</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
-        </return-value>
-      </function>
       <method name="get_blue_pixel_details"
               c:identifier="gdk_visual_get_blue_pixel_details"
               version="2.22">
@@ -21750,21 +21696,6 @@ is visible.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_visual"
-              c:identifier="gdk_window_get_visual"
-              version="2.24">
-        <doc xml:space="preserve">Gets the #GdkVisual describing the pixel format of @window.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkVisual</doc>
-          <type name="Visual" c:type="GdkVisual*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkWindow</doc>
-            <type name="Window" c:type="GdkWindow*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_width"
               c:identifier="gdk_window_get_width"
               version="2.24">
@@ -23605,6 +23536,15 @@ withdraws toplevel windows before hiding them.</doc>
 gdk_window_get_cursor() for details.</doc>
         <type name="Cursor"/>
       </property>
+      <property name="display"
+                version="3.90"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDisplay connection of the window. See gdk_window_get_display()
+for details.</doc>
+        <type name="Display"/>
+      </property>
       <glib:signal name="moved-to-rect"
                    when="first"
                    version="3.22"
@@ -25422,22 +25362,6 @@ character.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="list_visuals" c:identifier="gdk_list_visuals">
-      <doc xml:space="preserve">Lists the available visuals for the default screen.
-(See gdk_screen_list_visuals())
-A visual describes a hardware image data format.
-For example, a visual might support 24-bit color, or 8-bit color,
-and might expect pixels to be in a certain format.
-
-Call g_list_free() on the return value when you’re finished with it.</doc>
-      <return-value transfer-ownership="container">
-        <doc xml:space="preserve">
-    a list of visuals; the list must be freed, but not its contents</doc>
-        <type name="GLib.List" c:type="GList*">
-          <type name="Visual"/>
-        </type>
-      </return-value>
-    </function>
     <function name="notify_startup_complete"
               c:identifier="gdk_notify_startup_complete"
               version="2.2">
@@ -25911,66 +25835,6 @@ gdk_property_get() is provided.</doc>
           <array length="8" zero-terminated="0" c:type="guchar**">
             <type name="guint8" c:type="guchar*"/>
           </array>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="query_depths" c:identifier="gdk_query_depths">
-      <doc xml:space="preserve">This function returns the available bit depths for the default
-screen. It’s equivalent to listing the visuals
-(gdk_list_visuals()) and then looking at the depth field in each
-visual, removing duplicates.
-
-The array returned by this function should not be freed.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="depths"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="none">
-          <doc xml:space="preserve">return
-    location for available depths</doc>
-          <array length="1" zero-terminated="0" c:type="gint**">
-            <type name="gint" c:type="gint*"/>
-          </array>
-        </parameter>
-        <parameter name="count"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">return location for number of available depths</doc>
-          <type name="gint" c:type="gint*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="query_visual_types" c:identifier="gdk_query_visual_types">
-      <doc xml:space="preserve">This function returns the available visual types for the default
-screen. It’s equivalent to listing the visuals
-(gdk_list_visuals()) and then looking at the type field in each
-visual, removing duplicates.
-
-The array returned by this function should not be freed.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="visual_types"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="none">
-          <doc xml:space="preserve">return
-    location for the available visual types</doc>
-          <array length="1" zero-terminated="0" c:type="GdkVisualType**">
-            <type name="VisualType" c:type="GdkVisualType*"/>
-          </array>
-        </parameter>
-        <parameter name="count"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">return location for the number of available visual types</doc>
-          <type name="gint" c:type="gint*"/>
         </parameter>
       </parameters>
     </function>
