@@ -11918,6 +11918,49 @@ metadata. Free with g_strfreev() when no longer needed.</doc>
            glib:get-type="gst_double_range_get_type"
            glib:fundamental="1">
     </class>
+    <class name="DynamicTypeFactory"
+           c:symbol-prefix="dynamic_type_factory"
+           c:type="GstDynamicTypeFactory"
+           parent="PluginFeature"
+           glib:type-name="GstDynamicTypeFactory"
+           glib:get-type="gst_dynamic_type_factory_get_type"
+           glib:type-struct="DynamicTypeFactoryClass">
+      <doc xml:space="preserve">#GstDynamicTypeFactory is used to represent a type that can be
+automatically loaded the first time it is used. For example,
+a non-standard type for use in caps fields.
+
+In general, applications and plugins don't need to use the factory
+beyond registering the type in a plugin init function. Once that is
+done, the type is stored in the registry, and ready as soon as the
+registry is loaded.
+
+&lt;example&gt;
+&lt;title&gt;Registering a type for dynamic loading&lt;/title&gt;
+&lt;programlisting language="c"&gt;
+
+static gboolean
+plugin_init (GstPlugin * plugin)
+{
+  return gst_dynamic_type_register (plugin, GST_TYPE_CUSTOM_CAPS_FIELD);
+}
+&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+      <function name="load" c:identifier="gst_dynamic_type_factory_load">
+        <return-value transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </return-value>
+        <parameters>
+          <parameter name="factoryname" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+    </class>
+    <record name="DynamicTypeFactoryClass"
+            c:type="GstDynamicTypeFactoryClass"
+            disguised="1"
+            glib:is-gtype-struct-for="DynamicTypeFactory">
+    </record>
     <constant name="ELEMENT_FACTORY_KLASS_DECODER"
               value="Decoder"
               c:type="GST_ELEMENT_FACTORY_KLASS_DECODER">
@@ -27425,6 +27468,13 @@ for linking the pads.
               glib:nick="caps">
         <doc xml:space="preserve">Check if the pads are compatible by comparing the
   caps returned by gst_pad_query_caps().</doc>
+      </member>
+      <member name="no_reconfigure"
+              value="8"
+              c:identifier="GST_PAD_LINK_CHECK_NO_RECONFIGURE"
+              glib:nick="no-reconfigure">
+        <doc xml:space="preserve">Disables pushing a reconfigure event when pads are
+  linked.</doc>
       </member>
       <member name="default"
               value="5"
@@ -43599,15 +43649,15 @@ determine a order for the two provided values.</doc>
       <doc xml:space="preserve">The major version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MICRO" value="90" c:type="GST_VERSION_MICRO">
+    <constant name="VERSION_MICRO" value="0" c:type="GST_VERSION_MICRO">
       <doc xml:space="preserve">The micro version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MINOR" value="9" c:type="GST_VERSION_MINOR">
+    <constant name="VERSION_MINOR" value="11" c:type="GST_VERSION_MINOR">
       <doc xml:space="preserve">The minor version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_NANO" value="0" c:type="GST_VERSION_NANO">
+    <constant name="VERSION_NANO" value="1" c:type="GST_VERSION_NANO">
       <doc xml:space="preserve">The nano version of GStreamer at compile time:
 Actual releases have 0, GIT versions have 1, prerelease versions have 2-...</doc>
       <type name="gint" c:type="gint"/>
@@ -44484,6 +44534,20 @@ After this call GStreamer (including this method) should not be used anymore.</d
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
+    </function>
+    <function name="dynamic_type_register"
+              c:identifier="gst_dynamic_type_register">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="plugin" transfer-ownership="none">
+          <type name="Plugin" c:type="GstPlugin*"/>
+        </parameter>
+        <parameter name="type" transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="error_get_message" c:identifier="gst_error_get_message">
       <doc xml:space="preserve">Get a string describing the error message in the current locale.</doc>

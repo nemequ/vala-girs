@@ -8,6 +8,7 @@ and/or use gtk-doc annotations.  -->
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
   <include name="Gst" version="1.0"/>
   <include name="GstBase" version="1.0"/>
+  <include name="GstVideo" version="1.0"/>
   <package name="gstreamer-gl-1.0"/>
   <c:include name="gst/gl/gl.h"/>
   <namespace name="GstGL"
@@ -18,6 +19,8 @@ and/or use gtk-doc annotations.  -->
     <constant name="BUFFER_POOL_OPTION_GL_SYNC_META"
               value="GstBufferPoolOptionGLSyncMeta"
               c:type="GST_BUFFER_POOL_OPTION_GL_SYNC_META">
+      <doc xml:space="preserve">An option that can be activated on bufferpools to request OpenGL
+synchronization metadata on buffers from the pool.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="BUFFER_POOL_OPTION_GL_TEXTURE_TARGET_2D"
@@ -129,8 +132,8 @@ and/or use gtk-doc annotations.  -->
               c:identifier="gst_gl_allocation_params_copy"
               version="1.8">
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a copy of the #GstGLAllocationParams specified by @src or %NULL on
-         failure</doc>
+          <doc xml:space="preserve">a copy of the #GstGLAllocationParams specified by
+         @src or %NULL on failure</doc>
           <type name="GLAllocationParams" c:type="GstGLAllocationParams*"/>
         </return-value>
         <parameters>
@@ -1254,12 +1257,14 @@ multiple times.  This must be called before any other #GstGLBuffer operation.</d
            glib:type-name="GstGLBufferPool"
            glib:get-type="gst_gl_buffer_pool_get_type"
            glib:type-struct="GLBufferPoolClass">
-      <doc xml:space="preserve">a #GstGLBufferPool is an object that allocates buffers with #GstGLMemory
+      <doc xml:space="preserve">a #GstGLBufferPool is an object that allocates buffers with #GstGLBaseMemory
 
 A #GstGLBufferPool is created with gst_gl_buffer_pool_new()
 
 #GstGLBufferPool implements the VideoMeta buffer pool option
-#GST_BUFFER_POOL_OPTION_VIDEO_META</doc>
+%GST_BUFFER_POOL_OPTION_VIDEO_META, the VideoAligment buffer pool option
+%GST_BUFFER_POOL_OPTION_VIDEO_ALIGNMENT as well as the OpenGL specific
+%GST_BUFFER_POOL_OPTION_GL_SYNC_META buffer pool option.</doc>
       <constructor name="new" c:identifier="gst_gl_buffer_pool_new">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #GstBufferPool that allocates buffers with #GstGLMemory</doc>
@@ -1314,8 +1319,15 @@ A #GstGLBufferPool is created with gst_gl_buffer_pool_new()
       <doc xml:space="preserve">#GstGLColorConvert is an object that converts between color spaces and/or
 formats using OpenGL Shaders.
 
-A #GstGLColorConvert can be created with gst_gl_color_convert_new().</doc>
-      <constructor name="new" c:identifier="gst_gl_color_convert_new">
+A #GstGLColorConvert can be created with gst_gl_color_convert_new(), the
+configuration negotiated with gst_gl_color_convert_transform_caps() and the
+conversion performed with gst_gl_color_convert_perform().
+
+The glcolorconvertelement provides a GStreamer element that uses
+#GstGLColorConvert to convert between video formats and color spaces.</doc>
+      <constructor name="new"
+                   c:identifier="gst_gl_color_convert_new"
+                   version="1.4">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a new #GstGLColorConvert object</doc>
           <type name="GLColorConvert" c:type="GstGLColorConvert*"/>
@@ -1328,64 +1340,85 @@ A #GstGLColorConvert can be created with gst_gl_color_convert_new().</doc>
         </parameters>
       </constructor>
       <function name="fixate_caps"
-                c:identifier="gst_gl_color_convert_fixate_caps">
+                c:identifier="gst_gl_color_convert_fixate_caps"
+                version="1.8">
+        <doc xml:space="preserve">Provides an implementation of #GstBaseTransformClass::fixate_caps()</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the fixated #GstCaps</doc>
           <type name="Gst.Caps" c:type="GstCaps*"/>
         </return-value>
         <parameters>
-          <parameter name="convert" transfer-ownership="none">
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext to use for transforming @caps</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
           <parameter name="direction" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPadDirection</doc>
             <type name="Gst.PadDirection" c:type="GstPadDirection"/>
           </parameter>
           <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstCaps of @direction</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
-          <parameter name="other" transfer-ownership="none">
+          <parameter name="other" transfer-ownership="full">
+            <doc xml:space="preserve">the #GstCaps to fixate</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
         </parameters>
       </function>
       <function name="transform_caps"
-                c:identifier="gst_gl_color_convert_transform_caps">
+                c:identifier="gst_gl_color_convert_transform_caps"
+                version="1.6">
+        <doc xml:space="preserve">Provides an implementation of #GstBaseTransformClass::transform_caps()</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the converted #GstCaps</doc>
           <type name="Gst.Caps" c:type="GstCaps*"/>
         </return-value>
         <parameters>
-          <parameter name="convert" transfer-ownership="none">
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext to use for transforming @caps</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
           <parameter name="direction" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPadDirection</doc>
             <type name="Gst.PadDirection" c:type="GstPadDirection"/>
           </parameter>
           <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstCaps to transform</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
           <parameter name="filter" transfer-ownership="none">
+            <doc xml:space="preserve">a set of filter #GstCaps</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
         </parameters>
       </function>
       <method name="decide_allocation"
-              c:identifier="gst_gl_color_convert_decide_allocation">
+              c:identifier="gst_gl_color_convert_decide_allocation"
+              version="1.8">
+        <doc xml:space="preserve">Provides an implementation of #GstBaseTransfromClass::decide_allocation()</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the allocation parameters were successfully chosen</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="convert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLColorConvert</doc>
             <type name="GLColorConvert" c:type="GstGLColorConvert*"/>
           </instance-parameter>
           <parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a completed ALLOCATION #GstQuery</doc>
             <type name="Gst.Query" c:type="GstQuery*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="perform" c:identifier="gst_gl_color_convert_perform">
+      <method name="perform"
+              c:identifier="gst_gl_color_convert_perform"
+              version="1.4">
         <doc xml:space="preserve">Converts the data contained by @inbuf using the formats specified by the
-#GstVideoInfo&lt;!--  --&gt;s passed to gst_gl_color_convert_set_caps()</doc>
+#GstCaps passed to gst_gl_color_convert_set_caps()</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a converted #GstBuffer or %NULL%</doc>
+          <doc xml:space="preserve">a converted #GstBuffer or %NULL</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
@@ -1394,12 +1427,14 @@ A #GstGLColorConvert can be created with gst_gl_color_convert_new().</doc>
             <type name="GLColorConvert" c:type="GstGLColorConvert*"/>
           </instance-parameter>
           <parameter name="inbuf" transfer-ownership="none">
-            <doc xml:space="preserve">the texture ids for input formatted according to in_info</doc>
+            <doc xml:space="preserve">the #GstGLMemory filled #GstBuffer to convert</doc>
             <type name="Gst.Buffer" c:type="GstBuffer*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="set_caps" c:identifier="gst_gl_color_convert_set_caps">
+      <method name="set_caps"
+              c:identifier="gst_gl_color_convert_set_caps"
+              version="1.6">
         <doc xml:space="preserve">Initializes @convert with the information required for conversion.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -1425,11 +1460,11 @@ A #GstGLColorConvert can be created with gst_gl_color_convert_new().</doc>
       <field name="context" readable="0" private="1">
         <type name="GLContext" c:type="GstGLContext*"/>
       </field>
-      <field name="in_info" introspectable="0" readable="0" private="1">
-        <type c:type="GstVideoInfo"/>
+      <field name="in_info" readable="0" private="1">
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
-      <field name="out_info" introspectable="0" readable="0" private="1">
-        <type c:type="GstVideoInfo"/>
+      <field name="out_info" readable="0" private="1">
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
       <field name="initted" readable="0" private="1">
         <type name="gboolean" c:type="gboolean"/>
@@ -1462,7 +1497,7 @@ A #GstGLColorConvert can be created with gst_gl_color_convert_new().</doc>
             c:type="GstGLColorConvertClass"
             glib:is-gtype-struct-for="GLColorConvert">
       <doc xml:space="preserve">The #GstGLColorConvertClass struct only contains private data</doc>
-      <field name="object_class">
+      <field name="object_class" readable="0" private="1">
         <type name="Gst.ObjectClass" c:type="GstObjectClass"/>
       </field>
       <field name="_padding" readable="0" private="1">
@@ -1502,7 +1537,11 @@ specified and must only be activated in a single thread.</doc>
       <constructor name="new_wrapped"
                    c:identifier="gst_gl_context_new_wrapped"
                    version="1.4">
-        <doc xml:space="preserve">Wraps an existing OpenGL context into a #GstGLContext.</doc>
+        <doc xml:space="preserve">Wraps an existing OpenGL context into a #GstGLContext.
+
+Note: The caller is responsible for ensuring that the OpenGL context
+represented by @handle stays alive while the returned #GstGLContext is
+active.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #GstGLContext wrapping @handle</doc>
           <type name="GLContext" c:type="GstGLContext*"/>
@@ -1527,15 +1566,23 @@ specified and must only be activated in a single thread.</doc>
         </parameters>
       </constructor>
       <function name="default_get_proc_address"
-                c:identifier="gst_gl_context_default_get_proc_address">
+                c:identifier="gst_gl_context_default_get_proc_address"
+                version="1.4">
+        <doc xml:space="preserve">A default implementation of the various GetProcAddress functions that looks
+for @name in the OpenGL shared libraries or in the current process.
+
+See also: gst_gl_context_get_proc_address()</doc>
         <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">an address pointing to @name or %NULL</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <parameter name="gl_api" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLAPI</doc>
             <type name="GLAPI" c:type="GstGLAPI"/>
           </parameter>
           <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">then function to get the address of</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -1547,10 +1594,9 @@ specified and must only be activated in a single thread.</doc>
       </function>
       <function name="get_current"
                 c:identifier="gst_gl_context_get_current"
-                version="1.6"
-                introspectable="0">
+                version="1.6">
         <doc xml:space="preserve">See also gst_gl_context_activate().</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GstGLContext active in the current thread or %NULL</doc>
           <type name="GLContext" c:type="GstGLContext*"/>
         </return-value>
@@ -1558,7 +1604,7 @@ specified and must only be activated in a single thread.</doc>
       <function name="get_current_gl_api"
                 c:identifier="gst_gl_context_get_current_gl_api"
                 version="1.6">
-        <doc xml:space="preserve">If an error occurs, @major and @minor aren't modified and %GST_GL_API_NONE is
+        <doc xml:space="preserve">If an error occurs, @major and @minor are not modified and %GST_GL_API_NONE is
 returned.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The version supported by the OpenGL context current in the calling
@@ -1573,15 +1619,19 @@ returned.</doc>
           <parameter name="major"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve">(allow-none): the major version</doc>
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the major version</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
           <parameter name="minor"
                      direction="out"
                      caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve">(allow-none): the minor version</doc>
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the minor version</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
         </parameters>
@@ -1601,18 +1651,27 @@ returned.</doc>
         </parameters>
       </function>
       <function name="get_proc_address_with_platform"
-                c:identifier="gst_gl_context_get_proc_address_with_platform">
+                c:identifier="gst_gl_context_get_proc_address_with_platform"
+                version="1.6">
+        <doc xml:space="preserve">Attempts to use the @context_type specific GetProcAddress implementations
+to retreive @name.
+
+See also gst_gl_context_get_proc_address().</doc>
         <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a function pointer for @name, or %NULL</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
           <parameter name="context_type" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLPlatform</doc>
             <type name="GLPlatform" c:type="GstGLPlatform"/>
           </parameter>
           <parameter name="gl_api" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLAPI</doc>
             <type name="GLAPI" c:type="GstGLAPI"/>
           </parameter>
           <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of the function to retrieve</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -1640,8 +1699,11 @@ currently set window.  See gst_gl_context_set_window() for details.</doc>
       <virtual-method name="check_feature"
                       invoker="check_feature"
                       version="1.4">
-        <doc xml:space="preserve">Some features require that the context be created before it is possible to
-determine their existence and so will fail if that is not the case.</doc>
+        <doc xml:space="preserve">Check for an OpenGL @feature being supported.
+
+Note: Most features require that the context be created before it is
+possible to determine their existence and so will fail if that is not the
+case.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">Whether @feature is supported by @context</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1794,8 +1856,11 @@ currently set window.  See gst_gl_context_set_window() for details.</doc>
       <method name="check_feature"
               c:identifier="gst_gl_context_check_feature"
               version="1.4">
-        <doc xml:space="preserve">Some features require that the context be created before it is possible to
-determine their existence and so will fail if that is not the case.</doc>
+        <doc xml:space="preserve">Check for an OpenGL @feature being supported.
+
+Note: Most features require that the context be created before it is
+possible to determine their existence and so will fail if that is not the
+case.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">Whether @feature is supported by @context</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1812,12 +1877,15 @@ determine their existence and so will fail if that is not the case.</doc>
         </parameters>
       </method>
       <method name="check_framebuffer_status"
-              c:identifier="gst_gl_context_check_framebuffer_status">
+              c:identifier="gst_gl_context_check_framebuffer_status"
+              version="1.10">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether whether the current framebuffer is complete</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </instance-parameter>
         </parameters>
@@ -1850,12 +1918,15 @@ version.</doc>
         </parameters>
       </method>
       <method name="clear_framebuffer"
-              c:identifier="gst_gl_context_clear_framebuffer">
+              c:identifier="gst_gl_context_clear_framebuffer"
+              version="1.10">
+        <doc xml:space="preserve">Unbind the current framebuffer</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </instance-parameter>
         </parameters>
@@ -1878,9 +1949,9 @@ Note: must be called in the GL thread.</doc>
               c:identifier="gst_gl_context_create"
               version="1.4"
               throws="1">
-        <doc xml:space="preserve">Creates an OpenGL context in the current thread with the specified
-@other_context as a context to share shareable OpenGL objects with.  See the
-OpenGL specification for what is shared between contexts.
+        <doc xml:space="preserve">Creates an OpenGL context with the specified @other_context as a context
+to share shareable OpenGL objects with.  See the OpenGL specification for
+what is shared between OpenGL contexts.
 
 If an error occurs, and @error is not %NULL, then error will contain details
 of the error and %FALSE will be returned.
@@ -1972,9 +2043,8 @@ allow wrapped contexts to be used as regular #GstGLContext's.</doc>
       </method>
       <method name="get_display"
               c:identifier="gst_gl_context_get_display"
-              version="1.4"
-              introspectable="0">
-        <return-value>
+              version="1.4">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the #GstGLDisplay associated with this @context</doc>
           <type name="GLDisplay" c:type="GstGLDisplay*"/>
         </return-value>
@@ -2070,9 +2140,19 @@ gst_gl_context_get_gl_api() for retreiving the OpenGL api implemented by
 specific function does not exist, NULL is returned instead.
 
 Platform specfic functions (names starting 'egl', 'glX', 'wgl', etc) can also
-be retrieved using this method.</doc>
+be retrieved using this method.
+
+Note: This function may return valid function pointers that may not be valid
+to call in @context.  The caller is responsible for ensuring that the
+returned function is a valid function to call in @context by either checking
+the OpenGL API and version or for an appropriate OpenGL extension.
+
+Note: On success, you need to cast the returned function pointer to the
+correct type to be able to call it correctly.  On 32-bit Windows, this will
+include the %GSTGLAPI identifier to use the correct calling convention.
+e.g. void (GSTGLAPI *PFN_glGetIntegerv) (GLenum name, GLint * ret)</doc>
         <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">a function pointer or NULL</doc>
+          <doc xml:space="preserve">a function pointer or %NULL</doc>
           <type name="gpointer" c:type="gpointer"/>
         </return-value>
         <parameters>
@@ -2102,9 +2182,8 @@ be retrieved using this method.</doc>
       </method>
       <method name="get_window"
               c:identifier="gst_gl_context_get_window"
-              version="1.4"
-              introspectable="0">
-        <return-value>
+              version="1.4">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the currently set window</doc>
           <type name="GLWindow" c:type="GstGLWindow*"/>
         </return-value>
@@ -2187,8 +2266,7 @@ already running.</doc>
       </method>
       <method name="thread_add"
               c:identifier="gst_gl_context_thread_add"
-              version="1.4"
-              introspectable="0">
+              version="1.4">
         <doc xml:space="preserve">Execute @func in the OpenGL thread of @context with @data
 
 MT-safe</doc>
@@ -2200,7 +2278,10 @@ MT-safe</doc>
             <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </instance-parameter>
-          <parameter name="func" transfer-ownership="none" closure="1">
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="1">
             <doc xml:space="preserve">a #GstGLContextThreadFunc</doc>
             <type name="GLContextThreadFunc" c:type="GstGLContextThreadFunc"/>
           </parameter>
@@ -2213,16 +2294,17 @@ MT-safe</doc>
           </parameter>
         </parameters>
       </method>
-      <field name="parent">
+      <field name="parent" readable="0" private="1">
         <type name="Gst.Object" c:type="GstObject"/>
       </field>
-      <field name="display">
+      <field name="display" readable="0" private="1">
         <type name="GLDisplay" c:type="GstGLDisplay*"/>
       </field>
-      <field name="window">
+      <field name="window" readable="0" private="1">
         <type name="GLWindow" c:type="GstGLWindow*"/>
       </field>
       <field name="gl_vtable">
+        <doc xml:space="preserve">a list of OpenGL function pointers</doc>
         <type name="GLFuncs" c:type="GstGLFuncs*"/>
       </field>
       <field name="priv" readable="0" private="1">
@@ -2401,29 +2483,36 @@ MT-safe</doc>
       </field>
     </record>
     <enumeration name="GLContextError" c:type="GstGLContextError">
+      <doc xml:space="preserve">OpenGL context errors.</doc>
       <member name="failed"
               value="0"
               c:identifier="GST_GL_CONTEXT_ERROR_FAILED">
+        <doc xml:space="preserve">Failed for an unspecified reason</doc>
       </member>
       <member name="wrong_config"
               value="1"
               c:identifier="GST_GL_CONTEXT_ERROR_WRONG_CONFIG">
+        <doc xml:space="preserve">The configuration requested is not correct</doc>
       </member>
       <member name="wrong_api"
               value="2"
               c:identifier="GST_GL_CONTEXT_ERROR_WRONG_API">
+        <doc xml:space="preserve">The OpenGL API requested is not correct</doc>
       </member>
       <member name="old_libs"
               value="3"
               c:identifier="GST_GL_CONTEXT_ERROR_OLD_LIBS">
+        <doc xml:space="preserve">The OpenGL libraries are too old</doc>
       </member>
       <member name="create_context"
               value="4"
               c:identifier="GST_GL_CONTEXT_ERROR_CREATE_CONTEXT">
+        <doc xml:space="preserve">glXCreateContext (or similar) failed</doc>
       </member>
       <member name="resource_unavailable"
               value="5"
               c:identifier="GST_GL_CONTEXT_ERROR_RESOURCE_UNAVAILABLE">
+        <doc xml:space="preserve">A resource is not available</doc>
       </member>
     </enumeration>
     <record name="GLContextPrivate" c:type="GstGLContextPrivate" disguised="1">
@@ -2523,12 +2612,14 @@ example of such a function is X11's XInitThreads().&lt;/note&gt;</doc>
           <type name="GLDisplay" c:type="GstGLDisplay*"/>
         </return-value>
       </constructor>
-      <virtual-method name="get_handle" invoker="get_handle">
+      <virtual-method name="get_handle" invoker="get_handle" version="1.4">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the native handle for the display</doc>
           <type name="guintptr" c:type="guintptr"/>
         </return-value>
         <parameters>
           <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLDisplay</doc>
             <type name="GLDisplay" c:type="GstGLDisplay*"/>
           </instance-parameter>
         </parameters>
@@ -2572,7 +2663,10 @@ Must be called with the object lock held.</doc>
             <doc xml:space="preserve">other #GstGLContext to share resources with.</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
-          <parameter name="p_context" transfer-ownership="none">
+          <parameter name="p_context"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">resulting #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext**"/>
           </parameter>
@@ -2641,12 +2735,16 @@ Must be called with the object lock held.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_handle" c:identifier="gst_gl_display_get_handle">
+      <method name="get_handle"
+              c:identifier="gst_gl_display_get_handle"
+              version="1.4">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the native handle for the display</doc>
           <type name="guintptr" c:type="guintptr"/>
         </return-value>
         <parameters>
           <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLDisplay</doc>
             <type name="GLDisplay" c:type="GstGLDisplay*"/>
           </instance-parameter>
         </parameters>
@@ -2674,11 +2772,11 @@ Must be called with the object lock held.</doc>
       <field name="priv" readable="0" private="1">
         <type name="GLDisplayPrivate" c:type="GstGLDisplayPrivate*"/>
       </field>
-      <glib:signal name="create-context" when="last" introspectable="0">
+      <glib:signal name="create-context" when="last">
         <doc xml:space="preserve">Overrides the @GstGLContext creation mechanism.
 It can be called in any thread and it is emitted with
 display's object lock held.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new context.</doc>
           <type name="GLContext"/>
         </return-value>
@@ -2699,10 +2797,12 @@ display's object lock held.</doc>
       <field name="get_handle">
         <callback name="get_handle">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the native handle for the display</doc>
             <type name="guintptr" c:type="guintptr"/>
           </return-value>
           <parameters>
             <parameter name="display" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstGLDisplay</doc>
               <type name="GLDisplay" c:type="GstGLDisplay*"/>
             </parameter>
           </parameters>
@@ -2748,43 +2848,6 @@ display's object lock held.</doc>
         <doc xml:space="preserve">any display type</doc>
       </member>
     </bitfield>
-    <record name="GLFeatureData" c:type="GstGLFeatureData">
-      <field name="feature_name" writable="1">
-        <type name="utf8" c:type="const char*"/>
-      </field>
-      <field name="gl_availability" writable="1">
-        <type name="GLAPI" c:type="GstGLAPI"/>
-      </field>
-      <field name="min_gl_major" writable="1">
-        <type name="gint" c:type="int"/>
-      </field>
-      <field name="min_gl_minor" writable="1">
-        <type name="gint" c:type="int"/>
-      </field>
-      <field name="min_gles_major" writable="1">
-        <type name="gint" c:type="int"/>
-      </field>
-      <field name="min_gles_minor" writable="1">
-        <type name="gint" c:type="int"/>
-      </field>
-      <field name="namespaces" writable="1">
-        <type name="utf8" c:type="const char*"/>
-      </field>
-      <field name="extension_names" writable="1">
-        <type name="utf8" c:type="const char*"/>
-      </field>
-      <field name="functions" writable="1">
-        <type name="GLFeatureFunction" c:type="const GstGLFeatureFunction*"/>
-      </field>
-    </record>
-    <record name="GLFeatureFunction" c:type="GstGLFeatureFunction">
-      <field name="name" writable="1">
-        <type name="utf8" c:type="const char*"/>
-      </field>
-      <field name="pointer_offset" writable="1">
-        <type name="guint" c:type="unsigned"/>
-      </field>
-    </record>
     <class name="GLFilter"
            c:symbol-prefix="gl_filter"
            c:type="GstGLFilter"
@@ -2792,9 +2855,8 @@ display's object lock held.</doc>
            glib:type-name="GstGLFilter"
            glib:get-type="gst_gl_filter_get_type"
            glib:type-struct="GLFilterClass">
-      <doc xml:space="preserve">#GstGLFilter is a base class that provides the logic of getting the GL context
-from downstream and automatic upload/download for non-#GstGLMemory
-#GstBuffer&lt;!--  --&gt;s.</doc>
+      <doc xml:space="preserve">#GstGLFilter helps to implement simple OpenGL filter elements taking a
+single input and producing a single output with a #GstGLFramebuffer</doc>
       <virtual-method name="display_init_cb">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2831,7 +2893,9 @@ from downstream and automatic upload/download for non-#GstGLMemory
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="filter_texture" invoker="filter_texture">
+      <virtual-method name="filter_texture"
+                      invoker="filter_texture"
+                      version="1.4">
         <doc xml:space="preserve">Perform automatic upload if needed, call filter_texture vfunc and then an
 automatic download if needed.</doc>
         <return-value transfer-ownership="none">
@@ -2897,7 +2961,8 @@ automatic download if needed.</doc>
         </parameters>
       </virtual-method>
       <method name="draw_fullscreen_quad"
-              c:identifier="gst_gl_filter_draw_fullscreen_quad">
+              c:identifier="gst_gl_filter_draw_fullscreen_quad"
+              version="1.10">
         <doc xml:space="preserve">Render a fullscreen quad using the current GL state.  The only GL state this
 modifies is the necessary vertex/index buffers and, if necessary, a
 Vertex Array Object for drawing a fullscreen quad.  Framebuffer state,
@@ -2913,7 +2978,8 @@ any shaders, viewport state, etc must be setup by the caller.</doc>
         </parameters>
       </method>
       <method name="filter_texture"
-              c:identifier="gst_gl_filter_filter_texture">
+              c:identifier="gst_gl_filter_filter_texture"
+              version="1.4">
         <doc xml:space="preserve">Perform automatic upload if needed, call filter_texture vfunc and then an
 automatic download if needed.</doc>
         <return-value transfer-ownership="none">
@@ -2937,7 +3003,7 @@ automatic download if needed.</doc>
       </method>
       <method name="render_to_target"
               c:identifier="gst_gl_filter_render_to_target"
-              introspectable="0">
+              version="1.10">
         <doc xml:space="preserve">Transforms @input into @output using @func on through FBO.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the return value of @func</doc>
@@ -2956,7 +3022,10 @@ automatic download if needed.</doc>
             <doc xml:space="preserve">the output texture</doc>
             <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
-          <parameter name="func" transfer-ownership="none" closure="3">
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="3">
             <doc xml:space="preserve">the function to transform @input into @output. called with @data</doc>
             <type name="GLFilterRenderFunc" c:type="GstGLFilterRenderFunc"/>
           </parameter>
@@ -2970,7 +3039,8 @@ automatic download if needed.</doc>
         </parameters>
       </method>
       <method name="render_to_target_with_shader"
-              c:identifier="gst_gl_filter_render_to_target_with_shader">
+              c:identifier="gst_gl_filter_render_to_target_with_shader"
+              version="1.4">
         <doc xml:space="preserve">Transforms @input into @output using @shader with a FBO.
 
 See also: gst_gl_filter_render_to_target()</doc>
@@ -2997,21 +3067,23 @@ See also: gst_gl_filter_render_to_target()</doc>
         </parameters>
       </method>
       <field name="parent">
+        <doc xml:space="preserve">parent #GstGLBaseFilter</doc>
         <type name="GLBaseFilter" c:type="GstGLBaseFilter"/>
       </field>
-      <field name="in_info" introspectable="0">
+      <field name="in_info">
         <doc xml:space="preserve">the video info for input buffers</doc>
-        <type c:type="GstVideoInfo"/>
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
-      <field name="out_info" introspectable="0">
+      <field name="out_info">
         <doc xml:space="preserve">the video info for output buffers</doc>
-        <type c:type="GstVideoInfo"/>
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
       <field name="out_caps">
+        <doc xml:space="preserve">the output #GstCaps</doc>
         <type name="Gst.Caps" c:type="GstCaps*"/>
       </field>
       <field name="fbo">
-        <doc xml:space="preserve">GL Framebuffer object used for transformations</doc>
+        <doc xml:space="preserve">#GstGLFramebuffer object used for transformations</doc>
         <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
       </field>
       <field name="gl_result" readable="0" private="1">
@@ -3060,6 +3132,7 @@ See also: gst_gl_filter_render_to_target()</doc>
             c:type="GstGLFilterClass"
             glib:is-gtype-struct-for="GLFilter">
       <field name="parent_class">
+        <doc xml:space="preserve">parent #GstGLBaseFilterClass</doc>
         <type name="GLBaseFilterClass" c:type="GstGLBaseFilterClass"/>
       </field>
       <field name="set_caps">
@@ -3175,21 +3248,26 @@ See also: gst_gl_filter_render_to_target()</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_padding">
+      <field name="_padding" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
     </record>
-    <callback name="GLFilterRenderFunc" c:type="GstGLFilterRenderFunc">
+    <callback name="GLFilterRenderFunc"
+              c:type="GstGLFilterRenderFunc"
+              version="1.10">
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">whether the render succeeded</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="filter" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstGLFIlter</doc>
           <type name="GLFilter" c:type="GstGLFilter*"/>
         </parameter>
         <parameter name="in_tex" transfer-ownership="none">
+          <doc xml:space="preserve">the input #GstGLMemory to render</doc>
           <type name="GLMemory" c:type="GstGLMemory*"/>
         </parameter>
         <parameter name="user_data"
@@ -3197,6 +3275,7 @@ See also: gst_gl_filter_render_to_target()</doc>
                    nullable="1"
                    allow-none="1"
                    closure="2">
+          <doc xml:space="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -3244,114 +3323,173 @@ See also: gst_gl_filter_render_to_target()</doc>
            glib:type-name="GstGLFramebuffer"
            glib:get-type="gst_gl_framebuffer_get_type"
            glib:type-struct="GLFramebufferClass">
-      <constructor name="new" c:identifier="gst_gl_framebuffer_new">
+      <doc xml:space="preserve">A #GstGLFramebuffer represents and holds an OpenGL framebuffer object with
+it's associated attachments.
+
+A #GstGLFramebuffer can be created with gst_gl_framebuffer_new() or
+gst_gl_framebuffer_new_with_default_depth() and bound with
+gst_gl_framebuffer_bind().  Other resources can be bound with
+gst_gl_framebuffer_attach()
+
+Note: OpenGL framebuffers are not shareable resources so cannot be used
+between multiple OpenGL contexts.</doc>
+      <constructor name="new"
+                   c:identifier="gst_gl_framebuffer_new"
+                   version="1.10">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GstGLFramebuffer</doc>
           <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
         </return-value>
         <parameters>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
         </parameters>
       </constructor>
       <constructor name="new_with_default_depth"
-                   c:identifier="gst_gl_framebuffer_new_with_default_depth">
+                   c:identifier="gst_gl_framebuffer_new_with_default_depth"
+                   version="1.10">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GstGLFramebuffer with a depth buffer of @width and @height</doc>
           <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
         </return-value>
         <parameters>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">width for the depth buffer</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">for the depth buffer</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </constructor>
-      <method name="attach" c:identifier="gst_gl_framebuffer_attach">
+      <method name="attach"
+              c:identifier="gst_gl_framebuffer_attach"
+              version="1.10">
+        <doc xml:space="preserve">attach @mem to @attachment_point</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="fb" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLFramebuffer</doc>
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
           <parameter name="attachment_point" transfer-ownership="none">
+            <doc xml:space="preserve">the OpenGL attachment point to bind @mem to</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="mem" transfer-ownership="none">
+            <doc xml:space="preserve">the memory object to bind to @attachment_point</doc>
             <type name="GLBaseMemory" c:type="GstGLBaseMemory*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="bind" c:identifier="gst_gl_framebuffer_bind">
+      <method name="bind"
+              c:identifier="gst_gl_framebuffer_bind"
+              version="1.10">
+        <doc xml:space="preserve">Bind @fb into the current thread</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="fb" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLFramebuffer</doc>
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
         </parameters>
       </method>
       <method name="draw_to_texture"
               c:identifier="gst_gl_framebuffer_draw_to_texture"
-              introspectable="0">
+              version="1.10">
+        <doc xml:space="preserve">Perform the steps necessary to have the output of a glDraw* command in
+@func update the contents of @mem.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the result of executing @func</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="fb" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLFramebuffer</doc>
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
           <parameter name="mem" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstGLMemory to draw to</doc>
             <type name="GLMemory" c:type="GstGLMemory*"/>
           </parameter>
-          <parameter name="cb" transfer-ownership="none" closure="2">
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="2">
+            <doc xml:space="preserve">the function to run</doc>
             <type name="GLFramebufferFunc" c:type="GstGLFramebufferFunc"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">data to pass to @func</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
       <method name="get_effective_dimensions"
-              c:identifier="gst_gl_framebuffer_get_effective_dimensions">
+              c:identifier="gst_gl_framebuffer_get_effective_dimensions"
+              version="1.10">
+        <doc xml:space="preserve">Retreive the effective dimensions from the current attachments attached to
+@fb.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="fb" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLFramebuffer</doc>
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
-          <parameter name="width" transfer-ownership="none">
+          <parameter name="width"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output width</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
-          <parameter name="height" transfer-ownership="none">
+          <parameter name="height"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output height</doc>
             <type name="guint" c:type="guint*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="get_id" c:identifier="gst_gl_framebuffer_get_id">
+      <method name="get_id"
+              c:identifier="gst_gl_framebuffer_get_id"
+              version="1.10">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the OpenGL id for @fb</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
           <instance-parameter name="fb" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLFramebuffer</doc>
             <type name="GLFramebuffer" c:type="GstGLFramebuffer*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <field name="object">
+      <field name="object" readable="0" private="1">
         <type name="Gst.Object" c:type="GstObject"/>
       </field>
-      <field name="context">
+      <field name="context" readable="0" private="1">
         <type name="GLContext" c:type="GstGLContext*"/>
       </field>
       <field name="fbo_id" readable="0" private="1">
@@ -3382,17 +3520,18 @@ See also: gst_gl_filter_render_to_target()</doc>
     <record name="GLFramebufferClass"
             c:type="GstGLFramebufferClass"
             glib:is-gtype-struct-for="GLFramebuffer">
-      <field name="object_class">
+      <doc xml:space="preserve">Opaque #GstGLFramebufferClass struct</doc>
+      <field name="object_class" readable="0" private="1">
         <type name="Gst.ObjectClass" c:type="GstObjectClass"/>
       </field>
-      <field name="_padding">
+      <field name="_padding" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
     </record>
     <callback name="GLFramebufferFunc" c:type="GstGLFramebufferFunc">
-      <doc xml:space="preserve">callback definition for operating through a Framebuffer object</doc>
+      <doc xml:space="preserve">callback definition for operating through a #GstGLFramebuffer object</doc>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -3401,6 +3540,7 @@ See also: gst_gl_filter_render_to_target()</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">user data</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -7768,7 +7908,7 @@ with #GstGLVideoAllocationParams.
 
 Data is uploaded or downloaded from the GPU as is necessary.</doc>
       <field name="mem" writable="1">
-        <doc xml:space="preserve">the parent object</doc>
+        <doc xml:space="preserve">the parent #GstGLBaseMemory object</doc>
         <type name="GLBaseMemory" c:type="GstGLBaseMemory"/>
       </field>
       <field name="tex_id" writable="1">
@@ -7779,17 +7919,18 @@ Data is uploaded or downloaded from the GPU as is necessary.</doc>
         <doc xml:space="preserve">the GL texture target for this memory</doc>
         <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
       </field>
-      <field name="tex_type" introspectable="0" writable="1">
+      <field name="tex_type" writable="1">
         <doc xml:space="preserve">the texture type</doc>
-        <type c:type="GstVideoGLTextureType"/>
+        <type name="GstVideo.VideoGLTextureType"
+              c:type="GstVideoGLTextureType"/>
       </field>
-      <field name="info" introspectable="0" writable="1">
+      <field name="info" writable="1">
         <doc xml:space="preserve">the texture's #GstVideoInfo</doc>
-        <type c:type="GstVideoInfo"/>
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
-      <field name="valign" introspectable="0" writable="1">
+      <field name="valign" writable="1">
         <doc xml:space="preserve">data alignment for system memory mapping</doc>
-        <type c:type="GstVideoAlignment"/>
+        <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment"/>
       </field>
       <field name="plane" writable="1">
         <doc xml:space="preserve">data plane in @info</doc>
@@ -7817,8 +7958,7 @@ Data is uploaded or downloaded from the GPU as is necessary.</doc>
       </field>
       <method name="copy_into"
               c:identifier="gst_gl_memory_copy_into"
-              version="1.8"
-              introspectable="0">
+              version="1.8">
         <doc xml:space="preserve">Copies @gl_mem into the texture specfified by @tex_id.  The format of @tex_id
 is specified by @tex_type, @width and @height.</doc>
         <return-value transfer-ownership="none">
@@ -7840,7 +7980,8 @@ is specified by @tex_type, @width and @height.</doc>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoGLTextureType</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve">width of @tex_id</doc>
@@ -7852,9 +7993,7 @@ is specified by @tex_type, @width and @height.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="copy_teximage"
-              c:identifier="gst_gl_memory_copy_teximage"
-              introspectable="0">
+      <method name="copy_teximage" c:identifier="gst_gl_memory_copy_teximage">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7869,7 +8008,8 @@ is specified by @tex_type, @width and @height.</doc>
             <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
           </parameter>
           <parameter name="out_tex_type" transfer-ownership="none">
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <type name="gint" c:type="gint"/>
@@ -7923,11 +8063,11 @@ is specified by @tex_type, @width and @height.</doc>
       </method>
       <method name="get_texture_type"
               c:identifier="gst_gl_memory_get_texture_type"
-              version="1.8"
-              introspectable="0">
-        <return-value>
+              version="1.8">
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GstVideoGLTextureType of @gl_mem</doc>
-          <type c:type="GstVideoGLTextureType"/>
+          <type name="GstVideo.VideoGLTextureType"
+                c:type="GstVideoGLTextureType"/>
         </return-value>
         <parameters>
           <instance-parameter name="gl_mem" transfer-ownership="none">
@@ -7950,10 +8090,7 @@ is specified by @tex_type, @width and @height.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="init"
-              c:identifier="gst_gl_memory_init"
-              version="1.8"
-              introspectable="0">
+      <method name="init" c:identifier="gst_gl_memory_init" version="1.8">
         <doc xml:space="preserve">Initializes @mem with the required parameters.  @info is assumed to have
 already have been modified with gst_video_info_align().</doc>
         <return-value transfer-ownership="none">
@@ -7984,7 +8121,9 @@ already have been modified with gst_video_info_align().</doc>
             <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
-            <type c:type="GstVideoGLTextureType"/>
+            <doc xml:space="preserve">the #GstVideoGLTextureType for this #GstGLMemory</doc>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="params"
                      transfer-ownership="none"
@@ -7995,7 +8134,7 @@ already have been modified with gst_video_info_align().</doc>
           </parameter>
           <parameter name="info" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoInfo for this #GstGLMemory</doc>
-            <type c:type="GstVideoInfo*"/>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
           <parameter name="plane" transfer-ownership="none">
             <doc xml:space="preserve">the plane number (starting from 0) for this #GstGLMemory</doc>
@@ -8006,7 +8145,7 @@ already have been modified with gst_video_info_align().</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">optional #GstVideoAlignment parameters</doc>
-            <type c:type="GstVideoAlignment*"/>
+            <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
@@ -8083,8 +8222,7 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
       </function>
       <function name="setup_buffer"
                 c:identifier="gst_gl_memory_setup_buffer"
-                version="1.8"
-                introspectable="0">
+                version="1.8">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">whether the buffer was correctly setup</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -8108,15 +8246,18 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a list of #GstVideoGLTextureType's to allocate with.</doc>
-            <type c:type="GstVideoGLTextureType*"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType*"/>
           </parameter>
           <parameter name="wrapped_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">a list of wrapped data pointers</doc>
             <type name="gpointer" c:type="gpointer*"/>
           </parameter>
           <parameter name="n_wrapped_pointers" transfer-ownership="none">
+            <doc xml:space="preserve">the number of elements in @tex_types and @wrapped_data</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
         </parameters>
@@ -8132,10 +8273,10 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
       <doc xml:space="preserve">Opaque #GstGLMemoryAllocator struct</doc>
       <function name="get_default"
                 c:identifier="gst_gl_memory_allocator_get_default"
-                version="1.8"
-                introspectable="0">
-        <return-value>
-          <doc xml:space="preserve">the default #GstGLMemoryAllocator supported by @context</doc>
+                version="1.8">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the default #GstGLMemoryAllocator supported by
+         @context</doc>
           <type name="GLMemoryAllocator" c:type="GstGLMemoryAllocator*"/>
         </return-value>
         <parameters>
@@ -8145,7 +8286,7 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
           </parameter>
         </parameters>
       </function>
-      <field name="parent">
+      <field name="parent" readable="0" private="1">
         <type name="GLBaseMemoryAllocator" c:type="GstGLBaseMemoryAllocator"/>
       </field>
       <field name="_padding" readable="0" private="1">
@@ -8157,20 +8298,22 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
     <record name="GLMemoryAllocatorClass"
             c:type="GstGLMemoryAllocatorClass"
             glib:is-gtype-struct-for="GLMemoryAllocator">
-      <doc xml:space="preserve">The #GstGLMemoryAllocatorClass only contains private data</doc>
-      <field name="parent_class">
+      <field name="parent_class" readable="0" private="1">
         <type name="GLBaseMemoryAllocatorClass"
               c:type="GstGLBaseMemoryAllocatorClass"/>
       </field>
       <field name="map">
+        <doc xml:space="preserve">provide a custom map implementation</doc>
         <type name="GLBaseMemoryAllocatorMapFunction"
               c:type="GstGLBaseMemoryAllocatorMapFunction"/>
       </field>
       <field name="copy" introspectable="0">
+        <doc xml:space="preserve">provide a custom copy implementation</doc>
         <type name="GLBaseMemoryAllocatorCopyFunction"
               c:type="GstGLBaseMemoryAllocatorCopyFunction"/>
       </field>
       <field name="unmap">
+        <doc xml:space="preserve">provide a custom unmap implementation</doc>
         <type name="GLBaseMemoryAllocatorUnmapFunction"
               c:type="GstGLBaseMemoryAllocatorUnmapFunction"/>
       </field>
@@ -8194,11 +8337,8 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
       <doc xml:space="preserve">#GstGLMemoryPBO is created or wrapped through gst_gl_base_memory_alloc()
 with #GstGLVideoAllocationParams.
 
-#GstGLMemoryPBO is created through gst_gl_memory_pbo_alloc() or system memory can
-be wrapped through gst_gl_memory_pbo_wrapped().
-
 Data is uploaded or downloaded from the GPU as is necessary.</doc>
-      <field name="mem" writable="1">
+      <field name="mem" readable="0" private="1">
         <type name="GLMemory" c:type="GstGLMemory"/>
       </field>
       <field name="pbo" readable="0" private="1">
@@ -8211,8 +8351,7 @@ Data is uploaded or downloaded from the GPU as is necessary.</doc>
       </field>
       <method name="copy_into_texture"
               c:identifier="gst_gl_memory_pbo_copy_into_texture"
-              version="1.8"
-              introspectable="0">
+              version="1.8">
         <doc xml:space="preserve">Copies @gl_mem into the texture specfified by @tex_id.  The format of @tex_id
 is specified by @tex_type, @width and @height.
 
@@ -8245,7 +8384,8 @@ mappings between texture formats.</doc>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
             <doc xml:space="preserve">the destination #GstVideoGLTextureType</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve">width of @tex_id</doc>
@@ -8268,7 +8408,7 @@ mappings between texture formats.</doc>
       <method name="download_transfer"
               c:identifier="gst_gl_memory_pbo_download_transfer"
               version="1.8">
-        <doc xml:space="preserve">Transfer the texture data from the PBO into the texture if necessary.</doc>
+        <doc xml:space="preserve">Transfer the texture data from the texture into the PBO if necessary.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8280,12 +8420,15 @@ mappings between texture formats.</doc>
         </parameters>
       </method>
       <method name="upload_transfer"
-              c:identifier="gst_gl_memory_pbo_upload_transfer">
+              c:identifier="gst_gl_memory_pbo_upload_transfer"
+              version="1.8">
+        <doc xml:space="preserve">Transfer the texture data from the PBO into the texture if necessary.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="gl_mem" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLMemoryPBO</doc>
             <type name="GLMemoryPBO" c:type="GstGLMemoryPBO*"/>
           </instance-parameter>
         </parameters>
@@ -8465,6 +8608,8 @@ mappings between texture formats.</doc>
       </member>
     </bitfield>
     <record name="GLQuery" c:type="GstGLQuery">
+      <doc xml:space="preserve">A #GstGLQuery represents and holds an OpenGL query object.  Various types of
+queries can be run or counters retrieved.</doc>
       <field name="context" readable="0" private="1">
         <type name="GLContext" c:type="GstGLContext*"/>
       </field>
@@ -8488,91 +8633,115 @@ mappings between texture formats.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
-      <method name="counter" c:identifier="gst_gl_query_counter">
+      <method name="counter"
+              c:identifier="gst_gl_query_counter"
+              version="1.10">
+        <doc xml:space="preserve">Record the result of a counter</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="end" c:identifier="gst_gl_query_end">
+      <method name="end" c:identifier="gst_gl_query_end" version="1.10">
+        <doc xml:space="preserve">End counting the query</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="free" c:identifier="gst_gl_query_free">
+      <method name="free" c:identifier="gst_gl_query_free" version="1.10">
+        <doc xml:space="preserve">Frees a #GstGLQuery</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="init" c:identifier="gst_gl_query_init">
+      <method name="init" c:identifier="gst_gl_query_init" version="1.10">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
           <parameter name="query_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstGLQueryType</doc>
             <type name="GLQueryType" c:type="GstGLQueryType"/>
           </parameter>
         </parameters>
       </method>
-      <method name="result" c:identifier="gst_gl_query_result">
+      <method name="result" c:identifier="gst_gl_query_result" version="1.10">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the result of the query</doc>
           <type name="guint64" c:type="guint64"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="start" c:identifier="gst_gl_query_start">
+      <method name="start" c:identifier="gst_gl_query_start" version="1.10">
+        <doc xml:space="preserve">Start counting the query</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="unset" c:identifier="gst_gl_query_unset">
+      <method name="unset" c:identifier="gst_gl_query_unset" version="1.10">
+        <doc xml:space="preserve">Free any dynamically allocated resources</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLQuery</doc>
             <type name="GLQuery" c:type="GstGLQuery*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <function name="new" c:identifier="gst_gl_query_new" introspectable="0">
+      <function name="new"
+                c:identifier="gst_gl_query_new"
+                version="1.10"
+                introspectable="0">
+        <doc xml:space="preserve">Free with gst_gl_query_free()</doc>
         <return-value>
+          <doc xml:space="preserve">a new #GstGLQuery</doc>
           <type name="GLQuery" c:type="GstGLQuery*"/>
         </return-value>
         <parameters>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
           <parameter name="query_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstGLQueryType to create</doc>
             <type name="GLQueryType" c:type="GstGLQueryType"/>
           </parameter>
         </parameters>
@@ -8580,12 +8749,15 @@ mappings between texture formats.</doc>
     </record>
     <enumeration name="GLQueryType" c:type="GstGLQueryType">
       <member name="none" value="0" c:identifier="GST_GL_QUERY_NONE">
+        <doc xml:space="preserve">no query</doc>
       </member>
       <member name="time_elapsed"
               value="1"
               c:identifier="GST_GL_QUERY_TIME_ELAPSED">
+        <doc xml:space="preserve">query the time elapsed</doc>
       </member>
       <member name="timestamp" value="2" c:identifier="GST_GL_QUERY_TIMESTAMP">
+        <doc xml:space="preserve">query the current time</doc>
       </member>
     </enumeration>
     <record name="GLRenderbuffer" c:type="GstGLRenderbuffer">
@@ -8602,9 +8774,10 @@ with #GstGLRenderbufferAllocationParams.</doc>
         <doc xml:space="preserve">the GL texture id for this memory</doc>
         <type name="guint" c:type="guint"/>
       </field>
-      <field name="renderbuffer_type" introspectable="0" writable="1">
+      <field name="renderbuffer_type" writable="1">
         <doc xml:space="preserve">the texture type</doc>
-        <type c:type="GstVideoGLTextureType"/>
+        <type name="GstVideo.VideoGLTextureType"
+              c:type="GstVideoGLTextureType"/>
       </field>
       <field name="width" writable="1">
         <doc xml:space="preserve">the width</doc>
@@ -8624,7 +8797,7 @@ with #GstGLRenderbufferAllocationParams.</doc>
       </field>
       <method name="get_height"
               c:identifier="gst_gl_renderbuffer_get_height"
-              version="1.8">
+              version="1.10">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the configured height of @gl_mem</doc>
           <type name="gint" c:type="gint"/>
@@ -8638,7 +8811,7 @@ with #GstGLRenderbufferAllocationParams.</doc>
       </method>
       <method name="get_id"
               c:identifier="gst_gl_renderbuffer_get_id"
-              version="1.8">
+              version="1.10">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the OpenGL renderbuffer handle of @gl_mem</doc>
           <type name="guint" c:type="guint"/>
@@ -8652,11 +8825,11 @@ with #GstGLRenderbufferAllocationParams.</doc>
       </method>
       <method name="get_type"
               c:identifier="gst_gl_renderbuffer_get_type"
-              version="1.8"
-              introspectable="0">
-        <return-value>
+              version="1.10">
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GstVideoGLTextureType of @gl_mem</doc>
-          <type c:type="GstVideoGLTextureType"/>
+          <type name="GstVideo.VideoGLTextureType"
+                c:type="GstVideoGLTextureType"/>
         </return-value>
         <parameters>
           <instance-parameter name="gl_mem" transfer-ownership="none">
@@ -8667,7 +8840,7 @@ with #GstGLRenderbufferAllocationParams.</doc>
       </method>
       <method name="get_width"
               c:identifier="gst_gl_renderbuffer_get_width"
-              version="1.8">
+              version="1.10">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the configured width of @gl_mem</doc>
           <type name="gint" c:type="gint"/>
@@ -8681,7 +8854,7 @@ with #GstGLRenderbufferAllocationParams.</doc>
       </method>
       <function name="init_once"
                 c:identifier="gst_gl_renderbuffer_init_once"
-                version="1.4">
+                version="1.10">
         <doc xml:space="preserve">Initializes the GL Base Texture allocator. It is safe to call this function
 multiple times.  This must be called before any other GstGLRenderbuffer operation.</doc>
         <return-value transfer-ownership="none">
@@ -8694,8 +8867,9 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
       <field name="parent" writable="1">
         <type name="GLAllocationParams" c:type="GstGLAllocationParams"/>
       </field>
-      <field name="renderbuffer_type" introspectable="0" writable="1">
-        <type c:type="GstVideoGLTextureType"/>
+      <field name="renderbuffer_type" writable="1">
+        <type name="GstVideo.VideoGLTextureType"
+              c:type="GstVideoGLTextureType"/>
       </field>
       <field name="width" writable="1">
         <type name="guint" c:type="guint"/>
@@ -8731,7 +8905,8 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </parameter>
           <parameter name="renderbuffer_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoGLTextureType for the created textures</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve">the width of the renderbuffer</doc>
@@ -8767,7 +8942,8 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </parameter>
           <parameter name="renderbuffer_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoGLTextureType for @tex_id</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve">the width of the renderbuffer</doc>
@@ -8834,27 +9010,38 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
       </field>
     </record>
     <enumeration name="GLSLError"
+                 version="1.8"
                  c:type="GstGLSLError"
                  glib:error-domain="gst-glsl-error">
+      <doc xml:space="preserve">Compilation stage that caused an error</doc>
       <member name="compile" value="0" c:identifier="GST_GLSL_ERROR_COMPILE">
+        <doc xml:space="preserve">Compilation error occured</doc>
       </member>
       <member name="link" value="1" c:identifier="GST_GLSL_ERROR_LINK">
+        <doc xml:space="preserve">Link error occured</doc>
       </member>
       <member name="program" value="2" c:identifier="GST_GLSL_ERROR_PROGRAM">
+        <doc xml:space="preserve">General program error occured</doc>
       </member>
     </enumeration>
-    <bitfield name="GLSLProfile" c:type="GstGLSLProfile">
+    <bitfield name="GLSLProfile" version="1.8" c:type="GstGLSLProfile">
+      <doc xml:space="preserve">GLSL profiles</doc>
       <member name="none" value="0" c:identifier="GST_GLSL_PROFILE_NONE">
+        <doc xml:space="preserve">no profile supported/available</doc>
       </member>
       <member name="es" value="1" c:identifier="GST_GLSL_PROFILE_ES">
+        <doc xml:space="preserve">OpenGL|ES profile</doc>
       </member>
       <member name="core" value="2" c:identifier="GST_GLSL_PROFILE_CORE">
+        <doc xml:space="preserve">OpenGL core profile</doc>
       </member>
       <member name="compatibility"
               value="4"
               c:identifier="GST_GLSL_PROFILE_COMPATIBILITY">
+        <doc xml:space="preserve">OpenGL compatibility profile</doc>
       </member>
       <member name="any" value="-1" c:identifier="GST_GLSL_PROFILE_ANY">
+        <doc xml:space="preserve">any OpenGL/OpenGL|ES profile</doc>
       </member>
     </bitfield>
     <class name="GLSLStage"
@@ -8865,7 +9052,7 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
            glib:get-type="gst_glsl_stage_get_type"
            glib:type-struct="GLSLStageClass">
       <doc xml:space="preserve">#GstGLSLStage holds and represents a single OpenGL shader stage.</doc>
-      <constructor name="new" c:identifier="gst_glsl_stage_new">
+      <constructor name="new" c:identifier="gst_glsl_stage_new" version="1.8">
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstGLSLStage of the specified @type</doc>
           <type name="GLSLStage" c:type="GstGLSLStage*"/>
@@ -8904,7 +9091,8 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
         </parameters>
       </constructor>
       <constructor name="new_with_string"
-                   c:identifier="gst_glsl_stage_new_with_string">
+                   c:identifier="gst_glsl_stage_new_with_string"
+                   version="1.8">
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstGLSLStage of the specified @type</doc>
           <type name="GLSLStage" c:type="GstGLSLStage*"/>
@@ -8933,7 +9121,8 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
         </parameters>
       </constructor>
       <constructor name="new_with_strings"
-                   c:identifier="gst_glsl_stage_new_with_strings">
+                   c:identifier="gst_glsl_stage_new_with_strings"
+                   version="1.8">
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GstGLSLStage of the specified @type</doc>
           <type name="GLSLStage" c:type="GstGLSLStage*"/>
@@ -8965,7 +9154,10 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </parameter>
         </parameters>
       </constructor>
-      <method name="compile" c:identifier="gst_glsl_stage_compile" throws="1">
+      <method name="compile"
+              c:identifier="gst_glsl_stage_compile"
+              version="1.8"
+              throws="1">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">whether the compilation suceeded</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -8977,7 +9169,9 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_handle" c:identifier="gst_glsl_stage_get_handle">
+      <method name="get_handle"
+              c:identifier="gst_glsl_stage_get_handle"
+              version="1.8">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The GL handle for this shader stage</doc>
           <type name="guint" c:type="guint"/>
@@ -8989,7 +9183,9 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_profile" c:identifier="gst_glsl_stage_get_profile">
+      <method name="get_profile"
+              c:identifier="gst_glsl_stage_get_profile"
+              version="1.8">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The GLSL profile for the current shader stage</doc>
           <type name="GLSLProfile" c:type="GstGLSLProfile"/>
@@ -9002,7 +9198,8 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
         </parameters>
       </method>
       <method name="get_shader_type"
-              c:identifier="gst_glsl_stage_get_shader_type">
+              c:identifier="gst_glsl_stage_get_shader_type"
+              version="1.8">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The GL shader type for this shader stage</doc>
           <type name="guint" c:type="guint"/>
@@ -9014,7 +9211,9 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_version" c:identifier="gst_glsl_stage_get_version">
+      <method name="get_version"
+              c:identifier="gst_glsl_stage_get_version"
+              version="1.8">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The GLSL version for the current shader stage</doc>
           <type name="GLSLVersion" c:type="GstGLSLVersion"/>
@@ -9026,7 +9225,9 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_strings" c:identifier="gst_glsl_stage_set_strings">
+      <method name="set_strings"
+              c:identifier="gst_glsl_stage_set_strings"
+              version="1.8">
         <doc xml:space="preserve">Replaces the current shader string with @str.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -9054,10 +9255,10 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
           </parameter>
         </parameters>
       </method>
-      <field name="parent">
+      <field name="parent" readable="0" private="1">
         <type name="Gst.Object" c:type="GstObject"/>
       </field>
-      <field name="context">
+      <field name="context" readable="0" private="1">
         <type name="GLContext" c:type="GstGLContext*"/>
       </field>
       <field name="priv" readable="0" private="1">
@@ -9073,7 +9274,7 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
             c:type="GstGLSLStageClass"
             glib:is-gtype-struct-for="GLSLStage">
       <doc xml:space="preserve">Opaque #GstGLSLStageClass struct</doc>
-      <field name="parent">
+      <field name="parent" readable="0" private="1">
         <type name="Gst.ObjectClass" c:type="GstObjectClass"/>
       </field>
       <field name="_padding" readable="0" private="1">
@@ -9084,42 +9285,58 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
     </record>
     <record name="GLSLStagePrivate" c:type="GstGLSLStagePrivate" disguised="1">
     </record>
-    <enumeration name="GLSLVersion" c:type="GstGLSLVersion">
+    <enumeration name="GLSLVersion" version="1.8" c:type="GstGLSLVersion">
+      <doc xml:space="preserve">GLSL version list</doc>
       <member name="none" value="0" c:identifier="GST_GLSL_VERSION_NONE">
+        <doc xml:space="preserve">no version</doc>
       </member>
       <member name="100" value="100" c:identifier="GST_GLSL_VERSION_100">
+        <doc xml:space="preserve">#version 100 (only valid for ES)</doc>
       </member>
       <member name="110" value="110" c:identifier="GST_GLSL_VERSION_110">
+        <doc xml:space="preserve">#version 110 (only valid for compatibility desktop GL)</doc>
       </member>
       <member name="120" value="120" c:identifier="GST_GLSL_VERSION_120">
+        <doc xml:space="preserve">#version 120 (only valid for compatibility desktop GL)</doc>
       </member>
       <member name="130" value="130" c:identifier="GST_GLSL_VERSION_130">
+        <doc xml:space="preserve">#version 130 (only valid for compatibility desktop GL)</doc>
       </member>
       <member name="140" value="140" c:identifier="GST_GLSL_VERSION_140">
+        <doc xml:space="preserve">#version 140 (only valid for compatibility desktop GL)</doc>
       </member>
       <member name="150" value="150" c:identifier="GST_GLSL_VERSION_150">
+        <doc xml:space="preserve">#version 150 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="300" value="300" c:identifier="GST_GLSL_VERSION_300">
+        <doc xml:space="preserve">#version 300 (only valid for ES)</doc>
       </member>
       <member name="310" value="310" c:identifier="GST_GLSL_VERSION_310">
+        <doc xml:space="preserve">#version 310 (only valid for ES)</doc>
       </member>
       <member name="320" value="320" c:identifier="GST_GLSL_VERSION_320">
+        <doc xml:space="preserve">#version 320 (only valid for ES)</doc>
       </member>
       <member name="330" value="330" c:identifier="GST_GLSL_VERSION_330">
+        <doc xml:space="preserve">#version 330 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="400" value="400" c:identifier="GST_GLSL_VERSION_400">
+        <doc xml:space="preserve">#version 400 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="410" value="410" c:identifier="GST_GLSL_VERSION_410">
+        <doc xml:space="preserve">#version 410 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="420" value="420" c:identifier="GST_GLSL_VERSION_420">
+        <doc xml:space="preserve">#version 420 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="430" value="430" c:identifier="GST_GLSL_VERSION_430">
+        <doc xml:space="preserve">#version 430 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="440" value="440" c:identifier="GST_GLSL_VERSION_440">
+        <doc xml:space="preserve">#version 440 (valid for compatibility/core desktop GL)</doc>
       </member>
       <member name="450" value="450" c:identifier="GST_GLSL_VERSION_450">
-      </member>
-      <member name="any" value="-1" c:identifier="GST_GLSL_VERSION_ANY">
+        <doc xml:space="preserve">#version 450 (valid for compatibility/core desktop GL)</doc>
       </member>
     </enumeration>
     <class name="GLShader"
@@ -10028,6 +10245,7 @@ Note: must be called in the GL thread and @shader must have been linked.</doc>
                  glib:type-name="GstGLStereoDownmix"
                  glib:get-type="gst_gl_stereo_downmix_mode_get_type"
                  c:type="GstGLStereoDownmix">
+      <doc xml:space="preserve">Output anaglyph type to generate when downmixing to mono</doc>
       <member name="green_magenta_dubois"
               value="0"
               c:identifier="Dubois optimised Green-Magenta anaglyph"
@@ -10045,13 +10263,18 @@ Note: must be called in the GL thread and @shader must have been linked.</doc>
       </member>
     </enumeration>
     <record name="GLSyncMeta" c:type="GstGLSyncMeta">
+      <doc xml:space="preserve">#GstGLSyncMeta provides the ability to synchronize the OpenGL command stream
+with the CPU or with other OpenGL contexts.</doc>
       <field name="parent" writable="1">
+        <doc xml:space="preserve">the parent #GstMeta</doc>
         <type name="Gst.Meta" c:type="GstMeta"/>
       </field>
       <field name="context" writable="1">
+        <doc xml:space="preserve">the #GstGLContext used to allocate the meta</doc>
         <type name="GLContext" c:type="GstGLContext*"/>
       </field>
       <field name="data" writable="1">
+        <doc xml:space="preserve">a custom data pointer for the implementation</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
       <field name="set_sync">
@@ -10196,41 +10419,56 @@ Note: must be called in the GL thread and @shader must have been linked.</doc>
         </callback>
       </field>
       <method name="set_sync_point"
-              c:identifier="gst_gl_sync_meta_set_sync_point">
+              c:identifier="gst_gl_sync_meta_set_sync_point"
+              version="1.6">
+        <doc xml:space="preserve">Set a sync point to possibly wait on at a later time.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="sync" transfer-ownership="none">
+          <instance-parameter name="sync_meta" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLSyncMeta</doc>
             <type name="GLSyncMeta" c:type="GstGLSyncMeta*"/>
           </instance-parameter>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="wait" c:identifier="gst_gl_sync_meta_wait">
+      <method name="wait" c:identifier="gst_gl_sync_meta_wait" version="1.6">
+        <doc xml:space="preserve">Insert a wait into @context's command stream ensuring all previous OpenGL
+commands before @sync_meta have completed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="sync" transfer-ownership="none">
+          <instance-parameter name="sync_meta" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLSyncMeta</doc>
             <type name="GLSyncMeta" c:type="GstGLSyncMeta*"/>
           </instance-parameter>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="wait_cpu" c:identifier="gst_gl_sync_meta_wait_cpu">
+      <method name="wait_cpu"
+              c:identifier="gst_gl_sync_meta_wait_cpu"
+              version="1.8">
+        <doc xml:space="preserve">Perform a wait so that the sync point has passed from the CPU's perspective
+What that means, is that all GL operations changing CPU-visible data before
+the sync point are now visible.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="sync" transfer-ownership="none">
+          <instance-parameter name="sync_meta" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLSyncMeta</doc>
             <type name="GLSyncMeta" c:type="GstGLSyncMeta*"/>
           </instance-parameter>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
         </parameters>
@@ -10471,22 +10709,29 @@ gst_gl_upload_set_caps() creating a new #GstBuffer in @outbuf_ptr.</doc>
     </enumeration>
     <record name="GLVideoAllocationParams" c:type="GstGLVideoAllocationParams">
       <field name="parent" writable="1">
+        <doc xml:space="preserve">the parent #GstGLAllocationParams structure</doc>
         <type name="GLAllocationParams" c:type="GstGLAllocationParams"/>
       </field>
-      <field name="v_info" introspectable="0" writable="1">
-        <type c:type="GstVideoInfo*"/>
+      <field name="v_info" writable="1">
+        <doc xml:space="preserve">the #GstVideoInfo to allocate</doc>
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
       </field>
       <field name="plane" writable="1">
+        <doc xml:space="preserve">the video plane index to allocate</doc>
         <type name="guint" c:type="guint"/>
       </field>
-      <field name="valign" introspectable="0" writable="1">
-        <type c:type="GstVideoAlignment*"/>
+      <field name="valign" writable="1">
+        <doc xml:space="preserve">the #GstVideoAlignment to align the system representation to (may be %NULL for the default)</doc>
+        <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
       </field>
       <field name="target" writable="1">
+        <doc xml:space="preserve">the #GstGLTextureTarget to allocate</doc>
         <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
       </field>
-      <field name="tex_type" introspectable="0" writable="1">
-        <type c:type="GstVideoGLTextureType"/>
+      <field name="tex_type" writable="1">
+        <doc xml:space="preserve">the #GstVideoGLTextureType to allocate</doc>
+        <type name="GstVideo.VideoGLTextureType"
+              c:type="GstVideoGLTextureType"/>
       </field>
       <field name="_padding" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
@@ -10580,7 +10825,7 @@ usage only to chain up at the end of a subclass free function.</doc>
           </parameter>
           <parameter name="v_info" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoInfo for @wrapped_data</doc>
-            <type c:type="GstVideoInfo*"/>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
           <parameter name="plane" transfer-ownership="none">
             <doc xml:space="preserve">the video plane @wrapped_data represents</doc>
@@ -10591,7 +10836,7 @@ usage only to chain up at the end of a subclass free function.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">any #GstVideoAlignment applied to symem mappings of @wrapped_data</doc>
-            <type c:type="GstVideoAlignment*"/>
+            <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none">
             <doc xml:space="preserve">the #GstGLTextureTarget</doc>
@@ -10599,7 +10844,8 @@ usage only to chain up at the end of a subclass free function.</doc>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoGLTextureType</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="wrapped_data"
                      transfer-ownership="none"
@@ -10655,7 +10901,7 @@ usage only to chain up at the end of a subclass free function.</doc>
           </parameter>
           <parameter name="v_info" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoInfo for the texture</doc>
-            <type c:type="GstVideoInfo*"/>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
           <parameter name="plane" transfer-ownership="none">
             <doc xml:space="preserve">the video plane of @v_info to allocate</doc>
@@ -10666,14 +10912,16 @@ usage only to chain up at the end of a subclass free function.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">any #GstVideoAlignment applied to symem mappings of the texture</doc>
-            <type c:type="GstVideoAlignment*"/>
+            <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none">
-            <doc xml:space="preserve">the #GstVideoGLTextureType for the created textures</doc>
+            <doc xml:space="preserve">the #GstGLTextureTarget for the created textures</doc>
             <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
-            <type c:type="GstVideoGLTextureType"/>
+            <doc xml:space="preserve">the #GstVideoGLTextureType for the created textures</doc>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
         </parameters>
       </function>
@@ -10700,7 +10948,7 @@ usage only to chain up at the end of a subclass free function.</doc>
           </parameter>
           <parameter name="v_info" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoInfo for @wrapped_data</doc>
-            <type c:type="GstVideoInfo*"/>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
           <parameter name="plane" transfer-ownership="none">
             <doc xml:space="preserve">the video plane @wrapped_data represents</doc>
@@ -10711,7 +10959,7 @@ usage only to chain up at the end of a subclass free function.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">any #GstVideoAlignment applied to symem mappings of @wrapped_data</doc>
-            <type c:type="GstVideoAlignment*"/>
+            <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none">
             <doc xml:space="preserve">the #GstGLTextureTarget for @wrapped_data</doc>
@@ -10719,7 +10967,8 @@ usage only to chain up at the end of a subclass free function.</doc>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoGLTextureType for @wrapped_data</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="wrapped_data"
                      transfer-ownership="none"
@@ -10771,7 +11020,7 @@ Other memory types may define it to require a different type of parameter.</doc>
           </parameter>
           <parameter name="v_info" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoInfo for @tex_id</doc>
-            <type c:type="GstVideoInfo*"/>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
           <parameter name="plane" transfer-ownership="none">
             <doc xml:space="preserve">the video plane @tex_id represents</doc>
@@ -10782,7 +11031,7 @@ Other memory types may define it to require a different type of parameter.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">any #GstVideoAlignment applied to symem mappings of @tex_id</doc>
-            <type c:type="GstVideoAlignment*"/>
+            <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none">
             <doc xml:space="preserve">the #GstGLTextureTarget for @tex_id</doc>
@@ -10790,7 +11039,8 @@ Other memory types may define it to require a different type of parameter.</doc>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoGLTextureType for @tex_id</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="gl_handle"
                      transfer-ownership="none"
@@ -10839,7 +11089,7 @@ Other memory types may define it to require a different type of parameter.</doc>
           </parameter>
           <parameter name="v_info" transfer-ownership="none">
             <doc xml:space="preserve">the #GstVideoInfo for @tex_id</doc>
-            <type c:type="GstVideoInfo*"/>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
           <parameter name="plane" transfer-ownership="none">
             <doc xml:space="preserve">the video plane @tex_id represents</doc>
@@ -10850,7 +11100,7 @@ Other memory types may define it to require a different type of parameter.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">any #GstVideoAlignment applied to symem mappings of @tex_id</doc>
-            <type c:type="GstVideoAlignment*"/>
+            <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
           </parameter>
           <parameter name="target" transfer-ownership="none">
             <doc xml:space="preserve">the #GstGLTextureTarget for @tex_id</doc>
@@ -10858,7 +11108,8 @@ Other memory types may define it to require a different type of parameter.</doc>
           </parameter>
           <parameter name="tex_type" transfer-ownership="none">
             <doc xml:space="preserve">the #GstGLTextureType for @tex_id</doc>
-            <type c:type="GstVideoGLTextureType"/>
+            <type name="GstVideo.VideoGLTextureType"
+                  c:type="GstVideoGLTextureType"/>
           </parameter>
           <parameter name="tex_id" transfer-ownership="none">
             <doc xml:space="preserve">the GL texture to wrap</doc>
@@ -10890,68 +11141,101 @@ Other memory types may define it to require a different type of parameter.</doc>
            glib:get-type="gst_gl_view_convert_get_type"
            glib:type-struct="GLViewConvertClass">
       <doc xml:space="preserve">Convert stereoscopic/multiview video using fragment shaders.</doc>
-      <constructor name="new" c:identifier="gst_gl_view_convert_new">
+      <constructor name="new"
+                   c:identifier="gst_gl_view_convert_new"
+                   version="1.6">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GstGLViewConvert</doc>
           <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
         </return-value>
       </constructor>
       <method name="fixate_caps"
-              c:identifier="gst_gl_view_convert_fixate_caps">
+              c:identifier="gst_gl_view_convert_fixate_caps"
+              version="1.6">
+        <doc xml:space="preserve">Provides an implementation of #GstBaseTransformClass::fixate_caps()</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the fixated #GstCaps</doc>
           <type name="Gst.Caps" c:type="GstCaps*"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
           <parameter name="direction" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPadDirection</doc>
             <type name="Gst.PadDirection" c:type="GstPadDirection"/>
           </parameter>
           <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstCaps of @direction</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
-          <parameter name="othercaps" transfer-ownership="none">
+          <parameter name="othercaps" transfer-ownership="full">
+            <doc xml:space="preserve">the #GstCaps to fixate</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="get_output" c:identifier="gst_gl_view_convert_get_output">
+      <method name="get_output"
+              c:identifier="gst_gl_view_convert_get_output"
+              version="1.6">
+        <doc xml:space="preserve">Retrieve the processed output buffer placing the output in @outbuf_ptr.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstFlowReturn</doc>
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
-          <parameter name="outbuf_ptr" transfer-ownership="none">
+          <parameter name="outbuf_ptr"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">a #GstBuffer</doc>
             <type name="Gst.Buffer" c:type="GstBuffer**"/>
           </parameter>
         </parameters>
       </method>
-      <method name="perform" c:identifier="gst_gl_view_convert_perform">
+      <method name="perform"
+              c:identifier="gst_gl_view_convert_perform"
+              version="1.6">
+        <doc xml:space="preserve">Converts the data contained by @inbuf using the formats specified by the
+#GstCaps passed to gst_gl_view_convert_set_caps()</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a converted #GstBuffer or %NULL</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
           <parameter name="inbuf" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstGLMemory filled #GstBuffer to convert</doc>
             <type name="Gst.Buffer" c:type="GstBuffer*"/>
           </parameter>
         </parameters>
       </method>
-      <method name="reset" c:identifier="gst_gl_view_convert_reset">
+      <method name="reset"
+              c:identifier="gst_gl_view_convert_reset"
+              version="1.6">
+        <doc xml:space="preserve">Reset @viewconvert to the default state.  Further operation will require
+setting the caps with gst_gl_view_convert_set_caps().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_caps" c:identifier="gst_gl_view_convert_set_caps">
+      <method name="set_caps"
+              c:identifier="gst_gl_view_convert_set_caps"
+              version="1.6">
         <doc xml:space="preserve">Initializes @viewconvert with the information required for conversion.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -10972,52 +11256,69 @@ Other memory types may define it to require a different type of parameter.</doc>
         </parameters>
       </method>
       <method name="set_context"
-              c:identifier="gst_gl_view_convert_set_context">
+              c:identifier="gst_gl_view_convert_set_context"
+              version="1.6">
+        <doc xml:space="preserve">Set @context on @viewconvert</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstGLContext to set</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </parameter>
         </parameters>
       </method>
       <method name="submit_input_buffer"
-              c:identifier="gst_gl_view_convert_submit_input_buffer">
+              c:identifier="gst_gl_view_convert_submit_input_buffer"
+              version="1.6">
+        <doc xml:space="preserve">Submit @input to be processed by @viewconvert</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GstFlowReturn</doc>
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
           <parameter name="is_discont" transfer-ownership="none">
+            <doc xml:space="preserve">true if we have a discontinuity</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="input" transfer-ownership="none">
+          <parameter name="input" transfer-ownership="full">
+            <doc xml:space="preserve">a #GstBuffer</doc>
             <type name="Gst.Buffer" c:type="GstBuffer*"/>
           </parameter>
         </parameters>
       </method>
       <method name="transform_caps"
-              c:identifier="gst_gl_view_convert_transform_caps">
+              c:identifier="gst_gl_view_convert_transform_caps"
+              version="1.6">
+        <doc xml:space="preserve">Provides an implementation of #GstBaseTransformClass::transform_caps()</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the converted #GstCaps</doc>
           <type name="Gst.Caps" c:type="GstCaps*"/>
         </return-value>
         <parameters>
           <instance-parameter name="viewconvert" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLViewConvert</doc>
             <type name="GLViewConvert" c:type="GstGLViewConvert*"/>
           </instance-parameter>
           <parameter name="direction" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPadDirection</doc>
             <type name="Gst.PadDirection" c:type="GstPadDirection"/>
           </parameter>
           <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstCaps to transform</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
           <parameter name="filter" transfer-ownership="none">
+            <doc xml:space="preserve">a set of filter #GstCaps</doc>
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
         </parameters>
@@ -11026,28 +11327,24 @@ Other memory types may define it to require a different type of parameter.</doc>
         <type name="GLStereoDownmix"/>
       </property>
       <property name="input-flags-override"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <type/>
+        <type name="GstVideo.VideoMultiviewFlags"/>
       </property>
       <property name="input-mode-override"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <type/>
+        <type name="GstVideo.VideoMultiviewMode"/>
       </property>
       <property name="output-flags-override"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <type/>
+        <type name="GstVideo.VideoMultiviewFlags"/>
       </property>
       <property name="output-mode-override"
-                introspectable="0"
                 writable="1"
                 transfer-ownership="none">
-        <type/>
+        <type name="GstVideo.VideoMultiviewMode"/>
       </property>
       <field name="object">
         <type name="Gst.Object" c:type="GstObject"/>
@@ -11058,26 +11355,30 @@ Other memory types may define it to require a different type of parameter.</doc>
       <field name="shader">
         <type name="GLShader" c:type="GstGLShader*"/>
       </field>
-      <field name="input_mode_override" introspectable="0">
-        <type c:type="GstVideoMultiviewMode"/>
+      <field name="input_mode_override">
+        <type name="GstVideo.VideoMultiviewMode"
+              c:type="GstVideoMultiviewMode"/>
       </field>
-      <field name="input_flags_override" introspectable="0">
-        <type c:type="GstVideoMultiviewFlags"/>
+      <field name="input_flags_override">
+        <type name="GstVideo.VideoMultiviewFlags"
+              c:type="GstVideoMultiviewFlags"/>
       </field>
-      <field name="output_mode_override" introspectable="0">
-        <type c:type="GstVideoMultiviewMode"/>
+      <field name="output_mode_override">
+        <type name="GstVideo.VideoMultiviewMode"
+              c:type="GstVideoMultiviewMode"/>
       </field>
-      <field name="output_flags_override" introspectable="0">
-        <type c:type="GstVideoMultiviewFlags"/>
+      <field name="output_flags_override">
+        <type name="GstVideo.VideoMultiviewFlags"
+              c:type="GstVideoMultiviewFlags"/>
       </field>
       <field name="downmix_mode">
         <type name="GLStereoDownmix" c:type="GstGLStereoDownmix"/>
       </field>
-      <field name="in_info" introspectable="0">
-        <type c:type="GstVideoInfo"/>
+      <field name="in_info">
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
-      <field name="out_info" introspectable="0">
-        <type c:type="GstVideoInfo"/>
+      <field name="out_info">
+        <type name="GstVideo.VideoInfo" c:type="GstVideoInfo"/>
       </field>
       <field name="from_texture_target">
         <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
@@ -11109,7 +11410,8 @@ Other memory types may define it to require a different type of parameter.</doc>
     <record name="GLViewConvertClass"
             c:type="GstGLViewConvertClass"
             glib:is-gtype-struct-for="GLViewConvert">
-      <field name="object_class">
+      <doc xml:space="preserve">Opaque #GstGLViewConvertClass struct</doc>
+      <field name="object_class" readable="0" private="1">
         <type name="Gst.ObjectClass" c:type="GstObjectClass"/>
       </field>
       <field name="_padding" readable="0" private="1">
@@ -12290,14 +12592,17 @@ require this to be called with a valid handle before drawing can commence.</doc>
       <member name="failed"
               value="0"
               c:identifier="GST_GL_WINDOW_ERROR_FAILED">
+        <doc xml:space="preserve">failed for a unspecified reason</doc>
       </member>
       <member name="old_libs"
               value="1"
               c:identifier="GST_GL_WINDOW_ERROR_OLD_LIBS">
+        <doc xml:space="preserve">the implementation is too old</doc>
       </member>
       <member name="resource_unavailable"
               value="2"
               c:identifier="GST_GL_WINDOW_ERROR_RESOURCE_UNAVAILABLE">
+        <doc xml:space="preserve">no such resource was found</doc>
       </member>
     </enumeration>
     <record name="GLWindowPrivate" c:type="GstGLWindowPrivate" disguised="1">
@@ -12480,36 +12785,43 @@ you are writing to OpenGL. Conversely, combining #GST_MAP_GL with
     </constant>
     <function name="buffer_add_gl_sync_meta"
               c:identifier="gst_buffer_add_gl_sync_meta"
-              introspectable="0">
-      <return-value>
+              version="1.6">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstGLSyncMeta added to #GstBuffer</doc>
         <type name="GLSyncMeta" c:type="GstGLSyncMeta*"/>
       </return-value>
       <parameters>
         <parameter name="context" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstGLContext</doc>
           <type name="GLContext" c:type="GstGLContext*"/>
         </parameter>
         <parameter name="buffer" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </parameter>
       </parameters>
     </function>
     <function name="buffer_add_gl_sync_meta_full"
               c:identifier="gst_buffer_add_gl_sync_meta_full"
-              introspectable="0">
-      <return-value>
+              version="1.8">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstGLSyncMeta added to #GstBuffer</doc>
         <type name="GLSyncMeta" c:type="GstGLSyncMeta*"/>
       </return-value>
       <parameters>
         <parameter name="context" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstGLContext</doc>
           <type name="GLContext" c:type="GstGLContext*"/>
         </parameter>
         <parameter name="buffer" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </parameter>
         <parameter name="data"
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">sync data to hold</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -12679,8 +12991,7 @@ multiple times.  This must be called before any other #GstGLBuffer operation.</d
       </parameters>
     </function>
     <function name="gl_format_from_gl_texture_type"
-              c:identifier="gst_gl_format_from_gl_texture_type"
-              introspectable="0">
+              c:identifier="gst_gl_format_from_gl_texture_type">
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the OpenGL format specified by @tex_format</doc>
         <type name="guint" c:type="guint"/>
@@ -12688,7 +12999,8 @@ multiple times.  This must be called before any other #GstGLBuffer operation.</d
       <parameters>
         <parameter name="tex_format" transfer-ownership="none">
           <doc xml:space="preserve">a #GstVideoGLTextureType</doc>
-          <type c:type="GstVideoGLTextureType"/>
+          <type name="GstVideo.VideoGLTextureType"
+                c:type="GstVideoGLTextureType"/>
         </parameter>
       </parameters>
     </function>
@@ -12711,14 +13023,14 @@ per pixel</doc>
       </parameters>
     </function>
     <function name="gl_get_affine_transformation_meta_as_ndc"
-              c:identifier="gst_gl_get_affine_transformation_meta_as_ndc"
-              introspectable="0">
+              c:identifier="gst_gl_get_affine_transformation_meta_as_ndc">
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
         <parameter name="meta" transfer-ownership="none">
-          <type c:type="GstVideoAffineTransformationMeta*"/>
+          <type name="GstVideo.VideoAffineTransformationMeta"
+                c:type="GstVideoAffineTransformationMeta*"/>
         </parameter>
         <parameter name="matrix" transfer-ownership="none">
           <type name="gfloat" c:type="gfloat*"/>
@@ -12726,35 +13038,32 @@ per pixel</doc>
       </parameters>
     </function>
     <function name="gl_get_plane_data_size"
-              c:identifier="gst_gl_get_plane_data_size"
-              introspectable="0">
+              c:identifier="gst_gl_get_plane_data_size">
       <return-value transfer-ownership="none">
         <type name="gsize" c:type="gsize"/>
       </return-value>
       <parameters>
         <parameter name="info" transfer-ownership="none">
-          <type c:type="GstVideoInfo*"/>
+          <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
         </parameter>
         <parameter name="align" transfer-ownership="none">
-          <type c:type="GstVideoAlignment*"/>
+          <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
         </parameter>
         <parameter name="plane" transfer-ownership="none">
           <type name="guint" c:type="guint"/>
         </parameter>
       </parameters>
     </function>
-    <function name="gl_get_plane_start"
-              c:identifier="gst_gl_get_plane_start"
-              introspectable="0">
+    <function name="gl_get_plane_start" c:identifier="gst_gl_get_plane_start">
       <return-value transfer-ownership="none">
         <type name="gsize" c:type="gsize"/>
       </return-value>
       <parameters>
         <parameter name="info" transfer-ownership="none">
-          <type c:type="GstVideoInfo*"/>
+          <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
         </parameter>
         <parameter name="valign" transfer-ownership="none">
-          <type c:type="GstVideoAlignment*"/>
+          <type name="GstVideo.VideoAlignment" c:type="GstVideoAlignment*"/>
         </parameter>
         <parameter name="plane" transfer-ownership="none">
           <type name="guint" c:type="guint"/>
@@ -12842,6 +13151,49 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
         <type name="none" c:type="void"/>
       </return-value>
     </function>
+    <function name="gl_memory_setup_buffer"
+              c:identifier="gst_gl_memory_setup_buffer"
+              moved-to="GLMemory.setup_buffer"
+              version="1.8">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">whether the buffer was correctly setup</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="allocator" transfer-ownership="none">
+          <doc xml:space="preserve">the @GstGLMemoryAllocator to allocate from</doc>
+          <type name="GLMemoryAllocator" c:type="GstGLMemoryAllocator*"/>
+        </parameter>
+        <parameter name="buffer" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer to setup</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+        <parameter name="params" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstGLVideoAllocationParams to allocate with</doc>
+          <type name="GLVideoAllocationParams"
+                c:type="GstGLVideoAllocationParams*"/>
+        </parameter>
+        <parameter name="tex_types"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a list of #GstVideoGLTextureType's to allocate with.</doc>
+          <type name="GstVideo.VideoGLTextureType"
+                c:type="GstVideoGLTextureType*"/>
+        </parameter>
+        <parameter name="wrapped_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a list of wrapped data pointers</doc>
+          <type name="gpointer" c:type="gpointer*"/>
+        </parameter>
+        <parameter name="n_wrapped_pointers" transfer-ownership="none">
+          <doc xml:space="preserve">the number of elements in @tex_types and @wrapped_data</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="gl_multiply_matrix4"
               c:identifier="gst_gl_multiply_matrix4">
       <return-value transfer-ownership="none">
@@ -12905,7 +13257,7 @@ multiple times.  This must be called before any other GstGLMemory operation.</do
     <function name="gl_renderbuffer_init_once"
               c:identifier="gst_gl_renderbuffer_init_once"
               moved-to="GLRenderbuffer.init_once"
-              version="1.4">
+              version="1.10">
       <doc xml:space="preserve">Initializes the GL Base Texture allocator. It is safe to call this function
 multiple times.  This must be called before any other GstGLRenderbuffer operation.</doc>
       <return-value transfer-ownership="none">
@@ -12980,10 +13332,13 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
     <function name="gl_texture_target_from_string"
               c:identifier="gst_gl_texture_target_from_string">
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstGLTextureTarget represented by @str or
+         %GST_GL_TEXTURE_TARGET_NONE</doc>
         <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
       </return-value>
       <parameters>
         <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a string equivalant to one of the GST_GL_TEXTURE_TARGET_*_STR values</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -13018,23 +13373,23 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
     <function name="gl_texture_target_to_string"
               c:identifier="gst_gl_texture_target_to_string">
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the #GstGLTextureTarget represented by @str or
-         %GST_GL_TEXTURE_TARGET_NONE</doc>
+        <doc xml:space="preserve">the stringified version of @target or %NULL</doc>
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
       <parameters>
         <parameter name="target" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstGLTextureTarget</doc>
           <type name="GLTextureTarget" c:type="GstGLTextureTarget"/>
         </parameter>
       </parameters>
     </function>
     <function name="gl_texture_type_from_format"
-              c:identifier="gst_gl_texture_type_from_format"
-              introspectable="0">
-      <return-value>
+              c:identifier="gst_gl_texture_type_from_format">
+      <return-value transfer-ownership="none">
         <doc xml:space="preserve">the #GstVideoGLTextureType for the specified @format and @plane
          that can be allocated using @context</doc>
-        <type c:type="GstVideoGLTextureType"/>
+        <type name="GstVideo.VideoGLTextureType"
+              c:type="GstVideoGLTextureType"/>
       </return-value>
       <parameters>
         <parameter name="context" transfer-ownership="none">
@@ -13043,7 +13398,7 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
         </parameter>
         <parameter name="v_format" transfer-ownership="none">
           <doc xml:space="preserve">a #GstVideoFormat</doc>
-          <type c:type="GstVideoFormat"/>
+          <type name="GstVideo.VideoFormat" c:type="GstVideoFormat"/>
         </parameter>
         <parameter name="plane" transfer-ownership="none">
           <doc xml:space="preserve">the plane number (starting from 0)</doc>
@@ -13052,8 +13407,7 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
       </parameters>
     </function>
     <function name="gl_texture_type_n_bytes"
-              c:identifier="gst_gl_texture_type_n_bytes"
-              introspectable="0">
+              c:identifier="gst_gl_texture_type_n_bytes">
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes @tex_format used per pixel</doc>
         <type name="guint" c:type="guint"/>
@@ -13061,7 +13415,8 @@ multiple times.  This must be called before any other GstGLRenderbuffer operatio
       <parameters>
         <parameter name="tex_format" transfer-ownership="none">
           <doc xml:space="preserve">a #GstVideoGLTextureType</doc>
-          <type c:type="GstVideoGLTextureType"/>
+          <type name="GstVideo.VideoGLTextureType"
+                c:type="GstVideoGLTextureType"/>
         </parameter>
       </parameters>
     </function>

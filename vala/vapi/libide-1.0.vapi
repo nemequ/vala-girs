@@ -188,6 +188,8 @@ namespace Ide {
 		public GLib.TimeSpan get_running_time ();
 		public unowned GLib.InputStream get_stderr_stream ();
 		public unowned GLib.InputStream? get_stdout_stream ();
+		public void log_stderr_literal (string str);
+		public void log_stdout_literal (string str);
 		public void log_subprocess (Ide.Subprocess subprocess);
 		public void set_failed (bool failed);
 		public void set_mode (string mode);
@@ -203,9 +205,9 @@ namespace Ide {
 	public abstract class Builder : Ide.Object {
 		[CCode (has_construct_function = false)]
 		protected Builder ();
-		public virtual async Ide.BuildResult build_async (Ide.BuilderBuildFlags flags, out unowned Ide.BuildResult result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async Ide.BuildResult build_async (Ide.BuilderBuildFlags flags, out Ide.BuildResult? result, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Ide.Configuration get_configuration ();
-		public virtual async unowned Ide.BuildResult install_async (Ide.BuildResult result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async Ide.BuildResult install_async (out Ide.BuildResult? result, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Ide.Configuration configuration { get; construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_completion_item_get_type ()")]
@@ -230,6 +232,11 @@ namespace Ide {
 		public void take_proposal (owned Ide.CompletionItem proposal);
 		public string query { get; construct; }
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_completion_words_get_type ()")]
+	public class CompletionWords : Gtk.SourceCompletionWords, Gtk.SourceCompletionProvider {
+		[CCode (has_construct_function = false)]
+		protected CompletionWords ();
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_configuration_get_type ()")]
 	public class Configuration : Ide.Object {
 		[CCode (has_construct_function = false)]
@@ -245,6 +252,10 @@ namespace Ide {
 		public string[] get_environ ();
 		public unowned Ide.Environment get_environment ();
 		public unowned string get_id ();
+		public bool get_internal_boolean (string key);
+		public int get_internal_int (string key);
+		public int64 get_internal_int64 (string key);
+		public unowned string get_internal_string (string key);
 		public int get_parallelism ();
 		public Ide.BuildCommandQueue get_postbuild ();
 		public Ide.BuildCommandQueue get_prebuild ();
@@ -259,6 +270,10 @@ namespace Ide {
 		public void set_device_id (string device_id);
 		public void set_dirty (bool dirty);
 		public void set_display_name (string display_name);
+		public void set_internal_boolean (string key, bool value);
+		public void set_internal_int (string key, int value);
+		public void set_internal_int64 (string key, int64 value);
+		public void set_internal_string (string key, string value);
 		public void set_parallelism (int parallelism);
 		public void set_prefix (string prefix);
 		public void set_runtime (Ide.Runtime runtime);
@@ -303,6 +318,7 @@ namespace Ide {
 		public unowned Ide.BuildSystem get_build_system ();
 		public unowned Ide.ConfigurationManager get_configuration_manager ();
 		public unowned Ide.DeviceManager get_device_manager ();
+		public unowned Ide.DiagnosticsManager get_diagnostics_manager ();
 		public unowned Ide.Project get_project ();
 		public unowned GLib.File get_project_file ();
 		public unowned Gtk.RecentManager get_recent_manager ();
@@ -374,6 +390,7 @@ namespace Ide {
 		public Diagnostic (Ide.DiagnosticSeverity severity, string text, Ide.SourceLocation location);
 		public void add_range (Ide.SourceRange range);
 		public int compare (Ide.Diagnostic b);
+		public unowned GLib.File? get_file ();
 		public unowned Ide.Fixit get_fixit (uint index);
 		public unowned Ide.SourceLocation get_location ();
 		public uint get_num_fixits ();
@@ -388,25 +405,27 @@ namespace Ide {
 		public void take_range (owned Ide.SourceRange range);
 		public void unref ();
 	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_diagnostician_get_type ()")]
-	public class Diagnostician : Ide.Object {
-		[CCode (has_construct_function = false)]
-		protected Diagnostician ();
-		public async Ide.Diagnostics diagnose_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
-		public unowned Gtk.SourceLanguage get_language ();
-		public void set_language (Gtk.SourceLanguage language);
-		public Gtk.SourceLanguage language { get; set; }
-	}
 	[CCode (cheader_filename = "ide.h", ref_function = "ide_diagnostics_ref", type_id = "ide_diagnostics_get_type ()", unref_function = "ide_diagnostics_unref")]
 	[Compact]
 	public class Diagnostics {
 		[CCode (has_construct_function = false)]
-		public Diagnostics (owned GLib.GenericArray<Ide.Diagnostic>? ar);
+		public Diagnostics (owned GLib.GenericArray<weak Ide.Diagnostic>? ar);
+		public void add (Ide.Diagnostic diagnostic);
 		public size_t get_size ();
 		public unowned Ide.Diagnostic index (size_t index);
 		public void merge (Ide.Diagnostics other);
 		public Ide.Diagnostics @ref ();
 		public void unref ();
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_diagnostics_manager_get_type ()")]
+	public class DiagnosticsManager : Ide.Object, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DiagnosticsManager ();
+		public bool get_busy ();
+		public Ide.Diagnostics get_diagnostics_for_file (GLib.File file);
+		public uint get_sequence_for_file (GLib.File file);
+		public bool busy { get; }
+		public signal void changed ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_directory_build_system_get_type ()")]
 	public class DirectoryBuildSystem : Ide.Object, GLib.AsyncInitable, Ide.BuildSystem {
@@ -652,7 +671,7 @@ namespace Ide {
 		public void add_language (string language_id);
 		public async bool call_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool get_diagnostics_async (GLib.File file, GLib.Cancellable? cancellable, out Ide.Diagnostics? diagnostics) throws GLib.Error;
-		public async bool notification_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool send_notification_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void start ();
 		public void stop ();
 		[NoAccessorMethod]
@@ -667,6 +686,7 @@ namespace Ide {
 		protected LangservCompletionProvider ();
 		public unowned Ide.LangservClient? get_client ();
 		public void set_client (Ide.LangservClient client);
+		public Ide.LangservClient client { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_diagnostic_provider_get_type ()")]
 	public abstract class LangservDiagnosticProvider : Ide.Object, Ide.DiagnosticProvider {
@@ -674,6 +694,7 @@ namespace Ide {
 		protected LangservDiagnosticProvider ();
 		public unowned Ide.LangservClient? get_client ();
 		public void set_client (Ide.LangservClient client);
+		public Ide.LangservClient client { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_rename_provider_get_type ()")]
 	public abstract class LangservRenameProvider : Ide.Object, Ide.RenameProvider {
@@ -681,6 +702,7 @@ namespace Ide {
 		protected LangservRenameProvider ();
 		public unowned Ide.LangservClient? get_client ();
 		public void set_client (Ide.LangservClient client);
+		public Ide.LangservClient client { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_node_get_type ()")]
 	public class LangservSymbolNode : Ide.SymbolNode {
@@ -693,6 +715,7 @@ namespace Ide {
 		protected LangservSymbolResolver ();
 		public unowned Ide.LangservClient? get_client ();
 		public void set_client (Ide.LangservClient client);
+		public Ide.LangservClient client { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_tree_get_type ()")]
 	public class LangservSymbolTree : GLib.Object, Ide.SymbolTree {
@@ -1588,12 +1611,16 @@ namespace Ide {
 	public class SubprocessLauncher : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SubprocessLauncher (GLib.SubprocessFlags flags);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_argv ();
 		public bool get_clear_env ();
 		public unowned string get_cwd ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_environ ();
 		public GLib.SubprocessFlags get_flags ();
 		public bool get_run_on_host ();
+		public unowned string getenv (string key);
+		public void insert_argv (uint index, string arg);
 		public void overlay_environment (Ide.Environment environment);
 		public string pop_argv ();
 		public void push_args ([CCode (array_length = false, array_null_terminated = true)] string[] args);
@@ -1604,8 +1631,7 @@ namespace Ide {
 		public void set_flags (GLib.SubprocessFlags flags);
 		public void set_run_on_host (bool run_on_host);
 		public void setenv (string key, string value, bool replace);
-		public virtual async Ide.Subprocess spawn_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		public virtual Ide.Subprocess spawn_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Ide.Subprocess spawn (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void take_stderr_fd (int stderr_fd);
 		public void take_stdin_fd (int stdin_fd);
 		public void take_stdout_fd (int stdout_fd);
@@ -1967,6 +1993,7 @@ namespace Ide {
 		public static string context_current_word (Gtk.SourceCompletionContext context);
 		public static bool context_in_comment (Gtk.SourceCompletionContext context);
 		public static bool context_in_comment_or_string (Gtk.SourceCompletionContext context);
+		public abstract void load ();
 		[NoWrapper]
 		public abstract void set_context (Ide.Context context);
 		public abstract Ide.Context context { construct; }
@@ -1985,9 +2012,12 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeDiagnosticProviderInterface", type_id = "ide_diagnostic_provider_get_type ()")]
 	public interface DiagnosticProvider : Ide.Object {
 		public abstract async Ide.Diagnostics? diagnose_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void emit_invalidated ();
+		public abstract void load ();
 		[NoWrapper]
 		public abstract void set_context (Ide.Context context);
 		public abstract Ide.Context context { construct; }
+		public signal void invalidated ();
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeEditorViewAddinInterface", type_id = "ide_editor_view_addin_get_type ()")]
 	public interface EditorViewAddin : GLib.Object {
@@ -2052,13 +2082,13 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdePreferencesInterface", type_id = "ide_preferences_get_type ()")]
 	public interface Preferences : GLib.Object {
-		public abstract uint add_custom (string page_name, string group_name, Gtk.Widget widget, string keywords, int priority);
+		public abstract uint add_custom (string page_name, string group_name, Gtk.Widget widget, string? keywords, int priority);
 		public abstract uint add_file_chooser (string page_name, string group_name, string schema_id, string key, string path, string title, string subtitle, Gtk.FileChooserAction action, string keywords, int priority);
 		public abstract uint add_font_button (string page_name, string group_name, string schema_id, string key, string title, string keywords, int priority);
 		public abstract void add_group (string page_name, string group_name, string title, int priority);
 		public abstract void add_list_group (string page_name, string group_name, string title, Gtk.SelectionMode mode, int priority);
 		public abstract void add_page (string page_name, string title, int priority);
-		public abstract uint add_radio (string page_name, string group_name, string schema_id, string key, string path, string variant_string, string title, string subtitle, string keywords, int priority);
+		public abstract uint add_radio (string page_name, string group_name, string schema_id, string key, string? path, string? variant_string, string? title, string? subtitle, string? keywords, int priority);
 		public abstract uint add_spin_button (string page_name, string group_name, string schema_id, string key, string path, string title, string subtitle, string keywords, int priority);
 		public abstract uint add_switch (string page_name, string group_name, string schema_id, string key, string? path, string? variant_string, string? title, string? subtitle, string? keywords, int priority);
 		public abstract unowned Gtk.Widget? get_widget (uint widget_id);
@@ -2089,6 +2119,7 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeRenameProviderInterface", type_id = "ide_rename_provider_get_type ()")]
 	public interface RenameProvider : Ide.Object {
+		public abstract void load ();
 		public abstract async bool rename_async (Ide.SourceLocation location, string new_name, GLib.Cancellable? cancellable, out GLib.GenericArray<weak Ide.ProjectEdit>? edits) throws GLib.Error;
 		[NoWrapper]
 		public abstract void set_context (Ide.Context context);
@@ -2152,6 +2183,7 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeSymbolResolverInterface", type_id = "ide_symbol_resolver_get_type ()")]
 	public interface SymbolResolver : Ide.Object {
 		public abstract async Ide.SymbolTree? get_symbol_tree_async (GLib.File file, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract void load ();
 		public abstract async Ide.Symbol? lookup_symbol_async (Ide.SourceLocation location, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public abstract void set_context (Ide.Context context);

@@ -26,6 +26,40 @@ namespace Gspell {
 		public unowned Gspell.Navigator get_spell_navigator ();
 		public Gspell.Navigator spell_navigator { get; construct; }
 	}
+	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_entry_get_type ()")]
+	public class Entry : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Entry ();
+		[Version (since = "1.4")]
+		public unowned Gtk.Entry get_entry ();
+		[Version (since = "1.4")]
+		public static unowned Gspell.Entry get_from_gtk_entry (Gtk.Entry gtk_entry);
+		[Version (since = "1.4")]
+		public bool get_inline_spell_checking ();
+		[Version (since = "1.4")]
+		public void set_inline_spell_checking (bool enable);
+		[Version (since = "1.4")]
+		public Gtk.Entry entry { get; construct; }
+		[Version (since = "1.4")]
+		public bool inline_spell_checking { get; set; }
+	}
+	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_entry_buffer_get_type ()")]
+	public class EntryBuffer : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected EntryBuffer ();
+		[Version (since = "1.4")]
+		public unowned Gtk.EntryBuffer get_buffer ();
+		[Version (since = "1.4")]
+		public static unowned Gspell.EntryBuffer get_from_gtk_entry_buffer (Gtk.EntryBuffer gtk_buffer);
+		[Version (since = "1.4")]
+		public unowned Gspell.Checker? get_spell_checker ();
+		[Version (since = "1.4")]
+		public void set_spell_checker (Gspell.Checker? spell_checker);
+		[Version (since = "1.4")]
+		public Gtk.EntryBuffer buffer { get; construct; }
+		[Version (since = "1.4")]
+		public Gspell.Checker spell_checker { get; set; }
+	}
 	[CCode (cheader_filename = "gspell/gspell.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gspell_language_get_type ()")]
 	[Compact]
 	public class Language {
