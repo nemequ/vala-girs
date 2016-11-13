@@ -2597,7 +2597,7 @@ trusted input.</doc>
         <doc xml:space="preserve">Merge components, appending</doc>
       </member>
     </enumeration>
-    <enumeration name="AppParseFlags" c:type="AsAppParseFlags">
+    <bitfield name="AppParseFlags" c:type="AsAppParseFlags">
       <doc xml:space="preserve">The flags to use when parsing resources.</doc>
       <member name="none" value="0" c:identifier="AS_APP_PARSE_FLAG_NONE">
         <doc xml:space="preserve">No special actions to use</doc>
@@ -2637,7 +2637,12 @@ trusted input.</doc>
               c:identifier="AS_APP_PARSE_FLAG_ADD_ALL_METADATA">
         <doc xml:space="preserve">Add all extra metadata from the source file</doc>
       </member>
-    </enumeration>
+      <member name="only_native_langs"
+              value="128"
+              c:identifier="AS_APP_PARSE_FLAG_ONLY_NATIVE_LANGS">
+        <doc xml:space="preserve">Only load native languages</doc>
+      </member>
+    </bitfield>
     <bitfield name="AppQuirk" c:type="AsAppQuirk">
       <doc xml:space="preserve">The component attributes.</doc>
       <member name="none" value="0" c:identifier="AS_APP_QUIRK_NONE">
@@ -2701,6 +2706,44 @@ trusted input.</doc>
         <doc xml:space="preserve">System scope</doc>
       </member>
     </enumeration>
+    <bitfield name="AppSearchMatch" c:type="AsAppSearchMatch">
+      <doc xml:space="preserve">The token match kind, which we want to be exactly 16 bits for storage
+reasons.</doc>
+      <member name="none" value="0" c:identifier="AS_APP_SEARCH_MATCH_NONE">
+        <doc xml:space="preserve">No token matching</doc>
+      </member>
+      <member name="mimetype"
+              value="1"
+              c:identifier="AS_APP_SEARCH_MATCH_MIMETYPE">
+        <doc xml:space="preserve">Use the app mimetypes</doc>
+      </member>
+      <member name="pkgname"
+              value="2"
+              c:identifier="AS_APP_SEARCH_MATCH_PKGNAME">
+        <doc xml:space="preserve">Use the app package name</doc>
+      </member>
+      <member name="description"
+              value="4"
+              c:identifier="AS_APP_SEARCH_MATCH_DESCRIPTION">
+        <doc xml:space="preserve">Use the app description</doc>
+      </member>
+      <member name="comment"
+              value="8"
+              c:identifier="AS_APP_SEARCH_MATCH_COMMENT">
+        <doc xml:space="preserve">Use the app comment</doc>
+      </member>
+      <member name="name" value="16" c:identifier="AS_APP_SEARCH_MATCH_NAME">
+        <doc xml:space="preserve">Use the app name</doc>
+      </member>
+      <member name="keyword"
+              value="32"
+              c:identifier="AS_APP_SEARCH_MATCH_KEYWORD">
+        <doc xml:space="preserve">Use the app keyword</doc>
+      </member>
+      <member name="id" value="64" c:identifier="AS_APP_SEARCH_MATCH_ID">
+        <doc xml:space="preserve">Use the app application ID</doc>
+      </member>
+    </bitfield>
     <enumeration name="AppSourceKind" c:type="AsAppSourceKind">
       <doc xml:space="preserve">The source kind.</doc>
       <member name="unknown"
@@ -4923,7 +4966,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
     <constant name="MAJOR_VERSION" value="0" c:type="AS_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="5" c:type="AS_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="6" c:type="AS_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="6" c:type="AS_MINOR_VERSION">
@@ -4986,7 +5029,7 @@ using as_image_get_basename(). This can be overridden if required.</doc>
         <doc xml:space="preserve">No support for parsing</doc>
       </member>
     </enumeration>
-    <enumeration name="NodeFromXmlFlags" c:type="AsNodeFromXmlFlags">
+    <bitfield name="NodeFromXmlFlags" c:type="AsNodeFromXmlFlags">
       <doc xml:space="preserve">The flags for converting from XML.</doc>
       <member name="none" value="0" c:identifier="AS_NODE_FROM_XML_FLAG_NONE">
         <doc xml:space="preserve">No extra flags to use</doc>
@@ -5001,7 +5044,12 @@ using as_image_get_basename(). This can be overridden if required.</doc>
               c:identifier="AS_NODE_FROM_XML_FLAG_KEEP_COMMENTS">
         <doc xml:space="preserve">Retain comments in the XML file</doc>
       </member>
-    </enumeration>
+      <member name="only_native_langs"
+              value="4"
+              c:identifier="AS_NODE_FROM_XML_FLAG_ONLY_NATIVE_LANGS">
+        <doc xml:space="preserve">Only load native languages</doc>
+      </member>
+    </bitfield>
     <enumeration name="NodeInsertFlags" c:type="AsNodeInsertFlags">
       <doc xml:space="preserve">The flags to use when inserting a node.</doc>
       <member name="none" value="0" c:identifier="AS_NODE_INSERT_FLAG_NONE">
@@ -7889,6 +7937,25 @@ metadata can be used.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_search_match"
+              c:identifier="as_store_set_search_match"
+              version="0.6.5">
+        <doc xml:space="preserve">Sets the token match fields. The bitfield given here is used to choose what
+is included in the token cache.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsStore instance.</doc>
+            <type name="Store" c:type="AsStore*"/>
+          </instance-parameter>
+          <parameter name="search_match" transfer-ownership="none">
+            <doc xml:space="preserve">the API version</doc>
+            <type name="AppSearchMatch" c:type="AsAppSearchMatch"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_watch_flags"
               c:identifier="as_store_set_watch_flags"
               version="0.4.2">
@@ -8047,6 +8114,11 @@ or removed from the store.</doc>
               value="4"
               c:identifier="AS_STORE_ADD_FLAG_USE_MERGE_HEURISTIC">
         <doc xml:space="preserve">Use a heuristic when adding merge components</doc>
+      </member>
+      <member name="only_native_langs"
+              value="8"
+              c:identifier="AS_STORE_ADD_FLAG_ONLY_NATIVE_LANGS">
+        <doc xml:space="preserve">Only load native languages</doc>
       </member>
     </bitfield>
     <record name="StoreClass"

@@ -1975,19 +1975,6 @@ Should only be called once.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="del_shader" c:identifier="gst_gl_context_del_shader">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="GLContext" c:type="GstGLContext*"/>
-          </instance-parameter>
-          <parameter name="shader" transfer-ownership="none">
-            <type name="GLShader" c:type="GstGLShader*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="destroy"
               c:identifier="gst_gl_context_destroy"
               version="1.6">
@@ -2020,25 +2007,6 @@ allow wrapped contexts to be used as regular #GstGLContext's.</doc>
             <doc xml:space="preserve">a #GstGLContext:</doc>
             <type name="GLContext" c:type="GstGLContext*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="gen_shader" c:identifier="gst_gl_context_gen_shader">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <type name="GLContext" c:type="GstGLContext*"/>
-          </instance-parameter>
-          <parameter name="shader_vertex_source" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="shader_fragment_source" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="shader" transfer-ownership="none">
-            <type name="GLShader" c:type="GstGLShader**"/>
-          </parameter>
         </parameters>
       </method>
       <method name="get_display"
@@ -2612,6 +2580,21 @@ example of such a function is X11's XInitThreads().&lt;/note&gt;</doc>
           <type name="GLDisplay" c:type="GstGLDisplay*"/>
         </return-value>
       </constructor>
+      <virtual-method name="create_window"
+                      invoker="create_window"
+                      introspectable="0">
+        <doc xml:space="preserve">It requires the display's object lock to be held.</doc>
+        <return-value>
+          <doc xml:space="preserve">a new #GstGLWindow for @display or %NULL.</doc>
+          <type name="GLWindow" c:type="GstGLWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLDisplay</doc>
+            <type name="GLDisplay" c:type="GstGLDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_handle" invoker="get_handle" version="1.4">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the native handle for the display</doc>
@@ -2672,6 +2655,21 @@ Must be called with the object lock held.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_window"
+              c:identifier="gst_gl_display_create_window"
+              introspectable="0">
+        <doc xml:space="preserve">It requires the display's object lock to be held.</doc>
+        <return-value>
+          <doc xml:space="preserve">a new #GstGLWindow for @display or %NULL.</doc>
+          <type name="GLWindow" c:type="GstGLWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLDisplay</doc>
+            <type name="GLDisplay" c:type="GstGLDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="filter_gl_api" c:identifier="gst_gl_display_filter_gl_api">
         <doc xml:space="preserve">limit the use of OpenGL to the requested @gl_api.  This is intended to allow
 application and elements to request a specific set of OpenGL API's based on
@@ -2688,6 +2686,34 @@ API supported by a #GstGLContext.</doc>
           <parameter name="gl_api" transfer-ownership="none">
             <doc xml:space="preserve">a #GstGLAPI to filter with</doc>
             <type name="GLAPI" c:type="GstGLAPI"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_window"
+              c:identifier="gst_gl_display_find_window"
+              version="1.12"
+              introspectable="0">
+        <doc xml:space="preserve">Execute @compare_func over the list of windows stored by @display.  The
+first argment to @compare_func is the #GstGLWindow being checked and the
+second argument is @data.</doc>
+        <return-value>
+          <doc xml:space="preserve">The first #GstGLWindow that causes a match from @compare_func</doc>
+          <type name="GLWindow" c:type="GstGLWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLDisplay</doc>
+            <type name="GLDisplay" c:type="GstGLDisplay*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">some data to pass to @compare_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="compar_func" transfer-ownership="none">
+            <type name="GLib.CompareFunc" c:type="GCompareFunc"/>
           </parameter>
         </parameters>
       </method>
@@ -2763,11 +2789,43 @@ Must be called with the object lock held.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="remove_window"
+              c:identifier="gst_gl_display_remove_window"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">if @window could be removed from @display</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLDisplay</doc>
+            <type name="GLDisplay" c:type="GstGLDisplay*"/>
+          </instance-parameter>
+          <parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLWindow to remove</doc>
+            <type name="GLWindow" c:type="GstGLWindow*"/>
+          </parameter>
+        </parameters>
+      </method>
       <field name="object" readable="0" private="1">
         <type name="Gst.Object" c:type="GstObject"/>
       </field>
       <field name="type" readable="0" private="1">
         <type name="GLDisplayType" c:type="GstGLDisplayType"/>
+      </field>
+      <field name="windows" readable="0" private="1">
+        <type name="GLib.List" c:type="GList*">
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
+      <field name="main_context" readable="0" private="1">
+        <type name="GLib.MainContext" c:type="GMainContext*"/>
+      </field>
+      <field name="main_loop" readable="0" private="1">
+        <type name="GLib.MainLoop" c:type="GMainLoop*"/>
+      </field>
+      <field name="event_source" readable="0" private="1">
+        <type name="GLib.Source" c:type="GSource*"/>
       </field>
       <field name="priv" readable="0" private="1">
         <type name="GLDisplayPrivate" c:type="GstGLDisplayPrivate*"/>
@@ -2799,6 +2857,20 @@ display's object lock held.</doc>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve">the native handle for the display</doc>
             <type name="guintptr" c:type="guintptr"/>
+          </return-value>
+          <parameters>
+            <parameter name="display" transfer-ownership="none">
+              <doc xml:space="preserve">a #GstGLDisplay</doc>
+              <type name="GLDisplay" c:type="GstGLDisplay*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="create_window" introspectable="0">
+        <callback name="create_window" introspectable="0">
+          <return-value>
+            <doc xml:space="preserve">a new #GstGLWindow for @display or %NULL.</doc>
+            <type name="GLWindow" c:type="GstGLWindow*"/>
           </return-value>
           <parameters>
             <parameter name="display" transfer-ownership="none">
@@ -2857,26 +2929,6 @@ display's object lock held.</doc>
            glib:type-struct="GLFilterClass">
       <doc xml:space="preserve">#GstGLFilter helps to implement simple OpenGL filter elements taking a
 single input and producing a single output with a #GstGLFramebuffer</doc>
-      <virtual-method name="display_init_cb">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="filter" transfer-ownership="none">
-            <type name="GLFilter" c:type="GstGLFilter*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="display_reset_cb">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="filter" transfer-ownership="none">
-            <type name="GLFilter" c:type="GstGLFilter*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
       <virtual-method name="filter">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -3220,30 +3272,6 @@ See also: gst_gl_filter_render_to_target()</doc>
             </parameter>
             <parameter name="filter_caps" transfer-ownership="none">
               <type name="Gst.Caps" c:type="GstCaps*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="display_init_cb">
-        <callback name="display_init_cb">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="filter" transfer-ownership="none">
-              <type name="GLFilter" c:type="GstGLFilter*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="display_reset_cb">
-        <callback name="display_reset_cb">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="filter" transfer-ownership="none">
-              <type name="GLFilter" c:type="GstGLFilter*"/>
             </parameter>
           </parameters>
         </callback>
@@ -11809,20 +11837,6 @@ from the @window.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="is_running"
-              c:identifier="gst_gl_window_is_running"
-              version="1.4">
-        <doc xml:space="preserve">Whether the runloop is running</doc>
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstGLWindow</doc>
-            <type name="GLWindow" c:type="GstGLWindow*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="queue_resize" c:identifier="gst_gl_window_queue_resize">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -11875,23 +11889,6 @@ from the @window.</doc>
       </method>
       <method name="send_key_event"
               c:identifier="gst_gl_window_send_key_event">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
-            <type name="GLWindow" c:type="GstGLWindow*"/>
-          </instance-parameter>
-          <parameter name="event_type" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="key_str" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="send_key_event_async"
-              c:identifier="gst_gl_window_send_key_event_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -11972,29 +11969,6 @@ have been executed when this function returns.</doc>
       </method>
       <method name="send_mouse_event"
               c:identifier="gst_gl_window_send_mouse_event">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
-            <type name="GLWindow" c:type="GstGLWindow*"/>
-          </instance-parameter>
-          <parameter name="event_type" transfer-ownership="none">
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="button" transfer-ownership="none">
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="posx" transfer-ownership="none">
-            <type name="gdouble" c:type="double"/>
-          </parameter>
-          <parameter name="posy" transfer-ownership="none">
-            <type name="gdouble" c:type="double"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="send_mouse_event_async"
-              c:identifier="gst_gl_window_send_mouse_event_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -12217,9 +12191,6 @@ require this to be called with a valid handle before drawing can commence.</doc>
       </field>
       <field name="context_ref" readable="0" private="1">
         <type name="GObject.WeakRef" c:type="GWeakRef"/>
-      </field>
-      <field name="external_gl_context" readable="0" private="1">
-        <type name="guintptr" c:type="guintptr"/>
       </field>
       <field name="is_drawing" readable="0" private="1">
         <type name="gboolean" c:type="gboolean"/>

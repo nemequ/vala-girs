@@ -786,6 +786,7 @@ namespace Ggit {
 		public Ggit.TreeBuilder create_tree_builder_from_tree (Ggit.Tree tree) throws GLib.Error;
 		public bool delete_tag (string name) throws GLib.Error;
 		public static GLib.File discover (GLib.File location) throws GLib.Error;
+		public static GLib.File discover_full (GLib.File location, bool across_fs, [CCode (array_length = false, array_null_terminated = true)] string[]? ceiling_dirs) throws GLib.Error;
 		public void drop_stash (size_t index) throws GLib.Error;
 		public Ggit.BranchEnumerator enumerate_branches (Ggit.BranchType list_type) throws GLib.Error;
 		public Ggit.StatusFlags file_status (GLib.File location) throws GLib.Error;

@@ -2077,7 +2077,8 @@ signal to be notified when a buffer has completed loading.</doc>
       <glib:signal name="buffer-saved" when="last">
         <doc xml:space="preserve">This signal is emitted when a buffer has finished saving to storage. You might connect to
 this signal if you want to know when the modifications have successfully been written to
-storage.</doc>
+storage.
+The buffer:file property point to the saved file.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2142,7 +2143,8 @@ changes from the host file-system.</doc>
       </glib:signal>
       <glib:signal name="save-buffer" when="last">
         <doc xml:space="preserve">This signal is emitted when a request has been made to save a buffer. Connect to this signal
-if you'd like to perform mutation of the buffer before it is persisted to storage.</doc>
+if you'd like to perform mutation of the buffer before it is persisted to storage.
+Till the "buffer-saved" signal is emmited, the buffer:file property point to the current file.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -4980,6 +4982,24 @@ it will be set to zero.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_internal_object"
+              c:identifier="ide_configuration_get_internal_object">
+        <doc xml:space="preserve">Gets the value associated with @key if it is a #GObject.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #GObject or %NULL.</doc>
+          <type name="GObject.Object" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">The key to get</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_internal_string"
               c:identifier="ide_configuration_get_internal_string">
         <return-value transfer-ownership="none">
@@ -5246,6 +5266,30 @@ mean time.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_internal_object"
+              c:identifier="ide_configuration_set_internal_object">
+        <doc xml:space="preserve">Sets the value for @key to @instance.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #IdeConfiguration</doc>
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">the key to set</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="instance"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GObject or %NULL</doc>
+            <type name="GObject.Object" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_internal_string"
               c:identifier="ide_configuration_set_internal_string">
         <return-value transfer-ownership="none">
@@ -5435,7 +5479,7 @@ mean time.</doc>
         <doc xml:space="preserve">Gets the current configuration to use for building.
 
 Many systems allow you to pass a configuration in instead of relying on the
-default configuration. This sets the default configuration that various
+default configuration. This gets the default configuration that various
 background items might use, such as tags builders which need to discover
 settings.</doc>
         <return-value transfer-ownership="none">
@@ -7309,6 +7353,23 @@ a %NULL value.</doc>
             <type name="DiagnosticsManager" c:type="IdeDiagnosticsManager*"/>
           </instance-parameter>
           <parameter name="file" transfer-ownership="none">
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_group_by_file"
+              c:identifier="ide_diagnostics_manager_update_group_by_file">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="DiagnosticsManager" c:type="IdeDiagnosticsManager*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </parameter>
+          <parameter name="new_file" transfer-ownership="none">
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
         </parameters>
@@ -9591,6 +9652,16 @@ internal structures or strings they know about to optimize later work.</doc>
                glib:get-type="ide_highlighter_get_type"
                glib:type-struct="HighlighterInterface">
       <prerequisite name="Object"/>
+      <virtual-method name="load" invoker="load">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Highlighter" c:type="IdeHighlighter*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="set_engine">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -9640,6 +9711,16 @@ to @range_end.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="load" c:identifier="ide_highlighter_load">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Highlighter" c:type="IdeHighlighter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="update" c:identifier="ide_highlighter_update">
         <doc xml:space="preserve">Incrementally processes more of the buffer for highlighting.  If @callback
 returns %IDE_HIGHLIGHT_STOP, then this vfunc should stop processing and
@@ -9733,6 +9814,18 @@ to @range_end.</doc>
             </parameter>
             <parameter name="engine" transfer-ownership="none">
               <type name="HighlightEngine" c:type="IdeHighlightEngine*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="load">
+        <callback name="load">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Highlighter" c:type="IdeHighlighter*"/>
             </parameter>
           </parameters>
         </callback>
@@ -10545,6 +10638,66 @@ returned then ide_indenter_format() will be called.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
+    <class name="LangservHighlighter"
+           c:symbol-prefix="langserv_highlighter"
+           c:type="IdeLangservHighlighter"
+           parent="Object"
+           glib:type-name="IdeLangservHighlighter"
+           glib:get-type="ide_langserv_highlighter_get_type"
+           glib:type-struct="LangservHighlighterClass">
+      <implements name="Highlighter"/>
+      <method name="get_client"
+              c:identifier="ide_langserv_highlighter_get_client">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeLangservHighlighter or %NULL.</doc>
+          <type name="LangservClient" c:type="IdeLangservClient*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="LangservHighlighter" c:type="IdeLangservHighlighter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_client"
+              c:identifier="ide_langserv_highlighter_set_client">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="LangservHighlighter" c:type="IdeLangservHighlighter*"/>
+          </instance-parameter>
+          <parameter name="client" transfer-ownership="none">
+            <type name="LangservClient" c:type="IdeLangservClient*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="client" writable="1" transfer-ownership="none">
+        <type name="LangservClient"/>
+      </property>
+      <field name="parent_instance">
+        <type name="Object" c:type="IdeObject"/>
+      </field>
+    </class>
+    <record name="LangservHighlighterClass"
+            c:type="IdeLangservHighlighterClass"
+            glib:is-gtype-struct-for="LangservHighlighter">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+      <field name="_reserved1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved2">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved3">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved4">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+    </record>
     <class name="LangservRenameProvider"
            c:symbol-prefix="langserv_rename_provider"
            c:type="IdeLangservRenameProvider"
@@ -10658,6 +10811,17 @@ returned then ide_indenter_format() will be called.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="get_parent_name"
+              c:identifier="ide_langserv_symbol_node_get_parent_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="LangservSymbolNode" c:type="IdeLangservSymbolNode*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </class>
     <record name="LangservSymbolNodeClass"
             c:type="IdeLangservSymbolNodeClass"
@@ -17452,6 +17616,19 @@ executing inferior.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="set_tty" invoker="set_tty">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+          <parameter name="tty_fd" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="append_argv" c:identifier="ide_runner_append_argv">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -17661,6 +17838,19 @@ executing inferior.</doc>
           </instance-parameter>
           <parameter name="run_on_host" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_tty" c:identifier="ide_runner_set_tty">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+          <parameter name="tty_fd" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
       </method>
@@ -18177,6 +18367,21 @@ executing inferior.</doc>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="set_tty">
+        <callback name="set_tty">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runner" c:type="IdeRunner*"/>
+            </parameter>
+            <parameter name="tty_fd" transfer-ownership="none">
+              <type name="gint" c:type="int"/>
             </parameter>
           </parameters>
         </callback>
@@ -18989,7 +19194,7 @@ or "run unit test" inside the target runtime.</doc>
       </method>
       <method name="get_runtime"
               c:identifier="ide_runtime_manager_get_runtime">
-        <doc xml:space="preserve">Gets the runtime by it's internal identifier.</doc>
+        <doc xml:space="preserve">Gets the runtime by its internal identifier.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">An #IdeRuntime.</doc>
           <type name="Runtime" c:type="IdeRuntime*"/>
@@ -28500,7 +28705,7 @@ the project creation workflow.</doc>
       </function>
       <function name="push_task" c:identifier="ide_thread_pool_push_task">
         <doc xml:space="preserve">This pushes a task to be executed on a worker thread based on the task kind as denoted by
-@kind. Some tasks will be placed on special work queues or throttled based on proirity.</doc>
+@kind. Some tasks will be placed on special work queues or throttled based on priority.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -30249,7 +30454,7 @@ cell of the IdeTree.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">This property allows for more lazy loading of nodes.
 
-When a node becomes visible, we normally build it's children nodes
+When a node becomes visible, we normally build its children nodes
 so that we know if we need an expansion arrow. However, that can
 be expensive when rendering directories with lots of subdirectories.
 
@@ -30578,7 +30783,7 @@ clang.
 Call g_ptr_array_unref() on the resulting #GPtrArray when no longer in use.
 
 If you would like to hold onto an unsaved file instance, call
-ide_unsaved_file_ref() to increment it's reference count.</doc>
+ide_unsaved_file_ref() to increment its reference count.</doc>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve">A #GPtrArray
   containing #IdeUnsavedFile elements.</doc>
@@ -32329,7 +32534,7 @@ to an #IdeWorkbenchHeaderBar. This is convenience for plugins.</doc>
       </method>
       <method name="get_perspective_by_name"
               c:identifier="ide_workbench_get_perspective_by_name">
-        <doc xml:space="preserve">Gets the perspective by it's registered name as defined in
+        <doc xml:space="preserve">Gets the perspective by its registered name as defined in
 ide_perspective_get_id().</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">An #IdePerspective or %NULL.</doc>
@@ -32688,7 +32893,7 @@ has been set.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">This property is used internall by Builder to avoid creating the
+        <doc xml:space="preserve">This property is used internally by Builder to avoid creating the
 greeter when opening a new workspace that is only for loading a
 project.
 
@@ -33991,7 +34196,7 @@ not be enabled, but path features such as ~user will be expanded.</doc>
               c:identifier="ide_thread_pool_push_task"
               moved-to="ThreadPool.push_task">
       <doc xml:space="preserve">This pushes a task to be executed on a worker thread based on the task kind as denoted by
-@kind. Some tasks will be placed on special work queues or throttled based on proirity.</doc>
+@kind. Some tasks will be placed on special work queues or throttled based on priority.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

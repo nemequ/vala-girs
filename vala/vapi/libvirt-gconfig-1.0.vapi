@@ -299,7 +299,7 @@ namespace GVirConfig {
 		public DomainCpuModel.from_xml (string xml) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_device_get_type ()")]
-	public abstract class DomainDevice : GVirConfig.Object {
+	public class DomainDevice : GVirConfig.Object {
 		[CCode (has_construct_function = false)]
 		protected DomainDevice ();
 		public unowned string get_alias ();

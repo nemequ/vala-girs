@@ -6,9 +6,6 @@ namespace E {
 	[Compact]
 	[Version (since = "3.6")]
 	public class AsyncClosure {
-		public static void callback (GLib.Object object, GLib.AsyncResult result, void* closure);
-		public void free ();
-		public unowned GLib.AsyncResult wait ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_client_get_type ()")]
 	[Version (since = "3.2")]
@@ -125,15 +122,6 @@ namespace E {
 	[Compact]
 	[Version (since = "1.12")]
 	public class Flag {
-		public void clear ();
-		public void free ();
-		public bool is_set ();
-		public void @set ();
-		[Version (deprecated = true, deprecated_since = "3.8", since = "1.12")]
-		public bool timed_wait (GLib.TimeVal abs_time);
-		public void wait ();
-		[Version (since = "3.8")]
-		public bool wait_until (int64 end_time);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
@@ -1073,8 +1061,6 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 	public struct ClientErrorsList {
-		public weak string name;
-		public int err_code;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	public struct FreeFormExpSymbol {
@@ -1395,7 +1381,7 @@ namespace E {
 	public const int SOURCE_PARAM_SETTING;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
-	public static unowned GLib.Binding binding_bind_property (void* source, string source_property, void* target, string target_property, GLib.BindingFlags flags);
+	public static unowned GLib.Binding binding_bind_property (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property_full (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.BindingTransformFunc? transform_to, owned GLib.BindingTransformFunc? transform_from);
@@ -1447,7 +1433,7 @@ namespace E {
 	public static void debug_log_clear ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.32")]
-	public static void debug_log_disable_domains (string domains, int n_domains);
+	public static void debug_log_disable_domains ([CCode (array_length_cname = "n_domains", array_length_pos = 1.1)] string[] domains);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.32")]
 	public static bool debug_log_dump (string filename) throws GLib.Error;
@@ -1456,7 +1442,7 @@ namespace E {
 	public static bool debug_log_dump_to_dated_file () throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.32")]
-	public static void debug_log_enable_domains (string domains, int n_domains);
+	public static void debug_log_enable_domains ([CCode (array_length_cname = "n_domains", array_length_pos = 1.1)] string[] domains);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.32")]
 	public static int debug_log_get_max_lines ();
@@ -1503,18 +1489,6 @@ namespace E {
 	public static unowned string get_user_data_dir ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void localtime_with_offset (long tt, [CCode (type = "tm*")] Posix.tm tm, int offset);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void* memchunk_alloc (E.MemChunk memchunk);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void* memchunk_alloc0 (E.MemChunk memchunk);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void memchunk_clean (E.MemChunk memchunk);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void memchunk_destroy (E.MemChunk memchunk);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void memchunk_empty (E.MemChunk memchunk);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static void memchunk_free (E.MemChunk memchunk, void* mem);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1628,9 +1602,6 @@ namespace E {
 	public static unowned string util_utf8_strstrcase (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.10")]
-	public static void weak_ref_free (GLib.WeakRef weak_ref);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
 	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource> discovered_sources);

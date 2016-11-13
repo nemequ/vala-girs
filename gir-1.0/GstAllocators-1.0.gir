@@ -22,6 +22,92 @@ and/or use gtk-doc annotations.  -->
     <constant name="ALLOCATOR_FD" value="fd" c:type="GST_ALLOCATOR_FD">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CAPS_FEATURE_MEMORY_DMABUF"
+              value="memory:DMABuf"
+              c:type="GST_CAPS_FEATURE_MEMORY_DMABUF"
+              version="1.11">
+      <doc xml:space="preserve">Constant that defines the caps feature name for DMA buffer sharing.
+
+It has to be used for non-mappable dma-buf only, i.e. when the underlying
+memory is not mappable to user space. Or when the mapped memory contains
+non meaningful data. It can be the case for protected content or when the
+user wants explicitly avoid any software post processing.
+
+In these cases all elements between the exported and the importer has to work
+in passthrough mode. This is done by adding this caps feature.
+
+When the memory is mappable for read and write requests then it is assumes
+to be a fast path and so this caps feature should not be used. Though
+according to the dma-buf protocal, while it is mapped it prevents the
+exporter to migrate the buffer.
+
+This caps feature should not serve at all the purpose of selecting the
+@GST_ALLOCATOR_DMABUF allocator during caps negotiation.
+When the exporter is the upstream element from the importer point of view,
+the exporter should try to map the dma buffer at runtime (preferrably during
+decide_allocation phase). When it succeeds for #GST_MAP_READWRITE this caps
+feature should not be used. This allows scalers, color converts and any image
+processing filters to work directly on the dma buffer.
+In this case the importer element should check all incomming memory using
+gst_is_dmabuf_memory().</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <class name="DmaBufAllocator"
+           c:symbol-prefix="dmabuf_allocator"
+           c:type="GstDmaBufAllocator"
+           version="1.12"
+           parent="FdAllocator"
+           glib:type-name="GstDmaBufAllocator"
+           glib:get-type="gst_dmabuf_allocator_get_type"
+           glib:type-struct="DmaBufAllocatorClass">
+      <doc xml:space="preserve">Base class for allocators with dmabuf-backed memory</doc>
+      <constructor name="new"
+                   c:identifier="gst_dmabuf_allocator_new"
+                   version="1.2">
+        <doc xml:space="preserve">Return a new dmabuf allocator.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new dmabuf allocator, or NULL if the allocator
+   isn't available. Use gst_object_unref() to release the allocator after
+   usage</doc>
+          <type name="Gst.Allocator" c:type="GstAllocator*"/>
+        </return-value>
+      </constructor>
+      <function name="alloc"
+                c:identifier="gst_dmabuf_allocator_alloc"
+                version="1.2">
+        <doc xml:space="preserve">Return a %GstMemory that wraps a dmabuf file descriptor.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a GstMemory based on @allocator.
+When the buffer will be released dmabuf allocator will close the @fd.
+The memory is only mmapped on gst_buffer_mmap() request.</doc>
+          <type name="Gst.Memory" c:type="GstMemory*"/>
+        </return-value>
+        <parameters>
+          <parameter name="allocator" transfer-ownership="none">
+            <doc xml:space="preserve">allocator to be used for this memory</doc>
+            <type name="Gst.Allocator" c:type="GstAllocator*"/>
+          </parameter>
+          <parameter name="fd" transfer-ownership="none">
+            <doc xml:space="preserve">dmabuf file descriptor</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <doc xml:space="preserve">memory size</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </function>
+      <field name="parent">
+        <type name="FdAllocator" c:type="GstFdAllocator"/>
+      </field>
+    </class>
+    <record name="DmaBufAllocatorClass"
+            c:type="GstDmaBufAllocatorClass"
+            glib:is-gtype-struct-for="DmaBufAllocator">
+      <field name="parent_class">
+        <type name="FdAllocatorClass" c:type="GstFdAllocatorClass"/>
+      </field>
+    </record>
     <class name="FdAllocator"
            c:symbol-prefix="fd_allocator"
            c:type="GstFdAllocator"
@@ -107,42 +193,6 @@ The memory is only mmapped on gst_buffer_mmap() request.</doc>
        the memory is freed. Since: 1.10.</doc>
       </member>
     </bitfield>
-    <function name="dmabuf_allocator_alloc"
-              c:identifier="gst_dmabuf_allocator_alloc"
-              version="1.2">
-      <doc xml:space="preserve">Return a %GstMemory that wraps a dmabuf file descriptor.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a GstMemory based on @allocator.
-When the buffer will be released dmabuf allocator will close the @fd.
-The memory is only mmapped on gst_buffer_mmap() request.</doc>
-        <type name="Gst.Memory" c:type="GstMemory*"/>
-      </return-value>
-      <parameters>
-        <parameter name="allocator" transfer-ownership="none">
-          <doc xml:space="preserve">allocator to be used for this memory</doc>
-          <type name="Gst.Allocator" c:type="GstAllocator*"/>
-        </parameter>
-        <parameter name="fd" transfer-ownership="none">
-          <doc xml:space="preserve">dmabuf file descriptor</doc>
-          <type name="gint" c:type="gint"/>
-        </parameter>
-        <parameter name="size" transfer-ownership="none">
-          <doc xml:space="preserve">memory size</doc>
-          <type name="gsize" c:type="gsize"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="dmabuf_allocator_new"
-              c:identifier="gst_dmabuf_allocator_new"
-              version="1.2">
-      <doc xml:space="preserve">Return a new dmabuf allocator.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a new dmabuf allocator, or NULL if the allocator
-   isn't available. Use gst_object_unref() to release the allocator after
-   usage</doc>
-        <type name="Gst.Allocator" c:type="GstAllocator*"/>
-      </return-value>
-    </function>
     <function name="dmabuf_memory_get_fd"
               c:identifier="gst_dmabuf_memory_get_fd"
               version="1.2">

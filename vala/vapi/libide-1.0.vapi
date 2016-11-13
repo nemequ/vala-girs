@@ -255,6 +255,7 @@ namespace Ide {
 		public bool get_internal_boolean (string key);
 		public int get_internal_int (string key);
 		public int64 get_internal_int64 (string key);
+		public unowned GLib.Object? get_internal_object (string key);
 		public unowned string get_internal_string (string key);
 		public int get_parallelism ();
 		public Ide.BuildCommandQueue get_postbuild ();
@@ -273,6 +274,7 @@ namespace Ide {
 		public void set_internal_boolean (string key, bool value);
 		public void set_internal_int (string key, int value);
 		public void set_internal_int64 (string key, int64 value);
+		public void set_internal_object (string key, GLib.Object? instance);
 		public void set_internal_string (string key, string value);
 		public void set_parallelism (int parallelism);
 		public void set_prefix (string prefix);
@@ -424,6 +426,7 @@ namespace Ide {
 		public bool get_busy ();
 		public Ide.Diagnostics get_diagnostics_for_file (GLib.File file);
 		public uint get_sequence_for_file (GLib.File file);
+		public void update_group_by_file (Ide.Buffer buffer, GLib.File new_file);
 		public bool busy { get; }
 		public signal void changed ();
 	}
@@ -696,6 +699,14 @@ namespace Ide {
 		public void set_client (Ide.LangservClient client);
 		public Ide.LangservClient client { get; set; }
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_highlighter_get_type ()")]
+	public class LangservHighlighter : Ide.Object, Ide.Highlighter {
+		[CCode (has_construct_function = false)]
+		protected LangservHighlighter ();
+		public unowned Ide.LangservClient? get_client ();
+		public void set_client (Ide.LangservClient client);
+		public Ide.LangservClient client { get; set; }
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_rename_provider_get_type ()")]
 	public abstract class LangservRenameProvider : Ide.Object, Ide.RenameProvider {
 		[CCode (has_construct_function = false)]
@@ -708,6 +719,7 @@ namespace Ide {
 	public class LangservSymbolNode : Ide.SymbolNode {
 		[CCode (has_construct_function = false)]
 		public LangservSymbolNode (GLib.File file, string name, string parent_name, int kind, uint begin_line, uint begin_column, uint end_line, uint end_column);
+		public unowned string get_parent_name ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_resolver_get_type ()")]
 	public abstract class LangservSymbolResolver : Ide.Object, Ide.SymbolResolver {
@@ -1152,6 +1164,7 @@ namespace Ide {
 		public void set_clear_env (bool clear_env);
 		public void set_flags (GLib.SubprocessFlags flags);
 		public void set_run_on_host (bool run_on_host);
+		public virtual void set_tty (int tty_fd);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] argv { owned get; set; }
 		public bool clear_env { get; set; }
@@ -2046,6 +2059,7 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeHighlighterInterface", type_id = "ide_highlighter_get_type ()")]
 	public interface Highlighter : Ide.Object {
+		public abstract void load ();
 		[NoWrapper]
 		public abstract void set_engine (Ide.HighlightEngine engine);
 		public abstract Gtk.TextIter update (Ide.HighlightCallback callback, Gtk.TextIter range_begin, Gtk.TextIter range_end);

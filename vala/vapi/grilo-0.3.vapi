@@ -572,12 +572,6 @@ namespace Grl {
 		public GLib.List<weak Grl.Source> get_sources ();
 		[Version (since = "0.2.0")]
 		public unowned string get_version ();
-		public void register_keys ();
-		public void set_filename (string filename);
-		public void set_id (string id);
-		public void set_module (GLib.Module module);
-		public void set_module_name (string module_name);
-		public void unload ();
 		[NoAccessorMethod]
 		[Version (since = "0.2.0")]
 		public bool loaded { get; }
