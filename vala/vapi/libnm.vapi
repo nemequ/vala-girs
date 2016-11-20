@@ -228,6 +228,16 @@ namespace NM {
 		public const string PLUGIN_IP6_CONFIG_PTP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_PLUGIN_IP6_CONFIG_ROUTES")]
 		public const string PLUGIN_IP6_CONFIG_ROUTES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_PLUGIN_OLD_DBUS_SERVICE_NAME")]
+		public const string PLUGIN_OLD_DBUS_SERVICE_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_PLUGIN_OLD_STATE")]
+		public const string PLUGIN_OLD_STATE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_SERVICE_PLUGIN_DBUS_SERVICE_NAME")]
+		public const string SERVICE_PLUGIN_DBUS_SERVICE_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_SERVICE_PLUGIN_DBUS_WATCH_PEER")]
+		public const string SERVICE_PLUGIN_DBUS_WATCH_PEER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_SERVICE_PLUGIN_STATE")]
+		public const string SERVICE_PLUGIN_STATE;
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_access_point_get_type ()")]
 	public class AccessPoint : NM.Object, GLib.AsyncInitable, GLib.Initable {
@@ -1373,6 +1383,28 @@ namespace NM {
 		public async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool unsaved { get; }
 		public bool visible { get; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_secret_agent_old_get_type ()")]
+	public abstract class SecretAgentOld : GLib.Object, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected SecretAgentOld ();
+		[NoWrapper]
+		public virtual void cancel_get_secrets (string connection_path, string setting_name);
+		public virtual void delete_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] NM.SecretAgentOldDeleteSecretsFunc callback);
+		public bool get_registered ();
+		public virtual void get_secrets (NM.Connection connection, string connection_path, string setting_name, [CCode (array_length = false, array_null_terminated = true)] string[] hints, NM.SecretAgentGetSecretsFlags flags, [CCode (scope = "async")] NM.SecretAgentOldGetSecretsFunc callback);
+		public bool register (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool register_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual void save_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] NM.SecretAgentOldSaveSecretsFunc callback);
+		public bool unregister (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool unregister_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[NoAccessorMethod]
+		public bool auto_register { get; set construct; }
+		[NoAccessorMethod]
+		public NM.SecretAgentCapabilities capabilities { get; set construct; }
+		[NoAccessorMethod]
+		public string identifier { owned get; construct; }
+		public bool registered { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_get_type ()")]
 	public abstract class Setting : GLib.Object {
@@ -3459,6 +3491,97 @@ namespace NM {
 		[Version (since = "1.2")]
 		public string name { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_vpn_plugin_old_get_type ()")]
+	public abstract class VpnPluginOld : GLib.Object, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected VpnPluginOld ();
+		[NoWrapper]
+		public virtual bool connect (NM.Connection connection) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool connect_interactive (NM.Connection connection, GLib.Variant details) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public virtual bool disconnect () throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public GLib.DBusConnection get_connection ();
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public static bool get_secret_flags (GLib.HashTable<void*,void*> data, string secret_name, out NM.SettingSecretFlags out_flags);
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public NM.VpnServiceState get_state ();
+		[NoWrapper]
+		public virtual bool need_secrets (NM.Connection connection, string setting_name) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool new_secrets (NM.Connection connection) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public static bool read_vpn_details (int fd, out GLib.HashTable<void*,void*> out_data, out GLib.HashTable<void*,void*> out_secrets);
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public void set_config (GLib.Variant config);
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public void set_ip4_config (GLib.Variant ip4_config);
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public void set_ip6_config (GLib.Variant ip6_config);
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public void set_login_banner (string banner);
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public void set_state (NM.VpnServiceState state);
+		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public string service_name { owned get; construct; }
+		[Version (deprecated = true, deprecated_since = "1.2")]
+		public NM.VpnServiceState state { get; set; }
+		public virtual signal void config (GLib.Variant config);
+		[HasEmitter]
+		public virtual signal void failure (uint reason);
+		public virtual signal void ip4_config (GLib.Variant ip4_config);
+		public virtual signal void ip6_config (GLib.Variant config);
+		public virtual signal void login_banner (string banner);
+		public virtual signal void quit ();
+		[HasEmitter]
+		public signal void secrets_required (string message, [CCode (array_length = false, array_null_terminated = true)] string[] hints);
+		public virtual signal void state_changed (uint state);
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_vpn_service_plugin_get_type ()")]
+	public abstract class VpnServicePlugin : GLib.Object, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected VpnServicePlugin ();
+		[NoWrapper]
+		public virtual bool connect (NM.Connection connection) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool connect_interactive (NM.Connection connection, GLib.Variant details) throws GLib.Error;
+		public virtual bool disconnect () throws GLib.Error;
+		[Version (since = "1.2")]
+		public GLib.DBusConnection get_connection ();
+		[Version (since = "1.2")]
+		public static bool get_secret_flags (GLib.HashTable<void*,void*> data, string secret_name, out NM.SettingSecretFlags out_flags);
+		[NoWrapper]
+		public virtual bool need_secrets (NM.Connection connection, string setting_name) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool new_secrets (NM.Connection connection) throws GLib.Error;
+		[Version (since = "1.2")]
+		public static bool read_vpn_details (int fd, out GLib.HashTable<void*,void*> out_data, out GLib.HashTable<void*,void*> out_secrets);
+		public void set_config (GLib.Variant config);
+		public void set_ip4_config (GLib.Variant ip4_config);
+		public void set_ip6_config (GLib.Variant ip6_config);
+		public void set_login_banner (string banner);
+		[NoAccessorMethod]
+		[Version (since = "1.2")]
+		public string service_name { owned get; construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.2")]
+		public NM.VpnServiceState state { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.2")]
+		public bool watch_peer { get; construct; }
+		public virtual signal void config (GLib.Variant config);
+		[HasEmitter]
+		public virtual signal void failure (uint reason);
+		public virtual signal void ip4_config (GLib.Variant ip4_config);
+		public virtual signal void ip6_config (GLib.Variant config);
+		public virtual signal void login_banner (string banner);
+		public virtual signal void quit ();
+		[HasEmitter]
+		public signal void secrets_required (string message, [CCode (array_length = false, array_null_terminated = true)] string[] hints);
+		public virtual signal void state_changed (uint state);
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_wimax_nsp_get_type ()")]
 	public class WimaxNsp : NM.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NAME")]
@@ -4248,6 +4371,12 @@ namespace NM {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 3.9)]
+	public delegate void SecretAgentOldDeleteSecretsFunc (NM.SecretAgentOld agent, NM.Connection connection, GLib.Error error);
+	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 4.9)]
+	public delegate void SecretAgentOldGetSecretsFunc (NM.SecretAgentOld agent, NM.Connection connection, GLib.Variant secrets, GLib.Error error);
+	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 3.9)]
+	public delegate void SecretAgentOldSaveSecretsFunc (NM.SecretAgentOld agent, NM.Connection connection, GLib.Error error);
+	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 3.9)]
 	public delegate bool SettingClearSecretsWithFlagsFn (NM.Setting setting, string secret, NM.SettingSecretFlags flags);
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 4.9)]
 	public delegate void SettingValueIterFn (NM.Setting setting, string key, GLib.Value value, GLib.ParamFlags flags);
@@ -4373,6 +4502,14 @@ namespace NM {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_MINOR_VERSION")]
 	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_AUTO_REGISTER")]
+	public const string SECRET_AGENT_OLD_AUTO_REGISTER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_CAPABILITIES")]
+	public const string SECRET_AGENT_OLD_CAPABILITIES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_IDENTIFIER")]
+	public const string SECRET_AGENT_OLD_IDENTIFIER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_REGISTERED")]
+	public const string SECRET_AGENT_OLD_REGISTERED;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ATTEMPTS")]
 	public const string SETTING_DNS_OPTION_ATTEMPTS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_DEBUG")]

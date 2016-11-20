@@ -242,6 +242,7 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		public Configuration (Ide.Context context, string id, string device_id, string runtime_id);
 		public Ide.Configuration duplicate ();
+		public unowned string? get_app_id ();
 		public unowned string get_config_opts ();
 		public bool get_debug ();
 		public unowned Ide.Device? get_device ();
@@ -265,6 +266,7 @@ namespace Ide {
 		public unowned string get_runtime_id ();
 		public uint get_sequence ();
 		public unowned string getenv (string key);
+		public void set_app_id (string app_id);
 		public void set_config_opts (string config_opts);
 		public void set_debug (bool debug);
 		public void set_device (Ide.Device device);
@@ -281,6 +283,7 @@ namespace Ide {
 		public void set_runtime (Ide.Runtime runtime);
 		public void set_runtime_id (string runtime_id);
 		public void setenv (string key, string value);
+		public string app_id { get; set; }
 		public string config_opts { get; set; }
 		public bool debug { get; set; }
 		public Ide.Device device { get; set; }
@@ -1154,6 +1157,7 @@ namespace Ide {
 		public string[] get_argv ();
 		public bool get_clear_env ();
 		public unowned Ide.Environment get_environment ();
+		public GLib.SubprocessFlags get_flags ();
 		public bool get_run_on_host ();
 		public virtual GLib.OutputStream? get_stderr ();
 		public virtual GLib.InputStream? get_stdin ();
@@ -1182,9 +1186,9 @@ namespace Ide {
 		public virtual Ide.Runner? create_runner (Ide.BuildTarget build_target);
 		public unowned string get_display_name ();
 		public unowned string get_id ();
-		public virtual async bool postbuild_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		public virtual async bool postinstall_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		public virtual async bool prebuild_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async bool postbuild_async (Ide.BuildResult build_result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async bool postinstall_async (Ide.BuildResult build_result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async bool prebuild_async (Ide.BuildResult build_result, GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual void prepare_configuration (Ide.Configuration configuration);
 		public void set_display_name (string display_name);
 		public void set_id (string id);
@@ -1638,6 +1642,7 @@ namespace Ide {
 		public string pop_argv ();
 		public void push_args ([CCode (array_length = false, array_null_terminated = true)] string[] args);
 		public void push_argv (string argv);
+		public void replace_argv (uint index, string arg);
 		public void set_clear_env (bool clear_env);
 		public void set_cwd (string cwd);
 		public void set_environ (string environ_);
