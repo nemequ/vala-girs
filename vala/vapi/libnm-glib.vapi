@@ -768,7 +768,7 @@ namespace NM {
 		public unowned string get_gateway ();
 		[CCode (array_length = false)]
 		[Version (since = "0.9.10")]
-		public unowned uint8 get_nameserver (uint32 idx);
+		public unowned uint8[] get_nameserver (uint32 idx);
 		[Version (since = "0.9.10")]
 		public uint32 get_num_nameservers ();
 		public unowned GLib.SList<NM.IP6Route> get_routes ();
@@ -1272,10 +1272,10 @@ namespace NM {
 	public delegate void DeviceDeactivateFn (NM.Device device, GLib.Error error);
 	[CCode (cheader_filename = "NMClient-1.0.h", instance_pos = 2.9)]
 	public delegate void DeviceWifiRequestScanFn (NM.DeviceWifi device, GLib.Error error);
+	[CCode (cheader_filename = "NMClient-1.0.h", instance_pos = 1.9)]
+	public delegate void ObjectTypeCallbackFunc (GLib.Type type);
 	[CCode (cheader_filename = "NMClient-1.0.h", has_target = false)]
-	public delegate void ObjectTypeCallbackFunc (GLib.Type arg0, void* arg1);
-	[CCode (cheader_filename = "NMClient-1.0.h", has_target = false)]
-	public delegate GLib.Type ObjectTypeFunc (DBus.Connection arg0, string arg1);
+	public delegate GLib.Type ObjectTypeFunc (DBus.Connection connection, string path);
 	[CCode (cheader_filename = "nm-remote-connection.h", instance_pos = 2.9)]
 	public delegate void RemoteConnectionCommitFunc (NM.RemoteConnection connection, GLib.Error error);
 	[CCode (cheader_filename = "nm-remote-connection.h", instance_pos = 2.9)]
