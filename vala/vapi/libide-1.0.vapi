@@ -720,9 +720,11 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_node_get_type ()")]
 	public class LangservSymbolNode : Ide.SymbolNode {
+		public weak GLib.Node gnode;
 		[CCode (has_construct_function = false)]
 		public LangservSymbolNode (GLib.File file, string name, string parent_name, int kind, uint begin_line, uint begin_column, uint end_line, uint end_column);
 		public unowned string get_parent_name ();
+		public bool is_parent_of (Ide.LangservSymbolNode other);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_symbol_resolver_get_type ()")]
 	public abstract class LangservSymbolResolver : Ide.Object, Ide.SymbolResolver {
@@ -1782,6 +1784,7 @@ namespace Ide {
 		public void set_filter (owned Ide.TreeFilterFunc filter_func);
 		public void set_root (Ide.TreeNode node);
 		public void set_show_icons (bool show_icons);
+		public void unselect_all ();
 		public GLib.MenuModel context_menu { get; set; }
 		public Ide.TreeNode root { get; set; }
 		[NoAccessorMethod]
