@@ -326,6 +326,141 @@ discipline do multibyte backspace correctly.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="spawn_async"
+              c:identifier="vte_pty_spawn_async"
+              version="0.48">
+        <doc xml:space="preserve">Starts the specified command under the pseudo-terminal @pty.
+The @argv and @envv lists should be %NULL-terminated.
+The "TERM" environment variable is automatically set to a default value,
+but can be overridden from @envv.
+@pty_flags controls logging the session to the specified system log files.
+
+Note that %G_SPAWN_DO_NOT_REAP_CHILD will always be added to @spawn_flags.
+
+Note that all open file descriptors will be closed in the child. If you want
+to keep some file descriptor open for use in the child process, you need to
+use a child setup function that unsets the FD_CLOEXEC flag on that file
+descriptor.
+
+See vte_pty_new(), g_spawn_async() and vte_terminal_watch_child() for more information.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:space="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
+          <parameter name="working_directory"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the name of a directory the command should start
+  in, or %NULL to use the current working directory</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="argv" transfer-ownership="none">
+            <doc xml:space="preserve">child's argument vector</doc>
+            <array c:type="char**">
+              <type name="filename"/>
+            </array>
+          </parameter>
+          <parameter name="envv"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a list of environment
+  variables to be added to the environment before starting the process, or %NULL</doc>
+            <array c:type="char**">
+              <type name="filename"/>
+            </array>
+          </parameter>
+          <parameter name="spawn_flags" transfer-ownership="none">
+            <doc xml:space="preserve">flags from #GSpawnFlags</doc>
+            <type name="GLib.SpawnFlags" c:type="GSpawnFlags"/>
+          </parameter>
+          <parameter name="child_setup"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="notified"
+                     closure="5"
+                     destroy="6">
+            <doc xml:space="preserve">an extra child setup function to run in the child just before exec(), or %NULL</doc>
+            <type name="GLib.SpawnChildSetupFunc"
+                  c:type="GSpawnChildSetupFunc"/>
+          </parameter>
+          <parameter name="child_setup_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="notified"
+                     closure="4">
+            <doc xml:space="preserve">user data for @child_setup, or %NULL</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="child_setup_data_destroy"
+                     transfer-ownership="none"
+                     scope="async"
+                     destroy="5">
+            <doc xml:space="preserve">a #GDestroyNotify for @child_setup_data, or %NULL</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">a timeout value in ms, or -1 to wait indefinitely</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="10">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="spawn_finish"
+              c:identifier="vte_pty_spawn_finish"
+              version="0.48"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, or %FALSE on error with @error filled in</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pty" transfer-ownership="none">
+            <doc xml:space="preserve">a #VtePty</doc>
+            <type name="Pty" c:type="VtePty*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+          <parameter name="child_pid"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a location to store the child PID, or %NULL</doc>
+            <type name="GLib.Pid" c:type="GPid*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="fd"
                 writable="1"
                 construct-only="1"
@@ -2696,6 +2831,119 @@ Use %NULL to reset the set of exception characters to the default.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="spawn_async"
+              c:identifier="vte_terminal_spawn_async"
+              version="0.48"
+              introspectable="0">
+        <doc xml:space="preserve">A convenience function that wraps creating the #VtePty and spawning
+the child process on it. See vte_pty_new_sync(), vte_pty_spawn_async(),
+and vte_pty_spawn_finish() for more information.
+
+When the operation is finished successfully, @callback will be called
+with the child #GPid, and a %NULL #GError. The child PID will already be
+watched via vte_terminal_watch_child().
+
+When the operation fails, @callback will be called with a -1 #GPid,
+and a non-%NULL #GError containing the error information.
+
+Note that if @terminal has been destroyed before the operation is called,
+@callback will be called with a %NULL @terminal; you must not do anything
+in the callback besides freeing any resources associated with @user_data,
+but taking care not to access the now-destroyed #VteTerminal. Note that
+in this case, if spawning was successful, the child process will be aborted
+automatically.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="pty_flags" transfer-ownership="none">
+            <doc xml:space="preserve">flags from #VtePtyFlags</doc>
+            <type name="PtyFlags" c:type="VtePtyFlags"/>
+          </parameter>
+          <parameter name="working_directory"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the name of a directory the command should start
+  in, or %NULL to use the current working directory</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="argv" transfer-ownership="none">
+            <doc xml:space="preserve">child's argument vector</doc>
+            <array c:type="char**">
+              <type name="filename"/>
+            </array>
+          </parameter>
+          <parameter name="envv"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a list of environment
+  variables to be added to the environment before starting the process, or %NULL</doc>
+            <array c:type="char**">
+              <type name="filename"/>
+            </array>
+          </parameter>
+          <parameter name="spawn_flags_" transfer-ownership="none">
+            <doc xml:space="preserve">flags from #GSpawnFlags</doc>
+            <type name="GLib.SpawnFlags" c:type="GSpawnFlags"/>
+          </parameter>
+          <parameter name="child_setup"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="notified"
+                     closure="6"
+                     destroy="7">
+            <doc xml:space="preserve">an extra child setup function to run in the child just before exec(), or %NULL</doc>
+            <type name="GLib.SpawnChildSetupFunc"
+                  c:type="GSpawnChildSetupFunc"/>
+          </parameter>
+          <parameter name="child_setup_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="notified"
+                     closure="5">
+            <doc xml:space="preserve">user data for @child_setup, or %NULL</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="child_setup_data_destroy"
+                     transfer-ownership="none"
+                     scope="async"
+                     destroy="6">
+            <doc xml:space="preserve">a #GDestroyNotify for @child_setup_data, or %NULL</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="timeout" transfer-ownership="none">
+            <doc xml:space="preserve">a timeout value in ms, or -1 to wait indefinitely</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback" transfer-ownership="none" closure="11">
+            <doc xml:space="preserve">a #VteTerminalSpawnAsyncCallback, or %NULL</doc>
+            <type name="TerminalSpawnAsyncCallback"
+                  c:type="VteTerminalSpawnAsyncCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data for @callback, or %NULL</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="spawn_sync"
               c:identifier="vte_terminal_spawn_sync"
               throws="1">
@@ -3649,6 +3897,40 @@ circumstances.</doc>
             c:type="VteTerminalClassPrivate"
             disguised="1">
     </record>
+    <callback name="TerminalSpawnAsyncCallback"
+              c:type="VteTerminalSpawnAsyncCallback"
+              version="0.48">
+      <doc xml:space="preserve">Callback for vte_terminal_spawn_async().
+
+On success, @pid contains the PID of the spawned process, and @error
+is %NULL.
+On failure, @pid is -1 and @error contains the error information.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="terminal" transfer-ownership="none">
+          <doc xml:space="preserve">the #VteTerminal</doc>
+          <type name="Terminal" c:type="VteTerminal*"/>
+        </parameter>
+        <parameter name="pid" transfer-ownership="none">
+          <doc xml:space="preserve">a #GPid</doc>
+          <type name="GLib.Pid" c:type="GPid"/>
+        </parameter>
+        <parameter name="error" transfer-ownership="none">
+          <doc xml:space="preserve">a #GError, or %NULL</doc>
+          <type name="GLib.Error" c:type="GError*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
+          <doc xml:space="preserve">user data that was passed to vte_terminal_spawn_async</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <enumeration name="WriteFlags"
                  glib:type-name="VteWriteFlags"
                  glib:get-type="vte_write_flags_get_type"

@@ -15,6 +15,8 @@ namespace Vte {
 		public bool get_size (out int rows, out int columns) throws GLib.Error;
 		public bool set_size (int rows, int columns) throws GLib.Error;
 		public bool set_utf8 (bool utf8) throws GLib.Error;
+		[Version (since = "0.48")]
+		public async bool spawn_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable, out GLib.Pid child_pid) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Pty.sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int fd { get; construct; }
@@ -252,6 +254,9 @@ namespace Vte {
 	}
 	[CCode (cheader_filename = "vte/vte.h", instance_pos = 3.9)]
 	public delegate bool SelectionFunc (Vte.Terminal terminal, long column, long row);
+	[CCode (cheader_filename = "vte/vte.h", instance_pos = 3.9)]
+	[Version (since = "0.48")]
+	public delegate void TerminalSpawnAsyncCallback (Vte.Terminal terminal, GLib.Pid pid, GLib.Error error);
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_MICRO_VERSION")]

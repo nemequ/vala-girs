@@ -31,6 +31,8 @@ namespace Gspell {
 		[CCode (has_construct_function = false)]
 		protected Entry ();
 		[Version (since = "1.4")]
+		public void basic_setup ();
+		[Version (since = "1.4")]
 		public unowned Gtk.Entry get_entry ();
 		[Version (since = "1.4")]
 		public static unowned Gspell.Entry get_from_gtk_entry (Gtk.Entry gtk_entry);
