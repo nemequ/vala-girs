@@ -316,6 +316,7 @@ namespace Egg {
 		[CCode (has_construct_function = false)]
 		protected TaskCache ();
 		public bool evict (void* key);
+		public void evict_all ();
 		public async void* get_async (void* key, bool force_update, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned GLib.Object? peek (void* key);
 		public void set_name (string name);

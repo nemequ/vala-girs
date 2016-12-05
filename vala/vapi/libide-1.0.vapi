@@ -226,6 +226,7 @@ namespace Ide {
 		[NoWrapper]
 		public virtual int compare (Ide.CompletionItem left, Ide.CompletionItem right);
 		public unowned string get_query ();
+		public uint get_size ();
 		public void invalidate_sort ();
 		public void present (Gtk.SourceCompletionProvider provider, Gtk.SourceCompletionContext context);
 		public bool replay (string query);

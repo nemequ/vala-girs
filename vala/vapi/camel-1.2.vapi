@@ -534,7 +534,7 @@ namespace Camel {
 		public FolderSearch ();
 		[Version (since = "2.26")]
 		public uint32 count (string expr, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public void free_result (GLib.GenericArray<string> result);
+		public void free_result (GLib.GenericArray<string>? result);
 		[Version (since = "3.24")]
 		public unowned Camel.MessageInfo? get_current_message_info ();
 		[Version (since = "3.24")]
@@ -545,7 +545,7 @@ namespace Camel {
 		public unowned GLib.GenericArray<string> get_summary ();
 		public bool get_summary_empty ();
 		public GLib.GenericArray<string> search (string expr, GLib.GenericArray<string> uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public void set_body_index (Camel.Index body_index);
+		public void set_body_index (Camel.Index? body_index);
 		[Version (since = "3.24")]
 		public void set_current_message_info (Camel.MessageInfo? info);
 		public void set_folder (Camel.Folder folder);
@@ -668,7 +668,7 @@ namespace Camel {
 		[CCode (has_construct_function = false)]
 		public HTMLParser ();
 		public unowned string attr (string name);
-		public unowned GLib.GenericArray<string> attr_list (ref GLib.GenericArray<string> values);
+		public unowned GLib.GenericArray<string> attr_list (ref GLib.GenericArray<string>? values);
 		public unowned string left (int lenp);
 		public void set_data (string start, int len, int last);
 		public Camel.HTMLParserState step (string datap, int lenp);
@@ -1050,7 +1050,7 @@ namespace Camel {
 		public size_t outsize;
 		[CCode (has_construct_function = false)]
 		public MimeFilter ();
-		public void backup (string data, size_t length);
+		public void backup ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] string[] data);
 		public virtual void complete ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] string[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out string[] @out, out size_t outprespace);
 		public virtual void filter ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] string[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out string[] @out, out size_t outprespace);
 		public virtual void reset ();
@@ -1434,6 +1434,9 @@ namespace Camel {
 		[CCode (has_construct_function = false, type = "GCancellable*")]
 		public Operation ();
 		public static void cancel_all ();
+		[CCode (has_construct_function = false, type = "GCancellable*")]
+		[Version (since = "3.24")]
+		public Operation.proxy (GLib.Cancellable? cancellable = null);
 		public signal void push_message (string object);
 		public virtual signal void status (string what, int pc);
 	}
@@ -1479,14 +1482,14 @@ namespace Camel {
 		public void add_variable (uint scope, string name, Camel.SExpTerm value);
 		public static void encode_bool (GLib.StringBuilder string, bool v_bool);
 		public static void encode_string (GLib.StringBuilder string, string v_string);
-		public unowned string error ();
+		public unowned string? error ();
 		public bool evaluate_occur_times (long start, long end);
 		public void input_file (int fd);
 		public void input_text (string text, int len);
 		public int parse ();
 		public void remove_symbol (uint scope, string name);
-		public void result_free (Camel.SExpResult term);
-		public void resultv_free (int argc, Camel.SExpResult argv);
+		public void result_free (Camel.SExpResult? result);
+		public void resultv_free ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] Camel.SExpResult[] argv);
 		public int set_scope (uint scope);
 		[Version (since = "2.26")]
 		public static string to_sql_sexp (string sexp);
@@ -2303,7 +2306,7 @@ namespace Camel {
 		public void* next;
 		public weak string name;
 		public weak string value;
-		public static void* list_decode (string @in);
+		public static void* list_decode (string? @in);
 		public static string list_format (void* @params);
 		public static void list_format_append (GLib.StringBuilder @out, void* @params);
 		public static void list_free (void* @params);
@@ -3164,10 +3167,10 @@ namespace Camel {
 	public delegate int ProviderAutoDetectFunc (Camel.URL url, GLib.HashTable<void*,void*> auto_detected) throws GLib.Error;
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	[Version (since = "3.4")]
-	public delegate unowned Camel.SExpResult? SExpFunc (Camel.SExp sexp, [CCode (array_length_cname = "argc", array_length_pos = 1.5)] ref Camel.SExpResult[] argv);
+	public delegate unowned Camel.SExpResult? SExpFunc (Camel.SExp sexp, [CCode (array_length_cname = "argc", array_length_pos = 1.5)] Camel.SExpResult[] argv);
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	[Version (since = "3.4")]
-	public delegate unowned Camel.SExpResult? SExpIFunc (Camel.SExp sexp, [CCode (array_length_cname = "argc", array_length_pos = 1.5)] ref Camel.SExpTerm[] argv);
+	public delegate unowned Camel.SExpResult? SExpIFunc (Camel.SExp sexp, [CCode (array_length_cname = "argc", array_length_pos = 1.5)] Camel.SExpTerm[] argv);
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	[Version (since = "3.2")]
 	public delegate void SessionCallback (Camel.Session session, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -3596,14 +3599,14 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string utf7_utf8 (string ptr);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static uint32 utf8_getc (uint8 ptr);
+	public static uint32 utf8_getc (ref uint8 ptr);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static uint32 utf8_getc_limit (uint8 ptr, uint8 end);
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "2.26")]
 	public static string utf8_make_valid (string text);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static void utf8_putc (uint8 ptr, uint32 c);
+	public static void utf8_putc (ref uint8 ptr, uint32 c);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string utf8_ucs2 (string ptr);
 	[CCode (cheader_filename = "camel/camel.h")]
