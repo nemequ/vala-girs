@@ -6,6 +6,7 @@ and/or use gtk-doc annotations.  -->
             xmlns="http://www.gtk.org/introspection/core/1.0"
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="Camel" version="1.2"/>
   <include name="GObject" version="2.0"/>
   <include name="Gio" version="2.0"/>
   <include name="Soup" version="2.4"/>
@@ -4416,6 +4417,14 @@ different authentication methods can use different names.</doc>
 #ESourceAutocomplete.  This is also used as a group name in key files.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SOURCE_EXTENSION_AUTOCONFIG"
+              value="Autoconfig"
+              c:type="E_SOURCE_EXTENSION_AUTOCONFIG"
+              version="3.24">
+      <doc xml:space="preserve">Pass this extension name to e_source_get_extension() to access
+#ESourceAutoconfig.  This is also used as a group name in key files.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SOURCE_EXTENSION_CALENDAR"
               value="Calendar"
               c:type="E_SOURCE_EXTENSION_CALENDAR"
@@ -5501,8 +5510,7 @@ If an error occurs, the functon will set @error and return %FALSE.</doc>
       </virtual-method>
       <method name="camel_configure_service"
               c:identifier="e_source_camel_configure_service"
-              version="3.6"
-              introspectable="0">
+              version="3.6">
         <doc xml:space="preserve">This function essentially glues together @source and @serivce so their
 configuration settings stay synchronized.  The glue itself is a shared
 #CamelSettings instance.
@@ -5519,7 +5527,7 @@ camel_session_add_service().</doc>
           </instance-parameter>
           <parameter name="service" transfer-ownership="none">
             <doc xml:space="preserve">a #CamelService</doc>
-            <type c:type="CamelService*"/>
+            <type name="Camel.Service" c:type="CamelService*"/>
           </parameter>
         </parameters>
       </method>
@@ -8892,6 +8900,109 @@ contact name or email address.</doc>
             c:type="ESourceAutocompletePrivate"
             disguised="1">
     </record>
+    <class name="SourceAutoconfig"
+           c:symbol-prefix="source_autoconfig"
+           c:type="ESourceAutoconfig"
+           version="3.24"
+           parent="SourceExtension"
+           glib:type-name="ESourceAutoconfig"
+           glib:get-type="e_source_autoconfig_get_type"
+           glib:type-struct="SourceAutoconfigClass">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <method name="dup_revision"
+              c:identifier="e_source_autoconfig_dup_revision"
+              version="3.24">
+        <doc xml:space="preserve">Thread-safe variation of e_source_autoconfig_get_revision().
+Use this function when accessing @extension from multiple threads.
+
+The returned string should be freed with g_free() when no longer needed.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly-allocated copy of #ESourceAutoconfig:revision</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceAutoconfig</doc>
+            <type name="SourceAutoconfig" c:type="ESourceAutoconfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_revision"
+              c:identifier="e_source_autoconfig_get_revision"
+              version="3.24">
+        <doc xml:space="preserve">Returns the revision of a data source. This maps a particular version of a
+system-wide source to a user-specific source.
+
+If doesn't match, the system-wide source will be copied to the user-specific
+evolution config directory, preserving the already present fields that are
+not defined by the system-wide source.
+
+If it matches, no copying is done.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">revision of the data source</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceAutoconfig</doc>
+            <type name="SourceAutoconfig" c:type="ESourceAutoconfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_revision"
+              c:identifier="e_source_autoconfig_set_revision"
+              version="3.24">
+        <doc xml:space="preserve">Sets the revision used to map a particular version of a system-wide source
+to a user-specific source.
+
+If doesn't match, the system-wide source will be copied to the user-specific
+evolution config directory, preserving the already present fields that are
+not defined by the system-wide source.
+
+If it matches, no copying is done.
+
+The internal copy of @revision is automatically stripped of leading and
+trailing whitespace.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceAutoconfig</doc>
+            <type name="SourceAutoconfig" c:type="ESourceAutoconfig*"/>
+          </instance-parameter>
+          <parameter name="revision" transfer-ownership="none">
+            <doc xml:space="preserve">a revision</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="revision"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="SourceExtension" c:type="ESourceExtension"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="SourceAutoconfigPrivate"
+              c:type="ESourceAutoconfigPrivate*"/>
+      </field>
+    </class>
+    <record name="SourceAutoconfigClass"
+            c:type="ESourceAutoconfigClass"
+            glib:is-gtype-struct-for="SourceAutoconfig">
+      <field name="parent_class">
+        <type name="SourceExtensionClass" c:type="ESourceExtensionClass"/>
+      </field>
+    </record>
+    <record name="SourceAutoconfigPrivate"
+            c:type="ESourceAutoconfigPrivate"
+            disguised="1">
+    </record>
     <class name="SourceBackend"
            c:symbol-prefix="source_backend"
            c:type="ESourceBackend"
@@ -9105,8 +9216,7 @@ or library initialization.</doc>
       </function>
       <method name="get_settings"
               c:identifier="e_source_camel_get_settings"
-              version="3.6"
-              introspectable="0">
+              version="3.6">
         <doc xml:space="preserve">Returns @extension's #ESourceCamel:settings instance, pre-configured
 from the #ESource to which @extension belongs.  Changes to the #ESource
 will automatically propagate to the #ESourceCamel:settings instance and
@@ -9116,7 +9226,7 @@ This is essentially the glue that binds #ESource to #CamelService.
 See e_source_camel_configure_service().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a configured #CamelSettings instance</doc>
-          <type c:type="CamelSettings*"/>
+          <type name="Camel.Settings" c:type="CamelSettings*"/>
         </return-value>
         <parameters>
           <instance-parameter name="extension" transfer-ownership="none">
@@ -9125,8 +9235,8 @@ See e_source_camel_configure_service().</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="settings" introspectable="0" transfer-ownership="none">
-        <type/>
+      <property name="settings" transfer-ownership="none">
+        <type name="Camel.Settings"/>
       </property>
       <field name="parent" readable="0" private="1">
         <type name="SourceExtension" c:type="ESourceExtension"/>

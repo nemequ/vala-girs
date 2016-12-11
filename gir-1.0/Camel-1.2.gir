@@ -2444,29 +2444,12 @@ execute at all</doc>
       <field name="children" writable="1">
         <type name="GLib.Queue" c:type="GQueue"/>
       </field>
-      <record name="sign" c:type="sign">
-        <field name="status" writable="1">
-          <type name="CipherValiditySign" c:type="CamelCipherValiditySign"/>
-        </field>
-        <field name="description" writable="1">
-          <type name="utf8" c:type="gchar*"/>
-        </field>
-        <field name="signers" writable="1">
-          <type name="GLib.Queue" c:type="GQueue"/>
-        </field>
-      </record>
-      <record name="encrypt" c:type="encrypt">
-        <field name="status" writable="1">
-          <type name="CipherValidityEncrypt"
-                c:type="CamelCipherValidityEncrypt"/>
-        </field>
-        <field name="description" writable="1">
-          <type name="utf8" c:type="gchar*"/>
-        </field>
-        <field name="encrypters" writable="1">
-          <type name="GLib.Queue" c:type="GQueue"/>
-        </field>
-      </record>
+      <field name="sign" writable="1">
+        <type name="gpointer" c:type="_sign"/>
+      </field>
+      <field name="encrypt" writable="1">
+        <type name="gpointer" c:type="_encrypt"/>
+      </field>
       <constructor name="new" c:identifier="camel_cipher_validity_new">
         <return-value transfer-ownership="full">
           <type name="CipherValidity" c:type="CamelCipherValidity*"/>
@@ -2788,16 +2771,22 @@ functions cannot be %NULL.</doc>
               c:identifier="CAMEL_CIPHER_VALIDITY_SIGN_NEED_PUBLIC_KEY">
       </member>
     </enumeration>
-    <enumeration name="CompareType" version="3.24" c:type="CamelCompareType">
+    <enumeration name="CompareType"
+                 version="3.24"
+                 glib:type-name="CamelCompareType"
+                 glib:get-type="camel_compare_type_get_type"
+                 c:type="CamelCompareType">
       <doc xml:space="preserve">Declares the compare type to use.</doc>
       <member name="insensitive"
               value="0"
-              c:identifier="CAMEL_COMPARE_CASE_INSENSITIVE">
+              c:identifier="CAMEL_COMPARE_CASE_INSENSITIVE"
+              glib:nick="insensitive">
         <doc xml:space="preserve">compare case insensitively</doc>
       </member>
       <member name="sensitive"
               value="1"
-              c:identifier="CAMEL_COMPARE_CASE_SENSITIVE">
+              c:identifier="CAMEL_COMPARE_CASE_SENSITIVE"
+              glib:nick="sensitive">
         <doc xml:space="preserve">compare case sensitively</doc>
       </member>
     </enumeration>
@@ -11257,17 +11246,48 @@ the folder's type.</doc>
               glib:nick="type-tasks">
         <doc xml:space="preserve">The folder contains tasks, instead of mail messages.</doc>
       </member>
+      <member name="type_all"
+              value="10240"
+              c:identifier="CAMEL_FOLDER_TYPE_ALL"
+              glib:nick="type-all">
+        <doc xml:space="preserve">This folder contains all the messages. Used by RFC 6154.</doc>
+      </member>
+      <member name="type_archive"
+              value="11264"
+              c:identifier="CAMEL_FOLDER_TYPE_ARCHIVE"
+              glib:nick="type-archive">
+        <doc xml:space="preserve">This folder contains archived messages. Used by RFC 6154.</doc>
+      </member>
+      <member name="type_drafts"
+              value="12288"
+              c:identifier="CAMEL_FOLDER_TYPE_DRAFTS"
+              glib:nick="type-drafts">
+        <doc xml:space="preserve">This folder contains drafts. Used by RFC 6154.</doc>
+      </member>
       <member name="readonly"
               value="65536"
               c:identifier="CAMEL_FOLDER_READONLY"
               glib:nick="readonly">
         <doc xml:space="preserve">The folder is read only.</doc>
       </member>
+      <member name="writeonly"
+              value="131072"
+              c:identifier="CAMEL_FOLDER_WRITEONLY"
+              glib:nick="writeonly">
+        <doc xml:space="preserve">The folder is write only.</doc>
+      </member>
       <member name="flagged"
               value="262144"
               c:identifier="CAMEL_FOLDER_FLAGGED"
               glib:nick="flagged">
         <doc xml:space="preserve">This folder contains flagged messages. Some clients call this "starred". Used by RFC 6154.</doc>
+      </member>
+      <member name="flags_last"
+              value="16777216"
+              c:identifier="CAMEL_FOLDER_FLAGS_LAST"
+              glib:nick="flags-last">
+        <doc xml:space="preserve">The last define bit of the flags. The #CamelProvider can use this and
+   upper bits to store its own flags.</doc>
       </member>
     </bitfield>
     <record name="FolderPrivate" c:type="CamelFolderPrivate" disguised="1">
@@ -13582,7 +13602,7 @@ encryption.</doc>
       <constructor name="new" c:identifier="camel_html_parser_new">
         <doc xml:space="preserve">Create a new CamelHTMLParser object.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A new CamelHTMLParser widget.</doc>
+          <doc xml:space="preserve">A new #CamelHTMLParser object</doc>
           <type name="HTMLParser" c:type="CamelHTMLParser*"/>
         </return-value>
       </constructor>
@@ -21568,7 +21588,7 @@ parts will be encoded as binary and 8bit textual parts will be encoded as 8bit.<
       <constructor name="new" c:identifier="camel_mime_parser_new">
         <doc xml:space="preserve">Create a new CamelMimeParser object.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A new CamelMimeParser widget.</doc>
+          <doc xml:space="preserve">A new #CamelMimeParser object</doc>
           <type name="MimeParser" c:type="CamelMimeParser*"/>
         </return-value>
       </constructor>
@@ -27226,6 +27246,7 @@ when the @result is %NULL.</doc>
       </return-value>
       <parameters>
         <parameter name="sexp" transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelSExp</doc>
           <type name="SExp" c:type="CamelSExp*"/>
         </parameter>
         <parameter name="argc" transfer-ownership="none">
@@ -33878,10 +33899,12 @@ folder exists</doc>
       <member name="invalid"
               value="0"
               c:identifier="CAMEL_STORE_ERROR_INVALID">
+        <doc xml:space="preserve">an invalid store operation had been requested</doc>
       </member>
       <member name="no_folder"
               value="1"
               c:identifier="CAMEL_STORE_ERROR_NO_FOLDER">
+        <doc xml:space="preserve">requested operation cannot be performed with the given folder</doc>
       </member>
     </enumeration>
     <bitfield name="StoreFlags"
@@ -34120,10 +34143,80 @@ folder exists</doc>
               c:identifier="CAMEL_STORE_INFO_FOLDER_SHARED_BY_ME"
               glib:nick="shared-by-me">
       </member>
+      <member name="type_normal"
+              value="0"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_NORMAL"
+              glib:nick="type-normal">
+      </member>
+      <member name="type_inbox"
+              value="1024"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_INBOX"
+              glib:nick="type-inbox">
+      </member>
+      <member name="type_outbox"
+              value="2048"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_OUTBOX"
+              glib:nick="type-outbox">
+      </member>
+      <member name="type_trash"
+              value="3072"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_TRASH"
+              glib:nick="type-trash">
+      </member>
+      <member name="type_junk"
+              value="4096"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_JUNK"
+              glib:nick="type-junk">
+      </member>
+      <member name="type_sent"
+              value="5120"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_SENT"
+              glib:nick="type-sent">
+      </member>
+      <member name="type_contacts"
+              value="6144"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_CONTACTS"
+              glib:nick="type-contacts">
+      </member>
+      <member name="type_events"
+              value="7168"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_EVENTS"
+              glib:nick="type-events">
+      </member>
+      <member name="type_memos"
+              value="8192"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_MEMOS"
+              glib:nick="type-memos">
+      </member>
+      <member name="type_tasks"
+              value="9216"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_TASKS"
+              glib:nick="type-tasks">
+      </member>
+      <member name="type_all"
+              value="10240"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_ALL"
+              glib:nick="type-all">
+      </member>
+      <member name="type_archive"
+              value="11264"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_ARCHIVE"
+              glib:nick="type-archive">
+      </member>
+      <member name="type_drafts"
+              value="12288"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_TYPE_DRAFTS"
+              glib:nick="type-drafts">
+      </member>
       <member name="readonly"
               value="65536"
               c:identifier="CAMEL_STORE_INFO_FOLDER_READONLY"
               glib:nick="readonly">
+      </member>
+      <member name="writeonly"
+              value="131072"
+              c:identifier="CAMEL_STORE_INFO_FOLDER_WRITEONLY"
+              glib:nick="writeonly">
       </member>
       <member name="flagged"
               value="262144"
@@ -35145,6 +35238,7 @@ along with setting errno.</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -35554,13 +35648,15 @@ along with setting errno.</doc>
       <constructor name="new"
                    c:identifier="camel_stream_filter_new"
                    version="2.32">
-        <doc xml:space="preserve">Create a new #CamelStreamFilter object.</doc>
+        <doc xml:space="preserve">Create a new #CamelStreamFilter object. The @source stream
+is referenced, thus the caller can unref it, if not needed.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #CamelStreamFilter object.</doc>
           <type name="Stream" c:type="CamelStream*"/>
         </return-value>
         <parameters>
           <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelStream to filter</doc>
             <type name="Stream" c:type="CamelStream*"/>
           </parameter>
         </parameters>
@@ -38013,23 +38109,29 @@ functions below.</doc>
       <constructor name="new"
                    c:identifier="camel_vee_data_cache_new"
                    version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #CamelVeeDataCache; unref it
+   with g_object_unref(), when no longer needed.</doc>
           <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
         </return-value>
       </constructor>
       <method name="add_subfolder"
               c:identifier="camel_vee_data_cache_add_subfolder"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Adds the @subfolder to the @data_cache to be tracked by it. The @subfolder
+is referenced for later use. The function does nothing when the @subfolder
+is already in the @data_cache. The subfolders can be removed with
+camel_vee_data_cache_remove_subfolder().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
         </parameters>
@@ -38037,21 +38139,24 @@ functions below.</doc>
       <method name="contains_message_info_data"
               c:identifier="camel_vee_data_cache_contains_message_info_data"
               version="3.6">
-        <doc xml:space="preserve">Returns whether data_cache contains certain UID for certain folder;
-instead of camel_vee_data_cache_get_message_info_data() only
-returns FALSE if not, while camel_vee_data_cache_get_message_info_data()
+        <doc xml:space="preserve">Returns whether data_cache contains given @orig_message_uid for the given @folder.
+Unlike camel_vee_data_cache_get_message_info_data(), this only
+returns %FALSE if not, while camel_vee_data_cache_get_message_info_data()
 auto-adds it to data_cache.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder to which the @orig_message_uid belongs</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
           <parameter name="orig_message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">a message UID from the @folder to check</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38059,28 +38164,31 @@ auto-adds it to data_cache.</doc>
       <method name="foreach_message_info_data"
               c:identifier="camel_vee_data_cache_foreach_message_info_data"
               version="3.6">
+        <doc xml:space="preserve">Calls the @func for each message info data from the given @fromfolder</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="fromfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
           <parameter name="func"
                      transfer-ownership="none"
                      scope="call"
                      closure="2">
-            <doc xml:space="preserve">
-FIXME Document me!</doc>
+            <doc xml:space="preserve">a #CamelForeachInfoData function to call</doc>
             <type name="ForeachInfoData" c:type="CamelForeachInfoData"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">user data to pass to the @func</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -38088,18 +38196,26 @@ FIXME Document me!</doc>
       <method name="get_message_info_data"
               c:identifier="camel_vee_data_cache_get_message_info_data"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Returns a referenced #CamelVeeMessageInfoData referencing the given @folder
+and @orig_message_uid. If it's not part of the @data_cache, then it is
+created and auto-added. Use camel_vee_data_cache_contains_message_info_data()
+when you only want to check the existence, without adding it to the @data_cache.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a referenced #CamelVeeMessageInfoData; unref it
+   with g_object_unref(), when no longer needed.</doc>
           <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder to which the @orig_message_uid belongs</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
           <parameter name="orig_message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">a message UID from the @folder to return</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38107,15 +38223,20 @@ FIXME Document me!</doc>
       <method name="get_message_info_data_by_vuid"
               c:identifier="camel_vee_data_cache_get_message_info_data_by_vuid"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a referenced #CamelVeeMessageInfoData,
+   which corresponds to the given @vee_message_uid, or %NULL, when no such
+   message info with that virtual UID exists. Unref it with g_object_unref(),
+   when no longer needed.</doc>
           <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="vee_message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">a message UID in the virtual folder</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38123,15 +38244,19 @@ FIXME Document me!</doc>
       <method name="get_subfolder_data"
               c:identifier="camel_vee_data_cache_get_subfolder_data"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Returns a #CamelVeeSubfolderData for the given @folder.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a referenced #CamelVeeSubfolderData; unref it
+   with g_object_unref(), when no longer needed.</doc>
           <type name="VeeSubfolderData" c:type="CamelVeeSubfolderData*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder for which to return subfolder data</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
         </parameters>
@@ -38139,15 +38264,17 @@ FIXME Document me!</doc>
       <method name="remove_message_info_data"
               c:identifier="camel_vee_data_cache_remove_message_info_data"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Removes given @mi_data from the @data_cache.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="mi_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeMessageInfoData to remove</doc>
             <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
           </parameter>
         </parameters>
@@ -38155,15 +38282,20 @@ FIXME Document me!</doc>
       <method name="remove_subfolder"
               c:identifier="camel_vee_data_cache_remove_subfolder"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Removes given @subfolder from the @data_cache, which had been
+previously added with camel_vee_data_cache_add_subfolder().
+The function does nothing, when the @subfolder is not part
+of the @data_cache.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="data_cache" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeDataCache</doc>
             <type name="VeeDataCache" c:type="CamelVeeDataCache*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder to remove</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
         </parameters>
@@ -38199,9 +38331,9 @@ FIXME Document me!</doc>
            glib:get-type="camel_vee_folder_get_type"
            glib:type-struct="VeeFolderClass">
       <constructor name="new" c:identifier="camel_vee_folder_new">
-        <doc xml:space="preserve">Create a new CamelVeeFolder object.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A new CamelVeeFolder widget.</doc>
+          <doc xml:space="preserve">A new @CamelVeeFolder object. Unref it
+   with g_object_unref() when no longer needed.</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -38226,7 +38358,7 @@ FIXME Document me!</doc>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
-            <doc xml:space="preserve">Virtual Folder object</doc>
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
@@ -38237,6 +38369,7 @@ FIXME Document me!</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -38264,7 +38397,7 @@ FIXME Document me!</doc>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
-            <doc xml:space="preserve">Virtual Folder object</doc>
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
@@ -38287,7 +38420,7 @@ FIXME Document me!</doc>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
-            <doc xml:space="preserve">Virtual Folder object</doc>
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
@@ -38298,19 +38431,25 @@ FIXME Document me!</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="set_expression" invoker="set_expression">
+      <virtual-method name="set_expression"
+                      invoker="set_expression"
+                      version="3.6">
+        <doc xml:space="preserve">Sets an SExp expression to be used for this @vfolder</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="expression" transfer-ownership="none">
+            <doc xml:space="preserve">an SExp expression to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38322,7 +38461,7 @@ FIXME Document me!</doc>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
-            <doc xml:space="preserve">Virtual Folder object</doc>
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
@@ -38333,6 +38472,7 @@ FIXME Document me!</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -38340,18 +38480,30 @@ FIXME Document me!</doc>
       <method name="add_vuid"
               c:identifier="camel_vee_folder_add_vuid"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Adds the @mi_data to the @vfolder. The @changes can be
+updated with the made change and later used to notify others
+with came_folder_changed() on the @vfolder. This can be used
+only for the Unmatched folder.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
-          <parameter name="mi_data" transfer-ownership="none">
-            <type name="VeeMessageInfoData" c:type="gpointer*"/>
+          <parameter name="mi_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #CamelVeeMessageInfoData to add</doc>
+            <type name="gpointer" c:type="_CamelVeeMessageInfoData*"/>
           </parameter>
-          <parameter name="changes" transfer-ownership="none">
+          <parameter name="changes"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional #CamelFolderChangeInfo to update with the made change, or %NULL</doc>
             <type name="FolderChangeInfo" c:type="CamelFolderChangeInfo*"/>
           </parameter>
         </parameters>
@@ -38376,12 +38528,14 @@ called by the descendants of #CamelVeeFolder.</doc>
       <method name="get_auto_update"
               c:identifier="camel_vee_folder_get_auto_update"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the @vfolder can automatically update when any
+   of its subfolders changes.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
         </parameters>
@@ -38389,12 +38543,13 @@ called by the descendants of #CamelVeeFolder.</doc>
       <method name="get_expression"
               c:identifier="camel_vee_folder_get_expression"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a SExp expression used for this @vfolder</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
         </parameters>
@@ -38414,20 +38569,28 @@ called by the descendants of #CamelVeeFolder.</doc>
         </parameters>
       </method>
       <method name="get_location" c:identifier="camel_vee_folder_get_location">
-        <doc xml:space="preserve">Find the real folder (and uid)</doc>
+        <doc xml:space="preserve">Find the real folder (and message info UID) for the given @vinfo.
+When the @realuid is not %NULL and it's set, then use g_free() to
+free it, when no longer needed.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a real (not virtual) #CamelFolder, which the @vinfo is for.</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
           <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="vinfo" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeMessageInfo to search for</doc>
             <type name="VeeMessageInfo" c:type="const CamelVeeMessageInfo*"/>
           </parameter>
-          <parameter name="realuid" transfer-ownership="none">
-            <doc xml:space="preserve">if not NULL, set to the uid of the real message, must be
-g_free'd by caller.</doc>
+          <parameter name="realuid"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">if not %NULL, set to the UID of the real message info</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -38435,15 +38598,18 @@ g_free'd by caller.</doc>
       <method name="get_vee_uid_folder"
               c:identifier="camel_vee_folder_get_vee_uid_folder"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a #CamelFolder to which the @vee_message_info
+   belongs, or %NULL, when it could not be found.</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="vf" transfer-ownership="none">
+          <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="vee_message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">a virtual message info UID</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38479,7 +38645,7 @@ These ignored changes are accumulated and used on folder refresh.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
-            <doc xml:space="preserve">Virtual Folder object</doc>
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
@@ -38503,7 +38669,7 @@ These ignored changes are accumulated and used on folder refresh.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
-            <doc xml:space="preserve">Virtual Folder object</doc>
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
@@ -38514,6 +38680,7 @@ These ignored changes are accumulated and used on folder refresh.</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -38542,18 +38709,30 @@ ignore event request.</doc>
       <method name="remove_vuid"
               c:identifier="camel_vee_folder_remove_vuid"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Removes given @mi_data from the @vfolder. The @changes can be
+updated with the made change and later used to notify others
+with came_folder_changed() on the @vfolder. This can be used
+only for the Unmatched folder.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
-          <parameter name="mi_data" transfer-ownership="none">
-            <type name="VeeMessageInfoData" c:type="gpointer*"/>
+          <parameter name="mi_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #CamelVeeMessageInfoData to remove</doc>
+            <type name="gpointer" c:type="_CamelVeeMessageInfoData*"/>
           </parameter>
-          <parameter name="changes" transfer-ownership="none">
+          <parameter name="changes"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional #CamelFolderChangeInfo to update with the made change, or %NULL</doc>
             <type name="FolderChangeInfo" c:type="CamelFolderChangeInfo*"/>
           </parameter>
         </parameters>
@@ -38561,29 +38740,36 @@ ignore event request.</doc>
       <method name="set_auto_update"
               c:identifier="camel_vee_folder_set_auto_update"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Sets whether the @vfolder can automatically update when of its
+subfolders changes.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="auto_update" transfer-ownership="none">
+            <doc xml:space="preserve">a value to set</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_expression"
-              c:identifier="camel_vee_folder_set_expression">
+              c:identifier="camel_vee_folder_set_expression"
+              version="3.6">
+        <doc xml:space="preserve">Sets an SExp expression to be used for this @vfolder</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
-          <parameter name="expr" transfer-ownership="none">
+          <parameter name="expression" transfer-ownership="none">
+            <doc xml:space="preserve">an SExp expression to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38594,10 +38780,12 @@ ignore event request.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="vf" transfer-ownership="none">
+          <instance-parameter name="vfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeFolder</doc>
             <type name="VeeFolder" c:type="CamelVeeFolder*"/>
           </instance-parameter>
           <parameter name="folders" transfer-ownership="none">
+            <doc xml:space="preserve">a #GList of #CamelFolder to add</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="Folder"/>
             </type>
@@ -38606,6 +38794,7 @@ ignore event request.</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -38633,7 +38822,7 @@ ignore event request.</doc>
           </return-value>
           <parameters>
             <parameter name="vfolder" transfer-ownership="none">
-              <doc xml:space="preserve">Virtual Folder object</doc>
+              <doc xml:space="preserve">a #CamelVeeFolder</doc>
               <type name="VeeFolder" c:type="CamelVeeFolder*"/>
             </parameter>
             <parameter name="subfolder" transfer-ownership="none">
@@ -38644,6 +38833,7 @@ ignore event request.</doc>
                        transfer-ownership="none"
                        nullable="1"
                        allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -38656,7 +38846,7 @@ ignore event request.</doc>
           </return-value>
           <parameters>
             <parameter name="vfolder" transfer-ownership="none">
-              <doc xml:space="preserve">Virtual Folder object</doc>
+              <doc xml:space="preserve">a #CamelVeeFolder</doc>
               <type name="VeeFolder" c:type="CamelVeeFolder*"/>
             </parameter>
             <parameter name="subfolder" transfer-ownership="none">
@@ -38667,6 +38857,7 @@ ignore event request.</doc>
                        transfer-ownership="none"
                        nullable="1"
                        allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -38679,7 +38870,7 @@ ignore event request.</doc>
           </return-value>
           <parameters>
             <parameter name="vfolder" transfer-ownership="none">
-              <doc xml:space="preserve">Virtual Folder object</doc>
+              <doc xml:space="preserve">a #CamelVeeFolder</doc>
               <type name="VeeFolder" c:type="CamelVeeFolder*"/>
             </parameter>
             <parameter name="subfolder" transfer-ownership="none">
@@ -38703,9 +38894,11 @@ ignore event request.</doc>
           </return-value>
           <parameters>
             <parameter name="vfolder" transfer-ownership="none">
+              <doc xml:space="preserve">a #CamelVeeFolder</doc>
               <type name="VeeFolder" c:type="CamelVeeFolder*"/>
             </parameter>
             <parameter name="expression" transfer-ownership="none">
+              <doc xml:space="preserve">an SExp expression to set</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
@@ -38838,15 +39031,19 @@ functions below.</doc>
       <constructor name="new"
                    c:identifier="camel_vee_message_info_data_new"
                    version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #CamelVeeMessageInfoData which references
+   message info with UID @orig_message_uid froma folder managed by @subfolder_data.
+   Unref the returned object with g_object_unref(), when no longer needed.</doc>
           <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
         </return-value>
         <parameters>
           <parameter name="subfolder_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeSubfolderData</doc>
             <type name="VeeSubfolderData" c:type="CamelVeeSubfolderData*"/>
           </parameter>
           <parameter name="orig_message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">original message info's UID</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -38854,12 +39051,14 @@ functions below.</doc>
       <method name="get_orig_message_uid"
               c:identifier="camel_vee_message_info_data_get_orig_message_uid"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The original message info's UID, for which
+   the @data had been created.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">a CamelVeeMessageInfoData</doc>
             <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
           </instance-parameter>
         </parameters>
@@ -38867,12 +39066,14 @@ functions below.</doc>
       <method name="get_subfolder_data"
               c:identifier="camel_vee_message_info_data_get_subfolder_data"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #CamelVeeSubfolderData for which
+   the @data had been created.</doc>
           <type name="VeeSubfolderData" c:type="CamelVeeSubfolderData*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">a CamelVeeMessageInfoData</doc>
             <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
           </instance-parameter>
         </parameters>
@@ -38880,12 +39081,14 @@ functions below.</doc>
       <method name="get_vee_message_uid"
               c:identifier="camel_vee_message_info_data_get_vee_message_uid"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Message UID corresponding to this virtual
+   message info @data.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">a CamelVeeMessageInfoData</doc>
             <type name="VeeMessageInfoData" c:type="CamelVeeMessageInfoData*"/>
           </instance-parameter>
         </parameters>
@@ -39152,12 +39355,16 @@ functions below.</doc>
       <constructor name="new"
                    c:identifier="camel_vee_subfolder_data_new"
                    version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Creates a new #CamelVeeSubfolderData object for the given @folder.
+The @folder is referenced for later use.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #CamelVeeSubfolderData. Use g_object_unref()
+   to unref it, when no longer needed.</doc>
           <type name="VeeSubfolderData" c:type="CamelVeeSubfolderData*"/>
         </return-value>
         <parameters>
           <parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder for which create the object</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
         </parameters>
@@ -39165,12 +39372,13 @@ functions below.</doc>
       <method name="get_folder"
               c:identifier="camel_vee_subfolder_data_get_folder"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelFolder to which this @data was created</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">a CamelVeeSubfolderData</doc>
             <type name="VeeSubfolderData" c:type="CamelVeeSubfolderData*"/>
           </instance-parameter>
         </parameters>
@@ -39178,12 +39386,13 @@ functions below.</doc>
       <method name="get_folder_id"
               c:identifier="camel_vee_subfolder_data_get_folder_id"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a folder ID for this subfolder @data</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">a CamelVeeSubfolderData</doc>
             <type name="VeeSubfolderData" c:type="CamelVeeSubfolderData*"/>
           </instance-parameter>
         </parameters>
@@ -39253,18 +39462,24 @@ summary data from disk, if it exists.</doc>
       <method name="get_uids_for_subfolder"
               c:identifier="camel_vee_summary_get_uids_for_subfolder"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Returns a hash table of all virtual message info UID-s known to the @summary.
+The key of the hash table is the virtual message info UID, the value is
+only the number 1.</doc>
         <return-value transfer-ownership="container">
+          <doc xml:space="preserve">a #GHashTable with
+   all the virtual mesasge info UID-s knwn to the @summary.</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
             <type name="utf8"/>
-            <type name="utf8"/>
+            <type name="gint"/>
           </type>
         </return-value>
         <parameters>
           <instance-parameter name="summary" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeSummary</doc>
             <type name="VeeSummary" c:type="CamelVeeSummary*"/>
           </instance-parameter>
           <parameter name="subfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
         </parameters>
@@ -39272,18 +39487,21 @@ summary data from disk, if it exists.</doc>
       <method name="remove"
               c:identifier="camel_vee_summary_remove"
               version="3.6">
-        <doc xml:space="preserve">FIXME Document me!</doc>
+        <doc xml:space="preserve">Removes the given @vuid of the @subfolder from the @summary.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="summary" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelVeeSummary</doc>
             <type name="VeeSummary" c:type="CamelVeeSummary*"/>
           </instance-parameter>
           <parameter name="vuid" transfer-ownership="none">
+            <doc xml:space="preserve">a virtual message info UID to remove</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="subfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder to which @vuid belongs</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </parameter>
         </parameters>
@@ -39375,6 +39593,18 @@ on @summary as well.</doc>
         <type name="gpointer" c:type="_camel_search_word**"/>
       </field>
     </record>
+    <record name="_encrypt" c:type="_encrypt">
+      <field name="status" writable="1">
+        <type name="CipherValidityEncrypt"
+              c:type="CamelCipherValidityEncrypt"/>
+      </field>
+      <field name="description" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="encrypters" writable="1">
+        <type name="GLib.Queue" c:type="GQueue"/>
+      </field>
+    </record>
     <bitfield name="_search_flags_t" c:type="camel_search_flags_t">
       <member name="start" value="1" c:identifier="CAMEL_SEARCH_MATCH_START">
       </member>
@@ -39435,6 +39665,17 @@ on @summary as well.</doc>
       <member name="8bit" value="4" c:identifier="CAMEL_SEARCH_WORD_8BIT">
       </member>
     </enumeration>
+    <record name="_sign" c:type="_sign">
+      <field name="status" writable="1">
+        <type name="CipherValiditySign" c:type="CamelCipherValiditySign"/>
+      </field>
+      <field name="description" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="signers" writable="1">
+        <type name="GLib.Queue" c:type="GQueue"/>
+      </field>
+    </record>
     <function name="async_closure_callback"
               c:identifier="camel_async_closure_callback"
               moved-to="AsyncClosure.callback"
@@ -42473,13 +42714,16 @@ done by the CamelTrie will be case insensitive.</doc>
       </parameters>
     </function>
     <function name="ucs2_utf8" c:identifier="camel_ucs2_utf8">
-      <doc xml:space="preserve">Convert a ucs2 string into a utf8 one.  The ucs2 string is treated
-as network byte ordered, and terminated with a 16 bit NUL.</doc>
+      <doc xml:space="preserve">Convert a ucs2 string into a UTF-8 one. The ucs2 string is treated
+as network byte ordered, and terminated with a 16-bit %NULL.</doc>
       <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The converted string. Free it with g_free(),
+   when no longer needed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
         <parameter name="ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a ucs2 string to convert</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -42774,27 +43018,29 @@ to escape (or %NULL)</doc>
       </parameters>
     </function>
     <function name="utf7_utf8" c:identifier="camel_utf7_utf8">
-      <doc xml:space="preserve">Convert a modified utf7 string to utf8.  If the utf7 string
+      <doc xml:space="preserve">Convert a modified UTF-7 string to UTF-8.  If the UTF-7 string
 contains 8 bit characters, they are treated as iso-8859-1.
 
-The IMAP rules [rfc2060] are used in the utf7 encoding.</doc>
+The IMAP rules [rfc2060] are used in the UTF-7 encoding.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">The converted string.</doc>
+        <doc xml:space="preserve">The converted string. Free it with g_free(),
+   when no longer needed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
         <parameter name="ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a UTF-7 string to convert</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
     <function name="utf8_getc" c:identifier="camel_utf8_getc">
-      <doc xml:space="preserve">Get a Unicode character from a utf8 stream.  @ptr will be advanced
+      <doc xml:space="preserve">Get a Unicode character from a UTF-8 stream.  @ptr will be advanced
 to the next character position.  Invalid utf8 characters will be
-silently skipped.  @ptr should point to a NUL terminated array.</doc>
+silently skipped. The @ptr should point to a NUL terminated array.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">The next Unicode character.  @ptr will be advanced to
-the next character always.</doc>
+        <doc xml:space="preserve">The next Unicode character. The @ptr will be advanced to
+   the next character always.</doc>
         <type name="guint32" c:type="guint32"/>
       </return-value>
       <parameters>
@@ -42802,27 +43048,31 @@ the next character always.</doc>
                    direction="inout"
                    caller-allocates="0"
                    transfer-ownership="full">
-          <doc xml:space="preserve">a pointer to read the characted from</doc>
+          <doc xml:space="preserve">a pointer to read the character from</doc>
           <type name="guint8" c:type="const guchar**"/>
         </parameter>
       </parameters>
     </function>
     <function name="utf8_getc_limit" c:identifier="camel_utf8_getc_limit">
-      <doc xml:space="preserve">Get the next utf8 gchar at @ptr, and return it, advancing @ptr to
-the next character.  If @end is reached before a full utf8
+      <doc xml:space="preserve">Get the next UTF-8 gchar at @ptr, and return it, advancing @ptr to
+the next character. If @end is reached before a full UTF-8
 character can be read, then the invalid Unicode gchar 0xffff is
 returned as a sentinel (Unicode 3.1, section 2.7), and @ptr is not
 advanced.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">The next utf8 char, or 0xffff.</doc>
+        <doc xml:space="preserve">The next UTF-8 char, or 0xffff.</doc>
         <type name="guint32" c:type="guint32"/>
       </return-value>
       <parameters>
-        <parameter name="ptr" transfer-ownership="none">
+        <parameter name="ptr"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">a pointer to read the character from</doc>
           <type name="guint8" c:type="const guchar**"/>
         </parameter>
         <parameter name="end" transfer-ownership="none">
-          <doc xml:space="preserve">must not be NULL.</doc>
+          <doc xml:space="preserve">upper limit for the read, must not be %NULL</doc>
           <type name="guint8" c:type="const guchar*"/>
         </parameter>
       </parameters>
@@ -42831,19 +43081,22 @@ advanced.</doc>
               c:identifier="camel_utf8_make_valid"
               version="2.26">
       <doc xml:space="preserve">Ensures the returned text will be valid UTF-8 string, with incorrect letters
-changed to question marks. Returned pointer should be freed with g_free.</doc>
+changed to question marks.</doc>
       <return-value transfer-ownership="full">
+        <doc xml:space="preserve">Valid UTF-8 string, with replaced incorrect letters.
+   Free it with g_free(), when no longer needed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
         <parameter name="text" transfer-ownership="none">
+          <doc xml:space="preserve">a text to make valid</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
     <function name="utf8_putc" c:identifier="camel_utf8_putc">
-      <doc xml:space="preserve">Output a 32 bit unicode character as utf8 octets.  At most 4 octets will
-be written to @ptr.  @ptr will be advanced to the next character position.</doc>
+      <doc xml:space="preserve">Output a 32 bit unicode character as UTF-8 octets.  At most 4 octets will
+be written to @ptr. The @ptr will be advanced to the next character position.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -42862,26 +43115,32 @@ be written to @ptr.  @ptr will be advanced to the next character position.</doc>
       </parameters>
     </function>
     <function name="utf8_ucs2" c:identifier="camel_utf8_ucs2">
-      <doc xml:space="preserve">Convert a utf8 string into a ucs2 one.  The ucs string will be in
-network byte order, and terminated with a 16 bit NULL.</doc>
+      <doc xml:space="preserve">Convert a UTF-8 string into a ucs2 one. The ucs string will be in
+network byte order, and terminated with a 16-bit %NULL.</doc>
       <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The converted string. Free it with g_free(),
+   when no longer needed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
         <parameter name="ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a UTF-8 string to convert</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
     <function name="utf8_utf7" c:identifier="camel_utf8_utf7">
-      <doc xml:space="preserve">Convert a utf8 string to a modified utf7 format.
+      <doc xml:space="preserve">Convert a UTF-8 string to a modified UTF-7 format.
 
-The IMAP rules [rfc2060] are used in the utf7 encoding.</doc>
+The IMAP rules [rfc2060] are used in the UTF-7 encoding.</doc>
       <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The converted string. Free it with g_free(),
+   when no longer needed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
         <parameter name="ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a UTF-8 string to convert</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

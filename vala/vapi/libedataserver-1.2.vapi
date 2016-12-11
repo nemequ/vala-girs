@@ -203,6 +203,7 @@ namespace E {
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false)]
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
+		public void camel_configure_service (Camel.Service service);
 		public int compare_by_display_name (E.Source source2);
 		public bool credentials_google_get_access_token_sync (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static bool credentials_google_is_supported ();
@@ -391,6 +392,16 @@ namespace E {
 		public void set_include_me (bool include_me);
 		public bool include_me { get; set construct; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_autoconfig_get_type ()")]
+	[Version (since = "3.24")]
+	public class SourceAutoconfig : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceAutoconfig ();
+		public string dup_revision ();
+		public unowned string get_revision ();
+		public void set_revision (string revision);
+		public string revision { get; set construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_backend_get_type ()")]
 	[Version (since = "3.6")]
 	public abstract class SourceBackend : E.SourceExtension {
@@ -414,8 +425,10 @@ namespace E {
 		protected SourceCamel ();
 		public static GLib.Type generate_subtype (string protocol, GLib.Type settings_type);
 		public static unowned string get_extension_name (string protocol);
+		public unowned Camel.Settings get_settings ();
 		public static unowned string get_type_name (string protocol);
 		public static void register_types ();
+		public Camel.Settings settings { get; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_collection_get_type ()")]
 	[Version (since = "3.6")]
@@ -1302,6 +1315,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_AUTOCOMPLETE")]
 	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_AUTOCOMPLETE;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_AUTOCONFIG")]
+	[Version (since = "3.24")]
+	public const string SOURCE_EXTENSION_AUTOCONFIG;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_CALENDAR")]
 	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_CALENDAR;

@@ -4308,7 +4308,9 @@ namespace NM {
 		[CCode (cname = "NM_MANAGER_ERROR_UNKNOWN_LOG_DOMAIN")]
 		UNKNOWNLOGDOMAIN,
 		[CCode (cname = "NM_MANAGER_ERROR_INVALID_ARGUMENTS")]
-		INVALIDARGUMENTS;
+		INVALIDARGUMENTS,
+		[CCode (cname = "NM_MANAGER_ERROR_MISSING_PLUGIN")]
+		MISSINGPLUGIN;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}

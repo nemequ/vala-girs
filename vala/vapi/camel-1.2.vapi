@@ -2034,7 +2034,7 @@ namespace Camel {
 		public bool contains_message_info_data (Camel.Folder folder, string orig_message_uid);
 		public void foreach_message_info_data (Camel.Folder fromfolder, Camel.ForeachInfoData func);
 		public Camel.VeeMessageInfoData get_message_info_data (Camel.Folder folder, string orig_message_uid);
-		public Camel.VeeMessageInfoData get_message_info_data_by_vuid (string vee_message_uid);
+		public Camel.VeeMessageInfoData? get_message_info_data_by_vuid (string vee_message_uid);
 		public Camel.VeeSubfolderData get_subfolder_data (Camel.Folder folder);
 		public void remove_message_info_data (Camel.VeeMessageInfoData mi_data);
 		public void remove_subfolder (Camel.Folder subfolder);
@@ -2045,7 +2045,7 @@ namespace Camel {
 		public VeeFolder (Camel.Store parent_store, string full, uint32 flags);
 		public virtual void add_folder (Camel.Folder subfolder, GLib.Cancellable? cancellable = null);
 		[Version (since = "3.6")]
-		public void add_vuid (Camel.VeeMessageInfoData mi_data, Camel.FolderChangeInfo changes);
+		public void add_vuid (void* mi_data, Camel.FolderChangeInfo? changes);
 		public void @construct (uint32 flags);
 		[NoWrapper]
 		public virtual void folder_changed (Camel.Folder subfolder, Camel.FolderChangeInfo changes);
@@ -2055,9 +2055,9 @@ namespace Camel {
 		public unowned string get_expression ();
 		[Version (since = "3.24")]
 		public uint32 get_flags ();
-		public unowned Camel.Folder get_location (Camel.VeeMessageInfo vinfo, string realuid);
+		public unowned Camel.Folder get_location (Camel.VeeMessageInfo vinfo, out string? realuid);
 		[Version (since = "3.6")]
-		public unowned Camel.Folder get_vee_uid_folder (string vee_message_uid);
+		public unowned Camel.Folder? get_vee_uid_folder (string vee_message_uid);
 		[Version (since = "3.2")]
 		public void ignore_next_changed_event (Camel.Folder subfolder);
 		public virtual void rebuild_folder (Camel.Folder subfolder, GLib.Cancellable? cancellable = null);
@@ -2065,9 +2065,10 @@ namespace Camel {
 		[Version (since = "3.12")]
 		public void remove_from_ignore_changed_event (Camel.Folder subfolder);
 		[Version (since = "3.6")]
-		public void remove_vuid (Camel.VeeMessageInfoData mi_data, Camel.FolderChangeInfo changes);
+		public void remove_vuid (void* mi_data, Camel.FolderChangeInfo? changes);
 		[Version (since = "3.6")]
 		public void set_auto_update (bool auto_update);
+		[Version (since = "3.6")]
 		public virtual void set_expression (string expression);
 		public void set_folders (GLib.List<Camel.Folder> folders, GLib.Cancellable? cancellable = null);
 		public bool auto_update { get; set; }
@@ -2129,7 +2130,7 @@ namespace Camel {
 		public VeeSummary (Camel.Folder parent);
 		public Camel.VeeMessageInfo add (Camel.VeeMessageInfoData mi_data);
 		[Version (since = "3.6")]
-		public GLib.HashTable<weak string,weak string> get_uids_for_subfolder (Camel.Folder subfolder);
+		public GLib.HashTable<weak string,weak int> get_uids_for_subfolder (Camel.Folder subfolder);
 		[Version (since = "3.6")]
 		public void remove (string vuid, Camel.Folder subfolder);
 		[Version (since = "3.6")]
@@ -2529,6 +2530,12 @@ namespace Camel {
 	[SimpleType]
 	public struct _block_t : uint32 {
 	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "_encrypt", has_type_id = false)]
+	public struct _encrypt {
+		public Camel.CipherValidityEncrypt status;
+		public weak string description;
+		public weak GLib.Queue encrypters;
+	}
 	[CCode (cheader_filename = "camel/camel.h", cname = "camel_hash_t")]
 	[SimpleType]
 	public struct _hash_t : uint32 {
@@ -2536,6 +2543,12 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", cname = "camel_key_t")]
 	[SimpleType]
 	public struct _key_t : uint32 {
+	}
+	[CCode (cheader_filename = "camel/camel.h", cname = "_sign", has_type_id = false)]
+	public struct _sign {
+		public Camel.CipherValiditySign status;
+		public weak string description;
+		public weak GLib.Queue signers;
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_AUTHENTICATION_", type_id = "camel_authentication_result_get_type ()")]
 	[Version (since = "3.4")]
@@ -2614,7 +2627,7 @@ namespace Camel {
 		UNKNOWN,
 		NEED_PUBLIC_KEY
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_COMPARE_CASE_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_COMPARE_CASE_", type_id = "camel_compare_type_get_type ()")]
 	[Version (since = "3.24")]
 	public enum CompareType {
 		INSENSITIVE,
@@ -2718,8 +2731,13 @@ namespace Camel {
 		TYPE_EVENTS,
 		TYPE_MEMOS,
 		TYPE_TASKS,
+		TYPE_ALL,
+		TYPE_ARCHIVE,
+		TYPE_DRAFTS,
 		READONLY,
-		FLAGGED
+		WRITEONLY,
+		FLAGGED,
+		FLAGS_LAST
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_SUMMARY_", has_type_id = false)]
 	[Flags]
@@ -3044,7 +3062,21 @@ namespace Camel {
 		VTRASH,
 		SHARED_TO_ME,
 		SHARED_BY_ME,
+		TYPE_NORMAL,
+		TYPE_INBOX,
+		TYPE_OUTBOX,
+		TYPE_TRASH,
+		TYPE_JUNK,
+		TYPE_SENT,
+		TYPE_CONTACTS,
+		TYPE_EVENTS,
+		TYPE_MEMOS,
+		TYPE_TASKS,
+		TYPE_ALL,
+		TYPE_ARCHIVE,
+		TYPE_DRAFTS,
 		READONLY,
+		WRITEONLY,
 		FLAGGED
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_", type_id = "camel_store_permission_flags_get_type ()")]
@@ -3601,7 +3633,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static uint32 utf8_getc (ref uint8 ptr);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static uint32 utf8_getc_limit (uint8 ptr, uint8 end);
+	public static uint32 utf8_getc_limit (ref uint8 ptr, uint8 end);
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "2.26")]
 	public static string utf8_make_valid (string text);

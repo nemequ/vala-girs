@@ -4301,6 +4301,61 @@ which DND is done.</doc>
         <doc xml:space="preserve">Wayland DND protocol.</doc>
       </member>
     </enumeration>
+    <class name="DrawContext"
+           c:symbol-prefix="draw_context"
+           c:type="GdkDrawContext"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="GdkDrawContext"
+           glib:get-type="gdk_draw_context_get_type">
+      <doc xml:space="preserve">#GdkDrawContext is the base object used by contexts implementing different
+rendering methods, such as #GdkGLContext or #GdkVulkanContext. It provides
+shared functionality between those contexts.
+
+You will always interact with one of those subclasses.</doc>
+      <method name="get_display"
+              c:identifier="gdk_draw_context_get_display"
+              version="3.90">
+        <doc xml:space="preserve">Retrieves the #GdkDisplay the @context is created for</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a #GdkDisplay or %NULL</doc>
+          <type name="Display" c:type="GdkDisplay*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawContext</doc>
+            <type name="DrawContext" c:type="GdkDrawContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_window"
+              c:identifier="gdk_draw_context_get_window"
+              version="3.90">
+        <doc xml:space="preserve">Retrieves the #GdkWindow used by the @context.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a #GdkWindow or %NULL</doc>
+          <type name="Window" c:type="GdkWindow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawContext</doc>
+            <type name="DrawContext" c:type="GdkDrawContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="display" version="3.90" transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDisplay used to create the #GdkDrawContext.</doc>
+        <type name="Display"/>
+      </property>
+      <property name="window"
+                version="3.90"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkWindow the gl context is bound to.</doc>
+        <type name="Window"/>
+      </property>
+    </class>
     <class name="DrawingContext"
            c:symbol-prefix="drawing_context"
            c:type="GdkDrawingContext"
@@ -4322,7 +4377,10 @@ and will be valid until a call to gdk_window_end_draw_frame().
               c:identifier="gdk_drawing_context_get_cairo_context"
               version="3.22">
         <doc xml:space="preserve">Retrieves a Cairo context to be used to draw on the #GdkWindow
-that created the #GdkDrawingContext.
+that created the #GdkDrawingContext. The @context must have been
+created without a #GdkDrawContext for this function to work. If
+gdk_drawing_context_get_paint_context() does not return %NULL,
+then this function will.
 
 The returned context is guaranteed to be valid as long as the
 #GdkDrawingContext is valid, that is between a call to
@@ -4330,11 +4388,13 @@ gdk_window_begin_draw_frame() and gdk_window_end_draw_frame().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a Cairo context to be used to draw
   the contents of the #GdkWindow. The context is owned by the
-  #GdkDrawingContext and should not be destroyed</doc>
+  #GdkDrawingContext and should not be destroyed. %NULL is
+  returned when a paint context is in used.</doc>
           <type name="cairo.Context" c:type="cairo_t*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawingContext created with a %NULL paint context</doc>
             <type name="DrawingContext" c:type="GdkDrawingContext*"/>
           </instance-parameter>
         </parameters>
@@ -4346,6 +4406,21 @@ gdk_window_begin_draw_frame() and gdk_window_end_draw_frame().</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a Cairo region</doc>
           <type name="cairo.Region" c:type="cairo_region_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrawingContext</doc>
+            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_paint_context"
+              c:identifier="gdk_drawing_context_get_paint_context"
+              version="3.90">
+        <doc xml:space="preserve">Retrieves the paint context used to draw with.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDrawContext or %NULL</doc>
+          <type name="DrawContext" c:type="GdkDrawContext*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
@@ -4391,6 +4466,14 @@ gdk_window_begin_draw_frame() and gdk_window_end_draw_frame().</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The clip region applied to the drawing context.</doc>
         <type name="cairo.Region"/>
+      </property>
+      <property name="paint-context"
+                version="3.90"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDrawContext used to draw or %NULL if Cairo is used.</doc>
+        <type name="DrawContext"/>
       </property>
       <property name="window"
                 version="3.22"
@@ -7561,7 +7644,7 @@ when in fullscreen mode.</doc>
     <class name="GLContext"
            c:symbol-prefix="gl_context"
            c:type="GdkGLContext"
-           parent="GObject.Object"
+           parent="DrawContext"
            abstract="1"
            glib:type-name="GdkGLContext"
            glib:get-type="gdk_gl_context_get_type">
@@ -7636,6 +7719,21 @@ until gdk_gl_context_make_current() is called.</doc>
           <type name="GLContext" c:type="GdkGLContext*"/>
         </return-value>
       </function>
+      <method name="get_damage" c:identifier="gdk_gl_context_get_damage">
+        <doc xml:space="preserve">Returns the part of the backbuffer that is known to be damaged and would
+need to be redrawn. This is the area that needs to be respected in addition
+to areas invalidated by GTK or the windowing system itself.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The damage to the backbuffer</doc>
+          <type name="cairo.Region" c:type="cairo_region_t*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_debug_enabled"
               c:identifier="gdk_gl_context_get_debug_enabled"
               version="3.16">
@@ -7955,14 +8053,6 @@ OpenGL ES API, extensions, or shaders.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="display"
-                version="3.16"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The #GdkDisplay used to create the #GdkGLContext.</doc>
-        <type name="Display"/>
-      </property>
       <property name="shared-context"
                 version="3.16"
                 writable="1"
@@ -7970,14 +8060,6 @@ OpenGL ES API, extensions, or shaders.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The #GdkGLContext that this context is sharing data with, or #NULL</doc>
         <type name="GLContext"/>
-      </property>
-      <property name="window"
-                version="3.16"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">The #GdkWindow the gl context is bound to.</doc>
-        <type name="Window"/>
       </property>
     </class>
     <enumeration name="GLError"
@@ -19726,6 +19808,169 @@ for a visual are converted into RGB values for display.</doc>
     being converted directly.</doc>
       </member>
     </enumeration>
+    <class name="VulkanContext"
+           c:symbol-prefix="vulkan_context"
+           c:type="GdkVulkanContext"
+           parent="DrawContext"
+           abstract="1"
+           glib:type-name="GdkVulkanContext"
+           glib:get-type="gdk_vulkan_context_get_type">
+      <implements name="Gio.Initable"/>
+      <method name="get_device"
+              c:identifier="gdk_vulkan_context_get_device"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkDevice"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_draw_index"
+              c:identifier="gdk_vulkan_context_get_draw_index">
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="uint32_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_draw_semaphore"
+              c:identifier="gdk_vulkan_context_get_draw_semaphore"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkSemaphore"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_image"
+              c:identifier="gdk_vulkan_context_get_image"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkImage"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_image_format"
+              c:identifier="gdk_vulkan_context_get_image_format"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkFormat"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_instance"
+              c:identifier="gdk_vulkan_context_get_instance"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkInstance"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_n_images"
+              c:identifier="gdk_vulkan_context_get_n_images">
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="uint32_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_physical_device"
+              c:identifier="gdk_vulkan_context_get_physical_device"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkPhysicalDevice"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_queue"
+              c:identifier="gdk_vulkan_context_get_queue"
+              introspectable="0">
+        <return-value>
+          <type c:type="VkQueue"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_queue_family_index"
+              c:identifier="gdk_vulkan_context_get_queue_family_index">
+        <return-value transfer-ownership="none">
+          <type name="guint32" c:type="uint32_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <glib:signal name="images-updated" when="last">
+        <doc xml:space="preserve">This signal is emitted when the images managed by this context have
+changed. Usually this means that the swapchain had to be recreated,
+for example in response to a change of the window size.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <enumeration name="VulkanError"
+                 version="3.90"
+                 glib:type-name="GdkVulkanError"
+                 glib:get-type="gdk_vulkan_error_get_type"
+                 c:type="GdkVulkanError"
+                 glib:error-domain="gdk-vulkan-error-quark">
+      <doc xml:space="preserve">Error enumeration for #GdkVulkanContext.</doc>
+      <member name="unsupported"
+              value="0"
+              c:identifier="GDK_VULKAN_ERROR_UNSUPPORTED"
+              glib:nick="unsupported">
+        <doc xml:space="preserve">Vulkan is not supported on this backend or has not been
+    compiled in.</doc>
+      </member>
+      <member name="not_available"
+              value="1"
+              c:identifier="GDK_VULKAN_ERROR_NOT_AVAILABLE"
+              glib:nick="not-available">
+        <doc xml:space="preserve">Vulkan support is not available on this Window</doc>
+      </member>
+      <function name="quark" c:identifier="gdk_vulkan_error_quark">
+        <return-value transfer-ownership="none">
+          <type name="GLib.Quark" c:type="GQuark"/>
+        </return-value>
+      </function>
+    </enumeration>
     <bitfield name="WMDecoration"
               glib:type-name="GdkWMDecoration"
               glib:get-type="gdk_wm_decoration_get_type"
@@ -20071,6 +20316,13 @@ explicitly.</doc>
             <doc xml:space="preserve">a #GdkWindow</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
+          <parameter name="context"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the context used to draw the frame</doc>
+            <type name="DrawContext" c:type="GdkDrawContext*"/>
+          </parameter>
           <parameter name="region" transfer-ownership="none">
             <doc xml:space="preserve">a Cairo region</doc>
             <type name="cairo.Region" c:type="const cairo_region_t*"/>
@@ -20446,6 +20698,25 @@ or any other error occurs.</doc>
             <doc xml:space="preserve">height of the new surface</doc>
             <type name="gint" c:type="int"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="create_vulkan_context"
+              c:identifier="gdk_window_create_vulkan_context"
+              version="3.90"
+              throws="1">
+        <doc xml:space="preserve">Creates a new #GdkVulkanContext for rendering on @window.
+
+If the creation of the #GdkVulkanContext failed, @error will be set.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the newly created #GdkVulkanContext, or
+%NULL on error</doc>
+          <type name="VulkanContext" c:type="GdkVulkanContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="window" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkWindow</doc>
+            <type name="Window" c:type="GdkWindow*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="deiconify" c:identifier="gdk_window_deiconify">
@@ -21817,26 +22088,15 @@ function before gdk_window_show(). (Try gdk_window_show_unraised().)</doc>
         </parameters>
       </method>
       <method name="mark_paint_from_clip"
-              c:identifier="gdk_window_mark_paint_from_clip"
-              version="3.16">
-        <doc xml:space="preserve">If you call this during a paint (e.g. between gdk_window_begin_paint_region()
-and gdk_window_end_paint() then GDK will mark the current clip region of the
-window as being drawn. This is required when mixing GL rendering via
-gdk_cairo_draw_from_gl() and cairo rendering, as otherwise GDK has no way
-of knowing when something paints over the GL-drawn regions.
-
-This is typically called automatically by GTK+ and you don't need
-to care about this.</doc>
+              c:identifier="gdk_window_mark_paint_from_clip">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkWindow</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
           <parameter name="cr" transfer-ownership="none">
-            <doc xml:space="preserve">a #cairo_t</doc>
             <type name="cairo.Context" c:type="cairo_t*"/>
           </parameter>
         </parameters>
@@ -26287,6 +26547,25 @@ is not specified; it may be as pseudo-escape sequences
         <parameter name="str" transfer-ownership="none">
           <doc xml:space="preserve">a UTF-8 string</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="vulkan_error_quark"
+              c:identifier="gdk_vulkan_error_quark"
+              moved-to="VulkanError.quark">
+      <return-value transfer-ownership="none">
+        <type name="GLib.Quark" c:type="GQuark"/>
+      </return-value>
+    </function>
+    <function name="vulkan_strerror"
+              c:identifier="gdk_vulkan_strerror"
+              introspectable="0">
+      <return-value transfer-ownership="none">
+        <type name="utf8" c:type="const char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <type c:type="VkResult"/>
         </parameter>
       </parameters>
     </function>
