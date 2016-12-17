@@ -1407,12 +1407,27 @@ namespace Camel {
 	public class OfflineSettings : Camel.StoreSettings {
 		[CCode (has_construct_function = false)]
 		protected OfflineSettings ();
+		[Version (since = "3.24")]
+		public bool get_limit_by_age ();
+		[Version (since = "3.24")]
+		public Camel.TimeUnit get_limit_unit ();
+		[Version (since = "3.24")]
+		public int get_limit_value ();
 		public bool get_stay_synchronized ();
 		[Version (since = "3.18")]
 		public int get_store_changes_interval ();
+		[Version (since = "3.24")]
+		public void set_limit_by_age (bool limit_by_age);
+		[Version (since = "3.24")]
+		public void set_limit_unit (Camel.TimeUnit limit_unit);
+		[Version (since = "3.24")]
+		public void set_limit_value (bool limit_value);
 		public void set_stay_synchronized (bool stay_synchronized);
 		[Version (since = "3.18")]
 		public void set_store_changes_interval (int interval);
+		public bool limit_by_age { get; set construct; }
+		public Camel.TimeUnit limit_unit { get; set construct; }
+		public int limit_value { get; set construct; }
 		public bool stay_synchronized { get; set construct; }
 		public int store_changes_interval { get; set construct; }
 	}
@@ -2894,7 +2909,8 @@ namespace Camel {
 		ENTRY,
 		LABEL,
 		HIDDEN,
-		OPTIONS
+		OPTIONS,
+		PLACEHOLDER
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_", type_id = "camel_provider_flags_get_type ()")]
 	[Flags]
@@ -3099,6 +3115,14 @@ namespace Camel {
 		OFF,
 		ON,
 		INCONSISTENT
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_TIME_UNIT_", type_id = "camel_time_unit_get_type ()")]
+	[Version (since = "3.24")]
+	public enum TimeUnit {
+		DAYS,
+		WEEKS,
+		MONTHS,
+		YEARS
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_TRANSFER_", type_id = "camel_transfer_encoding_get_type ()")]
 	public enum TransferEncoding {
@@ -3616,6 +3640,9 @@ namespace Camel {
 	public static bool system_flag_get (Camel.MessageFlags flags, string name);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string text_to_html (string @in, Camel.MimeFilterToHTMLFlags flags, uint32 color);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.24")]
+	public static long time_value_apply (long src_time, Camel.TimeUnit unit, int value);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string ucs2_utf8 (string ptr);
 	[CCode (cheader_filename = "camel/camel.h")]

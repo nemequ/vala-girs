@@ -1066,6 +1066,21 @@ Bluetooth device.</doc>
               c:type="NM_CLIENT_DEVICE_REMOVED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CLIENT_DNS_CONFIGURATION"
+              value="dns-configuration"
+              c:type="NM_CLIENT_DNS_CONFIGURATION">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_DNS_MODE"
+              value="dns-mode"
+              c:type="NM_CLIENT_DNS_MODE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CLIENT_DNS_RC_MANAGER"
+              value="dns-rc-manager"
+              c:type="NM_CLIENT_DNS_RC_MANAGER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_HOSTNAME"
               value="hostname"
               c:type="NM_CLIENT_HOSTNAME">
@@ -2033,6 +2048,58 @@ containing all the #NMDevices.  The returned array is owned by the
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_dns_configuration"
+              c:identifier="nm_client_get_dns_configuration"
+              version="1.6">
+        <doc xml:space="preserve">Gets the current DNS configuration</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GPtrArray
+containing #NMDnsEntry elements or %NULL in case the value is not
+available.  The returned array is owned by the #NMClient object
+and should not be modified.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="DnsEntry"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_dns_mode"
+              c:identifier="nm_client_get_dns_mode"
+              version="1.6">
+        <doc xml:space="preserve">Gets the current DNS processing mode.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the DNS processing mode, or %NULL in case the
+  value is not available.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_dns_rc_manager"
+              c:identifier="nm_client_get_dns_rc_manager"
+              version="1.6">
+        <doc xml:space="preserve">Gets the current DNS resolv.conf manager.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the resolv.conf manager or %NULL in case the
+  value is not available.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_logging"
               c:identifier="nm_client_get_logging"
               throws="1">
@@ -2708,6 +2775,28 @@ Element-type: NMDevice</doc>
         <array name="GLib.PtrArray">
           <type name="gpointer" c:type="gpointer"/>
         </array>
+      </property>
+      <property name="dns-configuration"
+                version="1.6"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The current DNS configuration represented as an array of
+dictionaries.  Each dictionary has the "nameservers",
+"priority" keys and, optionally, "interface" and "vpn".
+"nameservers" is the list of DNS servers, "priority" their
+relative priority, "interface" the interface on which these
+servers are contacted, "vpn" a boolean telling whether the
+configuration was obtained from a VPN connection.</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </property>
+      <property name="dns-mode" version="1.6" transfer-ownership="none">
+        <doc xml:space="preserve">The current DNS processing mode.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="dns-rc-manager" version="1.6" transfer-ownership="none">
+        <doc xml:space="preserve">The current resolv.conf management mode.</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="hostname" transfer-ownership="none">
         <doc xml:space="preserve">The machine hostname stored in persistent configuration. This can be
@@ -4558,6 +4647,11 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DBUS_INTERFACE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DBUS_INTERFACE_DNS_MANAGER"
+              value="org.freedesktop.NetworkManager.DnsManager"
+              c:type="NM_DBUS_INTERFACE_DNS_MANAGER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DBUS_INTERFACE_SETTINGS"
               value="org.freedesktop.NetworkManager.Settings"
               c:type="NM_DBUS_INTERFACE_SETTINGS">
@@ -4606,6 +4700,11 @@ and some #NMSetting8021x operations.</doc>
     <constant name="DBUS_PATH_AGENT_MANAGER"
               value="/org/freedesktop/NetworkManager/AgentManager"
               c:type="NM_DBUS_PATH_AGENT_MANAGER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DBUS_PATH_DNS_MANAGER"
+              value="/org/freedesktop/NetworkManager/DnsManager"
+              c:type="NM_DBUS_PATH_DNS_MANAGER">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="DBUS_PATH_SECRET_AGENT"
@@ -10096,6 +10195,102 @@ configuration, and must not be modified.</doc>
         </array>
       </field>
     </record>
+    <record name="DnsEntry"
+            c:type="NMDnsEntry"
+            glib:type-name="NMDnsEntry"
+            glib:get-type="nm_dns_entry_get_type"
+            c:symbol-prefix="dns_entry">
+      <method name="get_domains"
+              c:identifier="nm_dns_entry_get_domains"
+              version="1.6">
+        <doc xml:space="preserve">Gets the list of DNS domains.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the list of DNS domains</doc>
+          <array c:type="const char* const*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDnsEntry</doc>
+            <type name="DnsEntry" c:type="NMDnsEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_interface"
+              c:identifier="nm_dns_entry_get_interface"
+              version="1.6">
+        <doc xml:space="preserve">Gets the interface on which name servers are contacted.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the interface name</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDnsEntry</doc>
+            <type name="DnsEntry" c:type="NMDnsEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_nameservers"
+              c:identifier="nm_dns_entry_get_nameservers"
+              version="1.6">
+        <doc xml:space="preserve">Gets the list of name servers for this entry.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the list of name servers</doc>
+          <array c:type="const char* const*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDnsEntry</doc>
+            <type name="DnsEntry" c:type="NMDnsEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_priority"
+              c:identifier="nm_dns_entry_get_priority"
+              version="1.6">
+        <doc xml:space="preserve">Gets the priority of the entry</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the priority of the entry</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDnsEntry</doc>
+            <type name="DnsEntry" c:type="NMDnsEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vpn" c:identifier="nm_dns_entry_get_vpn" version="1.6">
+        <doc xml:space="preserve">Gets whether the entry refers to VPN name servers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the entry refers to VPN name servers</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDnsEntry</doc>
+            <type name="DnsEntry" c:type="NMDnsEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="nm_dns_entry_unref" version="1.6">
+        <doc xml:space="preserve">Decreases the reference count of the object.  If the reference count
+reaches zero, the object will be destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="entry" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDnsEntry</doc>
+            <type name="DnsEntry" c:type="NMDnsEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <record name="IPAddress"
             c:type="NMIPAddress"
             glib:type-name="NMIPAddress"
@@ -11345,7 +11540,7 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -20933,7 +21128,7 @@ providing a static hostname for the computer.  If the
                 version="1.2"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Array of DNS options.
+        <doc xml:space="preserve">Array of DNS options as described in man 5 resolv.conf.
 
 %NULL means that the options are unset and left at the default.
 In this case NetworkManager will use default options. This is

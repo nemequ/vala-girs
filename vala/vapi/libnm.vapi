@@ -391,6 +391,12 @@ namespace NM {
 		public const string DEVICE_ADDED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICE_REMOVED")]
 		public const string DEVICE_REMOVED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DNS_CONFIGURATION")]
+		public const string DNS_CONFIGURATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DNS_MODE")]
+		public const string DNS_MODE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DNS_RC_MANAGER")]
+		public const string DNS_RC_MANAGER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_HOSTNAME")]
 		public const string HOSTNAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_METERED")]
@@ -442,6 +448,12 @@ namespace NM {
 		public unowned NM.Device get_device_by_iface (string iface);
 		public unowned NM.Device get_device_by_path (string object_path);
 		public unowned GLib.GenericArray<NM.Device> get_devices ();
+		[Version (since = "1.6")]
+		public unowned GLib.GenericArray<NM.DnsEntry> get_dns_configuration ();
+		[Version (since = "1.6")]
+		public unowned string get_dns_mode ();
+		[Version (since = "1.6")]
+		public unowned string get_dns_rc_manager ();
 		public bool get_logging (string? level, string? domains) throws GLib.Error;
 		public bool get_nm_running ();
 		public NM.ClientPermissionResult get_permission_result (NM.ClientPermission permission);
@@ -477,6 +489,12 @@ namespace NM {
 		public GLib.GenericArray<void*> connections { get; }
 		public NM.ConnectivityState connectivity { get; }
 		public GLib.GenericArray<void*> devices { get; }
+		[Version (since = "1.6")]
+		public GLib.GenericArray<void*> dns_configuration { get; }
+		[Version (since = "1.6")]
+		public string dns_mode { get; }
+		[Version (since = "1.6")]
+		public string dns_rc_manager { get; }
 		[NoAccessorMethod]
 		public string hostname { owned get; }
 		[NoAccessorMethod]
@@ -1229,6 +1247,24 @@ namespace NM {
 		public unowned GLib.HashTable<string,string> get_options ();
 		public int family { get; }
 		public GLib.HashTable<string,string> options { get; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "nm_dns_entry_get_type ()")]
+	[Compact]
+	public class DnsEntry {
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.6")]
+		public unowned string[] get_domains ();
+		[Version (since = "1.6")]
+		public unowned string get_interface ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.6")]
+		public unowned string[] get_nameservers ();
+		[Version (since = "1.6")]
+		public int get_priority ();
+		[Version (since = "1.6")]
+		public bool get_vpn ();
+		[Version (since = "1.6")]
+		public void unref ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_ip_address_ref", type_id = "nm_ip_address_get_type ()", unref_function = "nm_ip_address_unref")]
 	[Compact]
@@ -4398,6 +4434,8 @@ namespace NM {
 	public const string CONNECTION_SECRETS_UPDATED;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_INTERFACE")]
 	public const string DBUS_INTERFACE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_INTERFACE_DNS_MANAGER")]
+	public const string DBUS_INTERFACE_DNS_MANAGER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_INTERFACE_SETTINGS")]
 	public const string DBUS_INTERFACE_SETTINGS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_INTERFACE_SETTINGS_CONNECTION")]
@@ -4418,6 +4456,8 @@ namespace NM {
 	public const string DBUS_PATH;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_PATH_AGENT_MANAGER")]
 	public const string DBUS_PATH_AGENT_MANAGER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_PATH_DNS_MANAGER")]
+	public const string DBUS_PATH_DNS_MANAGER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_PATH_SECRET_AGENT")]
 	public const string DBUS_PATH_SECRET_AGENT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_PATH_SETTINGS")]

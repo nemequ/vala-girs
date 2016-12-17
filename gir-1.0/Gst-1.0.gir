@@ -2450,7 +2450,9 @@ gst_buffer_is_writable() to check that if needed.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="iterate_meta" c:identifier="gst_buffer_iterate_meta">
+      <method name="iterate_meta"
+              c:identifier="gst_buffer_iterate_meta"
+              introspectable="0">
         <doc xml:space="preserve">Retrieve the next #GstMeta after @current. If @state points
 to %NULL, the first metadata is returned.
 
@@ -2471,6 +2473,38 @@ when there are no more items.</doc>
                      allow-none="1">
             <doc xml:space="preserve">an opaque state pointer</doc>
             <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="iterate_meta_filtered"
+              c:identifier="gst_buffer_iterate_meta_filtered"
+              version="1.12"
+              introspectable="0">
+        <doc xml:space="preserve">Retrieve the next #GstMeta of type @meta_api_type after the current one
+according to @state. If @state points to %NULL, the first metadata of
+type @meta_api_type is returned.
+
+@state will be updated with an opaque state pointer</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The next #GstMeta of type
+@meta_api_type or %NULL when there are no more items.</doc>
+          <type name="Meta" c:type="GstMeta*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstBuffer</doc>
+            <type name="Buffer" c:type="GstBuffer*"/>
+          </instance-parameter>
+          <parameter name="state"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an opaque state pointer</doc>
+            <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+          <parameter name="meta_api_type" transfer-ownership="none">
+            <doc xml:space="preserve">only return #GstMeta of this type</doc>
+            <type name="GType" c:type="GType"/>
           </parameter>
         </parameters>
       </method>
@@ -16084,7 +16118,7 @@ in #GST_EVENT_STREAM_START, #GST_EVENT_STREAM_COLLECTION or
             <doc xml:space="preserve">the list of streams to
 activate</doc>
             <type name="GLib.List" c:type="GList*">
-              <type name="gchar"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -16761,7 +16795,7 @@ and make a copy if you want to modify it or store it for later use.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve">the streams</doc>
             <type name="GLib.List" c:type="GList**">
-              <type name="gchar"/>
+              <type name="utf8"/>
             </type>
           </parameter>
         </parameters>
@@ -35124,6 +35158,18 @@ values of the seek flags.</doc>
                                        possible (Since 1.6)</doc>
       </member>
     </bitfield>
+    <bitfield name="StackTraceFlags"
+              glib:type-name="GstStackTraceFlags"
+              glib:get-type="gst_stack_trace_flags_get_type"
+              c:type="GstStackTraceFlags">
+      <member name="full"
+              value="1"
+              c:identifier="GST_STACK_TRACE_SHOW_FULL"
+              glib:nick="full">
+        <doc xml:space="preserve">Try to retrieve as much information as
+                            possible when getting the stack trace</doc>
+      </member>
+    </bitfield>
     <enumeration name="State"
                  glib:type-name="GstState"
                  glib:get-type="gst_state_get_type"
@@ -44270,12 +44316,20 @@ The caller has to free the list after use.</doc>
       </return-value>
     </function>
     <function name="debug_get_stack_trace"
-              c:identifier="gst_debug_get_stack_trace">
+              c:identifier="gst_debug_get_stack_trace"
+              version="1.12">
       <doc xml:space="preserve">If libunwind or glibc backtrace are present, a stack trace
 is returned.</doc>
       <return-value transfer-ownership="full">
         <type name="utf8" c:type="gchar*"/>
       </return-value>
+      <parameters>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">A set of #GstStackTraceFlags to determine how the stack
+trace should look like. Pass 0 to retrieve a minimal backtrace.</doc>
+          <type name="StackTraceFlags" c:type="GstStackTraceFlags"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="debug_is_active" c:identifier="gst_debug_is_active">
       <doc xml:space="preserve">Checks if debugging output is activated.</doc>
