@@ -550,6 +550,24 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </method>
+      <method name="add_require"
+              c:identifier="as_app_add_require"
+              version="0.6.7">
+        <doc xml:space="preserve">Adds a require to an application.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_review"
               c:identifier="as_app_add_review"
               version="0.6.1">
@@ -1487,6 +1505,48 @@ becomes "gimp" and is used for cache directories.</doc>
           <doc xml:space="preserve">an array</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
             <type name="Release"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_require_by_value"
+              c:identifier="as_app_get_require_by_value"
+              version="0.6.7">
+        <doc xml:space="preserve">Gets a specific requirement for the application.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #AsRequire, or %NULL for not found</doc>
+          <type name="Require" c:type="AsRequire*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="app" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsApp instance.</doc>
+            <type name="App" c:type="AsApp*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequireKind, e.g. %AS_REQUIRE_KIND_FIRMWARE</doc>
+            <type name="RequireKind" c:type="AsRequireKind"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a string, or NULL, e.g. `bootloader`</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_requires"
+              c:identifier="as_app_get_requires"
+              version="0.6.7">
+        <doc xml:space="preserve">Gets any requires the application has defined. A rquirement could be that
+a firmware version has to be below a defined version or that another
+application is required to be installed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an array</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="Require"/>
           </array>
         </return-value>
         <parameters>
@@ -2695,6 +2755,11 @@ trusted input.</doc>
       </member>
       <member name="is_proxy" value="512" c:identifier="AS_APP_QUIRK_IS_PROXY">
         <doc xml:space="preserve">Is a proxy app that operates on other applications</doc>
+      </member>
+      <member name="removable_hardware"
+              value="1024"
+              c:identifier="AS_APP_QUIRK_REMOVABLE_HARDWARE">
+        <doc xml:space="preserve">The device is unusable whilst the action is performed</doc>
       </member>
     </bitfield>
     <enumeration name="AppScope" c:type="AsAppScope">
@@ -6138,6 +6203,344 @@ NOTE: This is not stored in the XML file, and is only available in-memory.</doc>
         <doc xml:space="preserve">Release is available</doc>
       </member>
     </enumeration>
+    <class name="Require"
+           c:symbol-prefix="require"
+           c:type="AsRequire"
+           parent="GObject.Object"
+           glib:type-name="AsRequire"
+           glib:get-type="as_require_get_type"
+           glib:type-struct="RequireClass">
+      <constructor name="new" c:identifier="as_require_new" version="0.6.7">
+        <doc xml:space="preserve">Creates a new #AsRequire.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsRequire</doc>
+          <type name="Require" c:type="AsRequire*"/>
+        </return-value>
+      </constructor>
+      <function name="compare_from_string"
+                c:identifier="as_require_compare_from_string"
+                version="0.6.7">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsRequireCompare, or
+		     %AS_REQUIRE_COMPARE_UNKNOWN for unknown.</doc>
+          <type name="RequireCompare" c:type="AsRequireCompare"/>
+        </return-value>
+        <parameters>
+          <parameter name="compare" transfer-ownership="none">
+            <doc xml:space="preserve">the string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="compare_to_string"
+                c:identifier="as_require_compare_to_string"
+                version="0.6.7">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @compare</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="compare" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsRequireCompare.</doc>
+            <type name="RequireCompare" c:type="AsRequireCompare"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="kind_from_string"
+                c:identifier="as_require_kind_from_string"
+                version="0.6.7">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #AsRequireKind, or %AS_REQUIRE_KIND_UNKNOWN for unknown.</doc>
+          <type name="RequireKind" c:type="AsRequireKind"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="kind_to_string"
+                c:identifier="as_require_kind_to_string"
+                version="0.6.7">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @kind</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsRequireKind.</doc>
+            <type name="RequireKind" c:type="AsRequireKind"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_compare"
+              c:identifier="as_require_get_compare"
+              version="0.6.7">
+        <doc xml:space="preserve">Gets the require version comparison type.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #AsRequireKind</doc>
+          <type name="RequireCompare" c:type="AsRequireCompare"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="as_require_get_kind"
+              version="0.6.7">
+        <doc xml:space="preserve">Gets the require kind.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #AsRequireKind</doc>
+          <type name="RequireKind" c:type="AsRequireKind"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_value"
+              c:identifier="as_require_get_value"
+              version="0.6.7">
+        <doc xml:space="preserve">Gets the require value if set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the value, e.g. "bootloader"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_version"
+              c:identifier="as_require_get_version"
+              version="0.6.7">
+        <doc xml:space="preserve">Gets the require version if set.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the version, e.g. "0.1.2"</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_compare"
+              c:identifier="as_require_set_compare"
+              version="0.6.7">
+        <doc xml:space="preserve">Sets the require version comparison type.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+          <parameter name="compare" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsRequireKind, e.g. %AS_REQUIRE_KIND_ID.</doc>
+            <type name="RequireCompare" c:type="AsRequireCompare"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_kind"
+              c:identifier="as_require_set_kind"
+              version="0.6.7">
+        <doc xml:space="preserve">Sets the require kind.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsRequireKind, e.g. %AS_REQUIRE_KIND_ID.</doc>
+            <type name="RequireKind" c:type="AsRequireKind"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_value"
+              c:identifier="as_require_set_value"
+              version="0.6.7">
+        <doc xml:space="preserve">Sets the require value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">an require version, e.g. `firmware`</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_version"
+              c:identifier="as_require_set_version"
+              version="0.6.7">
+        <doc xml:space="preserve">Sets the require version.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+          <parameter name="version" transfer-ownership="none">
+            <doc xml:space="preserve">an version number, e.g. `0.1.2`</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="version_compare"
+              c:identifier="as_require_version_compare"
+              version="0.6.7"
+              throws="1">
+        <doc xml:space="preserve">Compares the version number of the requirement with a predicate.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the predicate was true</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="require" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRequire instance.</doc>
+            <type name="Require" c:type="AsRequire*"/>
+          </instance-parameter>
+          <parameter name="version" transfer-ownership="none">
+            <doc xml:space="preserve">a version number, e.g. `0.1.3`</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="RequireClass"
+            c:type="AsRequireClass"
+            glib:is-gtype-struct-for="Require">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="_as_reserved1" introspectable="0">
+        <callback name="_as_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved2" introspectable="0">
+        <callback name="_as_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved3" introspectable="0">
+        <callback name="_as_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved4" introspectable="0">
+        <callback name="_as_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved5" introspectable="0">
+        <callback name="_as_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved6" introspectable="0">
+        <callback name="_as_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved7" introspectable="0">
+        <callback name="_as_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_as_reserved8" introspectable="0">
+        <callback name="_as_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <enumeration name="RequireCompare" c:type="AsRequireCompare">
+      <doc xml:space="preserve">The relational comparison type.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="AS_REQUIRE_COMPARE_UNKNOWN">
+        <doc xml:space="preserve">Comparison predicate invalid or not known</doc>
+      </member>
+      <member name="eq" value="1" c:identifier="AS_REQUIRE_COMPARE_EQ">
+        <doc xml:space="preserve">Equal to</doc>
+      </member>
+      <member name="ne" value="2" c:identifier="AS_REQUIRE_COMPARE_NE">
+        <doc xml:space="preserve">Not equal to</doc>
+      </member>
+      <member name="lt" value="3" c:identifier="AS_REQUIRE_COMPARE_LT">
+        <doc xml:space="preserve">Less than</doc>
+      </member>
+      <member name="gt" value="4" c:identifier="AS_REQUIRE_COMPARE_GT">
+        <doc xml:space="preserve">Greater than</doc>
+      </member>
+      <member name="le" value="5" c:identifier="AS_REQUIRE_COMPARE_LE">
+        <doc xml:space="preserve">Less than or equal to</doc>
+      </member>
+      <member name="ge" value="6" c:identifier="AS_REQUIRE_COMPARE_GE">
+        <doc xml:space="preserve">Greater than or equal to</doc>
+      </member>
+      <member name="glob" value="7" c:identifier="AS_REQUIRE_COMPARE_GLOB">
+      </member>
+      <member name="regex" value="8" c:identifier="AS_REQUIRE_COMPARE_REGEX">
+      </member>
+    </enumeration>
+    <enumeration name="RequireKind" c:type="AsRequireKind">
+      <doc xml:space="preserve">The require type.</doc>
+      <member name="unknown" value="0" c:identifier="AS_REQUIRE_KIND_UNKNOWN">
+        <doc xml:space="preserve">Type invalid or not known</doc>
+      </member>
+      <member name="id" value="1" c:identifier="AS_REQUIRE_KIND_ID">
+        <doc xml:space="preserve">Component ID</doc>
+      </member>
+      <member name="firmware"
+              value="2"
+              c:identifier="AS_REQUIRE_KIND_FIRMWARE">
+        <doc xml:space="preserve">Device firmware version</doc>
+      </member>
+    </enumeration>
     <class name="Review"
            c:symbol-prefix="review"
            c:type="AsReview"
@@ -8723,6 +9126,9 @@ or removed from the store.</doc>
       </member>
       <member name="suggests" value="56" c:identifier="AS_TAG_SUGGESTS">
         <doc xml:space="preserve">`suggests`</doc>
+      </member>
+      <member name="requires" value="57" c:identifier="AS_TAG_REQUIRES">
+        <doc xml:space="preserve">`requires`</doc>
       </member>
     </enumeration>
     <enumeration name="TagFlags" c:type="AsTagFlags">

@@ -69,7 +69,8 @@ namespace GWeather {
 		[Version (since = "3.12")]
 		public async GWeather.Location detect_nearest_city (double lat, double lon, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool equal (GWeather.Location two);
-		public GWeather.Location find_by_station_code (string station_code);
+		public unowned GWeather.Location find_by_country_code (string country_code);
+		public unowned GWeather.Location find_by_station_code (string station_code);
 		[Version (since = "3.12")]
 		public GWeather.Location find_nearest_city (double lat, double lon);
 		[Version (since = "3.12")]

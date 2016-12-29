@@ -9471,40 +9471,6 @@ signals.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="thread_messages_new"
-              c:identifier="camel_folder_thread_messages_new"
-              introspectable="0">
-        <doc xml:space="preserve">Thread a (subset) of the messages in a folder.  And sort the result
-in summary order.
-
-If @thread_subject is %TRUE, messages with
-related subjects will also be threaded. The default behaviour is to
-only thread based on message-id.
-
-This function is probably to be removed soon.</doc>
-        <return-value>
-          <doc xml:space="preserve">A CamelFolderThread contianing a tree of CamelFolderThreadNode's
-which represent the threaded structure of the messages.</doc>
-          <type name="FolderThread" c:type="CamelFolderThread*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="folder" transfer-ownership="none">
-            <doc xml:space="preserve">a #CamelFolder</doc>
-            <type name="Folder" c:type="CamelFolder*"/>
-          </instance-parameter>
-          <parameter name="uids" transfer-ownership="none">
-            <doc xml:space="preserve">The subset of uid's to thread. If %NULL, then thread
-   all UID-s in the @folder</doc>
-            <array name="GLib.PtrArray" c:type="GPtrArray*">
-              <type name="utf8"/>
-            </array>
-          </parameter>
-          <parameter name="thread_subject" transfer-ownership="none">
-            <doc xml:space="preserve">thread based on subject also</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="transfer_messages_to"
               c:identifier="camel_folder_transfer_messages_to"
               version="3.0">
@@ -13362,7 +13328,11 @@ This string must be freed by the caller.</doc>
             c:type="CamelFolderSummaryPrivate"
             disguised="1">
     </record>
-    <record name="FolderThread" c:type="CamelFolderThread">
+    <record name="FolderThread"
+            c:type="CamelFolderThread"
+            glib:type-name="CamelFolderThread"
+            glib:get-type="camel_folder_thread_messages_get_type"
+            c:symbol-prefix="folder_thread_messages">
       <field name="refcount" writable="1" bits="31">
         <type name="guint32" c:type="guint32"/>
       </field>
@@ -13383,8 +13353,39 @@ This string must be freed by the caller.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
-      <method name="messages_apply"
-              c:identifier="camel_folder_thread_messages_apply">
+      <constructor name="new" c:identifier="camel_folder_thread_messages_new">
+        <doc xml:space="preserve">Thread a (subset) of the messages in a folder.  And sort the result
+in summary order.
+
+If @thread_subject is %TRUE, messages with
+related subjects will also be threaded. The default behaviour is to
+only thread based on message-id.
+
+This function is probably to be removed soon.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A CamelFolderThread contianing a tree of CamelFolderThreadNode's
+which represent the threaded structure of the messages.</doc>
+          <type name="FolderThread" c:type="CamelFolderThread*"/>
+        </return-value>
+        <parameters>
+          <parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder</doc>
+            <type name="Folder" c:type="CamelFolder*"/>
+          </parameter>
+          <parameter name="uids" transfer-ownership="none">
+            <doc xml:space="preserve">The subset of uid's to thread. If %NULL, then thread
+   all UID-s in the @folder</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="utf8"/>
+            </array>
+          </parameter>
+          <parameter name="thread_subject" transfer-ownership="none">
+            <doc xml:space="preserve">thread based on subject also</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="apply" c:identifier="camel_folder_thread_messages_apply">
         <doc xml:space="preserve">Adds new @uids into the threaded tree.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -13402,19 +13403,20 @@ This string must be freed by the caller.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="messages_ref"
-              c:identifier="camel_folder_thread_messages_ref">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+      <method name="ref" c:identifier="camel_folder_thread_messages_ref">
+        <doc xml:space="preserve">Increase the reference of @thread</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the referenced @thread</doc>
+          <type name="FolderThread" c:type="CamelFolderThread*"/>
         </return-value>
         <parameters>
           <instance-parameter name="thread" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolderThread</doc>
             <type name="FolderThread" c:type="CamelFolderThread*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="messages_unref"
-              c:identifier="camel_folder_thread_messages_unref">
+      <method name="unref" c:identifier="camel_folder_thread_messages_unref">
         <doc xml:space="preserve">Free all memory associated with the thread descriptor @thread.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -14979,7 +14981,11 @@ This includes IDN (Internationalized Domain Names).</doc>
             <doc xml:space="preserve">address to lookup</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="namep" transfer-ownership="none">
+          <parameter name="namep"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
             <doc xml:space="preserve">holder for the matching name, or %NULL, if not required.</doc>
             <type name="utf8" c:type="const gchar**"/>
           </parameter>
@@ -15001,7 +15007,11 @@ match was found</doc>
             <doc xml:space="preserve">name to lookup</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="addressp" transfer-ownership="none">
+          <parameter name="addressp"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
             <doc xml:space="preserve">holder for address part, or %NULL, if not required.</doc>
             <type name="utf8" c:type="const gchar**"/>
           </parameter>
@@ -15022,11 +15032,19 @@ match was found</doc>
             <doc xml:space="preserve">address's array index</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
-          <parameter name="namep" transfer-ownership="none">
+          <parameter name="namep"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
             <doc xml:space="preserve">holder for the returned name, or %NULL, if not required.</doc>
             <type name="utf8" c:type="const gchar**"/>
           </parameter>
-          <parameter name="addressp" transfer-ownership="none">
+          <parameter name="addressp"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
             <doc xml:space="preserve">holder for the returned address, or %NULL, if not required.</doc>
             <type name="utf8" c:type="const gchar**"/>
           </parameter>
@@ -15525,9 +15543,14 @@ records.</doc>
             <doc xml:space="preserve">Number of records read, if != NULL.</doc>
             <type name="gsize" c:type="gsize*"/>
           </parameter>
-          <parameter name="records" transfer-ownership="none">
+          <parameter name="records"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">Records, allocated, must be freed with g_free, if != NULL.</doc>
-            <type name="_key_t" c:type="camel_key_t**"/>
+            <array length="1" zero-terminated="0" c:type="camel_key_t**">
+              <type name="_key_t" c:type="camel_key_t*"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -15565,7 +15588,9 @@ records.</doc>
           </parameter>
           <parameter name="records" transfer-ownership="none">
             <doc xml:space="preserve">an array of #camel_key_t to write</doc>
-            <type name="_key_t" c:type="camel_key_t*"/>
+            <array length="1" zero-terminated="0" c:type="camel_key_t*">
+              <type name="_key_t" c:type="camel_key_t"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -16757,7 +16782,7 @@ the header also.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">parent #CamelFolderSummary object, or %NULL</doc>
-            <type name="gpointer" c:type="_CamelFolderSummary*"/>
+            <type name="FolderSummary" c:type="gpointer*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -16799,7 +16824,7 @@ summary as the one with @mi is used.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">parent #CamelFolderSummary object, or %NULL, to set on the clone</doc>
-            <type name="gpointer" c:type="_CamelFolderSummary*"/>
+            <type name="FolderSummary" c:type="gpointer*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -17083,7 +17108,7 @@ After successful load of the @mi, the 'dirty' flag is unset.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #CamelMIRecord to load the @mi from</doc>
-            <type name="gpointer" c:type="const _CamelMIRecord*"/>
+            <type name="MIRecord" c:type="gpointer*"/>
           </parameter>
           <parameter name="bdata_ptr" transfer-ownership="none">
             <doc xml:space="preserve">a backend specific data (bdata) pointer</doc>
@@ -17109,7 +17134,7 @@ camel_util_bdata_put_number() and camel_util_bdata_put_string() to put data into
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a #CamelMIRecord to populate</doc>
-            <type name="gpointer" c:type="_CamelMIRecord*"/>
+            <type name="MIRecord" c:type="gpointer*"/>
           </parameter>
           <parameter name="bdata_str" transfer-ownership="none">
             <doc xml:space="preserve">a #GString with a string to save as backend specific data (bdata)</doc>
@@ -17602,7 +17627,7 @@ summary as the one with @mi is used.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">parent #CamelFolderSummary object, or %NULL, to set on the clone</doc>
-            <type name="gpointer" c:type="_CamelFolderSummary*"/>
+            <type name="FolderSummary" c:type="gpointer*"/>
           </parameter>
         </parameters>
       </method>
@@ -18088,12 +18113,9 @@ After successful load of the @mi, the 'dirty' flag is unset.</doc>
             <doc xml:space="preserve">a #CamelMessageInfo to load</doc>
             <type name="MessageInfo" c:type="CamelMessageInfo*"/>
           </instance-parameter>
-          <parameter name="record"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="record" transfer-ownership="none">
             <doc xml:space="preserve">a #CamelMIRecord to load the @mi from</doc>
-            <type name="gpointer" c:type="const _CamelMIRecord*"/>
+            <type name="MIRecord" c:type="gpointer*"/>
           </parameter>
           <parameter name="bdata_ptr" transfer-ownership="none">
             <doc xml:space="preserve">a backend specific data (bdata) pointer</doc>
@@ -18179,12 +18201,9 @@ camel_util_bdata_put_number() and camel_util_bdata_put_string() to put data into
             <doc xml:space="preserve">a #CamelMessageInfo</doc>
             <type name="MessageInfo" c:type="const CamelMessageInfo*"/>
           </instance-parameter>
-          <parameter name="record"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="record" transfer-ownership="none">
             <doc xml:space="preserve">a #CamelMIRecord to populate</doc>
-            <type name="gpointer" c:type="_CamelMIRecord*"/>
+            <type name="MIRecord" c:type="gpointer*"/>
           </parameter>
           <parameter name="bdata_str" transfer-ownership="none">
             <doc xml:space="preserve">a #GString with a string to save as backend specific data (bdata)</doc>
@@ -18992,7 +19011,7 @@ can contain various values.</doc>
                        nullable="1"
                        allow-none="1">
               <doc xml:space="preserve">parent #CamelFolderSummary object, or %NULL, to set on the clone</doc>
-              <type name="gpointer" c:type="_CamelFolderSummary*"/>
+              <type name="FolderSummary" c:type="gpointer*"/>
             </parameter>
           </parameters>
         </callback>
@@ -19013,7 +19032,7 @@ can contain various values.</doc>
                        nullable="1"
                        allow-none="1">
               <doc xml:space="preserve">a #CamelMIRecord to load the @mi from</doc>
-              <type name="gpointer" c:type="const _CamelMIRecord*"/>
+              <type name="MIRecord" c:type="gpointer*"/>
             </parameter>
             <parameter name="bdata_ptr" transfer-ownership="none">
               <doc xml:space="preserve">a backend specific data (bdata) pointer</doc>
@@ -19038,7 +19057,7 @@ can contain various values.</doc>
                        nullable="1"
                        allow-none="1">
               <doc xml:space="preserve">a #CamelMIRecord to populate</doc>
-              <type name="gpointer" c:type="_CamelMIRecord*"/>
+              <type name="MIRecord" c:type="gpointer*"/>
             </parameter>
             <parameter name="bdata_str" transfer-ownership="none">
               <doc xml:space="preserve">a #GString with a string to save as backend specific data (bdata)</doc>
@@ -29585,7 +29604,7 @@ set to defaults.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <type name="gpointer" c:type="gpointer"/>
+        <type name="Provider"/>
       </property>
       <property name="proxy-resolver" writable="1" transfer-ownership="none">
         <type name="Gio.ProxyResolver"/>
@@ -31811,7 +31830,7 @@ Default behavior is that all Inbox folders are intended to be refreshed.</doc>
 @parent_name can be %NULL to create a new top-level folder.
 The returned #CamelFolderInfo struct should be freed with
 camel_folder_info_free().</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">info about the created folder, or %NULL on error</doc>
           <type name="FolderInfo" c:type="CamelFolderInfo*"/>
         </return-value>
@@ -31820,7 +31839,10 @@ camel_folder_info_free().</doc>
             <doc xml:space="preserve">a #CamelStore</doc>
             <type name="Store" c:type="CamelStore*"/>
           </instance-parameter>
-          <parameter name="parent_name" transfer-ownership="none">
+          <parameter name="parent_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">name of the new folder's parent, or %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -31997,7 +32019,7 @@ The CAMEL_STORE_FOLDER_INFO_FAST flag should be considered
 deprecated; most backends will behave the same whether it is
 supplied or not.  The only guaranteed way to get updated folder
 counts is to both open the folder and invoke refresh_info() it.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #CamelFolderInfo tree, or %NULL on error</doc>
           <type name="FolderInfo" c:type="CamelFolderInfo*"/>
         </return-value>
@@ -32006,7 +32028,10 @@ counts is to both open the folder and invoke refresh_info() it.</doc>
             <doc xml:space="preserve">a #CamelStore</doc>
             <type name="Store" c:type="CamelStore*"/>
           </instance-parameter>
-          <parameter name="top" transfer-ownership="none">
+          <parameter name="top"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the name of the folder to start from</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -32029,8 +32054,9 @@ counts is to both open the folder and invoke refresh_info() it.</doc>
                       version="3.0"
                       throws="1">
         <doc xml:space="preserve">Gets a specific folder object from @store by name.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the requested #CamelFolder object, or %NULL on error</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the requested #CamelFolder object, or
+%NULL on error</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32061,9 +32087,9 @@ counts is to both open the folder and invoke refresh_info() it.</doc>
                       version="3.0"
                       throws="1">
         <doc xml:space="preserve">Gets the folder in @store into which new mail is delivered.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the inbox folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the inbox folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32085,9 +32111,9 @@ folder exists</doc>
                       version="3.0"
                       throws="1">
         <doc xml:space="preserve">Gets the folder in @store into which junk is delivered.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the junk folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the junk folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32109,9 +32135,9 @@ folder exists</doc>
                       version="3.0"
                       throws="1">
         <doc xml:space="preserve">Gets the folder in @store into which trash is delivered.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the trash folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the trash folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32272,7 +32298,10 @@ call camel_store_create_folder_finish() to get the result of the operation.</doc
             <doc xml:space="preserve">a #CamelStore</doc>
             <type name="Store" c:type="CamelStore*"/>
           </instance-parameter>
-          <parameter name="parent_name" transfer-ownership="none">
+          <parameter name="parent_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">name of the new folder's parent, or %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -32316,7 +32345,7 @@ call camel_store_create_folder_finish() to get the result of the operation.</doc
         <doc xml:space="preserve">Finishes the operation started with camel_store_create_folder().
 The returned #CamelFolderInfo struct should be freed with
 camel_folder_info_free().</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">info about the created folder, or %NULL on error</doc>
           <type name="FolderInfo" c:type="CamelFolderInfo*"/>
         </return-value>
@@ -32339,7 +32368,7 @@ camel_folder_info_free().</doc>
 @parent_name can be %NULL to create a new top-level folder.
 The returned #CamelFolderInfo struct should be freed with
 camel_folder_info_free().</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">info about the created folder, or %NULL on error</doc>
           <type name="FolderInfo" c:type="CamelFolderInfo*"/>
         </return-value>
@@ -32348,7 +32377,10 @@ camel_folder_info_free().</doc>
             <doc xml:space="preserve">a #CamelStore</doc>
             <type name="Store" c:type="CamelStore*"/>
           </instance-parameter>
-          <parameter name="parent_name" transfer-ownership="none">
+          <parameter name="parent_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">name of the new folder's parent, or %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -32702,8 +32734,9 @@ call camel_store_get_folder_finish() to get the result of the operation.</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Finishes the operation started with camel_store_get_folder().</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the requested #CamelFolder object, or %NULL on error</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the requested #CamelFolder object, or
+%NULL on error</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32735,7 +32768,10 @@ the operation.</doc>
             <doc xml:space="preserve">a #CamelStore</doc>
             <type name="Store" c:type="CamelStore*"/>
           </instance-parameter>
-          <parameter name="top" transfer-ownership="none">
+          <parameter name="top"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the name of the folder to start from</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -32780,7 +32816,7 @@ the operation.</doc>
         <doc xml:space="preserve">Finishes the operation started with camel_store_get_folder_info().
 The returned #CamelFolderInfo tree should be freed with
 camel_folder_info_free().</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #CamelFolderInfo tree, or %NULL on error</doc>
           <type name="FolderInfo" c:type="CamelFolderInfo*"/>
         </return-value>
@@ -32820,7 +32856,7 @@ The CAMEL_STORE_FOLDER_INFO_FAST flag should be considered
 deprecated; most backends will behave the same whether it is
 supplied or not.  The only guaranteed way to get updated folder
 counts is to both open the folder and invoke refresh_info() it.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #CamelFolderInfo tree, or %NULL on error</doc>
           <type name="FolderInfo" c:type="CamelFolderInfo*"/>
         </return-value>
@@ -32829,7 +32865,10 @@ counts is to both open the folder and invoke refresh_info() it.</doc>
             <doc xml:space="preserve">a #CamelStore</doc>
             <type name="Store" c:type="CamelStore*"/>
           </instance-parameter>
-          <parameter name="top" transfer-ownership="none">
+          <parameter name="top"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the name of the folder to start from</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -32852,8 +32891,9 @@ counts is to both open the folder and invoke refresh_info() it.</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Gets a specific folder object from @store by name.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the requested #CamelFolder object, or %NULL on error</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the requested #CamelFolder object, or
+%NULL on error</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32943,9 +32983,9 @@ the operation.</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Finishes the operation started with camel_store_get_inbox_folder().</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the inbox folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the inbox folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -32964,9 +33004,9 @@ folder exists</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Gets the folder in @store into which new mail is delivered.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the inbox folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the inbox folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -33033,9 +33073,9 @@ the operation.</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Finishes the operation started with camel_store_get_junk_folder().</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the junk folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the junk folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -33054,9 +33094,9 @@ folder exists</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Gets the folder in @store into which junk is delivered.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the junk folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the junk folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -33137,9 +33177,9 @@ the operation.</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Finishes the operation started with camel_store_get_trash_folder().</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the trash folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the trash folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -33158,9 +33198,9 @@ folder exists</doc>
               version="3.0"
               throws="1">
         <doc xml:space="preserve">Gets the folder in @store into which trash is delivered.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the trash folder for @store, or %NULL on error or if no such
-folder exists</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the trash folder for @store, or %NULL on
+error or if no such folder exists</doc>
           <type name="Folder" c:type="CamelFolder*"/>
         </return-value>
         <parameters>
@@ -33657,8 +33697,9 @@ to augment the @store with virtual Junk and Trash folders.</doc>
       </field>
       <field name="get_folder_sync">
         <callback name="get_folder_sync" throws="1">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the requested #CamelFolder object, or %NULL on error</doc>
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">the requested #CamelFolder object, or
+%NULL on error</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </return-value>
           <parameters>
@@ -33687,7 +33728,7 @@ to augment the @store with virtual Junk and Trash folders.</doc>
       </field>
       <field name="get_folder_info_sync">
         <callback name="get_folder_info_sync" throws="1">
-          <return-value transfer-ownership="full">
+          <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">a #CamelFolderInfo tree, or %NULL on error</doc>
             <type name="FolderInfo" c:type="CamelFolderInfo*"/>
           </return-value>
@@ -33696,7 +33737,10 @@ to augment the @store with virtual Junk and Trash folders.</doc>
               <doc xml:space="preserve">a #CamelStore</doc>
               <type name="Store" c:type="CamelStore*"/>
             </parameter>
-            <parameter name="top" transfer-ownership="none">
+            <parameter name="top"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
               <doc xml:space="preserve">the name of the folder to start from</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
@@ -33717,9 +33761,9 @@ to augment the @store with virtual Junk and Trash folders.</doc>
       </field>
       <field name="get_inbox_folder_sync">
         <callback name="get_inbox_folder_sync" throws="1">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the inbox folder for @store, or %NULL on error or if no such
-folder exists</doc>
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">the inbox folder for @store, or %NULL on
+error or if no such folder exists</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </return-value>
           <parameters>
@@ -33739,9 +33783,9 @@ folder exists</doc>
       </field>
       <field name="get_junk_folder_sync">
         <callback name="get_junk_folder_sync" throws="1">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the junk folder for @store, or %NULL on error or if no such
-folder exists</doc>
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">the junk folder for @store, or %NULL on
+error or if no such folder exists</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </return-value>
           <parameters>
@@ -33761,9 +33805,9 @@ folder exists</doc>
       </field>
       <field name="get_trash_folder_sync">
         <callback name="get_trash_folder_sync" throws="1">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the trash folder for @store, or %NULL on error or if no such
-folder exists</doc>
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">the trash folder for @store, or %NULL on
+error or if no such folder exists</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </return-value>
           <parameters>
@@ -33783,7 +33827,7 @@ folder exists</doc>
       </field>
       <field name="create_folder_sync">
         <callback name="create_folder_sync" throws="1">
-          <return-value transfer-ownership="full">
+          <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">info about the created folder, or %NULL on error</doc>
             <type name="FolderInfo" c:type="CamelFolderInfo*"/>
           </return-value>
@@ -33792,7 +33836,10 @@ folder exists</doc>
               <doc xml:space="preserve">a #CamelStore</doc>
               <type name="Store" c:type="CamelStore*"/>
             </parameter>
-            <parameter name="parent_name" transfer-ownership="none">
+            <parameter name="parent_name"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
               <doc xml:space="preserve">name of the new folder's parent, or %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>

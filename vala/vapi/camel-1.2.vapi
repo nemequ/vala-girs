@@ -649,6 +649,21 @@ namespace Camel {
 		public uint unread_count { get; }
 		public uint visible_count { get; }
 	}
+	[CCode (cheader_filename = "camel/camel.h", lower_case_csuffix = "folder_thread_messages", ref_function = "camel_folder_thread_messages_ref", type_id = "camel_folder_thread_messages_get_type ()", unref_function = "camel_folder_thread_messages_unref")]
+	[Compact]
+	public class FolderThread {
+		public weak Camel.Folder folder;
+		public weak Camel.MemChunk node_chunks;
+		public uint32 refcount;
+		public uint32 subject;
+		public weak GLib.GenericArray<void*> summary;
+		public void* tree;
+		[CCode (has_construct_function = false)]
+		public FolderThread (Camel.Folder folder, GLib.GenericArray<string> uids, bool thread_subject);
+		public void apply (GLib.GenericArray<string> uids);
+		public Camel.FolderThread @ref ();
+		public void unref ();
+	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_gpg_context_get_type ()")]
 	public class GpgContext : Camel.CipherContext {
 		[CCode (has_construct_function = false, type = "CamelCipherContext*")]
@@ -758,19 +773,19 @@ namespace Camel {
 		public static string encode_address (int len, string name, string addr);
 		[Version (since = "3.16")]
 		public void ensure_ascii_domains ();
-		public int find_address (string address, string namep);
-		public int find_name (string name, string addressp);
+		public int find_address (string address, out string? namep);
+		public int find_name (string name, out string? addressp);
 		public static string format_address (string name, string addr);
-		public bool @get (int index, string namep, string addressp);
+		public bool @get (int index, out string? namep, out string? addressp);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_key_file_get_type ()")]
 	public class KeyFile : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public KeyFile (string path, int flags, char version);
 		public int @delete ();
-		public int read (Camel._block_t start, size_t len, Camel._key_t records);
+		public int read (Camel._block_t start, [CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] Camel._key_t[]? records);
 		public int rename (string path);
-		public int write (Camel._block_t parent, size_t len, Camel._key_t records);
+		public int write (Camel._block_t parent, [CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] Camel._key_t[] records);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_key_table_get_type ()")]
 	public class KeyTable : GLib.Object {
@@ -857,9 +872,9 @@ namespace Camel {
 	public abstract class MessageInfo : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.24")]
-		public MessageInfo (void* summary);
+		public MessageInfo (Camel.FolderSummary? summary);
 		[Version (since = "3.24")]
-		public virtual Camel.MessageInfo clone (void* assign_summary);
+		public virtual Camel.MessageInfo clone (Camel.FolderSummary? assign_summary);
 		[Version (since = "3.24")]
 		public void dump ();
 		[Version (since = "3.24")]
@@ -922,7 +937,7 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public virtual unowned Camel.NameValueArray? get_user_tags ();
 		[Version (since = "3.24")]
-		public virtual bool load (void* record, string bdata_ptr);
+		public virtual bool load (Camel.MIRecord? record, string bdata_ptr);
 		[Version (since = "3.24")]
 		public unowned string pooldup_uid ();
 		[Version (since = "3.24")]
@@ -932,7 +947,7 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public void* ref_summary ();
 		[Version (since = "3.24")]
-		public virtual bool save (void* record, GLib.StringBuilder bdata_str);
+		public virtual bool save (Camel.MIRecord? record, GLib.StringBuilder bdata_str);
 		[Version (since = "3.24")]
 		public void set_abort_notifications (bool abort_notifications);
 		[Version (since = "3.24")]
@@ -1653,7 +1668,7 @@ namespace Camel {
 		public Camel.ServiceConnectionStatus connection_status { get; }
 		public string display_name { get; set construct; }
 		public string password { get; set construct; }
-		public void* provider { get; construct; }
+		public Camel.Provider provider { owned get; construct; }
 		[NoAccessorMethod]
 		public GLib.ProxyResolver proxy_resolver { owned get; set; }
 		[NoAccessorMethod]
@@ -1761,9 +1776,9 @@ namespace Camel {
 		[Version (since = "2.22")]
 		public virtual bool can_refresh_folder (Camel.FolderInfo info) throws GLib.Error;
 		[Version (since = "3.0")]
-		public async Camel.FolderInfo create_folder (string parent_name, string folder_name, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.FolderInfo? create_folder (string? parent_name, string folder_name, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
-		public virtual Camel.FolderInfo create_folder_sync (string parent_name, string folder_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.FolderInfo? create_folder_sync (string? parent_name, string folder_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.24")]
 		public void delete_cached_folder (string folder_name);
 		[Version (since = "3.0")]
@@ -1778,29 +1793,29 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public uint32 get_flags ();
 		[Version (since = "3.0")]
-		public async Camel.Folder get_folder (string folder_name, Camel.StoreGetFolderFlags flags, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.Folder? get_folder (string folder_name, Camel.StoreGetFolderFlags flags, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
-		public async Camel.FolderInfo get_folder_info (string top, Camel.StoreGetFolderInfoFlags flags, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.FolderInfo? get_folder_info (string? top, Camel.StoreGetFolderInfoFlags flags, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
-		public virtual Camel.FolderInfo get_folder_info_sync (string top, Camel.StoreGetFolderInfoFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.FolderInfo? get_folder_info_sync (string? top, Camel.StoreGetFolderInfoFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.0")]
-		public virtual Camel.Folder get_folder_sync (string folder_name, Camel.StoreGetFolderFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.Folder? get_folder_sync (string folder_name, Camel.StoreGetFolderFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.24")]
 		public unowned Camel.ObjectBag get_folders_bag ();
 		[Version (since = "3.0")]
-		public async Camel.Folder get_inbox_folder (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.Folder? get_inbox_folder (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
-		public virtual Camel.Folder get_inbox_folder_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.Folder? get_inbox_folder_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.0")]
-		public async Camel.Folder get_junk_folder (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.Folder? get_junk_folder (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
-		public virtual Camel.Folder get_junk_folder_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.Folder? get_junk_folder_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.24")]
 		public uint32 get_permissions ();
 		[Version (since = "3.0")]
-		public async Camel.Folder get_trash_folder (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Camel.Folder? get_trash_folder (int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.0")]
-		public virtual Camel.Folder get_trash_folder_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual Camel.Folder? get_trash_folder_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.20")]
 		public async bool initial_setup (int io_priority, GLib.Cancellable? cancellable, out GLib.HashTable<weak string,weak string> out_save_setup) throws GLib.Error;
 		[Version (since = "3.20")]
@@ -2294,18 +2309,6 @@ namespace Camel {
 		public uint32 visible_count;
 		public uint32 jnd_count;
 		public weak string bdata;
-	}
-	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
-	public struct FolderThread {
-		public uint32 refcount;
-		public uint32 subject;
-		public void* tree;
-		public weak Camel.MemChunk node_chunks;
-		public weak Camel.Folder folder;
-		public weak GLib.GenericArray<void*> summary;
-		public void messages_apply (GLib.GenericArray<string> uids);
-		public void messages_ref ();
-		public void messages_unref ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct FolderThreadNode {

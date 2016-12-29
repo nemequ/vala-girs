@@ -206,6 +206,9 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		protected Builder ();
 		public virtual async Ide.BuildResult build_async (Ide.BuilderBuildFlags flags, out Ide.BuildResult? result, GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public virtual async string[] get_build_flags_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
+		public virtual async GLib.GenericArray<weak Ide.BuildTarget> get_build_targets_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Ide.Configuration get_configuration ();
 		public virtual async Ide.BuildResult install_async (out Ide.BuildResult? result, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Ide.Configuration configuration { get; construct; }
@@ -284,6 +287,7 @@ namespace Ide {
 		public void set_runtime (Ide.Runtime runtime);
 		public void set_runtime_id (string runtime_id);
 		public void setenv (string key, string value);
+		public Ide.Configuration snapshot ();
 		public string app_id { get; set; }
 		public string config_opts { get; set; }
 		public bool debug { get; set; }
@@ -788,6 +792,7 @@ namespace Ide {
 		public virtual bool get_can_split ();
 		public virtual bool get_modified ();
 		public virtual string get_special_title ();
+		public virtual bool get_split_view ();
 		public virtual string get_title ();
 		public virtual void navigate_to (Ide.SourceLocation location);
 		public virtual void set_back_forward_list (Ide.BackForwardList back_forward_list);
@@ -1195,6 +1200,7 @@ namespace Ide {
 		public virtual void prepare_configuration (Ide.Configuration configuration);
 		public void set_display_name (string display_name);
 		public void set_id (string id);
+		public virtual GLib.File translate_file (GLib.File file);
 		public string display_name { get; set construct; }
 		public string id { get; set construct; }
 	}
@@ -1292,6 +1298,11 @@ namespace Ide {
 		public string relative_path { get; construct; }
 		public string schema_id { get; construct; }
 		public signal void changed (string object);
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_simple_builder_get_type ()")]
+	public class SimpleBuilder : Ide.Builder {
+		[CCode (has_construct_function = false)]
+		protected SimpleBuilder ();
 	}
 	[CCode (cheader_filename = "ide.h", ref_function = "ide_source_location_ref", type_id = "ide_source_location_get_type ()", unref_function = "ide_source_location_unref")]
 	[Compact]
@@ -1996,8 +2007,8 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeBuildSystemInterface", type_id = "ide_build_system_get_type ()")]
 	public interface BuildSystem : Ide.Object {
 		[CCode (array_length = false, array_null_terminated = true)]
-		public abstract async string[] get_build_flags_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
-		public abstract async GLib.GenericArray<weak Ide.BuildTarget> get_build_targets_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async string[] get_build_flags_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async GLib.GenericArray<weak Ide.BuildTarget> get_build_targets_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract Ide.Builder get_builder (Ide.Configuration configuration) throws GLib.Error;
 		public abstract int get_priority ();
 		public static async Ide.BuildSystem new_async (Ide.Context context, GLib.File project_file, GLib.Cancellable? cancellable) throws GLib.Error;
