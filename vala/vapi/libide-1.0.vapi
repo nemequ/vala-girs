@@ -913,6 +913,7 @@ namespace Ide {
 	public class PreferencesEntry : Ide.PreferencesBin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesEntry ();
+		public unowned Gtk.Widget get_entry_widget ();
 		public unowned Gtk.Widget get_title_widget ();
 		[NoAccessorMethod]
 		public string text { owned get; set; }
