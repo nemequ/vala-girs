@@ -10478,6 +10478,20 @@ These values are *NOT* automatically normalized.</doc>
           <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
         </return-value>
       </constructor>
+      <constructor name="new_from_string"
+                   c:identifier="gst_video_time_code_new_from_string"
+                   version="1.12">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstVideoTimeCode from the given string</doc>
+          <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
+        </return-value>
+        <parameters>
+          <parameter name="tc_str" transfer-ownership="none">
+            <doc xml:space="preserve">The string that represents the #GstVideoTimeCode</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <method name="add_frames"
               c:identifier="gst_video_time_code_add_frames"
               version="1.10">
@@ -10493,6 +10507,32 @@ These values are *NOT* automatically normalized.</doc>
           <parameter name="frames" transfer-ownership="none">
             <doc xml:space="preserve">How many frames to add or subtract</doc>
             <type name="gint64" c:type="gint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_interval"
+              c:identifier="gst_video_time_code_add_interval"
+              version="1.12">
+        <doc xml:space="preserve">This makes a component-wise addition of @tc_inter to @tc. For example,
+adding ("01:02:03:04", "00:01:00:00") will return "01:03:03:04".
+When it comes to drop-frame timecodes,
+adding ("00:00:00;00", "00:01:00:00") will return "00:01:00;02"
+because of drop-frame oddities. However,
+adding ("00:09:00;02", "00:01:00:00") will return "00:10:00;00"
+because this time we can have an exact minute.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #GstVideoTimeCode with @tc_inter added.</doc>
+          <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tc" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstVideoTimeCode where the diff should be added</doc>
+            <type name="VideoTimeCode" c:type="const GstVideoTimeCode*"/>
+          </instance-parameter>
+          <parameter name="tc_inter" transfer-ownership="none">
+            <doc xml:space="preserve">The #GstVideoTimeCodeInterval to add to @tc</doc>
+            <type name="VideoTimeCodeInterval"
+                  c:type="const GstVideoTimeCodeInterval*"/>
           </parameter>
         </parameters>
       </method>
@@ -10753,6 +10793,151 @@ For drop frame, only 30000/1001 and 60000/1001 frame rates are supported.</doc>
         <doc xml:space="preserve">Whether we have interlaced video</doc>
       </member>
     </bitfield>
+    <record name="VideoTimeCodeInterval"
+            c:type="GstVideoTimeCodeInterval"
+            version="1.12"
+            glib:type-name="GstVideoTimeCodeInterval"
+            glib:get-type="gst_video_time_code_interval_get_type"
+            c:symbol-prefix="video_time_code_interval">
+      <doc xml:space="preserve">A representation of a difference between two #GstVideoTimeCode instances.
+Will not necessarily correspond to a real timecode (e.g. 00:00:10;00)</doc>
+      <field name="hours" writable="1">
+        <doc xml:space="preserve">the hours field of #GstVideoTimeCodeInterval</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="minutes" writable="1">
+        <doc xml:space="preserve">the minutes field of #GstVideoTimeCodeInterval</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="seconds" writable="1">
+        <doc xml:space="preserve">the seconds field of #GstVideoTimeCodeInterval</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <field name="frames" writable="1">
+        <doc xml:space="preserve">the frames field of #GstVideoTimeCodeInterval</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <constructor name="new"
+                   c:identifier="gst_video_time_code_interval_new"
+                   version="1.12">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstVideoTimeCodeInterval with the given values.</doc>
+          <type name="VideoTimeCodeInterval"
+                c:type="GstVideoTimeCodeInterval*"/>
+        </return-value>
+        <parameters>
+          <parameter name="hours" transfer-ownership="none">
+            <doc xml:space="preserve">the hours field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="minutes" transfer-ownership="none">
+            <doc xml:space="preserve">the minutes field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="seconds" transfer-ownership="none">
+            <doc xml:space="preserve">the seconds field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="frames" transfer-ownership="none">
+            <doc xml:space="preserve">the frames field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_from_string"
+                   c:identifier="gst_video_time_code_interval_new_from_string"
+                   version="1.12">
+        <doc xml:space="preserve">@tc_inter_str must only have ":" as separators.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstVideoTimeCodeInterval from the given string</doc>
+          <type name="VideoTimeCodeInterval"
+                c:type="GstVideoTimeCodeInterval*"/>
+        </return-value>
+        <parameters>
+          <parameter name="tc_inter_str" transfer-ownership="none">
+            <doc xml:space="preserve">The string that represents the #GstVideoTimeCodeInterval</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="clear"
+              c:identifier="gst_video_time_code_interval_clear"
+              version="1.12">
+        <doc xml:space="preserve">Initializes @tc with empty/zero/NULL values.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoTimeCodeInterval</doc>
+            <type name="VideoTimeCodeInterval"
+                  c:type="GstVideoTimeCodeInterval*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="copy"
+              c:identifier="gst_video_time_code_interval_copy"
+              version="1.12">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstVideoTimeCodeInterval with the same values as @tc .</doc>
+          <type name="VideoTimeCodeInterval"
+                c:type="GstVideoTimeCodeInterval*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoTimeCodeInterval</doc>
+            <type name="VideoTimeCodeInterval"
+                  c:type="const GstVideoTimeCodeInterval*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="free"
+              c:identifier="gst_video_time_code_interval_free"
+              version="1.12">
+        <doc xml:space="preserve">Frees @tc .</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoTimeCodeInterval</doc>
+            <type name="VideoTimeCodeInterval"
+                  c:type="GstVideoTimeCodeInterval*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init"
+              c:identifier="gst_video_time_code_interval_init"
+              version="1.12">
+        <doc xml:space="preserve">Initializes @tc with the given values.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoTimeCodeInterval</doc>
+            <type name="VideoTimeCodeInterval"
+                  c:type="GstVideoTimeCodeInterval*"/>
+          </instance-parameter>
+          <parameter name="hours" transfer-ownership="none">
+            <doc xml:space="preserve">the hours field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="minutes" transfer-ownership="none">
+            <doc xml:space="preserve">the minutes field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="seconds" transfer-ownership="none">
+            <doc xml:space="preserve">the seconds field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="frames" transfer-ownership="none">
+            <doc xml:space="preserve">the frames field of #GstVideoTimeCodeInterval</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+    </record>
     <record name="VideoTimeCodeMeta"
             c:type="GstVideoTimeCodeMeta"
             version="1.10">

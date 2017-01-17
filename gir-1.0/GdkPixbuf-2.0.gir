@@ -97,7 +97,7 @@ the gdk-pixbuf library.  Currently only RGB is supported.</doc>
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_MICRO" value="3" c:type="GDK_PIXBUF_MICRO">
+    <constant name="PIXBUF_MICRO" value="4" c:type="GDK_PIXBUF_MICRO">
       <doc xml:space="preserve">Micro version of gdk-pixbuf library, that is the "2" in
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
@@ -107,7 +107,7 @@ the gdk-pixbuf library.  Currently only RGB is supported.</doc>
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_VERSION" value="2.36.3" c:type="GDK_PIXBUF_VERSION">
+    <constant name="PIXBUF_VERSION" value="2.36.4" c:type="GDK_PIXBUF_VERSION">
       <doc xml:space="preserve">Contains the full version of the gdk-pixbuf header as a string.
 This is the version being compiled against; contrast with
 #gdk_pixbuf_version.</doc>
@@ -961,7 +961,7 @@ input pixbuf (with an increased reference count).</doc>
 @scale_x and @scale_y then translating by @offset_x and @offset_y.
 This gives an image in the coordinates of the destination pixbuf.
 The rectangle (@dest_x, @dest_y, @dest_width, @dest_height)
-is then composited onto the corresponding rectangle of the
+is then alpha blended onto the corresponding rectangle of the
 original destination image.
 
 When the destination rectangle contains parts not in the source
@@ -1026,10 +1026,13 @@ to infinity.
       <method name="composite_color" c:identifier="gdk_pixbuf_composite_color">
         <doc xml:space="preserve">Creates a transformation of the source image @src by scaling by
 @scale_x and @scale_y then translating by @offset_x and @offset_y,
-then composites the rectangle (@dest_x ,@dest_y, @dest_width,
+then alpha blends the rectangle (@dest_x ,@dest_y, @dest_width,
 @dest_height) of the resulting image with a checkboard of the
 colors @color1 and @color2 and renders it onto the destination
 image.
+
+If the source image has no alpha channel, and @overall_alpha is 255, a fast
+path is used which omits the alpha blending and just performs the scaling.
 
 See gdk_pixbuf_composite_color_simple() for a simpler variant of this
 function suitable for many tasks.</doc>
@@ -1110,7 +1113,7 @@ function suitable for many tasks.</doc>
       <method name="composite_color_simple"
               c:identifier="gdk_pixbuf_composite_color_simple">
         <doc xml:space="preserve">Creates a new #GdkPixbuf by scaling @src to @dest_width x
-@dest_height and compositing the result with a checkboard of colors
+@dest_height and alpha blending the result with a checkboard of colors
 @color1 and @color2.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new #GdkPixbuf, or %NULL if not enough memory could be
@@ -1596,7 +1599,9 @@ pixbuf.</doc>
               c:identifier="gdk_pixbuf_rotate_simple"
               version="2.6">
         <doc xml:space="preserve">Rotates a pixbuf by a multiple of 90 degrees, and returns the
-result in a new pixbuf.</doc>
+result in a new pixbuf.
+
+If @angle is 0, a copy of @src is returned, avoiding any rotation.</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the new #GdkPixbuf, or %NULL
 if not enough memory could be allocated for it.</doc>
@@ -2277,7 +2282,10 @@ reasonable quality and speed.
 You can scale a sub-portion of @src by creating a sub-pixbuf
 pointing into @src; see gdk_pixbuf_new_subpixbuf().
 
-For more complicated scaling/compositing see gdk_pixbuf_scale()
+If @dest_width and @dest_height are equal to the @src width and height, a
+copy of @src is returned, avoiding any scaling.
+
+For more complicated scaling/alpha blending see gdk_pixbuf_scale()
 and gdk_pixbuf_composite().</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new #GdkPixbuf, or %NULL if not enough memory could be
@@ -2412,7 +2420,7 @@ be at least as large as the width of the pixbuf.</doc>
                  glib:get-type="gdk_pixbuf_alpha_mode_get_type"
                  c:type="GdkPixbufAlphaMode">
       <doc xml:space="preserve">These values can be passed to
-gdk_pixbuf_render_to_drawable_alpha() to control how the alpha
+gdk_pixbuf_xlib_render_to_drawable_alpha() to control how the alpha
 channel of an image should be handled.  This function can create a
 bilevel clipping mask (black and white) and use it while painting
 the image.  In the future, when the X Window System gets an alpha

@@ -17,6 +17,718 @@ and/or use gtk-doc annotations.  -->
              shared-library="libgeocode-glib.so.0"
              c:identifier-prefixes="Geocode"
              c:symbol-prefixes="geocode">
+    <interface name="Backend"
+               c:symbol-prefix="backend"
+               c:type="GeocodeBackend"
+               version="3.23.1"
+               glib:type-name="GeocodeBackend"
+               glib:get-type="geocode_backend_get_type"
+               glib:type-struct="BackendInterface">
+      <doc xml:space="preserve">All the fields in the #GeocodeBackend structure are private and should
+never be accessed directly.</doc>
+      <virtual-method name="forward_search"
+                      invoker="forward_search"
+                      version="3.23.1"
+                      throws="1">
+        <doc xml:space="preserve">Gets the result of a forward geocoding query using the @backend.
+
+This is a synchronous function, which means it may block on network requests.
+In most situations, the asynchronous version
+(geocode_backend_forward_search_async()) is more appropriate. See its
+documentation for more information on usage.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="forward_search_async"
+                      invoker="forward_search_async"
+                      version="3.23.1">
+        <doc xml:space="preserve">Asynchronously performs a forward geocoding query using the @backend. Use
+geocode_backend_forward_search() to do the same thing synchronously.
+
+The @params hash table is in the format used by Telepathy, and documented
+in the [Telepathy specification](http://telepathy.freedesktop.org/spec/Connection_Interface_Location.html#Mapping:Location).
+
+See also: [XEP-0080 specification](http://xmpp.org/extensions/xep-0080.html).
+
+When the operation is finished, @callback will be called. You can then call
+geocode_backend_forward_search_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <doc xml:space="preserve">the data to pass to the @callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="forward_search_finish"
+                      invoker="forward_search_finish"
+                      version="3.23.1"
+                      throws="1">
+        <doc xml:space="preserve">Finishes a forward geocoding operation. See
+geocode_backend_forward_search_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="reverse_resolve"
+                      invoker="reverse_resolve"
+                      version="3.23.1"
+                      throws="1">
+        <doc xml:space="preserve">Gets the result of a reverse geocoding query using the @backend.
+
+This is a synchronous function, which means it may block on network requests.
+In most situations, the asynchronous version,
+geocode_backend_forward_search_async(), is more appropriate. See its
+documentation for more information on usage.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+   #GeocodePlace instances, or %NULL in case of errors. The list is ordered
+   by relevance, with most relevant results first. Free the returned
+   instances with g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="reverse_resolve_async"
+                      invoker="reverse_resolve_async"
+                      version="3.23.1">
+        <doc xml:space="preserve">Asynchronously gets the result of a reverse geocoding query using the
+backend.
+
+Typically, a single result will be returned representing the place at a
+given latitude and longitude (the `lat` and `lon` keys to @params); but in
+some cases the results will be ambiguous and *multiple* results will be
+returned. They will be returned in order of relevance, with the most
+relevant result first in the list.
+
+The @params hash table is in the format used by Telepathy, and documented
+in the [Telepathy specification](http://telepathy.freedesktop.org/spec/Connection_Interface_Location.html#Mapping:Location).
+
+See also: [XEP-0080 specification](http://xmpp.org/extensions/xep-0080.html).
+
+Use geocode_backend_reverse_resolve() to do the same thing synchronously.
+
+When the operation is finished, @callback will be called. You can then call
+geocode_backend_reverse_resolve_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <doc xml:space="preserve">the data to pass to callback function.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="reverse_resolve_finish"
+                      invoker="reverse_resolve_finish"
+                      version="3.23.1"
+                      throws="1">
+        <doc xml:space="preserve">Finishes a reverse geocoding operation. See geocode_backend_reverse_resolve_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+   #GeocodePlace instances, or %NULL in case of errors. The list is ordered
+   by relevance, with most relevant results first. Free the returned
+   instances with g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="forward_search"
+              c:identifier="geocode_backend_forward_search"
+              version="3.23.1"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a forward geocoding query using the @backend.
+
+This is a synchronous function, which means it may block on network requests.
+In most situations, the asynchronous version
+(geocode_backend_forward_search_async()) is more appropriate. See its
+documentation for more information on usage.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="forward_search_async"
+              c:identifier="geocode_backend_forward_search_async"
+              version="3.23.1">
+        <doc xml:space="preserve">Asynchronously performs a forward geocoding query using the @backend. Use
+geocode_backend_forward_search() to do the same thing synchronously.
+
+The @params hash table is in the format used by Telepathy, and documented
+in the [Telepathy specification](http://telepathy.freedesktop.org/spec/Connection_Interface_Location.html#Mapping:Location).
+
+See also: [XEP-0080 specification](http://xmpp.org/extensions/xep-0080.html).
+
+When the operation is finished, @callback will be called. You can then call
+geocode_backend_forward_search_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to the @callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="forward_search_finish"
+              c:identifier="geocode_backend_forward_search_finish"
+              version="3.23.1"
+              throws="1">
+        <doc xml:space="preserve">Finishes a forward geocoding operation. See
+geocode_backend_forward_search_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reverse_resolve"
+              c:identifier="geocode_backend_reverse_resolve"
+              version="3.23.1"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a reverse geocoding query using the @backend.
+
+This is a synchronous function, which means it may block on network requests.
+In most situations, the asynchronous version,
+geocode_backend_forward_search_async(), is more appropriate. See its
+documentation for more information on usage.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+   #GeocodePlace instances, or %NULL in case of errors. The list is ordered
+   by relevance, with most relevant results first. Free the returned
+   instances with g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reverse_resolve_async"
+              c:identifier="geocode_backend_reverse_resolve_async"
+              version="3.23.1">
+        <doc xml:space="preserve">Asynchronously gets the result of a reverse geocoding query using the
+backend.
+
+Typically, a single result will be returned representing the place at a
+given latitude and longitude (the `lat` and `lon` keys to @params); but in
+some cases the results will be ambiguous and *multiple* results will be
+returned. They will be returned in order of relevance, with the most
+relevant result first in the list.
+
+The @params hash table is in the format used by Telepathy, and documented
+in the [Telepathy specification](http://telepathy.freedesktop.org/spec/Connection_Interface_Location.html#Mapping:Location).
+
+See also: [XEP-0080 specification](http://xmpp.org/extensions/xep-0080.html).
+
+Use geocode_backend_reverse_resolve() to do the same thing synchronously.
+
+When the operation is finished, @callback will be called. You can then call
+geocode_backend_reverse_resolve_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reverse_resolve_finish"
+              c:identifier="geocode_backend_reverse_resolve_finish"
+              version="3.23.1"
+              throws="1">
+        <doc xml:space="preserve">Finishes a reverse geocoding operation. See geocode_backend_reverse_resolve_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A list of
+   #GeocodePlace instances, or %NULL in case of errors. The list is ordered
+   by relevance, with most relevant results first. Free the returned
+   instances with g_object_unref() and the list with g_list_free() when done.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Place"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeBackend.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="BackendInterface"
+            c:type="GeocodeBackendInterface"
+            glib:is-gtype-struct-for="Backend"
+            version="3.23.1">
+      <doc xml:space="preserve">Interface which defines the basic operations for geocoding.</doc>
+      <field name="g_iface" readable="0" private="1">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="forward_search">
+        <callback name="forward_search" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A list of
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Place"/>
+            </type>
+          </return-value>
+          <parameters>
+            <parameter name="backend" transfer-ownership="none">
+              <doc xml:space="preserve">a #GeocodeBackend.</doc>
+              <type name="Backend" c:type="GeocodeBackend*"/>
+            </parameter>
+            <parameter name="params" transfer-ownership="none">
+              <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="GObject.Value"/>
+              </type>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="forward_search_async">
+        <callback name="forward_search_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="backend" transfer-ownership="none">
+              <doc xml:space="preserve">a #GeocodeBackend.</doc>
+              <type name="Backend" c:type="GeocodeBackend*"/>
+            </parameter>
+            <parameter name="params" transfer-ownership="none">
+              <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="GObject.Value"/>
+              </type>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <doc xml:space="preserve">the data to pass to the @callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="forward_search_finish">
+        <callback name="forward_search_finish" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A list of
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Place"/>
+            </type>
+          </return-value>
+          <parameters>
+            <parameter name="backend" transfer-ownership="none">
+              <doc xml:space="preserve">a #GeocodeBackend.</doc>
+              <type name="Backend" c:type="GeocodeBackend*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult.</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="reverse_resolve">
+        <callback name="reverse_resolve" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A list of
+   #GeocodePlace instances, or %NULL in case of errors. The list is ordered
+   by relevance, with most relevant results first. Free the returned
+   instances with g_object_unref() and the list with g_list_free() when done.</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Place"/>
+            </type>
+          </return-value>
+          <parameters>
+            <parameter name="backend" transfer-ownership="none">
+              <doc xml:space="preserve">a #GeocodeBackend.</doc>
+              <type name="Backend" c:type="GeocodeBackend*"/>
+            </parameter>
+            <parameter name="params" transfer-ownership="none">
+              <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="GObject.Value"/>
+              </type>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="reverse_resolve_async">
+        <callback name="reverse_resolve_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="backend" transfer-ownership="none">
+              <doc xml:space="preserve">a #GeocodeBackend.</doc>
+              <type name="Backend" c:type="GeocodeBackend*"/>
+            </parameter>
+            <parameter name="params" transfer-ownership="none">
+              <doc xml:space="preserve">a #GHashTable with string keys, and #GValue values.</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="GObject.Value"/>
+              </type>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied.</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <doc xml:space="preserve">the data to pass to callback function.</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="reverse_resolve_finish">
+        <callback name="reverse_resolve_finish" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A list of
+   #GeocodePlace instances, or %NULL in case of errors. The list is ordered
+   by relevance, with most relevant results first. Free the returned
+   instances with g_object_unref() and the list with g_list_free() when done.</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Place"/>
+            </type>
+          </return-value>
+          <parameters>
+            <parameter name="backend" transfer-ownership="none">
+              <doc xml:space="preserve">a #GeocodeBackend.</doc>
+              <type name="Backend" c:type="GeocodeBackend*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult.</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <class name="BoundingBox"
            c:symbol-prefix="bounding_box"
            c:type="GeocodeBoundingBox"
@@ -282,10 +994,10 @@ string is in free-form format.</doc>
       <method name="search" c:identifier="geocode_forward_search" throws="1">
         <doc xml:space="preserve">Gets the result of a forward geocoding
 query using a web service.</doc>
-        <return-value transfer-ownership="container">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">A list of
-places or %NULL in case of errors. Free the returned list with
-g_list_free() when done.</doc>
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Place"/>
           </type>
@@ -341,10 +1053,10 @@ geocode_forward_search_finish() to get the result of the operation.</doc>
               c:identifier="geocode_forward_search_finish"
               throws="1">
         <doc xml:space="preserve">Finishes a forward geocoding operation. See geocode_forward_search_async().</doc>
-        <return-value transfer-ownership="container">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">A list of
-places or %NULL in case of errors. Free the returned list with
-g_list_free() when done.</doc>
+places or %NULL in case of errors. Free the returned instances with
+g_object_unref() and the list with g_list_free() when done.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Place"/>
           </type>
@@ -374,6 +1086,30 @@ g_list_free() when done.</doc>
           <parameter name="count" transfer-ownership="none">
             <doc xml:space="preserve">the number of requested results</doc>
             <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_backend"
+              c:identifier="geocode_forward_set_backend"
+              version="3.23.1">
+        <doc xml:space="preserve">Specifies the backend to use in the forward geocoding operation.
+
+If none is given, the default GNOME Nominatim server is used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="forward" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeForward representing a query</doc>
+            <type name="Forward" c:type="GeocodeForward*"/>
+          </instance-parameter>
+          <parameter name="backend"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GeocodeBackend, or %NULL to use the
+   default one.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
           </parameter>
         </parameters>
       </method>
@@ -799,6 +1535,228 @@ A value of 0 (zero) will be interpreted as the current time.</doc>
         <doc xml:space="preserve">The 'geo' URI scheme, RFC 5870</doc>
       </member>
     </enumeration>
+    <class name="Nominatim"
+           c:symbol-prefix="nominatim"
+           c:type="GeocodeNominatim"
+           version="3.23.1"
+           parent="GObject.Object"
+           glib:type-name="GeocodeNominatim"
+           glib:get-type="geocode_nominatim_get_type"
+           glib:type-struct="NominatimClass">
+      <doc xml:space="preserve">All the fields in the #GeocodeNominatim structure are private and should
+never be accessed directly.</doc>
+      <implements name="Backend"/>
+      <constructor name="new"
+                   c:identifier="geocode_nominatim_new"
+                   version="3.23.1">
+        <doc xml:space="preserve">Creates a new backend implementation for an online Nominatim server. See
+the documentation for #GeocodeNominatim:base-url and
+#GeocodeNominatim:maintainer-email-address.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GeocodeNominatim. Use g_object_unref() when done.</doc>
+          <type name="Nominatim" c:type="GeocodeNominatim*"/>
+        </return-value>
+        <parameters>
+          <parameter name="base_url" transfer-ownership="none">
+            <doc xml:space="preserve">a the base URL of the Nominatim server.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="maintainer_email_address" transfer-ownership="none">
+            <doc xml:space="preserve">the email address of the software maintainer.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="get_gnome"
+                c:identifier="geocode_nominatim_get_gnome"
+                version="3.23.1">
+        <doc xml:space="preserve">Gets a reference to the default Nominatim server on nominatim.gnome.org.
+
+This function is thread-safe.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GeocodeNominatim. Use g_object_unref() when done.</doc>
+          <type name="Nominatim" c:type="GeocodeNominatim*"/>
+        </return-value>
+      </function>
+      <virtual-method name="query" throws="1">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Nominatim" c:type="GeocodeNominatim*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="query_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Nominatim" c:type="GeocodeNominatim*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="query_finish" throws="1">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Nominatim" c:type="GeocodeNominatim*"/>
+          </instance-parameter>
+          <parameter name="res" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <property name="base-url"
+                version="3.23.1"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The base URL of the Nominatim service, for example
+`https://nominatim.example.org`.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="maintainer-email-address"
+                version="3.23.1"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">E-mail address of the maintainer of the software making the
+geocoding requests to the  Nominatim server. This is used to contact
+them in the event of a problem with their usage. See
+[the Nominatim API](http://wiki.openstreetmap.org/wiki/Nominatim).</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+    </class>
+    <record name="NominatimClass"
+            c:type="GeocodeNominatimClass"
+            glib:is-gtype-struct-for="Nominatim"
+            version="3.23.1">
+      <doc xml:space="preserve">#GeocodeNominatim allows derived classes to override its query functions,
+which are called for each network request the Nominatim client makes. All
+network requests are `GET`s with no request body; just a URI. The default
+implementation makes the requests internally, but derived classes may want
+to override these queries to check the URIs for testing, for example.
+
+Applications should not normally have to derive #GeocodeNominatim; these
+virtual methods are mainly intended for testing.</doc>
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="query">
+        <callback name="query" throws="1">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Nominatim" c:type="GeocodeNominatim*"/>
+            </parameter>
+            <parameter name="uri" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="query_async">
+        <callback name="query_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Nominatim" c:type="GeocodeNominatim*"/>
+            </parameter>
+            <parameter name="uri" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="query_finish">
+        <callback name="query_finish" throws="1">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Nominatim" c:type="GeocodeNominatim*"/>
+            </parameter>
+            <parameter name="res" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <class name="Place"
            c:symbol-prefix="place"
            c:type="GeocodePlace"
@@ -1785,6 +2743,29 @@ errors. Free the returned instance with #g_object_unref() when done.</doc>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve">a #GAsyncResult.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_backend"
+              c:identifier="geocode_reverse_set_backend"
+              version="3.23.1">
+        <doc xml:space="preserve">Specifies the backend to use in the reverse geocoding operation.
+
+If none is given, the default GNOME Nominatim server is used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeReverse representing a query</doc>
+            <type name="Reverse" c:type="GeocodeReverse*"/>
+          </instance-parameter>
+          <parameter name="backend"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GeocodeBackend, or %NULL to use the default one.</doc>
+            <type name="Backend" c:type="GeocodeBackend*"/>
           </parameter>
         </parameters>
       </method>

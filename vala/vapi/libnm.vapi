@@ -66,6 +66,7 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool hwaddr_valid (string asc, ssize_t length);
 		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (deprecated = true, deprecated_since = "1.6")]
 		public static bool iface_valid_name (string name);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.GenericArray<NM.IPAddress> ip4_addresses_from_variant (GLib.Variant value, out string out_gateway);
@@ -115,6 +116,8 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool is_uuid (string str);
 		[CCode (cheader_filename = "NetworkManager.h")]
+		public static bool is_valid_iface_name (string name) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool same_ssid ([CCode (array_length_cname = "len1", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] ssid1, [CCode (array_length_cname = "len2", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] ssid2, bool ignore_trailing_null);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool security_valid (NM.Utils.SecurityType type, NM.DeviceWifiCapabilities wifi_caps, bool have_ap, bool adhoc, NM.80211ApFlags ap_flags, NM.80211ApSecurityFlags ap_wpa, NM.80211ApSecurityFlags ap_rsn);
@@ -122,6 +125,9 @@ namespace NM {
 		public static string ssid_to_utf8 ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] ssid);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string uuid_generate ();
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.6.0")]
+		public static uint version ();
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool wep_key_valid (string key, NM.WepKeyType wep_type);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -585,6 +591,34 @@ namespace NM {
 		public const string IP_TUNNEL_TTL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_LLDP_NEIGHBORS")]
 		public const string LLDP_NEIGHBORS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_CIPHER_SUITE")]
+		public const string MACSEC_CIPHER_SUITE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ENCODING_SA")]
+		public const string MACSEC_ENCODING_SA;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ENCRYPT")]
+		public const string MACSEC_ENCRYPT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ES")]
+		public const string MACSEC_ES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_HW_ADDRESS")]
+		public const string MACSEC_HW_ADDRESS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ICV_LENGTH")]
+		public const string MACSEC_ICV_LENGTH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_INCLUDE_SCI")]
+		public const string MACSEC_INCLUDE_SCI;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_PARENT")]
+		public const string MACSEC_PARENT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_PROTECT")]
+		public const string MACSEC_PROTECT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_REPLAY_PROTECT")]
+		public const string MACSEC_REPLAY_PROTECT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_SCB")]
+		public const string MACSEC_SCB;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_SCI")]
+		public const string MACSEC_SCI;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_VALIDATION")]
+		public const string MACSEC_VALIDATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_WINDOW")]
+		public const string MACSEC_WINDOW;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_HW_ADDRESS")]
 		public const string MACVLAN_HW_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_MODE")]
@@ -925,6 +959,67 @@ namespace NM {
 		public unowned string get_hw_address ();
 		public bool carrier { get; }
 		public string hw_address { get; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macsec_get_type ()")]
+	public class DeviceMacsec : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceMacsec ();
+		[Version (since = "1.6")]
+		public uint64 get_cipher_suite ();
+		[Version (since = "1.6")]
+		public uint8 get_encoding_sa ();
+		[Version (since = "1.6")]
+		public bool get_encrypt ();
+		[Version (since = "1.6")]
+		public bool get_es ();
+		[Version (since = "1.6")]
+		public unowned string get_hw_address ();
+		[Version (since = "1.6")]
+		public uint8 get_icv_length ();
+		[Version (since = "1.6")]
+		public bool get_include_sci ();
+		[Version (since = "1.6")]
+		public unowned NM.Device get_parent ();
+		[Version (since = "1.6")]
+		public bool get_protect ();
+		[Version (since = "1.6")]
+		public bool get_replay_protect ();
+		[Version (since = "1.6")]
+		public bool get_scb ();
+		[Version (since = "1.6")]
+		public uint64 get_sci ();
+		[Version (since = "1.6")]
+		public unowned string get_validation ();
+		[Version (since = "1.6")]
+		public uint get_window ();
+		[Version (since = "1.6")]
+		public uint64 cipher_suite { get; }
+		[Version (since = "1.6")]
+		public uint8 encoding_sa { get; }
+		[Version (since = "1.6")]
+		public bool encrypt { get; }
+		[Version (since = "1.6")]
+		public bool es { get; }
+		[Version (since = "1.6")]
+		public string hw_address { get; }
+		[Version (since = "1.6")]
+		public uint8 icv_length { get; }
+		[Version (since = "1.6")]
+		public bool include_sci { get; }
+		[Version (since = "1.6")]
+		public NM.Device parent { get; }
+		[Version (since = "1.6")]
+		public bool protect { get; }
+		[Version (since = "1.6")]
+		public bool replay_protect { get; }
+		[Version (since = "1.6")]
+		public bool scb { get; }
+		[Version (since = "1.6")]
+		public uint64 sci { get; }
+		[Version (since = "1.6")]
+		public string validation { get; }
+		[Version (since = "1.6")]
+		public uint window { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macvlan_get_type ()")]
 	public class DeviceMacvlan : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1483,6 +1578,8 @@ namespace NM {
 		public const string CA_PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PATH")]
 		public const string CERT_SCHEME_PREFIX_PATH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PKCS11")]
+		public const string CERT_SCHEME_PREFIX_PKCS11;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT")]
 		public const string CLIENT_CERT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_DOMAIN_SUFFIX_MATCH")]
@@ -1560,10 +1657,14 @@ namespace NM {
 		public unowned GLib.Bytes get_ca_cert_blob ();
 		public unowned string get_ca_cert_path ();
 		public NM.Setting8021xCKScheme get_ca_cert_scheme ();
+		[Version (since = "1.6")]
+		public unowned string get_ca_cert_uri ();
 		public unowned string get_ca_path ();
 		public unowned GLib.Bytes get_client_cert_blob ();
 		public unowned string get_client_cert_path ();
 		public NM.Setting8021xCKScheme get_client_cert_scheme ();
+		[Version (since = "1.6")]
+		public unowned string get_client_cert_uri ();
 		[Version (since = "1.2")]
 		public unowned string get_domain_suffix_match ();
 		public unowned string get_eap_method (uint32 i);
@@ -1585,10 +1686,14 @@ namespace NM {
 		public unowned GLib.Bytes get_phase2_ca_cert_blob ();
 		public unowned string get_phase2_ca_cert_path ();
 		public NM.Setting8021xCKScheme get_phase2_ca_cert_scheme ();
+		[Version (since = "1.6")]
+		public unowned string get_phase2_ca_cert_uri ();
 		public unowned string get_phase2_ca_path ();
 		public unowned GLib.Bytes get_phase2_client_cert_blob ();
 		public unowned string get_phase2_client_cert_path ();
 		public NM.Setting8021xCKScheme get_phase2_client_cert_scheme ();
+		[Version (since = "1.6")]
+		public unowned string get_phase2_client_cert_uri ();
 		[Version (since = "1.2")]
 		public unowned string get_phase2_domain_suffix_match ();
 		public unowned GLib.Bytes get_phase2_private_key_blob ();
@@ -1597,6 +1702,8 @@ namespace NM {
 		public NM.SettingSecretFlags get_phase2_private_key_password_flags ();
 		public unowned string get_phase2_private_key_path ();
 		public NM.Setting8021xCKScheme get_phase2_private_key_scheme ();
+		[Version (since = "1.6")]
+		public unowned string get_phase2_private_key_uri ();
 		public unowned string get_phase2_subject_match ();
 		public unowned string get_pin ();
 		public NM.SettingSecretFlags get_pin_flags ();
@@ -1606,6 +1713,8 @@ namespace NM {
 		public NM.SettingSecretFlags get_private_key_password_flags ();
 		public unowned string get_private_key_path ();
 		public NM.Setting8021xCKScheme get_private_key_scheme ();
+		[Version (since = "1.6")]
+		public unowned string get_private_key_uri ();
 		public unowned string get_subject_match ();
 		public bool get_system_ca_certs ();
 		public void remove_altsubject_match (uint32 i);
@@ -1614,12 +1723,12 @@ namespace NM {
 		public bool remove_eap_method_by_value (string eap);
 		public void remove_phase2_altsubject_match (uint32 i);
 		public bool remove_phase2_altsubject_match_by_value (string phase2_altsubject_match);
-		public bool set_ca_cert (string cert_path, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
-		public bool set_client_cert (string cert_path, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
-		public bool set_phase2_ca_cert (string cert_path, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
-		public bool set_phase2_client_cert (string cert_path, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
-		public bool set_phase2_private_key (string key_path, string password, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
-		public bool set_private_key (string key_path, string password, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
+		public bool set_ca_cert (string value, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
+		public bool set_client_cert (string value, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
+		public bool set_phase2_ca_cert (string value, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
+		public bool set_phase2_client_cert (string value, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
+		public bool set_phase2_private_key (string value, string password, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
+		public bool set_private_key (string value, string password, NM.Setting8021xCKScheme scheme, NM.Setting8021xCKFormat out_format) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] altsubject_matches { owned get; set; }
@@ -2565,6 +2674,52 @@ namespace NM {
 		public string parent { owned get; set construct; }
 		[NoAccessorMethod]
 		public string transport_mode { owned get; set construct; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macsec_get_type ()")]
+	public class SettingMacsec : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.6")]
+		public SettingMacsec ();
+		[Version (since = "1.6")]
+		public bool get_encrypt ();
+		[Version (since = "1.6")]
+		public unowned string get_mka_cak ();
+		[Version (since = "1.6")]
+		public NM.SettingSecretFlags get_mka_cak_flags ();
+		[Version (since = "1.6")]
+		public unowned string get_mka_ckn ();
+		[Version (since = "1.6")]
+		public NM.SettingMacsecMode get_mode ();
+		[Version (since = "1.6")]
+		public unowned string get_parent ();
+		[Version (since = "1.6")]
+		public int get_port ();
+		[Version (since = "1.6")]
+		public NM.SettingMacsecValidation get_validation ();
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public bool encrypt { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public string mka_cak { owned get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public NM.SettingSecretFlags mka_cak_flags { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public string mka_ckn { owned get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public int mode { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public string parent { owned get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public int port { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.6")]
+		public int validation { get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macvlan_get_type ()")]
 	public class SettingMacvlan : NM.Setting {
@@ -3671,6 +3826,8 @@ namespace NM {
 		public unowned NM.SettingIP6Config get_setting_ip6_config ();
 		[Version (since = "1.2")]
 		public unowned NM.SettingIPTunnel get_setting_ip_tunnel ();
+		[Version (since = "1.6")]
+		public unowned NM.SettingMacsec get_setting_macsec ();
 		[Version (since = "1.2")]
 		public unowned NM.SettingMacvlan get_setting_macvlan ();
 		public unowned NM.SettingOlpcMesh get_setting_olpc_mesh ();
@@ -3962,7 +4119,8 @@ namespace NM {
 		IP_TUNNEL,
 		MACVLAN,
 		VXLAN,
-		VETH
+		VETH,
+		MACSEC
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
@@ -4039,7 +4197,8 @@ namespace NM {
 	public enum Setting8021xCKScheme {
 		UNKNOWN,
 		BLOB,
-		PATH
+		PATH,
+		PKCS11
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_COMPARE_FLAG_", type_id = "nm_setting_compare_flags_get_type ()")]
 	public enum SettingCompareFlags {
@@ -4099,6 +4258,19 @@ namespace NM {
 		DEFAULT,
 		NEVER,
 		ALWAYS
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_MACSEC_MODE_", type_id = "nm_setting_macsec_mode_get_type ()")]
+	[Version (since = "1.6")]
+	public enum SettingMacsecMode {
+		PSK,
+		EAP
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_MACSEC_VALIDATION_", type_id = "nm_setting_macsec_validation_get_type ()")]
+	[Version (since = "1.6")]
+	public enum SettingMacsecValidation {
+		DISABLE,
+		CHECK,
+		STRICT
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_MACVLAN_MODE_", type_id = "nm_setting_macvlan_mode_get_type ()")]
 	public enum SettingMacvlanMode {
@@ -4582,6 +4754,28 @@ namespace NM {
 	public const string SETTING_DNS_OPTION_TIMEOUT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_USE_VC")]
 	public const string SETTING_DNS_OPTION_USE_VC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_ENCRYPT")]
+	public const string SETTING_MACSEC_ENCRYPT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK")]
+	public const string SETTING_MACSEC_MKA_CAK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK_FLAGS")]
+	public const string SETTING_MACSEC_MKA_CAK_FLAGS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK_LENGTH")]
+	public const int SETTING_MACSEC_MKA_CAK_LENGTH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CKN")]
+	public const string SETTING_MACSEC_MKA_CKN;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CKN_LENGTH")]
+	public const int SETTING_MACSEC_MKA_CKN_LENGTH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MODE")]
+	public const string SETTING_MACSEC_MODE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_PARENT")]
+	public const string SETTING_MACSEC_PARENT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_PORT")]
+	public const string SETTING_MACSEC_PORT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_SETTING_NAME")]
+	public const string SETTING_MACSEC_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_VALIDATION")]
+	public const string SETTING_MACSEC_VALIDATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VLAN_FLAGS_ALL")]

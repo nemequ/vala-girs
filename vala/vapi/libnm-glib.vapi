@@ -808,8 +808,6 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "nm-remote-connection.h", type_id = "nm_remote_connection_get_type ()")]
 	public class RemoteConnection : NM.Connection, GLib.AsyncInitable, GLib.Initable {
-		[CCode (cheader_filename = "nm-remote-connection.h", cname = "NM_REMOTE_CONNECTION_INIT_RESULT")]
-		public const string INIT_RESULT;
 		[CCode (cheader_filename = "nm-remote-connection.h", cname = "NM_REMOTE_CONNECTION_REMOVED")]
 		public const string REMOVED;
 		[CCode (cheader_filename = "nm-remote-connection.h", cname = "NM_REMOTE_CONNECTION_UNSAVED")]
@@ -949,13 +947,6 @@ namespace NM {
 		public uint network_type { get; }
 		public uint signal_quality { get; }
 	}
-	[CCode (cheader_filename = "NMClient-1.0.h", has_type_id = false)]
-	public struct PropertiesInfo {
-		public weak string name;
-		public void* field;
-		public GLib.Type object_type;
-		public weak string signal_prefix;
-	}
 	[CCode (cheader_filename = "nm-client.h", cprefix = "NM_CLIENT_PERMISSION_", type_id = "nm_client_permission_get_type ()")]
 	public enum ClientPermission {
 		NONE,
@@ -982,13 +973,6 @@ namespace NM {
 		YES,
 		AUTH,
 		NO
-	}
-	[CCode (cheader_filename = "NMClient-1.0.h", cprefix = "NM_REMOTE_CONNECTION_INIT_RESULT_", has_type_id = false)]
-	public enum RemoteConnectionInitResult {
-		UNKNOWN,
-		SUCCESS,
-		ERROR,
-		INVISIBLE
 	}
 	[CCode (cheader_filename = "NMClient-1.0.h", cprefix = "NM_SECRET_AGENT_CAPABILITY_", type_id = "nm_secret_agent_capabilities_get_type ()")]
 	[Flags]
@@ -1272,10 +1256,6 @@ namespace NM {
 	public delegate void DeviceDeactivateFn (NM.Device device, GLib.Error error);
 	[CCode (cheader_filename = "NMClient-1.0.h", instance_pos = 2.9)]
 	public delegate void DeviceWifiRequestScanFn (NM.DeviceWifi device, GLib.Error error);
-	[CCode (cheader_filename = "NMClient-1.0.h", instance_pos = 1.9)]
-	public delegate void ObjectTypeCallbackFunc (GLib.Type type);
-	[CCode (cheader_filename = "NMClient-1.0.h", has_target = false)]
-	public delegate GLib.Type ObjectTypeFunc (DBus.Connection connection, string path);
 	[CCode (cheader_filename = "nm-remote-connection.h", instance_pos = 2.9)]
 	public delegate void RemoteConnectionCommitFunc (NM.RemoteConnection connection, GLib.Error error);
 	[CCode (cheader_filename = "nm-remote-connection.h", instance_pos = 2.9)]

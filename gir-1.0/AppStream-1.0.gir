@@ -186,11 +186,14 @@ and/or use gtk-doc annotations.  -->
       <member name="appimage" value="4" c:identifier="AS_BUNDLE_KIND_APPIMAGE">
         <doc xml:space="preserve">An AppImageKit bundle</doc>
       </member>
+      <member name="snap" value="5" c:identifier="AS_BUNDLE_KIND_SNAP">
+        <doc xml:space="preserve">A Snap/Snappy bundle</doc>
+      </member>
     </enumeration>
     <bitfield name="CacheFlags" c:type="AsCacheFlags">
       <doc xml:space="preserve">Flags on how caching should be used.</doc>
       <member name="none" value="0" c:identifier="AS_CACHE_FLAG_NONE">
-        <doc xml:space="preserve">Type invalid or not known</doc>
+        <doc xml:space="preserve">No flags.</doc>
       </member>
       <member name="use_user" value="1" c:identifier="AS_CACHE_FLAG_USE_USER">
         <doc xml:space="preserve">Create an user-specific metadata cache.</doc>
@@ -1015,6 +1018,41 @@ This is the reverse of %as_component_get_extends()</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_custom"
+              c:identifier="as_component_get_custom"
+              version="0.10.5">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Hash table of custom user defined data fields.</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">An #AsComponent.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_custom_value"
+              c:identifier="as_component_get_custom_value"
+              version="0.10.5">
+        <doc xml:space="preserve">Retrieve value for a custom data entry with the given key.</doc>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">An #AsComponent.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">Field name.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_data_id" c:identifier="as_component_get_data_id">
         <doc xml:space="preserve">Get a unique identifier for this metadata set.
 This unique ID is only valid for the current session,
@@ -1025,7 +1063,7 @@ The format of the unique id usually is:
 %{scope}/%{origin}/%{distribution_system}/%{appstream_id}
 
 For example:
-system/distributor/package/org.example.FooBar</doc>
+system/os/package/org.example.FooBar</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the unique session-specific identifier.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -1555,6 +1593,29 @@ Only set for metainfo files.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="insert_custom_value"
+              c:identifier="as_component_insert_custom_value"
+              version="0.10.5">
+        <doc xml:space="preserve">Add a key and value pair to the custom data table.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the key did not exist yet.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">An #AsComponent.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">Key name.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">A string value.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="is_compulsory_for_desktop"
               c:identifier="as_component_is_compulsory_for_desktop">
         <doc xml:space="preserve">Check if this component is compulsory for the given desktop.</doc>
@@ -1571,6 +1632,20 @@ Only set for metainfo files.</doc>
             <doc xml:space="preserve">the desktop-id to test for</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="is_ignored"
+              c:identifier="as_component_is_ignored"
+              version="0.10.2">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether this component's metadata should be ignored.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cpt" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsComponent instance.</doc>
+            <type name="Component" c:type="AsComponent*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="is_member_of_category"
@@ -2254,6 +2329,9 @@ the same component type.</doc>
           <parameter name="key" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="default_val" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_id" c:identifier="as_distro_details_get_id">
@@ -2371,6 +2449,11 @@ the same component type.</doc>
       </member>
       <member name="yaml" value="2" c:identifier="AS_FORMAT_KIND_YAML">
         <doc xml:space="preserve">AppStream YAML (DEP-11) metadata.</doc>
+      </member>
+      <member name="desktop_entry"
+              value="3"
+              c:identifier="AS_FORMAT_KIND_DESKTOP_ENTRY">
+        <doc xml:space="preserve">XDG Desktop Entry data.</doc>
       </member>
     </enumeration>
     <enumeration name="FormatStyle" c:type="AsFormatStyle">
@@ -3297,6 +3380,28 @@ or "ALL" if all locales are read.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="parse_desktop_data"
+              c:identifier="as_metadata_parse_desktop_data"
+              throws="1">
+        <doc xml:space="preserve">Parses XDG Desktop Entry metadata and adds it to the pool.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="metad" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsMetadata.</doc>
+            <type name="Metadata" c:type="AsMetadata*"/>
+          </instance-parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">Metadata describing one or more software components.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cid" transfer-ownership="none">
+            <doc xml:space="preserve">The component-id the new #AsComponent should have.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_file"
               c:identifier="as_metadata_parse_file"
               throws="1">
@@ -3758,6 +3863,20 @@ data describing this component from multiple scopes/origin types.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_flags"
+              c:identifier="as_pool_get_flags"
+              version="0.10.2">
+        <doc xml:space="preserve">Get the #AsPoolFlags for this data pool.</doc>
+        <return-value transfer-ownership="none">
+          <type name="PoolFlags" c:type="AsPoolFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsPool.</doc>
+            <type name="Pool" c:type="AsPool*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_locale" c:identifier="as_pool_get_locale">
         <doc xml:space="preserve">Gets the currently used locale.</doc>
         <return-value transfer-ownership="none">
@@ -3853,7 +3972,7 @@ transparently in the background.</doc>
       </method>
       <method name="search" c:identifier="as_pool_search" version="0.9.7">
         <doc xml:space="preserve">Search for a list of components matching the search terms.
-The list will be unordered.</doc>
+The list will be ordered by match score.</doc>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve">an array of the found #AsComponent objects.</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
@@ -3884,6 +4003,24 @@ The list will be unordered.</doc>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve">The new #AsCacheFlags.</doc>
             <type name="CacheFlags" c:type="AsCacheFlags"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_flags"
+              c:identifier="as_pool_set_flags"
+              version="0.10.2">
+        <doc xml:space="preserve">Set the #AsPoolFlags for this data pool.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pool" transfer-ownership="none">
+            <doc xml:space="preserve">An instance of #AsPool.</doc>
+            <type name="Pool" c:type="AsPool*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">The new #AsPoolFlags.</doc>
+            <type name="PoolFlags" c:type="AsPoolFlags"/>
           </parameter>
         </parameters>
       </method>
@@ -3977,6 +4114,27 @@ The list will be unordered.</doc>
         <doc xml:space="preserve">An AppStream-ID collision occured (a component with that ID already existed in the pool)</doc>
       </member>
     </enumeration>
+    <bitfield name="PoolFlags" c:type="AsPoolFlags">
+      <doc xml:space="preserve">Flags on how caching should be used.</doc>
+      <member name="none" value="0" c:identifier="AS_POOL_FLAG_NONE">
+        <doc xml:space="preserve">No flags.</doc>
+      </member>
+      <member name="read_collection"
+              value="1"
+              c:identifier="AS_POOL_FLAG_READ_COLLECTION">
+        <doc xml:space="preserve">Add AppStream collection metadata to the pool.</doc>
+      </member>
+      <member name="read_metainfo"
+              value="2"
+              c:identifier="AS_POOL_FLAG_READ_METAINFO">
+        <doc xml:space="preserve">Add data from AppStream metainfo files to the pool.</doc>
+      </member>
+      <member name="read_desktop_files"
+              value="4"
+              c:identifier="AS_POOL_FLAG_READ_DESKTOP_FILES">
+        <doc xml:space="preserve">Add metadata from .desktop files to the pool.</doc>
+      </member>
+    </bitfield>
     <class name="Provided"
            c:symbol-prefix="provided"
            c:type="AsProvided"
