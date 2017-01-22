@@ -32,6 +32,8 @@ never be accessed directly.</doc>
                       throws="1">
         <doc xml:space="preserve">Gets the result of a forward geocoding query using the @backend.
 
+If no results are found, a %GEOCODE_ERROR_NO_MATCHES error is returned.
+
 This is a synchronous function, which means it may block on network requests.
 In most situations, the asynchronous version
 (geocode_backend_forward_search_async()) is more appropriate. See its
@@ -149,6 +151,10 @@ g_object_unref() and the list with g_list_free() when done.</doc>
                       version="3.23.1"
                       throws="1">
         <doc xml:space="preserve">Gets the result of a reverse geocoding query using the @backend.
+
+If no result could be found, a %GEOCODE_ERROR_NOT_SUPPORTED error will be
+returned. This typically happens if the coordinates to geocode are in the
+middle of the ocean.
 
 This is a synchronous function, which means it may block on network requests.
 In most situations, the asynchronous version,
@@ -277,6 +283,8 @@ geocode_backend_reverse_resolve_finish() to get the result of the operation.</do
               throws="1">
         <doc xml:space="preserve">Gets the result of a forward geocoding query using the @backend.
 
+If no results are found, a %GEOCODE_ERROR_NO_MATCHES error is returned.
+
 This is a synchronous function, which means it may block on network requests.
 In most situations, the asynchronous version
 (geocode_backend_forward_search_async()) is more appropriate. See its
@@ -393,6 +401,10 @@ g_object_unref() and the list with g_list_free() when done.</doc>
               version="3.23.1"
               throws="1">
         <doc xml:space="preserve">Gets the result of a reverse geocoding query using the @backend.
+
+If no result could be found, a %GEOCODE_ERROR_NOT_SUPPORTED error will be
+returned. This typically happens if the coordinates to geocode are in the
+middle of the ocean.
 
 This is a synchronous function, which means it may block on network requests.
 In most situations, the asynchronous version,
@@ -763,6 +775,27 @@ never be accessed directly.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="equal" c:identifier="geocode_bounding_box_equal">
+        <doc xml:space="preserve">Compare two #GeocodeBoundingBox instances for equality. This compares all
+fields and only returns %TRUE if the instances are exactly equal.
+
+Both instances must be non-%NULL.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the instances are equal, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="a" transfer-ownership="none">
+            <doc xml:space="preserve">a bounding box</doc>
+            <type name="BoundingBox" c:type="GeocodeBoundingBox*"/>
+          </instance-parameter>
+          <parameter name="b" transfer-ownership="none">
+            <doc xml:space="preserve">another bounding box</doc>
+            <type name="BoundingBox" c:type="GeocodeBoundingBox*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_bottom" c:identifier="geocode_bounding_box_get_bottom">
         <doc xml:space="preserve">Gets the bottom coordinate of @bbox.</doc>
         <return-value transfer-ownership="none">
@@ -993,7 +1026,11 @@ string is in free-form format.</doc>
       </method>
       <method name="search" c:identifier="geocode_forward_search" throws="1">
         <doc xml:space="preserve">Gets the result of a forward geocoding
-query using a web service.</doc>
+query using the current backend (see geocode_forward_set_backend()). By
+default the GNOME Nominatim server is used. See #GeocodeBackend for more
+information.
+
+If no results are found, a %GEOCODE_ERROR_NO_MATCHES error is returned.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A list of
 places or %NULL in case of errors. Free the returned instances with
@@ -1084,7 +1121,7 @@ g_object_unref() and the list with g_list_free() when done.</doc>
             <type name="Forward" c:type="GeocodeForward*"/>
           </instance-parameter>
           <parameter name="count" transfer-ownership="none">
-            <doc xml:space="preserve">the number of requested results</doc>
+            <doc xml:space="preserve">the number of requested results, which must be greater than zero</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -1273,6 +1310,35 @@ this area is returned.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="equal" c:identifier="geocode_location_equal">
+        <doc xml:space="preserve">Compare two #GeocodeLocation instances for equality. This compares all fields
+and only returns %TRUE if the instances are exactly equal. For example, if
+both locations have the same physical coordinates, but one location has its
+#GeocodeLocation:description property set and the other does not, %FALSE
+will be returned. Similarly, if both locations have the same
+#GeocodeLocation:latitude, #GeocodeLocation:longitude and
+#GeocodeLocation:altitude, but a different #GeocodeLocation:accuracy or
+#GeocodeLocation:timestamp, %FALSE will be returned. Or if both locations
+have the same#GeocodeLocation:latitude and #GeocodeLocation:longitude but a
+different #GeocodeLocation:altitude, %FALSE will be returned.
+
+Both instances must be non-%NULL.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the instances are equal, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="a" transfer-ownership="none">
+            <doc xml:space="preserve">a location</doc>
+            <type name="Location" c:type="GeocodeLocation*"/>
+          </instance-parameter>
+          <parameter name="b" transfer-ownership="none">
+            <doc xml:space="preserve">another location</doc>
+            <type name="Location" c:type="GeocodeLocation*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_accuracy" c:identifier="geocode_location_get_accuracy">
         <doc xml:space="preserve">Gets the accuracy (in meters) of location @loc.</doc>
         <return-value transfer-ownership="none">
@@ -1535,6 +1601,217 @@ A value of 0 (zero) will be interpreted as the current time.</doc>
         <doc xml:space="preserve">The 'geo' URI scheme, RFC 5870</doc>
       </member>
     </enumeration>
+    <class name="MockBackend"
+           c:symbol-prefix="mock_backend"
+           c:type="GeocodeMockBackend"
+           parent="GObject.Object"
+           glib:type-name="GeocodeMockBackend"
+           glib:get-type="geocode_mock_backend_get_type"
+           glib:type-struct="MockBackendClass">
+      <doc xml:space="preserve">All the fields in the #GeocodeMockBackend structure are private and should
+never be accessed directly.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <implements name="Backend"/>
+      <constructor name="new" c:identifier="geocode_mock_backend_new">
+        <doc xml:space="preserve">Creates a new mock backend implementation with no initial forward or reverse
+query results (so it will return an empty result set for all queries).</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GeocodeMockBackend</doc>
+          <type name="MockBackend" c:type="GeocodeMockBackend*"/>
+        </return-value>
+      </constructor>
+      <method name="add_forward_result"
+              c:identifier="geocode_mock_backend_add_forward_result">
+        <doc xml:space="preserve">Add a query and corresponding result (or error) to the mock backend, meaning
+that if it receives a forward search for @params through
+geocode_backend_forward_search() (or its asynchronous variants), the mock
+backend will return the given @results or @error to the caller.
+
+If a set of @params is added to the backend multiple times, the most
+recently provided @results and @error will be used.
+
+Exactly one of @results and @error must be set. Empty result sets are
+represented as a %GEOCODE_ERROR_NO_MATCHES error.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeMockBackend</doc>
+            <type name="MockBackend" c:type="GeocodeMockBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">query parameters to
+    respond to, in the same format as accepted by geocode_forward_search()</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="results"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">result set
+    to return for the query, or %NULL if @error is non-%NULL; result sets
+    must be in the same format as returned by geocode_forward_search()</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Place"/>
+            </type>
+          </parameter>
+          <parameter name="error"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">error to return for the query, or %NULL if @results
+    should be returned instead; errors must match those returned by
+    geocode_forward_search()</doc>
+            <type name="GLib.Error" c:type="const GError*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_reverse_result"
+              c:identifier="geocode_mock_backend_add_reverse_result">
+        <doc xml:space="preserve">Add a query and corresponding result (or error) to the mock backend, meaning
+that if it receives a reverse search for @params through
+geocode_backend_reverse_resolve() (or its asynchronous variants), the mock
+backend will return the given @results or @error to the caller.
+
+If a set of @params is added to the backend multiple times, the most
+recently provided @results and @error will be used.
+
+Exactly one of @results and @error must be set. Empty result sets are
+represented as a %GEOCODE_ERROR_NOT_SUPPORTED error.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeMockBackend</doc>
+            <type name="MockBackend" c:type="GeocodeMockBackend*"/>
+          </instance-parameter>
+          <parameter name="params" transfer-ownership="none">
+            <doc xml:space="preserve">query parameters to
+    respond to, in the same format as accepted by geocode_reverse_resolve()</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="GObject.Value"/>
+            </type>
+          </parameter>
+          <parameter name="results"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">result set
+    to return for the query, or %NULL if @error is non-%NULL; result sets
+    must be in the same format as returned by geocode_reverse_resolve()</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Place"/>
+            </type>
+          </parameter>
+          <parameter name="error"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">error to return for the query, or %NULL if @results
+    should be returned instead; errors must match those returned by
+    geocode_reverse_resolve()</doc>
+            <type name="GLib.Error" c:type="const GError*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear" c:identifier="geocode_mock_backend_clear">
+        <doc xml:space="preserve">Clear the set of stored results in the mock backend which have been added
+using geocode_mock_backend_add_forward_result() and
+geocode_mock_backend_add_reverse_result(). Additionally, clear the query log
+so far (see geocode_mock_backend_get_query_log()).
+
+This effectively resets the mock backend to its initial state.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeMockBackend</doc>
+            <type name="MockBackend" c:type="GeocodeMockBackend*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_query_log"
+              c:identifier="geocode_mock_backend_get_query_log">
+        <doc xml:space="preserve">Get the details of the forward and reverse queries which have been requested
+of the mock backend since the most recent call to
+geocode_mock_backend_clear(). The query details are provided as
+#GeocodeMockBackendQuery structures, which map the query parameters to
+either the result set or the error which geocode_backend_forward_search()
+or geocode_backend_reverse_resolve() (or their asynchronous variants)
+returned to the caller.
+
+The results are provided in the order in which calls were made to
+geocode_backend_forward_search() and geocode_backend_reverse_resolve().
+Results for forward and reverse queries may be interleaved.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">potentially
+    empty sequence of forward and reverse query details</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="MockBackendQuery"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeocodeMockBackend</doc>
+            <type name="MockBackend" c:type="GeocodeMockBackend*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="MockBackendClass"
+            c:type="GeocodeMockBackendClass"
+            glib:is-gtype-struct-for="MockBackend">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="MockBackendQuery" c:type="GeocodeMockBackendQuery">
+      <doc xml:space="preserve">The details of a forward or reverse query which was performed on a
+#GeocodeMockBackend by application code. This includes the input (@params,
+@is_forward), and the output which was returned (@results or @error).
+
+Empty result sets are represented by the %GEOCODE_ERROR_NO_MATCHES error
+(for forward queries) or the %GEOCODE_ERROR_NOT_SUPPORTED error (for reverse
+queries), rather than an empty @results list.</doc>
+      <doc-version xml:space="preserve">UNRELEASED</doc-version>
+      <field name="params" writable="1">
+        <doc xml:space="preserve">query parameters, in the format accepted by geocode_forward_search()
+    (if @is_forward is %TRUE) or geocode_reverse_resolve() (otherwise)</doc>
+        <type name="GLib.HashTable" c:type="GHashTable*">
+          <type name="gpointer" c:type="gpointer"/>
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
+      <field name="is_forward" writable="1">
+        <doc xml:space="preserve">%TRUE if this represents a call to geocode_forward_search();
+    %FALSE if it represents a call to geocode_reverse_resolve()</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="results" writable="1">
+        <doc xml:space="preserve">results returned by the
+    query, or %NULL if an error was returned</doc>
+        <type name="GLib.List" c:type="GList*">
+          <type name="Place"/>
+        </type>
+      </field>
+      <field name="error" writable="1">
+        <doc xml:space="preserve">error returned by the query, or %NULL if a result set
+    was returned</doc>
+        <type name="GLib.Error" c:type="GError*"/>
+      </field>
+    </record>
     <class name="Nominatim"
            c:symbol-prefix="nominatim"
            c:type="GeocodeNominatim"
@@ -1662,6 +1939,20 @@ This function is thread-safe.</doc>
 geocoding requests to the  Nominatim server. This is used to contact
 them in the event of a problem with their usage. See
 [the Nominatim API](http://wiki.openstreetmap.org/wiki/Nominatim).</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="user-agent" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">User-Agent string to send with HTTP(S) requests, or %NULL to use the
+default user agent, which is derived from the geocode-glib version
+and #GApplication:id, for example: `geocode-glib/3.20 (MyAppId)`.
+
+As per the
+[Nominatim usage policy](http://wiki.openstreetmap.org/wiki/Nominatim_usage_policy),
+it should be set to a string which identifies the application which
+is using geocode-glib, and must be a valid
+[user agent](https://tools.ietf.org/html/rfc7231#section-5.5.3)
+string.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent_instance">
@@ -1804,6 +2095,30 @@ virtual methods are mainly intended for testing.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="equal" c:identifier="geocode_place_equal">
+        <doc xml:space="preserve">Compare two #GeocodePlace instances for equality. This compares all fields
+and only returns %TRUE if the instances are exactly equal. For example, if
+both places have the same #GeocodePlace:location, but place @b has its
+#GeocodePlace:continent property set and place @a does not, %FALSE will be
+returned.
+
+Both instances must be non-%NULL.</doc>
+        <doc-version xml:space="preserve">UNRELEASED</doc-version>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the instances are equal, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="a" transfer-ownership="none">
+            <doc xml:space="preserve">a place</doc>
+            <type name="Place" c:type="GeocodePlace*"/>
+          </instance-parameter>
+          <parameter name="b" transfer-ownership="none">
+            <doc xml:space="preserve">another place</doc>
+            <type name="Place" c:type="GeocodePlace*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_administrative_area"
               c:identifier="geocode_place_get_administrative_area">
         <doc xml:space="preserve">Gets the local administrative area of the @place.</doc>
@@ -2672,7 +2987,13 @@ Use geocode_reverse_resolve_async() to perform the resolution.</doc>
       </constructor>
       <method name="resolve" c:identifier="geocode_reverse_resolve" throws="1">
         <doc xml:space="preserve">Gets the result of a reverse geocoding
-query using a web service.</doc>
+query using the current backend (see geocode_reverse_set_backend()). By
+default the GNOME Nominatim server is used. See #GeocodeBackend for more
+information.
+
+If no result could be found, a %GEOCODE_ERROR_NOT_SUPPORTED error will be
+returned. This typically happens if the coordinates to geocode are in the
+middle of the ocean.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A #GeocodePlace instance, or %NULL in case of
 errors. Free the returned instance with #g_object_unref() when done.</doc>

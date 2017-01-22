@@ -7,8 +7,8 @@ namespace Gcr {
 		[CCode (has_construct_function = false)]
 		public CertificateChain ();
 		public void add (Gcr.Certificate certificate);
-		public bool build (string purpose, string? peer, uint flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool build_async (string purpose, string? peer, uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool build (string purpose, string? peer, Gcr.CertificateChainFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool build_async (string purpose, string? peer, Gcr.CertificateChainFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Gcr.Certificate get_anchor ();
 		public unowned Gcr.Certificate get_certificate (uint index);
 		public unowned Gcr.Certificate get_endpoint ();

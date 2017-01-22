@@ -377,6 +377,8 @@ namespace Camel {
 		public unowned string get_full_name ();
 		[Version (since = "3.0")]
 		public async unowned Camel.MimeMessage get_message (string message_uid, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.24")]
+		public virtual Camel.MimeMessage? get_message_cached (string message_uid, GLib.Cancellable? cancellable = null);
 		public virtual int get_message_count ();
 		[Version (deprecated = true)]
 		public virtual uint32 get_message_flags (string uid);
@@ -542,6 +544,8 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public unowned Camel.Folder get_folder ();
 		[Version (since = "3.24")]
+		public bool get_only_cached_messages ();
+		[Version (since = "3.24")]
 		public unowned GLib.GenericArray<string> get_summary ();
 		public bool get_summary_empty ();
 		public GLib.GenericArray<string> search (string expr, GLib.GenericArray<string> uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -549,6 +553,8 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public void set_current_message_info (Camel.MessageInfo? info);
 		public void set_folder (Camel.Folder folder);
+		[Version (since = "3.24")]
+		public void set_only_cached_messages (bool only_cached_messages);
 		public void set_summary (GLib.GenericArray<string> summary);
 		[Version (since = "3.24")]
 		public void take_current_message_info (Camel.MessageInfo? info);

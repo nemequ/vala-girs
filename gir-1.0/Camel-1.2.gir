@@ -7029,21 +7029,35 @@ be emitted.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_message_cached" introspectable="0">
-        <return-value>
+      <virtual-method name="get_message_cached"
+                      invoker="get_message_cached"
+                      version="3.24">
+        <doc xml:space="preserve">Gets the message corresponding to @message_uid from the @folder cache,
+if available locally. This should not do any network I/O, only check
+if message is already downloaded and return it quickly, not being
+blocked by the folder's lock. Returning NULL is not considered as
+an error, it just means that the message is still to-be-downloaded.
+
+Note: This function is called automatically within camel_folder_get_message_sync().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a cached #CamelMimeMessage corresponding
+   to the requested UID</doc>
           <type name="MimeMessage" c:type="CamelMimeMessage*"/>
         </return-value>
         <parameters>
           <instance-parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder</doc>
             <type name="Folder" c:type="CamelFolder*"/>
           </instance-parameter>
           <parameter name="message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">the message UID</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -8324,6 +8338,39 @@ call camel_folder_get_message_finish() to get the result of the operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve">data to pass to the callback function</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_message_cached"
+              c:identifier="camel_folder_get_message_cached"
+              version="3.24">
+        <doc xml:space="preserve">Gets the message corresponding to @message_uid from the @folder cache,
+if available locally. This should not do any network I/O, only check
+if message is already downloaded and return it quickly, not being
+blocked by the folder's lock. Returning NULL is not considered as
+an error, it just means that the message is still to-be-downloaded.
+
+Note: This function is called automatically within camel_folder_get_message_sync().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a cached #CamelMimeMessage corresponding
+   to the requested UID</doc>
+          <type name="MimeMessage" c:type="CamelMimeMessage*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="folder" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolder</doc>
+            <type name="Folder" c:type="CamelFolder*"/>
+          </instance-parameter>
+          <parameter name="message_uid" transfer-ownership="none">
+            <doc xml:space="preserve">the message UID</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
@@ -10566,22 +10613,27 @@ when it is done.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="get_message_cached" introspectable="0">
-        <callback name="get_message_cached" introspectable="0">
-          <return-value>
+      <field name="get_message_cached">
+        <callback name="get_message_cached">
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">a cached #CamelMimeMessage corresponding
+   to the requested UID</doc>
             <type name="MimeMessage" c:type="CamelMimeMessage*"/>
           </return-value>
           <parameters>
             <parameter name="folder" transfer-ownership="none">
+              <doc xml:space="preserve">a #CamelFolder</doc>
               <type name="Folder" c:type="CamelFolder*"/>
             </parameter>
             <parameter name="message_uid" transfer-ownership="none">
+              <doc xml:space="preserve">the message UID</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="cancellable"
                        transfer-ownership="none"
                        nullable="1"
                        allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -11466,6 +11518,22 @@ it must implement summaries.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_only_cached_messages"
+              c:identifier="camel_folder_search_get_only_cached_messages"
+              version="3.24">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether only cached messages can be searched. See
+   camel_folder_search_set_only_cached_messages() for more
+   information what it means.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="search" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolderSearch</doc>
+            <type name="FolderSearch" c:type="CamelFolderSearch*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_summary"
               c:identifier="camel_folder_search_get_summary"
               version="3.24">
@@ -11593,6 +11661,26 @@ when indexes and so forth are not available. Or for use by subclasses.</doc>
           <parameter name="folder" transfer-ownership="none">
             <doc xml:space="preserve">a #CamelFolder</doc>
             <type name="Folder" c:type="CamelFolder*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_only_cached_messages"
+              c:identifier="camel_folder_search_set_only_cached_messages"
+              version="3.24">
+        <doc xml:space="preserve">Sets whether only locally cached messages can be searched. The default
+value is %FALSE, which means that when a message is required and it is
+not available locally, then it is downloaded from the server, if possible.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="search" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelFolderSearch</doc>
+            <type name="FolderSearch" c:type="CamelFolderSearch*"/>
+          </instance-parameter>
+          <parameter name="only_cached_messages" transfer-ownership="none">
+            <doc xml:space="preserve">a value to set</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>

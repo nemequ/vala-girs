@@ -524,23 +524,37 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceGoa ();
 		public string dup_account_id ();
+		[Version (since = "3.24")]
+		public string dup_address ();
 		[Version (since = "3.8")]
 		public string dup_calendar_url ();
 		[Version (since = "3.8")]
 		public string dup_contacts_url ();
+		[Version (since = "3.24")]
+		public string dup_name ();
 		public unowned string get_account_id ();
+		[Version (since = "3.24")]
+		public unowned string get_address ();
 		[Version (since = "3.8")]
 		public unowned string get_calendar_url ();
 		[Version (since = "3.8")]
 		public unowned string get_contacts_url ();
+		[Version (since = "3.24")]
+		public unowned string get_name ();
 		public void set_account_id (string? account_id);
+		[Version (since = "3.24")]
+		public void set_address (string? address);
 		[Version (since = "3.8")]
 		public void set_calendar_url (string? calendar_url);
 		[Version (since = "3.8")]
 		public void set_contacts_url (string? contacts_url);
+		[Version (since = "3.24")]
+		public void set_name (string? name);
 		public string account_id { get; set construct; }
+		public string address { get; set construct; }
 		public string calendar_url { get; set construct; }
 		public string contacts_url { get; set construct; }
+		public string name { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_ldap_get_type ()")]
 	public class SourceLDAP : E.SourceExtension {

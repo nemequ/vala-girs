@@ -4144,7 +4144,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -4644,6 +4644,150 @@ navigation.</doc>
         </return-value>
       </function>
     </enumeration>
+    <enumeration name="NetworkProxyMode"
+                 version="2.16"
+                 glib:type-name="WebKitNetworkProxyMode"
+                 glib:get-type="webkit_network_proxy_mode_get_type"
+                 c:type="WebKitNetworkProxyMode">
+      <doc xml:space="preserve">Enum values used to set the network proxy mode.</doc>
+      <member name="default"
+              value="0"
+              c:identifier="WEBKIT_NETWORK_PROXY_MODE_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">Use the default proxy of the system.</doc>
+      </member>
+      <member name="no_proxy"
+              value="1"
+              c:identifier="WEBKIT_NETWORK_PROXY_MODE_NO_PROXY"
+              glib:nick="no-proxy">
+        <doc xml:space="preserve">Do not use any proxy.</doc>
+      </member>
+      <member name="custom"
+              value="2"
+              c:identifier="WEBKIT_NETWORK_PROXY_MODE_CUSTOM"
+              glib:nick="custom">
+        <doc xml:space="preserve">Use custom proxy settings.</doc>
+      </member>
+    </enumeration>
+    <record name="NetworkProxySettings"
+            c:type="WebKitNetworkProxySettings"
+            glib:type-name="WebKitNetworkProxySettings"
+            glib:get-type="webkit_network_proxy_settings_get_type"
+            c:symbol-prefix="network_proxy_settings">
+      <constructor name="new"
+                   c:identifier="webkit_network_proxy_settings_new"
+                   version="2.16">
+        <doc xml:space="preserve">Create a new #WebKitNetworkProxySettings with the given @default_proxy_uri and @ignore_hosts.
+
+The default proxy URI will be used for any URI that doesn't match @ignore_hosts, and doesn't match any
+of the schemes added with webkit_network_proxy_settings_add_proxy_for_scheme().
+If @default_proxy_uri starts with "socks://", it will be treated as referring to all three of the
+socks5, socks4a, and socks4 proxy types.
+
+@ignore_hosts is a list of hostnames and IP addresses that the resolver should allow direct connections to.
+Entries can be in one of 4 formats:
+&lt;itemizedlist&gt;
+&lt;listitem&gt;&lt;para&gt;
+A hostname, such as "example.com", ".example.com", or "*.example.com", any of which match "example.com" or
+any subdomain of it.
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;
+An IPv4 or IPv6 address, such as "192.168.1.1", which matches only that address.
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;
+A hostname or IP address followed by a port, such as "example.com:80", which matches whatever the hostname or IP
+address would match, but only for URLs with the (explicitly) indicated port. In the case of an IPv6 address, the address
+part must appear in brackets: "[::1]:443"
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;
+An IP address range, given by a base address and prefix length, such as "fe80::/10", which matches any address in that range.
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Note that when dealing with Unicode hostnames, the matching is done against the ASCII form of the name.
+Also note that hostname exclusions apply only to connections made to hosts identified by name, and IP address exclusions apply only
+to connections made to hosts identified by address. That is, if example.com has an address of 192.168.1.1, and @ignore_hosts
+contains only "192.168.1.1", then a connection to "example.com" will use the proxy, and a connection to 192.168.1.1" will not.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #WebKitNetworkProxySettings.</doc>
+          <type name="NetworkProxySettings"
+                c:type="WebKitNetworkProxySettings*"/>
+        </return-value>
+        <parameters>
+          <parameter name="default_proxy_uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the default proxy URI to use, or %NULL.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="ignore_hosts"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional list of hosts/IP addresses to not use a proxy for.</doc>
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_proxy_for_scheme"
+              c:identifier="webkit_network_proxy_settings_add_proxy_for_scheme"
+              version="2.16">
+        <doc xml:space="preserve">Adds a URI-scheme-specific proxy. URIs whose scheme matches @uri_scheme will be proxied via @proxy_uri.
+As with the default proxy URI, if @proxy_uri starts with "socks://", it will be treated as referring to
+all three of the socks5, socks4a, and socks4 proxy types.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitNetworkProxySettings</doc>
+            <type name="NetworkProxySettings"
+                  c:type="WebKitNetworkProxySettings*"/>
+          </instance-parameter>
+          <parameter name="scheme" transfer-ownership="none">
+            <doc xml:space="preserve">the URI scheme to add a proxy for</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="proxy_uri" transfer-ownership="none">
+            <doc xml:space="preserve">the proxy URI to use for @uri_scheme</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="copy"
+              c:identifier="webkit_network_proxy_settings_copy"
+              version="2.16">
+        <doc xml:space="preserve">Make a copy of the #WebKitNetworkProxySettings.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A copy of passed in #WebKitNetworkProxySettings</doc>
+          <type name="NetworkProxySettings"
+                c:type="WebKitNetworkProxySettings*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitNetworkProxySettings</doc>
+            <type name="NetworkProxySettings"
+                  c:type="WebKitNetworkProxySettings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="free"
+              c:identifier="webkit_network_proxy_settings_free"
+              version="2.16">
+        <doc xml:space="preserve">Free the #WebKitNetworkProxySettings.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_settings" transfer-ownership="none">
+            <doc xml:space="preserve">A #WebKitNetworkProxySettings</doc>
+            <type name="NetworkProxySettings"
+                  c:type="WebKitNetworkProxySettings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <class name="Notification"
            c:symbol-prefix="notification"
            c:type="WebKitNotification"
@@ -4710,6 +4854,21 @@ navigation.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_tag"
+              c:identifier="webkit_notification_get_tag"
+              version="2.16">
+        <doc xml:space="preserve">Obtains the tag identifier for the notification.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the tag for the notification</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="notification" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitNotification</doc>
+            <type name="Notification" c:type="WebKitNotification*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_title"
               c:identifier="webkit_notification_get_title"
               version="2.8">
@@ -4732,6 +4891,10 @@ navigation.</doc>
       <property name="id" version="2.8" transfer-ownership="none">
         <doc xml:space="preserve">The unique id for the notification.</doc>
         <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="tag" version="2.16" transfer-ownership="none">
+        <doc xml:space="preserve">The tag identifier for the notification.</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="title" version="2.8" transfer-ownership="none">
         <doc xml:space="preserve">The title for the notification.</doc>
@@ -6104,6 +6267,172 @@ See also webkit_security_manager_register_uri_scheme_as_secure().</doc>
     <record name="SecurityManagerPrivate"
             c:type="WebKitSecurityManagerPrivate"
             disguised="1">
+    </record>
+    <record name="SecurityOrigin"
+            c:type="WebKitSecurityOrigin"
+            glib:type-name="WebKitSecurityOrigin"
+            glib:get-type="webkit_security_origin_get_type"
+            c:symbol-prefix="security_origin">
+      <constructor name="new"
+                   c:identifier="webkit_security_origin_new"
+                   version="2.16">
+        <doc xml:space="preserve">Create a new security origin from the provided protocol, host and
+port.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #WebKitSecurityOrigin.</doc>
+          <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+        </return-value>
+        <parameters>
+          <parameter name="protocol" transfer-ownership="none">
+            <doc xml:space="preserve">The protocol for the new origin</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="host" transfer-ownership="none">
+            <doc xml:space="preserve">The host for the new origin</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="port" transfer-ownership="none">
+            <doc xml:space="preserve">The port number for the new origin, or 0 to indicate the
+       default port for @protocol</doc>
+            <type name="guint16" c:type="guint16"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_for_uri"
+                   c:identifier="webkit_security_origin_new_for_uri"
+                   version="2.16">
+        <doc xml:space="preserve">Create a new security origin from the provided URI. Components of
+@uri other than protocol, host, and port do not affect the created
+#WebKitSecurityOrigin.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #WebKitSecurityOrigin.</doc>
+          <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+        </return-value>
+        <parameters>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">The URI for the new origin</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_host"
+              c:identifier="webkit_security_origin_get_host"
+              version="2.16">
+        <doc xml:space="preserve">Gets the hostname of @origin, or %NULL if @origin is opaque or if its
+protocol does not require a host component.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The host of the #WebKitSecurityOrigin</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_port"
+              c:identifier="webkit_security_origin_get_port"
+              version="2.16">
+        <doc xml:space="preserve">Gets the port of @origin. This function will always return 0 if the
+port is the default port for the given protocol. For example,
+http://example.com has the same security origin as
+http://example.com:80, and this function will return 0 for a
+#WebKitSecurityOrigin constructed from either URI. It will also
+return 0 if @origin is opaque.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The port of the #WebKitSecurityOrigin.</doc>
+          <type name="guint16" c:type="guint16"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_protocol"
+              c:identifier="webkit_security_origin_get_protocol"
+              version="2.16">
+        <doc xml:space="preserve">Gets the protocol of @origin, or %NULL if @origin is opaque.
+
+Returns (allow-none): The protocol of the #WebKitSecurityOrigin</doc>
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_opaque"
+              c:identifier="webkit_security_origin_is_opaque"
+              version="2.16">
+        <doc xml:space="preserve">Gets whether @origin is an opaque security origin, which does not
+possess an associated protocol, host, or port.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @origin is opaque.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref"
+              c:identifier="webkit_security_origin_ref"
+              version="2.16">
+        <doc xml:space="preserve">Atomically increments the reference count of @origin by one.
+This function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The passed #WebKitSecurityOrigin</doc>
+          <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="to_string"
+              c:identifier="webkit_security_origin_to_string"
+              version="2.16">
+        <doc xml:space="preserve">Gets a string representation of @origin. The string representation
+is a valid URI with only protocol, host, and port components. It may
+be %NULL, but usually only if @origin is opaque.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a URI representing @origin.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref"
+              c:identifier="webkit_security_origin_unref"
+              version="2.16">
+        <doc xml:space="preserve">Atomically decrements the reference count of @origin by one.
+If the reference count drops to 0, all memory allocated by
+#WebKitSecurityOrigin is released. This function is MT-safe and may be
+called from any thread.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="origin" transfer-ownership="none">
+            <doc xml:space="preserve">A #WebKitSecurityOrigin</doc>
+            <type name="SecurityOrigin" c:type="WebKitSecurityOrigin*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </record>
     <class name="Settings"
            c:symbol-prefix="settings"
@@ -7786,6 +8115,7 @@ useful to turn this property off.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family used as the default for content using a cursive font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="default-charset"
@@ -7799,18 +8129,23 @@ useful to turn this property off.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family to use as the default for content that does not specify a font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="default-font-size"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The default font size in pixels to use for content displayed if
+no font size is specified.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="default-monospace-font-size"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The default font size in pixels to use for content displayed in
+monospace font if no font size is specified.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="draw-compositing-indicators"
@@ -8079,6 +8414,7 @@ reflective XSS attacks on vulnerable web sites.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family used as the default for content using a fantasy font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="javascript-can-access-clipboard"
@@ -8129,18 +8465,23 @@ load the media.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The minimum font size in points used to display text. This setting
+controls the absolute smallest size. Values other than 0 can
+potentially break page layouts.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="monospace-font-family"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family used as the default for content using a monospace font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="pictograph-font-family"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family used as the default for content using a pictograph font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="print-backgrounds"
@@ -8154,12 +8495,14 @@ load the media.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family used as the default for content using a sans-serif font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="serif-font-family"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The font family used as the default for content using a serif font.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="user-agent"
@@ -9365,6 +9708,16 @@ called from any thread.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="initialize_notification_permissions">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="initialize_web_extensions">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -9670,6 +10023,46 @@ details on the format of the languages in the list.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="initialize_notification_permissions"
+              c:identifier="webkit_web_context_initialize_notification_permissions"
+              version="2.16">
+        <doc xml:space="preserve">Sets initial desktop notification permissions for the @context.
+@allowed_origins and @disallowed_origins must each be #GList of
+#WebKitSecurityOrigin objects representing origins that will,
+respectively, either always or never have permission to show desktop
+notifications. No #WebKitNotificationPermissionRequest will ever be
+generated for any of the security origins represented in
+@allowed_origins or @disallowed_origins. This function is necessary
+because some webpages proactively check whether they have permission
+to display notifications without ever creating a permission request.
+
+This function only affects web processes that have not already been
+created. The best time to call it is when handling
+#WebKitWebContext::initialize-notification-permissions so as to
+ensure that new web processes receive the most recent set of
+permissions.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitWebContext</doc>
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+          <parameter name="allowed_origins" transfer-ownership="none">
+            <doc xml:space="preserve">a #GList of security origins</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="SecurityOrigin"/>
+            </type>
+          </parameter>
+          <parameter name="disallowed_origins" transfer-ownership="none">
+            <doc xml:space="preserve">a #GList of security origins</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="SecurityOrigin"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
       <method name="prefetch_dns"
               c:identifier="webkit_web_context_prefetch_dns">
         <doc xml:space="preserve">Resolve the domain name of the given @hostname in advance, so that if a URI
@@ -9870,6 +10263,39 @@ called only once. Further calls for the same instance of
             <doc xml:space="preserve">an absolute path to the icon database
 directory or %NULL to use the defaults</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_network_proxy_settings"
+              c:identifier="webkit_web_context_set_network_proxy_settings"
+              version="2.16">
+        <doc xml:space="preserve">Set the network proxy settings to be used by connections started in @context.
+By default %WEBKIT_NETWORK_PROXY_MODE_DEFAULT is used, which means that the
+system settings will be used (g_proxy_resolver_get_default()).
+If you want to override the system default settings, you can either use
+%WEBKIT_NETWORK_PROXY_MODE_NO_PROXY to make sure no proxies are used at all,
+or %WEBKIT_NETWORK_PROXY_MODE_CUSTOM to provide your own proxy settings.
+When @proxy_mode is %WEBKIT_NETWORK_PROXY_MODE_CUSTOM @proxy_settings must be
+a valid #WebKitNetworkProxySettings; otherwise, @proxy_settings must be %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebContext</doc>
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
+          <parameter name="proxy_mode" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitNetworkProxyMode</doc>
+            <type name="NetworkProxyMode" c:type="WebKitNetworkProxyMode"/>
+          </parameter>
+          <parameter name="proxy_settings"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #WebKitNetworkProxySettings, or %NULL</doc>
+            <type name="NetworkProxySettings"
+                  c:type="WebKitNetworkProxySettings*"/>
           </parameter>
         </parameters>
       </method>
@@ -10102,6 +10528,21 @@ your application crash.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="initialize-notification-permissions"
+                   when="last"
+                   version="2.16">
+        <doc xml:space="preserve">This signal is emitted when a #WebKitWebContext needs to set
+initial notification permissions for a web process. It is emitted
+when a new web process is about to be launched, and signals the
+most appropriate moment to use
+webkit_web_context_initialize_notification_permissions(). If no
+notification permissions have changed since the last time this
+signal was emitted, then there is no need to call
+webkit_web_context_initialize_notification_permissions() again.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="initialize-web-extensions" when="last" version="2.4">
         <doc xml:space="preserve">This signal is emitted when a new web process is about to be
 launched. It signals the most appropriate moment to use
@@ -10145,6 +10586,18 @@ and webkit_web_context_set_web_extensions_directory().</doc>
           </parameters>
         </callback>
       </field>
+      <field name="initialize_notification_permissions">
+        <callback name="initialize_notification_permissions">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="WebContext" c:type="WebKitWebContext*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_webkit_reserved0" introspectable="0">
         <callback name="_webkit_reserved0">
           <return-value transfer-ownership="none">
@@ -10175,13 +10628,6 @@ and webkit_web_context_set_web_extensions_directory().</doc>
       </field>
       <field name="_webkit_reserved4" introspectable="0">
         <callback name="_webkit_reserved4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_webkit_reserved5" introspectable="0">
-        <callback name="_webkit_reserved5">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -12079,7 +12525,7 @@ using any cached data.</doc>
       <method name="run_javascript"
               c:identifier="webkit_web_view_run_javascript">
         <doc xml:space="preserve">Asynchronously run @script in the context of the current page in @web_view. If
-WebKitWebSettings:enable-javascript is FALSE, this method will do nothing.
+WebKitSettings:enable-javascript is FALSE, this method will do nothing.
 
 When the operation is finished, @callback will be called. You can then call
 webkit_web_view_run_javascript_finish() to get the result of the operation.</doc>
