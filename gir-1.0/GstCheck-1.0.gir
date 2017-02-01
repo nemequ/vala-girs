@@ -25,6 +25,40 @@ and/or use gtk-doc annotations.  -->
         <type name="gint" c:type="int"/>
       </field>
     </record>
+    <record name="CheckLogFilter" c:type="GstCheckLogFilter" disguised="1">
+    </record>
+    <callback name="CheckLogFilterFunc"
+              c:type="GstCheckLogFilterFunc"
+              version="1.12">
+      <doc xml:space="preserve">A function that is called for messages matching the filter added by
+@gst_check_add_log_filter.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if message should be discarded by GstCheck.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="log_domain" transfer-ownership="none">
+          <doc xml:space="preserve">the log domain of the message</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">the log level of the message</doc>
+          <type name="GLib.LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="message" transfer-ownership="none">
+          <doc xml:space="preserve">the message that has occured</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
+          <doc xml:space="preserve">user data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <record name="Harness" c:type="GstHarness" version="1.6">
       <doc xml:space="preserve">#GstHarness is meant to make writing unit test for GStreamer much easier.
 It can be thought of as a way of treating a #GstElement as a black box,
@@ -33,7 +67,7 @@ deterministically feeding it data, and controlling what data it outputs.
 The basic structure of #GstHarness is two "floating" #GstPads that connect
 to the harnessed #GstElement src and sink #GstPads like so:
 
-&lt;programlisting&gt;
+|[
           __________________________
  _____   |  _____            _____  |   _____
 |     |  | |     |          |     | |  |     |
@@ -41,7 +75,7 @@ to the harnessed #GstElement src and sink #GstPads like so:
 |_____|  | |_____|          |_____| |  |_____|
          |__________________________|
 
-&lt;/programlisting&gt;
+]|
 
 With this, you can now simulate any environment the #GstElement might find
 itself in. By specifying the #GstCaps of the harness #GstPads, using
@@ -57,11 +91,11 @@ using functions like gst_harness_push() and gst_harness_push_event(), and
 then pull them out to examine them with gst_harness_pull() and
 gst_harness_pull_event().
 
-&lt;example&gt;
-&lt;title&gt;A simple buffer-in buffer-out example&lt;/title&gt;
-  &lt;programlisting language="c"&gt;
-  #include &amp;lt;gst/gst.h&amp;gt;
-  #include &amp;lt;gst/check/gstharness.h&amp;gt;
+## A simple buffer-in buffer-out example
+
+|[&lt;!-- language="C" --&gt;
+  #include &lt;gst/gst.h&gt;
+  #include &lt;gst/check/gstharness.h&gt;
   GstHarness *h;
   GstBuffer *in_buf;
   GstBuffer *out_buf;
@@ -88,8 +122,7 @@ gst_harness_pull_event().
   gst_buffer_unref (out_buf);
   gst_harness_teardown (h);
 
-  &lt;/programlisting&gt;
-&lt;/example&gt;
+  ]|
 
 Another main feature of the #GstHarness is its integration with the
 #GstTestClock. Operating the #GstTestClock can be very challenging, but
@@ -107,20 +140,16 @@ gst_harness_add_sink_parse(). If you have a decoder-element you want to test,
 src-element (videotestsrc) and an encoder (vp8enc) to feed the decoder data
 with different configurations, by simply doing:
 
-&lt;example&gt;
-&lt;programlisting language="c"&gt;
+|[&lt;!-- language="C" --&gt;
   GstHarness * h = gst_harness_new (h, "vp8dec");
   gst_harness_add_src_parse (h, "videotestsrc is-live=1 ! vp8enc", TRUE);
-&lt;/programlisting&gt;
-&lt;/example&gt;
+]|
 
 and then feeding it data with:
 
-&lt;example&gt;
-&lt;programlisting language="c"&gt;
+|[&lt;!-- language="C" --&gt;
 gst_harness_push_from_src (h);
-&lt;/programlisting&gt;
-&lt;/example&gt;</doc>
+]|</doc>
       <field name="element" writable="1">
         <doc xml:space="preserve">the element inside the harness</doc>
         <type name="Gst.Element" c:type="GstElement*"/>
@@ -2202,11 +2231,11 @@ called. #GstTestClock provides unit tests with the possibility to
 precisely advance the time in a deterministic manner, independent of the
 system time or any other external factors.
 
-&lt;example&gt;
-&lt;title&gt;Advancing the time of a #GstTestClock&lt;/title&gt;
-  &lt;programlisting language="c"&gt;
-  #include &amp;lt;gst/gst.h&amp;gt;
-  #include &amp;lt;gst/check/gsttestclock.h&amp;gt;
+## Advancing the time of a #GstTestClock
+
+|[&lt;!-- language="C" --&gt;
+  #include &lt;gst/gst.h&gt;
+  #include &lt;gst/check/gsttestclock.h&gt;
 
   GstClock *clock;
   GstTestClock *test_clock;
@@ -2221,8 +2250,7 @@ system time or any other external factors.
   gst_test_clock_set_time (test_clock, 42 * GST_SECOND);
   GST_INFO ("Time: %" GST_TIME_FORMAT, GST_TIME_ARGS (gst_clock_get_time (clock)));
   ...
-  &lt;/programlisting&gt;
-&lt;/example&gt;
+]|
 
 #GstClock allows for setting up single shot or periodic clock notifications
 as well as waiting for these notifications synchronously (using
@@ -2261,12 +2289,12 @@ buffer sent will arrive exactly on time only delayed by the latency. The
 second buffer will arrive a little late (7ms) due to simulated jitter in the
 clock notification.
 
-&lt;example&gt;
-&lt;title&gt;Demonstration of how to work with clock notifications and #GstTestClock&lt;/title&gt;
-  &lt;programlisting language="c"&gt;
-  #include &amp;lt;gst/gst.h&amp;gt;
-  #include &amp;lt;gst/check/gstcheck.h&amp;gt;
-  #include &amp;lt;gst/check/gsttestclock.h&amp;gt;
+## Demonstration of how to work with clock notifications and #GstTestClock
+
+|[&lt;!-- language="C" --&gt;
+  #include &lt;gst/gst.h&gt;
+  #include &lt;gst/check/gstcheck.h&gt;
+  #include &lt;gst/check/gsttestclock.h&gt;
 
   GstClockTime latency;
   GstElement *element;
@@ -2334,8 +2362,7 @@ clock notification.
   GST_INFO ("Check that element does not wait for any clock notification\n");
   g_assert (!gst_test_clock_peek_next_pending_id (test_clock, NULL));
   ...
-  &lt;/programlisting&gt;
-&lt;/example&gt;
+]|
 
 Since #GstTestClock is only supposed to be used in unit tests it calls
 g_assert(), g_assert_cmpint() or g_assert_cmpuint() to validate all function
@@ -2790,6 +2817,52 @@ You must have previously called gst_buffer_straw_start_pipeline() on
         </parameter>
       </parameters>
     </function>
+    <function name="check_add_log_filter"
+              c:identifier="gst_check_add_log_filter"
+              version="1.12"
+              introspectable="0">
+      <doc xml:space="preserve">Add a callback @func to be called for all log messages that matches
+@log_domain, @log_level and @regex. If @func is NULL the
+matching logs will be silently discarded by GstCheck.
+
+MT safe.</doc>
+      <return-value>
+        <doc xml:space="preserve">A filter that can be passed to @gst_check_remove_log_filter.</doc>
+        <type name="CheckLogFilter" c:type="GstCheckLogFilter*"/>
+      </return-value>
+      <parameters>
+        <parameter name="log" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="log_level" transfer-ownership="none">
+          <doc xml:space="preserve">the log level of the message</doc>
+          <type name="GLib.LogLevelFlags" c:type="GLogLevelFlags"/>
+        </parameter>
+        <parameter name="regex" transfer-ownership="full">
+          <doc xml:space="preserve">a #GRegex to match the message</doc>
+          <type name="GLib.Regex" c:type="GRegex*"/>
+        </parameter>
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="notified"
+                   closure="4"
+                   destroy="5">
+          <doc xml:space="preserve">the function to call for matching messages</doc>
+          <type name="CheckLogFilterFunc" c:type="GstCheckLogFilterFunc"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the user data to pass to @func</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="destroy_data" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">#GDestroyNotify for @user_data</doc>
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="check_buffer_data" c:identifier="gst_check_buffer_data">
       <doc xml:space="preserve">Compare the buffer contents with @data and @size.</doc>
       <return-value transfer-ownership="none">
@@ -2845,6 +2918,16 @@ equal.</doc>
           <type name="Gst.Buffer" c:type="GstBuffer*"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="check_clear_log_filter"
+              c:identifier="gst_check_clear_log_filter"
+              version="1.12">
+      <doc xml:space="preserve">Clear all filters added by @gst_check_add_log_filter.
+
+MT safe.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
     </function>
     <function name="check_drop_buffers" c:identifier="gst_check_drop_buffers">
       <doc xml:space="preserve">Unref and remove all buffers that are in the global @buffers GList,
@@ -3012,6 +3095,22 @@ concequence of unrefing @object_to_unref.</doc>
         <parameter name="..." transfer-ownership="none">
           <doc xml:space="preserve">Additional object that should have been destroyed.</doc>
           <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="check_remove_log_filter"
+              c:identifier="gst_check_remove_log_filter"
+              version="1.12">
+      <doc xml:space="preserve">Remove a filter that has been added by @gst_check_add_log_filter.
+
+MT safe.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="filter" transfer-ownership="none">
+          <doc xml:space="preserve">Filter returned by @gst_check_add_log_filter</doc>
+          <type name="CheckLogFilter" c:type="GstCheckLogFilter*"/>
         </parameter>
       </parameters>
     </function>

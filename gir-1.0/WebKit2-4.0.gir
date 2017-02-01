@@ -3583,6 +3583,31 @@ associated to @request.</doc>
             c:type="WebKitGeolocationPermissionRequestPrivate"
             disguised="1">
     </record>
+    <enumeration name="HardwareAccelerationPolicy"
+                 version="2.16"
+                 glib:type-name="WebKitHardwareAccelerationPolicy"
+                 glib:get-type="webkit_hardware_acceleration_policy_get_type"
+                 c:type="WebKitHardwareAccelerationPolicy">
+      <doc xml:space="preserve">Enum values used for determining the hardware acceleration policy.</doc>
+      <member name="on_demand"
+              value="0"
+              c:identifier="WEBKIT_HARDWARE_ACCELERATION_POLICY_ON_DEMAND"
+              glib:nick="on-demand">
+        <doc xml:space="preserve">Hardware acceleration is enabled/disabled as request by web contents.</doc>
+      </member>
+      <member name="always"
+              value="1"
+              c:identifier="WEBKIT_HARDWARE_ACCELERATION_POLICY_ALWAYS"
+              glib:nick="always">
+        <doc xml:space="preserve">Hardware acceleration is always enabled, even for websites not requesting it.</doc>
+      </member>
+      <member name="never"
+              value="2"
+              c:identifier="WEBKIT_HARDWARE_ACCELERATION_POLICY_NEVER"
+              glib:nick="never">
+        <doc xml:space="preserve">Hardware acceleration is always disabled, even for websites requesting it.</doc>
+      </member>
+    </enumeration>
     <class name="HitTestResult"
            c:symbol-prefix="hit_test_result"
            c:type="WebKitHitTestResult"
@@ -4144,7 +4169,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="4" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -6838,8 +6863,11 @@ be manually attached to a #WebKitWebView.</doc>
         </parameters>
       </method>
       <method name="get_enable_private_browsing"
-              c:identifier="webkit_settings_get_enable_private_browsing">
+              c:identifier="webkit_settings_get_enable_private_browsing"
+              deprecated="1"
+              deprecated-version="2.16.">
         <doc xml:space="preserve">Get the #WebKitSettings:enable-private-browsing property.</doc>
+        <doc-deprecated xml:space="preserve">Use #WebKitWebView:is-ephemeral or #WebKitWebContext:is-ephemeral instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE If private browsing is enabled or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -6986,6 +7014,22 @@ otherwise.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The default font family used to display content marked with fantasy font.</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSettings</doc>
+            <type name="Settings" c:type="WebKitSettings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_hardware_acceleration_policy"
+              c:identifier="webkit_settings_get_hardware_acceleration_policy"
+              version="2.16">
+        <doc xml:space="preserve">Get the #WebKitSettings:hardware-acceleration-policy property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #WebKitHardwareAccelerationPolicy</doc>
+          <type name="HardwareAccelerationPolicy"
+                c:type="WebKitHardwareAccelerationPolicy"/>
         </return-value>
         <parameters>
           <instance-parameter name="settings" transfer-ownership="none">
@@ -7627,15 +7671,21 @@ otherwise.</doc>
         </parameters>
       </method>
       <method name="set_enable_private_browsing"
-              c:identifier="webkit_settings_set_enable_private_browsing">
+              c:identifier="webkit_settings_set_enable_private_browsing"
+              deprecated="1"
+              deprecated-version="2.16.">
+        <doc xml:space="preserve">Set the #WebKitSettings:enable-private-browsing property.</doc>
+        <doc-deprecated xml:space="preserve">Use #WebKitWebView:is-ephemeral or #WebKitWebContext:is-ephemeral instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSettings</doc>
             <type name="Settings" c:type="WebKitSettings*"/>
           </instance-parameter>
           <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">Value to be set</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -7809,6 +7859,25 @@ otherwise.</doc>
           <parameter name="fantasy_font_family" transfer-ownership="none">
             <doc xml:space="preserve">the new default fantasy font family</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_hardware_acceleration_policy"
+              c:identifier="webkit_settings_set_hardware_acceleration_policy"
+              version="2.16">
+        <doc xml:space="preserve">Set the #WebKitSettings:hardware-acceleration-policy property.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitSettings</doc>
+            <type name="Settings" c:type="WebKitSettings*"/>
+          </instance-parameter>
+          <parameter name="policy" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitHardwareAccelerationPolicy</doc>
+            <type name="HardwareAccelerationPolicy"
+                  c:type="WebKitHardwareAccelerationPolicy"/>
           </parameter>
         </parameters>
       </method>
@@ -8316,11 +8385,14 @@ http://webkit.org/blog/427/webkit-page-cache-i-the-basics/</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="enable-private-browsing"
+                deprecated="1"
+                deprecated-version="2.16."
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Determines whether or not private browsing is enabled. Private browsing
 will disable history, cache and form auto-fill for any pages visited.</doc>
+        <doc-deprecated xml:space="preserve">Use #WebKitWebView:is-ephemeral or #WebKitWebContext:is-ephemeral instead.</doc-deprecated>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="enable-resizable-text-areas"
@@ -8416,6 +8488,24 @@ reflective XSS attacks on vulnerable web sites.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The font family used as the default for content using a fantasy font.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="hardware-acceleration-policy"
+                version="2.16"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #WebKitHardwareAccelerationPolicy to decide how to enable and disable
+hardware acceleration. The default value %WEBKIT_HARDWARE_ACCELERATION_POLICY_ON_DEMAND
+enables the hardware acceleration when the web contents request it, disabling it again
+when no longer needed. It's possible to enfore hardware acceleration to be always enabled
+by using %WEBKIT_HARDWARE_ACCELERATION_POLICY_ALWAYS. And it's also posible to disable it
+completely using %WEBKIT_HARDWARE_ACCELERATION_POLICY_NEVER. Note that disabling hardware
+acceleration might cause some websites to not render correctly or consume more CPU.
+
+Note that changing this setting might not be possible if hardware acceleration is not
+supported by the hardware or the system. In that case you can get the value to know the
+actual policy being used, but changing the setting will not have any effect.</doc>
+        <type name="HardwareAccelerationPolicy"/>
       </property>
       <property name="javascript-can-access-clipboard"
                 writable="1"
@@ -9671,6 +9761,20 @@ called from any thread.</doc>
           <type name="WebContext" c:type="WebKitWebContext*"/>
         </return-value>
       </constructor>
+      <constructor name="new_ephemeral"
+                   c:identifier="webkit_web_context_new_ephemeral"
+                   version="2.16">
+        <doc xml:space="preserve">Create a new ephemeral #WebKitWebContext. An ephemeral #WebKitWebContext is a context
+created with an ephemeral #WebKitWebsiteDataManager. This is just a convenient method
+to create ephemeral contexts without having to create your own #WebKitWebsiteDataManager.
+All #WebKitWebView&lt;!-- --&gt;s associated with this context will also be ephemeral. Websites will
+not store any data in the client storage.
+This is normally used to implement private instances.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new ephemeral #WebKitWebContext.</doc>
+          <type name="WebContext" c:type="WebKitWebContext*"/>
+        </return-value>
+      </constructor>
       <constructor name="new_with_website_data_manager"
                    c:identifier="webkit_web_context_new_with_website_data_manager"
                    version="2.10">
@@ -10061,6 +10165,21 @@ permissions.</doc>
               <type name="SecurityOrigin"/>
             </type>
           </parameter>
+        </parameters>
+      </method>
+      <method name="is_ephemeral"
+              c:identifier="webkit_web_context_is_ephemeral"
+              version="2.16">
+        <doc xml:space="preserve">Get whether a #WebKitWebContext is ephemeral.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @context is ephemeral or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitWebContext</doc>
+            <type name="WebContext" c:type="WebKitWebContext*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="prefetch_dns"
@@ -12254,6 +12373,25 @@ You can monitor the load operation by connecting to
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_ephemeral"
+              c:identifier="webkit_web_view_is_ephemeral"
+              version="2.16">
+        <doc xml:space="preserve">Get whether a #WebKitWebView is ephemeral. To create an ephemeral #WebKitWebView you need to
+use g_object_new() and pass is-ephemeral propery with %TRUE value. See
+#WebKitWebView:is-ephemeral for more details.
+If @web_view was created with a ephemeral #WebKitWebView:related-view or an
+ephemeral #WebKitWebView:web-context it will also be ephemeral.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @web_view is ephemeral or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="is_loading" c:identifier="webkit_web_view_is_loading">
         <doc xml:space="preserve">Gets the value of the #WebKitWebView:is-loading property.
 You can monitor when a #WebKitWebView is loading a page by connecting to
@@ -13025,6 +13163,20 @@ and child documents.</doc>
         <doc xml:space="preserve">The favicon currently associated to the #WebKitWebView.
 See webkit_web_view_get_favicon() for more details.</doc>
         <type name="gpointer" c:type="gpointer"/>
+      </property>
+      <property name="is-ephemeral"
+                version="2.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the #WebKitWebView is ephemeral. An ephemeral web view never writes
+website data to the client storage, no matter what #WebKitWebsiteDataManager
+its context is using. This is normally used to implement private browsing mode.
+This is a %G_PARAM_CONSTRUCT_ONLY property, so you have to create a ephemeral
+#WebKitWebView and it can't be changed. Note that all #WebKitWebView&lt;!-- --&gt;s
+created with an ephemeral #WebKitWebContext will be ephemeral automatically.
+See also webkit_web_context_new_ephemeral().</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="is-loading" transfer-ownership="none">
         <doc xml:space="preserve">Whether the #WebKitWebView is currently loading a page. This property becomes
@@ -14261,6 +14413,97 @@ released. This function is MT-safe and may be called from any thread.</doc>
         </parameters>
       </method>
     </record>
+    <record name="WebsiteData"
+            c:type="WebKitWebsiteData"
+            glib:type-name="WebKitWebsiteData"
+            glib:get-type="webkit_website_data_get_type"
+            c:symbol-prefix="website_data">
+      <method name="get_name"
+              c:identifier="webkit_website_data_get_name"
+              version="2.16">
+        <doc xml:space="preserve">Gets the name of #WebKitWebsiteData. This is the website name, normally represented by
+a domain or host name. All local documents are grouped in the same #WebKitWebsiteData using
+the name "Local files".</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the website name of @website_data.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="website_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteData</doc>
+            <type name="WebsiteData" c:type="WebKitWebsiteData*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_size"
+              c:identifier="webkit_website_data_get_size"
+              version="2.16">
+        <doc xml:space="preserve">Gets the size of the data of types @types in a #WebKitWebsiteData.
+Note that currently the data size is only known for %WEBKIT_WEBSITE_DATA_DISK_CACHE data type
+so for all other types 0 will be returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the size of @website_data for the given @types.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="website_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteData</doc>
+            <type name="WebsiteData" c:type="WebKitWebsiteData*"/>
+          </instance-parameter>
+          <parameter name="types" transfer-ownership="none">
+            <doc xml:space="preserve">a bitmask  of #WebKitWebsiteDataTypes</doc>
+            <type name="WebsiteDataTypes" c:type="WebKitWebsiteDataTypes"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_types"
+              c:identifier="webkit_website_data_get_types"
+              version="2.16">
+        <doc xml:space="preserve">Gets the types of data stored in the client for a #WebKitWebsiteData. These are the
+types actually present, not the types queried with webkit_website_data_manager_fetch().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a bitmask of #WebKitWebsiteDataTypes in @website_data</doc>
+          <type name="WebsiteDataTypes" c:type="WebKitWebsiteDataTypes"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="website_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteData</doc>
+            <type name="WebsiteData" c:type="WebKitWebsiteData*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="webkit_website_data_ref" version="2.16">
+        <doc xml:space="preserve">Atomically increments the reference count of @website_data by one.
+This function is MT-safe and may be called from any thread.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The passed #WebKitWebsiteData</doc>
+          <type name="WebsiteData" c:type="WebKitWebsiteData*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="website_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteData</doc>
+            <type name="WebsiteData" c:type="WebKitWebsiteData*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref"
+              c:identifier="webkit_website_data_unref"
+              version="2.16">
+        <doc xml:space="preserve">Atomically decrements the reference count of @website_data by one.
+If the reference count drops to 0, all memory allocated by
+#WebKitWebsiteData is released. This function is MT-safe and may be
+called from any thread.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="website_data" transfer-ownership="none">
+            <doc xml:space="preserve">A #WebKitWebsiteData</doc>
+            <type name="WebsiteData" c:type="WebKitWebsiteData*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <class name="WebsiteDataManager"
            c:symbol-prefix="website_data_manager"
            c:type="WebKitWebsiteDataManager"
@@ -14289,13 +14532,162 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_ephemeral"
+                   c:identifier="webkit_website_data_manager_new_ephemeral"
+                   version="2.16">
+        <doc xml:space="preserve">Creates an ephemeral #WebKitWebsiteDataManager. See #WebKitWebsiteDataManager:is-ephemeral for more details.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new ephemeral #WebKitWebsiteDataManager.</doc>
+          <type name="WebsiteDataManager" c:type="WebKitWebsiteDataManager*"/>
+        </return-value>
+      </constructor>
+      <method name="clear"
+              c:identifier="webkit_website_data_manager_clear"
+              version="2.16">
+        <doc xml:space="preserve">Asynchronously clear the website data of the given @types modified in the past @timespan.
+If @timespan is 0 all website data will be removed.
+
+When the operation is finished, @callback will be called. You can then call
+webkit_website_data_manager_clear_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="types" transfer-ownership="none">
+            <doc xml:space="preserve">#WebKitWebsiteDataTypes</doc>
+            <type name="WebsiteDataTypes" c:type="WebKitWebsiteDataTypes"/>
+          </parameter>
+          <parameter name="timespan" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTimeSpan</doc>
+            <type name="GLib.TimeSpan" c:type="GTimeSpan"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear_finish"
+              c:identifier="webkit_website_data_manager_clear_finish"
+              version="2.16"
+              throws="1">
+        <doc xml:space="preserve">Finish an asynchronous operation started with webkit_website_data_manager_clear()</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if website data was succesfully cleared, or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="fetch"
+              c:identifier="webkit_website_data_manager_fetch"
+              version="2.16">
+        <doc xml:space="preserve">Asynchronously get the list of #WebKitWebsiteData for the given @types.
+
+When the operation is finished, @callback will be called. You can then call
+webkit_website_data_manager_fetch_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="types" transfer-ownership="none">
+            <doc xml:space="preserve">#WebKitWebsiteDataTypes</doc>
+            <type name="WebsiteDataTypes" c:type="WebKitWebsiteDataTypes"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="fetch_finish"
+              c:identifier="webkit_website_data_manager_fetch_finish"
+              version="2.16"
+              throws="1">
+        <doc xml:space="preserve">Finish an asynchronous operation started with webkit_website_data_manager_fetch().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GList of #WebKitWebsiteData. You must free the #GList with
+   g_list_free() and unref the #WebKitWebsiteData&lt;!-- --&gt;s with webkit_website_data_unref() when you're done with them.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="WebsiteData"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_base_cache_directory"
               c:identifier="webkit_website_data_manager_get_base_cache_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:base-cache-directory property.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the base directory for Website cache, or %NULL if
-   #WebKitWebsiteDataManager:base-cache-directory was not provided.</doc>
+   #WebKitWebsiteDataManager:base-cache-directory was not provided or @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14310,9 +14702,9 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
               c:identifier="webkit_website_data_manager_get_base_data_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:base-data-directory property.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the base directory for Website data, or %NULL if
-   #WebKitWebsiteDataManager:base-data-directory was not provided.</doc>
+   #WebKitWebsiteDataManager:base-data-directory was not provided or @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14327,8 +14719,8 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
               c:identifier="webkit_website_data_manager_get_disk_cache_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:disk-cache-directory property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the directory where HTTP disk cache is stored.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the directory where HTTP disk cache is stored or %NULL if @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14343,8 +14735,8 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
               c:identifier="webkit_website_data_manager_get_indexeddb_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:indexeddb-directory property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the directory where IndexedDB databases are stored.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the directory where IndexedDB databases are stored or %NULL if @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14359,8 +14751,8 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
               c:identifier="webkit_website_data_manager_get_local_storage_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:local-storage-directory property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the directory where local storage data is stored.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the directory where local storage data is stored or %NULL if @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14375,8 +14767,8 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
               c:identifier="webkit_website_data_manager_get_offline_application_cache_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:offline-application-cache-directory property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the directory where offline web application cache is stored.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the directory where offline web application cache is stored or %NULL if @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14391,8 +14783,8 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
               c:identifier="webkit_website_data_manager_get_websql_directory"
               version="2.10">
         <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:websql-directory property.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the directory where WebSQL databases are stored.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the directory where WebSQL databases are stored or %NULL if @manager is ephemeral.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -14401,6 +14793,95 @@ be passed as construction parameter of a #WebKitWebContext.</doc>
             <type name="WebsiteDataManager"
                   c:type="WebKitWebsiteDataManager*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_ephemeral"
+              c:identifier="webkit_website_data_manager_is_ephemeral"
+              version="2.16">
+        <doc xml:space="preserve">Get whether a #WebKitWebsiteDataManager is ephemeral. See #WebKitWebsiteDataManager::is-ephemerla for more details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @manager is epheral or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove"
+              c:identifier="webkit_website_data_manager_remove"
+              version="2.16">
+        <doc xml:space="preserve">Asynchronously removes the website data of the for the given @types for websites in the given @website_data list.
+Use webkit_website_data_manager_clear() if you want to remove the website data for all sites.
+
+When the operation is finished, @callback will be called. You can then call
+webkit_website_data_manager_remove_finish() to get the result of the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="types" transfer-ownership="none">
+            <doc xml:space="preserve">#WebKitWebsiteDataTypes</doc>
+            <type name="WebsiteDataTypes" c:type="WebKitWebsiteDataTypes"/>
+          </parameter>
+          <parameter name="website_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #GList of #WebKitWebsiteData</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="WebsiteData"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_finish"
+              c:identifier="webkit_website_data_manager_remove_finish"
+              version="2.16"
+              throws="1">
+        <doc xml:space="preserve">Finish an asynchronous operation started with webkit_website_data_manager_remove().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if website data resources were succesfully removed, or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
         </parameters>
       </method>
       <property name="base-cache-directory"
@@ -14436,6 +14917,17 @@ for any Website data when no specific data directory has been provided.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The directory where IndexedDB databases will be stored.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="is-ephemeral"
+                version="2.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the #WebKitWebsiteDataManager is ephemeral. An ephemeral #WebKitWebsiteDataManager
+handles all websites data as non-persistent, and nothing will be written to the client
+storage. Note that if you create an ephemeral #WebKitWebsiteDataManager all other construction
+parameters to configure data directories will be ignored.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="local-storage-directory"
                 version="2.10"
@@ -14508,6 +15000,67 @@ for any Website data when no specific data directory has been provided.</doc>
             c:type="WebKitWebsiteDataManagerPrivate"
             disguised="1">
     </record>
+    <bitfield name="WebsiteDataTypes"
+              version="2.16"
+              glib:type-name="WebKitWebsiteDataTypes"
+              glib:get-type="webkit_website_data_types_get_type"
+              c:type="WebKitWebsiteDataTypes">
+      <doc xml:space="preserve">Enum values with flags representing types of Website data.</doc>
+      <member name="memory_cache"
+              value="1"
+              c:identifier="WEBKIT_WEBSITE_DATA_MEMORY_CACHE"
+              glib:nick="memory-cache">
+        <doc xml:space="preserve">Memory cache.</doc>
+      </member>
+      <member name="disk_cache"
+              value="2"
+              c:identifier="WEBKIT_WEBSITE_DATA_DISK_CACHE"
+              glib:nick="disk-cache">
+        <doc xml:space="preserve">HTTP disk cache.</doc>
+      </member>
+      <member name="offline_application_cache"
+              value="4"
+              c:identifier="WEBKIT_WEBSITE_DATA_OFFLINE_APPLICATION_CACHE"
+              glib:nick="offline-application-cache">
+        <doc xml:space="preserve">Offline web application cache.</doc>
+      </member>
+      <member name="session_storage"
+              value="8"
+              c:identifier="WEBKIT_WEBSITE_DATA_SESSION_STORAGE"
+              glib:nick="session-storage">
+        <doc xml:space="preserve">Session storage data.</doc>
+      </member>
+      <member name="local_storage"
+              value="16"
+              c:identifier="WEBKIT_WEBSITE_DATA_LOCAL_STORAGE"
+              glib:nick="local-storage">
+        <doc xml:space="preserve">Local storage data.</doc>
+      </member>
+      <member name="websql_databases"
+              value="32"
+              c:identifier="WEBKIT_WEBSITE_DATA_WEBSQL_DATABASES"
+              glib:nick="websql-databases">
+        <doc xml:space="preserve">WebSQL databases.</doc>
+      </member>
+      <member name="indexeddb_databases"
+              value="64"
+              c:identifier="WEBKIT_WEBSITE_DATA_INDEXEDDB_DATABASES"
+              glib:nick="indexeddb-databases">
+        <doc xml:space="preserve">IndexedDB databases.</doc>
+      </member>
+      <member name="plugin_data"
+              value="128"
+              c:identifier="WEBKIT_WEBSITE_DATA_PLUGIN_DATA"
+              glib:nick="plugin-data">
+        <doc xml:space="preserve">Plugins data.</doc>
+      </member>
+      <member name="all"
+              value="255"
+              c:identifier="WEBKIT_WEBSITE_DATA_ALL"
+              glib:nick="all">
+        <doc xml:space="preserve">All types.</doc>
+      </member>
+    </bitfield>
     <class name="WindowProperties"
            c:symbol-prefix="window_properties"
            c:type="WebKitWindowProperties"

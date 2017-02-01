@@ -447,7 +447,7 @@ for value.</doc>
           <doc xml:space="preserve">offset of the first match, or -1 if no match was found.
 
 Example:
-&lt;programlisting&gt;
+|[
 // Assume the adapter contains 0x00 0x01 0x02 ... 0xfe 0xff
 
 gst_adapter_masked_scan_uint32 (adapter, 0xffffffff, 0x00010203, 0, 256);
@@ -464,7 +464,7 @@ gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 256);
 // -&gt; returns 2
 gst_adapter_masked_scan_uint32 (adapter, 0xffff0000, 0x02030000, 0, 4);
 // -&gt; returns -1
-&lt;/programlisting&gt;</doc>
+]|</doc>
           <type name="gssize" c:type="gssize"/>
         </return-value>
         <parameters>
@@ -962,109 +962,88 @@ buffer in the list before freeing the list after usage.</doc>
 into separate audio/video/whatever frames.
 
 It provides for:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;provides one sink pad and one source pad&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;handles state changes&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;can operate in pull mode or push mode&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;handles seeking in both modes&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;handles events (SEGMENT/EOS/FLUSH)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-       handles queries (POSITION/DURATION/SEEKING/FORMAT/CONVERT)
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;handles flushing&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+
+  * provides one sink pad and one source pad
+  * handles state changes
+  * can operate in pull mode or push mode
+  * handles seeking in both modes
+  * handles events (SEGMENT/EOS/FLUSH)
+  * handles queries (POSITION/DURATION/SEEKING/FORMAT/CONVERT)
+  * handles flushing
 
 The purpose of this base class is to provide the basic functionality of
 a parser and share a lot of rather complex code.
 
-Description of the parsing mechanism:
-&lt;orderedlist&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Set-up phase&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseParse calls @start to inform subclass that data processing is
-    about to start now.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseParse class calls @set_sink_caps to inform the subclass about
-    incoming sinkpad caps. Subclass could already set the srcpad caps
-    accordingly, but this might be delayed until calling
-    gst_base_parse_finish_frame() with a non-queued frame.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     At least at this point subclass needs to tell the #GstBaseParse class
-     how big data chunks it wants to receive (min_frame_size). It can do
-     this with gst_base_parse_set_min_frame_size().
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     #GstBaseParse class sets up appropriate data passing mode (pull/push)
-     and starts to process the data.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Parsing phase&lt;/title&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      #GstBaseParse gathers at least min_frame_size bytes of data either
-      by pulling it from upstream or collecting buffers in an internal
-      #GstAdapter.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      A buffer of (at least) min_frame_size bytes is passed to subclass with
-      @handle_frame. Subclass checks the contents and can optionally
-      return GST_FLOW_OK along with an amount of data to be skipped to find
-      a valid frame (which will result in a subsequent DISCONT).
-      If, otherwise, the buffer does not hold a complete frame,
-      @handle_frame can merely return and will be called again when additional
-      data is available.  In push mode this amounts to an
-      additional input buffer (thus minimal additional latency), in pull mode
-      this amounts to some arbitrary reasonable buffer size increase.
-      Of course, gst_base_parse_set_min_frame_size() could also be used if a
-      very specific known amount of additional data is required.
-      If, however, the buffer holds a complete valid frame, it can pass
-      the size of this frame to gst_base_parse_finish_frame().
-      If acting as a converter, it can also merely indicate consumed input data
-      while simultaneously providing custom output data.
-      Note that baseclass performs some processing (such as tracking
-      overall consumed data rate versus duration) for each finished frame,
-      but other state is only updated upon each call to @handle_frame
-      (such as tracking upstream input timestamp).
-      &lt;/para&gt;&lt;para&gt;
-      Subclass is also responsible for setting the buffer metadata
-      (e.g. buffer timestamp and duration, or keyframe if applicable).
-      (although the latter can also be done by #GstBaseParse if it is
-      appropriately configured, see below).  Frame is provided with
-      timestamp derived from upstream (as much as generally possible),
-      duration obtained from configuration (see below), and offset
-      if meaningful (in pull mode).
-      &lt;/para&gt;&lt;para&gt;
-      Note that @check_valid_frame might receive any small
-      amount of input data when leftover data is being drained (e.g. at EOS).
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      As part of finish frame processing,
-      just prior to actually pushing the buffer in question,
-      it is passed to @pre_push_frame which gives subclass yet one
-      last chance to examine buffer metadata, or to send some custom (tag)
-      events, or to perform custom (segment) filtering.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      During the parsing process #GstBaseParseClass will handle both srcpad
-      and sinkpad events. They will be passed to subclass if @event or
-      @src_event callbacks have been provided.
-    &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Shutdown phase&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseParse class calls @stop to inform the subclass that data
-    parsing will be stopped.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;/orderedlist&gt;
+# Description of the parsing mechanism:
+
+## Set-up phase
+
+ * #GstBaseParse calls @start to inform subclass that data processing is
+   about to start now.
+
+ * #GstBaseParse class calls @set_sink_caps to inform the subclass about
+   incoming sinkpad caps. Subclass could already set the srcpad caps
+   accordingly, but this might be delayed until calling
+   gst_base_parse_finish_frame() with a non-queued frame.
+
+ * At least at this point subclass needs to tell the #GstBaseParse class
+   how big data chunks it wants to receive (min_frame_size). It can do
+   this with gst_base_parse_set_min_frame_size().
+
+ * #GstBaseParse class sets up appropriate data passing mode (pull/push)
+   and starts to process the data.
+
+## Parsing phase
+
+ * #GstBaseParse gathers at least min_frame_size bytes of data either
+   by pulling it from upstream or collecting buffers in an internal
+   #GstAdapter.
+
+ * A buffer of (at least) min_frame_size bytes is passed to subclass with
+   @handle_frame. Subclass checks the contents and can optionally
+   return GST_FLOW_OK along with an amount of data to be skipped to find
+   a valid frame (which will result in a subsequent DISCONT).
+   If, otherwise, the buffer does not hold a complete frame,
+   @handle_frame can merely return and will be called again when additional
+   data is available.  In push mode this amounts to an
+   additional input buffer (thus minimal additional latency), in pull mode
+   this amounts to some arbitrary reasonable buffer size increase.
+   Of course, gst_base_parse_set_min_frame_size() could also be used if a
+   very specific known amount of additional data is required.
+   If, however, the buffer holds a complete valid frame, it can pass
+   the size of this frame to gst_base_parse_finish_frame().
+   If acting as a converter, it can also merely indicate consumed input data
+   while simultaneously providing custom output data.
+   Note that baseclass performs some processing (such as tracking
+   overall consumed data rate versus duration) for each finished frame,
+   but other state is only updated upon each call to @handle_frame
+   (such as tracking upstream input timestamp).
+
+   Subclass is also responsible for setting the buffer metadata
+   (e.g. buffer timestamp and duration, or keyframe if applicable).
+   (although the latter can also be done by #GstBaseParse if it is
+   appropriately configured, see below).  Frame is provided with
+   timestamp derived from upstream (as much as generally possible),
+   duration obtained from configuration (see below), and offset
+   if meaningful (in pull mode).
+
+   Note that @check_valid_frame might receive any small
+   amount of input data when leftover data is being drained (e.g. at EOS).
+
+ * As part of finish frame processing,
+   just prior to actually pushing the buffer in question,
+   it is passed to @pre_push_frame which gives subclass yet one
+   last chance to examine buffer metadata, or to send some custom (tag)
+   events, or to perform custom (segment) filtering.
+
+ * During the parsing process #GstBaseParseClass will handle both srcpad
+   and sinkpad events. They will be passed to subclass if @event or
+   @src_event callbacks have been provided.
+
+## Shutdown phase
+
+* #GstBaseParse class calls @stop to inform the subclass that data
+  parsing will be stopped.
 
 Subclass is responsible for providing pad template caps for
 source and sink pads. The pads need to be named "sink" and "src". It also
@@ -1083,44 +1062,30 @@ Subclass @start and @stop functions will be called to inform the beginning
 and end of data processing.
 
 Things that subclass need to take care of:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;Provide pad templates&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Fixate the source pad caps when appropriate
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Inform base class how big data chunks should be retrieved. This is
-     done with gst_base_parse_set_min_frame_size() function.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Examine data chunks passed to subclass with @handle_frame and pass
-     proper frame(s) to gst_base_parse_finish_frame(), and setting src pad
-     caps and timestamps on frame.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Provide conversion functions&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Update the duration information with gst_base_parse_set_duration()
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Optionally passthrough using gst_base_parse_set_passthrough()
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Configure various baseparse parameters using
-     gst_base_parse_set_average_bitrate(), gst_base_parse_set_syncable()
-     and gst_base_parse_set_frame_rate().
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     In particular, if subclass is unable to determine a duration, but
-     parsing (or specs) yields a frames per seconds rate, then this can be
-     provided to #GstBaseParse to enable it to cater for
-     buffer time metadata (which will be taken from upstream as much as
-     possible). Internally keeping track of frame durations and respective
-     sizes that have been pushed provides #GstBaseParse with an estimated
-     bitrate. A default @convert (used if not overridden) will then use these
-     rates to perform obvious conversions.  These rates are also used to
-     update (estimated) duration at regular frame intervals.
-  &lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
+
+* Provide pad templates
+* Fixate the source pad caps when appropriate
+* Inform base class how big data chunks should be retrieved. This is
+  done with gst_base_parse_set_min_frame_size() function.
+* Examine data chunks passed to subclass with @handle_frame and pass
+  proper frame(s) to gst_base_parse_finish_frame(), and setting src pad
+  caps and timestamps on frame.
+* Provide conversion functions
+* Update the duration information with gst_base_parse_set_duration()
+* Optionally passthrough using gst_base_parse_set_passthrough()
+* Configure various baseparse parameters using
+  gst_base_parse_set_average_bitrate(), gst_base_parse_set_syncable()
+  and gst_base_parse_set_frame_rate().
+
+* In particular, if subclass is unable to determine a duration, but
+  parsing (or specs) yields a frames per seconds rate, then this can be
+  provided to #GstBaseParse to enable it to cater for
+  buffer time metadata (which will be taken from upstream as much as
+  possible). Internally keeping track of frame durations and respective
+  sizes that have been pushed provides #GstBaseParse with an estimated
+  bitrate. A default @convert (used if not overridden) will then use these
+  rates to perform obvious conversions.  These rates are also used to
+  update (estimated) duration at regular frame intervals.</doc>
       <virtual-method name="convert">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -2116,7 +2081,7 @@ my_element_class_init (GstMyElementClass *klass)
       "Sink name",
       "Sink",
       "My Sink element",
-      "The author &amp;lt;my.sink@my.email&amp;gt;");
+      "The author &lt;my.sink@my.email&gt;");
 }
 ]|
 
@@ -3449,11 +3414,10 @@ output/present buffers.</doc>
            glib:type-struct="BaseSrcClass">
       <doc xml:space="preserve">This is a generic base class for source elements. The following
 types of sources are supported:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;random access sources like files&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;seekable sources&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;live sources&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+
+  * random access sources like files
+  * seekable sources
+  * live sources
 
 The source can be configured to operate in any #GstFormat with the
 gst_base_src_set_format() method. The currently set format determines
@@ -3462,30 +3426,20 @@ events. The default format for #GstBaseSrc is %GST_FORMAT_BYTES.
 
 #GstBaseSrc always supports push mode scheduling. If the following
 conditions are met, it also supports pull mode scheduling:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;The format is set to %GST_FORMAT_BYTES (default).&lt;/para&gt;
-  &lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;#GstBaseSrcClass.is_seekable() returns %TRUE.&lt;/para&gt;
-  &lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+
+  * The format is set to %GST_FORMAT_BYTES (default).
+  * #GstBaseSrcClass.is_seekable() returns %TRUE.
 
 If all the conditions are met for operating in pull mode, #GstBaseSrc is
 automatically seekable in push mode as well. The following conditions must
 be met to make the element seekable in push mode when the format is not
 %GST_FORMAT_BYTES:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseSrcClass.is_seekable() returns %TRUE.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseSrcClass.query() can convert all supported seek formats to the
-    internal format as set with gst_base_src_set_format().
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseSrcClass.do_seek() is implemented, performs the seek and returns
-     %TRUE.
-  &lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+
+* #GstBaseSrcClass.is_seekable() returns %TRUE.
+* #GstBaseSrcClass.query() can convert all supported seek formats to the
+  internal format as set with gst_base_src_set_format().
+* #GstBaseSrcClass.do_seek() is implemented, performs the seek and returns
+   %TRUE.
 
 When the element does not meet the requirements to operate in pull mode, the
 offset and length in the #GstBaseSrcClass.create() method should be ignored.
@@ -3547,13 +3501,12 @@ my_element_class_init (GstMyElementClass *klass)
      "Source name",
      "Source",
      "My Source element",
-     "The author &amp;lt;my.sink@my.email&amp;gt;");
+     "The author &lt;my.sink@my.email&gt;");
 }
 ]|
 
-&lt;refsect2&gt;
-&lt;title&gt;Controlled shutdown of live sources in applications&lt;/title&gt;
-&lt;para&gt;
+## Controlled shutdown of live sources in applications
+
 Applications that record from a live source may want to stop recording
 in a controlled way, so that the recording is stopped, but the data
 already in the pipeline is processed to the end (remember that many live
@@ -3570,9 +3523,7 @@ with the gst_element_send_event() function on the element or its parent bin.
 
 After the EOS has been sent to the element, the application should wait for
 an EOS message to be posted on the pipeline's bus. Once this EOS message is
-received, it may safely shut down the entire pipeline.
-&lt;/para&gt;
-&lt;/refsect2&gt;</doc>
+received, it may safely shut down the entire pipeline.</doc>
       <virtual-method name="alloc">
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
@@ -4644,172 +4595,100 @@ or that expand one input buffer into multiple output buffers. See below
 for more concrete use cases.
 
 It provides for:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;one sinkpad and one srcpad&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Possible formats on sink and source pad implemented
-     with custom transform_caps function. By default uses
-     same format on sink and source.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Handles state changes&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Does flushing&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Push mode&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-      Pull mode if the sub-class transform can operate on arbitrary data
-   &lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
 
-&lt;refsect2&gt;
-&lt;title&gt;Use Cases&lt;/title&gt;
-&lt;para&gt;
-&lt;orderedlist&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Passthrough mode&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Element has no interest in modifying the buffer. It may want to inspect it,
+* one sinkpad and one srcpad
+* Possible formats on sink and source pad implemented
+  with custom transform_caps function. By default uses
+  same format on sink and source.
+
+* Handles state changes
+* Does flushing
+* Push mode
+* Pull mode if the sub-class transform can operate on arbitrary data
+
+# Use Cases
+
+## Passthrough mode
+
+  * Element has no interest in modifying the buffer. It may want to inspect it,
     in which case the element should have a transform_ip function. If there
     is no transform_ip function in passthrough mode, the buffer is pushed
     intact.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    The #GstBaseTransformClass.passthrough_on_same_caps variable
+
+  * The #GstBaseTransformClass.passthrough_on_same_caps variable
     will automatically set/unset passthrough based on whether the
     element negotiates the same caps on both pads.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    #GstBaseTransformClass.passthrough_on_same_caps on an element that
+
+  * #GstBaseTransformClass.passthrough_on_same_caps on an element that
     doesn't implement a transform_caps function is useful for elements that
     only inspect data (such as level)
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Example elements&lt;/title&gt;
-    &lt;listitem&gt;Level&lt;/listitem&gt;
-    &lt;listitem&gt;Videoscale, audioconvert, videoconvert, audioresample in
-    certain modes.&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;
-    &lt;title&gt;Modifications in-place - input buffer and output buffer are the
-    same thing.&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    The element must implement a transform_ip function.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Output buffer size must &lt;= input buffer size
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    If the always_in_place flag is set, non-writable buffers will be copied
-    and passed to the transform_ip function, otherwise a new buffer will be
-    created and the transform function called.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Incoming writable buffers will be passed to the transform_ip function
-    immediately.  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    only implementing transform_ip and not transform implies always_in_place
-    = %TRUE
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Example elements&lt;/title&gt;
-    &lt;listitem&gt;Volume&lt;/listitem&gt;
-    &lt;listitem&gt;Audioconvert in certain modes (signed/unsigned
-    conversion)&lt;/listitem&gt;
-    &lt;listitem&gt;videoconvert in certain modes (endianness
-    swapping)&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
- &lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Modifications only to the caps/metadata of a buffer&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    The element does not require writable data, but non-writable buffers
-    should be subbuffered so that the meta-information can be replaced.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Elements wishing to operate in this mode should replace the
-    prepare_output_buffer method to create subbuffers of the input buffer
-    and set always_in_place to %TRUE
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Example elements&lt;/title&gt;
-    &lt;listitem&gt;Capsfilter when setting caps on outgoing buffers that have
-    none.&lt;/listitem&gt;
-    &lt;listitem&gt;identity when it is going to re-timestamp buffers by
-    datarate.&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Normal mode&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    always_in_place flag is not set, or there is no transform_ip function
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Element will receive an input buffer and output buffer to operate on.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Output buffer is allocated by calling the prepare_output_buffer function.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Example elements&lt;/title&gt;
-    &lt;listitem&gt;Videoscale, videoconvert, audioconvert when doing
-    scaling/conversions&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Special output buffer allocations&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Elements which need to do special allocation of their output buffers
+
+  * Example elements
+
+    * Level
+    * Videoscale, audioconvert, videoconvert, audioresample in certain modes.
+
+## Modifications in-place - input buffer and output buffer are the same thing.
+
+* The element must implement a transform_ip function.
+* Output buffer size must &lt;= input buffer size
+* If the always_in_place flag is set, non-writable buffers will be copied
+  and passed to the transform_ip function, otherwise a new buffer will be
+  created and the transform function called.
+
+* Incoming writable buffers will be passed to the transform_ip function
+  immediately.
+* only implementing transform_ip and not transform implies always_in_place = %TRUE
+
+  * Example elements:
+    * Volume
+    * Audioconvert in certain modes (signed/unsigned conversion)
+    * videoconvert in certain modes (endianness swapping)
+
+## Modifications only to the caps/metadata of a buffer
+
+* The element does not require writable data, but non-writable buffers
+  should be subbuffered so that the meta-information can be replaced.
+
+* Elements wishing to operate in this mode should replace the
+  prepare_output_buffer method to create subbuffers of the input buffer
+  and set always_in_place to %TRUE
+
+* Example elements
+  * Capsfilter when setting caps on outgoing buffers that have
+    none.
+  * identity when it is going to re-timestamp buffers by
+    datarate.
+
+## Normal mode
+  * always_in_place flag is not set, or there is no transform_ip function
+  * Element will receive an input buffer and output buffer to operate on.
+  * Output buffer is allocated by calling the prepare_output_buffer function.
+  * Example elements:
+    * Videoscale, videoconvert, audioconvert when doing
+    scaling/conversions
+
+## Special output buffer allocations
+  * Elements which need to do special allocation of their output buffers
     beyond allocating output buffers via the negotiated allocator or
     buffer pool should implement the prepare_output_buffer method.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Example elements&lt;/title&gt;
-    &lt;listitem&gt;efence&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;/orderedlist&gt;
-&lt;/para&gt;
-&lt;/refsect2&gt;
-&lt;refsect2&gt;
-&lt;title&gt;Sub-class settable flags on GstBaseTransform&lt;/title&gt;
-&lt;para&gt;
-&lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;passthrough&lt;/title&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Implies that in the current configuration, the sub-class is not
-      interested in modifying the buffers.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Elements which are always in passthrough mode whenever the same caps
-      has been negotiated on both pads can set the class variable
-      passthrough_on_same_caps to have this behaviour automatically.
-    &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;always_in_place&lt;/title&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Determines whether a non-writable buffer will be copied before passing
-      to the transform_ip function.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Implied %TRUE if no transform function is implemented.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Implied %FALSE if ONLY transform function is implemented.
-    &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-&lt;/para&gt;
-&lt;/refsect2&gt;</doc>
+
+  * Example elements:
+    * efence
+
+# Sub-class settable flags on GstBaseTransform
+
+* passthrough
+
+  * Implies that in the current configuration, the sub-class is not interested in modifying the buffers.
+  * Elements which are always in passthrough mode whenever the same caps has been negotiated on both pads can set the class variable passthrough_on_same_caps to have this behaviour automatically.
+
+* always_in_place
+  * Determines whether a non-writable buffer will be copied before passing
+    to the transform_ip function.
+
+  * Implied %TRUE if no transform function is implemented.
+  * Implied %FALSE if ONLY transform function is implemented.</doc>
       <virtual-method name="accept_caps">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -5308,10 +5187,9 @@ MT safe.</doc>
               c:identifier="gst_base_transform_set_in_place">
         <doc xml:space="preserve">Determines whether a non-writable buffer will be copied before passing
 to the transform_ip function.
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;Always %TRUE if no transform function is implemented.&lt;/listitem&gt;
-  &lt;listitem&gt;Always %FALSE if ONLY transform function is implemented.&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
+
+  * Always %TRUE if no transform function is implemented.
+  * Always %FALSE if ONLY transform function is implemented.
 
 MT safe.</doc>
         <return-value transfer-ownership="none">
@@ -7108,7 +6986,7 @@ enough data (offset+size bytes) in the byte reader.</doc>
           <doc xml:space="preserve">offset of the first match, or -1 if no match was found.
 
 Example:
-&lt;programlisting&gt;
+|[
 // Assume the reader contains 0x00 0x01 0x02 ... 0xfe 0xff
 
 gst_byte_reader_masked_scan_uint32 (reader, 0xffffffff, 0x00010203, 0, 256);
@@ -7125,7 +7003,7 @@ gst_byte_reader_masked_scan_uint32 (reader, 0xffff0000, 0x02030000, 0, 256);
 // -&gt; returns 2
 gst_byte_reader_masked_scan_uint32 (reader, 0xffff0000, 0x02030000, 0, 4);
 // -&gt; returns -1
-&lt;/programlisting&gt;</doc>
+]|</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
@@ -8754,50 +8632,40 @@ memory and resources allocated for it.</doc>
            glib:type-struct="CollectPadsClass">
       <doc xml:space="preserve">Manages a set of pads that operate in collect mode. This means that control
 is given to the manager of this object when all pads have data.
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Collectpads are created with gst_collect_pads_new(). A callback should then
+
+  * Collectpads are created with gst_collect_pads_new(). A callback should then
     be installed with gst_collect_pads_set_function ().
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Pads are added to the collection with gst_collect_pads_add_pad()/
+
+  * Pads are added to the collection with gst_collect_pads_add_pad()/
     gst_collect_pads_remove_pad(). The pad
     has to be a sinkpad. The chain and event functions of the pad are
     overridden. The element_private of the pad is used to store
     private information for the collectpads.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    For each pad, data is queued in the _chain function or by
+
+  * For each pad, data is queued in the _chain function or by
     performing a pull_range.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    When data is queued on all pads in waiting mode, the callback function is called.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Data can be dequeued from the pad with the gst_collect_pads_pop() method.
+
+  * When data is queued on all pads in waiting mode, the callback function is called.
+
+  * Data can be dequeued from the pad with the gst_collect_pads_pop() method.
     One can peek at the data with the gst_collect_pads_peek() function.
     These functions will return %NULL if the pad received an EOS event. When all
     pads return %NULL from a gst_collect_pads_peek(), the element can emit an EOS
     event itself.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Data can also be dequeued in byte units using the gst_collect_pads_available(),
+
+  * Data can also be dequeued in byte units using the gst_collect_pads_available(),
     gst_collect_pads_read_buffer() and gst_collect_pads_flush() calls.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Elements should call gst_collect_pads_start() and gst_collect_pads_stop() in
+
+  * Elements should call gst_collect_pads_start() and gst_collect_pads_stop() in
     their state change functions to start and stop the processing of the collectpads.
     The gst_collect_pads_stop() call should be called before calling the parent
     element state change function in the PAUSED_TO_READY state change to ensure
     no pad is blocked and the element can finish streaming.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    gst_collect_pads_set_waiting() sets a pad to waiting or non-waiting mode.
+
+  * gst_collect_pads_set_waiting() sets a pad to waiting or non-waiting mode.
     CollectPads element is not waiting for data to be collected on non-waiting pads.
     Thus these pads may but need not have data when the callback is called.
-    All pads are in waiting mode by default.
-  &lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
+    All pads are in waiting mode by default.</doc>
       <constructor name="new" c:identifier="gst_collect_pads_new">
         <doc xml:space="preserve">Create a new instance of #GstCollectPads.
 
