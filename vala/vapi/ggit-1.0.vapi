@@ -611,6 +611,11 @@ namespace Ggit {
 		public string to_string () throws GLib.Error;
 		public void unref ();
 	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_proxy_options_get_type ()")]
+	public class ProxyOptions : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public ProxyOptions ();
+	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_push_options_get_type ()")]
 	public class PushOptions : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -716,7 +721,7 @@ namespace Ggit {
 		public Remote (Ggit.Repository repository, string name, string url) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Remote.anonymous (Ggit.Repository repository, string url) throws GLib.Error;
-		public void connect (Ggit.Direction direction, Ggit.RemoteCallbacks callbacks, string? custom_headers) throws GLib.Error;
+		public void connect (Ggit.Direction direction, Ggit.RemoteCallbacks callbacks, Ggit.ProxyOptions? proxy_options, string? custom_headers) throws GLib.Error;
 		public void disconnect ();
 		public bool download ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.FetchOptions fetch_options) throws GLib.Error;
 		public bool get_connected ();
@@ -1232,6 +1237,12 @@ namespace Ggit {
 	public enum PackbuilderStage {
 		ADDING_OBJECTS,
 		DELTAFICATION
+	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_PROXY_", type_id = "ggit_proxy_type_get_type ()")]
+	public enum ProxyType {
+		NONE,
+		AUTO,
+		SPECIFIED
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_REBASE_OPERATION_", type_id = "ggit_rebase_operation_type_get_type ()")]
 	public enum RebaseOperationType {

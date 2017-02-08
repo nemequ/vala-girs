@@ -16,7 +16,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="ide.h"/>
   <namespace name="Ide"
              version="1.0"
-             shared-library="libide-1.0.so,libegg-private.so.0,libtemplate-glib-1.0.so.0"
+             shared-library="libide-1.0.so,libegg-private.so.0,libpanel-gtk.so.0,libtemplate-glib-1.0.so.0"
              c:identifier-prefixes="Ide"
              c:symbol-prefixes="ide">
     <class name="Application"
@@ -1028,6 +1028,17 @@ to calling gtk_text_buffer_get_selection_bounds().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_spell_checking"
+              c:identifier="ide_buffer_get_spell_checking">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_style_scheme_name"
               c:identifier="ide_buffer_get_style_scheme_name">
         <doc xml:space="preserve">Gets the #IdeBuffer:style-scheme-name property.
@@ -1220,6 +1231,20 @@ Sets whether the diagnostic warnings and errors should be highlighted.</doc>
           </instance-parameter>
           <parameter name="highlight_diagnostics" transfer-ownership="none">
             <doc xml:space="preserve">Whether to highlight the diagnostics or not.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_spell_checking"
+              c:identifier="ide_buffer_set_spell_checking">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </instance-parameter>
+          <parameter name="enable" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -5992,19 +6017,6 @@ in various runtimes such as xdg-app.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_script_manager"
-              c:identifier="ide_context_get_script_manager">
-        <doc xml:space="preserve">Retrieves the script manager for the context.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">An #IdeScriptManager.</doc>
-          <type name="ScriptManager" c:type="IdeScriptManager*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_search_engine"
               c:identifier="ide_context_get_search_engine">
         <doc xml:space="preserve">Retrieves the search engine for the context.</doc>
@@ -6325,9 +6337,6 @@ ide_context_release() have been called.</doc>
       </property>
       <property name="runtime-manager" transfer-ownership="none">
         <type name="RuntimeManager"/>
-      </property>
-      <property name="script-manager" transfer-ownership="none">
-        <type name="ScriptManager"/>
       </property>
       <property name="search-engine" transfer-ownership="none">
         <type name="SearchEngine"/>
@@ -7864,10 +7873,12 @@ file managed by the IdeDiagnosticsManager.</doc>
     <constant name="ENABLE_TRACE" value="0" c:type="IDE_ENABLE_TRACE">
       <type name="gint" c:type="gint"/>
     </constant>
+    <record name="EditorFrame" c:type="IdeEditorFrame" disguised="1">
+    </record>
     <class name="EditorPerspective"
            c:symbol-prefix="editor_perspective"
            c:type="IdeEditorPerspective"
-           parent="Layout"
+           parent="Pnl.DockOverlay"
            glib:type-name="IdeEditorPerspective"
            glib:get-type="ide_editor_perspective_get_type"
            glib:type-struct="EditorPerspectiveClass">
@@ -7904,6 +7915,128 @@ file managed by the IdeDiagnosticsManager.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_active_view"
+              c:identifier="ide_editor_perspective_get_active_view">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #IdeLayoutView or %NULL.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_bottom_edge"
+              c:identifier="ide_editor_perspective_get_bottom_edge">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_center_widget"
+              c:identifier="ide_editor_perspective_get_center_widget">
+        <doc xml:space="preserve">Gets the center widget for the editor perspective.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #GtkWidget or %NULL.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #IdeEditorPerspective</doc>
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_layout"
+              c:identifier="ide_editor_perspective_get_layout">
+        <doc xml:space="preserve">Gets the #IdeLayout widget for the editor perspective.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #IdeLayout or %NULL.</doc>
+          <type name="Layout" c:type="IdeLayout*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #IdeEditorPerspective</doc>
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_left_edge"
+              c:identifier="ide_editor_perspective_get_left_edge">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_overlay_edge"
+              c:identifier="ide_editor_perspective_get_overlay_edge">
+        <doc xml:space="preserve">self: an #IdeEditorPerspective.
+position: a #GtkPositionType.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #PnlDockOverlayEdge</doc>
+          <type name="Pnl.DockOverlayEdge" c:type="PnlDockOverlayEdge*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+          <parameter name="position" transfer-ownership="none">
+            <type name="Gtk.PositionType" c:type="GtkPositionType"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_right_edge"
+              c:identifier="ide_editor_perspective_get_right_edge">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_top_edge"
+              c:identifier="ide_editor_perspective_get_top_edge">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GtkWidget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="show_spellchecker"
+              c:identifier="ide_editor_perspective_show_spellchecker">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="EditorPerspective" c:type="IdeEditorPerspective*"/>
+          </instance-parameter>
+          <parameter name="source_view" transfer-ownership="none">
+            <type name="SourceView" c:type="IdeSourceView*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="active-view" transfer-ownership="none">
+        <type name="Gtk.Widget"/>
+      </property>
       <glib:signal name="view-added" when="last">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -7929,7 +8062,7 @@ file managed by the IdeDiagnosticsManager.</doc>
             c:type="IdeEditorPerspectiveClass"
             glib:is-gtype-struct-for="EditorPerspective">
       <field name="parent_class">
-        <type name="LayoutClass" c:type="IdeLayoutClass"/>
+        <type name="Pnl.DockOverlayClass" c:type="PnlDockOverlayClass"/>
       </field>
     </record>
     <class name="EditorView"
@@ -19646,199 +19779,9 @@ be accessed from the host system.</doc>
         </callback>
       </field>
     </record>
-    <constant name="SCRIPT_EXTENSION_POINT"
-              value="org.gnome.libide.extensions.script"
-              c:type="IDE_SCRIPT_EXTENSION_POINT">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <class name="Script"
-           c:symbol-prefix="script"
-           c:type="IdeScript"
-           parent="Object"
-           abstract="1"
-           glib:type-name="IdeScript"
-           glib:get-type="ide_script_get_type"
-           glib:type-struct="ScriptClass">
-      <implements name="Gio.AsyncInitable"/>
-      <virtual-method name="load" invoker="load">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Script" c:type="IdeScript*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="unload" invoker="unload">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Script" c:type="IdeScript*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <method name="get_file" c:identifier="ide_script_get_file">
-        <doc xml:space="preserve">Returns a #GFile pointing to the location of the script on disk.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A #GFile</doc>
-          <type name="Gio.File" c:type="GFile*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Script" c:type="IdeScript*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="load" c:identifier="ide_script_load">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Script" c:type="IdeScript*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="unload" c:identifier="ide_script_unload">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Script" c:type="IdeScript*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <property name="file"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Gio.File"/>
-      </property>
-      <field name="parent_instance">
-        <type name="Object" c:type="IdeObject"/>
-      </field>
-      <glib:signal name="load" when="last">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="unload" when="last">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-    </class>
-    <record name="ScriptClass"
-            c:type="IdeScriptClass"
-            glib:is-gtype-struct-for="Script">
-      <field name="parent">
-        <type name="ObjectClass" c:type="IdeObjectClass"/>
-      </field>
-      <field name="load">
-        <callback name="load">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="Script" c:type="IdeScript*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="unload">
-        <callback name="unload">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="Script" c:type="IdeScript*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
+    <record name="Script" c:type="IdeScript" disguised="1">
     </record>
-    <class name="ScriptManager"
-           c:symbol-prefix="script_manager"
-           c:type="IdeScriptManager"
-           parent="Object"
-           glib:type-name="IdeScriptManager"
-           glib:get-type="ide_script_manager_get_type"
-           glib:type-struct="ScriptManagerClass">
-      <method name="get_scripts_directory"
-              c:identifier="ide_script_manager_get_scripts_directory">
-        <return-value transfer-ownership="none">
-          <type name="utf8" c:type="const gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="ScriptManager" c:type="IdeScriptManager*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="load_async" c:identifier="ide_script_manager_load_async">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="ScriptManager" c:type="IdeScriptManager*"/>
-          </instance-parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1"
-                     scope="async"
-                     closure="2">
-            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
-          </parameter>
-          <parameter name="user_data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="load_finish"
-              c:identifier="ide_script_manager_load_finish"
-              throws="1">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="ScriptManager" c:type="IdeScriptManager*"/>
-          </instance-parameter>
-          <parameter name="result" transfer-ownership="none">
-            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="scripts-directory"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-    </class>
-    <record name="ScriptManagerClass"
-            c:type="IdeScriptManagerClass"
-            glib:is-gtype-struct-for="ScriptManager">
-      <field name="parent_class">
-        <type name="ObjectClass" c:type="IdeObjectClass"/>
-      </field>
+    <record name="ScriptManager" c:type="IdeScriptManager" disguised="1">
     </record>
     <class name="SearchContext"
            c:symbol-prefix="search_context"
@@ -23047,6 +22990,17 @@ If enabled, snippet expansion can be performed via the auto completion drop down
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_spell_checking"
+              c:identifier="ide_source_view_get_spell_checking">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SourceView" c:type="IdeSourceView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_visible_rect"
               c:identifier="ide_source_view_get_visible_rect">
         <doc xml:space="preserve">Gets the visible region in buffer coordinates that is the visible area of the buffer. This
@@ -23348,6 +23302,23 @@ visible_rect.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_misspelled_word"
+              c:identifier="ide_source_view_set_misspelled_word">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SourceView" c:type="IdeSourceView*"/>
+          </instance-parameter>
+          <parameter name="start" transfer-ownership="none">
+            <type name="Gtk.TextIter" c:type="GtkTextIter*"/>
+          </parameter>
+          <parameter name="end" transfer-ownership="none">
+            <type name="Gtk.TextIter" c:type="GtkTextIter*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_overwrite_braces"
               c:identifier="ide_source_view_set_overwrite_braces">
         <return-value transfer-ownership="none">
@@ -23501,6 +23472,20 @@ See also: ide_source_view_get_snippet_completion()</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_spell_checking"
+              c:identifier="ide_source_view_set_spell_checking">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SourceView" c:type="IdeSourceView*"/>
+          </instance-parameter>
+          <parameter name="enable" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="back-forward-list"
                 writable="1"
                 transfer-ownership="none">
@@ -23594,6 +23579,9 @@ to generate diagnostics.</doc>
       <property name="snippet-completion"
                 writable="1"
                 transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="spell-checking" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent_instance">
@@ -29351,6 +29339,59 @@ the project creation workflow.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="execute_async"
+              c:identifier="ide_transfer_manager_execute_async">
+        <doc xml:space="preserve">This is a convenience function that will queue @transfer into the transfer
+manager and execute callback upon completion of the transfer. The success
+or failure #GError will be propagated to the caller via
+ide_transfer_manager_execute_finish().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+          <parameter name="transfer" transfer-ownership="none">
+            <type name="Transfer" c:type="IdeTransfer*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="execute_finish"
+              c:identifier="ide_transfer_manager_execute_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TransferManager" c:type="IdeTransferManager*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_has_active"
               c:identifier="ide_transfer_manager_get_has_active">
         <doc xml:space="preserve">Gets if there are active transfers.</doc>
@@ -29434,6 +29475,23 @@ Set to zero for a sensible default.</doc>
           <parameter name="transfer" transfer-ownership="none">
             <doc xml:space="preserve">An #IdeTransfer</doc>
             <type name="Transfer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="transfer-failed" when="last">
+        <doc xml:space="preserve">This signal is emitted when a transfer has failed to complete
+successfully.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="transfer" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeTransfer</doc>
+            <type name="Transfer"/>
+          </parameter>
+          <parameter name="reason" transfer-ownership="none">
+            <doc xml:space="preserve">The reason for the failure.</doc>
+            <type name="GLib.Error"/>
           </parameter>
         </parameters>
       </glib:signal>

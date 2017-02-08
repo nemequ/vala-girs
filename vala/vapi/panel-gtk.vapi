@@ -47,6 +47,8 @@ namespace Pnl {
 	public class DockOverlay : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Pnl.Dock, Pnl.DockItem {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public DockOverlay ();
+		public unowned Pnl.DockOverlayEdge get_edge (Gtk.PositionType position);
+		public unowned Gtk.Adjustment get_edge_adjustment (Gtk.PositionType position);
 		public virtual signal void hide_edges ();
 	}
 	[CCode (cheader_filename = "pnl.h", type_id = "pnl_dock_overlay_edge_get_type ()")]
@@ -70,6 +72,7 @@ namespace Pnl {
 	public class DockRevealer : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public DockRevealer ();
+		public void animate_to_position (int position, uint transition_duration);
 		public bool get_child_revealed ();
 		public int get_position ();
 		public bool get_position_set ();
@@ -219,4 +222,6 @@ namespace Pnl {
 	public static bool gtk_bin_draw (Gtk.Widget widget, Cairo.Context cr);
 	[CCode (cheader_filename = "pnl.h")]
 	public static void gtk_bin_size_allocate (Gtk.Widget widget, Gtk.Allocation allocation);
+	[CCode (cheader_filename = "pnl.h")]
+	public static void overlay_add_child (Pnl.DockOverlay self, Gtk.Widget child, string type);
 }

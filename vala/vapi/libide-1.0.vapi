@@ -61,6 +61,7 @@ namespace Ide {
 		public bool get_read_only ();
 		public unowned Ide.RenameProvider? get_rename_provider ();
 		public void get_selection_bounds (out Gtk.TextIter insert, out Gtk.TextIter selection);
+		public bool get_spell_checking ();
 		public unowned string get_style_scheme_name ();
 		public async Ide.Symbol get_symbol_at_location_async (Gtk.TextIter location, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned Ide.SymbolResolver? get_symbol_resolver ();
@@ -72,6 +73,7 @@ namespace Ide {
 		public void release ();
 		public void set_file (Ide.File file);
 		public void set_highlight_diagnostics (bool highlight_diagnostics);
+		public void set_spell_checking (bool enable);
 		public void set_style_scheme_name (string style_scheme_name);
 		public void sync_to_unsaved_files ();
 		public void trim_trailing_whitespace ();
@@ -335,7 +337,6 @@ namespace Ide {
 		public unowned string get_root_build_dir ();
 		public unowned Ide.RunManager get_run_manager ();
 		public unowned Ide.RuntimeManager get_runtime_manager ();
-		public unowned Ide.ScriptManager get_script_manager ();
 		public unowned Ide.SearchEngine get_search_engine ();
 		public unowned Ide.Service? get_service_typed (GLib.Type service_type);
 		public Ide.Settings get_settings (string schema_id, string relative_path);
@@ -358,7 +359,6 @@ namespace Ide {
 		public GLib.File project_file { get; construct; }
 		public string root_build_dir { get; set; }
 		public Ide.RuntimeManager runtime_manager { get; }
-		public Ide.ScriptManager script_manager { get; }
 		public Ide.SearchEngine search_engine { get; }
 		[NoAccessorMethod]
 		public Ide.SourceSnippetsManager snippets_manager { owned get; set; }
@@ -492,12 +492,26 @@ namespace Ide {
 		public string email { get; set; }
 		public string name { get; set; }
 	}
+	[CCode (cheader_filename = "ide.h", has_type_id = false)]
+	[Compact]
+	public class EditorFrame {
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_editor_perspective_get_type ()")]
-	public class EditorPerspective : Ide.Layout, Atk.Implementor, Gtk.Buildable, Ide.Perspective, Pnl.Dock, Pnl.DockItem {
+	public class EditorPerspective : Pnl.DockOverlay, Atk.Implementor, Gtk.Buildable, Ide.Perspective, Pnl.Dock, Pnl.DockItem {
 		[CCode (has_construct_function = false)]
 		protected EditorPerspective ();
 		public void focus_buffer_in_current_stack (Ide.Buffer buffer);
 		public void focus_location (Ide.SourceLocation location);
+		public unowned Gtk.Widget? get_active_view ();
+		public unowned Gtk.Widget get_bottom_edge ();
+		public unowned Gtk.Widget? get_center_widget ();
+		public unowned Ide.Layout? get_layout ();
+		public unowned Gtk.Widget get_left_edge ();
+		public unowned Pnl.DockOverlayEdge get_overlay_edge (Gtk.PositionType position);
+		public unowned Gtk.Widget get_right_edge ();
+		public unowned Gtk.Widget get_top_edge ();
+		public void show_spellchecker (Ide.SourceView source_view);
+		public Gtk.Widget active_view { get; }
 		public signal void view_added (Gtk.Widget object);
 		public signal void view_removed (Gtk.Widget object);
 	}
@@ -1213,24 +1227,13 @@ namespace Ide {
 		public unowned Ide.Runtime get_runtime (string id);
 		public void remove (Ide.Runtime runtime);
 	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_script_get_type ()")]
-	public abstract class Script : Ide.Object, GLib.AsyncInitable {
-		[CCode (has_construct_function = false)]
-		protected Script ();
-		public unowned GLib.File get_file ();
-		public GLib.File file { get; construct; }
-		[HasEmitter]
-		public virtual signal void load ();
-		[HasEmitter]
-		public virtual signal void unload ();
+	[CCode (cheader_filename = "ide.h", has_type_id = false)]
+	[Compact]
+	public class Script {
 	}
-	[CCode (cheader_filename = "ide.h", type_id = "ide_script_manager_get_type ()")]
-	public class ScriptManager : Ide.Object {
-		[CCode (has_construct_function = false)]
-		protected ScriptManager ();
-		public unowned string get_scripts_directory ();
-		public async bool load_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		public string scripts_directory { get; construct; }
+	[CCode (cheader_filename = "ide.h", has_type_id = false)]
+	[Compact]
+	public class ScriptManager {
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_search_context_get_type ()")]
 	public class SearchContext : Ide.Object {
@@ -1451,6 +1454,7 @@ namespace Ide {
 		public bool get_show_search_bubbles ();
 		public bool get_show_search_shadow ();
 		public bool get_snippet_completion ();
+		public bool get_spell_checking ();
 		public Gdk.Rectangle get_visible_rect ();
 		public void get_visual_position (uint line, uint line_offset);
 		[NoWrapper]
@@ -1468,6 +1472,7 @@ namespace Ide {
 		public void set_font_name (string font_name);
 		public void set_highlight_current_line (bool highlight_current_line);
 		public void set_insert_matching_brace (bool insert_matching_brace);
+		public void set_misspelled_word (Gtk.TextIter start, Gtk.TextIter end);
 		public void set_overwrite_braces (bool overwrite_braces);
 		public void set_rubberband_search (bool rubberband_search);
 		public void set_scroll_offset (uint scroll_offset);
@@ -1478,6 +1483,7 @@ namespace Ide {
 		public void set_show_search_bubbles (bool show_search_bubbles);
 		public void set_show_search_shadow (bool show_search_bubbles);
 		public void set_snippet_completion (bool snippet_completion);
+		public void set_spell_checking (bool enable);
 		public Ide.BackForwardList back_forward_list { get; set; }
 		public int count { get; set; }
 		public bool enable_word_completion { get; set; }
@@ -1503,6 +1509,7 @@ namespace Ide {
 		public bool show_search_bubbles { get; set; }
 		public bool show_search_shadow { get; set; }
 		public bool snippet_completion { get; set; }
+		public bool spell_checking { get; set; }
 		public signal void action (string object, string p0, string p1);
 		public virtual signal void append_to_count (int digit);
 		public virtual signal void begin_macro ();
@@ -1744,6 +1751,7 @@ namespace Ide {
 		public void cancel (Ide.Transfer transfer);
 		public void cancel_all ();
 		public void clear ();
+		public async bool execute_async (Ide.Transfer transfer, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_has_active ();
 		public uint get_max_active ();
 		public double get_progress ();
@@ -1753,6 +1761,7 @@ namespace Ide {
 		public uint max_active { get; set; }
 		public double progress { get; }
 		public signal void transfer_completed (Ide.Transfer transfer);
+		public signal void transfer_failed (Ide.Transfer transfer, GLib.Error reason);
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_transfer_row_get_type ()")]
 	public class TransferRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Buildable {
@@ -2579,8 +2588,6 @@ namespace Ide {
 	public const string RECENT_PROJECTS_GROUP;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_LANGUAGE_GROUP_PREFIX")]
 	public const string RECENT_PROJECTS_LANGUAGE_GROUP_PREFIX;
-	[CCode (cheader_filename = "ide.h", cname = "IDE_SCRIPT_EXTENSION_POINT")]
-	public const string SCRIPT_EXTENSION_POINT;
 	[CCode (cheader_filename = "ide.h")]
 	public static async Ide.BuildSystem build_system_new_async (Ide.Context context, GLib.File project_file, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "ide.h")]

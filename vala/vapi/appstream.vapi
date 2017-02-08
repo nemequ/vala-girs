@@ -287,7 +287,6 @@ namespace AppStream {
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_id (string cid);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_kind (AppStream.ComponentKind kind);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_provided_item (AppStream.ProvidedKind kind, string item);
-		[Version (since = "0.10.2")]
 		public AppStream.PoolFlags get_flags ();
 		public unowned string get_locale ();
 		public bool load (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -297,7 +296,6 @@ namespace AppStream {
 		[Version (since = "0.9.7")]
 		public GLib.GenericArray<weak AppStream.Component> search (string search);
 		public void set_cache_flags (AppStream.CacheFlags flags);
-		[Version (since = "0.10.2")]
 		public void set_flags (AppStream.PoolFlags flags);
 		public void set_locale (string locale);
 	}
