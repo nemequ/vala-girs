@@ -235,6 +235,8 @@ namespace Camel {
 		[Version (since = "3.2")]
 		public void clear (string path);
 		public GLib.IOStream @get (string path, string key) throws GLib.Error;
+		[Version (since = "3.24")]
+		public bool get_expire_enabled ();
 		[Version (since = "2.26")]
 		public string get_filename (string path, string key);
 		[Version (since = "2.32")]
@@ -242,8 +244,11 @@ namespace Camel {
 		public int remove (string path, string key) throws GLib.Error;
 		public void set_expire_access (long when);
 		public void set_expire_age (long when);
+		[Version (since = "3.24")]
+		public void set_expire_enabled (bool expire_enabled);
 		[Version (since = "2.32")]
 		public void set_path (string path);
+		public bool expire_enabled { get; set construct; }
 		public string path { get; set construct; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_data_wrapper_get_type ()")]

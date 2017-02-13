@@ -10509,7 +10509,8 @@ integer.
 
 If @key cannot be found then 0 is returned and @error is set to
 #G_KEY_FILE_ERROR_KEY_NOT_FOUND. Likewise, if the value associated
-with @key cannot be interpreted as an integer then 0 is returned
+with @key cannot be interpreted as an integer, or is out of range
+for a #gint, then 0 is returned
 and @error is set to #G_KEY_FILE_ERROR_INVALID_VALUE.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the value associated with the key as an integer, or
@@ -10540,7 +10541,8 @@ integers.
 
 If @key cannot be found then %NULL is returned and @error is set to
 #G_KEY_FILE_ERROR_KEY_NOT_FOUND. Likewise, if the values associated
-with @key cannot be interpreted as integers then %NULL is returned
+with @key cannot be interpreted as integers, or are out of range for
+#gint, then %NULL is returned
 and @error is set to #G_KEY_FILE_ERROR_INVALID_VALUE.</doc>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve">
@@ -11000,9 +11002,13 @@ set to either a #GFileError or #GKeyFileError.</doc>
               throws="1">
         <doc xml:space="preserve">This function looks for a key file named @file in the paths
 specified in @search_dirs, loads the file into @key_file and
-returns the file's full path in @full_path.  If the file could not
-be loaded then an %error is set to either a #GFileError or
-#GKeyFileError.</doc>
+returns the file's full path in @full_path.
+
+If the file could not be found in any of the @search_dirs,
+%G_KEY_FILE_ERROR_NOT_FOUND is returned. If
+the file is found but the OS returns an error when opening or reading the
+file, a %G_FILE_ERROR is returned. If there is a problem parsing the file, a
+%G_KEY_FILE_ERROR is returned.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if a key file could be loaded, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -11043,8 +11049,13 @@ be loaded then an %error is set to either a #GFileError or
               version="2.6"
               throws="1">
         <doc xml:space="preserve">Loads a key file into an empty #GKeyFile structure.
-If the file could not be loaded then @error is set to
-either a #GFileError or #GKeyFileError.</doc>
+
+If the OS returns an error when opening or reading the file, a
+%G_FILE_ERROR is returned. If there is a problem parsing the file, a
+%G_KEY_FILE_ERROR is returned.
+
+This function will never return a %G_KEY_FILE_ERROR_NOT_FOUND error. If the
+@file is not found, %G_FILE_ERROR_NOENT is returned.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if a key file could be loaded, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -31967,11 +31978,41 @@ this function.</doc>
       </method>
       <method name="open" c:identifier="g_variant_builder_open" version="2.24">
         <doc xml:space="preserve">Opens a subcontainer inside the given @builder.  When done adding
-items to the subcontainer, g_variant_builder_close() must be called.
+items to the subcontainer, g_variant_builder_close() must be called. @type
+is the type of the container: so to build a tuple of several values, @type
+must include the tuple itself.
 
 It is an error to call this function in any way that would cause an
 inconsistent value to be constructed (ie: adding too many values or
-a value of an incorrect type).</doc>
+a value of an incorrect type).
+
+Example of building a nested variant:
+|[&lt;!-- language="C" --&gt;
+GVariantBuilder builder;
+guint32 some_number = get_number ();
+g_autoptr (GHashTable) some_dict = get_dict ();
+GHashTableIter iter;
+const gchar *key;
+const GVariant *value;
+g_autoptr (GVariant) output = NULL;
+
+g_variant_builder_init (&amp;builder, G_VARIANT_TYPE ("(ua{sv})"));
+g_variant_builder_add (&amp;builder, "u", some_number);
+g_variant_builder_open (&amp;builder, G_VARIANT_TYPE ("a{sv}"));
+
+g_hash_table_iter_init (&amp;iter, some_dict);
+while (g_hash_table_iter_next (&amp;iter, (gpointer *) &amp;key, (gpointer *) &amp;value))
+  {
+    g_variant_builder_open (&amp;builder, G_VARIANT_TYPE ("{sv}"));
+    g_variant_builder_add (&amp;builder, "s", key);
+    g_variant_builder_add (&amp;builder, "v", value);
+    g_variant_builder_close (&amp;builder);
+  }
+
+g_variant_builder_close (&amp;builder);
+
+output = g_variant_builder_end (&amp;builder);
+]|</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -31981,7 +32022,7 @@ a value of an incorrect type).</doc>
             <type name="VariantBuilder" c:type="GVariantBuilder*"/>
           </instance-parameter>
           <parameter name="type" transfer-ownership="none">
-            <doc xml:space="preserve">a #GVariantType</doc>
+            <doc xml:space="preserve">the #GVariantType of the container</doc>
             <type name="VariantType" c:type="const GVariantType*"/>
           </parameter>
         </parameters>
@@ -40687,18 +40728,25 @@ created. Returns -1 if an error occurred, with errno set.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="mkdtemp" c:identifier="g_mkdtemp" version="2.30">
+    <function name="mkdtemp"
+              c:identifier="g_mkdtemp"
+              version="2.30"
+              introspectable="0">
       <doc xml:space="preserve">Creates a temporary directory. See the mkdtemp() documentation
 on most UNIX-like systems.
 
 The parameter is a string that should follow the rules for
 mkdtemp() templates, i.e. contain the string "XXXXXX".
 g_mkdtemp() is slightly more flexible than mkdtemp() in that the
-sequence does not have to occur at the very end of the template
-and you can pass a @mode and additional @flags. The X string will
-be modified to form the name of a directory that didn't exist.
+sequence does not have to occur at the very end of the template.
+The X string will be modified to form the name of a directory that
+didn't exist.
 The string should be in the GLib file name encoding. Most importantly,
-on Windows it should be in UTF-8.</doc>
+on Windows it should be in UTF-8.
+
+If you are going to be creating a temporary directory inside the
+directory returned by g_get_tmp_dir(), you might want to use
+g_dir_make_tmp() instead.</doc>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">A pointer to @tmpl, which has been
     modified to hold the directory name.  In case of errors, %NULL is
@@ -40712,18 +40760,25 @@ on Windows it should be in UTF-8.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="mkdtemp_full" c:identifier="g_mkdtemp_full" version="2.30">
+    <function name="mkdtemp_full"
+              c:identifier="g_mkdtemp_full"
+              version="2.30"
+              introspectable="0">
       <doc xml:space="preserve">Creates a temporary directory. See the mkdtemp() documentation
 on most UNIX-like systems.
 
 The parameter is a string that should follow the rules for
 mkdtemp() templates, i.e. contain the string "XXXXXX".
-g_mkdtemp() is slightly more flexible than mkdtemp() in that the
+g_mkdtemp_full() is slightly more flexible than mkdtemp() in that the
 sequence does not have to occur at the very end of the template
 and you can pass a @mode. The X string will be modified to form
 the name of a directory that didn't exist. The string should be
 in the GLib file name encoding. Most importantly, on Windows it
-should be in UTF-8.</doc>
+should be in UTF-8.
+
+If you are going to be creating a temporary directory inside the
+directory returned by g_get_tmp_dir(), you might want to use
+g_dir_make_tmp() instead.</doc>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">A pointer to @tmpl, which has been
     modified to hold the directory name. In case of errors, %NULL is
@@ -40741,7 +40796,7 @@ should be in UTF-8.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="mkstemp" c:identifier="g_mkstemp">
+    <function name="mkstemp" c:identifier="g_mkstemp" introspectable="0">
       <doc xml:space="preserve">Opens a temporary file. See the mkstemp() documentation
 on most UNIX-like systems.
 
@@ -40767,7 +40822,10 @@ Most importantly, on Windows it should be in UTF-8.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="mkstemp_full" c:identifier="g_mkstemp_full" version="2.22">
+    <function name="mkstemp_full"
+              c:identifier="g_mkstemp_full"
+              version="2.22"
+              introspectable="0">
       <doc xml:space="preserve">Opens a temporary file. See the mkstemp() documentation
 on most UNIX-like systems.
 
@@ -48369,18 +48427,33 @@ doing anything else with it.</doc>
       </parameters>
     </function>
     <function name="uuid_string_is_valid"
-              c:identifier="g_uuid_string_is_valid">
+              c:identifier="g_uuid_string_is_valid"
+              version="2.52">
+      <doc xml:space="preserve">Parses the string @str and verify if it is a UUID.
+
+The function accepts the following syntax:
+
+- simple forms (e.g. `f81d4fae-7dec-11d0-a765-00a0c91e6bf6`)
+
+Note that hyphens are required within the UUID string itself,
+as per the aforementioned RFC.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @str is a valid UUID, %FALSE otherwise.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
         <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a string representing a UUID</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
-    <function name="uuid_string_random" c:identifier="g_uuid_string_random">
+    <function name="uuid_string_random"
+              c:identifier="g_uuid_string_random"
+              version="2.52">
+      <doc xml:space="preserve">Generates a random UUID (RFC 4122 version 4) as a string.</doc>
       <return-value transfer-ownership="full">
+        <doc xml:space="preserve">A string that should be freed with g_free().</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
     </function>
