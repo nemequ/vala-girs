@@ -530,8 +530,6 @@ namespace Grl {
 		[Version (since = "0.2.0")]
 		public Grl.TypeFilter get_type_filter ();
 		[Version (since = "0.2.0")]
-		public bool key_is_set (string key);
-		[Version (since = "0.2.0")]
 		public bool obey_caps (Grl.Caps caps, out Grl.OperationOptions supported_options, out Grl.OperationOptions unsupported_options);
 		[Version (since = "0.2.0")]
 		public bool set_count (int count);
@@ -638,11 +636,8 @@ namespace Grl {
 		public bool metadata_key_validate (Grl.KeyID key, GLib.Value value);
 		[Version (since = "0.3.0")]
 		public Grl.KeyID register_metadata_key (owned GLib.ParamSpec param_spec, Grl.KeyID bind_key) throws GLib.Error;
-		public Grl.KeyID register_metadata_key_system (GLib.ParamSpec param_spec, Grl.KeyID key, Grl.KeyID bind_key) throws GLib.Error;
 		[Version (since = "0.2.0")]
 		public bool register_source (Grl.Plugin plugin, owned Grl.Source source) throws GLib.Error;
-		public void restrict_plugins (string plugins);
-		public void shutdown ();
 		[Version (since = "0.2.0")]
 		public bool unload_plugin (string plugin_id) throws GLib.Error;
 		[Version (since = "0.2.0")]
@@ -1152,8 +1147,6 @@ namespace Grl {
 		FULL
 	}
 	[CCode (cheader_filename = "grilo.h", has_target = false)]
-	public delegate void OperationCancelCb (void* data);
-	[CCode (cheader_filename = "grilo.h", has_target = false)]
 	public delegate void PluginDeinitFunc (Grl.Plugin plugin);
 	[CCode (cheader_filename = "grilo.h", has_target = false)]
 	public delegate void PluginRegisterKeysFunc (Grl.Registry registry, Grl.Plugin plugin);
@@ -1311,18 +1304,6 @@ namespace Grl {
 	public const int METADATA_KEY_URL;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_WIDTH")]
 	public const int METADATA_KEY_WIDTH;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_COUNT")]
-	public const string OPERATION_OPTION_COUNT;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_KEY_EQUAL_FILTER")]
-	public const string OPERATION_OPTION_KEY_EQUAL_FILTER;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_KEY_RANGE_FILTER")]
-	public const string OPERATION_OPTION_KEY_RANGE_FILTER;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_RESOLUTION_FLAGS")]
-	public const string OPERATION_OPTION_RESOLUTION_FLAGS;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_SKIP")]
-	public const string OPERATION_OPTION_SKIP;
-	[CCode (cheader_filename = "grilo.h", cname = "GRL_OPERATION_OPTION_TYPE_FILTER")]
-	public const string OPERATION_OPTION_TYPE_FILTER;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_PADDING")]
 	public const int PADDING;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_PADDING_SMALL")]
@@ -1373,8 +1354,6 @@ namespace Grl {
 	[Version (since = "0.1.7")]
 	public static void log_configure (string config);
 	[CCode (cheader_filename = "grilo.h")]
-	public static void marshal_VOID__BOXED_ENUM_BOOLEAN (GLib.Closure closure, GLib.Value return_value, uint n_param_values, GLib.Value param_values, void* invocation_hint, void* marshal_data);
-	[CCode (cheader_filename = "grilo.h")]
 	[Version (since = "0.1.6")]
 	public static unowned string metadata_key_get_desc (Grl.KeyID key);
 	[CCode (cheader_filename = "grilo.h")]
@@ -1383,8 +1362,6 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	[Version (since = "0.2.0")]
 	public static GLib.Type metadata_key_get_type (Grl.KeyID key);
-	[CCode (cheader_filename = "grilo.h")]
-	public static void metadata_key_setup_system_keys (Grl.Registry registry);
 	[CCode (cheader_filename = "grilo.h")]
 	[Version (since = "0.2.0")]
 	public static void multiple_get_media_from_uri (string uri, GLib.List<Grl.KeyID> keys, Grl.OperationOptions options, Grl.SourceResolveCb callback);
@@ -1397,20 +1374,12 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	public static void operation_cancel (uint operation_id);
 	[CCode (cheader_filename = "grilo.h")]
-	public static uint operation_generate_id ();
-	[CCode (cheader_filename = "grilo.h")]
 	public static void* operation_get_data (uint operation_id);
-	[CCode (cheader_filename = "grilo.h")]
-	public static void operation_init ();
-	[CCode (cheader_filename = "grilo.h")]
-	public static void operation_remove (uint operation_id);
 	[CCode (cheader_filename = "grilo.h")]
 	public static void operation_set_data (uint operation_id, void* user_data);
 	[CCode (cheader_filename = "grilo.h")]
 	[Version (since = "0.2.7")]
 	public static void operation_set_data_full (uint operation_id, void* user_data, GLib.DestroyNotify? destroy_func);
-	[CCode (cheader_filename = "grilo.h")]
-	public static void operation_set_private_data (uint operation_id, void* private_data, [CCode (destroy_notify_pos = 3.1)] owned Grl.OperationCancelCb cancel_cb);
 	[CCode (cheader_filename = "grilo.h")]
 	[Version (since = "0.1.6")]
 	public static void paging_translate (uint skip, uint count, uint max_page_size, uint page_size, uint page_number, uint internal_offset);

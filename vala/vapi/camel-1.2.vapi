@@ -2177,6 +2177,21 @@ namespace Camel {
 		[Version (since = "3.6")]
 		public void replace_flags (string uid);
 	}
+	[CCode (cheader_filename = "camel/camel.h", ref_function = "camel_weak_ref_group_ref", type_id = "camel_weak_ref_group_get_type ()", unref_function = "camel_weak_ref_group_unref")]
+	[Compact]
+	public class WeakRefGroup {
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.24")]
+		public WeakRefGroup ();
+		[Version (since = "3.24")]
+		public void* @get ();
+		[Version (since = "3.24")]
+		public Camel.WeakRefGroup @ref ();
+		[Version (since = "3.24")]
+		public void @set (void* object);
+		[Version (since = "3.24")]
+		public void unref ();
+	}
 	[CCode (cheader_filename = "camel/camel.h", type_cname = "CamelJunkFilterInterface", type_id = "camel_junk_filter_get_type ()")]
 	[Version (since = "3.2")]
 	public interface JunkFilter : GLib.Object {

@@ -1574,6 +1574,10 @@ namespace NM {
 		public const string ANONYMOUS_IDENTITY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT")]
 		public const string CA_CERT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD")]
+		public const string CA_CERT_PASSWORD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD_FLAGS")]
+		public const string CA_CERT_PASSWORD_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_PATH")]
 		public const string CA_PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PATH")]
@@ -1582,6 +1586,10 @@ namespace NM {
 		public const string CERT_SCHEME_PREFIX_PKCS11;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT")]
 		public const string CLIENT_CERT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT_PASSWORD")]
+		public const string CLIENT_CERT_PASSWORD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT_PASSWORD_FLAGS")]
+		public const string CLIENT_CERT_PASSWORD_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_DOMAIN_SUFFIX_MATCH")]
 		public const string DOMAIN_SUFFIX_MATCH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_EAP")]
@@ -1612,10 +1620,18 @@ namespace NM {
 		public const string PHASE2_AUTHEAP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_CERT")]
 		public const string PHASE2_CA_CERT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_CERT_PASSWORD")]
+		public const string PHASE2_CA_CERT_PASSWORD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_CERT_PASSWORD_FLAGS")]
+		public const string PHASE2_CA_CERT_PASSWORD_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_PATH")]
 		public const string PHASE2_CA_PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT")]
 		public const string PHASE2_CLIENT_CERT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT_PASSWORD")]
+		public const string PHASE2_CLIENT_CERT_PASSWORD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT_PASSWORD_FLAGS")]
+		public const string PHASE2_CLIENT_CERT_PASSWORD_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_DOMAIN_SUFFIX_MATCH")]
 		public const string PHASE2_DOMAIN_SUFFIX_MATCH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY")]
@@ -1655,12 +1671,20 @@ namespace NM {
 		public unowned string get_altsubject_match (uint32 i);
 		public unowned string get_anonymous_identity ();
 		public unowned GLib.Bytes get_ca_cert_blob ();
+		[Version (since = "1.8")]
+		public unowned string get_ca_cert_password ();
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags get_ca_cert_password_flags ();
 		public unowned string get_ca_cert_path ();
 		public NM.Setting8021xCKScheme get_ca_cert_scheme ();
 		[Version (since = "1.6")]
 		public unowned string get_ca_cert_uri ();
 		public unowned string get_ca_path ();
 		public unowned GLib.Bytes get_client_cert_blob ();
+		[Version (since = "1.8")]
+		public unowned string get_client_cert_password ();
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags get_client_cert_password_flags ();
 		public unowned string get_client_cert_path ();
 		public NM.Setting8021xCKScheme get_client_cert_scheme ();
 		[Version (since = "1.6")]
@@ -1684,12 +1708,19 @@ namespace NM {
 		public unowned string get_phase2_auth ();
 		public unowned string get_phase2_autheap ();
 		public unowned GLib.Bytes get_phase2_ca_cert_blob ();
+		[Version (since = "1.8")]
+		public unowned string get_phase2_ca_cert_password ();
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags get_phase2_ca_cert_password_flags ();
 		public unowned string get_phase2_ca_cert_path ();
 		public NM.Setting8021xCKScheme get_phase2_ca_cert_scheme ();
 		[Version (since = "1.6")]
 		public unowned string get_phase2_ca_cert_uri ();
 		public unowned string get_phase2_ca_path ();
 		public unowned GLib.Bytes get_phase2_client_cert_blob ();
+		public unowned string get_phase2_client_cert_password ();
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags get_phase2_client_cert_password_flags ();
 		public unowned string get_phase2_client_cert_path ();
 		public NM.Setting8021xCKScheme get_phase2_client_cert_scheme ();
 		[Version (since = "1.6")]
@@ -1737,9 +1768,21 @@ namespace NM {
 		[NoAccessorMethod]
 		public GLib.Bytes ca_cert { owned get; set; }
 		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public string ca_cert_password { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags ca_cert_password_flags { get; set; }
+		[NoAccessorMethod]
 		public string ca_path { owned get; set; }
 		[NoAccessorMethod]
 		public GLib.Bytes client_cert { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public string client_cert_password { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags client_cert_password_flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string domain_suffix_match { owned get; set; }
@@ -1774,9 +1817,21 @@ namespace NM {
 		[NoAccessorMethod]
 		public GLib.Bytes phase2_ca_cert { owned get; set; }
 		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public string phase2_ca_cert_password { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags phase2_ca_cert_password_flags { get; set; }
+		[NoAccessorMethod]
 		public string phase2_ca_path { owned get; set; }
 		[NoAccessorMethod]
 		public GLib.Bytes phase2_client_cert { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public string phase2_client_cert_password { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public NM.SettingSecretFlags phase2_client_cert_password_flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string phase2_domain_suffix_match { owned get; set; }
@@ -2023,6 +2078,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_cdma_get_type ()")]
 	public class SettingCdma : NM.Setting {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_MTU")]
+		public const string MTU;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_NUMBER")]
 		public const string NUMBER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_PASSWORD")]
@@ -2035,10 +2092,15 @@ namespace NM {
 		public const string USERNAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingCdma ();
+		[Version (since = "1.8")]
+		public uint32 get_mtu ();
 		public unowned string get_number ();
 		public unowned string get_password ();
 		public NM.SettingSecretFlags get_password_flags ();
 		public unowned string get_username ();
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public uint mtu { get; set construct; }
 		[NoAccessorMethod]
 		public string number { owned get; set; }
 		[NoAccessorMethod]
@@ -2284,6 +2346,8 @@ namespace NM {
 		public const string DEVICE_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_HOME_ONLY")]
 		public const string HOME_ONLY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_MTU")]
+		public const string MTU;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_NETWORK_ID")]
 		public const string NETWORK_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_NUMBER")]
@@ -2310,6 +2374,8 @@ namespace NM {
 		[Version (since = "1.2")]
 		public unowned string get_device_id ();
 		public bool get_home_only ();
+		[Version (since = "1.8")]
+		public uint32 get_mtu ();
 		public unowned string get_network_id ();
 		public unowned string get_number ();
 		public unowned string get_password ();
@@ -2328,6 +2394,9 @@ namespace NM {
 		public string device_id { owned get; set; }
 		[NoAccessorMethod]
 		public bool home_only { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public uint mtu { get; set construct; }
 		[NoAccessorMethod]
 		public string network_id { owned get; set; }
 		[NoAccessorMethod]
