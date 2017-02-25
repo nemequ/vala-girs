@@ -2543,6 +2543,9 @@ the current state of the build process. This may be bound to
 UI elements to notify the user of the buid progress.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <property name="pipeline" transfer-ownership="none">
+        <type name="BuildPipeline"/>
+      </property>
       <property name="running-time" transfer-ownership="none">
         <doc xml:space="preserve">The "running-time" property can be bound by UI elements that
 want to track how long the current build has taken. g_object_notify()
@@ -2688,6 +2691,38 @@ the build pipeline which is being executed.</doc>
            glib:type-name="IdeBuildPipeline"
            glib:get-type="ide_build_pipeline_get_type"
            glib:type-struct="BuildPipelineClass">
+      <doc xml:space="preserve">The #IdeBuildPipeline is responsible for managing the build process
+for Builder. It consists of multiple build "phases" (see #IdeBuildPhase
+for the individual phases). An #IdeBuildStage can be attached with
+a priority to each phase and is the primary mechanism that plugins
+use to perform their operations in the proper ordering.
+
+For example, the flatpak plugin provides its download stage as part of the
+%IDE_BUILD_PHASE_DOWNLOAD phase. The autotools plugin provides stages to
+phases such as %IDE_BUILD_PHASE_AUTOGEN, %IDE_BUILD_PHASE_CONFIGURE,
+%IDE_BUILD_PHASE_BUILD, and %IDE_BUILD_PHASE_INSTALL.
+
+If you want ensure a particular phase is performed as part of a build,
+then fall ide_build_pipeline_request_phase() with the phase you are
+interested in seeing complete successfully.
+
+If your plugin has discovered that something has changed that invalidates a
+given phase, use ide_build_pipeline_invalidate_phase() to ensure that the
+phase is re-executed the next time a requested phase of higher precidence
+is requested.
+
+It can be useful to perform operations before or after a given stage (but
+still be executed as part of that stage) so the %IDE_BUILD_PHASE_BEFORE and
+%IDE_BUILD_PHASE_AFTER flags may be xor'd with the requested phase.  If more
+precise ordering is required, you may use the priority parameter to order
+the operation with regards to other stages in that phase.
+
+Transient stages may be added to the pipeline and they will be removed after
+the ide_build_pipeline_execute_async() operation has completed successfully
+or has failed. You can mark a stage as trandient with
+ide_build_stage_set_transient(). This may be useful to perform operations
+such as an "export tarball" stage which should only run once as determined
+by the user requesting a "make dist" style operation.</doc>
       <implements name="Gio.Initable"/>
       <method name="add_error_format"
               c:identifier="ide_build_pipeline_add_error_format">
@@ -3468,6 +3503,19 @@ While it should work, that is not yet guaranteed.</doc>
            glib:type-name="IdeBuildStage"
            glib:get-type="ide_build_stage_get_type"
            glib:type-struct="BuildStageClass">
+      <virtual-method name="chain" invoker="chain">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </instance-parameter>
+          <parameter name="next" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="clean_async" invoker="clean_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -3615,6 +3663,19 @@ While it should work, that is not yet guaranteed.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="chain" c:identifier="ide_build_stage_chain">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </instance-parameter>
+          <parameter name="next" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="clean_async" c:identifier="ide_build_stage_clean_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -3955,6 +4016,16 @@ be immediately discarded.</doc>
       <field name="parent_instance">
         <type name="Object" c:type="IdeObject"/>
       </field>
+      <glib:signal name="chain" when="last">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="BuildStage"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="query" when="last">
         <doc xml:space="preserve">The #IdeBuildStage::query signal is emitted to request that the
 build stage update its completed stage from any external resources.
@@ -4164,6 +4235,21 @@ as part of the next build.</doc>
             </parameter>
             <parameter name="reaper" transfer-ownership="none">
               <type name="DirectoryReaper" c:type="IdeDirectoryReaper*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="chain">
+        <callback name="chain">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="BuildStage" c:type="IdeBuildStage*"/>
+            </parameter>
+            <parameter name="next" transfer-ownership="none">
+              <type name="BuildStage" c:type="IdeBuildStage*"/>
             </parameter>
           </parameters>
         </callback>
@@ -14330,6 +14416,11 @@ context is not already in shutdown.</doc>
             glib:type-name="IdePatternSpec"
             glib:get-type="ide_pattern_spec_get_type"
             c:symbol-prefix="pattern_spec">
+      <doc xml:space="preserve">This works similar to GPatternSpec except the query syntax is different.
+It tries to mtach word boundaries, but with matching partial words up
+to those boundaries. For example, "gtk widg" would match "gtk_widget_show".
+Word boundaries include '_' and ' '. If any character is uppercase, then
+case sensitivity is used.</doc>
       <constructor name="new" c:identifier="ide_pattern_spec_new">
         <return-value transfer-ownership="full">
           <type name="PatternSpec" c:type="IdePatternSpec*"/>
@@ -17468,6 +17559,8 @@ project, %NULL is returned.</doc>
            glib:type-name="IdeProjectInfo"
            glib:get-type="ide_project_info_get_type"
            glib:type-struct="ProjectInfoClass">
+      <doc xml:space="preserve">This class contains information about a project that can be loaded.
+This information should be used to display a list of available projects.</doc>
       <method name="compare" c:identifier="ide_project_info_compare">
         <return-value transfer-ownership="none">
           <type name="gint" c:type="gint"/>
@@ -19194,6 +19287,29 @@ executing inferior.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <virtual-method name="create_launcher" introspectable="0">
+        <return-value>
+          <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="fixup_launcher">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+          <parameter name="launcher" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="force_quit" invoker="force_quit">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -19526,6 +19642,30 @@ executing inferior.</doc>
           </instance-parameter>
           <parameter name="tty_fd" transfer-ownership="none">
             <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="take_fd" c:identifier="ide_runner_take_fd">
+        <doc xml:space="preserve">This will ensure that @source_fd is mapped into the new process as @dest_fd.
+If @dest_fd is -1, then the next fd will be used and that value will be
+returned. Note that this is not a valid fd in the calling process, only
+within the destination process.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">@dest_fd or the FD or the next available dest_fd.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeRunner</doc>
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+          <parameter name="source_fd" transfer-ownership="none">
+            <doc xml:space="preserve">the fd to map, this will be closed by #IdeRunner</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="dest_fd" transfer-ownership="none">
+            <doc xml:space="preserve">the target FD in the spawned process, or -1 for next available</doc>
+            <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
       </method>
@@ -20060,6 +20200,57 @@ executing inferior.</doc>
             </parameter>
           </parameters>
         </callback>
+      </field>
+      <field name="create_launcher" introspectable="0">
+        <callback name="create_launcher" introspectable="0">
+          <return-value>
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runner" c:type="IdeRunner*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="fixup_launcher">
+        <callback name="fixup_launcher">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Runner" c:type="IdeRunner*"/>
+            </parameter>
+            <parameter name="launcher" transfer-ownership="none">
+              <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_reserved1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved2">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved3">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved4">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved5">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved6">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved7">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved8">
+        <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
     <class name="Runtime"
@@ -21793,6 +21984,13 @@ If @providers is %NULL, all registered providers will be used.</doc>
            glib:type-name="IdeSettings"
            glib:get-type="ide_settings_get_type"
            glib:type-struct="SettingsClass">
+      <doc xml:space="preserve">In Builder, we need support for settings at the user level (their chosen defaults) as well
+as defaults for a project. #IdeSettings attempts to simplify this by providing a layered
+approach to settings.
+
+If a setting has been set for the current project, it will be returned. If not, the users
+preference will be returned. Setting a preference via #IdeSettings will always modify the
+projects setting, not the users default settings.</doc>
       <method name="bind" c:identifier="ide_settings_bind">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -22843,6 +23041,13 @@ reaches zero, then the structure is freed.</doc>
            glib:type-name="IdeSourceSnippetContext"
            glib:get-type="ide_source_snippet_context_get_type"
            glib:type-struct="SourceSnippetContextClass">
+      <doc xml:space="preserve">This class is currently used primary as a hashtable. However, the longer
+term goal is to have it hold onto a GjsContext as well as other languages
+so that #IdeSourceSnippetChunk&lt;!-- --&gt;'s can expand themselves by executing
+script within the context.
+
+The #IdeSourceSnippet will build the context and then expand each of the
+chunks during the insertion/edit phase.</doc>
       <constructor name="new" c:identifier="ide_source_snippet_context_new">
         <return-value transfer-ownership="full">
           <type name="SourceSnippetContext" c:type="IdeSourceSnippetContext*"/>
@@ -28287,6 +28492,22 @@ ide_subprocess_launcher_get_run_on_host() for more information.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="take_fd" c:identifier="ide_subprocess_launcher_take_fd">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
+          </instance-parameter>
+          <parameter name="source_fd" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="dest_fd" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="take_stderr_fd"
               c:identifier="ide_subprocess_launcher_take_stderr_fd">
         <return-value transfer-ownership="none">
@@ -32599,45 +32820,7 @@ ide_unsaved_file_ref() to increment its reference count.</doc>
             glib:type-name="IdeUri"
             glib:get-type="ide_uri_get_type"
             c:symbol-prefix="uri">
-      <doc xml:space="preserve">A parsed URI. The exact manner in which a URI string is broken down
-into a #IdeUri depends on the #IdeUriParseFlags that were used when
-creating it.
-
-@scheme is always set, and always lowercase, even if @uri_string
-contains uppercase letters in the scheme.
-
-@host will be set if @uri_string has an "authority" component (that
-is, if the scheme is followed by "://" rather than just ":"). If
-the URI was not parsed with %IDE_URI_PARSE_NON_DNS, @host will be
-assumed to be an internet hostname (or IP address) and will be
-decoded accordingly.
-
-The generic URI syntax allows a "userinfo" component before the
-hostname. Some URI schemes further break the userinfo down into a
-username, a password (separated from the username by a colon),
-and/or additional parameters (separated by a semicolon). If you
-parse the URI with %IDE_URI_PARSE_PASSWORD and/or
-%IDE_URI_PARSE_AUTH_PARAMS, then the @password and @auth_params
-fields will be filled in (assuming they were present). Otherwise,
-the entire userinfo component will be put into the @user field.
-
-By default, @path, @query, and @fragment are stored undecoded,
-because with some schemes (such as "http"), it is possible that the
-encoded and unencoded forms of a character (eg,
-"&lt;literal&gt;/&lt;/literal&gt;" and "&lt;literal&gt;%&lt;!-- --&gt;2F&lt;/literal&gt;") may
-have different meanings. On the other hand, with schemes that do
-not use URIs as protocol elements (such as "ftp"), that sort of
-confusion is not possible, and it is always safe (and useful) to
-decode the URI fully. You can parse the URI with
-%IDE_URI_PARSE_DECODED if you want @path, @query, and @fragment to be
-decoded.
-
-Note however that all of the (string) fields in a #IdeUri are
-guaranteed to be valid UTF-8 strings, so if @uri_string contained
-encoded non-UTF-8 data, it will normally be left %&lt;!-- --&gt;-encoded
-in the corresponding #IdeUri fields, even if the #IdeUriParseFlags
-would otherwise call for decoding it. You can use the flag
-%IDE_URI_PARSE_UTF8_ONLY to cause this case to be an error instead.</doc>
+      <doc xml:space="preserve">FIXME</doc>
       <constructor name="new" c:identifier="ide_uri_new" throws="1">
         <doc xml:space="preserve">Parses @uri_string according to @flags. If the result is not a
 valid absolute URI, it will be discarded, and an error returned.</doc>

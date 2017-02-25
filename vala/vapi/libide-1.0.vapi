@@ -166,6 +166,7 @@ namespace Ide {
 		public bool has_diagnostics { get; }
 		public GLib.DateTime last_build_time { get; }
 		public string message { owned get; }
+		public Ide.BuildPipeline pipeline { get; }
 		public int64 running_time { get; }
 		public signal void build_failed (Ide.BuildPipeline pipeline);
 		public signal void build_finished (Ide.BuildPipeline pipeline);
@@ -236,6 +237,8 @@ namespace Ide {
 		public string name { get; set; }
 		public string stdout_path { get; set; }
 		public bool transient { get; set; }
+		[HasEmitter]
+		public virtual signal bool chain (Ide.BuildStage next);
 		public virtual signal void query (Ide.BuildPipeline pipeline, GLib.Cancellable? cancellable = null);
 		public virtual signal void reap (Ide.DirectoryReaper reaper);
 	}
@@ -1270,6 +1273,8 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		public Runner (Ide.Context context);
 		public void append_argv (string param);
+		[NoWrapper]
+		public virtual void fixup_launcher (Ide.SubprocessLauncher launcher);
 		public virtual void force_quit ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_argv ();
@@ -1287,6 +1292,7 @@ namespace Ide {
 		public void set_flags (GLib.SubprocessFlags flags);
 		public void set_run_on_host (bool run_on_host);
 		public virtual void set_tty (int tty_fd);
+		public int take_fd (int source_fd, int dest_fd);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] argv { owned get; set; }
 		public bool clear_env { get; set; }
@@ -1760,6 +1766,7 @@ namespace Ide {
 		public void set_run_on_host (bool run_on_host);
 		public void setenv (string key, string value, bool replace);
 		public virtual Ide.Subprocess spawn (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void take_fd (int source_fd, int dest_fd);
 		public void take_stderr_fd (int stderr_fd);
 		public void take_stdin_fd (int stdin_fd);
 		public void take_stdout_fd (int stdout_fd);

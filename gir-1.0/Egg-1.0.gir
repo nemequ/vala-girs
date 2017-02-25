@@ -172,6 +172,15 @@ animated.</doc>
            glib:type-name="EggBindingGroup"
            glib:get-type="egg_binding_group_get_type"
            glib:type-struct="BindingGroupClass">
+      <doc xml:space="preserve">#EggBindingGroup manages to simplify the process of binding
+many properties from a #GObject as a group. As such there is no API
+to unbind a property from the group.
+
+In particular, this allows you to change the source instance for the
+bindings. This automatically causes the unbinding of the properties
+from the old instance and binding to the new instance.
+
+This should not be confused with #GtkBindingGroup.</doc>
       <constructor name="new" c:identifier="egg_binding_group_new">
         <doc xml:space="preserve">Creates a new #EggBindingGroup.</doc>
         <return-value transfer-ownership="full">
@@ -457,6 +466,13 @@ Note: All properties that have been bound must exist on @source.</doc>
            glib:type-name="EggCenteringBin"
            glib:get-type="egg_centering_bin_get_type"
            glib:type-struct="CenteringBinClass">
+      <doc xml:space="preserve">First off, you probably want to use GtkBox with a center widget instead
+of this widget. However, the case where this widget is useful is when
+you cannot control your layout within the width of the toplevel, but
+still want your child centered within the toplevel.
+
+This is done by translating coordinates of the widget with respect to
+the toplevel and anchoring the child at TRUE_CENTER-(alloc.width/2).</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="egg_centering_bin_new">
@@ -1020,6 +1036,50 @@ Note: All properties that have been bound must exist on @source.</doc>
             glib:type-name="EggHeap"
             glib:get-type="egg_heap_get_type"
             c:symbol-prefix="heap">
+      <doc xml:space="preserve">Heaps are similar to a partially sorted tree but implemented as an
+array. They allow for efficient O(1) lookup of the highest priority
+item as it will always be the first item of the array.
+
+To create a new heap use egg_heap_new().
+
+To add items to the heap, use egg_heap_insert_val() or
+egg_heap_insert_vals() to insert in bulk.
+
+To access an item in the heap, use egg_heap_index().
+
+To remove an arbitrary item from the heap, use egg_heap_extract_index().
+
+To remove the highest priority item in the heap, use egg_heap_extract().
+
+To free a heap, use egg_heap_unref().
+
+Here is an example that stores integers in a #EggHeap:
+|[&lt;!-- language="C" --&gt;
+static int
+cmpint (gconstpointer a,
+        gconstpointer b)
+{
+  return *(const gint *)a - *(const gint *)b;
+}
+
+int
+main (gint   argc,
+      gchar *argv[])
+{
+  EggHeap *heap;
+  gint i;
+  gint v;
+
+  heap = egg_heap_new (sizeof (gint), cmpint);
+
+  for (i = 0; i &lt; 10000; i++)
+    egg_heap_insert_val (heap, i);
+  for (i = 0; i &lt; 10000; i++)
+    egg_heap_extract (heap, &amp;v);
+
+  egg_heap_unref (heap);
+}
+]|</doc>
       <field name="data" writable="1">
         <type name="utf8" c:type="gchar*"/>
       </field>
@@ -1245,6 +1305,24 @@ when the reference count reaches zero.</doc>
            glib:type-name="EggMenuManager"
            glib:get-type="egg_menu_manager_get_type"
            glib:type-struct="MenuManagerClass">
+      <doc xml:space="preserve">The goal of #EggMenuManager is to simplify the process of merging multiple
+GtkBuilder .ui files containing menus into a single representation of the
+application menus. Additionally, it provides the ability to "unmerge"
+previously merged menus.
+
+This allows for an application to have plugins which seemlessly extends
+the core application menus.
+
+Implementation notes:
+
+To make this work, we don't use the GMenu instances created by a GtkBuilder
+instance. Instead, we create the menus ourself and recreate section and
+submenu links. This allows the #EggMenuManager to be in full control of
+the generated menus.
+
+egg_menu_manager_get_menu_by_id() will always return a #GMenu, however
+that menu may contain no children until something has extended it later
+on during the application process.</doc>
       <constructor name="new" c:identifier="egg_menu_manager_new">
         <return-value transfer-ownership="full">
           <type name="MenuManager" c:type="EggMenuManager*"/>
@@ -1376,6 +1454,7 @@ when the reference count reaches zero.</doc>
            glib:type-name="EggPriorityBox"
            glib:get-type="egg_priority_box_get_type"
            glib:type-struct="PriorityBoxClass">
+      <doc xml:space="preserve">This is like a #GtkBox but uses stable priorities to sort.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
@@ -2038,6 +2117,24 @@ from the resolved value via the settings sandwich.</doc>
            glib:type-name="EggSignalGroup"
            glib:get-type="egg_signal_group_get_type"
            glib:type-struct="SignalGroupClass">
+      <doc xml:space="preserve">#EggSignalGroup manages to simplify the process of connecting
+many signals to a #GObject as a group. As such there is no API
+to disconnect a signal from the group.
+
+In particular, this allows you to:
+
+ - Change the target instance, which automatically causes disconnection
+   of the signals from the old instance and connecting to the new instance.
+ - Block and unblock signals as a group
+ - Ensuring that blocked state transfers across target instances.
+
+One place you might want to use such a structure is with #GtkTextView and
+#GtkTextBuffer. Often times, you'll need to connect to many signals on
+#GtkTextBuffer from a #GtkTextView subclass. This allows you to create a
+signal group during instance construction, simply bind the
+#GtkTextView:buffer property to #EggSignalGroup:target and connect
+all the signals you need. When the #GtkTextView:buffer property changes
+all of the signals will be transitioned correctly.</doc>
       <constructor name="new" c:identifier="egg_signal_group_new">
         <doc xml:space="preserve">Creates a new #EggSignalGroup for target instances of @target_type.</doc>
         <return-value transfer-ownership="full">

@@ -855,6 +855,11 @@ namespace NM {
 		public string hw_address { get; }
 		public string name { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_dummy_get_type ()")]
+	public class DeviceDummy : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceDummy ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ethernet_get_type ()")]
 	public class DeviceEthernet : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_CARRIER")]
@@ -1572,6 +1577,8 @@ namespace NM {
 		public const string ALTSUBJECT_MATCHES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_ANONYMOUS_IDENTITY")]
 		public const string ANONYMOUS_IDENTITY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_AUTH_TIMEOUT")]
+		public const string AUTH_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT")]
 		public const string CA_CERT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD")]
@@ -1606,6 +1613,8 @@ namespace NM {
 		public const string PASSWORD_RAW;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PASSWORD_RAW_FLAGS")]
 		public const string PASSWORD_RAW_FLAGS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_AUTH_FLAGS")]
+		public const string PHASE1_AUTH_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_FAST_PROVISIONING")]
 		public const string PHASE1_FAST_PROVISIONING;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_PEAPLABEL")]
@@ -1670,6 +1679,8 @@ namespace NM {
 		public void clear_phase2_altsubject_matches ();
 		public unowned string get_altsubject_match (uint32 i);
 		public unowned string get_anonymous_identity ();
+		[Version (since = "1.8")]
+		public int get_auth_timeout ();
 		public unowned GLib.Bytes get_ca_cert_blob ();
 		[Version (since = "1.8")]
 		public unowned string get_ca_cert_password ();
@@ -1701,6 +1712,8 @@ namespace NM {
 		public NM.SettingSecretFlags get_password_flags ();
 		public unowned GLib.Bytes get_password_raw ();
 		public NM.SettingSecretFlags get_password_raw_flags ();
+		[Version (since = "1.8")]
+		public NM.Setting8021xAuthFlags get_phase1_auth_flags ();
 		public unowned string get_phase1_fast_provisioning ();
 		public unowned string get_phase1_peaplabel ();
 		public unowned string get_phase1_peapver ();
@@ -1718,6 +1731,7 @@ namespace NM {
 		public unowned string get_phase2_ca_cert_uri ();
 		public unowned string get_phase2_ca_path ();
 		public unowned GLib.Bytes get_phase2_client_cert_blob ();
+		[Version (since = "1.8")]
 		public unowned string get_phase2_client_cert_password ();
 		[Version (since = "1.8")]
 		public NM.SettingSecretFlags get_phase2_client_cert_password_flags ();
@@ -1766,6 +1780,9 @@ namespace NM {
 		[NoAccessorMethod]
 		public string anonymous_identity { owned get; set; }
 		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public int auth_timeout { get; set; }
+		[NoAccessorMethod]
 		public GLib.Bytes ca_cert { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.8")]
@@ -1801,6 +1818,9 @@ namespace NM {
 		public GLib.Bytes password_raw { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingSecretFlags password_raw_flags { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public uint phase1_auth_flags { get; set construct; }
 		[NoAccessorMethod]
 		public string phase1_fast_provisioning { owned get; set; }
 		[NoAccessorMethod]
@@ -2330,6 +2350,12 @@ namespace NM {
 		public GLib.Array<void*> priority_strict_bandwidth { owned get; set; }
 		[NoAccessorMethod]
 		public GLib.Array<void*> priority_traffic_class { owned get; set; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_dummy_get_type ()")]
+	public class SettingDummy : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.8")]
+		public SettingDummy ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_generic_get_type ()")]
 	public class SettingGeneric : NM.Setting {
@@ -3888,6 +3914,8 @@ namespace NM {
 		public unowned NM.SettingCdma get_setting_cdma ();
 		public unowned NM.SettingConnection get_setting_connection ();
 		public unowned NM.SettingDcb get_setting_dcb ();
+		[Version (since = "1.8")]
+		public unowned NM.SettingDummy get_setting_dummy ();
 		public unowned NM.SettingGeneric get_setting_generic ();
 		public unowned NM.SettingGsm get_setting_gsm ();
 		public unowned NM.SettingInfiniband get_setting_infiniband ();
@@ -4189,7 +4217,8 @@ namespace NM {
 		MACVLAN,
 		VXLAN,
 		VETH,
-		MACSEC
+		MACSEC,
+		DUMMY
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
@@ -4254,6 +4283,16 @@ namespace NM {
 		USER_REQUESTED,
 		ONLY_SYSTEM,
 		NO_ERRORS
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_802_1X_AUTH_FLAGS_", type_id = "nm_setting_802_1x_auth_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.8")]
+	public enum Setting8021xAuthFlags {
+		NONE,
+		TLS_1_0_DISABLE,
+		TLS_1_1_DISABLE,
+		TLS_1_2_DISABLE,
+		ALL
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_802_1X_CK_FORMAT_", type_id = "nm_setting_802_1x_ck_format_get_type ()")]
 	public enum Setting8021xCKFormat {
@@ -4823,6 +4862,8 @@ namespace NM {
 	public const string SETTING_DNS_OPTION_TIMEOUT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_USE_VC")]
 	public const string SETTING_DNS_OPTION_USE_VC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DUMMY_SETTING_NAME")]
+	public const string SETTING_DUMMY_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_ENCRYPT")]
 	public const string SETTING_MACSEC_ENCRYPT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK")]

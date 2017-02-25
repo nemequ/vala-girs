@@ -1075,7 +1075,8 @@ See also webkit_context_menu_remove_all() to remove all items.</doc>
               version="2.8">
         <doc xml:space="preserve">Sets user data to @menu.
 This function can be used from a Web Process extension to set user data
-that can be retrieved from the UI Process using webkit_context_menu_get_user_data().</doc>
+that can be retrieved from the UI Process using webkit_context_menu_get_user_data().
+If the @user_data #GVariant is floating, it is consumed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1663,8 +1664,11 @@ submenu of @item is removed.</doc>
            glib:get-type="webkit_cookie_manager_get_type"
            glib:type-struct="CookieManagerClass">
       <method name="delete_all_cookies"
-              c:identifier="webkit_cookie_manager_delete_all_cookies">
+              c:identifier="webkit_cookie_manager_delete_all_cookies"
+              deprecated="1"
+              deprecated-version="2.16">
         <doc xml:space="preserve">Delete all cookies of @cookie_manager</doc>
+        <doc-deprecated xml:space="preserve">Use webkit_website_data_manager_clear() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1676,8 +1680,11 @@ submenu of @item is removed.</doc>
         </parameters>
       </method>
       <method name="delete_cookies_for_domain"
-              c:identifier="webkit_cookie_manager_delete_cookies_for_domain">
+              c:identifier="webkit_cookie_manager_delete_cookies_for_domain"
+              deprecated="1"
+              deprecated-version="2.16">
         <doc xml:space="preserve">Remove all cookies of @cookie_manager for the given @domain.</doc>
+        <doc-deprecated xml:space="preserve">Use webkit_website_data_manager_remove() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1751,11 +1758,14 @@ webkit_cookie_manager_get_accept_policy_finish() to get the result of the operat
         </parameters>
       </method>
       <method name="get_domains_with_cookies"
-              c:identifier="webkit_cookie_manager_get_domains_with_cookies">
+              c:identifier="webkit_cookie_manager_get_domains_with_cookies"
+              deprecated="1"
+              deprecated-version="2.16">
         <doc xml:space="preserve">Asynchronously get the list of domains for which @cookie_manager contains cookies.
 
 When the operation is finished, @callback will be called. You can then call
 webkit_cookie_manager_get_domains_with_cookies_finish() to get the result of the operation.</doc>
+        <doc-deprecated xml:space="preserve">Use webkit_website_data_manager_fetch() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1791,10 +1801,13 @@ webkit_cookie_manager_get_domains_with_cookies_finish() to get the result of the
       </method>
       <method name="get_domains_with_cookies_finish"
               c:identifier="webkit_cookie_manager_get_domains_with_cookies_finish"
+              deprecated="1"
+              deprecated-version="2.16"
               throws="1">
         <doc xml:space="preserve">Finish an asynchronous operation started with webkit_cookie_manager_get_domains_with_cookies().
 The return value is a %NULL terminated list of strings which should
 be released with g_strfreev().</doc>
+        <doc-deprecated xml:space="preserve">Use webkit_website_data_manager_fetch_finish() instead.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">A %NULL terminated array of domain names
    or %NULL in case of error.</doc>
@@ -1837,8 +1850,10 @@ be released with g_strfreev().</doc>
 Cookies are initially read from @filename to create an initial set of cookies.
 Then, non-session cookies will be written to @filename when the WebKitCookieManager::changed
 signal is emitted.
-By default, @cookie_manager doesn't store the cookies persistenly, so you need to call this
-method to keep cookies saved across sessions.</doc>
+By default, @cookie_manager doesn't store the cookies persistently, so you need to call this
+method to keep cookies saved across sessions.
+
+This method should never be called on a #WebKitCookieManager associated to an ephemeral #WebKitWebsiteDataManager.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2483,7 +2498,7 @@ inside the #WebKitWebView.</doc>
               value="CreateLink"
               c:type="WEBKIT_EDITING_COMMAND_CREATE_LINK"
               version="2.10">
-      <doc xml:space="preserve">The create link command. Creates a link elment thst is inserted at
+      <doc xml:space="preserve">The create link command. Creates a link element that is inserted at
 the current cursor position. If there's a selection, the selected text
 will be used as the link text, otherwise the URL itself will be used.
 It receives the link URL as argument. This command should be executed
@@ -4169,7 +4184,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="90" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -5448,6 +5463,233 @@ as a list of #WebKitMimeInfo.</doc>
         </return-value>
       </function>
     </enumeration>
+    <class name="PrintCustomWidget"
+           c:symbol-prefix="print_custom_widget"
+           c:type="WebKitPrintCustomWidget"
+           parent="GObject.Object"
+           glib:type-name="WebKitPrintCustomWidget"
+           glib:get-type="webkit_print_custom_widget_get_type"
+           glib:type-struct="PrintCustomWidgetClass">
+      <constructor name="new"
+                   c:identifier="webkit_print_custom_widget_new"
+                   version="2.16">
+        <doc xml:space="preserve">Create a new #WebKitPrintCustomWidget with given @widget and @title. The @widget
+ownership is taken and it is destroyed together with the dialog even if this
+object could still be alive at that point. You typically want to pass a container
+widget with multiple widgets in it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #WebKitPrintOperation.</doc>
+          <type name="PrintCustomWidget" c:type="WebKitPrintCustomWidget*"/>
+        </return-value>
+        <parameters>
+          <parameter name="widget" transfer-ownership="none">
+            <doc xml:space="preserve">a #GtkWidget</doc>
+            <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <doc xml:space="preserve">a @widget's title</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="apply">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="print_custom_widget"
+                              transfer-ownership="none">
+            <type name="PrintCustomWidget" c:type="WebKitPrintCustomWidget*"/>
+          </instance-parameter>
+          <parameter name="widget" transfer-ownership="none">
+            <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="update">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="print_custom_widget"
+                              transfer-ownership="none">
+            <type name="PrintCustomWidget" c:type="WebKitPrintCustomWidget*"/>
+          </instance-parameter>
+          <parameter name="widget" transfer-ownership="none">
+            <type name="Gtk.Widget" c:type="GtkWidget*"/>
+          </parameter>
+          <parameter name="page_setup" transfer-ownership="none">
+            <type name="Gtk.PageSetup" c:type="GtkPageSetup*"/>
+          </parameter>
+          <parameter name="print_settings" transfer-ownership="none">
+            <type name="Gtk.PrintSettings" c:type="GtkPrintSettings*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_title"
+              c:identifier="webkit_print_custom_widget_get_title"
+              version="2.16">
+        <doc xml:space="preserve">Return the value of #WebKitPrintCustomWidget:title property for the given
+@print_custom_widget object.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Title of the @print_custom_widget.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="print_custom_widget"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitPrintCustomWidget</doc>
+            <type name="PrintCustomWidget" c:type="WebKitPrintCustomWidget*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_widget"
+              c:identifier="webkit_print_custom_widget_get_widget"
+              version="2.16">
+        <doc xml:space="preserve">Return the value of #WebKitPrintCustomWidget:widget property for the given
+@print_custom_widget object. The returned value will always be valid if called
+from #WebKitPrintCustomWidget::apply or #WebKitPrintCustomWidget::update
+callbacks, but it will be %NULL if called after the
+#WebKitPrintCustomWidget::apply signal is emitted.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GtkWidget.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="print_custom_widget"
+                              transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitPrintCustomWidget</doc>
+            <type name="PrintCustomWidget" c:type="WebKitPrintCustomWidget*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="title"
+                version="2.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The title of the custom widget.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="widget"
+                version="2.16"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The custom #GtkWidget that will be embedded in the dialog.</doc>
+        <type name="Gtk.Widget"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="PrintCustomWidgetPrivate"
+              c:type="WebKitPrintCustomWidgetPrivate*"/>
+      </field>
+      <glib:signal name="apply" when="last" version="2.16">
+        <doc xml:space="preserve">Emitted right before the printing will start. You should read the information
+from the widget and update the content based on it if necessary. The widget
+is not guaranteed to be valid at a later time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="update" when="last" version="2.16">
+        <doc xml:space="preserve">Emitted after change of selected printer in the dialog. The actual page setup
+and print settings are available and the custom widget can actualize itself
+according to their values.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="page_setup" transfer-ownership="none">
+            <doc xml:space="preserve">actual page setup</doc>
+            <type name="Gtk.PageSetup"/>
+          </parameter>
+          <parameter name="print_settings" transfer-ownership="none">
+            <doc xml:space="preserve">actual print settings</doc>
+            <type name="Gtk.PrintSettings"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="PrintCustomWidgetClass"
+            c:type="WebKitPrintCustomWidgetClass"
+            glib:is-gtype-struct-for="PrintCustomWidget">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="apply">
+        <callback name="apply">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="print_custom_widget" transfer-ownership="none">
+              <type name="PrintCustomWidget"
+                    c:type="WebKitPrintCustomWidget*"/>
+            </parameter>
+            <parameter name="widget" transfer-ownership="none">
+              <type name="Gtk.Widget" c:type="GtkWidget*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="update">
+        <callback name="update">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="print_custom_widget" transfer-ownership="none">
+              <type name="PrintCustomWidget"
+                    c:type="WebKitPrintCustomWidget*"/>
+            </parameter>
+            <parameter name="widget" transfer-ownership="none">
+              <type name="Gtk.Widget" c:type="GtkWidget*"/>
+            </parameter>
+            <parameter name="page_setup" transfer-ownership="none">
+              <type name="Gtk.PageSetup" c:type="GtkPageSetup*"/>
+            </parameter>
+            <parameter name="print_settings" transfer-ownership="none">
+              <type name="Gtk.PrintSettings" c:type="GtkPrintSettings*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_webkit_reserved0" introspectable="0">
+        <callback name="_webkit_reserved0">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_webkit_reserved1" introspectable="0">
+        <callback name="_webkit_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_webkit_reserved2" introspectable="0">
+        <callback name="_webkit_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_webkit_reserved3" introspectable="0">
+        <callback name="_webkit_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <record name="PrintCustomWidgetPrivate"
+            c:type="WebKitPrintCustomWidgetPrivate"
+            disguised="1">
+    </record>
     <enumeration name="PrintError"
                  glib:type-name="WebKitPrintError"
                  glib:get-type="webkit_print_error_get_type"
@@ -5640,6 +5882,16 @@ the initial values of the print dialog when webkit_print_operation_run_dialog() 
         <type name="PrintOperationPrivate"
               c:type="WebKitPrintOperationPrivate*"/>
       </field>
+      <glib:signal name="create-custom-widget" when="last" version="2.16">
+        <doc xml:space="preserve">Emitted when displaying the print dialog with webkit_print_operation_run_dialog().
+The returned #WebKitPrintCustomWidget will be added to the print dialog and
+it will be owned by the @print_operation. However, the object is guaranteed
+to be alive until the #WebKitPrintCustomWidget::apply is emitted.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #WebKitPrintCustomWidget that will be embedded in the dialog.</doc>
+          <type name="PrintCustomWidget"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="failed" when="last">
         <doc xml:space="preserve">Emitted when an error occurs while printing. The given @error, of the domain
 %WEBKIT_PRINT_ERROR, contains further details of the failure.
@@ -6379,10 +6631,9 @@ return 0 if @origin is opaque.</doc>
       <method name="get_protocol"
               c:identifier="webkit_security_origin_get_protocol"
               version="2.16">
-        <doc xml:space="preserve">Gets the protocol of @origin, or %NULL if @origin is opaque.
-
-Returns (allow-none): The protocol of the #WebKitSecurityOrigin</doc>
-        <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Gets the protocol of @origin, or %NULL if @origin is opaque.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The protocol of the #WebKitSecurityOrigin</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -8422,7 +8673,7 @@ special-case this and other cases to make some specific sites work.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="enable-spatial-navigation"
-                version="2.3"
+                version="2.4"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
@@ -9907,7 +10158,7 @@ webkit_web_context_set_cache_model().</doc>
       </method>
       <method name="get_cookie_manager"
               c:identifier="webkit_web_context_get_cookie_manager">
-        <doc xml:space="preserve">Get the #WebKitCookieManager of @context.</doc>
+        <doc xml:space="preserve">Get the #WebKitCookieManager of the @context's #WebKitWebsiteDataManager.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #WebKitCookieManager of @context.</doc>
           <type name="CookieManager" c:type="WebKitCookieManager*"/>
@@ -11685,7 +11936,7 @@ in the view by the user content manager.</doc>
       </virtual-method>
       <method name="can_execute_editing_command"
               c:identifier="webkit_web_view_can_execute_editing_command">
-        <doc xml:space="preserve">Asynchronously execute the given editing command.
+        <doc xml:space="preserve">Asynchronously check if it is possible to execute the given editing command.
 
 When the operation is finished, @callback will be called. You can then call
 webkit_web_view_can_execute_editing_command_finish() to get the result of the operation.</doc>
@@ -12277,6 +12528,23 @@ view does not have an user content manager.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #WebKitUserContentManager associated with the view</doc>
           <type name="UserContentManager" c:type="WebKitUserContentManager*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebView</doc>
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_website_data_manager"
+              c:identifier="webkit_web_view_get_website_data_manager"
+              version="2.16">
+        <doc xml:space="preserve">Get the #WebKitWebsiteDataManager associated to @web_view. If @web_view is not ephemeral,
+the returned #WebKitWebsiteDataManager will be the same as the #WebKitWebsiteDataManager
+of @web_view's #WebKitWebContext.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+          <type name="WebsiteDataManager" c:type="WebKitWebsiteDataManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="web_view" transfer-ownership="none">
@@ -13288,8 +13556,8 @@ destroy the #WebKitWebView, if necessary.</doc>
         </return-value>
       </glib:signal>
       <glib:signal name="context-menu" when="last">
-        <doc xml:space="preserve">Emmited when a context menu is about to be displayed to give the application
-a chance to customize the proposed menu, prevent the menu from being displayed
+        <doc xml:space="preserve">Emitted when a context menu is about to be displayed to give the application
+a chance to customize the proposed menu, prevent the menu from being displayed,
 or build its own context menu.
 &lt;itemizedlist&gt;
 &lt;listitem&gt;&lt;para&gt;
@@ -14715,6 +14983,22 @@ webkit_website_data_manager_fetch_finish() to get the result of the operation.</
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_cookie_manager"
+              c:identifier="webkit_website_data_manager_get_cookie_manager"
+              version="2.16">
+        <doc xml:space="preserve">Get the #WebKitCookieManager of @manager.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #WebKitCookieManager</doc>
+          <type name="CookieManager" c:type="WebKitCookieManager*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_disk_cache_directory"
               c:identifier="webkit_website_data_manager_get_disk_cache_directory"
               version="2.10">
@@ -15054,8 +15338,14 @@ parameters to configure data directories will be ignored.</doc>
               glib:nick="plugin-data">
         <doc xml:space="preserve">Plugins data.</doc>
       </member>
+      <member name="cookies"
+              value="256"
+              c:identifier="WEBKIT_WEBSITE_DATA_COOKIES"
+              glib:nick="cookies">
+        <doc xml:space="preserve">Cookies.</doc>
+      </member>
       <member name="all"
-              value="255"
+              value="511"
               c:identifier="WEBKIT_WEBSITE_DATA_ALL"
               glib:nick="all">
         <doc xml:space="preserve">All types.</doc>

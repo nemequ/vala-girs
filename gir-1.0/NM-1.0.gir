@@ -3737,6 +3737,21 @@ added to the #NMConnection</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_setting_dummy"
+              c:identifier="nm_connection_get_setting_dummy"
+              version="1.8">
+        <doc xml:space="preserve">A shortcut to return any #NMSettingDummy the connection might contain.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #NMSettingDummy if the connection contains one, otherwise %NULL</doc>
+          <type name="SettingDummy" c:type="NMSettingDummy*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_setting_generic"
               c:identifier="nm_connection_get_setting_generic">
         <doc xml:space="preserve">A shortcut to return any #NMSettingGeneric the connection might contain.</doc>
@@ -7144,6 +7159,31 @@ This is the internal string used by the device, and must not be modified.</doc>
         </array>
       </field>
     </record>
+    <class name="DeviceDummy"
+           c:symbol-prefix="device_dummy"
+           c:type="NMDeviceDummy"
+           parent="Device"
+           glib:type-name="NMDeviceDummy"
+           glib:get-type="nm_device_dummy_get_type"
+           glib:type-struct="DeviceDummyClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.Initable"/>
+      <field name="parent">
+        <type name="Device" c:type="NMDevice"/>
+      </field>
+    </class>
+    <record name="DeviceDummyClass"
+            c:type="NMDeviceDummyClass"
+            glib:is-gtype-struct-for="DeviceDummy">
+      <field name="parent">
+        <type name="DeviceClass" c:type="NMDeviceClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <enumeration name="DeviceError"
                  glib:type-name="NMDeviceError"
                  glib:get-type="nm_device_error_get_type"
@@ -9194,6 +9234,12 @@ GSM/UMTS, or LTE network access protocols</doc>
               c:identifier="NM_DEVICE_TYPE_MACSEC"
               glib:nick="macsec">
         <doc xml:space="preserve">a MACsec interface</doc>
+      </member>
+      <member name="dummy"
+              value="22"
+              c:identifier="NM_DEVICE_TYPE_DUMMY"
+              glib:nick="dummy">
+        <doc xml:space="preserve">a dummy interface</doc>
       </member>
     </enumeration>
     <class name="DeviceVlan"
@@ -12704,6 +12750,11 @@ after you already have a reference to it.)</doc>
               c:type="NM_SETTING_802_1X_ANONYMOUS_IDENTITY">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_802_1X_AUTH_TIMEOUT"
+              value="auth-timeout"
+              c:type="NM_SETTING_802_1X_AUTH_TIMEOUT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_802_1X_CA_CERT"
               value="ca-cert"
               c:type="NM_SETTING_802_1X_CA_CERT">
@@ -12787,6 +12838,11 @@ after you already have a reference to it.)</doc>
     <constant name="SETTING_802_1X_PASSWORD_RAW_FLAGS"
               value="password-raw-flags"
               c:type="NM_SETTING_802_1X_PASSWORD_RAW_FLAGS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_802_1X_PHASE1_AUTH_FLAGS"
+              value="phase1-auth-flags"
+              c:type="NM_SETTING_802_1X_PHASE1_AUTH_FLAGS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_802_1X_PHASE1_FAST_PROVISIONING"
@@ -13527,6 +13583,11 @@ NAP (Network Access Point) protocol, which accepts connections via PANU.</doc>
     <constant name="SETTING_DNS_OPTION_USE_VC"
               value="use-vc"
               c:type="NM_SETTING_DNS_OPTION_USE_VC">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_DUMMY_SETTING_NAME"
+              value="dummy"
+              c:type="NM_SETTING_DUMMY_SETTING_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_GENERIC_SETTING_NAME"
@@ -16229,6 +16290,22 @@ a secure form, if applicable for that EAP method.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_auth_timeout"
+              c:identifier="nm_setting_802_1x_get_auth_timeout"
+              version="1.8">
+        <doc xml:space="preserve">Returns the value contained in the #NMSetting8021x:auth-timeout property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the configured authentication timeout in seconds. Zero means the
+global default value.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting8021x</doc>
+            <type name="Setting8021x" c:type="NMSetting8021x*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_ca_cert_blob"
               c:identifier="nm_setting_802_1x_get_ca_cert_blob">
         <doc xml:space="preserve">Returns the CA certificate blob if the CA certificate is stored using the
@@ -16619,6 +16696,20 @@ UTF-8-encoded array of bytes, as specified by the
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_phase1_auth_flags"
+              c:identifier="nm_setting_802_1x_get_phase1_auth_flags"
+              version="1.8">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the authentication flags for "phase 1".</doc>
+          <type name="Setting8021xAuthFlags" c:type="NMSetting8021xAuthFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting8021x</doc>
+            <type name="Setting8021x" c:type="NMSetting8021x*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_phase1_fast_provisioning"
               c:identifier="nm_setting_802_1x_get_phase1_fast_provisioning">
         <return-value transfer-ownership="none">
@@ -16735,8 +16826,8 @@ of the network cannot be confirmed by the client.</doc>
               c:identifier="nm_setting_802_1x_get_phase2_ca_cert_password"
               version="1.8">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the password used to access the "phase2" client certificate stored in
-#NMSetting8021x:phase2-client-cert property. Only makes sense if the certificate
+          <doc xml:space="preserve">the password used to access the "phase2" CA certificate stored in
+#NMSetting8021x:phase2-ca-cert property. Only makes sense if the certificate
 is stored on a PKCS#&lt;!-- --&gt;11 token that requires a login.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -16855,12 +16946,17 @@ authentication method.</doc>
         </parameters>
       </method>
       <method name="get_phase2_client_cert_password"
-              c:identifier="nm_setting_802_1x_get_phase2_client_cert_password">
+              c:identifier="nm_setting_802_1x_get_phase2_client_cert_password"
+              version="1.8">
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the password used to access the "phase2" client certificate stored in
+#NMSetting8021x:phase2-client-cert property. Only makes sense if the certificate
+is stored on a PKCS#&lt;!-- --&gt;11 token that requires a login.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetting8021x</doc>
             <type name="Setting8021x" c:type="NMSetting8021x*"/>
           </instance-parameter>
         </parameters>
@@ -17658,6 +17754,14 @@ unencrypted identity with EAP types that support different tunneled
 identity like EAP-TTLS.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <property name="auth-timeout"
+                version="1.8"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">A timeout for the authentication. Zero means the global default; if the
+global default is not set, the authentication timeout is 25 seconds.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
       <property name="ca-cert" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Contains the CA certificate if used by the EAP method specified in the
 #NMSetting8021x:eap property.
@@ -17780,6 +17884,19 @@ property are specified, #NMSetting8021x:password is preferred.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Flags indicating how to handle the #NMSetting8021x:password-raw property.</doc>
         <type name="SettingSecretFlags"/>
+      </property>
+      <property name="phase1-auth-flags"
+                version="1.8"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Specifies authentication flags to use in "phase 1" outer
+authentication using #NMSetting8021xAuthFlags options.
+The invidual TLS versions can be explicitly disabled. If a certain
+TLS disable flag is not set, it is up to the supplicant to allow
+or forbid it. The TLS options map to tls_disable_tlsv1_x settings.
+See the wpa_supplicant documentation for more details.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="phase1-fast-provisioning"
                 writable="1"
@@ -18065,6 +18182,44 @@ properties instead (sets ca_cert/ca_cert2 options for wpa_supplicant).</doc>
         <type name="Setting" c:type="NMSetting"/>
       </field>
     </class>
+    <bitfield name="Setting8021xAuthFlags"
+              version="1.8"
+              glib:type-name="NMSetting8021xAuthFlags"
+              glib:get-type="nm_setting_802_1x_auth_flags_get_type"
+              c:type="NMSetting8021xAuthFlags">
+      <doc xml:space="preserve">#NMSetting8021xAuthFlags values indicate which authentication settings
+should be used.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="NM_SETTING_802_1X_AUTH_FLAGS_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">No flags</doc>
+      </member>
+      <member name="tls_1_0_disable"
+              value="1"
+              c:identifier="NM_SETTING_802_1X_AUTH_FLAGS_TLS_1_0_DISABLE"
+              glib:nick="tls-1-0-disable">
+        <doc xml:space="preserve">Disable TLSv1.0</doc>
+      </member>
+      <member name="tls_1_1_disable"
+              value="2"
+              c:identifier="NM_SETTING_802_1X_AUTH_FLAGS_TLS_1_1_DISABLE"
+              glib:nick="tls-1-1-disable">
+        <doc xml:space="preserve">Disable TLSv1.1</doc>
+      </member>
+      <member name="tls_1_2_disable"
+              value="4"
+              c:identifier="NM_SETTING_802_1X_AUTH_FLAGS_TLS_1_2_DISABLE"
+              glib:nick="tls-1-2-disable">
+        <doc xml:space="preserve">Disable TLSv1.2</doc>
+      </member>
+      <member name="all"
+              value="7"
+              c:identifier="NM_SETTING_802_1X_AUTH_FLAGS_ALL"
+              glib:nick="all">
+        <doc xml:space="preserve">All supported flags</doc>
+      </member>
+    </bitfield>
     <enumeration name="Setting8021xCKFormat"
                  glib:type-name="NMSetting8021xCKFormat"
                  glib:get-type="nm_setting_802_1x_ck_format_get_type"
@@ -20653,6 +20808,38 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
         <doc xml:space="preserve">analog to @NM_SETTING_DIFF_RESULT_IN_A_DEFAULT.</doc>
       </member>
     </enumeration>
+    <class name="SettingDummy"
+           c:symbol-prefix="setting_dummy"
+           c:type="NMSettingDummy"
+           parent="Setting"
+           glib:type-name="NMSettingDummy"
+           glib:get-type="nm_setting_dummy_get_type"
+           glib:type-struct="SettingDummyClass">
+      <constructor name="new"
+                   c:identifier="nm_setting_dummy_new"
+                   version="1.8">
+        <doc xml:space="preserve">Creates a new #NMSettingDummy object with default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMSettingDummy object</doc>
+          <type name="Setting" c:type="NMSetting*"/>
+        </return-value>
+      </constructor>
+      <field name="parent">
+        <type name="Setting" c:type="NMSetting"/>
+      </field>
+    </class>
+    <record name="SettingDummyClass"
+            c:type="NMSettingDummyClass"
+            glib:is-gtype-struct-for="SettingDummy">
+      <field name="parent">
+        <type name="SettingClass" c:type="NMSettingClass"/>
+      </field>
+      <field name="padding" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
     <class name="SettingGeneric"
            c:symbol-prefix="setting_generic"
            c:type="NMSettingGeneric"

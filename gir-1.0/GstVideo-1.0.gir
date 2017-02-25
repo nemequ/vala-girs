@@ -1612,6 +1612,13 @@ Default is 0: let the resampler choose a good value.</doc>
       <doc xml:space="preserve">#G_TYPE_INT, source y position to start conversion, default 0</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="VIDEO_CONVERTER_OPT_THREADS"
+              value="GstVideoConverter.threads"
+              c:type="GST_VIDEO_CONVERTER_OPT_THREADS">
+      <doc xml:space="preserve">#G_TYPE_UINT, maximum number of threads to use. Default 1, 0 for the number
+of cores.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="VIDEO_DECODER_MAX_ERRORS"
               value="10"
               c:type="GST_VIDEO_DECODER_MAX_ERRORS">
@@ -10428,7 +10435,9 @@ These values are *NOT* automatically normalized.</doc>
         <doc xml:space="preserve">@field_count is 0 for progressive, 1 or 2 for interlaced.
 @latest_daiy_jam reference is stolen from caller.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GstVideoTimeCode with the given values.</doc>
+          <doc xml:space="preserve">a new #GstVideoTimeCode with the given values.
+The values are not checked for being in a valid range. To see if your
+timecode actually has valid content, use #gst_video_time_code_is_valid.</doc>
           <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
         </return-value>
         <parameters>
@@ -10478,6 +10487,38 @@ These values are *NOT* automatically normalized.</doc>
           <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
         </return-value>
       </constructor>
+      <constructor name="new_from_date_time"
+                   c:identifier="gst_video_time_code_new_from_date_time"
+                   version="1.12">
+        <doc xml:space="preserve">The resulting config-&gt;latest_daily_jam is set to
+midnight, and timecode is set to the given time.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the #GVideoTimeCode representation of @dt.</doc>
+          <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
+        </return-value>
+        <parameters>
+          <parameter name="fps_n" transfer-ownership="none">
+            <doc xml:space="preserve">Numerator of the frame rate</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="fps_d" transfer-ownership="none">
+            <doc xml:space="preserve">Denominator of the frame rate</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="dt" transfer-ownership="none">
+            <doc xml:space="preserve">#GDateTime to convert</doc>
+            <type name="GLib.DateTime" c:type="GDateTime*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GstVideoTimeCodeFlags</doc>
+            <type name="VideoTimeCodeFlags" c:type="GstVideoTimeCodeFlags"/>
+          </parameter>
+          <parameter name="field_count" transfer-ownership="none">
+            <doc xml:space="preserve">Interlaced video field count</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_from_string"
                    c:identifier="gst_video_time_code_new_from_string"
                    version="1.12">
@@ -10495,13 +10536,14 @@ These values are *NOT* automatically normalized.</doc>
       <method name="add_frames"
               c:identifier="gst_video_time_code_add_frames"
               version="1.10">
-        <doc xml:space="preserve">Adds or subtracts @frames amount of frames to @tc .</doc>
+        <doc xml:space="preserve">Adds or subtracts @frames amount of frames to @tc. tc needs to
+contain valid data, as verified by #gst_video_time_code_is_valid.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="tc" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstVideoTimeCode</doc>
+            <doc xml:space="preserve">a valid #GstVideoTimeCode</doc>
             <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
           </instance-parameter>
           <parameter name="frames" transfer-ownership="none">
@@ -10526,11 +10568,15 @@ because this time we can have an exact minute.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tc" transfer-ownership="none">
-            <doc xml:space="preserve">The #GstVideoTimeCode where the diff should be added</doc>
+            <doc xml:space="preserve">The #GstVideoTimeCode where the diff should be added. This
+must contain valid timecode values.</doc>
             <type name="VideoTimeCode" c:type="const GstVideoTimeCode*"/>
           </instance-parameter>
           <parameter name="tc_inter" transfer-ownership="none">
-            <doc xml:space="preserve">The #GstVideoTimeCodeInterval to add to @tc</doc>
+            <doc xml:space="preserve">The #GstVideoTimeCodeInterval to add to @tc.
+The interval must contain valid values, except that for drop-frame
+timecode, it may also contain timecodes which would normally
+be dropped. These are then corrected to the next reasonable timecode.</doc>
             <type name="VideoTimeCodeInterval"
                   c:type="const GstVideoTimeCodeInterval*"/>
           </parameter>
@@ -10555,7 +10601,7 @@ because this time we can have an exact minute.</doc>
               version="1.10">
         <doc xml:space="preserve">Compares @tc1 and @tc2 . If both have latest daily jam information, it is
 taken into account. Otherwise, it is assumed that the daily jam of both
-@tc1 and @tc2 was at the same time.</doc>
+@tc1 and @tc2 was at the same time. Both time codes must be valid.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">1 if @tc1 is after @tc2, -1 if @tc1 is before @tc2, 0 otherwise.</doc>
           <type name="gint" c:type="gint"/>
@@ -10594,7 +10640,7 @@ taken into account. Otherwise, it is assumed that the daily jam of both
         </return-value>
         <parameters>
           <instance-parameter name="tc" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstVideoTimeCode</doc>
+            <doc xml:space="preserve">a valid #GstVideoTimeCode</doc>
             <type name="VideoTimeCode" c:type="const GstVideoTimeCode*"/>
           </instance-parameter>
         </parameters>
@@ -10622,7 +10668,7 @@ taken into account. Otherwise, it is assumed that the daily jam of both
         </return-value>
         <parameters>
           <instance-parameter name="tc" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstVideoTimeCode</doc>
+            <doc xml:space="preserve">a valid #GstVideoTimeCode</doc>
             <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
           </instance-parameter>
         </parameters>
@@ -10633,7 +10679,9 @@ taken into account. Otherwise, it is assumed that the daily jam of both
         <doc xml:space="preserve">@field_count is 0 for progressive, 1 or 2 for interlaced.
 @latest_daiy_jam reference is stolen from caller.
 
-Initializes @tc with the given values.</doc>
+Initializes @tc with the given values.
+The values are not checked for being in a valid range. To see if your
+timecode actually has valid content, use #gst_video_time_code_is_valid.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10680,6 +10728,41 @@ Initializes @tc with the given values.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="init_from_date_time"
+              c:identifier="gst_video_time_code_init_from_date_time"
+              version="1.12">
+        <doc xml:space="preserve">The resulting config-&gt;latest_daily_jam is set to
+midnight, and timecode is set to the given time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoTimeCode</doc>
+            <type name="VideoTimeCode" c:type="GstVideoTimeCode*"/>
+          </instance-parameter>
+          <parameter name="fps_n" transfer-ownership="none">
+            <doc xml:space="preserve">Numerator of the frame rate</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="fps_d" transfer-ownership="none">
+            <doc xml:space="preserve">Denominator of the frame rate</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="dt" transfer-ownership="none">
+            <doc xml:space="preserve">#GDateTime to convert</doc>
+            <type name="GLib.DateTime" c:type="GDateTime*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GstVideoTimeCodeFlags</doc>
+            <type name="VideoTimeCodeFlags" c:type="GstVideoTimeCodeFlags"/>
+          </parameter>
+          <parameter name="field_count" transfer-ownership="none">
+            <doc xml:space="preserve">Interlaced video field count</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="is_valid"
               c:identifier="gst_video_time_code_is_valid"
               version="1.10">
@@ -10704,7 +10787,7 @@ hours/minutes/seconds/frames not overflowing)</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tc" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstVideoTimeCode</doc>
+            <doc xml:space="preserve">a valid #GstVideoTimeCode</doc>
             <type name="VideoTimeCode" c:type="const GstVideoTimeCode*"/>
           </instance-parameter>
         </parameters>
@@ -10719,7 +10802,7 @@ hours/minutes/seconds/frames not overflowing)</doc>
         </return-value>
         <parameters>
           <instance-parameter name="tc" transfer-ownership="none">
-            <doc xml:space="preserve">#GstVideoTimeCode to convert</doc>
+            <doc xml:space="preserve">A valid #GstVideoTimeCode to convert</doc>
             <type name="VideoTimeCode" c:type="const GstVideoTimeCode*"/>
           </instance-parameter>
         </parameters>
