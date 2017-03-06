@@ -1764,6 +1764,7 @@ namespace Ide {
 		public void set_environ (string environ_);
 		public void set_flags (GLib.SubprocessFlags flags);
 		public void set_run_on_host (bool run_on_host);
+		public void set_stdout_file_path (string stdout_file_path);
 		public void setenv (string key, string value, bool replace);
 		public virtual Ide.Subprocess spawn (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void take_fd (int source_fd, int dest_fd);
@@ -2135,6 +2136,8 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeBuildPipelineAddinInterface", type_id = "ide_build_pipeline_addin_get_type ()")]
 	public interface BuildPipelineAddin : GLib.Object {
 		public abstract void load (Ide.BuildPipeline pipeline);
+		[NoWrapper]
+		public abstract void set_context (Ide.Context context);
 		public void track (uint stage_id);
 		public abstract void unload (Ide.BuildPipeline pipeline);
 		[NoAccessorMethod]

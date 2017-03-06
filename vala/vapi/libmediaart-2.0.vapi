@@ -45,7 +45,7 @@ namespace MediaArt {
 	}
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
 	[Version (since = "0.1.0")]
-	public static bool buffer_to_jpeg (uint8 buffer, size_t len, string buffer_mime, string target) throws GLib.Error;
+	public static bool buffer_to_jpeg ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] buffer, string buffer_mime, string target) throws GLib.Error;
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
 	[Version (since = "0.1.0")]
 	public static bool file_to_jpeg (string filename, string target) throws GLib.Error;

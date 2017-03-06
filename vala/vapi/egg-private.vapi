@@ -122,11 +122,11 @@ namespace Egg {
 	[Compact]
 	public class Heap {
 		public weak string data;
-		public uint len;
+		public size_t len;
 		[CCode (has_construct_function = false)]
 		public Heap (uint element_size, [CCode (scope = "async")] GLib.CompareFunc compare_func);
 		public bool extract (void* result);
-		public bool extract_index (uint index_, void* result);
+		public bool extract_index (size_t index_, void* result);
 		public void insert_vals (void* data, uint len);
 		public Egg.Heap @ref ();
 		public void unref ();
