@@ -165,6 +165,17 @@ namespace Egg {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PriorityBox ();
 	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_progress_button_get_type ()")]
+	public class ProgressButton : Gtk.Button, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public ProgressButton ();
+		public uint get_progress ();
+		public bool get_show_progress ();
+		public void set_progress (uint percentage);
+		public void set_show_progress (bool show_progress);
+		public uint progress { get; set; }
+		public bool show_progress { get; set; }
+	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_radio_box_get_type ()")]
 	public class RadioBox : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]

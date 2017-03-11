@@ -50,6 +50,8 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static unowned string file_search_in_paths (string progname, string? try_first, string? paths, GLib.FileTest file_test_flags, NM.UtilsFileSearchInPathsPredicate predicate) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
+		public static string format_variant_attributes (GLib.HashTable<void*,void*> attributes, char attr_separator, char key_value_separator);
+		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Bytes hexstr2bin (string hex);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.ByteArray hwaddr_atoba (string asc, size_t length);
@@ -117,6 +119,9 @@ namespace NM {
 		public static bool is_uuid (string str);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool is_valid_iface_name (string name) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.8")]
+		public static GLib.HashTable<void*,void*> parse_variant_attributes (string string, char attr_separator, char key_value_separator, bool ignore_unknown, NM.VariantAttributeSpec spec) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool same_ssid ([CCode (array_length_cname = "len1", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] ssid1, [CCode (array_length_cname = "len2", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] ssid2, bool ignore_trailing_null);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -1437,6 +1442,9 @@ namespace NM {
 	public class IPRoute {
 		[CCode (has_construct_function = false)]
 		public IPRoute (int family, string dest, uint prefix, string? next_hop, int64 metric) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.8")]
+		public static bool attribute_validate (string name, GLib.Variant value, int family, out bool known) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public IPRoute.binary (int family, void* dest, uint prefix, void* next_hop, int64 metric) throws GLib.Error;
 		public NM.IPRoute dup ();
@@ -1449,6 +1457,9 @@ namespace NM {
 		public int64 get_metric ();
 		public unowned string get_next_hop ();
 		public uint get_prefix ();
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.8")]
+		public static unowned NM.VariantAttributeSpec get_variant_attribute_spec ();
 		public void @ref ();
 		public void set_attribute (string name, GLib.Variant? value);
 		public void set_dest (string dest);
@@ -3693,6 +3704,10 @@ namespace NM {
 		public static NM.Connection new_clone (NM.Connection connection);
 		public static NM.Connection new_from_dbus (GLib.Variant dict) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "NetworkManager.h", has_type_id = false)]
+	[Compact]
+	public class VariantAttributeSpec {
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_vpn_connection_get_type ()")]
 	public class VpnConnection : NM.ActiveConnection, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_CONNECTION_BANNER")]
@@ -4784,6 +4799,32 @@ namespace NM {
 	public const string DBUS_VPN_WRONG_STATE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_FAMILY")]
 	public const string DHCP_CONFIG_FAMILY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
+	public const string IP_ROUTE_ATTRIBUTE_CWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITCWND")]
+	public const string IP_ROUTE_ATTRIBUTE_INITCWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITRWND")]
+	public const string IP_ROUTE_ATTRIBUTE_INITRWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_CWND")]
+	public const string IP_ROUTE_ATTRIBUTE_LOCK_CWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITCWND")]
+	public const string IP_ROUTE_ATTRIBUTE_LOCK_INITCWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITRWND")]
+	public const string IP_ROUTE_ATTRIBUTE_LOCK_INITRWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_MTU")]
+	public const string IP_ROUTE_ATTRIBUTE_LOCK_MTU;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_WINDOW")]
+	public const string IP_ROUTE_ATTRIBUTE_LOCK_WINDOW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_MTU")]
+	public const string IP_ROUTE_ATTRIBUTE_MTU;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_PREF_SRC")]
+	public const string IP_ROUTE_ATTRIBUTE_PREF_SRC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
+	public const string IP_ROUTE_ATTRIBUTE_SRC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TOS")]
+	public const string IP_ROUTE_ATTRIBUTE_TOS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WINDOW")]
+	public const string IP_ROUTE_ATTRIBUTE_WINDOW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID")]
 	public const string LLDP_ATTR_CHASSIS_ID;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID_TYPE")]

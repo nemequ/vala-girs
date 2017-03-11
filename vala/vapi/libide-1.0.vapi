@@ -205,7 +205,7 @@ namespace Ide {
 		public Ide.BuildPhase phase { get; }
 		public signal void diagnostic (Ide.Diagnostic diagnostic);
 		public signal void finished (bool failed);
-		public signal void started ();
+		public signal void started (Ide.BuildPhase phase);
 	}
 	[CCode (cheader_filename = "ide.h", has_type_id = false)]
 	[Compact]
@@ -221,6 +221,7 @@ namespace Ide {
 		public virtual bool execute (Ide.BuildPipeline pipeline, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool execute_async (Ide.BuildPipeline pipeline, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_completed ();
+		public bool get_disabled ();
 		public unowned string get_name ();
 		public unowned string get_stdout_path ();
 		public bool get_transient ();
@@ -228,12 +229,14 @@ namespace Ide {
 		public void log_subprocess (Ide.Subprocess subprocess);
 		public void pause ();
 		public void set_completed (bool completed);
+		public void set_disabled (bool disabled);
 		public void set_log_observer (owned Ide.BuildLogObserver observer);
 		public void set_name (string name);
 		public void set_stdout_path (string path);
 		public void set_transient (bool transient);
 		public void unpause ();
 		public bool completed { get; set; }
+		public bool disabled { get; set; }
 		public string name { get; set; }
 		public string stdout_path { get; set; }
 		public bool transient { get; set; }
@@ -923,7 +926,7 @@ namespace Ide {
 		protected Object ();
 		[CCode (has_construct_function = false)]
 		public Object.finish (GLib.AsyncResult result) throws GLib.Error;
-		public unowned Ide.Context get_context ();
+		public virtual unowned Ide.Context get_context ();
 		public bool hold ();
 		public static void notify_in_main (void* instance, GLib.ParamSpec pspec);
 		public void release ();
@@ -999,6 +1002,14 @@ namespace Ide {
 		public bool match (string haystack);
 		public Ide.PatternSpec @ref ();
 		public void unref ();
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_pkcon_transfer_get_type ()")]
+	public class PkconTransfer : Ide.Transfer {
+		[CCode (has_construct_function = false)]
+		public PkconTransfer (string packages);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public string[] packages { owned get; construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_preferences_bin_get_type ()")]
 	public class PreferencesBin : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -1867,7 +1878,7 @@ namespace Ide {
 		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_transfer_button_get_type ()")]
-	public class TransferButton : Gtk.Button, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
+	public class TransferButton : Egg.ProgressButton, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public TransferButton (Ide.Transfer transfer);
 		[NoAccessorMethod]
@@ -2100,6 +2111,8 @@ namespace Ide {
 		public async bool open_files_async (GLib.File files, uint n_files, string hint, Ide.WorkbenchOpenFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool open_project_async (GLib.File file_or_directory, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool open_uri_async (Ide.Uri uri, string hint, Ide.WorkbenchOpenFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool pop_message (string message_id);
+		public void push_message (Ide.WorkbenchMessage message);
 		public void remove_perspective (Ide.Perspective perspective);
 		public async bool save_all_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_fullscreen (bool fullscreen);
@@ -2124,6 +2137,21 @@ namespace Ide {
 		public void insert_left (Gtk.Widget widget, Gtk.PackType pack_type, int priority);
 		public void insert_right (Gtk.Widget widget, Gtk.PackType pack_type, int priority);
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_workbench_message_get_type ()")]
+	public class WorkbenchMessage : Gtk.InfoBar, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public WorkbenchMessage ();
+		public void add_action (string label, string action_name);
+		public unowned string get_id ();
+		public unowned string get_subtitle ();
+		public unowned string get_title ();
+		public void set_id (string id);
+		public void set_subtitle (string subtitle);
+		public void set_title (string title);
+		public string id { get; set; }
+		public string subtitle { get; set; }
+		public string title { get; set; }
+	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeApplicationAddinInterface", type_id = "ide_application_addin_get_type ()")]
 	public interface ApplicationAddin : GLib.Object {
 		public abstract void load (Ide.Application application);
@@ -2134,14 +2162,10 @@ namespace Ide {
 		public abstract async int run_async ([CCode (array_length = false, array_null_terminated = true)] string[] arguments, GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeBuildPipelineAddinInterface", type_id = "ide_build_pipeline_addin_get_type ()")]
-	public interface BuildPipelineAddin : GLib.Object {
+	public interface BuildPipelineAddin : Ide.Object {
 		public abstract void load (Ide.BuildPipeline pipeline);
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
 		public void track (uint stage_id);
 		public abstract void unload (Ide.BuildPipeline pipeline);
-		[NoAccessorMethod]
-		public abstract Ide.Context context { owned get; construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeBuildSystemInterface", type_id = "ide_build_system_get_type ()")]
 	public interface BuildSystem : Ide.Object {
@@ -2166,10 +2190,7 @@ namespace Ide {
 		public static string context_current_word (Gtk.SourceCompletionContext context);
 		public static bool context_in_comment (Gtk.SourceCompletionContext context);
 		public static bool context_in_comment_or_string (Gtk.SourceCompletionContext context);
-		public abstract void load ();
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
-		public abstract Ide.Context context { construct; }
+		public abstract void load (Ide.Context context);
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeConfigurationProviderInterface", type_id = "ide_configuration_provider_get_type ()")]
 	public interface ConfigurationProvider : GLib.Object {
@@ -2193,9 +2214,6 @@ namespace Ide {
 		public abstract async Ide.Diagnostics? diagnose_async (Ide.File file, Ide.Buffer buffer, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void emit_invalidated ();
 		public abstract void load ();
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
-		public abstract Ide.Context context { construct; }
 		public signal void invalidated ();
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeEditorViewAddinInterface", type_id = "ide_editor_view_addin_get_type ()")]
@@ -2232,12 +2250,9 @@ namespace Ide {
 		public abstract Ide.Context context { construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeIndenterInterface", type_id = "ide_indenter_get_type ()")]
-	public interface Indenter : GLib.Object {
+	public interface Indenter : Ide.Object {
 		public abstract string? format (Gtk.TextView text_view, Gtk.TextIter begin, Gtk.TextIter end, out int cursor_offset, Gdk.EventKey event);
 		public abstract bool is_trigger (Gdk.EventKey event);
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
-		public abstract Ide.Context context { construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeLayoutStackAddinInterface", type_id = "ide_layout_stack_addin_get_type ()")]
 	public interface LayoutStackAddin : GLib.Object {
@@ -2301,9 +2316,6 @@ namespace Ide {
 	public interface RenameProvider : Ide.Object {
 		public abstract void load ();
 		public abstract async bool rename_async (Ide.SourceLocation location, string new_name, GLib.Cancellable? cancellable, out GLib.GenericArray<weak Ide.ProjectEdit>? edits) throws GLib.Error;
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
-		public abstract Ide.Context context { construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeRunnerAddinInterface", type_id = "ide_runner_addin_get_type ()")]
 	public interface RunnerAddin : GLib.Object {
@@ -2327,16 +2339,12 @@ namespace Ide {
 		public abstract int get_priority ();
 		public abstract unowned string get_verb ();
 		public abstract void populate (Ide.SearchContext context, string search_terms, size_t max_results, GLib.Cancellable? cancellable = null);
-		public abstract Ide.Context context { construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeServiceInterface", type_id = "ide_service_get_type ()")]
-	public interface Service : GLib.Object {
+	public interface Service : Ide.Object {
 		public abstract unowned string get_name ();
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
 		public abstract void start ();
 		public abstract void stop ();
-		public abstract Ide.Context context { construct; }
 		public virtual signal void context_loaded ();
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeSubprocessInterface", type_id = "ide_subprocess_get_type ()")]
@@ -2367,9 +2375,6 @@ namespace Ide {
 		public abstract async Ide.SymbolTree? get_symbol_tree_async (GLib.File file, Ide.Buffer buffer, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract void load ();
 		public abstract async Ide.Symbol? lookup_symbol_async (Ide.SourceLocation location, GLib.Cancellable? cancellable) throws GLib.Error;
-		[NoWrapper]
-		public abstract void set_context (Ide.Context context);
-		public abstract Ide.Context context { construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeSymbolTreeInterface", type_id = "ide_symbol_tree_get_type ()")]
 	public interface SymbolTree : GLib.Object {
@@ -2763,6 +2768,8 @@ namespace Ide {
 	public static bool completion_provider_context_in_comment_or_string (Gtk.SourceCompletionContext context);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "ide.h")]
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
+	[CCode (cheader_filename = "ide.h")]
+	public static string flatpak_get_app_path (string path);
 	[CCode (cheader_filename = "ide.h")]
 	public static void g_task_return_boolean_from_main (GLib.Task task, bool value);
 	[CCode (cheader_filename = "ide.h")]

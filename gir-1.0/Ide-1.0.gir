@@ -3359,6 +3359,12 @@ response to ide_build_pipeline_execute_async() being called.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
+        <parameters>
+          <parameter name="phase" transfer-ownership="none">
+            <doc xml:space="preserve">the #IdeBuildPhase for which we are advancing</doc>
+            <type name="BuildPhase"/>
+          </parameter>
+        </parameters>
       </glib:signal>
     </class>
     <interface name="BuildPipelineAddin"
@@ -3367,16 +3373,7 @@ response to ide_build_pipeline_execute_async() being called.</doc>
                glib:type-name="IdeBuildPipelineAddin"
                glib:get-type="ide_build_pipeline_addin_get_type"
                glib:type-struct="BuildPipelineAddinInterface">
-      <virtual-method name="get_context" introspectable="0">
-        <return-value>
-          <type name="Context" c:type="IdeContext*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="BuildPipelineAddin" c:type="IdeBuildPipelineAddin*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
+      <prerequisite name="Object"/>
       <virtual-method name="load" invoker="load">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -3387,19 +3384,6 @@ response to ide_build_pipeline_execute_async() being called.</doc>
           </instance-parameter>
           <parameter name="pipeline" transfer-ownership="none">
             <type name="BuildPipeline" c:type="IdeBuildPipeline*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="BuildPipelineAddin" c:type="IdeBuildPipelineAddin*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -3466,12 +3450,6 @@ While it should work, that is not yet guaranteed.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="context"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
     </interface>
     <record name="BuildPipelineAddinInterface"
             c:type="IdeBuildPipelineAddinInterface"
@@ -3505,33 +3483,6 @@ While it should work, that is not yet guaranteed.</doc>
             </parameter>
             <parameter name="pipeline" transfer-ownership="none">
               <type name="BuildPipeline" c:type="IdeBuildPipeline*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="get_context" introspectable="0">
-        <callback name="get_context" introspectable="0">
-          <return-value>
-            <type name="Context" c:type="IdeContext*"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="BuildPipelineAddin" c:type="IdeBuildPipelineAddin*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="set_context">
-        <callback name="set_context">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="BuildPipelineAddin" c:type="IdeBuildPipelineAddin*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
             </parameter>
           </parameters>
         </callback>
@@ -3847,6 +3798,16 @@ While it should work, that is not yet guaranteed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_disabled" c:identifier="ide_build_stage_get_disabled">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_name" c:identifier="ide_build_stage_get_name">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -3938,6 +3899,19 @@ the subprocess with %G_SUBPROCESS_FLAGS_STDERR_PIPE and
             <type name="BuildStage" c:type="IdeBuildStage*"/>
           </instance-parameter>
           <parameter name="completed" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_disabled" c:identifier="ide_build_stage_set_disabled">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </instance-parameter>
+          <parameter name="disabled" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -4037,6 +4011,16 @@ out to all observers.</doc>
         <doc xml:space="preserve">The "completed" property is set to %TRUE after the pipeline has
 completed processing the stage. When the pipeline invalidates
 phases, completed may be reset to %FALSE.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="disabled" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">If the build stage is disabled. This allows you to have a stage that is
+attached but will not be activated during execution.
+
+You may enable it later and then re-execute the pipeline.
+
+If the stage is both transient and disabled, it will not be removed during
+the transient cleanup phase.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="name" writable="1" transfer-ownership="none">
@@ -5431,16 +5415,6 @@ it will be set to zero.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="CompletionProvider" c:type="IdeCompletionProvider*"/>
           </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="CompletionProvider" c:type="IdeCompletionProvider*"/>
-          </instance-parameter>
           <parameter name="context" transfer-ownership="none">
             <type name="Context" c:type="IdeContext*"/>
           </parameter>
@@ -5454,15 +5428,11 @@ it will be set to zero.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="CompletionProvider" c:type="IdeCompletionProvider*"/>
           </instance-parameter>
+          <parameter name="context" transfer-ownership="none">
+            <type name="Context" c:type="IdeContext*"/>
+          </parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
     </interface>
     <record name="CompletionProviderInterface"
             c:type="IdeCompletionProviderInterface"
@@ -5470,21 +5440,6 @@ it will be set to zero.</doc>
       <field name="parent_interface">
         <type name="GtkSource.CompletionProviderIface"
               c:type="GtkSourceCompletionProviderIface"/>
-      </field>
-      <field name="set_context">
-        <callback name="set_context">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="CompletionProvider" c:type="IdeCompletionProvider*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
-            </parameter>
-          </parameters>
-        </callback>
       </field>
       <field name="load">
         <callback name="load">
@@ -5494,6 +5449,9 @@ it will be set to zero.</doc>
           <parameters>
             <parameter name="self" transfer-ownership="none">
               <type name="CompletionProvider" c:type="IdeCompletionProvider*"/>
+            </parameter>
+            <parameter name="context" transfer-ownership="none">
+              <type name="Context" c:type="IdeContext*"/>
             </parameter>
           </parameters>
         </callback>
@@ -8398,19 +8356,6 @@ if you are doing lots of diagnostics.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="DiagnosticProvider" c:type="IdeDiagnosticProvider*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <method name="diagnose_async"
               c:identifier="ide_diagnostic_provider_diagnose_async">
         <return-value transfer-ownership="none">
@@ -8486,13 +8431,6 @@ if you are doing lots of diagnostics.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
       <glib:signal name="invalidated" when="last">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -8505,17 +8443,14 @@ if you are doing lots of diagnostics.</doc>
       <field name="parent_interface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="set_context">
-        <callback name="set_context">
+      <field name="load">
+        <callback name="load">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
               <type name="DiagnosticProvider" c:type="IdeDiagnosticProvider*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
             </parameter>
           </parameters>
         </callback>
@@ -8572,18 +8507,6 @@ if you are doing lots of diagnostics.</doc>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="load">
-        <callback name="load">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="DiagnosticProvider" c:type="IdeDiagnosticProvider*"/>
             </parameter>
           </parameters>
         </callback>
@@ -11555,6 +11478,7 @@ to @range_end.</doc>
                glib:type-name="IdeIndenter"
                glib:get-type="ide_indenter_get_type"
                glib:type-struct="IndenterInterface">
+      <prerequisite name="Object"/>
       <virtual-method name="format" invoker="format">
         <doc xml:space="preserve">This function performs an indentation for the key press activated by @event.
 The implementation is free to move the @begin and @end iters to swallow
@@ -11612,19 +11536,6 @@ returned then ide_indenter_format() will be called.</doc>
           <parameter name="event" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkEventKey</doc>
             <type name="Gdk.EventKey" c:type="GdkEventKey*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="Indenter" c:type="IdeIndenter*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -11688,13 +11599,6 @@ returned then ide_indenter_format() will be called.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
     </interface>
     <record name="IndenterInterface"
             c:type="IdeIndenterInterface"
@@ -11753,21 +11657,6 @@ returned then ide_indenter_format() will be called.</doc>
             <parameter name="event" transfer-ownership="none">
               <doc xml:space="preserve">a #GdkEventKey</doc>
               <type name="Gdk.EventKey" c:type="GdkEventKey*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="set_context">
-        <callback name="set_context">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="Indenter" c:type="IdeIndenter*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
             </parameter>
           </parameters>
         </callback>
@@ -13913,6 +13802,18 @@ you must provide @length to determine the length of the line.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_context" invoker="get_context">
+        <doc xml:space="preserve">Fetches the #IdeObject:context property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeContext.</doc>
+          <type name="Context" c:type="IdeContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Object" c:type="IdeObject*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="set_context" invoker="set_context">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -14010,6 +13911,19 @@ context is not already in shutdown.</doc>
         <callback name="destroy">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Object" c:type="IdeObject*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_context">
+        <callback name="get_context">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeContext.</doc>
+            <type name="Context" c:type="IdeContext*"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
@@ -15117,6 +15031,39 @@ fullscreen mode. The #IdeWorkbench will notify the perspective before it is disp
             </parameter>
           </parameters>
         </callback>
+      </field>
+    </record>
+    <class name="PkconTransfer"
+           c:symbol-prefix="pkcon_transfer"
+           c:type="IdePkconTransfer"
+           parent="Transfer"
+           glib:type-name="IdePkconTransfer"
+           glib:get-type="ide_pkcon_transfer_get_type"
+           glib:type-struct="PkconTransferClass">
+      <constructor name="new" c:identifier="ide_pkcon_transfer_new">
+        <return-value transfer-ownership="full">
+          <type name="PkconTransfer" c:type="IdePkconTransfer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="packages" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <property name="packages"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <array>
+          <type name="utf8"/>
+        </array>
+      </property>
+    </class>
+    <record name="PkconTransferClass"
+            c:type="IdePkconTransferClass"
+            glib:is-gtype-struct-for="PkconTransfer">
+      <field name="parent_class">
+        <type name="TransferClass" c:type="IdeTransferClass"/>
       </field>
     </record>
     <interface name="Preferences"
@@ -18788,19 +18735,6 @@ to complete the symbol rename.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="RenameProvider" c:type="IdeRenameProvider*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <method name="load" c:identifier="ide_rename_provider_load">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -18891,13 +18825,6 @@ to complete the symbol rename.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
     </interface>
     <record name="RenameProviderInterface"
             c:type="IdeRenameProviderInterface"
@@ -18976,21 +18903,6 @@ to complete the symbol rename.</doc>
               <array name="GLib.PtrArray" c:type="GPtrArray**">
                 <type name="ProjectEdit"/>
               </array>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="set_context">
-        <callback name="set_context">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="RenameProvider" c:type="IdeRenameProvider*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
             </parameter>
           </parameters>
         </callback>
@@ -21521,13 +21433,6 @@ If @providers is %NULL, all registered providers will be used.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
     </interface>
     <record name="SearchProviderInterface"
             c:type="IdeSearchProviderInterface"
@@ -21861,6 +21766,7 @@ If @providers is %NULL, all registered providers will be used.</doc>
                glib:type-name="IdeService"
                glib:get-type="ide_service_get_type"
                glib:type-struct="ServiceInterface">
+      <prerequisite name="Object"/>
       <virtual-method name="context_loaded">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -21879,19 +21785,6 @@ If @providers is %NULL, all registered providers will be used.</doc>
           <instance-parameter name="service" transfer-ownership="none">
             <type name="Service" c:type="IdeService*"/>
           </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="service" transfer-ownership="none">
-            <type name="Service" c:type="IdeService*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
-          </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="start" invoker="start">
@@ -21944,13 +21837,6 @@ If @providers is %NULL, all registered providers will be used.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
       <glib:signal name="context-loaded" when="last">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -22007,21 +21893,6 @@ If @providers is %NULL, all registered providers will be used.</doc>
           <parameters>
             <parameter name="service" transfer-ownership="none">
               <type name="Service" c:type="IdeService*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="set_context">
-        <callback name="set_context">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="service" transfer-ownership="none">
-              <type name="Service" c:type="IdeService*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
             </parameter>
           </parameters>
         </callback>
@@ -29645,19 +29516,6 @@ ide_symbol_resolver_lookup_symbol_async().</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="set_context">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="Context" c:type="IdeContext*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <method name="get_symbol_tree_async"
               c:identifier="ide_symbol_resolver_get_symbol_tree_async">
         <doc xml:space="preserve">Asynchronously fetch an up to date symbol tree for @file.</doc>
@@ -29791,34 +29649,12 @@ ide_symbol_resolver_lookup_symbol_async().</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="context"
-                readable="0"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <type name="Context"/>
-      </property>
     </interface>
     <record name="SymbolResolverInterface"
             c:type="IdeSymbolResolverInterface"
             glib:is-gtype-struct-for="SymbolResolver">
       <field name="parent_interface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-      </field>
-      <field name="set_context">
-        <callback name="set_context">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="self" transfer-ownership="none">
-              <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
-            </parameter>
-            <parameter name="context" transfer-ownership="none">
-              <type name="Context" c:type="IdeContext*"/>
-            </parameter>
-          </parameters>
-        </callback>
       </field>
       <field name="lookup_symbol_async">
         <callback name="lookup_symbol_async">
@@ -30831,7 +30667,7 @@ the project creation workflow.</doc>
     <class name="TransferButton"
            c:symbol-prefix="transfer_button"
            c:type="IdeTransferButton"
-           parent="Gtk.Button"
+           parent="Egg.ProgressButton"
            glib:type-name="IdeTransferButton"
            glib:get-type="ide_transfer_button_get_type"
            glib:type-struct="TransferButtonClass">
@@ -30856,14 +30692,14 @@ the project creation workflow.</doc>
         <type name="Transfer"/>
       </property>
       <field name="parent_instance">
-        <type name="Gtk.Button" c:type="GtkButton"/>
+        <type name="Egg.ProgressButton" c:type="EggProgressButton"/>
       </field>
     </class>
     <record name="TransferButtonClass"
             c:type="IdeTransferButtonClass"
             glib:is-gtype-struct-for="TransferButton">
       <field name="parent_class">
-        <type name="Gtk.ButtonClass" c:type="GtkButtonClass"/>
+        <type name="Egg.ProgressButtonClass" c:type="EggProgressButtonClass"/>
       </field>
       <field name="_reserved1">
         <type name="gpointer" c:type="gpointer"/>
@@ -34775,6 +34611,32 @@ but not made visible in the UI).</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="pop_message" c:identifier="ide_workbench_pop_message">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Workbench" c:type="IdeWorkbench*"/>
+          </instance-parameter>
+          <parameter name="message_id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="push_message" c:identifier="ide_workbench_push_message">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Workbench" c:type="IdeWorkbench*"/>
+          </instance-parameter>
+          <parameter name="message" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="remove_perspective"
               c:identifier="ide_workbench_remove_perspective">
         <return-value transfer-ownership="none">
@@ -35601,6 +35463,126 @@ destruction process.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
+    <class name="WorkbenchMessage"
+           c:symbol-prefix="workbench_message"
+           c:type="IdeWorkbenchMessage"
+           parent="Gtk.InfoBar"
+           glib:type-name="IdeWorkbenchMessage"
+           glib:get-type="ide_workbench_message_get_type"
+           glib:type-struct="WorkbenchMessageClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <constructor name="new" c:identifier="ide_workbench_message_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+      <method name="add_action"
+              c:identifier="ide_workbench_message_add_action">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+          <parameter name="label" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="action_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="ide_workbench_message_get_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_subtitle"
+              c:identifier="ide_workbench_message_get_subtitle">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_title" c:identifier="ide_workbench_message_get_title">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_id" c:identifier="ide_workbench_message_set_id">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_subtitle"
+              c:identifier="ide_workbench_message_set_subtitle">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+          <parameter name="subtitle" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_title" c:identifier="ide_workbench_message_set_title">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="WorkbenchMessage" c:type="IdeWorkbenchMessage*"/>
+          </instance-parameter>
+          <parameter name="title" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="id" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="subtitle" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title" writable="1" transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="WorkbenchMessageClass"
+            c:type="IdeWorkbenchMessageClass"
+            glib:is-gtype-struct-for="WorkbenchMessage">
+      <field name="parent_class">
+        <type name="Gtk.InfoBarClass" c:type="GtkInfoBarClass"/>
+      </field>
+    </record>
     <bitfield name="WorkbenchOpenFlags" c:type="IdeWorkbenchOpenFlags">
       <member name="none"
               value="0"
@@ -35908,6 +35890,17 @@ return %NULL.</doc>
       <return-value transfer-ownership="none">
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
+    </function>
+    <function name="flatpak_get_app_path"
+              c:identifier="ide_flatpak_get_app_path">
+      <return-value transfer-ownership="full">
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="path" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="g_task_return_boolean_from_main"
               c:identifier="ide_g_task_return_boolean_from_main">

@@ -954,60 +954,49 @@ drifts too much.</doc>
            glib:type-name="GstAudioCdSrc"
            glib:get-type="gst_audio_cd_src_get_type"
            glib:type-struct="AudioCdSrcClass">
-      <doc xml:space="preserve">&lt;para&gt;
-Provides a base class for CD digital audio (CDDA) sources, which handles
+      <doc xml:space="preserve">Provides a base class for CD digital audio (CDDA) sources, which handles
 things like seeking, querying, discid calculation, tags, and buffer
 timestamping.
-&lt;/para&gt;
-&lt;refsect2&gt;
-&lt;title&gt;Using GstAudioCdSrc-based elements in applications&lt;/title&gt;
-&lt;para&gt;
+
+## Using GstAudioCdSrc-based elements in applications
+
 GstAudioCdSrc registers two #GstFormat&lt;!-- --&gt;s of its own, namely
 the "track" format and the "sector" format. Applications will usually
 only find the "track" format interesting. You can retrieve that #GstFormat
 for use in seek events or queries with gst_format_get_by_nick("track").
-&lt;/para&gt;
-&lt;para&gt;
+
 In order to query the number of tracks, for example, an application would
 set the CDDA source element to READY or PAUSED state and then query the
 the number of tracks via gst_element_query_duration() using the track
 format acquired above. Applications can query the currently playing track
 in the same way.
-&lt;/para&gt;
-&lt;para&gt;
+
 Alternatively, applications may retrieve the currently playing track and
 the total number of tracks from the taglist that will posted on the bus
 whenever the CD is opened or the currently playing track changes. The
 taglist will contain GST_TAG_TRACK_NUMBER and GST_TAG_TRACK_COUNT tags.
-&lt;/para&gt;
-&lt;para&gt;
+
 Applications playing back CD audio using playbin and cdda://n URIs should
 issue a seek command in track format to change between tracks, rather than
 setting a new cdda://n+1 URI on playbin (as setting a new URI on playbin
 involves closing and re-opening the CD device, which is much much slower).
-&lt;/para&gt;
-&lt;refsect2&gt;
-&lt;/refsect2&gt;
-&lt;title&gt;Tags and meta-information&lt;/title&gt;
-&lt;para&gt;
+
+## Tags and meta-information
+
 CDDA sources will automatically emit a number of tags, details about which
 can be found in the libgsttag documentation. Those tags are:
 #GST_TAG_CDDA_CDDB_DISCID, #GST_TAG_CDDA_CDDB_DISCID_FULL,
 #GST_TAG_CDDA_MUSICBRAINZ_DISCID, #GST_TAG_CDDA_MUSICBRAINZ_DISCID_FULL,
 among others.
-&lt;/para&gt;
-&lt;/refsect2&gt;
-&lt;refsect2&gt;
-&lt;title&gt;Tracks and Table of Contents (TOC)&lt;/title&gt;
-&lt;para&gt;
+
+## Tracks and Table of Contents (TOC)
+
 Applications will be informed of the available tracks via a TOC message
 on the pipeline's #GstBus. The #GstToc will contain a #GstTocEntry for
 each track, with information about each track. The duration for each
 track can be retrieved via the #GST_TAG_DURATION tag from each entry's
 tag list, or calculated via gst_toc_entry_get_start_stop_times().
-The track entries in the TOC will be sorted by track number.
-&lt;/para&gt;
-&lt;/refsect2&gt;</doc>
+The track entries in the TOC will be sorted by track number.</doc>
       <implements name="Gst.URIHandler"/>
       <virtual-method name="close">
         <return-value transfer-ownership="none">
@@ -2064,72 +2053,48 @@ parameters for details about the options and values.</doc>
 raw audio samples.
 
 GstAudioDecoder and subclass should cooperate as follows.
-&lt;orderedlist&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Configuration&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Initially, GstAudioDecoder calls @start when the decoder element
+
+## Configuration
+
+  * Initially, GstAudioDecoder calls @start when the decoder element
     is activated, which allows subclass to perform any global setup.
     Base class (context) parameters can already be set according to subclass
     capabilities (or possibly upon receive more information in subsequent
     @set_format).
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    GstAudioDecoder calls @set_format to inform subclass of the format
+  * GstAudioDecoder calls @set_format to inform subclass of the format
     of input audio data that it is about to receive.
     While unlikely, it might be called more than once, if changing input
     parameters require reconfiguration.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    GstAudioDecoder calls @stop at end of all processing.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
+  * GstAudioDecoder calls @stop at end of all processing.
+
 As of configuration stage, and throughout processing, GstAudioDecoder
 provides various (context) parameters, e.g. describing the format of
 output audio data (valid when output caps have been set) or current parsing state.
 Conversely, subclass can and should configure context to inform
 base class of its expectation w.r.t. buffer handling.
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Data processing&lt;/title&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Base class gathers input data, and optionally allows subclass
+
+## Data processing
+    * Base class gathers input data, and optionally allows subclass
       to parse this into subsequently manageable (as defined by subclass)
       chunks.  Such chunks are subsequently referred to as 'frames',
       though they may or may not correspond to 1 (or more) audio format frame.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Input frame is provided to subclass' @handle_frame.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      If codec processing results in decoded data, subclass should call
+    * Input frame is provided to subclass' @handle_frame.
+    * If codec processing results in decoded data, subclass should call
       @gst_audio_decoder_finish_frame to have decoded data pushed
       downstream.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Just prior to actually pushing a buffer downstream,
+    * Just prior to actually pushing a buffer downstream,
       it is passed to @pre_push.  Subclass should either use this callback
       to arrange for additional downstream pushing or otherwise ensure such
       custom pushing occurs after at least a method call has finished since
       setting src pad caps.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      During the parsing process GstAudioDecoderClass will handle both
+    * During the parsing process GstAudioDecoderClass will handle both
       srcpad and sinkpad events. Sink events will be passed to subclass
       if @event callback has been provided.
-    &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Shutdown phase&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    GstAudioDecoder class calls @stop to inform the subclass that data
+
+## Shutdown phase
+
+  * GstAudioDecoder class calls @stop to inform the subclass that data
     parsing will be stopped.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;/orderedlist&gt;
 
 Subclass is responsible for providing pad template caps for
 source and sink pads. The pads need to be named "sink" and "src". It also
@@ -2159,23 +2124,17 @@ approach caters for seeking and duration reporting using estimated input
 bitrates.
 
 Things that subclass need to take care of:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;Provide pad templates&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Set source pad caps when appropriate
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Set user-configurable properties to sane defaults for format and
+
+  * Provide pad templates
+  * Set source pad caps when appropriate
+  * Set user-configurable properties to sane defaults for format and
      implementing codec at hand, and convey some subclass capabilities and
      expectations in context.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Accept data in @handle_frame and provide encoded results to
+
+  * Accept data in @handle_frame and provide encoded results to
      @gst_audio_decoder_finish_frame.  If it is prepared to perform
      PLC, it should also accept NULL data in @handle_frame and provide for
-     data for indicated duration.
-  &lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
+     data for indicated duration.</doc>
       <virtual-method name="close">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -3415,65 +3374,46 @@ of the results.</doc>
 encoded audio data.
 
 GstAudioEncoder and subclass should cooperate as follows.
-&lt;orderedlist&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Configuration&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    Initially, GstAudioEncoder calls @start when the encoder element
+
+## Configuration
+
+  * Initially, GstAudioEncoder calls @start when the encoder element
     is activated, which allows subclass to perform any global setup.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    GstAudioEncoder calls @set_format to inform subclass of the format
+
+  * GstAudioEncoder calls @set_format to inform subclass of the format
     of input audio data that it is about to receive.  Subclass should
     setup for encoding and configure various base class parameters
     appropriately, notably those directing desired input data handling.
     While unlikely, it might be called more than once, if changing input
     parameters require reconfiguration.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    GstAudioEncoder calls @stop at end of all processing.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
+
+  * GstAudioEncoder calls @stop at end of all processing.
+
 As of configuration stage, and throughout processing, GstAudioEncoder
 maintains various parameters that provide required context,
 e.g. describing the format of input audio data.
 Conversely, subclass can and should configure these context parameters
 to inform base class of its expectation w.r.t. buffer handling.
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;
-  &lt;title&gt;Data processing&lt;/title&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Base class gathers input sample data (as directed by the context's
+
+## Data processing
+
+    * Base class gathers input sample data (as directed by the context's
       frame_samples and frame_max) and provides this to subclass' @handle_frame.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      If codec processing results in encoded data, subclass should call
+    * If codec processing results in encoded data, subclass should call
       gst_audio_encoder_finish_frame() to have encoded data pushed
       downstream. Alternatively, it might also call
       gst_audio_encoder_finish_frame() (with a NULL buffer and some number of
       dropped samples) to indicate dropped (non-encoded) samples.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      Just prior to actually pushing a buffer downstream,
+    * Just prior to actually pushing a buffer downstream,
       it is passed to @pre_push.
-    &lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;
-      During the parsing process GstAudioEncoderClass will handle both
+    * During the parsing process GstAudioEncoderClass will handle both
       srcpad and sinkpad events. Sink events will be passed to subclass
       if @event callback has been provided.
-    &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-  &lt;itemizedlist&gt;&lt;title&gt;Shutdown phase&lt;/title&gt;
-  &lt;listitem&gt;&lt;para&gt;
-    GstAudioEncoder class calls @stop to inform the subclass that data
+
+## Shutdown phase
+
+  * GstAudioEncoder class calls @stop to inform the subclass that data
     parsing will be stopped.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/itemizedlist&gt;
-&lt;/listitem&gt;
-&lt;/orderedlist&gt;
 
 Subclass is responsible for providing pad template caps for
 source and sink pads. The pads need to be named "sink" and "src". It also
@@ -3512,25 +3452,16 @@ including buffer) and OFFSET_END to corresponding timestamp (as determined
 by same sample count and sample rate).
 
 Things that subclass need to take care of:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;Provide pad templates&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Set source pad caps when appropriate
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Inform base class of buffer processing needs using context's
+
+  * Provide pad templates
+  * Set source pad caps when appropriate
+  * Inform base class of buffer processing needs using context's
      frame_samples and frame_bytes.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Set user-configurable properties to sane defaults for format and
+  * Set user-configurable properties to sane defaults for format and
      implementing codec at hand, e.g. those controlling timestamp behaviour
      and discontinuity processing.
-  &lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;
-     Accept data in @handle_frame and provide encoded results to
-     gst_audio_encoder_finish_frame().
-  &lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
+  * Accept data in @handle_frame and provide encoded results to
+     gst_audio_encoder_finish_frame().</doc>
       <implements name="Gst.Preset"/>
       <virtual-method name="close">
         <return-value transfer-ownership="none">
@@ -6109,19 +6040,14 @@ for @quality in @options.</doc>
            glib:type-name="GstAudioRingBuffer"
            glib:get-type="gst_audio_ring_buffer_get_type"
            glib:type-struct="AudioRingBufferClass">
-      <doc xml:space="preserve">&lt;refsect2&gt;
-&lt;para&gt;
-This object is the base class for audio ringbuffers used by the base
+      <doc xml:space="preserve">This object is the base class for audio ringbuffers used by the base
 audio source and sink classes.
-&lt;/para&gt;
-&lt;para&gt;
+
 The ringbuffer abstracts a circular buffer of data. One reader and
 one writer can operate on the data from different threads in a lockfree
 manner. The base class is sufficiently flexible to be used as an
 abstraction for DMA based ringbuffers as well as a pure software
-implementations.
-&lt;/para&gt;
-&lt;/refsect2&gt;</doc>
+implementations.</doc>
       <function name="debug_spec_buff"
                 c:identifier="gst_audio_ring_buffer_debug_spec_buff">
         <doc xml:space="preserve">Print debug info about the buffer sized in @spec to the debug log.</doc>
@@ -7544,37 +7470,20 @@ with a flush or stop.</doc>
       <doc xml:space="preserve">This is the most simple base class for audio sinks that only requires
 subclasses to implement a set of simple functions:
 
-&lt;variablelist&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;open()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Open the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;prepare()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Configure the device with the specified format.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;write()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Write samples to the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;reset()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Unblock writes and flush the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;delay()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Get the number of samples written but not yet played
-    by the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;unprepare()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Undo operations done by prepare.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;close()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Close the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-&lt;/variablelist&gt;
+* `open()` :Open the device.
+
+* `prepare()` :Configure the device with the specified format.
+
+* `write()` :Write samples to the device.
+
+* `reset()` :Unblock writes and flush the device.
+
+* `delay()` :Get the number of samples written but not yet played
+by the device.
+
+* `unprepare()` :Undo operations done by prepare.
+
+* `close()` :Close the device.
 
 All scheduling of samples and timestamps is done in this base class
 together with #GstAudioBaseSink using a default implementation of a
@@ -7794,37 +7703,13 @@ together with #GstAudioBaseSink using a default implementation of a
       <doc xml:space="preserve">This is the most simple base class for audio sources that only requires
 subclasses to implement a set of simple functions:
 
-&lt;variablelist&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;open()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Open the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;prepare()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Configure the device with the specified format.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;read()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Read samples from the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;reset()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Unblock reads and flush the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;delay()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Get the number of samples in the device but not yet read.
-    &lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;unprepare()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Undo operations done by prepare.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-  &lt;varlistentry&gt;
-    &lt;term&gt;close()&lt;/term&gt;
-    &lt;listitem&gt;&lt;para&gt;Close the device.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;/varlistentry&gt;
-&lt;/variablelist&gt;
+* `open()` :Open the device.
+* `prepare()` :Configure the device with the specified format.
+* `read()` :Read samples from the device.
+* `reset()` :Unblock reads and flush the device.
+* `delay()` :Get the number of samples in the device but not yet read.
+* `unprepare()` :Undo operations done by prepare.
+* `close()` :Close the device.
 
 All scheduling of samples and timestamps is done in this base class
 together with #GstAudioBaseSrc using a default implementation of a
@@ -8068,12 +7953,9 @@ functionality.</doc>
                glib:type-name="GstStreamVolume"
                glib:get-type="gst_stream_volume_get_type"
                glib:type-struct="StreamVolumeInterface">
-      <doc xml:space="preserve">&lt;refsect2&gt;
-&lt;para&gt;
-This interface is implemented by elements that provide a stream volume. Examples for
+      <doc xml:space="preserve">This interface is implemented by elements that provide a stream volume. Examples for
 such elements are #volume and #playbin.
-&lt;/para&gt;
-&lt;para&gt;
+
 Applications can use this interface to get or set the current stream volume. For this
 the "volume" #GObject property can be used or the helper functions gst_stream_volume_set_volume()
 and gst_stream_volume_get_volume(). This volume is always a linear factor, i.e. 0.0 is muted
@@ -8083,13 +7965,10 @@ use a cubic volume.
 
 Separate from the volume the stream can also be muted by the "mute" #GObject property or
 gst_stream_volume_set_mute() and gst_stream_volume_get_mute().
-&lt;/para&gt;
-&lt;para&gt;
+
 Elements that provide some kind of stream volume should implement the "volume" and
 "mute" #GObject properties and handle setting and getting of them properly.
-The volume property is defined to be a linear volume factor.
-&lt;/para&gt;
-&lt;/refsect2&gt;</doc>
+The volume property is defined to be a linear volume factor.</doc>
       <function name="convert_volume"
                 c:identifier="gst_stream_volume_convert_volume">
         <return-value transfer-ownership="none">
