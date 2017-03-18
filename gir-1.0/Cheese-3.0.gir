@@ -12,7 +12,7 @@ and/or use gtk-doc annotations.  -->
   <package name="cheese"/>
   <namespace name="Cheese"
              version="3.0"
-             shared-library="libcheese.so.7"
+             shared-library="libcheese.so.8"
              c:identifier-prefixes="Cheese"
              c:symbol-prefixes="cheese">
     <class name="Camera"
@@ -31,14 +31,14 @@ and/or use gtk-doc annotations.  -->
         </return-value>
         <parameters>
           <parameter name="video_texture" transfer-ownership="none">
-            <doc xml:space="preserve">a #ClutterTexture</doc>
-            <type name="Clutter.Texture" c:type="ClutterTexture*"/>
+            <doc xml:space="preserve">an actor in which to render the video</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
-          <parameter name="camera_device_node"
+          <parameter name="name"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">the device node path</doc>
+            <doc xml:space="preserve">the name of the device</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="x_resolution" transfer-ownership="none">
@@ -113,8 +113,8 @@ and/or use gtk-doc annotations.  -->
             <type name="Effect" c:type="CheeseEffect*"/>
           </parameter>
           <parameter name="texture" transfer-ownership="none">
-            <doc xml:space="preserve">a #ClutterTexture</doc>
-            <type name="Clutter.Texture" c:type="ClutterTexture*"/>
+            <doc xml:space="preserve">a #ClutterActor</doc>
+            <type name="Clutter.Actor" c:type="ClutterActor*"/>
           </parameter>
         </parameters>
       </method>
@@ -272,10 +272,8 @@ playing.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_device_by_device_node"
-              c:identifier="cheese_camera_set_device_by_device_node">
-        <doc xml:space="preserve">Set the active video capture device of the @camera, matching by device node
-path.</doc>
+      <method name="set_device" c:identifier="cheese_camera_set_device">
+        <doc xml:space="preserve">Set the active video capture device of the @camera.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -284,9 +282,9 @@ path.</doc>
             <doc xml:space="preserve">a #CheeseCamera</doc>
             <type name="Camera" c:type="CheeseCamera*"/>
           </instance-parameter>
-          <parameter name="file" transfer-ownership="none">
-            <doc xml:space="preserve">the device node path</doc>
-            <type name="filename" c:type="gchar*"/>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the device object</doc>
+            <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
           </parameter>
         </parameters>
       </method>
@@ -334,12 +332,12 @@ necessary.</doc>
             <doc xml:space="preserve">a #CheeseCamera</doc>
             <type name="Camera" c:type="CheeseCamera*"/>
           </instance-parameter>
-          <parameter name="uuid"
+          <parameter name="device"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">UUID of the video capture device, or %NULL</doc>
-            <type name="utf8" c:type="const gchar*"/>
+            <doc xml:space="preserve">the video capture device, or %NULL</doc>
+            <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
           </parameter>
         </parameters>
       </method>
@@ -449,9 +447,9 @@ NULL.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="device-node" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The path to the device node for the video capture device.</doc>
-        <type name="utf8" c:type="gchar*"/>
+      <property name="device" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The device object to capture from.</doc>
+        <type name="CameraDevice"/>
       </property>
       <property name="format" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The format of the video capture device.</doc>
@@ -582,30 +580,16 @@ NULL.</doc>
       <constructor name="new"
                    c:identifier="cheese_camera_device_new"
                    throws="1">
-        <doc xml:space="preserve">Tries to create a new #CheeseCameraDevice with the supplied parameters. If
+        <doc xml:space="preserve">Tries to create a new #CheeseCameraDevice with the supplied device. If
 construction fails, %NULL is returned, and @error is set.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #CheeseCameraDevice, or %NULL</doc>
           <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
         </return-value>
         <parameters>
-          <parameter name="uuid" transfer-ownership="none">
-            <doc xml:space="preserve">UUID of the device, as supplied by udev</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="device_node" transfer-ownership="none">
-            <doc xml:space="preserve">path to the device node of the video capture
-device</doc>
-            <type name="filename" c:type="gchar*"/>
-          </parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:space="preserve">human-readable name of the device, as supplied by udev</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="v4l_api_version" transfer-ownership="none">
-            <doc xml:space="preserve">version of the Video4Linux API that the device uses. Currently
-either 1 or 2</doc>
-            <type name="guint" c:type="guint"/>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">The GStreamer the device, as supplied by GstDeviceMonitor</doc>
+            <type name="Gst.Device" c:type="GstDevice*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -644,21 +628,6 @@ no such format is found, get the highest available resolution instead.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_device_node"
-              c:identifier="cheese_camera_device_get_device_node">
-        <doc xml:space="preserve">Get the path to the device node associated with the @device.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the path to the device node of the video capture
-device</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">a #CheeseCameraDevice</doc>
-            <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_format_list"
               c:identifier="cheese_camera_device_get_format_list">
         <doc xml:space="preserve">Get the sorted list of #CheeseVideoFormat that the @device supports.</doc>
@@ -691,12 +660,10 @@ suitable for display to a user.</doc>
         </parameters>
       </method>
       <method name="get_src" c:identifier="cheese_camera_device_get_src">
-        <doc xml:space="preserve">Get the name of the source GStreamer element for the @device. Currently,
-this will be either v4lsrc or v4l2src, depending on the version of the
-Video4Linux API that the device supports.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the name of the source GStreamer element</doc>
-          <type name="utf8" c:type="const gchar*"/>
+        <doc xml:space="preserve">Get the source GStreamer element for the @device.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the source GStreamer element</doc>
+          <type name="Gst.Element" c:type="GstElement*"/>
         </return-value>
         <parameters>
           <instance-parameter name="device" transfer-ownership="none">
@@ -705,25 +672,12 @@ Video4Linux API that the device supports.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_uuid" c:identifier="cheese_camera_device_get_uuid">
-        <doc xml:space="preserve">Get the UUID of the @device, as reported by udev.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the UUID of the video capture device</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">a #CheeseCameraDevice</doc>
-            <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <property name="device-node"
+      <property name="device"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Path to the device node of the video capture device.</doc>
-        <type name="utf8" c:type="gchar*"/>
+        <doc xml:space="preserve">GStreamer device object of the video capture device.</doc>
+        <type name="Gst.Device"/>
       </property>
       <property name="name"
                 writable="1"
@@ -731,21 +685,6 @@ Video4Linux API that the device supports.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Human-readable name of the video capture device, for display to the user.</doc>
         <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="uuid"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">UUID of the video capture device.</doc>
-        <type name="utf8" c:type="gchar*"/>
-      </property>
-      <property name="v4l-api-version"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Version of the Video4Linux API that the device supports. Currently, either
-1 or 2 are supported.</doc>
-        <type name="guint" c:type="guint"/>
       </property>
       <field name="parent" readable="0" private="1">
         <type name="GObject.Object" c:type="GObject"/>
@@ -757,8 +696,7 @@ Video4Linux API that the device supports.</doc>
     <record name="CameraDeviceClass"
             c:type="CheeseCameraDeviceClass"
             glib:is-gtype-struct-for="CameraDevice">
-      <doc xml:space="preserve">Use the accessor functions below.</doc>
-      <field name="parent_class" readable="0" private="1">
+      <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
@@ -801,8 +739,8 @@ Video4Linux API that the device supports.</doc>
             <type name="CameraDeviceMonitor"
                   c:type="CheeseCameraDeviceMonitor*"/>
           </instance-parameter>
-          <parameter name="uuid" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
+          <parameter name="device" transfer-ownership="none">
+            <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -848,9 +786,9 @@ the system.</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="uuid" transfer-ownership="none">
-            <doc xml:space="preserve">UUID for the device on the system</doc>
-            <type name="utf8" c:type="gchar*"/>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the #CheeseCameraDevice that was removed</doc>
+            <type name="CameraDevice"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -888,8 +826,8 @@ the system.</doc>
               <type name="CameraDeviceMonitor"
                     c:type="CheeseCameraDeviceMonitor*"/>
             </parameter>
-            <parameter name="uuid" transfer-ownership="none">
-              <type name="utf8" c:type="const gchar*"/>
+            <parameter name="device" transfer-ownership="none">
+              <type name="CameraDevice" c:type="CheeseCameraDevice*"/>
             </parameter>
           </parameters>
         </callback>
@@ -897,10 +835,6 @@ the system.</doc>
     </record>
     <record name="CameraDeviceMonitorPrivate"
             c:type="CheeseCameraDeviceMonitorPrivate"
-            disguised="1">
-    </record>
-    <record name="CameraDevicePrivate"
-            c:type="CheeseCameraDevicePrivate"
             disguised="1">
     </record>
     <enumeration name="CameraError" c:type="CheeseCameraError">
@@ -1071,12 +1005,9 @@ a video stream, for previews.</doc>
     <record name="EffectClass"
             c:type="CheeseEffectClass"
             glib:is-gtype-struct-for="Effect">
-      <doc xml:space="preserve">Use the accessor functions below.</doc>
-      <field name="parent_class" readable="0" private="1">
+      <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-    </record>
-    <record name="EffectPrivate" c:type="CheeseEffectPrivate" disguised="1">
     </record>
     <class name="FileUtil"
            c:symbol-prefix="fileutil"
@@ -1166,14 +1097,9 @@ burst of photos.</doc>
     <record name="FileUtilClass"
             c:type="CheeseFileUtilClass"
             glib:is-gtype-struct-for="FileUtil">
-      <doc xml:space="preserve">Use the accessor functions below.</doc>
-      <field name="parent_class" readable="0" private="1">
+      <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-    </record>
-    <record name="FileUtilPrivate"
-            c:type="CheeseFileUtilPrivate"
-            disguised="1">
     </record>
     <enumeration name="MediaMode" c:type="CheeseMediaMode">
       <doc xml:space="preserve">The media type, used for generating filenames with

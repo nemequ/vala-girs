@@ -11,7 +11,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="jsonrpc-glib.h"/>
   <namespace name="Jsonrpc"
              version="1.0"
-             shared-library=""
+             shared-library="libjsonrpc-glib.so.0"
              c:identifier-prefixes="Jsonrpc"
              c:symbol-prefixes="jsonrpc">
     <class name="Client"
@@ -21,30 +21,6 @@ and/or use gtk-doc annotations.  -->
            glib:type-name="JsonrpcClient"
            glib:get-type="jsonrpc_client_get_type"
            glib:type-struct="ClientClass">
-      <doc xml:space="preserve">The #JsonrpcClient class provides a convenient API to coordinate with a
-JSON-RPC server. You can provide the underlying #GIOStream to communicate
-with allowing you to control the negotiation of how you setup your
-communications channel. One such method might be to use a #GSubprocess and
-communicate over stdin and stdout.
-
-Because JSON-RPC allows for out-of-band notifications from the server to
-the client, it is important that the consumer of this API calls
-jsonrpc_client_close() or jsonrpc_client_close_async() when they no longer
-need the client. This is because #JsonrpcClient contains an asynchronous
-read-loop to process incoming messages. Until jsonrpc_client_close() or
-jsonrpc_client_close_async() have been called, this read loop will prevent
-the object from finalizing (being freed).
-
-To make an RPC call, use jsonrpc_client_call() or
-jsonrpc_client_call_async() and provide the method name and the parameters
-as a #JsonNode for call.
-
-It is a programming error to mix synchronous and asynchronous API calls
-of the #JsonrpcClient class.
-
-For synchronous calls, #JsonrpcClient will use the thread-default
-#GMainContext. If you have special needs here ensure you've set the context
-before calling into any #JsonrpcClient API.</doc>
       <constructor name="new" c:identifier="jsonrpc_client_new">
         <doc xml:space="preserve">Creates a new #JsonrpcClient instance.
 
@@ -79,10 +55,10 @@ g_subprocess_get_stdin_pipe() and g_subprocess_get_stdout_pipe().</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="id" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="params" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -98,18 +74,18 @@ g_subprocess_get_stdin_pipe() and g_subprocess_get_stdout_pipe().</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <method name="call" c:identifier="jsonrpc_client_call" throws="1">
         <doc xml:space="preserve">Synchronously calls @method with @params on the remote peer.
 
-This function takes ownership of @params.
-
 once a reply has been received, or failure, this function will return.
 If successful, @return_value will be set with the reslut field of
 the response.
+
+If @params is floating then this function consumes the reference.
 
 Returns; %TRUE on success; otherwise %FALSE and @error is set.</doc>
         <return-value transfer-ownership="none">
@@ -125,11 +101,11 @@ Returns; %TRUE on success; otherwise %FALSE and @error is set.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params"
-                     transfer-ownership="full"
+                     transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">A #JsonNode of parameters or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <doc xml:space="preserve">A #GVariant of parameters or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -144,7 +120,7 @@ Returns; %TRUE on success; otherwise %FALSE and @error is set.</doc>
                      transfer-ownership="full"
                      nullable="1">
             <doc xml:space="preserve">A location for a #JsonNode.</doc>
-            <type name="Json.Node" c:type="JsonNode**"/>
+            <type name="GLib.Variant" c:type="GVariant**"/>
           </parameter>
         </parameters>
       </method>
@@ -169,11 +145,11 @@ any memory held.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params"
-                     transfer-ownership="full"
+                     transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #JsonNode of parameters or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -223,7 +199,7 @@ any memory held.</doc>
                      transfer-ownership="full"
                      nullable="1">
             <doc xml:space="preserve">A location for a #JsonNode or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode**"/>
+            <type name="GLib.Variant" c:type="GVariant**"/>
           </parameter>
         </parameters>
       </method>
@@ -304,6 +280,17 @@ Completes an asynchronous request of jsonrpc_client_close_async().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_use_gvariant"
+              c:identifier="jsonrpc_client_get_use_gvariant">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Client" c:type="JsonrpcClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="reply" c:identifier="jsonrpc_client_reply" throws="1">
         <doc xml:space="preserve">Synchronous variant of jsonrpc_client_reply_async().</doc>
         <return-value transfer-ownership="none">
@@ -313,13 +300,13 @@ Completes an asynchronous request of jsonrpc_client_close_async().</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="Client" c:type="JsonrpcClient*"/>
           </instance-parameter>
-          <parameter name="id" transfer-ownership="full">
+          <parameter name="id" transfer-ownership="none">
             <doc xml:space="preserve">the id of the message to reply
-result: (transfer full) (nullable): the return value or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+result: (transfer none) (nullable): the return value or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="result" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -338,10 +325,10 @@ result: (transfer full) (nullable): the return value or %NULL</doc>
             <type name="Client" c:type="JsonrpcClient*"/>
           </instance-parameter>
           <parameter name="id" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="result" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -406,7 +393,7 @@ Returns; %TRUE on success; otherwise %FALSE and @error is set.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">A #JsonNode of parameters or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -426,7 +413,7 @@ This function is useful when the caller wants to be notified that
 the bytes have been delivered to the underlying stream. This does
 not indicate that the peer has received them.
 
-This function takes ownership of @params.</doc>
+If @params is floating then the reference is consumed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -440,11 +427,11 @@ This function takes ownership of @params.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params"
-                     transfer-ownership="full"
+                     transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">A #JsonNode of parameters or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <doc xml:space="preserve">A #GVariant of parameters or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -492,6 +479,20 @@ the notification.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_use_gvariant"
+              c:identifier="jsonrpc_client_set_use_gvariant">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Client" c:type="JsonrpcClient*"/>
+          </instance-parameter>
+          <parameter name="use_gvariant" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="start_listening"
               c:identifier="jsonrpc_client_start_listening">
         <return-value transfer-ownership="none">
@@ -509,6 +510,9 @@ the notification.</doc>
                 construct-only="1"
                 transfer-ownership="none">
         <type name="Gio.IOStream"/>
+      </property>
+      <property name="use-gvariant" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
@@ -532,11 +536,14 @@ jsonrpc_client_reply_async().</doc>
           </parameter>
           <parameter name="id" transfer-ownership="none">
             <doc xml:space="preserve">The "id" field of the JSONRPC message</doc>
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
-          <parameter name="params" transfer-ownership="none">
+          <parameter name="params"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">The "params" field of the JSONRPC message</doc>
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -553,9 +560,12 @@ ids. They do not round trip.</doc>
             <doc xml:space="preserve">the method name of the notification</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
-          <parameter name="params" transfer-ownership="none">
+          <parameter name="params"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">params for the notification</doc>
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -579,7 +589,7 @@ ids. They do not round trip.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="params" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
           </parameters>
         </callback>
@@ -597,10 +607,10 @@ ids. They do not round trip.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="id" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
             <parameter name="params" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
           </parameters>
         </callback>
@@ -664,8 +674,8 @@ ids. They do not round trip.</doc>
                      allow-none="1">
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
-          <parameter name="node" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode**"/>
+          <parameter name="message" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant**"/>
           </parameter>
         </parameters>
       </method>
@@ -713,8 +723,8 @@ ids. They do not round trip.</doc>
           <parameter name="result" transfer-ownership="none">
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
-          <parameter name="node" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode**"/>
+          <parameter name="message" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant**"/>
           </parameter>
         </parameters>
       </method>
@@ -757,7 +767,7 @@ ids. They do not round trip.</doc>
       <doc xml:space="preserve">jsonrpc-glib major version component (e.g. 1 if %JSONRPC_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="91" c:type="JSONRPC_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="92" c:type="JSONRPC_MICRO_VERSION">
       <doc xml:space="preserve">jsonrpc-glib micro version component (e.g. 3 if %JSONRPC_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -783,6 +793,31 @@ ids. They do not round trip.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="get_use_gvariant"
+              c:identifier="jsonrpc_output_stream_get_use_gvariant">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OutputStream" c:type="JsonrpcOutputStream*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_use_gvariant"
+              c:identifier="jsonrpc_output_stream_set_use_gvariant">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="OutputStream" c:type="JsonrpcOutputStream*"/>
+          </instance-parameter>
+          <parameter name="use_gvariant" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="write_message"
               c:identifier="jsonrpc_output_stream_write_message"
               throws="1">
@@ -793,8 +828,8 @@ ids. They do not round trip.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="OutputStream" c:type="JsonrpcOutputStream*"/>
           </instance-parameter>
-          <parameter name="node" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+          <parameter name="message" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -813,8 +848,8 @@ ids. They do not round trip.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="OutputStream" c:type="JsonrpcOutputStream*"/>
           </instance-parameter>
-          <parameter name="node" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+          <parameter name="message" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -853,6 +888,9 @@ ids. They do not round trip.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="use-gvariant" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="parent_instance">
         <type name="Gio.DataOutputStream" c:type="GDataOutputStream"/>
       </field>
@@ -928,10 +966,10 @@ ids. They do not round trip.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="id" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="params" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -950,7 +988,7 @@ ids. They do not round trip.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -983,10 +1021,10 @@ ids. They do not round trip.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
           <parameter name="p1" transfer-ownership="none">
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
           <parameter name="p2" transfer-ownership="none">
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -1002,7 +1040,7 @@ ids. They do not round trip.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
           <parameter name="p1" transfer-ownership="none">
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -1029,10 +1067,10 @@ ids. They do not round trip.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="id" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
             <parameter name="params" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
           </parameters>
         </callback>
@@ -1053,7 +1091,7 @@ ids. They do not round trip.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="params" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
           </parameters>
         </callback>
@@ -1083,7 +1121,7 @@ ids. They do not round trip.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
-    <constant name="VERSION_S" value="3.23.91" c:type="JSONRPC_VERSION_S">
+    <constant name="VERSION_S" value="3.23.92" c:type="JSONRPC_VERSION_S">
       <doc xml:space="preserve">jsonrpc-glib version, encoded as a string, useful for printing and
 concatenation.</doc>
       <type name="utf8" c:type="gchar*"/>

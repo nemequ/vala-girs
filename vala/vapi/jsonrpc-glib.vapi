@@ -6,41 +6,47 @@ namespace Jsonrpc {
 	public class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Client (GLib.IOStream io_stream);
-		public bool call (string method, owned Json.Node? @params, GLib.Cancellable? cancellable, out Json.Node? return_value) throws GLib.Error;
-		public async bool call_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable, out Json.Node? return_value) throws GLib.Error;
+		public bool call (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		public async bool call_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
 		public bool close (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool close_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		public bool reply (owned Json.Node id, Json.Node result, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool reply_async (Json.Node id, Json.Node result, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool send_notification (string method, owned Json.Node? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool send_notification_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_use_gvariant ();
+		public bool reply (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool reply_async (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool send_notification (string method, owned GLib.Variant? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool send_notification_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_use_gvariant (bool use_gvariant);
 		public void start_listening ();
 		public GLib.IOStream io_stream { construct; }
-		public virtual signal bool handle_call (string method, Json.Node id, Json.Node @params);
-		public virtual signal void notification (string method_name, Json.Node @params);
+		public bool use_gvariant { get; set; }
+		public virtual signal bool handle_call (string method, GLib.Variant id, GLib.Variant? @params);
+		public virtual signal void notification (string method_name, GLib.Variant? @params);
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_input_stream_get_type ()")]
 	public class InputStream : GLib.DataInputStream, GLib.Seekable {
 		[CCode (has_construct_function = false)]
 		public InputStream (GLib.InputStream base_stream);
-		public bool read_message (GLib.Cancellable? cancellable, Json.Node node) throws GLib.Error;
+		public bool read_message (GLib.Cancellable? cancellable, GLib.Variant message) throws GLib.Error;
 		public async bool read_message_async (GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_output_stream_get_type ()")]
 	public class OutputStream : GLib.DataOutputStream, GLib.Seekable {
 		[CCode (has_construct_function = false)]
 		public OutputStream (GLib.OutputStream base_stream);
-		public bool write_message (Json.Node node, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool write_message_async (Json.Node node, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_use_gvariant ();
+		public void set_use_gvariant (bool use_gvariant);
+		public bool write_message (GLib.Variant message, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool write_message_async (GLib.Variant message, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool use_gvariant { get; set; }
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_server_get_type ()")]
 	public class Server : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Server ();
 		public void accept_io_stream (GLib.IOStream stream);
-		public virtual signal bool handle_call (Jsonrpc.Client client, string method, Json.Node id, Json.Node @params);
-		public virtual signal void notification (Jsonrpc.Client client, string method, Json.Node @params);
+		public virtual signal bool handle_call (Jsonrpc.Client client, string method, GLib.Variant id, GLib.Variant @params);
+		public virtual signal void notification (Jsonrpc.Client client, string method, GLib.Variant @params);
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;

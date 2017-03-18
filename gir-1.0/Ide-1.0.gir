@@ -4333,14 +4333,22 @@ as part of the next build.</doc>
            glib:get-type="ide_build_stage_launcher_get_type"
            glib:type-struct="BuildStageLauncherClass">
       <constructor name="new" c:identifier="ide_build_stage_launcher_new">
+        <doc xml:space="preserve">Creates a new #IdeBuildStageLauncher that can be attached to an
+#IdeBuildPipeline.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An #IdeBuildStageLauncher</doc>
           <type name="BuildStage" c:type="IdeBuildStage*"/>
         </return-value>
         <parameters>
           <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeContext</doc>
             <type name="Context" c:type="IdeContext*"/>
           </parameter>
-          <parameter name="launcher" transfer-ownership="none">
+          <parameter name="launcher"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An #IdeSubprocessLauncher or %NULL</doc>
             <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
           </parameter>
         </parameters>
@@ -4413,6 +4421,20 @@ the build stage to fail.</doc>
           </instance-parameter>
           <parameter name="ignore_exit_status" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_launcher"
+              c:identifier="ide_build_stage_launcher_set_launcher">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStageLauncher" c:type="IdeBuildStageLauncher*"/>
+          </instance-parameter>
+          <parameter name="launcher" transfer-ownership="none">
+            <type name="SubprocessLauncher" c:type="IdeSubprocessLauncher*"/>
           </parameter>
         </parameters>
       </method>
@@ -4569,6 +4591,10 @@ return %NULL.</doc>
             <doc xml:space="preserve">A #GFile containing the directory or project file.</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
+          <parameter name="build_system_hint" transfer-ownership="none">
+            <doc xml:space="preserve">A hint for the build system to use</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
@@ -4581,7 +4607,7 @@ return %NULL.</doc>
                      nullable="1"
                      allow-none="1"
                      scope="async"
-                     closure="4">
+                     closure="5">
             <doc xml:space="preserve">A callback to execute upon completion</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -4725,6 +4751,16 @@ return %NULL.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_id" invoker="get_id">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildSystem" c:type="IdeBuildSystem*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_priority" invoker="get_priority">
         <return-value transfer-ownership="none">
           <type name="gint" c:type="gint"/>
@@ -4849,6 +4885,16 @@ return %NULL.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_id" c:identifier="ide_build_system_get_id">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildSystem" c:type="IdeBuildSystem*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_priority" c:identifier="ide_build_system_get_priority">
         <return-value transfer-ownership="none">
           <type name="gint" c:type="gint"/>
@@ -4872,6 +4918,128 @@ return %NULL.</doc>
         <type name="Gio.File"/>
       </property>
     </interface>
+    <interface name="BuildSystemDiscovery"
+               c:symbol-prefix="build_system_discovery"
+               c:type="IdeBuildSystemDiscovery"
+               glib:type-name="IdeBuildSystemDiscovery"
+               glib:get-type="ide_build_system_discovery_get_type"
+               glib:type-struct="BuildSystemDiscoveryInterface">
+      <virtual-method name="discover" invoker="discover" throws="1">
+        <doc xml:space="preserve">This virtual method can be used to try to discover the build system to use for
+a particular project. This might be used in cases like Flatpak where the build
+system can be determined from the .json manifest rather than auto-discovery
+by locating project files.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The hint for the build system, which should match what
+  the build system returns from ide_build_system_get_id().</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeBuildSystemDiscovery</doc>
+            <type name="BuildSystemDiscovery"
+                  c:type="IdeBuildSystemDiscovery*"/>
+          </instance-parameter>
+          <parameter name="project_file" transfer-ownership="none">
+            <doc xml:space="preserve">A #GFile containing the project file (a directory)</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="priority"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A location for the priority</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="discover"
+              c:identifier="ide_build_system_discovery_discover"
+              throws="1">
+        <doc xml:space="preserve">This virtual method can be used to try to discover the build system to use for
+a particular project. This might be used in cases like Flatpak where the build
+system can be determined from the .json manifest rather than auto-discovery
+by locating project files.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The hint for the build system, which should match what
+  the build system returns from ide_build_system_get_id().</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeBuildSystemDiscovery</doc>
+            <type name="BuildSystemDiscovery"
+                  c:type="IdeBuildSystemDiscovery*"/>
+          </instance-parameter>
+          <parameter name="project_file" transfer-ownership="none">
+            <doc xml:space="preserve">A #GFile containing the project file (a directory)</doc>
+            <type name="Gio.File" c:type="GFile*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="priority"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">A location for the priority</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="BuildSystemDiscoveryInterface"
+            c:type="IdeBuildSystemDiscoveryInterface"
+            glib:is-gtype-struct-for="BuildSystemDiscovery">
+      <field name="parent_iface">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="discover">
+        <callback name="discover" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">The hint for the build system, which should match what
+  the build system returns from ide_build_system_get_id().</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeBuildSystemDiscovery</doc>
+              <type name="BuildSystemDiscovery"
+                    c:type="IdeBuildSystemDiscovery*"/>
+            </parameter>
+            <parameter name="project_file" transfer-ownership="none">
+              <doc xml:space="preserve">A #GFile containing the project file (a directory)</doc>
+              <type name="Gio.File" c:type="GFile*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A #GCancellable or %NULL</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="priority"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
+              <doc xml:space="preserve">A location for the priority</doc>
+              <type name="gint" c:type="gint*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <record name="BuildSystemInterface"
             c:type="IdeBuildSystemInterface"
             glib:is-gtype-struct-for="BuildSystem">
@@ -5008,6 +5176,18 @@ return %NULL.</doc>
             </parameter>
             <parameter name="configuration" transfer-ownership="none">
               <type name="Configuration" c:type="IdeConfiguration*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_id">
+        <callback name="get_id">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="BuildSystem" c:type="IdeBuildSystem*"/>
             </parameter>
           </parameters>
         </callback>
@@ -11705,7 +11885,7 @@ returned then ide_indenter_format() will be called.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -11770,8 +11950,8 @@ returned then ide_indenter_format() will be called.</doc>
                      transfer-ownership="full"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">An #JsonNode or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <doc xml:space="preserve">An #GVariant or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -11812,7 +11992,7 @@ returned then ide_indenter_format() will be called.</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
           <parameter name="return_value" transfer-ownership="none">
-            <type name="Json.Node" c:type="JsonNode**"/>
+            <type name="GLib.Variant" c:type="GVariant**"/>
           </parameter>
         </parameters>
       </method>
@@ -11897,8 +12077,8 @@ returned then ide_indenter_format() will be called.</doc>
                      transfer-ownership="full"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">An #JsonNode or %NULL</doc>
-            <type name="Json.Node" c:type="JsonNode*"/>
+            <doc xml:space="preserve">An #GVariant or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
@@ -11978,7 +12158,7 @@ returned then ide_indenter_format() will be called.</doc>
             <type name="utf8" c:type="gchar*"/>
           </parameter>
           <parameter name="p0" transfer-ownership="none">
-            <type name="Json.Node"/>
+            <type name="GLib.Variant"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -12025,7 +12205,7 @@ returned then ide_indenter_format() will be called.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="params" transfer-ownership="none">
-              <type name="Json.Node" c:type="JsonNode*"/>
+              <type name="GLib.Variant" c:type="GVariant*"/>
             </parameter>
           </parameters>
         </callback>
@@ -27047,20 +27227,34 @@ First adjust the repeat and then perform the "movement" action.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="communicate_async" invoker="communicate_async">
+        <doc xml:space="preserve">Asynchronously communicates with the the child process.
+
+There is no need to call ide_subprocess_wait() on the process if using
+this asynchronous operation as it will internally wait for the child
+to exit or be signaled.
+
+Ensure you've set the proper flags to ensure that you can write to stdin
+or read from stderr/stdout as necessary.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeSubprocess</doc>
             <type name="Subprocess" c:type="IdeSubprocess*"/>
           </instance-parameter>
-          <parameter name="stdin_buf" transfer-ownership="none">
+          <parameter name="stdin_buf"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GBytes to send to stdin or %NULL</doc>
             <type name="GLib.Bytes" c:type="GBytes*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -27069,6 +27263,7 @@ First adjust the repeat and then perform the "movement" action.</doc>
                      allow-none="1"
                      scope="async"
                      closure="3">
+            <doc xml:space="preserve">A callback to complete the request</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -27076,6 +27271,7 @@ First adjust the repeat and then perform the "movement" action.</doc>
                      nullable="1"
                      allow-none="1"
                      closure="3">
+            <doc xml:space="preserve">user data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -27083,20 +27279,36 @@ First adjust the repeat and then perform the "movement" action.</doc>
       <virtual-method name="communicate_finish"
                       invoker="communicate_finish"
                       throws="1">
+        <doc xml:space="preserve">Finishes a request to ide_subprocess_communicate_async().</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if successful; otherwise %FALSE and @error is set.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeSubprocess</doc>
             <type name="Subprocess" c:type="IdeSubprocess*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">A #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
-          <parameter name="stdout_buf" transfer-ownership="none">
+          <parameter name="stdout_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for a #Bytes.</doc>
             <type name="GLib.Bytes" c:type="GBytes**"/>
           </parameter>
-          <parameter name="stderr_buf" transfer-ownership="none">
+          <parameter name="stderr_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for a #Bytes.</doc>
             <type name="GLib.Bytes" c:type="GBytes**"/>
           </parameter>
         </parameters>
@@ -27373,20 +27585,34 @@ First adjust the repeat and then perform the "movement" action.</doc>
       </method>
       <method name="communicate_async"
               c:identifier="ide_subprocess_communicate_async">
+        <doc xml:space="preserve">Asynchronously communicates with the the child process.
+
+There is no need to call ide_subprocess_wait() on the process if using
+this asynchronous operation as it will internally wait for the child
+to exit or be signaled.
+
+Ensure you've set the proper flags to ensure that you can write to stdin
+or read from stderr/stdout as necessary.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeSubprocess</doc>
             <type name="Subprocess" c:type="IdeSubprocess*"/>
           </instance-parameter>
-          <parameter name="stdin_buf" transfer-ownership="none">
+          <parameter name="stdin_buf"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GBytes to send to stdin or %NULL</doc>
             <type name="GLib.Bytes" c:type="GBytes*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -27395,12 +27621,14 @@ First adjust the repeat and then perform the "movement" action.</doc>
                      allow-none="1"
                      scope="async"
                      closure="3">
+            <doc xml:space="preserve">A callback to complete the request</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">user data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -27408,20 +27636,36 @@ First adjust the repeat and then perform the "movement" action.</doc>
       <method name="communicate_finish"
               c:identifier="ide_subprocess_communicate_finish"
               throws="1">
+        <doc xml:space="preserve">Finishes a request to ide_subprocess_communicate_async().</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if successful; otherwise %FALSE and @error is set.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeSubprocess</doc>
             <type name="Subprocess" c:type="IdeSubprocess*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">A #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
-          <parameter name="stdout_buf" transfer-ownership="none">
+          <parameter name="stdout_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for a #Bytes.</doc>
             <type name="GLib.Bytes" c:type="GBytes**"/>
           </parameter>
-          <parameter name="stderr_buf" transfer-ownership="none">
+          <parameter name="stderr_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for a #Bytes.</doc>
             <type name="GLib.Bytes" c:type="GBytes**"/>
           </parameter>
         </parameters>
@@ -27467,6 +27711,80 @@ First adjust the repeat and then perform the "movement" action.</doc>
                      transfer-ownership="full"
                      nullable="1">
             <doc xml:space="preserve">an optional location for the stderr contents</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="communicate_utf8_async"
+              c:identifier="ide_subprocess_communicate_utf8_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Subprocess" c:type="IdeSubprocess*"/>
+          </instance-parameter>
+          <parameter name="stdin_buf"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The data to send to stdin or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="communicate_utf8_finish"
+              c:identifier="ide_subprocess_communicate_utf8_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if successful; otherwise %FALSE and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeSubprocess</doc>
+            <type name="Subprocess" c:type="IdeSubprocess*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">A #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+          <parameter name="stdout_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for the UTF-8 formatted output string or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="stderr_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for the UTF-8 formatted output string or %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -28031,15 +28349,21 @@ First adjust the repeat and then perform the "movement" action.</doc>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeSubprocess</doc>
               <type name="Subprocess" c:type="IdeSubprocess*"/>
             </parameter>
-            <parameter name="stdin_buf" transfer-ownership="none">
+            <parameter name="stdin_buf"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A #GBytes to send to stdin or %NULL</doc>
               <type name="GLib.Bytes" c:type="GBytes*"/>
             </parameter>
             <parameter name="cancellable"
                        transfer-ownership="none"
                        nullable="1"
                        allow-none="1">
+              <doc xml:space="preserve">A #GCancellable or %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -28048,6 +28372,7 @@ First adjust the repeat and then perform the "movement" action.</doc>
                        allow-none="1"
                        scope="async"
                        closure="4">
+              <doc xml:space="preserve">A callback to complete the request</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -28056,6 +28381,7 @@ First adjust the repeat and then perform the "movement" action.</doc>
                        nullable="1"
                        allow-none="1"
                        closure="4">
+              <doc xml:space="preserve">user data for @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -28064,19 +28390,34 @@ First adjust the repeat and then perform the "movement" action.</doc>
       <field name="communicate_finish">
         <callback name="communicate_finish" throws="1">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if successful; otherwise %FALSE and @error is set.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeSubprocess</doc>
               <type name="Subprocess" c:type="IdeSubprocess*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">A #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
-            <parameter name="stdout_buf" transfer-ownership="none">
+            <parameter name="stdout_buf"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A location for a #Bytes.</doc>
               <type name="GLib.Bytes" c:type="GBytes**"/>
             </parameter>
-            <parameter name="stderr_buf" transfer-ownership="none">
+            <parameter name="stderr_buf"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A location for a #Bytes.</doc>
               <type name="GLib.Bytes" c:type="GBytes**"/>
             </parameter>
           </parameters>
@@ -35726,6 +36067,10 @@ return %NULL.</doc>
           <doc xml:space="preserve">A #GFile containing the directory or project file.</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </parameter>
+        <parameter name="build_system_hint" transfer-ownership="none">
+          <doc xml:space="preserve">A hint for the build system to use</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
         <parameter name="cancellable"
                    transfer-ownership="none"
                    nullable="1"
@@ -35738,7 +36083,7 @@ return %NULL.</doc>
                    nullable="1"
                    allow-none="1"
                    scope="async"
-                   closure="4">
+                   closure="5">
           <doc xml:space="preserve">A callback to execute upon completion</doc>
           <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
         </parameter>

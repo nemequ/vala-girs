@@ -248,16 +248,16 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", type_id = "ide_build_stage_launcher_get_type ()")]
 	public class BuildStageLauncher : Ide.BuildStage {
 		[CCode (has_construct_function = false, type = "IdeBuildStage*")]
-		public BuildStageLauncher (Ide.Context context, Ide.SubprocessLauncher launcher);
+		public BuildStageLauncher (Ide.Context context, Ide.SubprocessLauncher? launcher);
 		public unowned Ide.SubprocessLauncher? get_clean_launcher ();
 		public bool get_ignore_exit_status ();
 		public unowned Ide.SubprocessLauncher get_launcher ();
 		public void set_clean_launcher (Ide.SubprocessLauncher clean_launcher);
 		public void set_ignore_exit_status (bool ignore_exit_status);
+		public void set_launcher (Ide.SubprocessLauncher launcher);
 		public Ide.SubprocessLauncher clean_launcher { get; set; }
 		public bool ignore_exit_status { get; set; }
-		[NoAccessorMethod]
-		public Ide.SubprocessLauncher launcher { owned get; set; }
+		public Ide.SubprocessLauncher launcher { get; set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_build_stage_mkdirs_get_type ()")]
 	public class BuildStageMkdirs : Ide.BuildStage {
@@ -793,14 +793,14 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		public LangservClient (Ide.Context context, GLib.IOStream io_stream);
 		public void add_language (string language_id);
-		public async bool call_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool call_async (string method, owned GLib.Variant? @params, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool get_diagnostics_async (GLib.File file, GLib.Cancellable? cancellable, out Ide.Diagnostics? diagnostics) throws GLib.Error;
-		public async bool send_notification_async (string method, owned Json.Node? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool send_notification_async (string method, owned GLib.Variant? @params, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void start ();
 		public void stop ();
 		[NoAccessorMethod]
 		public GLib.IOStream io_stream { owned get; construct; }
-		public virtual signal void notification (string method, Json.Node @params);
+		public virtual signal void notification (string method, GLib.Variant @params);
 		public virtual signal void published_diagnostics (GLib.File file, Ide.Diagnostics diagnostics);
 		public virtual signal bool supports_language (string language_id);
 	}
@@ -2173,12 +2173,17 @@ namespace Ide {
 		public abstract async string[] get_build_flags_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract async GLib.GenericArray<weak Ide.BuildTarget> get_build_targets_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract string get_builddir (Ide.Configuration configuration);
+		public abstract string get_id ();
 		public abstract int get_priority ();
-		public static async Ide.BuildSystem new_async (Ide.Context context, GLib.File project_file, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static async Ide.BuildSystem new_async (Ide.Context context, GLib.File project_file, string build_system_hint, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoAccessorMethod]
 		public abstract Ide.Context context { owned get; construct; }
 		[NoAccessorMethod]
 		public abstract GLib.File project_file { owned get; construct; }
+	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeBuildSystemDiscoveryInterface", type_id = "ide_build_system_discovery_get_type ()")]
+	public interface BuildSystemDiscovery : GLib.Object {
+		public abstract string discover (GLib.File project_file, GLib.Cancellable? cancellable, out int priority) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeBuildTargetInterface", type_id = "ide_build_target_get_type ()")]
 	public interface BuildTarget : Ide.Object {
@@ -2351,8 +2356,9 @@ namespace Ide {
 	public interface Subprocess : GLib.Object {
 		public bool check_exit_status () throws GLib.Error;
 		public abstract bool communicate (GLib.Bytes stdin_buf, GLib.Cancellable? cancellable, GLib.Bytes stdout_buf, GLib.Bytes stderr_buf) throws GLib.Error;
-		public abstract async bool communicate_async (GLib.Bytes stdin_buf, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract async bool communicate_async (GLib.Bytes? stdin_buf, GLib.Cancellable? cancellable, out GLib.Bytes stdout_buf, out GLib.Bytes stderr_buf) throws GLib.Error;
 		public abstract bool communicate_utf8 (string? stdin_buf, GLib.Cancellable? cancellable, out string? stdout_buf, out string? stderr_buf) throws GLib.Error;
+		public async bool communicate_utf8_async (string? stdin_buf, GLib.Cancellable? cancellable, out string stdout_buf, out string stderr_buf) throws GLib.Error;
 		public abstract void force_exit ();
 		public abstract int get_exit_status ();
 		public abstract unowned string get_identifier ();
@@ -2753,7 +2759,7 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_LANGUAGE_GROUP_PREFIX")]
 	public const string RECENT_PROJECTS_LANGUAGE_GROUP_PREFIX;
 	[CCode (cheader_filename = "ide.h")]
-	public static async Ide.BuildSystem build_system_new_async (Ide.Context context, GLib.File project_file, GLib.Cancellable? cancellable) throws GLib.Error;
+	public static async Ide.BuildSystem build_system_new_async (Ide.Context context, GLib.File project_file, string build_system_hint, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "ide.h")]
 	public static string build_utils_color_codes_filtering (string txt);
 	[CCode (cheader_filename = "ide.h")]
