@@ -220,6 +220,7 @@ namespace Ide {
 		[NoWrapper]
 		public virtual bool execute (Ide.BuildPipeline pipeline, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool execute_async (Ide.BuildPipeline pipeline, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool get_check_stdout ();
 		public bool get_completed ();
 		public bool get_disabled ();
 		public unowned string get_name ();
@@ -228,6 +229,7 @@ namespace Ide {
 		public void log (Ide.BuildLogStream stream, string message, ssize_t message_len);
 		public void log_subprocess (Ide.Subprocess subprocess);
 		public void pause ();
+		public void set_check_stdout (bool check_stdout);
 		public void set_completed (bool completed);
 		public void set_disabled (bool disabled);
 		public void set_log_observer (owned Ide.BuildLogObserver observer);
@@ -235,6 +237,7 @@ namespace Ide {
 		public void set_stdout_path (string path);
 		public void set_transient (bool transient);
 		public void unpause ();
+		public bool check_stdout { get; set; }
 		public bool completed { get; set; }
 		public bool disabled { get; set; }
 		public string name { get; set; }
@@ -1291,15 +1294,18 @@ namespace Ide {
 		public string[] get_argv ();
 		public bool get_clear_env ();
 		public unowned Ide.Environment get_environment ();
+		public bool get_failed ();
 		public GLib.SubprocessFlags get_flags ();
 		public bool get_run_on_host ();
-		public virtual GLib.OutputStream? get_stderr ();
-		public virtual GLib.InputStream? get_stdin ();
-		public virtual GLib.OutputStream? get_stdout ();
+		public virtual Ide.Runtime? get_runtime ();
+		public virtual GLib.InputStream? get_stderr ();
+		public virtual GLib.OutputStream? get_stdin ();
+		public virtual GLib.InputStream? get_stdout ();
 		public void prepend_argv (string param);
 		public virtual async bool run_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_argv (string argv);
 		public void set_clear_env (bool clear_env);
+		public void set_failed (bool failed);
 		public void set_flags (GLib.SubprocessFlags flags);
 		public void set_run_on_host (bool run_on_host);
 		public virtual void set_tty (int tty_fd);
@@ -1308,6 +1314,7 @@ namespace Ide {
 		public string[] argv { owned get; set; }
 		public bool clear_env { get; set; }
 		public Ide.Environment environment { get; }
+		public bool failed { get; set; }
 		public bool run_on_host { get; set; }
 		public signal void exited ();
 		public signal void spawned (string object);
@@ -2358,7 +2365,7 @@ namespace Ide {
 		public abstract bool communicate (GLib.Bytes stdin_buf, GLib.Cancellable? cancellable, GLib.Bytes stdout_buf, GLib.Bytes stderr_buf) throws GLib.Error;
 		public abstract async bool communicate_async (GLib.Bytes? stdin_buf, GLib.Cancellable? cancellable, out GLib.Bytes stdout_buf, out GLib.Bytes stderr_buf) throws GLib.Error;
 		public abstract bool communicate_utf8 (string? stdin_buf, GLib.Cancellable? cancellable, out string? stdout_buf, out string? stderr_buf) throws GLib.Error;
-		public async bool communicate_utf8_async (string? stdin_buf, GLib.Cancellable? cancellable, out string stdout_buf, out string stderr_buf) throws GLib.Error;
+		public abstract async bool communicate_utf8_async (string? stdin_buf, GLib.Cancellable? cancellable, out string stdout_buf, out string stderr_buf) throws GLib.Error;
 		public abstract void force_exit ();
 		public abstract int get_exit_status ();
 		public abstract unowned string get_identifier ();
@@ -2389,7 +2396,7 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeTagsBuilderInterface", type_id = "ide_tags_builder_get_type ()")]
 	public interface TagsBuilder : GLib.Object {
-		public abstract async bool build_async (GLib.File directory_or_flie, bool asynchronous, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract async bool build_async (GLib.File directory_or_file, bool recursive, GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeTemplateProviderInterface", type_id = "ide_template_provider_get_type ()")]
 	public interface TemplateProvider : GLib.Object {

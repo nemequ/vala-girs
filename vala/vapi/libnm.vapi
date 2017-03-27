@@ -35,7 +35,7 @@ namespace NM {
 		public static bool enum_from_str (GLib.Type type, string str, out int out_value, out string err_token);
 		[CCode (array_length = false, array_null_terminated = true, cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.2")]
-		public static string[] enum_get_values (GLib.Type type, int from, int to);
+		public static (unowned string)[] enum_get_values (GLib.Type type, int from, int to);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.2")]
 		public static string enum_to_str (GLib.Type type, int value);
@@ -351,6 +351,8 @@ namespace NM {
 		public unowned NM.Device get_master ();
 		public unowned string get_specific_object_path ();
 		public NM.ActiveConnectionState get_state ();
+		[Version (since = "1.8")]
+		public NM.ActiveConnectionStateReason get_state_reason ();
 		public unowned string get_uuid ();
 		public bool get_vpn ();
 		public NM.RemoteConnection connection { get; }
@@ -369,6 +371,7 @@ namespace NM {
 		public string type { owned get; }
 		public string uuid { get; }
 		public bool vpn { get; }
+		public signal void state_changed (uint object, uint p0);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_client_get_type ()")]
 	public class Client : GLib.Object, GLib.AsyncInitable, GLib.Initable {
@@ -4049,6 +4052,25 @@ namespace NM {
 		DEACTIVATING,
 		DEACTIVATED
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ACTIVE_CONNECTION_STATE_REASON_", type_id = "nm_active_connection_state_reason_get_type ()")]
+	[Version (since = "1.8")]
+	public enum ActiveConnectionStateReason {
+		UNKNOWN,
+		NONE,
+		USER_DISCONNECTED,
+		DEVICE_DISCONNECTED,
+		SERVICE_STOPPED,
+		IP_CONFIG_INVALID,
+		CONNECT_TIMEOUT,
+		SERVICE_START_TIMEOUT,
+		SERVICE_START_FAILED,
+		NO_SECRETS,
+		LOGIN_FAILED,
+		CONNECTION_REMOVED,
+		DEPENDENCY_FAILED,
+		DEVICE_REALIZE_FAILED,
+		DEVICE_REMOVED
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_BT_CAPABILITY_", type_id = "nm_bluetooth_capabilities_get_type ()")]
 	[Flags]
 	public enum BluetoothCapabilities {
@@ -4801,6 +4823,8 @@ namespace NM {
 	public const string DHCP_CONFIG_FAMILY;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
 	public const string IP_ROUTE_ATTRIBUTE_CWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_FROM")]
+	public const string IP_ROUTE_ATTRIBUTE_FROM;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITCWND")]
 	public const string IP_ROUTE_ATTRIBUTE_INITCWND;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITRWND")]
@@ -4817,8 +4841,6 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_LOCK_WINDOW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_MTU")]
 	public const string IP_ROUTE_ATTRIBUTE_MTU;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_PREF_SRC")]
-	public const string IP_ROUTE_ATTRIBUTE_PREF_SRC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
 	public const string IP_ROUTE_ATTRIBUTE_SRC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TOS")]

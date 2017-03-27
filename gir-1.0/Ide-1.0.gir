@@ -3787,6 +3787,17 @@ While it should work, that is not yet guaranteed.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_check_stdout"
+              c:identifier="ide_build_stage_get_check_stdout">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_completed"
               c:identifier="ide_build_stage_get_completed">
         <return-value transfer-ownership="none">
@@ -3887,6 +3898,20 @@ the subprocess with %G_SUBPROCESS_FLAGS_STDERR_PIPE and
           <instance-parameter name="self" transfer-ownership="none">
             <type name="BuildStage" c:type="IdeBuildStage*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_check_stdout"
+              c:identifier="ide_build_stage_set_check_stdout">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildStage" c:type="IdeBuildStage*"/>
+          </instance-parameter>
+          <parameter name="check_stdout" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_completed"
@@ -4007,6 +4032,15 @@ out to all observers.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="check-stdout" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Most build systems will preserve stderr for the processes they call, such
+as gcc, clang, and others. However, if your build system redirects all
+output to stdout, you may need to set this property to %TRUE to ensure
+that Builder will extract errors from stdout.
+
+One such example is Ninja.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="completed" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The "completed" property is set to %TRUE after the pipeline has
 completed processing the stage. When the pipeline invalidates
@@ -19462,18 +19496,22 @@ executing inferior.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_stderr" invoker="get_stderr">
+      <virtual-method name="get_runtime" invoker="get_runtime">
+        <doc xml:space="preserve">This function will get the #IdeRuntime that will be used to execute the
+application. Consumers may want to use this to determine if a particular
+program is available (such as gdb, perf, strace, etc).</doc>
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
-          <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+          <doc xml:space="preserve">An #IdeRuntime or %NULL.</doc>
+          <type name="Runtime" c:type="IdeRuntime*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeRuntime</doc>
             <type name="Runner" c:type="IdeRunner*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_stdin" invoker="get_stdin">
+      <virtual-method name="get_stderr" invoker="get_stderr">
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
@@ -19484,10 +19522,21 @@ executing inferior.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="get_stdout" invoker="get_stdout">
+      <virtual-method name="get_stdin" invoker="get_stdin">
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
           <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_stdout" invoker="get_stdout">
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -19611,6 +19660,16 @@ executing inferior.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_failed" c:identifier="ide_runner_get_failed">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_flags" c:identifier="ide_runner_get_flags">
         <return-value transfer-ownership="none">
           <type name="Gio.SubprocessFlags" c:type="GSubprocessFlags"/>
@@ -19631,18 +19690,22 @@ executing inferior.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_stderr" c:identifier="ide_runner_get_stderr">
+      <method name="get_runtime" c:identifier="ide_runner_get_runtime">
+        <doc xml:space="preserve">This function will get the #IdeRuntime that will be used to execute the
+application. Consumers may want to use this to determine if a particular
+program is available (such as gdb, perf, strace, etc).</doc>
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
-          <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+          <doc xml:space="preserve">An #IdeRuntime or %NULL.</doc>
+          <type name="Runtime" c:type="IdeRuntime*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeRuntime</doc>
             <type name="Runner" c:type="IdeRunner*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_stdin" c:identifier="ide_runner_get_stdin">
+      <method name="get_stderr" c:identifier="ide_runner_get_stderr">
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
@@ -19653,10 +19716,21 @@ executing inferior.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_stdout" c:identifier="ide_runner_get_stdout">
+      <method name="get_stdin" c:identifier="ide_runner_get_stdin">
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
           <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_stdout" c:identifier="ide_runner_get_stdout">
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -19748,6 +19822,19 @@ executing inferior.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_failed" c:identifier="ide_runner_set_failed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Runner" c:type="IdeRunner*"/>
+          </instance-parameter>
+          <parameter name="failed" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_flags" c:identifier="ide_runner_set_flags">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -19822,7 +19909,16 @@ within the destination process.</doc>
       <property name="environment" transfer-ownership="none">
         <type name="Environment"/>
       </property>
+      <property name="failed" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">If the runner has "failed". This should be set if a plugin can determine
+that the runner cannot be executed due to an external issue. One such
+example might be a debugger plugin that cannot locate a suitable debugger
+to run the program.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="run-on-host" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The "run-on-host" property indicates the program should be run on the
+host machine rather than inside the application sandbox.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent_instance">
@@ -20244,7 +20340,7 @@ within the destination process.</doc>
         <callback name="get_stdin">
           <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
-            <type name="Gio.InputStream" c:type="GInputStream*"/>
+            <type name="Gio.OutputStream" c:type="GOutputStream*"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
@@ -20257,7 +20353,7 @@ within the destination process.</doc>
         <callback name="get_stdout">
           <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
-            <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+            <type name="Gio.InputStream" c:type="GInputStream*"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
@@ -20270,7 +20366,7 @@ within the destination process.</doc>
         <callback name="get_stderr">
           <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">An #GOutputStream or %NULL.</doc>
-            <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+            <type name="Gio.InputStream" c:type="GInputStream*"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
@@ -20370,6 +20466,20 @@ within the destination process.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="get_runtime">
+        <callback name="get_runtime">
+          <return-value transfer-ownership="full" nullable="1">
+            <doc xml:space="preserve">An #IdeRuntime or %NULL.</doc>
+            <type name="Runtime" c:type="IdeRuntime*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeRuntime</doc>
+              <type name="Runner" c:type="IdeRunner*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_reserved1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
@@ -20389,9 +20499,6 @@ within the destination process.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
       <field name="_reserved7">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="_reserved8">
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
@@ -27358,6 +27465,81 @@ or read from stderr/stdout as necessary.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="communicate_utf8_async"
+                      invoker="communicate_utf8_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Subprocess" c:type="IdeSubprocess*"/>
+          </instance-parameter>
+          <parameter name="stdin_buf"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The data to send to stdin or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="communicate_utf8_finish"
+                      invoker="communicate_utf8_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if successful; otherwise %FALSE and @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">An #IdeSubprocess</doc>
+            <type name="Subprocess" c:type="IdeSubprocess*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">A #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+          <parameter name="stdout_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for the UTF-8 formatted output string or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="stderr_buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A location for the UTF-8 formatted output string or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="force_exit" invoker="force_exit">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28419,6 +28601,83 @@ or read from stderr/stdout as necessary.</doc>
                        allow-none="1">
               <doc xml:space="preserve">A location for a #Bytes.</doc>
               <type name="GLib.Bytes" c:type="GBytes**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="communicate_utf8_async">
+        <callback name="communicate_utf8_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Subprocess" c:type="IdeSubprocess*"/>
+            </parameter>
+            <parameter name="stdin_buf"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">The data to send to stdin or %NULL</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="communicate_utf8_finish">
+        <callback name="communicate_utf8_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if successful; otherwise %FALSE and @error is set.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">An #IdeSubprocess</doc>
+              <type name="Subprocess" c:type="IdeSubprocess*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">A #GAsyncResult</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+            <parameter name="stdout_buf"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A location for the UTF-8 formatted output string or %NULL</doc>
+              <type name="utf8" c:type="gchar**"/>
+            </parameter>
+            <parameter name="stderr_buf"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">A location for the UTF-8 formatted output string or %NULL</doc>
+              <type name="utf8" c:type="gchar**"/>
             </parameter>
           </parameters>
         </callback>
@@ -30298,10 +30557,10 @@ is assumed.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="TagsBuilder" c:type="IdeTagsBuilder*"/>
           </instance-parameter>
-          <parameter name="directory_or_flie" transfer-ownership="none">
+          <parameter name="directory_or_file" transfer-ownership="none">
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
-          <parameter name="asynchronous" transfer-ownership="none">
+          <parameter name="recursive" transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="cancellable"
@@ -30407,10 +30666,10 @@ is assumed.</doc>
             <parameter name="self" transfer-ownership="none">
               <type name="TagsBuilder" c:type="IdeTagsBuilder*"/>
             </parameter>
-            <parameter name="directory_or_flie" transfer-ownership="none">
+            <parameter name="directory_or_file" transfer-ownership="none">
               <type name="Gio.File" c:type="GFile*"/>
             </parameter>
-            <parameter name="asynchronous" transfer-ownership="none">
+            <parameter name="recursive" transfer-ownership="none">
               <type name="gboolean" c:type="gboolean"/>
             </parameter>
             <parameter name="cancellable"

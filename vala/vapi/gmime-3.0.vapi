@@ -259,22 +259,27 @@ namespace GMime {
 		[CCode (cname = "g_mime_filter_best_encoding")]
 		public GMime.ContentEncoding encoding (GMime.EncodingConstraint constraint);
 	}
-	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_crlf_get_type ()")]
-	public class FilterCRLF : GMime.Filter {
-		public bool dots;
-		public bool encode;
-		public bool saw_cr;
-		public bool saw_dot;
-		public bool saw_lf;
-		[CCode (cname = "g_mime_filter_crlf_new", has_construct_function = false, type = "GMimeFilter*")]
-		public FilterCRLF (bool encode, bool dots);
-	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_charset_get_type ()")]
 	public class FilterCharset : GMime.Filter {
 		public weak string from_charset;
 		public weak string to_charset;
 		[CCode (cname = "g_mime_filter_charset_new", has_construct_function = false, type = "GMimeFilter*")]
 		public FilterCharset (string from_charset, string to_charset);
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_checksum_get_type ()")]
+	public class FilterChecksum : GMime.Filter {
+		public weak GLib.Checksum checksum;
+		[CCode (cname = "g_mime_filter_checksum_new", has_construct_function = false, type = "GMimeFilter*")]
+		public FilterChecksum (GLib.ChecksumType type);
+		[CCode (cname = "g_mime_filter_checksum_get_digest")]
+		public size_t get_digest (uint8 digest, size_t len);
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", lower_case_csuffix = "filter_dos2unix", type_id = "g_mime_filter_dos2unix_get_type ()")]
+	public class FilterDos2Unix : GMime.Filter {
+		public bool ensure_newline;
+		public char pc;
+		[CCode (cname = "g_mime_filter_dos2unix_new", has_construct_function = false, type = "GMimeFilter*")]
+		public FilterDos2Unix (bool ensure_newline);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_enriched_get_type ()")]
 	public class FilterEnriched : GMime.Filter {
@@ -308,17 +313,23 @@ namespace GMime {
 		[CCode (cname = "g_mime_filter_html_new", has_construct_function = false, type = "GMimeFilter*")]
 		public FilterHTML (uint32 flags, uint32 colour);
 	}
-	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_md5_get_type ()")]
-	public class FilterMd5 : GMime.Filter {
-		[CCode (cname = "g_mime_filter_md5_new", has_construct_function = false, type = "GMimeFilter*")]
-		public FilterMd5 ();
-		[CCode (cname = "g_mime_filter_md5_get_digest")]
-		public void get_digest (uint8 digest);
+	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_smtp_data_get_type ()")]
+	public class FilterSmtpData : GMime.Filter {
+		public bool bol;
+		[CCode (cname = "g_mime_filter_smtp_data_new", has_construct_function = false, type = "GMimeFilter*")]
+		public FilterSmtpData ();
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_strip_get_type ()")]
 	public class FilterStrip : GMime.Filter {
 		[CCode (cname = "g_mime_filter_strip_new", has_construct_function = false, type = "GMimeFilter*")]
 		public FilterStrip ();
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", lower_case_csuffix = "filter_unix2dos", type_id = "g_mime_filter_unix2dos_get_type ()")]
+	public class FilterUnix2Dos : GMime.Filter {
+		public bool ensure_newline;
+		public char pc;
+		[CCode (cname = "g_mime_filter_unix2dos_new", has_construct_function = false, type = "GMimeFilter*")]
+		public FilterUnix2Dos (bool ensure_newline);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_windows_get_type ()")]
 	public class FilterWindows : GMime.Filter {
@@ -360,23 +371,43 @@ namespace GMime {
 		public weak string value;
 		[CCode (has_construct_function = false)]
 		protected Header ();
+		[CCode (cname = "g_mime_header_format_addrlist")]
+		public string format_addrlist (GMime.FormatOptions options, string value, string charset);
+		[CCode (cname = "g_mime_header_format_content_disposition")]
+		public string format_content_disposition (GMime.FormatOptions options, string value, string charset);
+		[CCode (cname = "g_mime_header_format_content_type")]
+		public string format_content_type (GMime.FormatOptions options, string value, string charset);
+		[CCode (cname = "g_mime_header_format_default")]
+		public string format_default (GMime.FormatOptions options, string value, string charset);
+		[CCode (cname = "g_mime_header_format_message_id")]
+		public string format_message_id (GMime.FormatOptions options, string value, string charset);
+		[CCode (cname = "g_mime_header_format_received")]
+		public string format_received (GMime.FormatOptions options, string value, string charset);
+		[CCode (cname = "g_mime_header_format_references")]
+		public string format_references (GMime.FormatOptions options, string value, string charset);
 		[CCode (cname = "g_mime_header_get_name")]
 		public unowned string get_name ();
 		[CCode (cname = "g_mime_header_get_offset")]
 		public int64 get_offset ();
+		[CCode (cname = "g_mime_header_get_raw_name")]
+		public unowned string get_raw_name ();
+		[CCode (cname = "g_mime_header_get_raw_value")]
+		public unowned string get_raw_value ();
 		[CCode (cname = "g_mime_header_get_value")]
 		public unowned string get_value ();
+		[CCode (cname = "g_mime_header_set_raw_value")]
+		public void set_raw_value (string raw_value);
 		[CCode (cname = "g_mime_header_set_value")]
-		public void set_value (string value);
+		public void set_value (GMime.FormatOptions options, string value, string charset);
 		[CCode (cname = "g_mime_header_write_to_stream")]
-		public static ssize_t write_to_stream (GMime.HeaderList headers, GMime.Header header, GMime.FormatOptions options, GMime.Stream stream);
+		public ssize_t write_to_stream (GMime.FormatOptions options, GMime.Stream stream);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_header_list_get_type ()")]
 	public class HeaderList : GLib.Object {
 		[CCode (cname = "g_mime_header_list_new", has_construct_function = false)]
 		public HeaderList (GMime.ParserOptions options);
 		[CCode (cname = "g_mime_header_list_append")]
-		public void append (string name, string value);
+		public void append (string name, string value, string charset);
 		[CCode (cname = "g_mime_header_list_clear")]
 		public void clear ();
 		[CCode (cname = "g_mime_header_list_contains")]
@@ -386,13 +417,13 @@ namespace GMime {
 		[CCode (cname = "g_mime_header_list_get_header_at")]
 		public unowned GMime.Header get_header_at (int index);
 		[CCode (cname = "g_mime_header_list_prepend")]
-		public void prepend (string name, string value);
+		public void prepend (string name, string value, string charset);
 		[CCode (cname = "g_mime_header_list_remove")]
 		public bool remove (string name);
 		[CCode (cname = "g_mime_header_list_remove_at")]
 		public void remove_at (int index);
 		[CCode (cname = "g_mime_header_list_set")]
-		public void @set (string name, string value);
+		public void @set (string name, string value, string charset);
 		[CCode (cname = "g_mime_header_list_to_string")]
 		public string to_string (GMime.FormatOptions options);
 		[CCode (cname = "g_mime_header_list_write_to_stream")]
@@ -415,7 +446,7 @@ namespace GMime {
 		[CCode (cname = "internet_address_to_string")]
 		public string to_new_string (GMime.FormatOptions options, bool encode);
 		[NoWrapper]
-		public virtual void to_string (GMime.FormatOptions options, uint32 flags, size_t linelen, GLib.StringBuilder @out);
+		public virtual void to_string (GMime.FormatOptions options, uint32 flags, size_t linelen, GLib.StringBuilder str);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "InternetAddressGroup", type_id = "internet_address_group_get_type ()")]
 	public class InternetAddressGroup : GMime.InternetAddress {
@@ -442,6 +473,8 @@ namespace GMime {
 		public void clear ();
 		[CCode (cname = "internet_address_list_contains")]
 		public bool contains (GMime.InternetAddress ia);
+		[CCode (cname = "internet_address_list_encode")]
+		public void encode (GMime.FormatOptions options, GLib.StringBuilder str);
 		[CCode (cname = "internet_address_list_get_address")]
 		public unowned GMime.InternetAddress get_address (int index);
 		[CCode (cname = "internet_address_list_index_of")]
@@ -462,8 +495,6 @@ namespace GMime {
 		public void set_address (int index, GMime.InternetAddress ia);
 		[CCode (cname = "internet_address_list_to_string")]
 		public string to_string (GMime.FormatOptions options, bool encode);
-		[CCode (cname = "internet_address_list_writer")]
-		public void writer (GMime.FormatOptions options, GLib.StringBuilder str);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "InternetAddressMailbox", type_id = "internet_address_mailbox_get_type ()")]
 	public class InternetAddressMailbox : GMime.InternetAddress {
@@ -497,8 +528,6 @@ namespace GMime {
 		public unowned GMime.Object get_body ();
 		[CCode (cname = "g_mime_message_get_date")]
 		public void get_date (out long date, out int tz_offset);
-		[CCode (cname = "g_mime_message_get_date_as_string")]
-		public string get_date_as_string ();
 		[CCode (cname = "g_mime_message_get_message_id")]
 		public unowned string get_message_id ();
 		[CCode (cname = "g_mime_message_get_mime_part")]
@@ -509,8 +538,6 @@ namespace GMime {
 		public GMime.Message partial_split_message (size_t max_size, size_t nparts);
 		[CCode (cname = "g_mime_message_set_date")]
 		public void set_date (long date, int tz_offset);
-		[CCode (cname = "g_mime_message_set_date_as_string")]
-		public void set_date_as_string (string str);
 		[CCode (cname = "g_mime_message_set_message_id")]
 		public void set_message_id (string message_id);
 		[CCode (cname = "g_mime_message_set_mime_part")]
@@ -605,7 +632,7 @@ namespace GMime {
 		[CCode (cname = "g_mime_object_new", has_construct_function = false)]
 		public Object (GMime.ParserOptions options, GMime.ContentType content_type);
 		[CCode (cname = "g_mime_object_append_header")]
-		public void append_header (string header, string value);
+		public void append_header (string header, string value, string charset);
 		public virtual void encode (GMime.EncodingConstraint constraint);
 		[CCode (cname = "g_mime_object_get_content_disposition")]
 		public unowned GMime.ContentDisposition get_content_disposition ();
@@ -633,7 +660,7 @@ namespace GMime {
 		[NoWrapper]
 		public virtual void headers_cleared ();
 		[CCode (cname = "g_mime_object_prepend_header")]
-		public void prepend_header (string header, string value);
+		public void prepend_header (string header, string value, string charset);
 		[CCode (cname = "g_mime_object_register_type")]
 		public static void register_type (string type, string subtype, GLib.Type object_type);
 		[CCode (cname = "g_mime_object_remove_header")]
@@ -650,7 +677,7 @@ namespace GMime {
 		[CCode (cname = "g_mime_object_set_disposition")]
 		public void set_disposition (string disposition);
 		[CCode (cname = "g_mime_object_set_header")]
-		public void set_header (string header, string value);
+		public void set_header (string header, string value, string charset);
 		[CCode (cname = "g_mime_object_to_string")]
 		public string to_string (GMime.FormatOptions options);
 		[CCode (cname = "g_mime_object_new_type", has_construct_function = false)]
@@ -719,14 +746,14 @@ namespace GMime {
 		public bool eos ();
 		[CCode (cname = "g_mime_parser_get_format")]
 		public GMime.Format get_format ();
-		[CCode (cname = "g_mime_parser_get_from")]
-		public string get_from ();
-		[CCode (cname = "g_mime_parser_get_from_offset")]
-		public int64 get_from_offset ();
 		[CCode (cname = "g_mime_parser_get_headers_begin")]
 		public int64 get_headers_begin ();
 		[CCode (cname = "g_mime_parser_get_headers_end")]
 		public int64 get_headers_end ();
+		[CCode (cname = "g_mime_parser_get_mbox_marker")]
+		public string get_mbox_marker ();
+		[CCode (cname = "g_mime_parser_get_mbox_marker_offset")]
+		public int64 get_mbox_marker_offset ();
 		[CCode (cname = "g_mime_parser_get_persist_stream")]
 		public bool get_persist_stream ();
 		[CCode (cname = "g_mime_parser_get_respect_content_length")]
@@ -877,7 +904,6 @@ namespace GMime {
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_signature_list_get_type ()")]
 	public class SignatureList : GLib.Object {
-		public weak GLib.GenericArray<void*> array;
 		[CCode (cname = "g_mime_signature_list_new", has_construct_function = false)]
 		public SignatureList ();
 		[CCode (cname = "g_mime_signature_list_add")]
@@ -1041,10 +1067,15 @@ namespace GMime {
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_stream_null_get_type ()")]
 	public class StreamNull : GMime.Stream {
+		public bool count_newlines;
 		public size_t newlines;
 		public size_t written;
 		[CCode (cname = "g_mime_stream_null_new", has_construct_function = false, type = "GMimeStream*")]
 		public StreamNull ();
+		[CCode (cname = "g_mime_stream_null_get_count_newlines")]
+		public bool get_count_newlines ();
+		[CCode (cname = "g_mime_stream_null_set_count_newlines")]
+		public void set_count_newlines (bool count);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_stream_pipe_get_type ()")]
 	public class StreamPipe : GMime.Stream {
@@ -1125,12 +1156,16 @@ namespace GMime {
 		public void free ();
 		[CCode (cname = "g_mime_format_options_get_newline")]
 		public unowned string get_newline ();
+		[CCode (cname = "g_mime_format_options_get_newline_format")]
+		public GMime.NewLineFormat get_newline_format ();
 		[CCode (cname = "g_mime_format_options_get_param_encoding_method")]
 		public GMime.ParamEncodingMethod get_param_encoding_method ();
 		[CCode (cname = "g_mime_format_options_is_hidden_header")]
 		public bool is_hidden_header (string header);
 		[CCode (cname = "g_mime_format_options_remove_hidden_header")]
 		public void remove_hidden_header (string header);
+		[CCode (cname = "g_mime_format_options_set_newline_format")]
+		public void set_newline_format (GMime.NewLineFormat newline);
 		[CCode (cname = "g_mime_format_options_set_param_encoding_method")]
 		public void set_param_encoding_method (GMime.ParamEncodingMethod method);
 	}
@@ -1142,14 +1177,14 @@ namespace GMime {
 		public weak string charsets;
 		[CCode (cname = "g_mime_parser_options_free")]
 		public void free ();
-		[CCode (cname = "g_mime_parser_options_get_address_parser_compliance_mode")]
-		public GMime.RfcComplianceMode get_address_parser_compliance_mode ();
+		[CCode (cname = "g_mime_parser_options_get_address_compliance_mode")]
+		public GMime.RfcComplianceMode get_address_compliance_mode ();
 		[CCode (cname = "g_mime_parser_options_get_parameter_compliance_mode")]
 		public GMime.RfcComplianceMode get_parameter_compliance_mode ();
 		[CCode (cname = "g_mime_parser_options_get_rfc2047_compliance_mode")]
 		public GMime.RfcComplianceMode get_rfc2047_compliance_mode ();
-		[CCode (cname = "g_mime_parser_options_set_address_parser_compliance_mode")]
-		public void set_address_parser_compliance_mode (GMime.RfcComplianceMode mode);
+		[CCode (cname = "g_mime_parser_options_set_address_compliance_mode")]
+		public void set_address_compliance_mode (GMime.RfcComplianceMode mode);
 		[CCode (cname = "g_mime_parser_options_set_fallback_charsets")]
 		public void set_fallback_charsets (string charsets);
 		[CCode (cname = "g_mime_parser_options_set_parameter_compliance_mode")]
@@ -1321,11 +1356,10 @@ namespace GMime {
 		SYS_ERROR,
 		TOFU_CONFLICT
 	}
-	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_STREAM_BUFFER_", has_type_id = false)]
+	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_STREAM_BUFFER_BLOCK_", has_type_id = false)]
 	public enum StreamBufferMode {
-		CACHE_READ,
-		BLOCK_READ,
-		BLOCK_WRITE
+		READ,
+		WRITE
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_TRUST_", has_type_id = false)]
 	public enum Trust {
@@ -1342,7 +1376,7 @@ namespace GMime {
 		VERIFY_NONE
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", has_target = false)]
-	public delegate ssize_t HeaderWriter (GMime.ParserOptions options, GMime.FormatOptions format, GMime.Stream stream, string name, string value);
+	public delegate string HeaderRawValueFormatter (GMime.Header header, GMime.FormatOptions options, string value, string charset);
 	[CCode (cheader_filename = "gmime/gmime.h", instance_pos = 2.9)]
 	public delegate void ObjectForeachFunc (GMime.Object parent, GMime.Object part);
 	[CCode (cheader_filename = "gmime/gmime.h", instance_pos = 4.9)]
@@ -1453,18 +1487,10 @@ namespace GMime {
 	public static size_t encoding_uuencode_close (uint8 inbuf, size_t inlen, uint8 outbuf, uint8 uubuf, int state, uint32 save);
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_encoding_uuencode_step")]
 	public static size_t encoding_uuencode_step (uint8 inbuf, size_t inlen, uint8 outbuf, uint8 uubuf, int state, uint32 save);
-	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_format_get_newline_format")]
-	public static GMime.NewLineFormat format_get_newline_format (GMime.FormatOptions options);
-	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_format_set_newline_format")]
-	public static void format_set_newline_format (GMime.FormatOptions options, GMime.NewLineFormat newline);
-	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_iconv_init")]
-	public static void iconv_init ();
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_iconv_locale_to_utf8")]
 	public static string iconv_locale_to_utf8 (string str);
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_iconv_locale_to_utf8_length")]
 	public static string iconv_locale_to_utf8_length (string str, size_t n);
-	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_iconv_shutdown")]
-	public static void iconv_shutdown ();
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_iconv_utf8_to_locale")]
 	public static string iconv_utf8_to_locale (string str);
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_iconv_utf8_to_locale_length")]

@@ -763,6 +763,22 @@ by the connection, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_state_reason"
+              c:identifier="nm_active_connection_get_state_reason"
+              version="1.8">
+        <doc xml:space="preserve">Gets the reason for active connection's state.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the reason</doc>
+          <type name="ActiveConnectionStateReason"
+                c:type="NMActiveConnectionStateReason"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMActiveConnection</doc>
+            <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_uuid" c:identifier="nm_active_connection_get_uuid">
         <doc xml:space="preserve">Gets the #NMConnection's UUID.</doc>
         <return-value transfer-ownership="none">
@@ -858,6 +874,19 @@ nm_active_connection_get_specific_object_path() for more details.</doc>
       <field name="parent">
         <type name="Object" c:type="NMObject"/>
       </field>
+      <glib:signal name="state-changed" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="p0" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="ActiveConnectionClass"
             c:type="NMActiveConnectionClass"
@@ -909,6 +938,118 @@ network.</doc>
               glib:nick="deactivated">
         <doc xml:space="preserve">the network connection is disconnected
   and will be removed</doc>
+      </member>
+    </enumeration>
+    <enumeration name="ActiveConnectionStateReason"
+                 version="1.8"
+                 glib:type-name="NMActiveConnectionStateReason"
+                 glib:get-type="nm_active_connection_state_reason_get_type"
+                 c:type="NMActiveConnectionStateReason">
+      <doc xml:space="preserve">Active connection state reasons.</doc>
+      <member name="unknown"
+              value="0"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">The reason for the active connection
+  state change is unknown.</doc>
+      </member>
+      <member name="none"
+              value="1"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">No reason was given for the active
+  connection state change.</doc>
+      </member>
+      <member name="user_disconnected"
+              value="2"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_USER_DISCONNECTED"
+              glib:nick="user-disconnected">
+        <doc xml:space="preserve">The active connection changed
+  state because the user disconnected it.</doc>
+      </member>
+      <member name="device_disconnected"
+              value="3"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_DEVICE_DISCONNECTED"
+              glib:nick="device-disconnected">
+        <doc xml:space="preserve">The active connection
+  changed state because the device it was using was disconnected.</doc>
+      </member>
+      <member name="service_stopped"
+              value="4"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_SERVICE_STOPPED"
+              glib:nick="service-stopped">
+        <doc xml:space="preserve">The service providing the
+  VPN connection was stopped.</doc>
+      </member>
+      <member name="ip_config_invalid"
+              value="5"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_IP_CONFIG_INVALID"
+              glib:nick="ip-config-invalid">
+        <doc xml:space="preserve">The IP config of the active
+  connection was invalid.</doc>
+      </member>
+      <member name="connect_timeout"
+              value="6"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_CONNECT_TIMEOUT"
+              glib:nick="connect-timeout">
+        <doc xml:space="preserve">The connection attempt to
+  the VPN service timed out.</doc>
+      </member>
+      <member name="service_start_timeout"
+              value="7"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_SERVICE_START_TIMEOUT"
+              glib:nick="service-start-timeout">
+        <doc xml:space="preserve">A timeout occurred
+  while starting the service providing the VPN connection.</doc>
+      </member>
+      <member name="service_start_failed"
+              value="8"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_SERVICE_START_FAILED"
+              glib:nick="service-start-failed">
+        <doc xml:space="preserve">Starting the service
+  providing the VPN connection failed.</doc>
+      </member>
+      <member name="no_secrets"
+              value="9"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_NO_SECRETS"
+              glib:nick="no-secrets">
+        <doc xml:space="preserve">Necessary secrets for the
+  connection were not provided.</doc>
+      </member>
+      <member name="login_failed"
+              value="10"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_LOGIN_FAILED"
+              glib:nick="login-failed">
+        <doc xml:space="preserve">Authentication to the
+  server failed.</doc>
+      </member>
+      <member name="connection_removed"
+              value="11"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_CONNECTION_REMOVED"
+              glib:nick="connection-removed">
+        <doc xml:space="preserve">The connection was
+  deleted from settings.</doc>
+      </member>
+      <member name="dependency_failed"
+              value="12"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_DEPENDENCY_FAILED"
+              glib:nick="dependency-failed">
+        <doc xml:space="preserve">Master connection of this
+  connection failed to activate.</doc>
+      </member>
+      <member name="device_realize_failed"
+              value="13"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_DEVICE_REALIZE_FAILED"
+              glib:nick="device-realize-failed">
+        <doc xml:space="preserve">Could not create the
+  software device link.</doc>
+      </member>
+      <member name="device_removed"
+              value="14"
+              c:identifier="NM_ACTIVE_CONNECTION_STATE_REASON_DEVICE_REMOVED"
+              glib:nick="device-removed">
+        <doc xml:space="preserve">The device this connection
+  depended on disappeared.</doc>
       </member>
     </enumeration>
     <enumeration name="AgentManagerError"
@@ -11811,6 +11952,11 @@ and the value is of the correct type and well-formed.</doc>
               c:type="NM_IP_ROUTE_ATTRIBUTE_CWND">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="IP_ROUTE_ATTRIBUTE_FROM"
+              value="from"
+              c:type="NM_IP_ROUTE_ATTRIBUTE_FROM">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="IP_ROUTE_ATTRIBUTE_INITCWND"
               value="initcwnd"
               c:type="NM_IP_ROUTE_ATTRIBUTE_INITCWND">
@@ -11849,11 +11995,6 @@ and the value is of the correct type and well-formed.</doc>
     <constant name="IP_ROUTE_ATTRIBUTE_MTU"
               value="mtu"
               c:type="NM_IP_ROUTE_ATTRIBUTE_MTU">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="IP_ROUTE_ATTRIBUTE_PREF_SRC"
-              value="pref-src"
-              c:type="NM_IP_ROUTE_ATTRIBUTE_PREF_SRC">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="IP_ROUTE_ATTRIBUTE_SRC"
@@ -12093,7 +12234,7 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="1" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="2" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -16225,6 +16366,7 @@ example "ppp" or "wireless" or "wired".</doc>
            glib:type-name="NMSetting8021x"
            glib:get-type="nm_setting_802_1x_get_type"
            glib:type-struct="Setting8021xClass">
+      <doc xml:space="preserve">AIEEE 802.1x Authentication Settings</doc>
       <constructor name="new" c:identifier="nm_setting_802_1x_new">
         <doc xml:space="preserve">Creates a new #NMSetting8021x object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -18166,7 +18308,7 @@ PKCS#&lt;!-- --&gt;12 data and the #NMSetting8021x:phase2-private-key-password
 property must be set to password used to decrypt the PKCS#&lt;!-- --&gt;12
 certificate and key. When using PKCS#&lt;!-- --&gt;12 files and the path
 scheme, this property should be set to the full UTF-8 encoded path of the
-key, prefixed with the string "file://" and and ending with a terminating
+key, prefixed with the string "file://" and ending with a terminating
 NUL byte, and as with the blob scheme the
 #NMSetting8021x:phase2-private-key-password property must be set to the
 password used to decode the PKCS#&lt;!-- --&gt;12 private key and certificate.
@@ -18228,7 +18370,7 @@ PKCS#&lt;!-- --&gt;12 data and the #NMSetting8021x:private-key-password
 property must be set to password used to decrypt the PKCS#&lt;!-- --&gt;12
 certificate and key. When using PKCS#&lt;!-- --&gt;12 files and the path
 scheme, this property should be set to the full UTF-8 encoded path of the
-key, prefixed with the string "file://" and and ending with a terminating
+key, prefixed with the string "file://" and ending with a terminating
 NUL byte, and as with the blob scheme the "private-key-password" property
 must be set to the password used to decode the PKCS#&lt;!-- --&gt;12 private
 key and certificate.
@@ -18414,6 +18556,7 @@ URI of an object on a PKCS#11 token</doc>
            glib:type-name="NMSettingAdsl"
            glib:get-type="nm_setting_adsl_get_type"
            glib:type-struct="SettingAdslClass">
+      <doc xml:space="preserve">ADSL Settings</doc>
       <constructor name="new" c:identifier="nm_setting_adsl_new">
         <doc xml:space="preserve">Creates a new #NMSettingAdsl object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -18558,6 +18701,7 @@ URI of an object on a PKCS#11 token</doc>
            glib:type-name="NMSettingBluetooth"
            glib:get-type="nm_setting_bluetooth_get_type"
            glib:type-struct="SettingBluetoothClass">
+      <doc xml:space="preserve">Bluetooth Settings</doc>
       <constructor name="new" c:identifier="nm_setting_bluetooth_new">
         <doc xml:space="preserve">Creates a new #NMSettingBluetooth object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -18627,6 +18771,7 @@ Area Networking connections to devices supporting the NAP profile.</doc>
            glib:type-name="NMSettingBond"
            glib:get-type="nm_setting_bond_get_type"
            glib:type-struct="SettingBondClass">
+      <doc xml:space="preserve">Bonding Settings</doc>
       <constructor name="new" c:identifier="nm_setting_bond_new">
         <doc xml:space="preserve">Creates a new #NMSettingBond object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -18845,6 +18990,7 @@ must be strings. Option names must contain only alphanumeric characters
            glib:type-name="NMSettingBridge"
            glib:get-type="nm_setting_bridge_get_type"
            glib:type-struct="SettingBridgeClass">
+      <doc xml:space="preserve">Bridging Settings</doc>
       <constructor name="new" c:identifier="nm_setting_bridge_new">
         <doc xml:space="preserve">Creates a new #NMSettingBridge object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -19039,6 +19185,7 @@ bridge.</doc>
            glib:type-name="NMSettingBridgePort"
            glib:get-type="nm_setting_bridge_port_get_type"
            glib:type-struct="SettingBridgePortClass">
+      <doc xml:space="preserve">Bridge Port Settings</doc>
       <constructor name="new" c:identifier="nm_setting_bridge_port_new">
         <doc xml:space="preserve">Creates a new #NMSettingBridgePort object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -19128,6 +19275,7 @@ port.</doc>
            glib:type-name="NMSettingCdma"
            glib:get-type="nm_setting_cdma_get_type"
            glib:type-struct="SettingCdmaClass">
+      <doc xml:space="preserve">CDMA-based Mobile Broadband Settings</doc>
       <constructor name="new" c:identifier="nm_setting_cdma_new">
         <doc xml:space="preserve">Creates a new #NMSettingCdma object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -19530,8 +19678,7 @@ two connections.</doc>
            glib:type-name="NMSettingConnection"
            glib:get-type="nm_setting_connection_get_type"
            glib:type-struct="SettingConnectionClass">
-      <doc xml:space="preserve">The NMSettingConnection struct contains only private data.
-It should only be accessed through the functions described below.</doc>
+      <doc xml:space="preserve">General Connection Profile Settings</doc>
       <constructor name="new" c:identifier="nm_setting_connection_new">
         <doc xml:space="preserve">Creates a new #NMSettingConnection object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -20318,6 +20465,7 @@ should be activated when master is activated.</doc>
            glib:type-name="NMSettingDcb"
            glib:get-type="nm_setting_dcb_get_type"
            glib:type-struct="SettingDcbClass">
+      <doc xml:space="preserve">Data Center Bridging Settings</doc>
       <constructor name="new" c:identifier="nm_setting_dcb_new">
         <doc xml:space="preserve">Creates a new #NMSettingDcb object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -20921,6 +21069,7 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
            glib:type-name="NMSettingDummy"
            glib:get-type="nm_setting_dummy_get_type"
            glib:type-struct="SettingDummyClass">
+      <doc xml:space="preserve">Dummy Link Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_dummy_new"
                    version="1.8">
@@ -20953,6 +21102,7 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
            glib:type-name="NMSettingGeneric"
            glib:get-type="nm_setting_generic_get_type"
            glib:type-struct="SettingGenericClass">
+      <doc xml:space="preserve">Generic Link Settings</doc>
       <constructor name="new" c:identifier="nm_setting_generic_new">
         <doc xml:space="preserve">Creates a new #NMSettingGeneric object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -20983,6 +21133,7 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
            glib:type-name="NMSettingGsm"
            glib:get-type="nm_setting_gsm_get_type"
            glib:type-struct="SettingGsmClass">
+      <doc xml:space="preserve">GSM-based Mobile Broadband Settings</doc>
       <constructor name="new" c:identifier="nm_setting_gsm_new">
         <doc xml:space="preserve">Creates a new #NMSettingGsm object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -21274,6 +21425,7 @@ username is required, it is specified here.</doc>
            glib:type-name="NMSettingIP4Config"
            glib:get-type="nm_setting_ip4_config_get_type"
            glib:type-struct="SettingIP4ConfigClass">
+      <doc xml:space="preserve">IPv4 Settings</doc>
       <constructor name="new" c:identifier="nm_setting_ip4_config_new">
         <doc xml:space="preserve">Creates a new #NMSettingIP4Config object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -21351,6 +21503,7 @@ cannot be set at the same time.</doc>
            glib:type-name="NMSettingIP6Config"
            glib:get-type="nm_setting_ip6_config_get_type"
            glib:type-struct="SettingIP6ConfigClass">
+      <doc xml:space="preserve">IPv6 Settings</doc>
       <constructor name="new" c:identifier="nm_setting_ip6_config_new">
         <doc xml:space="preserve">Creates a new #NMSettingIP6Config object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -22472,6 +22625,7 @@ Element-Type: NMIPRoute</doc>
            glib:type-name="NMSettingIPTunnel"
            glib:get-type="nm_setting_ip_tunnel_get_type"
            glib:type-struct="SettingIPTunnelClass">
+      <doc xml:space="preserve">IP Tunneling Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_ip_tunnel_new"
                    version="1.2">
@@ -22783,6 +22937,7 @@ packets inherit the TTL value.</doc>
            glib:type-name="NMSettingInfiniband"
            glib:get-type="nm_setting_infiniband_get_type"
            glib:type-struct="SettingInfinibandClass">
+      <doc xml:space="preserve">Infiniband Settings</doc>
       <constructor name="new" c:identifier="nm_setting_infiniband_new">
         <doc xml:space="preserve">Creates a new #NMSettingInfiniband object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -22965,6 +23120,7 @@ overridden by user-controlled defaults configuration, is "never".</doc>
            glib:type-name="NMSettingMacsec"
            glib:get-type="nm_setting_macsec_get_type"
            glib:type-struct="SettingMacsecClass">
+      <doc xml:space="preserve">MACSec Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_macsec_new"
                    version="1.6">
@@ -23228,6 +23384,7 @@ in MKA (MACsec Key Agreement) is obtained.</doc>
            glib:type-name="NMSettingMacvlan"
            glib:get-type="nm_setting_macvlan_get_type"
            glib:type-struct="SettingMacvlanClass">
+      <doc xml:space="preserve">MAC VLAN Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_macvlan_new"
                    version="1.2">
@@ -23393,6 +23550,7 @@ with a #NMSettingWired:mac-address property.</doc>
            glib:type-name="NMSettingOlpcMesh"
            glib:get-type="nm_setting_olpc_mesh_get_type"
            glib:type-struct="SettingOlpcMeshClass">
+      <doc xml:space="preserve">OLPC Wireless Mesh Settings</doc>
       <constructor name="new" c:identifier="nm_setting_olpc_mesh_new">
         <doc xml:space="preserve">Creates a new #NMSettingOlpcMesh object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -23475,6 +23633,7 @@ answers the request.</doc>
            glib:type-name="NMSettingPpp"
            glib:get-type="nm_setting_ppp_get_type"
            glib:type-struct="SettingPppClass">
+      <doc xml:space="preserve">Point-to-Point Protocol Settings</doc>
       <constructor name="new" c:identifier="nm_setting_ppp_new">
         <doc xml:space="preserve">Creates a new #NMSettingPpp object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -23879,6 +24038,7 @@ be set to %TRUE.  If 128-bit MPPE is not available the session will fail.</doc>
            glib:type-name="NMSettingPppoe"
            glib:get-type="nm_setting_pppoe_get_type"
            glib:type-struct="SettingPppoeClass">
+      <doc xml:space="preserve">PPP-over-Ethernet Settings</doc>
       <constructor name="new" c:identifier="nm_setting_pppoe_new">
         <doc xml:space="preserve">Creates a new #NMSettingPppoe object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -23977,6 +24137,7 @@ access concentrators or a specific service is known to be required.</doc>
            glib:type-name="NMSettingProxy"
            glib:get-type="nm_setting_proxy_get_type"
            glib:type-struct="SettingProxyClass">
+      <doc xml:space="preserve">WWW Proxy Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_proxy_new"
                    version="1.6">
@@ -24156,6 +24317,7 @@ secret is not required</doc>
            glib:type-name="NMSettingSerial"
            glib:get-type="nm_setting_serial_get_type"
            glib:type-struct="SettingSerialClass">
+      <doc xml:space="preserve">Serial Link Settings</doc>
       <constructor name="new" c:identifier="nm_setting_serial_new">
         <doc xml:space="preserve">Creates a new #NMSettingSerial object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -24310,6 +24472,7 @@ The 1 in "8n1" for example.</doc>
            glib:type-name="NMSettingTeam"
            glib:get-type="nm_setting_team_get_type"
            glib:type-struct="SettingTeamClass">
+      <doc xml:space="preserve">Teaming Settings</doc>
       <constructor name="new" c:identifier="nm_setting_team_new">
         <doc xml:space="preserve">Creates a new #NMSettingTeam object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -24359,6 +24522,7 @@ configuration is used.  See man teamd.conf for the format details.</doc>
            glib:type-name="NMSettingTeamPort"
            glib:get-type="nm_setting_team_port_get_type"
            glib:type-struct="SettingTeamPortClass">
+      <doc xml:space="preserve">Team Port Settings</doc>
       <constructor name="new" c:identifier="nm_setting_team_port_new">
         <doc xml:space="preserve">Creates a new #NMSettingTeamPort object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -24408,6 +24572,7 @@ used. See man teamd.conf for the format details.</doc>
            glib:type-name="NMSettingTun"
            glib:get-type="nm_setting_tun_get_type"
            glib:type-struct="SettingTunClass">
+      <doc xml:space="preserve">Tunnel Settings</doc>
       <constructor name="new" c:identifier="nm_setting_tun_new" version="1.2">
         <doc xml:space="preserve">Creates a new #NMSettingTun object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -24626,6 +24791,7 @@ nm_setting_enumerate_values()</doc>
            glib:type-name="NMSettingVlan"
            glib:get-type="nm_setting_vlan_get_type"
            glib:type-struct="SettingVlanClass">
+      <doc xml:space="preserve">VLAN Settings</doc>
       <constructor name="new" c:identifier="nm_setting_vlan_new">
         <doc xml:space="preserve">Creates a new #NMSettingVlan object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -24953,6 +25119,7 @@ with a #NMSettingWired:mac-address property.</doc>
            glib:type-name="NMSettingVpn"
            glib:get-type="nm_setting_vpn_get_type"
            glib:type-struct="SettingVpnClass">
+      <doc xml:space="preserve">VPN Settings</doc>
       <constructor name="new" c:identifier="nm_setting_vpn_new">
         <doc xml:space="preserve">Creates a new #NMSettingVpn object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -25289,6 +25456,7 @@ VPN connection.</doc>
            glib:type-name="NMSettingVxlan"
            glib:get-type="nm_setting_vxlan_get_type"
            glib:type-struct="SettingVxlanClass">
+      <doc xml:space="preserve">VXLAN Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_vxlan_new"
                    version="1.2">
@@ -25681,6 +25849,7 @@ tunnel endpoint.</doc>
            glib:type-name="NMSettingWimax"
            glib:get-type="nm_setting_wimax_get_type"
            glib:type-struct="SettingWimaxClass">
+      <doc xml:space="preserve">WiMax Settings</doc>
       <constructor name="new"
                    c:identifier="nm_setting_wimax_new"
                    deprecated="1"
@@ -25772,6 +25941,7 @@ should use.</doc>
            glib:type-name="NMSettingWired"
            glib:get-type="nm_setting_wired_get_type"
            glib:type-struct="SettingWiredClass">
+      <doc xml:space="preserve">Wired Ethernet Settings</doc>
       <constructor name="new" c:identifier="nm_setting_wired_new">
         <doc xml:space="preserve">Creates a new #NMSettingWired object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -26443,6 +26613,7 @@ are supported by all devices.</doc>
            glib:type-name="NMSettingWireless"
            glib:get-type="nm_setting_wireless_get_type"
            glib:type-struct="SettingWirelessClass">
+      <doc xml:space="preserve">Wi-Fi Settings</doc>
       <constructor name="new" c:identifier="nm_setting_wireless_new">
         <doc xml:space="preserve">Creates a new #NMSettingWireless object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -27069,6 +27240,7 @@ devices support setting a static transmit power.</doc>
            glib:type-name="NMSettingWirelessSecurity"
            glib:get-type="nm_setting_wireless_security_get_type"
            glib:type-struct="SettingWirelessSecurityClass">
+      <doc xml:space="preserve">Wi-Fi Security Settings</doc>
       <constructor name="new" c:identifier="nm_setting_wireless_security_new">
         <doc xml:space="preserve">Creates a new #NMSettingWirelessSecurity object with default values.</doc>
         <return-value transfer-ownership="full">
@@ -27132,7 +27304,7 @@ protocol list contains only "wpa" but the access point for the SSID specified
 by this connection only supports WPA2/RSN, the connection cannot be used
 with the access point.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the protocol was new and and was added to the allowed
+          <doc xml:space="preserve">%TRUE if the protocol was new and was added to the allowed
 protocol list, or %FALSE if it was already in the list</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -27478,7 +27650,7 @@ algorithm list.</doc>
         <doc xml:space="preserve">Removes an encryption algorithm from the allowed groupwise encryption
 algorithm list.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the algorithm was found and removed; %FALSE it it was not.</doc>
+          <doc xml:space="preserve">%TRUE if the algorithm was found and removed; %FALSE if it was not.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -27518,7 +27690,7 @@ algorithm list.</doc>
         <doc xml:space="preserve">Removes an encryption algorithm from the allowed pairwise encryption
 algorithm list.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the encryption algorith was found and removed; %FALSE it it was not.</doc>
+          <doc xml:space="preserve">%TRUE if the encryption algorith was found and removed; %FALSE if it was not.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -27555,7 +27727,7 @@ algorithm list.</doc>
               c:identifier="nm_setting_wireless_security_remove_proto_by_value">
         <doc xml:space="preserve">Removes a protocol from the allowed protocol list.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the protocol was found and removed; %FALSE it it was not.</doc>
+          <doc xml:space="preserve">%TRUE if the protocol was found and removed; %FALSE if it was not.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -31789,7 +31961,7 @@ containing the unrecognized token in @err_token.</doc>
               c:identifier="nm_utils_enum_get_values"
               version="1.2">
       <doc xml:space="preserve">Returns the list of possible values for a given enum.</doc>
-      <return-value transfer-ownership="full">
+      <return-value transfer-ownership="container">
         <doc xml:space="preserve">a NULL-terminated dynamically-allocated array of static strings
 or %NULL on error</doc>
         <array c:type="const char**">

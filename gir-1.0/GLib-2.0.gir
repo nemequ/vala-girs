@@ -7396,7 +7396,9 @@ The g_direct_equal(), g_int_equal(), g_int64_equal(), g_double_equal()
 and g_str_equal() functions are provided for the most common types
 of keys. If @key_equal_func is %NULL, keys are compared directly in
 a similar fashion to g_direct_equal(), but without the overhead of
-a function call.</doc>
+a function call. @key_equal_func is called with the key from the hash table
+as its first parameter, and the user-provided key to check against as
+its second.</doc>
         <return-value>
           <doc xml:space="preserve">a new #GHashTable</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
@@ -7427,7 +7429,7 @@ Since version 2.42 it is permissible for destroy notify functions to
 recursively remove further items from the hash table. This is only
 permissible if the application still holds a reference to the hash table.
 This means that you may need to ensure that the hash table is empty by
-calling g_hash_table_remove_all before releasing the last reference using
+calling g_hash_table_remove_all() before releasing the last reference using
 g_hash_table_unref().</doc>
         <return-value>
           <doc xml:space="preserve">a new #GHashTable</doc>
@@ -12914,7 +12916,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="5" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="0" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -12941,7 +12943,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The minimum value which can be held in a #gint8.</doc>
       <type name="gint8" c:type="gint8"/>
     </constant>
-    <constant name="MINOR_VERSION" value="51" c:type="GLIB_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="53" c:type="GLIB_MINOR_VERSION">
       <doc xml:space="preserve">The minor version number of the GLib library.
 
 Like #gtk_minor_version, but from the headers used at
@@ -23928,7 +23930,13 @@ idle_callback (gpointer data)
   
   return FALSE;
 }
-]|</doc>
+]|
+
+Calls to this function from a thread other than the one acquired by the
+#GMainContext the #GSource is attached to are typically redundant, as the
+source could be destroyed immediately after this function returns. However,
+once a source is destroyed it cannot be un-destroyed, so this function can be
+used for opportunistic checks from any thread.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the source has been destroyed</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -24269,6 +24277,9 @@ suggests that it will be delivered first but the priority for the
 other suggests that it would be delivered first, and the ready time
 for both sources is reached during the same main context iteration
 then the order of dispatch is undefined.
+
+It is a no-op to call this function on a #GSource which has already been
+destroyed with g_source_destroy().
 
 This API is only intended to be used by implementations of #GSource.
 Do not call this API on a #GSource that you did not create.</doc>
@@ -34908,7 +34919,9 @@ representation.</doc>
 
 The output buffer must be large enough to fit all the data that will
 be written to it. It will need up to 4 bytes, or up to 5 bytes if
-line-breaking is enabled.</doc>
+line-breaking is enabled.
+
+The @out array will not be automatically nul-terminated.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">The number of bytes of output that was written</doc>
         <type name="gsize" c:type="gsize"/>
@@ -47919,8 +47932,7 @@ overlong encodings of valid characters.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="max_len" transfer-ownership="none">
-          <doc xml:space="preserve">the maximum number of bytes to read, or -1, for no maximum or
-    if @p is nul-terminated</doc>
+          <doc xml:space="preserve">the maximum number of bytes to read, or -1 if @p is nul-terminated</doc>
           <type name="gssize" c:type="gssize"/>
         </parameter>
       </parameters>

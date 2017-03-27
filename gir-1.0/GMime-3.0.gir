@@ -2684,12 +2684,9 @@ Note: caller is responsible for its own reference on
       </method>
       <method name="get_session_key"
               c:identifier="g_mime_decrypt_result_get_session_key">
-        <doc xml:space="preserve">Get the session_key used for this decryption, if the underlying
-crypto context is capable of and (configured to) retrieve session
-keys during decryption.  See, for example,
-g_mime_crypto_context_set_retrieve_session_key().</doc>
+        <doc xml:space="preserve">Get the session_key used for this decryption.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the session_key digest algorithm used, or NULL if no
+          <doc xml:space="preserve">the session key digest algorithm used, or %NULL if no
 session key was requested or found.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -2767,7 +2764,7 @@ stream was not signed.</doc>
       </method>
       <method name="set_session_key"
               c:identifier="g_mime_decrypt_result_set_session_key">
-        <doc xml:space="preserve">Set the session_key to be returned by this decryption result.</doc>
+        <doc xml:space="preserve">Set the session key to be returned by this decryption result.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3494,7 +3491,7 @@ html entities.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="copy" invoker="copy">
-        <doc xml:space="preserve">Copies @filter into a new GMimeFilter object.</doc>
+        <doc xml:space="preserve">Copies @filter into a new #GMimeFilter object.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a duplicate of @filter.</doc>
           <type name="Filter" c:type="GMimeFilter*"/>
@@ -3642,7 +3639,7 @@ previous ones</doc>
         </parameters>
       </method>
       <method name="copy" c:identifier="g_mime_filter_copy">
-        <doc xml:space="preserve">Copies @filter into a new GMimeFilter object.</doc>
+        <doc xml:space="preserve">Copies @filter into a new #GMimeFilter object.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a duplicate of @filter.</doc>
           <type name="Filter" c:type="GMimeFilter*"/>
@@ -3952,75 +3949,6 @@ use for the content passed through the filter.</doc>
         <doc xml:space="preserve">Enable best-encoding detection.</doc>
       </member>
     </bitfield>
-    <class name="FilterCRLF"
-           c:symbol-prefix="filter_crlf"
-           c:type="GMimeFilterCRLF"
-           parent="Filter"
-           glib:type-name="GMimeFilterCRLF"
-           glib:get-type="g_mime_filter_crlf_get_type"
-           glib:type-struct="FilterCRLFClass">
-      <doc xml:space="preserve">A filter to convert between line-ending formats and encode/decode
-lines beginning with a '.'.</doc>
-      <constructor name="new" c:identifier="g_mime_filter_crlf_new">
-        <doc xml:space="preserve">Creates a new #GMimeFilterCRLF filter.
-
-If @encode is %TRUE, then lone line-feeds ('\n') will be 'encoded'
-into the canonical CRLF end-of-line sequence ("\r\n") otherwise
-CRLF sequences will be 'decoded' into the UNIX line-ending form
-('\n').
-
-The @dots parameter tells the filter whether or not it should
-encode or decode lines beginning with a dot ('.'). If both @encode
-and @dots are %TRUE, then a '.' at the beginning of a line will be
-'encoded' into "..". If @encode is %FALSE, then ".." at the
-beginning of a line will be decoded into a single '.'.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GMimeFilterCRLF filter.</doc>
-          <type name="Filter" c:type="GMimeFilter*"/>
-        </return-value>
-        <parameters>
-          <parameter name="encode" transfer-ownership="none">
-            <doc xml:space="preserve">%TRUE if the filter should encode or %FALSE otherwise</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-          <parameter name="dots" transfer-ownership="none">
-            <doc xml:space="preserve">encode/decode dots (as for SMTP)</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <field name="parent_object">
-        <doc xml:space="preserve">parent #GMimeFilter</doc>
-        <type name="Filter" c:type="GMimeFilter"/>
-      </field>
-      <field name="encode">
-        <doc xml:space="preserve">encoding vs decoding line endings/dots</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </field>
-      <field name="dots">
-        <doc xml:space="preserve">%TRUE if dot-stuffing should be performed or %FALSE otherwise</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </field>
-      <field name="saw_cr">
-        <doc xml:space="preserve">%TRUE if the previous char was a CR</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </field>
-      <field name="saw_lf">
-        <doc xml:space="preserve">%TRUE if the previous char was a LF</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </field>
-      <field name="saw_dot">
-        <doc xml:space="preserve">%TRUE if the previous char was a period</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </field>
-    </class>
-    <record name="FilterCRLFClass"
-            c:type="GMimeFilterCRLFClass"
-            glib:is-gtype-struct-for="FilterCRLF">
-      <field name="parent_class">
-        <type name="FilterClass" c:type="GMimeFilterClass"/>
-      </field>
-    </record>
     <class name="FilterCharset"
            c:symbol-prefix="filter_charset"
            c:type="GMimeFilterCharset"
@@ -4067,6 +3995,65 @@ not possible.</doc>
     <record name="FilterCharsetClass"
             c:type="GMimeFilterCharsetClass"
             glib:is-gtype-struct-for="FilterCharset">
+      <field name="parent_class">
+        <type name="FilterClass" c:type="GMimeFilterClass"/>
+      </field>
+    </record>
+    <class name="FilterChecksum"
+           c:symbol-prefix="filter_checksum"
+           c:type="GMimeFilterChecksum"
+           parent="Filter"
+           glib:type-name="GMimeFilterChecksum"
+           glib:get-type="g_mime_filter_checksum_get_type"
+           glib:type-struct="FilterChecksumClass">
+      <doc xml:space="preserve">A filter for calculating the checksum of a stream.</doc>
+      <constructor name="new" c:identifier="g_mime_filter_checksum_new">
+        <doc xml:space="preserve">Creates a new checksum filter.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimeFilterChecksum filter.</doc>
+          <type name="Filter" c:type="GMimeFilter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">the type of checksum</doc>
+            <type name="GLib.ChecksumType" c:type="GChecksumType"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_digest"
+              c:identifier="g_mime_filter_checksum_get_digest">
+        <doc xml:space="preserve">Outputs the checksum digest into @digest.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of bytes used of the @digest buffer.</doc>
+          <type name="gsize" c:type="size_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="checksum" transfer-ownership="none">
+            <doc xml:space="preserve">checksum filter object</doc>
+            <type name="FilterChecksum" c:type="GMimeFilterChecksum*"/>
+          </instance-parameter>
+          <parameter name="digest" transfer-ownership="none">
+            <doc xml:space="preserve">the digest buffer</doc>
+            <type name="guint8" c:type="unsigned char*"/>
+          </parameter>
+          <parameter name="len" transfer-ownership="none">
+            <doc xml:space="preserve">the length of the digest buffer</doc>
+            <type name="gsize" c:type="size_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_object">
+        <doc xml:space="preserve">parent #GMimeFilter</doc>
+        <type name="Filter" c:type="GMimeFilter"/>
+      </field>
+      <field name="checksum">
+        <doc xml:space="preserve">The checksum context</doc>
+        <type name="GLib.Checksum" c:type="GChecksum*"/>
+      </field>
+    </class>
+    <record name="FilterChecksumClass"
+            c:type="GMimeFilterChecksumClass"
+            glib:is-gtype-struct-for="FilterChecksum">
       <field name="parent_class">
         <type name="FilterClass" c:type="GMimeFilterClass"/>
       </field>
@@ -4205,6 +4192,47 @@ not possible.</doc>
             </parameter>
           </parameters>
         </callback>
+      </field>
+    </record>
+    <class name="FilterDos2Unix"
+           c:symbol-prefix="filter_dos2unix"
+           c:type="GMimeFilterDos2Unix"
+           parent="Filter"
+           glib:type-name="GMimeFilterDos2Unix"
+           glib:get-type="g_mime_filter_dos2unix_get_type"
+           glib:type-struct="FilterDos2UnixClass">
+      <doc xml:space="preserve">A filter to convert a stream from Windows/DOS line endings to Unix line endings.</doc>
+      <constructor name="new" c:identifier="g_mime_filter_dos2unix_new">
+        <doc xml:space="preserve">Creates a new #GMimeFilterDos2Unix filter.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimeFilterDos2Unix filter.</doc>
+          <type name="Filter" c:type="GMimeFilter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="ensure_newline" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the filter should ensure that the stream ends in a new line</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <field name="parent_object">
+        <doc xml:space="preserve">parent #GMimeFilter</doc>
+        <type name="Filter" c:type="GMimeFilter"/>
+      </field>
+      <field name="ensure_newline">
+        <doc xml:space="preserve">%TRUE if the filter should ensure that the stream ends with a new line</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="pc">
+        <doc xml:space="preserve">the previous character encountered</doc>
+        <type name="gchar" c:type="char"/>
+      </field>
+    </class>
+    <record name="FilterDos2UnixClass"
+            c:type="GMimeFilterDos2UnixClass"
+            glib:is-gtype-struct-for="FilterDos2Unix">
+      <field name="parent_class">
+        <type name="FilterClass" c:type="GMimeFilterClass"/>
       </field>
     </record>
     <class name="FilterEnriched"
@@ -4439,49 +4467,33 @@ plain UTF-8 text stream into an html stream.</doc>
         <type name="FilterClass" c:type="GMimeFilterClass"/>
       </field>
     </record>
-    <class name="FilterMd5"
-           c:symbol-prefix="filter_md5"
-           c:type="GMimeFilterMd5"
+    <class name="FilterSmtpData"
+           c:symbol-prefix="filter_smtp_data"
+           c:type="GMimeFilterSmtpData"
            parent="Filter"
-           glib:type-name="GMimeFilterMd5"
-           glib:get-type="g_mime_filter_md5_get_type"
-           glib:type-struct="FilterMd5Class">
-      <doc xml:space="preserve">A filter for calculating the MD5 checksum of a stream.</doc>
-      <constructor name="new" c:identifier="g_mime_filter_md5_new">
-        <doc xml:space="preserve">Creates a new Md5 filter.</doc>
+           glib:type-name="GMimeFilterSmtpData"
+           glib:get-type="g_mime_filter_smtp_data_get_type"
+           glib:type-struct="FilterSmtpDataClass">
+      <doc xml:space="preserve">A filter to byte-stuff SMTP DATA.</doc>
+      <constructor name="new" c:identifier="g_mime_filter_smtp_data_new">
+        <doc xml:space="preserve">Creates a new #GMimeFilterSmtpData filter.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new Md5 filter.</doc>
+          <doc xml:space="preserve">a new #GMimeFilterSmtpData filter.</doc>
           <type name="Filter" c:type="GMimeFilter*"/>
         </return-value>
       </constructor>
-      <method name="get_digest" c:identifier="g_mime_filter_md5_get_digest">
-        <doc xml:space="preserve">Outputs the md5 digest into @digest.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="md5" transfer-ownership="none">
-            <doc xml:space="preserve">md5 filter object</doc>
-            <type name="FilterMd5" c:type="GMimeFilterMd5*"/>
-          </instance-parameter>
-          <parameter name="digest" transfer-ownership="none">
-            <doc xml:space="preserve">output buffer of at least 16 bytes</doc>
-            <type name="guint8" c:type="unsigned char"/>
-          </parameter>
-        </parameters>
-      </method>
       <field name="parent_object">
         <doc xml:space="preserve">parent #GMimeFilter</doc>
         <type name="Filter" c:type="GMimeFilter"/>
       </field>
-      <field name="priv">
-        <doc xml:space="preserve">private state data</doc>
-        <type name="gpointer" c:type="_GMimeFilterMd5Private*"/>
+      <field name="bol">
+        <doc xml:space="preserve">beginning-of-line state.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </field>
     </class>
-    <record name="FilterMd5Class"
-            c:type="GMimeFilterMd5Class"
-            glib:is-gtype-struct-for="FilterMd5">
+    <record name="FilterSmtpDataClass"
+            c:type="GMimeFilterSmtpDataClass"
+            glib:is-gtype-struct-for="FilterSmtpData">
       <field name="parent_class">
         <type name="FilterClass" c:type="GMimeFilterClass"/>
       </field>
@@ -4506,10 +4518,54 @@ whitespace from every line of input passed through the filter.</doc>
         <doc xml:space="preserve">parent #GMimeFilter</doc>
         <type name="Filter" c:type="GMimeFilter"/>
       </field>
+      <field name="lwsp" readable="0" private="1">
+        <type name="gpointer" c:type="void*"/>
+      </field>
     </class>
     <record name="FilterStripClass"
             c:type="GMimeFilterStripClass"
             glib:is-gtype-struct-for="FilterStrip">
+      <field name="parent_class">
+        <type name="FilterClass" c:type="GMimeFilterClass"/>
+      </field>
+    </record>
+    <class name="FilterUnix2Dos"
+           c:symbol-prefix="filter_unix2dos"
+           c:type="GMimeFilterUnix2Dos"
+           parent="Filter"
+           glib:type-name="GMimeFilterUnix2Dos"
+           glib:get-type="g_mime_filter_unix2dos_get_type"
+           glib:type-struct="FilterUnix2DosClass">
+      <doc xml:space="preserve">A filter to convert a stream from Windows/DOS line endings to Unix line endings.</doc>
+      <constructor name="new" c:identifier="g_mime_filter_unix2dos_new">
+        <doc xml:space="preserve">Creates a new #GMimeFilterUnix2Dos filter.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimeFilterUnix2Dos filter.</doc>
+          <type name="Filter" c:type="GMimeFilter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="ensure_newline" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the filter should ensure that the stream ends in a new line</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <field name="parent_object">
+        <doc xml:space="preserve">parent #GMimeFilter</doc>
+        <type name="Filter" c:type="GMimeFilter"/>
+      </field>
+      <field name="ensure_newline">
+        <doc xml:space="preserve">%TRUE if the filter should ensure that the stream ends with a new line</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="pc">
+        <doc xml:space="preserve">the previous character encountered</doc>
+        <type name="gchar" c:type="char"/>
+      </field>
+    </class>
+    <record name="FilterUnix2DosClass"
+            c:type="GMimeFilterUnix2DosClass"
+            glib:is-gtype-struct-for="FilterUnix2Dos">
       <field name="parent_class">
         <type name="FilterClass" c:type="GMimeFilterClass"/>
       </field>
@@ -4705,6 +4761,7 @@ or the proper Windows-CP125# charset.</doc>
     <enumeration name="Format" c:type="GMimeFormat">
       <doc xml:space="preserve">An enum of formats.</doc>
       <member name="message" value="0" c:identifier="GMIME_FORMAT_MESSAGE">
+        <doc xml:space="preserve">The stream contains a single message.</doc>
       </member>
       <member name="mbox" value="1" c:identifier="GMIME_FORMAT_MBOX">
         <doc xml:space="preserve">The stream is in the UNIX mbox format.</doc>
@@ -4781,7 +4838,7 @@ currently set new-line format.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
           <parameter name="ensure_newline" transfer-ownership="none">
@@ -4811,7 +4868,21 @@ currently set new-line format.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_newline_format"
+              c:identifier="g_mime_format_options_get_newline_format">
+        <doc xml:space="preserve">Gets the new-line format to use when writing out messages and headers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the new-line format that is currently set.</doc>
+          <type name="NewLineFormat" c:type="GMimeNewLineFormat"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
         </parameters>
@@ -4826,7 +4897,7 @@ already have an encoding method specified.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
         </parameters>
@@ -4863,6 +4934,23 @@ already have an encoding method specified.</doc>
           <parameter name="header" transfer-ownership="none">
             <doc xml:space="preserve">a header name</doc>
             <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_newline_format"
+              c:identifier="g_mime_format_options_set_newline_format">
+        <doc xml:space="preserve">Sets the new-line format that should be used when writing headers and messages.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </instance-parameter>
+          <parameter name="newline" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeNewLineFormat</doc>
+            <type name="NewLineFormat" c:type="GMimeNewLineFormat"/>
           </parameter>
         </parameters>
       </method>
@@ -4935,32 +5023,146 @@ Note: #GMIME_PARAM_ENCODING_METHOD_DEFAULT is not allowed.</doc>
            glib:get-type="g_mime_header_get_type"
            glib:type-struct="HeaderClass">
       <doc xml:space="preserve">A message or mime-part header.</doc>
-      <function name="write_to_stream"
-                c:identifier="g_mime_header_write_to_stream">
-        <doc xml:space="preserve">Write the header to the specified stream.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the number of bytes written, or %-1 on fail.</doc>
-          <type name="gssize" c:type="ssize_t"/>
+      <method name="format_addrlist"
+              c:identifier="g_mime_header_format_addrlist">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <parameter name="headers" transfer-ownership="none">
-            <doc xml:space="preserve">the #GMimeHeaderList that contains @header</doc>
-            <type name="HeaderList" c:type="GMimeHeaderList*"/>
-          </parameter>
-          <parameter name="header" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeHeader</doc>
+          <instance-parameter name="header" transfer-ownership="none">
             <type name="Header" c:type="GMimeHeader*"/>
-          </parameter>
+          </instance-parameter>
           <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
-          <parameter name="stream" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeStream</doc>
-            <type name="Stream" c:type="GMimeStream*"/>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
-      </function>
+      </method>
+      <method name="format_content_disposition"
+              c:identifier="g_mime_header_format_content_disposition">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_content_type"
+              c:identifier="g_mime_header_format_content_type">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_default"
+              c:identifier="g_mime_header_format_default">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_message_id"
+              c:identifier="g_mime_header_format_message_id">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_received"
+              c:identifier="g_mime_header_format_received">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_references"
+              c:identifier="g_mime_header_format_references">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_name" c:identifier="g_mime_header_get_name">
         <doc xml:space="preserve">Gets the header's name.</doc>
         <return-value transfer-ownership="none">
@@ -4987,6 +5189,36 @@ Note: #GMIME_PARAM_ENCODING_METHOD_DEFAULT is not allowed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_raw_name" c:identifier="g_mime_header_get_raw_name">
+        <doc xml:space="preserve">Gets the header's raw name. The raw header name is the complete string up to
+(but not including) the ':' separating the header's name from its value. This
+string may be different from the value returned by g_mime_header_get_name()
+if the parsed message's header contained trailing whitespace after the header
+name, such as: "Subject : this is the subject\r\n".</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the raw header name.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_raw_value" c:identifier="g_mime_header_get_raw_value">
+        <doc xml:space="preserve">Gets the header's raw (folded) value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the header value or %NULL if invalid.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_value" c:identifier="g_mime_header_get_value">
         <doc xml:space="preserve">Gets the header's value.</doc>
         <return-value transfer-ownership="none">
@@ -5003,11 +5235,8 @@ g_mime_utils_header_decode_text() before displaying to the user.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_value" c:identifier="g_mime_header_set_value">
-        <doc xml:space="preserve">Sets the header's value.
-
-Note: @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+      <method name="set_raw_value" c:identifier="g_mime_header_set_raw_value">
+        <doc xml:space="preserve">Sets the header's raw value.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -5016,9 +5245,55 @@ g_mime_utils_header_encode_text().</doc>
             <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
+          <parameter name="raw_value" transfer-ownership="none">
+            <doc xml:space="preserve">the raw value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_value" c:identifier="g_mime_header_set_value">
+        <doc xml:space="preserve">Sets the header's value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">the new header value</doc>
             <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_to_stream"
+              c:identifier="g_mime_header_write_to_stream">
+        <doc xml:space="preserve">Write the header to the specified stream.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of bytes written, or %-1 on fail.</doc>
+          <type name="gssize" c:type="ssize_t"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
+            <type name="Header" c:type="GMimeHeader*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeStream</doc>
+            <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
         </parameters>
       </method>
@@ -5032,6 +5307,13 @@ g_mime_utils_header_encode_text().</doc>
       <field name="value">
         <doc xml:space="preserve">the unfolded value of the header</doc>
         <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="formatter" readable="0" private="1">
+        <type name="HeaderRawValueFormatter"
+              c:type="GMimeHeaderRawValueFormatter"/>
+      </field>
+      <field name="options" readable="0" private="1">
+        <type name="ParserOptions" c:type="GMimeParserOptions*"/>
       </field>
       <field name="changed" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
@@ -5077,10 +5359,7 @@ g_mime_utils_header_encode_text().</doc>
       <method name="append" c:identifier="g_mime_header_list_append">
         <doc xml:space="preserve">Appends a header. If @value is %NULL, a space will be set aside for it
 (useful for setting the order of headers before values can be
-obtained for them) otherwise the header will be unset.
-
-Note: @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+obtained for them) otherwise the header will be unset.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -5095,6 +5374,10 @@ g_mime_utils_header_encode_text().</doc>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">header value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -5181,10 +5464,7 @@ g_mime_utils_header_encode_text().</doc>
       <method name="prepend" c:identifier="g_mime_header_list_prepend">
         <doc xml:space="preserve">Prepends a header. If @value is %NULL, a space will be set aside
 for it (useful for setting the order of headers before values can
-be obtained for them) otherwise the header will be unset.
-
-Note: @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+be obtained for them) otherwise the header will be unset.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -5201,29 +5481,9 @@ g_mime_utils_header_encode_text().</doc>
             <doc xml:space="preserve">header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
-        </parameters>
-      </method>
-      <method name="register_writer"
-              c:identifier="g_mime_header_list_register_writer"
-              introspectable="0">
-        <doc xml:space="preserve">Changes the function used to write @name headers to @writer (or the
-default if @writer is %NULL). This is useful if you want to change
-the default header folding style for a particular header.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="headers" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeHeaderList</doc>
-            <type name="HeaderList" c:type="GMimeHeaderList*"/>
-          </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
-            <doc xml:space="preserve">header name</doc>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
             <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="writer" transfer-ownership="none">
-            <doc xml:space="preserve">writer function</doc>
-            <type name="HeaderWriter" c:type="GMimeHeaderWriter"/>
           </parameter>
         </parameters>
       </method>
@@ -5269,10 +5529,7 @@ can be obtained for them) otherwise the header will be unset.
 
 Note: If there are multiple headers with the specified field name,
 the first instance of the header will be replaced and further
-instances will be removed.
-
-Additionally, @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+instances will be removed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -5287,6 +5544,10 @@ g_mime_utils_header_encode_text().</doc>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">header value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -5337,12 +5598,6 @@ contained in @headers.</doc>
       <field name="options" readable="0" private="1">
         <type name="ParserOptions" c:type="GMimeParserOptions*"/>
       </field>
-      <field name="writers" readable="0" private="1">
-        <type name="GLib.HashTable" c:type="GHashTable*">
-          <type name="gpointer" c:type="gpointer"/>
-          <type name="gpointer" c:type="gpointer"/>
-        </type>
-      </field>
       <field name="changed" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
@@ -5365,32 +5620,28 @@ contained in @headers.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
-    <callback name="HeaderWriter" c:type="GMimeHeaderWriter">
-      <doc xml:space="preserve">Function signature for the callback to
-g_mime_header_list_register_writer().</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the number of bytes written or %-1 on error.</doc>
-        <type name="gssize" c:type="ssize_t"/>
+    <callback name="HeaderRawValueFormatter"
+              c:type="GMimeHeaderRawValueFormatter">
+      <doc xml:space="preserve">Function callback for encoding and formatting a header value.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the encoded and formatted raw header value.</doc>
+        <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">The #GMimeParserOptions</doc>
-          <type name="ParserOptions" c:type="GMimeParserOptions*"/>
+        <parameter name="header" transfer-ownership="none">
+          <doc xml:space="preserve">a #GMimeHeader</doc>
+          <type name="Header" c:type="GMimeHeader*"/>
         </parameter>
-        <parameter name="format" transfer-ownership="none">
-          <doc xml:space="preserve">The #GMimeFormatOptions</doc>
+        <parameter name="options" transfer-ownership="none">
+          <doc xml:space="preserve">a #GMimeFormatOptions</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </parameter>
-        <parameter name="stream" transfer-ownership="none">
-          <doc xml:space="preserve">The output stream.</doc>
-          <type name="Stream" c:type="GMimeStream*"/>
-        </parameter>
-        <parameter name="name" transfer-ownership="none">
-          <doc xml:space="preserve">The field name.</doc>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">an unencoded header value</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="value" transfer-ownership="none">
-          <doc xml:space="preserve">The field value.</doc>
+        <parameter name="charset" transfer-ownership="none">
+          <doc xml:space="preserve">a charset</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
@@ -5425,7 +5676,7 @@ g_mime_header_list_register_writer().</doc>
           <parameter name="linelen" transfer-ownership="none">
             <type name="gsize" c:type="size_t*"/>
           </parameter>
-          <parameter name="out" transfer-ownership="none">
+          <parameter name="str" transfer-ownership="none">
             <type name="GLib.String" c:type="GString*"/>
           </parameter>
         </parameters>
@@ -5556,7 +5807,7 @@ rfc822 format.</doc>
             <parameter name="linelen" transfer-ownership="none">
               <type name="gsize" c:type="size_t*"/>
             </parameter>
-            <parameter name="out" transfer-ownership="none">
+            <parameter name="str" transfer-ownership="none">
               <type name="GLib.String" c:type="GString*"/>
             </parameter>
           </parameters>
@@ -5751,6 +6002,27 @@ within the specified #InternetAddressList or %FALSE otherwise.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="encode" c:identifier="internet_address_list_encode">
+        <doc xml:space="preserve">Writes the rfc2047-encoded rfc822 formatted addresses in @list to
+@str, folding appropriately.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">list of internet addresses</doc>
+            <type name="InternetAddressList" c:type="InternetAddressList*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </parameter>
+          <parameter name="str" transfer-ownership="none">
+            <doc xml:space="preserve">string to write to</doc>
+            <type name="GLib.String" c:type="GString*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_address"
               c:identifier="internet_address_list_get_address">
         <doc xml:space="preserve">Gets the #InternetAddress at the specified index.</doc>
@@ -5918,26 +6190,6 @@ or %NULL if no addresses are contained in the list.</doc>
           <parameter name="encode" transfer-ownership="none">
             <doc xml:space="preserve">%TRUE if the address should be rfc2047 encoded</doc>
             <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="writer" c:identifier="internet_address_list_writer">
-        <doc xml:space="preserve">Writes the rfc2047-encoded rfc822 formatted addresses in @list to
-@str, folding appropriately.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="list" transfer-ownership="none">
-            <doc xml:space="preserve">list of internet addresses</doc>
-            <type name="InternetAddressList" c:type="InternetAddressList*"/>
-          </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
-          </parameter>
-          <parameter name="str" transfer-ownership="none">
-            <doc xml:space="preserve">string to write to</doc>
-            <type name="GLib.String" c:type="GString*"/>
           </parameter>
         </parameters>
       </method>
@@ -6237,20 +6489,6 @@ non-%NULL, then the timezone offset in will be stored in
           </parameter>
         </parameters>
       </method>
-      <method name="get_date_as_string"
-              c:identifier="g_mime_message_get_date_as_string">
-        <doc xml:space="preserve">Gets the message's sent-date in string format.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly allocated string containing the Date header value.</doc>
-          <type name="utf8" c:type="char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="message" transfer-ownership="none">
-            <doc xml:space="preserve">A #GMimeMessage</doc>
-            <type name="Message" c:type="GMimeMessage*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_from"
               c:identifier="g_mime_message_get_from"
               introspectable="0">
@@ -6399,23 +6637,6 @@ sets @nparts to the number of messages returned or %NULL on fail.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_date_as_string"
-              c:identifier="g_mime_message_set_date_as_string">
-        <doc xml:space="preserve">Sets the sent-date of the message.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="message" transfer-ownership="none">
-            <doc xml:space="preserve">A #GMimeMessage</doc>
-            <type name="Message" c:type="GMimeMessage*"/>
-          </instance-parameter>
-          <parameter name="str" transfer-ownership="none">
-            <doc xml:space="preserve">a date string</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_message_id"
               c:identifier="g_mime_message_set_message_id">
         <doc xml:space="preserve">Set the Message-Id on a message.</doc>
@@ -6491,13 +6712,16 @@ Note: The @subject string should be in UTF-8.</doc>
         <doc xml:space="preserve">Subject string</doc>
         <type name="utf8" c:type="char*"/>
       </field>
+      <field name="tz_offset">
+        <doc xml:space="preserve">timezone offset</doc>
+        <type name="gint" c:type="int"/>
+      </field>
       <field name="date">
         <doc xml:space="preserve">Date value</doc>
         <type name="glong" c:type="time_t"/>
       </field>
-      <field name="tz_offset">
-        <doc xml:space="preserve">timezone offset</doc>
-        <type name="gint" c:type="int"/>
+      <field name="compliance" readable="0" private="1">
+        <type name="RfcComplianceMode" c:type="GMimeRfcComplianceMode"/>
       </field>
     </class>
     <record name="MessageClass"
@@ -7495,7 +7719,8 @@ as to why the failure occured.</doc>
             <doc xml:space="preserve">%TRUE if the content should also be signed or %FALSE otherwise</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="user_id" transfer-ownership="none">
+          <parameter name="userid" transfer-ownership="none">
+            <doc xml:space="preserve">user id to use for signing (only used if @sign is %TRUE)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
@@ -7874,10 +8099,7 @@ serializes it to the Content-Type header field.</doc>
         </parameters>
       </virtual-method>
       <method name="append_header" c:identifier="g_mime_object_append_header">
-        <doc xml:space="preserve">Appends a raw, unprocessed header to the MIME object.
-
-Note: @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+        <doc xml:space="preserve">Appends a new header to the header list.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7892,6 +8114,10 @@ g_mime_utils_header_encode_text().</doc>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">header value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -8017,13 +8243,10 @@ will be in UTF-8.</doc>
         </parameters>
       </method>
       <method name="get_header" c:identifier="g_mime_object_get_header">
-        <doc xml:space="preserve">Gets the raw, unprocessed value of the first header with the specified name.</doc>
+        <doc xml:space="preserve">Gets the value of the first header with the specified name.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the raw, unprocessed value of the requested header if it
-exists or %NULL otherwise.
-
-Note: The returned value should be decoded with a function such as
-g_mime_utils_header_decode_text() before displaying to the user.</doc>
+          <doc xml:space="preserve">the value of the requested header if it
+exists or %NULL otherwise.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -8074,10 +8297,7 @@ Note: The returned string will not be suitable for display.</doc>
       </method>
       <method name="prepend_header"
               c:identifier="g_mime_object_prepend_header">
-        <doc xml:space="preserve">Prepends a raw, unprocessed header to the MIME object.
-
-Note: @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+        <doc xml:space="preserve">Prepends a new header to the header list.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8092,6 +8312,10 @@ g_mime_utils_header_encode_text().</doc>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">header value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -8236,10 +8460,7 @@ part should be displayed by the MUA.</doc>
         </parameters>
       </method>
       <method name="set_header" c:identifier="g_mime_object_set_header">
-        <doc xml:space="preserve">Sets an arbitrary raw, unprocessed header on the MIME object.
-
-Note: @value should be encoded with a function such as
-g_mime_utils_header_encode_text().</doc>
+        <doc xml:space="preserve">Sets a header to the specified value.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8254,6 +8475,10 @@ g_mime_utils_header_encode_text().</doc>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">header value</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -8317,6 +8542,9 @@ object.</doc>
       <field name="content_id">
         <doc xml:space="preserve">a Content-Id</doc>
         <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="ensure_newline" readable="0" private="1">
+        <type name="gboolean" c:type="gboolean"/>
       </field>
     </class>
     <record name="ObjectClass"
@@ -8981,37 +9209,6 @@ fail.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_from" c:identifier="g_mime_parser_get_from">
-        <doc xml:space="preserve">Gets the mbox-style From-line of the most recently parsed message
-(gotten from g_mime_parser_construct_message()).</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the mbox-style From-line of the most recently parsed
-message or %NULL on error.</doc>
-          <type name="utf8" c:type="char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="parser" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParser context</doc>
-            <type name="Parser" c:type="GMimeParser*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_from_offset"
-              c:identifier="g_mime_parser_get_from_offset">
-        <doc xml:space="preserve">Gets the offset of the most recently parsed mbox-style From-line
-(gotten from g_mime_parser_construct_message()).</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the offset of the most recently parsed mbox-style From-line
-or %-1 on error.</doc>
-          <type name="gint64" c:type="gint64"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="parser" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParser context</doc>
-            <type name="Parser" c:type="GMimeParser*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_headers_begin"
               c:identifier="g_mime_parser_get_headers_begin">
         <doc xml:space="preserve">Gets the stream offset of the beginning of the headers of the most
@@ -9035,6 +9232,38 @@ recently parsed message.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the offset of the end of the headers of the most recently
 parsed message or %-1 on error.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="parser" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeParser context</doc>
+            <type name="Parser" c:type="GMimeParser*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mbox_marker"
+              c:identifier="g_mime_parser_get_mbox_marker">
+        <doc xml:space="preserve">Gets the mbox-style From-line of the most recently parsed message
+(gotten from g_mime_parser_construct_message()).</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the mbox-style From-line of the most recently parsed
+message or %NULL on error.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="parser" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeParser context</doc>
+            <type name="Parser" c:type="GMimeParser*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mbox_marker_offset"
+              c:identifier="g_mime_parser_get_mbox_marker_offset">
+        <doc xml:space="preserve">Gets the offset of the most recently parsed mbox-style From-line
+(gotten from g_mime_parser_construct_message()).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the offset of the most recently parsed mbox-style From-line
+or %-1 on error.</doc>
           <type name="gint64" c:type="gint64"/>
         </return-value>
         <parameters>
@@ -9304,8 +9533,8 @@ g_mime_parser_set_header_regex().</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_address_parser_compliance_mode"
-              c:identifier="g_mime_parser_options_get_address_parser_compliance_mode">
+      <method name="get_address_compliance_mode"
+              c:identifier="g_mime_parser_options_get_address_compliance_mode">
         <doc xml:space="preserve">Gets the compliance mode that should be used when parsing rfc822 addresses.
 
 Note: Even in #GMIME_RFC_COMPLIANCE_STRICT mode, the address parser is fairly liberal in
@@ -9317,7 +9546,7 @@ deal with garbage input.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
         </parameters>
@@ -9335,7 +9564,7 @@ deal with garbage input.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
         </parameters>
@@ -9354,7 +9583,7 @@ to deal with garbage input.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
         </parameters>
@@ -9372,13 +9601,13 @@ to deal with garbage input.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_address_parser_compliance_mode"
-              c:identifier="g_mime_parser_options_set_address_parser_compliance_mode">
+      <method name="set_address_compliance_mode"
+              c:identifier="g_mime_parser_options_set_address_compliance_mode">
         <doc xml:space="preserve">Sets the compliance mode that should be used when parsing rfc822 addresses.
 
 In general, you'll probably want this value to be #GMIME_RFC_COMPLIANCE_LOOSE
@@ -10811,8 +11040,7 @@ index.</doc>
         <doc xml:space="preserve">parent #GObject</doc>
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="array">
-        <doc xml:space="preserve">An array of #GMimeSignature objects.</doc>
+      <field name="array" readable="0" private="1">
         <array name="GLib.PtrArray" c:type="GPtrArray*">
           <type name="gpointer" c:type="gpointer"/>
         </array>
@@ -11491,18 +11719,13 @@ and @end.</doc>
     </record>
     <enumeration name="StreamBufferMode" c:type="GMimeStreamBufferMode">
       <doc xml:space="preserve">The buffering mode for a #GMimeStreamBuffer stream.</doc>
-      <member name="cache_read"
+      <member name="read"
               value="0"
-              c:identifier="GMIME_STREAM_BUFFER_CACHE_READ">
-        <doc xml:space="preserve">Cache all reads.</doc>
-      </member>
-      <member name="block_read"
-              value="1"
               c:identifier="GMIME_STREAM_BUFFER_BLOCK_READ">
         <doc xml:space="preserve">Read in 4k blocks.</doc>
       </member>
-      <member name="block_write"
-              value="2"
+      <member name="write"
+              value="1"
               c:identifier="GMIME_STREAM_BUFFER_BLOCK_WRITE">
         <doc xml:space="preserve">Write in 4k blocks.</doc>
       </member>
@@ -12483,6 +12706,39 @@ and @end.</doc>
           <type name="Stream" c:type="GMimeStream*"/>
         </return-value>
       </constructor>
+      <method name="get_count_newlines"
+              c:identifier="g_mime_stream_null_get_count_newlines">
+        <doc xml:space="preserve">Gets whether or not the stream should keep track of the number of newlines
+encountered.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the stream should count the number of newlines or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeStreamNull</doc>
+            <type name="StreamNull" c:type="GMimeStreamNull*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_count_newlines"
+              c:identifier="g_mime_stream_null_set_count_newlines">
+        <doc xml:space="preserve">Sets whether or not the stream should keep track of the number of newlines
+encountered.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeStreamNull</doc>
+            <type name="StreamNull" c:type="GMimeStreamNull*"/>
+          </instance-parameter>
+          <parameter name="count" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if newlines should be counted or %FALSE otherwise</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <field name="parent_object">
         <doc xml:space="preserve">parent #GMimeStream</doc>
         <type name="Stream" c:type="GMimeStream"/>
@@ -12494,6 +12750,10 @@ and @end.</doc>
       <field name="newlines">
         <doc xml:space="preserve">the number of newlines written to this stream</doc>
         <type name="gsize" c:type="size_t"/>
+      </field>
+      <field name="count_newlines">
+        <doc xml:space="preserve">whether or not the stream should count newlines</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </field>
     </class>
     <record name="StreamNullClass"
@@ -12683,17 +12943,24 @@ text/plain.</doc>
       </field>
     </record>
     <enumeration name="Trust" c:type="GMimeTrust">
+      <doc xml:space="preserve">The trust level of a certificate or key.</doc>
       <member name="unknown" value="0" c:identifier="GMIME_TRUST_UNKNOWN">
+        <doc xml:space="preserve">The certificate or key is of unknown validity.</doc>
       </member>
       <member name="undefined" value="1" c:identifier="GMIME_TRUST_UNDEFINED">
+        <doc xml:space="preserve">The validity of the certificate or key is undefined.</doc>
       </member>
       <member name="never" value="2" c:identifier="GMIME_TRUST_NEVER">
+        <doc xml:space="preserve">The certificate or key should never be treated as valid.</doc>
       </member>
       <member name="marginal" value="3" c:identifier="GMIME_TRUST_MARGINAL">
+        <doc xml:space="preserve">The certificate or key is marginally valid.</doc>
       </member>
       <member name="full" value="4" c:identifier="GMIME_TRUST_FULL">
+        <doc xml:space="preserve">The certificate or key is fully valid.</doc>
       </member>
       <member name="ultimate" value="5" c:identifier="GMIME_TRUST_ULTIMATE">
+        <doc xml:space="preserve">The certificate or key is ultimately valid.</doc>
       </member>
     </enumeration>
     <constant name="UUDECODE_STATE_BEGIN"
@@ -13288,31 +13555,6 @@ invocation).</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="format_get_newline_format"
-              c:identifier="g_mime_format_get_newline_format">
-      <return-value transfer-ownership="none">
-        <type name="NewLineFormat" c:type="GMimeNewLineFormat"/>
-      </return-value>
-      <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="format_set_newline_format"
-              c:identifier="g_mime_format_set_newline_format">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
-        </parameter>
-        <parameter name="newline" transfer-ownership="none">
-          <type name="NewLineFormat" c:type="GMimeNewLineFormat"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="iconv_close"
               c:identifier="g_mime_iconv_close"
               introspectable="0">
@@ -13330,15 +13572,6 @@ appropriate errno value.</doc>
           <type c:type="iconv_t"/>
         </parameter>
       </parameters>
-    </function>
-    <function name="iconv_init" c:identifier="g_mime_iconv_init">
-      <doc xml:space="preserve">Initialize GMime's iconv cache. This *MUST* be called before any
-gmime-iconv interfaces will work correctly.
-
-Note: this function is called for you by g_mime_init().</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
     </function>
     <function name="iconv_locale_to_utf8"
               c:identifier="g_mime_iconv_locale_to_utf8">
@@ -13399,14 +13632,6 @@ errno value.</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
-    </function>
-    <function name="iconv_shutdown" c:identifier="g_mime_iconv_shutdown">
-      <doc xml:space="preserve">Frees internal iconv caches created in g_mime_iconv_init().
-
-Note: this function is called for you by g_mime_shutdown().</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
     </function>
     <function name="iconv_strdup"
               c:identifier="g_mime_iconv_strdup"
@@ -13561,8 +13786,7 @@ headers defined in rfc822.</doc>
       </parameters>
     </function>
     <function name="shutdown" c:identifier="g_mime_shutdown">
-      <doc xml:space="preserve">Frees internally allocated tables created in g_mime_init(). Also
-calls g_mime_charset_map_shutdown() and g_mime_iconv_shutdown().</doc>
+      <doc xml:space="preserve">Frees internally allocated tables created in g_mime_init().</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
