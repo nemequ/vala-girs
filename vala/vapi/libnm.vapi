@@ -3154,6 +3154,24 @@ namespace NM {
 		[Version (since = "1.2")]
 		public bool vnet_hdr { get; set; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_user_get_type ()")]
+	public class SettingUser : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingUser ();
+		[Version (since = "1.8")]
+		public static bool check_key (string key) throws GLib.Error;
+		[Version (since = "1.8")]
+		public static bool check_val (string val) throws GLib.Error;
+		[Version (since = "1.8")]
+		public unowned string get_data (string key);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		public unowned string[] get_keys ();
+		[Version (since = "1.8")]
+		public bool set_data (string key, string val) throws GLib.Error;
+		[NoAccessorMethod]
+		[Version (since = "1.8")]
+		public GLib.HashTable<string,string> data { owned get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vlan_get_type ()")]
 	public class SettingVlan : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_EGRESS_PRIORITY_MAP")]
@@ -4951,6 +4969,10 @@ namespace NM {
 	public const string SETTING_MACSEC_VALIDATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_DATA")]
+	public const string SETTING_USER_DATA;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
+	public const string SETTING_USER_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VLAN_FLAGS_ALL")]
 	public const int VLAN_FLAGS_ALL;
 	[CCode (cheader_filename = "NetworkManager.h")]

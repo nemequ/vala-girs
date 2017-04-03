@@ -47,6 +47,7 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		protected Buffer ();
 		public void check_for_volume_change ();
+		public async bool format_selection_async (Ide.FormatterOptions options, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_busy ();
 		public size_t get_change_count ();
 		public bool get_changed_on_volume ();
@@ -131,6 +132,8 @@ namespace Ide {
 		[NoAccessorMethod]
 		public uint auto_save_timeout { get; set; }
 		public Ide.Buffer focus_buffer { get; set; }
+		[NoAccessorMethod]
+		public uint minimum_word_size { get; set; }
 		public signal void buffer_focus_enter (Ide.Buffer buffer);
 		public signal void buffer_focus_leave (Ide.Buffer buffer);
 		public signal void buffer_loaded (Ide.Buffer buffer);
@@ -333,6 +336,8 @@ namespace Ide {
 		public Configuration (Ide.Context context, string id, string device_id, string runtime_id);
 		public Ide.Configuration duplicate ();
 		public unowned string? get_app_id ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_build_commands ();
 		public unowned string get_config_opts ();
 		public bool get_debug ();
 		public virtual unowned Ide.Device? get_device ();
@@ -351,6 +356,8 @@ namespace Ide {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_internal_strv (string key);
 		public int get_parallelism ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_post_install_commands ();
 		public unowned string get_prefix ();
 		public bool get_ready ();
 		public virtual unowned Ide.Runtime? get_runtime ();
@@ -358,6 +365,7 @@ namespace Ide {
 		public uint get_sequence ();
 		public unowned string getenv (string key);
 		public void set_app_id (string app_id);
+		public void set_build_commands (string build_commands);
 		public void set_config_opts (string config_opts);
 		public void set_debug (bool debug);
 		public virtual void set_device (Ide.Device device);
@@ -372,6 +380,7 @@ namespace Ide {
 		public void set_internal_string (string key, string value);
 		public void set_internal_strv (string key, string value);
 		public void set_parallelism (int parallelism);
+		public void set_post_install_commands (string post_install_commands);
 		public void set_prefix (string prefix);
 		public virtual void set_runtime (Ide.Runtime runtime);
 		public void set_runtime_id (string runtime_id);
@@ -380,6 +389,8 @@ namespace Ide {
 		public virtual bool supports_device (Ide.Device device);
 		public virtual bool supports_runtime (Ide.Runtime runtime);
 		public string app_id { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] build_commands { get; set construct; }
 		public string config_opts { get; set; }
 		public bool debug { get; set; }
 		public Ide.Device device { get; set; }
@@ -390,6 +401,8 @@ namespace Ide {
 		public string[] environ { owned get; }
 		public string id { get; construct; }
 		public int parallelism { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] post_install_commands { get; set construct; }
 		public string prefix { get; set; }
 		public bool ready { get; }
 		public Ide.Runtime runtime { get; set; }
@@ -697,6 +710,7 @@ namespace Ide {
 		public unowned GLib.File get_file ();
 		public bool get_is_temporary ();
 		public unowned Gtk.SourceLanguage? get_language ();
+		public unowned string get_language_id ();
 		public unowned string get_path ();
 		public uint get_temporary_id ();
 		public uint hash ();
@@ -767,6 +781,17 @@ namespace Ide {
 		public Ide.Fixit @ref ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_formatter_options_get_type ()")]
+	public class FormatterOptions : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public FormatterOptions ();
+		public bool get_insert_spaces ();
+		public uint get_tab_width ();
+		public void set_insert_spaces (bool insert_spaces);
+		public void set_tab_width (uint tab_width);
+		public bool insert_spaces { get; set; }
+		public uint tab_width { get; set; }
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_highlight_engine_get_type ()")]
 	public class HighlightEngine : Ide.Object {
 		[CCode (has_construct_function = false)]
@@ -820,6 +845,18 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		protected LangservDiagnosticProvider ();
 		public unowned Ide.LangservClient? get_client ();
+		public void set_client (Ide.LangservClient client);
+		public Ide.LangservClient client { get; set; }
+	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_langserv_formatter_get_type ()")]
+	public class LangservFormatter : Ide.Object, Ide.Formatter {
+		public void* _reserved1;
+		public void* _reserved2;
+		public void* _reserved3;
+		public void* _reserved4;
+		[CCode (has_construct_function = false)]
+		protected LangservFormatter ();
+		public unowned Ide.LangservClient get_client ();
 		public void set_client (Ide.LangservClient client);
 		public Ide.LangservClient client { get; set; }
 	}
@@ -1207,6 +1244,7 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		protected ProjectInfo ();
 		public int compare (Ide.ProjectInfo info2);
+		public unowned string get_build_system_name ();
 		public unowned string get_description ();
 		public unowned GLib.File? get_directory ();
 		public unowned Ide.Doap? get_doap ();
@@ -1217,6 +1255,7 @@ namespace Ide {
 		public unowned GLib.DateTime? get_last_modified_at ();
 		public unowned string get_name ();
 		public int get_priority ();
+		public void set_build_system_name (string build_system_name);
 		public void set_description (string description);
 		public void set_directory (GLib.File directory);
 		public void set_file (GLib.File file);
@@ -1224,6 +1263,7 @@ namespace Ide {
 		public void set_languages (string languages);
 		public void set_name (string name);
 		public void set_priority (int priority);
+		public string build_system_name { get; set; }
 		public string description { get; set; }
 		public GLib.File directory { get; set; }
 		[NoAccessorMethod]
@@ -1641,7 +1681,9 @@ namespace Ide {
 		public signal void duplicate_entire_line ();
 		public virtual signal void end_macro ();
 		public signal void end_user_action ();
+		public signal void find_references ();
 		public virtual signal void focus_location (Ide.SourceLocation location);
+		public signal void format_selection ();
 		public virtual signal void goto_definition ();
 		public virtual signal void hide_completion ();
 		public virtual signal void increase_font_size ();
@@ -1713,6 +1755,8 @@ namespace Ide {
 		public signal void duplicate_entire_line ();
 		public signal void end_macro ();
 		public signal void end_user_action ();
+		public signal void find_references ();
+		public signal void format_selection ();
 		public signal void goto_definition ();
 		public signal void hide_completion ();
 		public signal void increase_font_size ();
@@ -2180,6 +2224,7 @@ namespace Ide {
 		public abstract async string[] get_build_flags_async (Ide.File file, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract async GLib.GenericArray<weak Ide.BuildTarget> get_build_targets_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract string get_builddir (Ide.Configuration configuration);
+		public abstract string get_display_name ();
 		public abstract string get_id ();
 		public abstract int get_priority ();
 		public static async Ide.BuildSystem new_async (Ide.Context context, GLib.File project_file, string build_system_hint, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -2240,6 +2285,12 @@ namespace Ide {
 		public abstract void unload (Ide.EditorView view);
 		[NoWrapper]
 		public abstract void unload_source_view (Ide.SourceView source_view);
+	}
+	[CCode (cheader_filename = "ide.h", type_cname = "IdeFormatterInterface", type_id = "ide_formatter_get_type ()")]
+	public interface Formatter : GLib.Object {
+		public abstract async bool format_async (Ide.Buffer buffer, Ide.FormatterOptions options, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract async bool format_range_async (Ide.Buffer buffer, Ide.FormatterOptions options, Gtk.TextIter begin, Gtk.TextIter end, GLib.Cancellable? cancellable) throws GLib.Error;
+		public abstract void load ();
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeGenesisAddinInterface", type_id = "ide_genesis_addin_get_type ()")]
 	public interface GenesisAddin : GLib.Object {
@@ -2328,6 +2379,8 @@ namespace Ide {
 	public interface RenameProvider : Ide.Object {
 		public abstract void load ();
 		public abstract async bool rename_async (Ide.SourceLocation location, string new_name, GLib.Cancellable? cancellable, out GLib.GenericArray<weak Ide.ProjectEdit>? edits) throws GLib.Error;
+		[NoAccessorMethod]
+		public abstract Ide.Buffer buffer { set; }
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeRunnerAddinInterface", type_id = "ide_runner_addin_get_type ()")]
 	public interface RunnerAddin : GLib.Object {
@@ -2385,6 +2438,7 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeSymbolResolverInterface", type_id = "ide_symbol_resolver_get_type ()")]
 	public interface SymbolResolver : Ide.Object {
+		public abstract async GLib.GenericArray<weak Ide.SourceRange> find_references_async (Ide.SourceLocation location, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract async Ide.SymbolTree? get_symbol_tree_async (GLib.File file, Ide.Buffer buffer, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract void load ();
 		public abstract async Ide.Symbol? lookup_symbol_async (Ide.SourceLocation location, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -2761,6 +2815,8 @@ namespace Ide {
 	public const int LANGSERV_COMPLETION_PROVIDER_PRIORITY;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_BOOKMARK_FILENAME")]
 	public const string RECENT_PROJECTS_BOOKMARK_FILENAME;
+	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_BUILD_SYSTEM_GROUP_PREFIX")]
+	public const string RECENT_PROJECTS_BUILD_SYSTEM_GROUP_PREFIX;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_GROUP")]
 	public const string RECENT_PROJECTS_GROUP;
 	[CCode (cheader_filename = "ide.h", cname = "IDE_RECENT_PROJECTS_LANGUAGE_GROUP_PREFIX")]

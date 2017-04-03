@@ -802,6 +802,55 @@ modification time (mtime).</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="format_selection_async"
+              c:identifier="ide_buffer_format_selection_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </instance-parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_selection_finish"
+              c:identifier="ide_buffer_format_selection_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_busy" c:identifier="ide_buffer_get_busy">
         <doc xml:space="preserve">Gets the #IdeBuffer:busy property.
 Return whether the buffer is performing background work or not.</doc>
@@ -2088,6 +2137,11 @@ ide_buffer_manager_save_file_async(). Upon failure, %FALSE is returned and @erro
       </property>
       <property name="focus-buffer" writable="1" transfer-ownership="none">
         <type name="Buffer"/>
+      </property>
+      <property name="minimum-word-size"
+                writable="1"
+                transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
       </property>
       <glib:signal name="buffer-focus-enter" when="last">
         <doc xml:space="preserve">This signal is emitted when a view for @buffer has received focus. You might connect to this
@@ -4785,6 +4839,16 @@ return %NULL.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="get_display_name" invoker="get_display_name">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildSystem" c:type="IdeBuildSystem*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_id" invoker="get_id">
         <return-value transfer-ownership="full">
           <type name="utf8" c:type="gchar*"/>
@@ -4917,6 +4981,17 @@ return %NULL.</doc>
           <parameter name="configuration" transfer-ownership="none">
             <type name="Configuration" c:type="IdeConfiguration*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_display_name"
+              c:identifier="ide_build_system_get_display_name">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildSystem" c:type="IdeBuildSystem*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_id" c:identifier="ide_build_system_get_id">
@@ -5216,6 +5291,18 @@ by locating project files.</doc>
       </field>
       <field name="get_id">
         <callback name="get_id">
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="BuildSystem" c:type="IdeBuildSystem*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_display_name">
+        <callback name="get_display_name">
           <return-value transfer-ownership="full">
             <type name="utf8" c:type="gchar*"/>
           </return-value>
@@ -5975,6 +6062,19 @@ it will be set to zero.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_build_commands"
+              c:identifier="ide_configuration_get_build_commands">
+        <return-value transfer-ownership="none">
+          <array c:type="const gchar* const*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_config_opts"
               c:identifier="ide_configuration_get_config_opts">
         <return-value transfer-ownership="none">
@@ -6179,6 +6279,19 @@ it will be set to zero.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_post_install_commands"
+              c:identifier="ide_configuration_get_post_install_commands">
+        <return-value transfer-ownership="none">
+          <array c:type="const gchar* const*">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_prefix" c:identifier="ide_configuration_get_prefix">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -6271,6 +6384,20 @@ mean time.</doc>
           </instance-parameter>
           <parameter name="app_id" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_build_commands"
+              c:identifier="ide_configuration_set_build_commands">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="build_commands" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar* const*"/>
           </parameter>
         </parameters>
       </method>
@@ -6492,6 +6619,20 @@ mean time.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_post_install_commands"
+              c:identifier="ide_configuration_set_post_install_commands">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Configuration" c:type="IdeConfiguration*"/>
+          </instance-parameter>
+          <parameter name="post_install_commands" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_prefix" c:identifier="ide_configuration_set_prefix">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -6592,6 +6733,14 @@ to build the project without synchronizing with other threads.</doc>
       <property name="app-id" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <property name="build-commands"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <array>
+          <type name="utf8"/>
+        </array>
+      </property>
       <property name="config-opts" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -6623,6 +6772,14 @@ to build the project without synchronizing with other threads.</doc>
       </property>
       <property name="parallelism" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="post-install-commands"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <property name="prefix" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
@@ -10558,6 +10715,16 @@ Returns an #IdeFile if successful, otherwise %NULL and @error is set.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_language_id" c:identifier="ide_file_get_language_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="File" c:type="IdeFile*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_path" c:identifier="ide_file_get_path">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -10896,6 +11063,461 @@ end location. [a,b)</doc>
           </instance-parameter>
         </parameters>
       </method>
+    </record>
+    <interface name="Formatter"
+               c:symbol-prefix="formatter"
+               c:type="IdeFormatter"
+               glib:type-name="IdeFormatter"
+               glib:get-type="ide_formatter_get_type"
+               glib:type-struct="FormatterInterface">
+      <virtual-method name="format_async" invoker="format_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="4">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="format_finish" invoker="format_finish" throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="format_range_async" invoker="format_range_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </parameter>
+          <parameter name="begin" transfer-ownership="none">
+            <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+          </parameter>
+          <parameter name="end" transfer-ownership="none">
+            <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="6">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="format_range_finish"
+                      invoker="format_range_finish"
+                      throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="load" invoker="load">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="format_async" c:identifier="ide_formatter_format_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_finish"
+              c:identifier="ide_formatter_format_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_range_async"
+              c:identifier="ide_formatter_format_range_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="IdeBuffer*"/>
+          </parameter>
+          <parameter name="options" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </parameter>
+          <parameter name="begin" transfer-ownership="none">
+            <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+          </parameter>
+          <parameter name="end" transfer-ownership="none">
+            <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="format_range_finish"
+              c:identifier="ide_formatter_format_range_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load" c:identifier="ide_formatter_load">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Formatter" c:type="IdeFormatter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </interface>
+    <record name="FormatterInterface"
+            c:type="IdeFormatterInterface"
+            glib:is-gtype-struct-for="Formatter">
+      <field name="parent">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="load">
+        <callback name="load">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Formatter" c:type="IdeFormatter*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="format_async">
+        <callback name="format_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Formatter" c:type="IdeFormatter*"/>
+            </parameter>
+            <parameter name="buffer" transfer-ownership="none">
+              <type name="Buffer" c:type="IdeBuffer*"/>
+            </parameter>
+            <parameter name="options" transfer-ownership="none">
+              <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="5">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="5">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="format_finish">
+        <callback name="format_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Formatter" c:type="IdeFormatter*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="format_range_async">
+        <callback name="format_range_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Formatter" c:type="IdeFormatter*"/>
+            </parameter>
+            <parameter name="buffer" transfer-ownership="none">
+              <type name="Buffer" c:type="IdeBuffer*"/>
+            </parameter>
+            <parameter name="options" transfer-ownership="none">
+              <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+            </parameter>
+            <parameter name="begin" transfer-ownership="none">
+              <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+            </parameter>
+            <parameter name="end" transfer-ownership="none">
+              <type name="Gtk.TextIter" c:type="const GtkTextIter*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="7">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="7">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="format_range_finish">
+        <callback name="format_range_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Formatter" c:type="IdeFormatter*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="FormatterOptions"
+           c:symbol-prefix="formatter_options"
+           c:type="IdeFormatterOptions"
+           parent="GObject.Object"
+           glib:type-name="IdeFormatterOptions"
+           glib:get-type="ide_formatter_options_get_type"
+           glib:type-struct="FormatterOptionsClass">
+      <constructor name="new" c:identifier="ide_formatter_options_new">
+        <return-value transfer-ownership="full">
+          <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+        </return-value>
+      </constructor>
+      <method name="get_insert_spaces"
+              c:identifier="ide_formatter_options_get_insert_spaces">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_tab_width"
+              c:identifier="ide_formatter_options_get_tab_width">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_insert_spaces"
+              c:identifier="ide_formatter_options_set_insert_spaces">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </instance-parameter>
+          <parameter name="insert_spaces" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_tab_width"
+              c:identifier="ide_formatter_options_set_tab_width">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="FormatterOptions" c:type="IdeFormatterOptions*"/>
+          </instance-parameter>
+          <parameter name="tab_width" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="insert-spaces" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="tab-width" writable="1" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+    </class>
+    <record name="FormatterOptionsClass"
+            c:type="IdeFormatterOptionsClass"
+            glib:is-gtype-struct-for="FormatterOptions">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
     </record>
     <interface name="GenesisAddin"
                c:symbol-prefix="genesis_addin"
@@ -12444,6 +13066,68 @@ returned then ide_indenter_format() will be called.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
+    <class name="LangservFormatter"
+           c:symbol-prefix="langserv_formatter"
+           c:type="IdeLangservFormatter"
+           parent="Object"
+           glib:type-name="IdeLangservFormatter"
+           glib:get-type="ide_langserv_formatter_get_type"
+           glib:type-struct="LangservFormatterClass">
+      <implements name="Formatter"/>
+      <method name="get_client"
+              c:identifier="ide_langserv_formatter_get_client">
+        <doc xml:space="preserve">Gets the client to use for the formatter.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">An #IdeLangservClient or %NULL.</doc>
+          <type name="LangservClient" c:type="IdeLangservClient*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #IdeLangservFormatter</doc>
+            <type name="LangservFormatter" c:type="IdeLangservFormatter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_client"
+              c:identifier="ide_langserv_formatter_set_client">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="LangservFormatter" c:type="IdeLangservFormatter*"/>
+          </instance-parameter>
+          <parameter name="client" transfer-ownership="none">
+            <type name="LangservClient" c:type="IdeLangservClient*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="client" writable="1" transfer-ownership="none">
+        <type name="LangservClient"/>
+      </property>
+      <field name="parent_class">
+        <type name="Object" c:type="IdeObject"/>
+      </field>
+      <field name="_reserved1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved2">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved3">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved4">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+    </class>
+    <record name="LangservFormatterClass"
+            c:type="IdeLangservFormatterClass"
+            glib:is-gtype-struct-for="LangservFormatter">
+      <field name="parent_class">
+        <type name="ObjectClass" c:type="IdeObjectClass"/>
+      </field>
+    </record>
     <class name="LangservHighlighter"
            c:symbol-prefix="langserv_highlighter"
            c:type="IdeLangservHighlighter"
@@ -12541,6 +13225,12 @@ returned then ide_indenter_format() will be called.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="buffer"
+                readable="0"
+                writable="1"
+                transfer-ownership="none">
+        <type name="Buffer"/>
+      </property>
       <property name="client" writable="1" transfer-ownership="none">
         <type name="LangservClient"/>
       </property>
@@ -17785,6 +18475,17 @@ This information should be used to display a list of available projects.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_build_system_name"
+              c:identifier="ide_project_info_get_build_system_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectInfo" c:type="IdeProjectInfo*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_description"
               c:identifier="ide_project_info_get_description">
         <return-value transfer-ownership="none">
@@ -17893,6 +18594,20 @@ This is the project file (such as configure.ac) of the project.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="set_build_system_name"
+              c:identifier="ide_project_info_set_build_system_name">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ProjectInfo" c:type="IdeProjectInfo*"/>
+          </instance-parameter>
+          <parameter name="build_system_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_description"
               c:identifier="ide_project_info_set_description">
         <return-value transfer-ownership="none">
@@ -17988,6 +18703,11 @@ This is the project file (such as configure.ac) of the project.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="build-system-name"
+                writable="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="description" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -18731,6 +19451,11 @@ the project.</doc>
               c:type="IDE_RECENT_PROJECTS_BOOKMARK_FILENAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="RECENT_PROJECTS_BUILD_SYSTEM_GROUP_PREFIX"
+              value="X-GNOME-Builder-Build-System:"
+              c:type="IDE_RECENT_PROJECTS_BUILD_SYSTEM_GROUP_PREFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="RECENT_PROJECTS_GROUP"
               value="X-GNOME-Builder-Project"
               c:type="IDE_RECENT_PROJECTS_GROUP">
@@ -19039,6 +19764,12 @@ to complete the symbol rename.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="buffer"
+                readable="0"
+                writable="1"
+                transfer-ownership="none">
+        <type name="Buffer"/>
+      </property>
     </interface>
     <record name="RenameProviderInterface"
             c:type="IdeRenameProviderInterface"
@@ -25188,6 +25919,11 @@ helpful when implementing recording sequences such as in Vim.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
+      <glib:signal name="find-references" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="focus-location" when="last">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -25197,6 +25933,11 @@ helpful when implementing recording sequences such as in Vim.</doc>
             <type name="SourceLocation"/>
           </parameter>
         </parameters>
+      </glib:signal>
+      <glib:signal name="format-selection" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
       </glib:signal>
       <glib:signal name="goto-definition" when="last" action="1">
         <return-value transfer-ownership="none">
@@ -26484,6 +27225,16 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
         </return-value>
       </glib:signal>
       <glib:signal name="end-user-action" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="find-references" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="format-selection" when="last" action="1">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -29982,6 +30733,63 @@ the definition).</doc>
                glib:get-type="ide_symbol_resolver_get_type"
                glib:type-struct="SymbolResolverInterface">
       <prerequisite name="Object"/>
+      <virtual-method name="find_references_async"
+                      invoker="find_references_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+          </instance-parameter>
+          <parameter name="location" transfer-ownership="none">
+            <type name="SourceLocation" c:type="IdeSourceLocation*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="find_references_finish"
+                      invoker="find_references_finish"
+                      throws="1">
+        <doc xml:space="preserve">Completes an asynchronous request to ide_symbol_resolver_find_references_async().</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">A #GPtrArray
+  of #IdeSourceRange if successful; otherwise %NULL and @error is set.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="SourceRange"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #IdeSymbolResolver</doc>
+            <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="get_symbol_tree_async"
                       invoker="get_symbol_tree_async">
         <doc xml:space="preserve">Asynchronously fetch an up to date symbol tree for @file.</doc>
@@ -30116,6 +30924,62 @@ ide_symbol_resolver_lookup_symbol_async().</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="find_references_async"
+              c:identifier="ide_symbol_resolver_find_references_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+          </instance-parameter>
+          <parameter name="location" transfer-ownership="none">
+            <type name="SourceLocation" c:type="IdeSourceLocation*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find_references_finish"
+              c:identifier="ide_symbol_resolver_find_references_finish"
+              throws="1">
+        <doc xml:space="preserve">Completes an asynchronous request to ide_symbol_resolver_find_references_async().</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">A #GPtrArray
+  of #IdeSourceRange if successful; otherwise %NULL and @error is set.</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="SourceRange"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #IdeSymbolResolver</doc>
+            <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_symbol_tree_async"
               c:identifier="ide_symbol_resolver_get_symbol_tree_async">
         <doc xml:space="preserve">Asynchronously fetch an up to date symbol tree for @file.</doc>
@@ -30386,6 +31250,64 @@ ide_symbol_resolver_lookup_symbol_async().</doc>
           <parameters>
             <parameter name="self" transfer-ownership="none">
               <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="find_references_async">
+        <callback name="find_references_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+            </parameter>
+            <parameter name="location" transfer-ownership="none">
+              <type name="SourceLocation" c:type="IdeSourceLocation*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="find_references_finish">
+        <callback name="find_references_finish" throws="1">
+          <return-value transfer-ownership="container">
+            <doc xml:space="preserve">A #GPtrArray
+  of #IdeSourceRange if successful; otherwise %NULL and @error is set.</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="SourceRange"/>
+            </array>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">a #IdeSymbolResolver</doc>
+              <type name="SymbolResolver" c:type="IdeSymbolResolver*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
           </parameters>
         </callback>

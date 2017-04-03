@@ -1000,8 +1000,7 @@ namespace Gtk {
 		[Version (since = "3.16")]
 		public signal void join_lines ();
 		public virtual signal void line_mark_activated (Gtk.TextIter iter, Gdk.Event event);
-		[Version (since = "2.10")]
-		public virtual signal void move_lines (bool copy, int step);
+		public virtual signal void move_lines (bool down);
 		[Version (since = "3.16")]
 		public signal void move_to_matching_bracket (bool extend_selection);
 		[Version (since = "3.0")]

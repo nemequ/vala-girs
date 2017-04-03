@@ -62,11 +62,13 @@ and/or use gtk-doc annotations.  -->
       </constructor>
       <function name="encrypt"
                 c:identifier="g_mime_application_pkcs7_mime_encrypt"
-                introspectable="0"
                 throws="1">
-        <doc xml:space="preserve">Encrypts @entity using S/MIME.</doc>
-        <return-value>
-          <doc xml:space="preserve">The encrypted @entity.</doc>
+        <doc xml:space="preserve">Attempts to encrypt the @entity MIME part to the public keys of @recipients
+using S/MIME. If successful, a new application/pkcs7-mime object is returned.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GMimeApplicationPkcs7Mime object on success
+or %NULL on fail. If encrypting fails, an exception will be set on @err to provide
+information as to why the failure occured.</doc>
           <type name="ApplicationPkcs7Mime"
                 c:type="GMimeApplicationPkcs7Mime*"/>
         </return-value>
@@ -80,20 +82,22 @@ and/or use gtk-doc annotations.  -->
             <type name="EncryptFlags" c:type="GMimeEncryptFlags"/>
           </parameter>
           <parameter name="recipients" transfer-ownership="none">
-            <doc xml:space="preserve">the list of recipients to encrypt to</doc>
+            <doc xml:space="preserve">an array of recipients to encrypt to</doc>
             <array name="GLib.PtrArray" c:type="GPtrArray*">
-              <type name="gpointer" c:type="gpointer"/>
+              <type name="utf8"/>
             </array>
           </parameter>
         </parameters>
       </function>
       <function name="sign"
                 c:identifier="g_mime_application_pkcs7_mime_sign"
-                introspectable="0"
                 throws="1">
-        <doc xml:space="preserve">Signs the @entity using S/MIME.</doc>
-        <return-value>
-          <doc xml:space="preserve">the signed @entity.</doc>
+        <doc xml:space="preserve">Attempts to sign the @entity MIME part with @userid's private key using
+S/MIME. If successful, a new application/pkcs7-mime object is returned.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GMimeApplicationPkcs7Mime object on success
+or %NULL on fail. If signing fails, an exception will be set on @err to provide
+information as to why the failure occured.</doc>
           <type name="ApplicationPkcs7Mime"
                 c:type="GMimeApplicationPkcs7Mime*"/>
         </return-value>
@@ -122,7 +126,7 @@ If @result is non-%NULL, then on a successful decrypt operation, it will be
 updated to point to a newly-allocated #GMimeDecryptResult with signature
 status information as well as a list of recipients that the part was
 encrypted to.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the decrypted MIME part on success or
 %NULL on fail. If the decryption fails, an exception will be set on
 @err to provide information as to why the failure occured.</doc>
@@ -165,11 +169,14 @@ encrypted to.</doc>
       </method>
       <method name="verify"
               c:identifier="g_mime_application_pkcs7_mime_verify"
-              introspectable="0"
               throws="1">
-        <doc xml:space="preserve">Verifies the signed @pkcs7_mime part and extracts the original MIME entity.</doc>
-        <return-value>
-          <doc xml:space="preserve">the list of signers.</doc>
+        <doc xml:space="preserve">Attempts to verify the signed @pkcs7_mime part and extract the original
+MIME entity.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GMimeSignatureList object on
+success or %NULL on fail. If the verification fails, an exception
+will be set on @err to provide information as to why the failure
+occured.</doc>
           <type name="SignatureList" c:type="GMimeSignatureList*"/>
         </return-value>
         <parameters>
@@ -182,7 +189,10 @@ encrypted to.</doc>
             <doc xml:space="preserve">a #GMimeVerifyFlags</doc>
             <type name="VerifyFlags" c:type="GMimeVerifyFlags"/>
           </parameter>
-          <parameter name="entity" transfer-ownership="none">
+          <parameter name="entity"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">the extracted entity</doc>
             <type name="Object" c:type="GMimeObject**"/>
           </parameter>
@@ -834,9 +844,9 @@ index.</doc>
       </field>
       <method name="best_name" c:identifier="g_mime_charset_best_name">
         <doc xml:space="preserve">Gets the best charset name based on the charset mask @charset.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a pointer to a string containing the best charset name that
-can represent the charset mask @charset.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the charset name that best represents the charset
+mask @charset or %NULL for us-ascii.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -909,9 +919,9 @@ limiting what charsets our @charset-&gt;mask can match.</doc>
       </method>
       <function name="best" c:identifier="g_mime_charset_best">
         <doc xml:space="preserve">Computes the best charset to use to encode this text buffer.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the charset name best suited for the input text or %NULL if
-it is US-ASCII safe.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the charset name best suited for the input text
+or %NULL if it is ascii-safe.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -975,9 +985,9 @@ charset.</doc>
         <doc xml:space="preserve">Attempts to find a specific language code that is specific to
 @charset. Currently only handles CJK and Russian/Ukranian
 charset-&gt;lang mapping. Everything else will return %NULL.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a language code that is specific to @charset, or %NULL on
-fail.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a language code that is specific to @charset,
+or %NULL on fail.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -1094,21 +1104,22 @@ instead.</doc>
           <type name="ContentDisposition" c:type="GMimeContentDisposition*"/>
         </return-value>
       </constructor>
-      <function name="parse"
-                c:identifier="g_mime_content_disposition_parse"
-                introspectable="0">
+      <function name="parse" c:identifier="g_mime_content_disposition_parse">
         <doc xml:space="preserve">Parses the input string into a #GMimeContentDisposition object.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GMimeContentDisposition object.</doc>
           <type name="ContentDisposition" c:type="GMimeContentDisposition*"/>
         </return-value>
         <parameters>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
           <parameter name="str" transfer-ownership="none">
-            <doc xml:space="preserve">Content-Disposition field value or %NULL</doc>
+            <doc xml:space="preserve">Content-Disposition field value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1124,8 +1135,11 @@ instead.</doc>
             <doc xml:space="preserve">a #GMimeContentDisposition object</doc>
             <type name="ContentDisposition" c:type="GMimeContentDisposition*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
         </parameters>
@@ -1166,10 +1180,9 @@ will be in UTF-8.</doc>
         </parameters>
       </method>
       <method name="get_parameters"
-              c:identifier="g_mime_content_disposition_get_parameters"
-              introspectable="0">
+              c:identifier="g_mime_content_disposition_get_parameters">
         <doc xml:space="preserve">Gets the Content-Disposition parameter list.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the Content-Disposition's parameter list.</doc>
           <type name="ParamList" c:type="GMimeParamList*"/>
         </return-value>
@@ -1181,8 +1194,7 @@ will be in UTF-8.</doc>
         </parameters>
       </method>
       <method name="is_attachment"
-              c:identifier="g_mime_content_disposition_is_attachment"
-              version="2.6.21">
+              c:identifier="g_mime_content_disposition_is_attachment">
         <doc xml:space="preserve">Determines if a Content-Disposition has a value of "attachment".</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the value matches "attachment", otherwise %FALSE.</doc>
@@ -1321,17 +1333,18 @@ UTF-8.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <function name="parse"
-                c:identifier="g_mime_content_type_parse"
-                introspectable="0">
+      <function name="parse" c:identifier="g_mime_content_type_parse">
         <doc xml:space="preserve">Parses the input string into a #GMimeContentType object.</doc>
-        <return-value>
-          <doc xml:space="preserve">a new #GMimeContentType object based on the input string.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimeContentType object.</doc>
           <type name="ContentType" c:type="GMimeContentType*"/>
         </return-value>
         <parameters>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
           <parameter name="str" transfer-ownership="none">
@@ -1351,8 +1364,11 @@ UTF-8.</doc>
             <doc xml:space="preserve">a #GMimeContentType</doc>
             <type name="ContentType" c:type="GMimeContentType*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
         </parameters>
@@ -1422,10 +1438,9 @@ will be in UTF-8.</doc>
         </parameters>
       </method>
       <method name="get_parameters"
-              c:identifier="g_mime_content_type_get_parameters"
-              introspectable="0">
+              c:identifier="g_mime_content_type_get_parameters">
         <doc xml:space="preserve">Gets the Content-Type's parameter list.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the Content-Type's parameter list.</doc>
           <type name="ParamList" c:type="GMimeParamList*"/>
         </return-value>
@@ -1440,7 +1455,7 @@ will be in UTF-8.</doc>
         <doc xml:space="preserve">Compares the given type and subtype with that of the given mime
 type object.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the MIME types match or FALSE otherwise. You may
+          <doc xml:space="preserve">%TRUE if the MIME types match or %FALSE otherwise. You may
 use "*" in place of @type and/or @subtype as a wilcard.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1554,7 +1569,7 @@ UTF-8.</doc>
       <doc xml:space="preserve">A crypto context for use with MIME.</doc>
       <constructor name="new" c:identifier="g_mime_crypto_context_new">
         <doc xml:space="preserve">Creates a new crypto context for the specified @protocol.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a newly allocated #GMimeCryptoContext.</doc>
           <type name="CryptoContext" c:type="GMimeCryptoContext*"/>
         </return-value>
@@ -1618,7 +1633,10 @@ on error.</doc>
             <doc xml:space="preserve">a set of #GMimeDecryptFlags</doc>
             <type name="DecryptFlags" c:type="GMimeDecryptFlags"/>
           </parameter>
-          <parameter name="session_key" transfer-ownership="none">
+          <parameter name="session_key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the session key to use or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -1651,7 +1669,7 @@ on error.</doc>
       </virtual-method>
       <virtual-method name="digest_name" invoker="digest_name">
         <doc xml:space="preserve">Gets the digest name based on the digest id @digest.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the equivalent digest name or %NULL on fail.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -1682,7 +1700,10 @@ writes the resulting ciphertext to the output stream.</doc>
             <doc xml:space="preserve">sign as well as encrypt</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="userid" transfer-ownership="none">
+          <parameter name="userid"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the key id (or email address) to use when signing (assuming @sign is %TRUE)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -1734,7 +1755,7 @@ will be exported.</doc>
       <virtual-method name="get_encryption_protocol"
                       invoker="get_encryption_protocol">
         <doc xml:space="preserve">Gets the encryption protocol for the crypto context.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the encryption protocol or %NULL if not supported.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -1748,7 +1769,7 @@ will be exported.</doc>
       <virtual-method name="get_key_exchange_protocol"
                       invoker="get_key_exchange_protocol">
         <doc xml:space="preserve">Gets the key exchange protocol for the crypto context.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the key exchange protocol or %NULL if not supported.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -1762,7 +1783,7 @@ will be exported.</doc>
       <virtual-method name="get_signature_protocol"
                       invoker="get_signature_protocol">
         <doc xml:space="preserve">Gets the signature protocol for the crypto context.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the signature protocol or %NULL if not supported.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -1826,7 +1847,7 @@ should pass %NULL as the @sigstream parameter and may wish to
 provide an @ostream argument for GMime to output the original
 plaintext into. Otherwise @sigstream is assumed to be the signature
 stream and is used to verify the integirity of the @istream.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #GMimeSignatureList object containing
 the status of each signature or %NULL on error.</doc>
           <type name="SignatureList" c:type="GMimeSignatureList*"/>
@@ -1844,12 +1865,18 @@ the status of each signature or %NULL on error.</doc>
             <doc xml:space="preserve">input stream</doc>
             <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
-          <parameter name="sigstream" transfer-ownership="none">
-            <doc xml:space="preserve">optional detached-signature stream</doc>
+          <parameter name="sigstream"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">detached-signature stream</doc>
             <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
-          <parameter name="ostream" transfer-ownership="none">
-            <doc xml:space="preserve">optional output stream for use with encapsulated signature input streams</doc>
+          <parameter name="ostream"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output stream for use with encapsulated signature input streams</doc>
             <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
         </parameters>
@@ -1890,7 +1917,10 @@ on error.</doc>
             <doc xml:space="preserve">a set of #GMimeDecryptFlags</doc>
             <type name="DecryptFlags" c:type="GMimeDecryptFlags"/>
           </parameter>
-          <parameter name="session_key" transfer-ownership="none">
+          <parameter name="session_key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the session key to use or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -1924,7 +1954,7 @@ on error.</doc>
       <method name="digest_name"
               c:identifier="g_mime_crypto_context_digest_name">
         <doc xml:space="preserve">Gets the digest name based on the digest id @digest.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the equivalent digest name or %NULL on fail.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -1957,7 +1987,10 @@ writes the resulting ciphertext to the output stream.</doc>
             <doc xml:space="preserve">sign as well as encrypt</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="userid" transfer-ownership="none">
+          <parameter name="userid"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the key id (or email address) to use when signing (assuming @sign is %TRUE)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -2011,7 +2044,7 @@ will be exported.</doc>
       <method name="get_encryption_protocol"
               c:identifier="g_mime_crypto_context_get_encryption_protocol">
         <doc xml:space="preserve">Gets the encryption protocol for the crypto context.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the encryption protocol or %NULL if not supported.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -2025,7 +2058,7 @@ will be exported.</doc>
       <method name="get_key_exchange_protocol"
               c:identifier="g_mime_crypto_context_get_key_exchange_protocol">
         <doc xml:space="preserve">Gets the key exchange protocol for the crypto context.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the key exchange protocol or %NULL if not supported.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -2039,7 +2072,7 @@ will be exported.</doc>
       <method name="get_signature_protocol"
               c:identifier="g_mime_crypto_context_get_signature_protocol">
         <doc xml:space="preserve">Gets the signature protocol for the crypto context.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the signature protocol or %NULL if not supported.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -2127,7 +2160,7 @@ should pass %NULL as the @sigstream parameter and may wish to
 provide an @ostream argument for GMime to output the original
 plaintext into. Otherwise @sigstream is assumed to be the signature
 stream and is used to verify the integirity of the @istream.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #GMimeSignatureList object containing
 the status of each signature or %NULL on error.</doc>
           <type name="SignatureList" c:type="GMimeSignatureList*"/>
@@ -2145,12 +2178,18 @@ the status of each signature or %NULL on error.</doc>
             <doc xml:space="preserve">input stream</doc>
             <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
-          <parameter name="sigstream" transfer-ownership="none">
-            <doc xml:space="preserve">optional detached-signature stream</doc>
+          <parameter name="sigstream"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">detached-signature stream</doc>
             <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
-          <parameter name="ostream" transfer-ownership="none">
-            <doc xml:space="preserve">optional output stream for use with encapsulated signature input streams</doc>
+          <parameter name="ostream"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">output stream for use with encapsulated signature input streams</doc>
             <type name="Stream" c:type="GMimeStream*"/>
           </parameter>
         </parameters>
@@ -2190,7 +2229,7 @@ the status of each signature or %NULL on error.</doc>
       </field>
       <field name="digest_name">
         <callback name="digest_name">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">the equivalent digest name or %NULL on fail.</doc>
             <type name="utf8" c:type="const char*"/>
           </return-value>
@@ -2208,7 +2247,7 @@ the status of each signature or %NULL on error.</doc>
       </field>
       <field name="get_signature_protocol">
         <callback name="get_signature_protocol">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">the signature protocol or %NULL if not supported.</doc>
             <type name="utf8" c:type="const char*"/>
           </return-value>
@@ -2222,7 +2261,7 @@ the status of each signature or %NULL on error.</doc>
       </field>
       <field name="get_encryption_protocol">
         <callback name="get_encryption_protocol">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">the encryption protocol or %NULL if not supported.</doc>
             <type name="utf8" c:type="const char*"/>
           </return-value>
@@ -2236,7 +2275,7 @@ the status of each signature or %NULL on error.</doc>
       </field>
       <field name="get_key_exchange_protocol">
         <callback name="get_key_exchange_protocol">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">the key exchange protocol or %NULL if not supported.</doc>
             <type name="utf8" c:type="const char*"/>
           </return-value>
@@ -2280,7 +2319,7 @@ the status of each signature or %NULL on error.</doc>
       </field>
       <field name="verify">
         <callback name="verify" throws="1">
-          <return-value transfer-ownership="full">
+          <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">a #GMimeSignatureList object containing
 the status of each signature or %NULL on error.</doc>
             <type name="SignatureList" c:type="GMimeSignatureList*"/>
@@ -2298,12 +2337,18 @@ the status of each signature or %NULL on error.</doc>
               <doc xml:space="preserve">input stream</doc>
               <type name="Stream" c:type="GMimeStream*"/>
             </parameter>
-            <parameter name="sigstream" transfer-ownership="none">
-              <doc xml:space="preserve">optional detached-signature stream</doc>
+            <parameter name="sigstream"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">detached-signature stream</doc>
               <type name="Stream" c:type="GMimeStream*"/>
             </parameter>
-            <parameter name="ostream" transfer-ownership="none">
-              <doc xml:space="preserve">optional output stream for use with encapsulated signature input streams</doc>
+            <parameter name="ostream"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">output stream for use with encapsulated signature input streams</doc>
               <type name="Stream" c:type="GMimeStream*"/>
             </parameter>
           </parameters>
@@ -2324,7 +2369,10 @@ the status of each signature or %NULL on error.</doc>
               <doc xml:space="preserve">sign as well as encrypt</doc>
               <type name="gboolean" c:type="gboolean"/>
             </parameter>
-            <parameter name="userid" transfer-ownership="none">
+            <parameter name="userid"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
               <doc xml:space="preserve">the key id (or email address) to use when signing (assuming @sign is %TRUE)</doc>
               <type name="utf8" c:type="const char*"/>
             </parameter>
@@ -2365,7 +2413,10 @@ on error.</doc>
               <doc xml:space="preserve">a set of #GMimeDecryptFlags</doc>
               <type name="DecryptFlags" c:type="GMimeDecryptFlags"/>
             </parameter>
-            <parameter name="session_key" transfer-ownership="none">
+            <parameter name="session_key"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
               <doc xml:space="preserve">the session key to use or %NULL</doc>
               <type name="utf8" c:type="const char*"/>
             </parameter>
@@ -2684,8 +2735,8 @@ Note: caller is responsible for its own reference on
       </method>
       <method name="get_session_key"
               c:identifier="g_mime_decrypt_result_get_session_key">
-        <doc xml:space="preserve">Get the session_key used for this decryption.</doc>
-        <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Get the session key used for this decryption.</doc>
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the session key digest algorithm used, or %NULL if no
 session key was requested or found.</doc>
           <type name="utf8" c:type="const char*"/>
@@ -2700,7 +2751,7 @@ session key was requested or found.</doc>
       <method name="get_signatures"
               c:identifier="g_mime_decrypt_result_get_signatures">
         <doc xml:space="preserve">Gets a list of signatures if the encrypted stream had also been signed.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a #GMimeSignatureList or %NULL if the
 stream was not signed.</doc>
           <type name="SignatureList" c:type="GMimeSignatureList*"/>
@@ -2773,8 +2824,11 @@ stream was not signed.</doc>
             <doc xml:space="preserve">a #GMimeDecryptResult</doc>
             <type name="DecryptResult" c:type="GMimeDecryptResult*"/>
           </instance-parameter>
-          <parameter name="session_key" transfer-ownership="none">
-            <doc xml:space="preserve">a pointer to a null-terminated string representing the session key</doc>
+          <parameter name="session_key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a string representing the session key or %NULL to unset the key</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -3369,6 +3423,11 @@ constraints are for the stream.</doc>
               value="32"
               c:identifier="GMIME_ENCRYPT_SYMMETRIC">
         <doc xml:space="preserve">Encrypt symmetrically.</doc>
+      </member>
+      <member name="throw_keyids"
+              value="64"
+              c:identifier="GMIME_ENCRYPT_THROW_KEYIDS">
+        <doc xml:space="preserve">Do not include the key ids in the ciphertext.</doc>
       </member>
     </enumeration>
     <constant name="FILTER_ENRICHED_IS_RICHTEXT"
@@ -4770,7 +4829,11 @@ or the proper Windows-CP125# charset.</doc>
         <doc xml:space="preserve">The stream is in the MMDF format.</doc>
       </member>
     </enumeration>
-    <record name="FormatOptions" c:type="GMimeFormatOptions">
+    <record name="FormatOptions"
+            c:type="GMimeFormatOptions"
+            glib:type-name="GMimeFormatOptions"
+            glib:get-type="g_mime_format_options_get_type"
+            c:symbol-prefix="format_options">
       <doc xml:space="preserve">Format options for serializing various GMime objects.</doc>
       <field name="method" writable="1">
         <doc xml:space="preserve">The method to use for parameter encoding.</doc>
@@ -4798,6 +4861,13 @@ or the proper Windows-CP125# charset.</doc>
         <doc xml:space="preserve">The max line length to allow for encoded content.</doc>
         <type name="guint" c:type="guint"/>
       </field>
+      <constructor name="new" c:identifier="g_mime_format_options_new">
+        <doc xml:space="preserve">Creates a new set of #GMimeFormatOptions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated set of #GMimeFormatOptions with the default values.</doc>
+          <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+        </return-value>
+      </constructor>
       <method name="add_hidden_header"
               c:identifier="g_mime_format_options_add_hidden_header">
         <doc xml:space="preserve">Adds the given header to the list of headers that should be hidden.</doc>
@@ -4828,6 +4898,22 @@ or the proper Windows-CP125# charset.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="clone" c:identifier="g_mime_format_options_clone">
+        <doc xml:space="preserve">Clones a #GMimeFormatOptions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GMimeFormatOptions.</doc>
+          <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
+            <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="create_newline_filter"
               c:identifier="g_mime_format_options_create_newline_filter">
         <doc xml:space="preserve">Creates a #GMimeFilter suitable for converting line-endings to the
@@ -4837,7 +4923,10 @@ currently set new-line format.</doc>
           <type name="Filter" c:type="GMimeFilter*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
@@ -4867,7 +4956,10 @@ currently set new-line format.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
@@ -4881,7 +4973,10 @@ currently set new-line format.</doc>
           <type name="NewLineFormat" c:type="GMimeNewLineFormat"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
@@ -4896,7 +4991,10 @@ already have an encoding method specified.</doc>
           <type name="ParamEncodingMethod" c:type="GMimeParamEncodingMethod"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
@@ -4910,8 +5008,11 @@ already have an encoding method specified.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </instance-parameter>
           <parameter name="header" transfer-ownership="none">
@@ -4976,20 +5077,10 @@ Note: #GMIME_PARAM_ENCODING_METHOD_DEFAULT is not allowed.</doc>
         </parameters>
       </method>
       <function name="get_default"
-                c:identifier="g_mime_format_options_get_default"
-                introspectable="0">
+                c:identifier="g_mime_format_options_get_default">
         <doc xml:space="preserve">Gets the default format options.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the default format options.</doc>
-          <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
-        </return-value>
-      </function>
-      <function name="new"
-                c:identifier="g_mime_format_options_new"
-                introspectable="0">
-        <doc xml:space="preserve">Creates a new set of #GMimeFormatOptions.</doc>
-        <return-value>
-          <doc xml:space="preserve">a newly allocated set of #GMimeFormatOptions with the default values.</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </return-value>
       </function>
@@ -5025,140 +5116,210 @@ Note: #GMIME_PARAM_ENCODING_METHOD_DEFAULT is not allowed.</doc>
       <doc xml:space="preserve">A message or mime-part header.</doc>
       <method name="format_addrlist"
               c:identifier="g_mime_header_format_addrlist">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a Sender, From, Reply-To, To, Cc, or Bcc header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset (note: unused)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
       <method name="format_content_disposition"
               c:identifier="g_mime_header_format_content_disposition">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a Content-Disposition header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset (note: unused)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
       <method name="format_content_type"
               c:identifier="g_mime_header_format_content_type">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a Content-Type header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset (note: unused)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
       <method name="format_default"
               c:identifier="g_mime_header_format_default">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset to use when encoding the @value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
       <method name="format_message_id"
               c:identifier="g_mime_header_format_message_id">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a Message-Id or Content-Id header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset (note: unused)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
       <method name="format_received"
               c:identifier="g_mime_header_format_received">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a Received header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset (note: unused)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
       <method name="format_references"
               c:identifier="g_mime_header_format_references">
+        <doc xml:space="preserve">Parses the @value and then re-formats it to conform to the formatting options,
+folding the value if necessary.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated string containing the reformatted value.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="header" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a References or In-Reply-To header value</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="charset" transfer-ownership="none">
+            <doc xml:space="preserve">a charset (note: unused)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -5261,8 +5422,11 @@ g_mime_utils_header_decode_text() before displaying to the user.</doc>
             <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
@@ -5287,8 +5451,11 @@ g_mime_utils_header_decode_text() before displaying to the user.</doc>
             <doc xml:space="preserve">a #GMimeHeader</doc>
             <type name="Header" c:type="GMimeHeader*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="stream" transfer-ownership="none">
@@ -5350,8 +5517,11 @@ g_mime_utils_header_decode_text() before displaying to the user.</doc>
           <type name="HeaderList" c:type="GMimeHeaderList*"/>
         </return-value>
         <parameters>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
         </parameters>
@@ -5424,11 +5594,9 @@ obtained for them) otherwise the header will be unset.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_header"
-              c:identifier="g_mime_header_list_get_header"
-              introspectable="0">
+      <method name="get_header" c:identifier="g_mime_header_list_get_header">
         <doc xml:space="preserve">Gets the first header with the specified name.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #GMimeHeader for the specified @name.</doc>
           <type name="Header" c:type="GMimeHeader*"/>
         </return-value>
@@ -5564,8 +5732,11 @@ contained in @headers.</doc>
             <doc xml:space="preserve">a #GMimeHeaderList</doc>
             <type name="HeaderList" c:type="GMimeHeaderList*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
         </parameters>
@@ -5582,8 +5753,11 @@ contained in @headers.</doc>
             <doc xml:space="preserve">a #GMimeHeaderList</doc>
             <type name="HeaderList" c:type="GMimeHeaderList*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="stream" transfer-ownership="none">
@@ -5683,9 +5857,9 @@ contained in @headers.</doc>
       </virtual-method>
       <method name="get_charset" c:identifier="internet_address_get_charset">
         <doc xml:space="preserve">Gets the charset to be used when encoding the name of the mailbox or group.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the charset to be used when encoding the name of the mailbox or
-group if available or %NULL otherwise.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the charset to be used when encoding the name of the
+mailbox or group if available or %NULL otherwise.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
@@ -5697,9 +5871,9 @@ group if available or %NULL otherwise.</doc>
       </method>
       <method name="get_name" c:identifier="internet_address_get_name">
         <doc xml:space="preserve">Gets the display name of the #InternetAddress.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the name of the mailbox or group in a form suitable for
-display if available or %NULL otherwise. If the name is available,
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the name of the mailbox or group in a form suitable
+for display if available or %NULL otherwise. If the name is available,
 the returned string will be in UTF-8.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -5720,7 +5894,10 @@ the returned string will be in UTF-8.</doc>
             <doc xml:space="preserve">a #InternetAddress</doc>
             <type name="InternetAddress" c:type="InternetAddress*"/>
           </instance-parameter>
-          <parameter name="charset" transfer-ownership="none">
+          <parameter name="charset"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the charset to use when encoding the name or %NULL to use the defaults</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -5757,8 +5934,11 @@ rfc822 format.</doc>
             <doc xml:space="preserve">Internet Address object</doc>
             <type name="InternetAddress" c:type="InternetAddress*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="encode" transfer-ownership="none">
@@ -5922,14 +6102,17 @@ members of @group.</doc>
       </constructor>
       <function name="parse" c:identifier="internet_address_list_parse">
         <doc xml:space="preserve">Construct a list of internet addresses from the given string.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #InternetAddressList or %NULL if the
 input string does not contain any addresses.</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
         <parameters>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
           <parameter name="str" transfer-ownership="none">
@@ -6013,8 +6196,11 @@ within the specified #InternetAddressList or %FALSE otherwise.</doc>
             <doc xml:space="preserve">list of internet addresses</doc>
             <type name="InternetAddressList" c:type="InternetAddressList*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="str" transfer-ownership="none">
@@ -6173,9 +6359,9 @@ otherwise.</doc>
       <method name="to_string" c:identifier="internet_address_list_to_string">
         <doc xml:space="preserve">Allocates a string buffer containing the rfc822 formatted addresses
 in @list.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a string containing the list of addresses in rfc822 format
-or %NULL if no addresses are contained in the list.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a string containing the list of addresses in rfc822
+format or %NULL if no addresses are contained in the list.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
@@ -6183,8 +6369,11 @@ or %NULL if no addresses are contained in the list.</doc>
             <doc xml:space="preserve">list of internet addresses</doc>
             <type name="InternetAddressList" c:type="InternetAddressList*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="encode" transfer-ownership="none">
@@ -6412,11 +6601,9 @@ are set.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_bcc"
-              c:identifier="g_mime_message_get_bcc"
-              introspectable="0">
+      <method name="get_bcc" c:identifier="g_mime_message_get_bcc">
         <doc xml:space="preserve">Gets combined list of parsed addresses in the Bcc header(s).</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the parsed list of addresses in the Bcc header(s).</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
@@ -6446,11 +6633,9 @@ recommended that you traverse the MIME structure yourself.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_cc"
-              c:identifier="g_mime_message_get_cc"
-              introspectable="0">
+      <method name="get_cc" c:identifier="g_mime_message_get_cc">
         <doc xml:space="preserve">Gets combined list of parsed addresses in the Cc header(s).</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the parsed list of addresses in the Cc header(s).</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
@@ -6462,38 +6647,21 @@ recommended that you traverse the MIME structure yourself.</doc>
         </parameters>
       </method>
       <method name="get_date" c:identifier="g_mime_message_get_date">
-        <doc xml:space="preserve">Stores the date in time_t format in @date. If @tz_offset is
-non-%NULL, then the timezone offset in will be stored in
-@tz_offset.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+        <doc xml:space="preserve">Gets the parsed date and time value from the Date header.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GDateTime on success or %NULL if the date could not be parsed.</doc>
+          <type name="GLib.DateTime" c:type="GDateTime*"/>
         </return-value>
         <parameters>
           <instance-parameter name="message" transfer-ownership="none">
             <doc xml:space="preserve">A #GMimeMessage</doc>
             <type name="Message" c:type="GMimeMessage*"/>
           </instance-parameter>
-          <parameter name="date"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve">pointer to a date in time_t</doc>
-            <type name="glong" c:type="time_t*"/>
-          </parameter>
-          <parameter name="tz_offset"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve">pointer to timezone offset (in +/- hours)</doc>
-            <type name="gint" c:type="int*"/>
-          </parameter>
         </parameters>
       </method>
-      <method name="get_from"
-              c:identifier="g_mime_message_get_from"
-              introspectable="0">
+      <method name="get_from" c:identifier="g_mime_message_get_from">
         <doc xml:space="preserve">Gets the parsed list of addresses in the From header.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the parsed list of addresses in the From header.</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
@@ -6531,11 +6699,9 @@ non-%NULL, then the timezone offset in will be stored in
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_reply_to"
-              c:identifier="g_mime_message_get_reply_to"
-              introspectable="0">
+      <method name="get_reply_to" c:identifier="g_mime_message_get_reply_to">
         <doc xml:space="preserve">Gets the parsed list of addresses in the Reply-To header.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the parsed list of addresses in the Reply-To header.</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
@@ -6546,11 +6712,9 @@ non-%NULL, then the timezone offset in will be stored in
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_sender"
-              c:identifier="g_mime_message_get_sender"
-              introspectable="0">
+      <method name="get_sender" c:identifier="g_mime_message_get_sender">
         <doc xml:space="preserve">Gets the parsed list of addresses in the Sender header.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the parsed list of addresses in the Sender header.</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
@@ -6576,11 +6740,9 @@ will be in UTF-8.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_to"
-              c:identifier="g_mime_message_get_to"
-              introspectable="0">
+      <method name="get_to" c:identifier="g_mime_message_get_to">
         <doc xml:space="preserve">Gets combined list of parsed addresses in the To header(s).</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the parsed list of addresses in the To header(s).</doc>
           <type name="InternetAddressList" c:type="InternetAddressList*"/>
         </return-value>
@@ -6597,7 +6759,7 @@ will be in UTF-8.</doc>
 containing a single #GMimeMessagePartial object containing
 @max_size bytes or fewer. @nparts is set to the number of
 #GMimeMessagePartial objects created.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">an array of #GMimeMessage objects and
 sets @nparts to the number of messages returned or %NULL on fail.</doc>
           <type name="Message" c:type="GMimeMessage**"/>
@@ -6611,7 +6773,10 @@ sets @nparts to the number of messages returned or %NULL on fail.</doc>
             <doc xml:space="preserve">max size</doc>
             <type name="gsize" c:type="size_t"/>
           </parameter>
-          <parameter name="nparts" transfer-ownership="none">
+          <parameter name="nparts"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">number of parts</doc>
             <type name="gsize" c:type="size_t*"/>
           </parameter>
@@ -6629,11 +6794,7 @@ sets @nparts to the number of messages returned or %NULL on fail.</doc>
           </instance-parameter>
           <parameter name="date" transfer-ownership="none">
             <doc xml:space="preserve">a date to be used in the Date header</doc>
-            <type name="glong" c:type="time_t"/>
-          </parameter>
-          <parameter name="tz_offset" transfer-ownership="none">
-            <doc xml:space="preserve">timezone offset (in +/- hours)</doc>
-            <type name="gint" c:type="int"/>
+            <type name="GLib.DateTime" c:type="GDateTime*"/>
           </parameter>
         </parameters>
       </method>
@@ -6708,20 +6869,19 @@ Note: The @subject string should be in UTF-8.</doc>
         <doc xml:space="preserve">Message-Id string</doc>
         <type name="utf8" c:type="char*"/>
       </field>
+      <field name="date">
+        <doc xml:space="preserve">Date value</doc>
+        <type name="GLib.DateTime" c:type="GDateTime*"/>
+      </field>
       <field name="subject">
         <doc xml:space="preserve">Subject string</doc>
         <type name="utf8" c:type="char*"/>
       </field>
-      <field name="tz_offset">
-        <doc xml:space="preserve">timezone offset</doc>
-        <type name="gint" c:type="int"/>
-      </field>
-      <field name="date">
-        <doc xml:space="preserve">Date value</doc>
-        <type name="glong" c:type="time_t"/>
-      </field>
       <field name="compliance" readable="0" private="1">
         <type name="RfcComplianceMode" c:type="GMimeRfcComplianceMode"/>
+      </field>
+      <field name="marker" readable="0" private="1">
+        <type name="utf8" c:type="char*"/>
       </field>
     </class>
     <record name="MessageClass"
@@ -7695,15 +7855,14 @@ otherwise.</doc>
       </constructor>
       <function name="encrypt"
                 c:identifier="g_mime_multipart_encrypted_encrypt"
-                introspectable="0"
                 throws="1">
         <doc xml:space="preserve">Attempts to encrypt (and conditionally sign) the @entity MIME part
 to the public keys of @recipients using the @ctx encryption
 context. If successful, a new multipart/encrypted object is returned.</doc>
-        <return-value>
-          <doc xml:space="preserve">a new #GMimeMultipartEncrypted object on success or %NULL on fail.
-If encrypting fails, an exception will be set on @err to provide information
-as to why the failure occured.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GMimeMultipartEncrypted object on success
+or %NULL on fail. If encrypting fails, an exception will be set on @err to provide
+information as to why the failure occured.</doc>
           <type name="MultipartEncrypted" c:type="GMimeMultipartEncrypted*"/>
         </return-value>
         <parameters>
@@ -7719,7 +7878,10 @@ as to why the failure occured.</doc>
             <doc xml:space="preserve">%TRUE if the content should also be signed or %FALSE otherwise</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="userid" transfer-ownership="none">
+          <parameter name="userid"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user id to use for signing (only used if @sign is %TRUE)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -7750,7 +7912,7 @@ If @result is non-%NULL, then on a successful decrypt operation, it will be
 updated to point to a newly-allocated #GMimeDecryptResult with signature
 status information as well as a list of recipients that the part was
 encrypted to.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the decrypted MIME part on success or
 %NULL on fail. If the decryption fails, an exception will be set on
 @err to provide information as to why the failure occured.</doc>
@@ -7769,8 +7931,11 @@ encrypted to.</doc>
             <doc xml:space="preserve">session key to use or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
-          <parameter name="result" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeDecryptionResult</doc>
+          <parameter name="result"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">a #GMimeDecryptResult</doc>
             <type name="DecryptResult" c:type="GMimeDecryptResult**"/>
           </parameter>
         </parameters>
@@ -7804,15 +7969,14 @@ encrypted to.</doc>
       </constructor>
       <function name="sign"
                 c:identifier="g_mime_multipart_signed_sign"
-                introspectable="0"
                 throws="1">
         <doc xml:space="preserve">Attempts to sign the @content MIME part with @userid's private key
 using the @ctx signing context. If successful, a new multipart/signed
 object is returned.</doc>
-        <return-value>
-          <doc xml:space="preserve">a new #GMimeMultipartSigned object on success or %NULL on fail.
-If signing fails, an exception will be set on @err to provide information
-as to why the failure occured.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GMimeMultipartSigned object on success
+or %NULL on fail. If signing fails, an exception will be set on @err to provide
+information as to why the failure occured.</doc>
           <type name="MultipartSigned" c:type="GMimeMultipartSigned*"/>
         </return-value>
         <parameters>
@@ -7835,7 +7999,7 @@ as to why the failure occured.</doc>
               throws="1">
         <doc xml:space="preserve">Attempts to verify the signed MIME part contained within the
 multipart/signed object @mps.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a new #GMimeSignatureList object on
 success or %NULL on fail. If the verification fails, an exception
 will be set on @err to provide information as to why the failure
@@ -7901,8 +8065,11 @@ parts appropriate for @content_type.</doc>
           <type name="Object" c:type="GMimeObject*"/>
         </return-value>
         <parameters>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
           <parameter name="content_type" transfer-ownership="none">
@@ -7924,8 +8091,11 @@ of @type/@subtype.</doc>
           <type name="Object" c:type="GMimeObject*"/>
         </return-value>
         <parameters>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
           <parameter name="type" transfer-ownership="none">
@@ -8007,8 +8177,11 @@ Note: The returned string will not be suitable for display.</doc>
             <doc xml:space="preserve">a #GMimeObject</doc>
             <type name="Object" c:type="GMimeObject*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
         </parameters>
@@ -8289,8 +8462,11 @@ Note: The returned string will not be suitable for display.</doc>
             <doc xml:space="preserve">a #GMimeObject</doc>
             <type name="Object" c:type="GMimeObject*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
         </parameters>
@@ -8495,8 +8671,11 @@ object.</doc>
             <doc xml:space="preserve">a #GMimeObject</doc>
             <type name="Object" c:type="GMimeObject*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
         </parameters>
@@ -8513,8 +8692,11 @@ object.</doc>
             <doc xml:space="preserve">a #GMimeObject</doc>
             <type name="Object" c:type="GMimeObject*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="stream" transfer-ownership="none">
@@ -8640,8 +8822,11 @@ Note: The returned string will not be suitable for display.</doc>
               <doc xml:space="preserve">a #GMimeObject</doc>
               <type name="Object" c:type="GMimeObject*"/>
             </parameter>
-            <parameter name="options" transfer-ownership="none">
-              <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <parameter name="options"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
               <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
             </parameter>
           </parameters>
@@ -8937,17 +9122,15 @@ some older email clients to improperly encode using the method described in
           <type name="ParamList" c:type="GMimeParamList*"/>
         </return-value>
       </constructor>
-      <function name="parse"
-                c:identifier="g_mime_param_list_parse"
-                introspectable="0">
+      <function name="parse" c:identifier="g_mime_param_list_parse">
         <doc xml:space="preserve">Parses the input string into a parameter list.</doc>
-        <return-value>
-          <doc xml:space="preserve">a #GMimeParamList.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimeParamList.</doc>
           <type name="ParamList" c:type="GMimeParamList*"/>
         </return-value>
         <parameters>
           <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions</doc>
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
           <parameter name="str" transfer-ownership="none">
@@ -8979,7 +9162,7 @@ some older email clients to improperly encode using the method described in
             <type name="ParamList" c:type="GMimeParamList*"/>
           </instance-parameter>
           <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+            <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
             <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
           </parameter>
           <parameter name="fold" transfer-ownership="none">
@@ -8993,10 +9176,9 @@ some older email clients to improperly encode using the method described in
         </parameters>
       </method>
       <method name="get_parameter"
-              c:identifier="g_mime_param_list_get_parameter"
-              introspectable="0">
+              c:identifier="g_mime_param_list_get_parameter">
         <doc xml:space="preserve">Gets the #GMimeParam with the given @name.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the requested #GMimeParam.</doc>
           <type name="Param" c:type="GMimeParam*"/>
         </return-value>
@@ -9012,10 +9194,9 @@ some older email clients to improperly encode using the method described in
         </parameters>
       </method>
       <method name="get_parameter_at"
-              c:identifier="g_mime_param_list_get_parameter_at"
-              introspectable="0">
+              c:identifier="g_mime_param_list_get_parameter_at">
         <doc xml:space="preserve">Gets the #GMimeParam at the specified @index.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GMimeParam at the specified index.</doc>
           <type name="Param" c:type="GMimeParam*"/>
         </return-value>
@@ -9149,7 +9330,7 @@ some older email clients to improperly encode using the method described in
       <method name="construct_message"
               c:identifier="g_mime_parser_construct_message">
         <doc xml:space="preserve">Constructs a MIME message from @parser.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a MIME message or %NULL on fail.</doc>
           <type name="Message" c:type="GMimeMessage*"/>
         </return-value>
@@ -9158,8 +9339,11 @@ some older email clients to improperly encode using the method described in
             <doc xml:space="preserve">a #GMimeParser context</doc>
             <type name="Parser" c:type="GMimeParser*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions or %NULL for the default options</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
         </parameters>
@@ -9167,7 +9351,7 @@ some older email clients to improperly encode using the method described in
       <method name="construct_part"
               c:identifier="g_mime_parser_construct_part">
         <doc xml:space="preserve">Constructs a MIME part from @parser.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a MIME part based on @parser or %NULL on
 fail.</doc>
           <type name="Object" c:type="GMimeObject*"/>
@@ -9177,8 +9361,11 @@ fail.</doc>
             <doc xml:space="preserve">a #GMimeParser context</doc>
             <type name="Parser" c:type="GMimeParser*"/>
           </instance-parameter>
-          <parameter name="options" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeParserOptions or %NULL for the default options</doc>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </parameter>
         </parameters>
@@ -9245,7 +9432,7 @@ parsed message or %-1 on error.</doc>
               c:identifier="g_mime_parser_get_mbox_marker">
         <doc xml:space="preserve">Gets the mbox-style From-line of the most recently parsed message
 (gotten from g_mime_parser_construct_message()).</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the mbox-style From-line of the most recently parsed
 message or %NULL on error.</doc>
           <type name="utf8" c:type="char*"/>
@@ -9503,7 +9690,11 @@ g_mime_parser_set_header_regex().</doc>
         </parameter>
       </parameters>
     </callback>
-    <record name="ParserOptions" c:type="GMimeParserOptions">
+    <record name="ParserOptions"
+            c:type="GMimeParserOptions"
+            glib:type-name="GMimeParserOptions"
+            glib:get-type="g_mime_parser_options_get_type"
+            c:symbol-prefix="parser_options">
       <doc xml:space="preserve">A set of parser options used by #GMimeParser and various other parsing functions.</doc>
       <field name="addresses" writable="1">
         <doc xml:space="preserve">The compliance mode that should be used when parsing rfc822 addresses.</doc>
@@ -9521,6 +9712,29 @@ g_mime_parser_set_header_regex().</doc>
         <doc xml:space="preserve">The fallback charsets to try when decoding 8-bit headers.</doc>
         <type name="utf8" c:type="char**"/>
       </field>
+      <constructor name="new" c:identifier="g_mime_parser_options_new">
+        <doc xml:space="preserve">Creates a new set of #GMimeParserOptions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated set of #GMimeParserOptions with the default values.</doc>
+          <type name="ParserOptions" c:type="GMimeParserOptions*"/>
+        </return-value>
+      </constructor>
+      <method name="clone" c:identifier="g_mime_parser_options_clone">
+        <doc xml:space="preserve">Clones a #GMimeParserOptions.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GMimeParserOptions.</doc>
+          <type name="ParserOptions" c:type="GMimeParserOptions*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
+            <type name="ParserOptions" c:type="GMimeParserOptions*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="free" c:identifier="g_mime_parser_options_free">
         <doc xml:space="preserve">Frees a set of #GMimeParserOptions.</doc>
         <return-value transfer-ownership="none">
@@ -9545,25 +9759,30 @@ deal with garbage input.</doc>
           <type name="RfcComplianceMode" c:type="GMimeRfcComplianceMode"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
         </parameters>
       </method>
       <method name="get_fallback_charsets"
-              c:identifier="g_mime_parser_options_get_fallback_charsets"
-              introspectable="0">
+              c:identifier="g_mime_parser_options_get_fallback_charsets">
         <doc xml:space="preserve">Gets the fallback charsets to try when decoding 8-bit headers.</doc>
-        <return-value>
-          <doc xml:space="preserve">a %NULL-terminated list of charsets to try when decoding
-8-bit headers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a %NULL-terminated list of charsets to try when
+decoding 8-bit headers.</doc>
           <array c:type="const char**">
             <type name="utf8"/>
           </array>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
@@ -9582,7 +9801,10 @@ to deal with garbage input.</doc>
           <type name="RfcComplianceMode" c:type="GMimeRfcComplianceMode"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
@@ -9600,7 +9822,10 @@ to deal with garbage input.</doc>
           <type name="RfcComplianceMode" c:type="GMimeRfcComplianceMode"/>
         </return-value>
         <parameters>
-          <instance-parameter name="options" transfer-ownership="none">
+          <instance-parameter name="options"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
             <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
             <type name="ParserOptions" c:type="GMimeParserOptions*"/>
           </instance-parameter>
@@ -9703,20 +9928,10 @@ to deal with garbage input.</doc>
         </parameters>
       </method>
       <function name="get_default"
-                c:identifier="g_mime_parser_options_get_default"
-                introspectable="0">
+                c:identifier="g_mime_parser_options_get_default">
         <doc xml:space="preserve">Gets the default parser options.</doc>
-        <return-value>
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the default parser options.</doc>
-          <type name="ParserOptions" c:type="GMimeParserOptions*"/>
-        </return-value>
-      </function>
-      <function name="new"
-                c:identifier="g_mime_parser_options_new"
-                introspectable="0">
-        <doc xml:space="preserve">Creates a new set of #GMimeParserOptions.</doc>
-        <return-value>
-          <doc xml:space="preserve">a newly allocated set of #GMimeParserOptions with the default values.</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </return-value>
       </function>
@@ -9910,9 +10125,7 @@ within the #GMimePart.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="is_attachment"
-              c:identifier="g_mime_part_is_attachment"
-              version="2.6.21">
+      <method name="is_attachment" c:identifier="g_mime_part_is_attachment">
         <doc xml:space="preserve">Determines whether or not the part is an attachment based on the
 value of the Content-Disposition header.</doc>
         <return-value transfer-ownership="none">
@@ -9931,7 +10144,7 @@ value of the Content-Disposition header.</doc>
               throws="1">
         <doc xml:space="preserve">Decrypts the content of the @mime_part and then replaces the content with
 the new, decrypted, content.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #GMimeDecryptResult on success or %NULL on error.</doc>
           <type name="DecryptResult" c:type="GMimeDecryptResult*"/>
         </return-value>
@@ -9944,7 +10157,10 @@ the new, decrypted, content.</doc>
             <doc xml:space="preserve">a set of #GMimeDecryptFlags</doc>
             <type name="DecryptFlags" c:type="GMimeDecryptFlags"/>
           </parameter>
-          <parameter name="session_key" transfer-ownership="none">
+          <parameter name="session_key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the session key to use or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -9968,7 +10184,10 @@ the content with the new, encrypted, content.</doc>
             <doc xml:space="preserve">%TRUE if the content should also be signed; otherwise, %FALSE</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
-          <parameter name="userid" transfer-ownership="none">
+          <parameter name="userid"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the key id (or email address) to use when signing (assuming @sign is %TRUE)</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -10009,7 +10228,7 @@ the new, signed, content.</doc>
               throws="1">
         <doc xml:space="preserve">Verifies the OpenPGP signature of the @mime_part and then replaces the content
 with the original, raw, content.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #GMimeSignatureList on success or %NULL on error.</doc>
           <type name="SignatureList" c:type="GMimeSignatureList*"/>
         </return-value>
@@ -10229,8 +10448,39 @@ return %FALSE if the mime part does not contain a Content-MD5.</doc>
         </callback>
       </field>
     </record>
-    <record name="PartIter" c:type="GMimePartIter" disguised="1">
+    <record name="PartIter"
+            c:type="GMimePartIter"
+            glib:type-name="GMimePartIter"
+            glib:get-type="g_mime_part_iter_get_type"
+            c:symbol-prefix="part_iter">
       <doc xml:space="preserve">A MIME part iterator.</doc>
+      <constructor name="new" c:identifier="g_mime_part_iter_new">
+        <doc xml:space="preserve">Creates a new #GMimePartIter for iterating over @toplevel's subparts.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GMimePartIter which should be freed
+using g_mime_part_iter_free() when finished with it.</doc>
+          <type name="PartIter" c:type="GMimePartIter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="toplevel" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeObject to use as the toplevel</doc>
+            <type name="Object" c:type="GMimeObject*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="clone" c:identifier="g_mime_part_iter_clone">
+        <doc xml:space="preserve">Clones the @iter, including its current state.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimePartIter that is identical to @iter.</doc>
+          <type name="PartIter" c:type="GMimePartIter*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimePartIter</doc>
+            <type name="PartIter" c:type="GMimePartIter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="free" c:identifier="g_mime_part_iter_free">
         <doc xml:space="preserve">Frees the memory allocated by g_mime_part_iter_new().</doc>
         <return-value transfer-ownership="none">
@@ -10406,22 +10656,6 @@ parent. If successful, @iter is advanced to the next position
           </instance-parameter>
         </parameters>
       </method>
-      <function name="new"
-                c:identifier="g_mime_part_iter_new"
-                introspectable="0">
-        <doc xml:space="preserve">Creates a new #GMimePartIter for iterating over @toplevel's subparts.</doc>
-        <return-value>
-          <doc xml:space="preserve">a newly allocated #GMimePartIter which should be freed
-using g_mime_part_iter_free() when finished with it.</doc>
-          <type name="PartIter" c:type="GMimePartIter*"/>
-        </return-value>
-        <parameters>
-          <parameter name="toplevel" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeObject to use as the toplevel</doc>
-            <type name="Object" c:type="GMimeObject*"/>
-          </parameter>
-        </parameters>
-      </function>
     </record>
     <callback name="PasswordRequestFunc"
               c:type="GMimePasswordRequestFunc"
@@ -10521,23 +10755,56 @@ prompt the user for a password for a given key.</doc>
             c:symbol-prefix="references">
       <doc xml:space="preserve">A List of references, as per the References or In-Reply-To header
 fields.</doc>
-      <field name="next" writable="1">
-        <doc xml:space="preserve">Pointer to the next reference.</doc>
-        <type name="References" c:type="GMimeReferences*"/>
+      <field name="array" writable="1">
+        <doc xml:space="preserve">the array of message-id references</doc>
+        <array name="GLib.PtrArray" c:type="GPtrArray*">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
-      <field name="msgid" writable="1">
-        <doc xml:space="preserve">Reference message-id.</doc>
-        <type name="utf8" c:type="char*"/>
-      </field>
-      <method name="copy" c:identifier="g_mime_references_copy">
-        <doc xml:space="preserve">Copies a #GMimeReferences linked list.</doc>
+      <constructor name="new" c:identifier="g_mime_references_new">
+        <doc xml:space="preserve">Creates a new #GMimeReferences.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly allocated linked list that contains
-an identical list of items as @references.</doc>
+          <doc xml:space="preserve">a new #GMimeReferences.</doc>
+          <type name="References" c:type="GMimeReferences*"/>
+        </return-value>
+      </constructor>
+      <method name="append" c:identifier="g_mime_references_append">
+        <doc xml:space="preserve">Appends a reference to msgid to the list of references.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="refs" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeReferences</doc>
+            <type name="References" c:type="GMimeReferences*"/>
+          </instance-parameter>
+          <parameter name="msgid" transfer-ownership="none">
+            <doc xml:space="preserve">a message-id string</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear" c:identifier="g_mime_references_clear">
+        <doc xml:space="preserve">Clears the #GMimeReferences list.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="refs" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeReferences</doc>
+            <type name="References" c:type="GMimeReferences*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="copy" c:identifier="g_mime_references_copy">
+        <doc xml:space="preserve">Copies a #GMimeReferences list.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GMimeReferences list that contains
+an identical list of items as @refs.</doc>
           <type name="References" c:type="GMimeReferences*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="references" transfer-ownership="none">
+          <instance-parameter name="refs" transfer-ownership="none">
             <doc xml:space="preserve">the list of references to copy</doc>
             <type name="References" c:type="GMimeReferences*"/>
           </instance-parameter>
@@ -10557,67 +10824,71 @@ an identical list of items as @references.</doc>
       </method>
       <method name="get_message_id"
               c:identifier="g_mime_references_get_message_id">
-        <doc xml:space="preserve">Gets the Message-Id reference from the #GMimeReferences node.</doc>
+        <doc xml:space="preserve">Gets the specified Message-Id reference from the #GMimeReferences.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the Message-Id reference from the #GMimeReferences node.</doc>
+          <doc xml:space="preserve">the Message-Id reference from the #GMimeReferences.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="ref" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeReferences list</doc>
-            <type name="References" c:type="const GMimeReferences*"/>
+          <instance-parameter name="refs" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeReferences</doc>
+            <type name="References" c:type="GMimeReferences*"/>
           </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">the index of the message id</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
         </parameters>
       </method>
-      <method name="get_next" c:identifier="g_mime_references_get_next">
-        <doc xml:space="preserve">Advances to the next reference node in the #GMimeReferences list.</doc>
+      <method name="length" c:identifier="g_mime_references_length">
+        <doc xml:space="preserve">Gets the length of the #GMimeReferences list.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the next reference node in the #GMimeReferences list.</doc>
-          <type name="References" c:type="const GMimeReferences*"/>
+          <doc xml:space="preserve">the number of message ids in the list.</doc>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
-          <instance-parameter name="ref" transfer-ownership="none">
-            <doc xml:space="preserve">a #GMimeReferences list</doc>
-            <type name="References" c:type="const GMimeReferences*"/>
+          <instance-parameter name="refs" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeReferences</doc>
+            <type name="References" c:type="GMimeReferences*"/>
           </instance-parameter>
         </parameters>
       </method>
-      <function name="append" c:identifier="g_mime_references_append">
-        <doc xml:space="preserve">Appends a reference to msgid to the list of references.</doc>
+      <method name="set_message_id"
+              c:identifier="g_mime_references_set_message_id">
+        <doc xml:space="preserve">Sets the specified Message-Id reference from the #GMimeReferences.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="refs" transfer-ownership="none">
-            <doc xml:space="preserve">the address of a #GMimeReferences list</doc>
-            <type name="References" c:type="GMimeReferences**"/>
+          <instance-parameter name="refs" transfer-ownership="none">
+            <doc xml:space="preserve">a #GMimeReferences</doc>
+            <type name="References" c:type="GMimeReferences*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">the index of the message id</doc>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="msgid" transfer-ownership="none">
-            <doc xml:space="preserve">a message-id string</doc>
+            <doc xml:space="preserve">the message id</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
-      </function>
-      <function name="clear" c:identifier="g_mime_references_clear">
-        <doc xml:space="preserve">Clears the #GMimeReferences list and resets it to %NULL.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="refs" transfer-ownership="none">
-            <doc xml:space="preserve">address of a #GMimeReferences list</doc>
-            <type name="References" c:type="GMimeReferences**"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="decode" c:identifier="g_mime_references_decode">
+      </method>
+      <function name="parse" c:identifier="g_mime_references_parse">
         <doc xml:space="preserve">Decodes a list of msg-ids as in the References and/or In-Reply-To
 headers defined in rfc822.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a list of referenced msg-ids.</doc>
+          <doc xml:space="preserve">a new #GMimeReferences containing the parsed message ids.</doc>
           <type name="References" c:type="GMimeReferences*"/>
         </return-value>
         <parameters>
+          <parameter name="options"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
+            <type name="ParserOptions" c:type="GMimeParserOptions*"/>
+          </parameter>
           <parameter name="text" transfer-ownership="none">
             <doc xml:space="preserve">string containing a list of msg-ids</doc>
             <type name="utf8" c:type="const char*"/>
@@ -12020,14 +12291,11 @@ passed in.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <function name="open"
-                c:identifier="g_mime_stream_file_open"
-                introspectable="0"
-                throws="1">
+      <function name="open" c:identifier="g_mime_stream_file_open" throws="1">
         <doc xml:space="preserve">Creates a new #GMimeStreamFile object for the specified @path.</doc>
-        <return-value>
-          <doc xml:space="preserve">a stream using for reading and/or writing to the specified
-file path or %NULL on error.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a stream using for reading and/or writing to the
+specified file path or %NULL on error.</doc>
           <type name="Stream" c:type="GMimeStream*"/>
         </return-value>
         <parameters>
@@ -12251,14 +12519,11 @@ and @end.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <function name="open"
-                c:identifier="g_mime_stream_fs_open"
-                introspectable="0"
-                throws="1">
+      <function name="open" c:identifier="g_mime_stream_fs_open" throws="1">
         <doc xml:space="preserve">Creates a new #GMimeStreamFs object for the specified @path.</doc>
-        <return-value>
-          <doc xml:space="preserve">a stream using for reading and/or writing to the specified
-file path or %NULL on error.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a stream using for reading and/or writing to the
+specified file path or %NULL on error.</doc>
           <type name="Stream" c:type="GMimeStream*"/>
         </return-value>
         <parameters>
@@ -13061,9 +13326,9 @@ line. (Note: not all yencoded blocks have one)</doc>
               c:identifier="g_mime_charset_best"
               moved-to="Charset.best">
       <doc xml:space="preserve">Computes the best charset to use to encode this text buffer.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the charset name best suited for the input text or %NULL if
-it is US-ASCII safe.</doc>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve">the charset name best suited for the input text
+or %NULL if it is ascii-safe.</doc>
         <type name="utf8" c:type="const char*"/>
       </return-value>
       <parameters>
@@ -13134,9 +13399,9 @@ charset.</doc>
       <doc xml:space="preserve">Attempts to find a specific language code that is specific to
 @charset. Currently only handles CJK and Russian/Ukranian
 charset-&gt;lang mapping. Everything else will return %NULL.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a language code that is specific to @charset, or %NULL on
-fail.</doc>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve">a language code that is specific to @charset,
+or %NULL on fail.</doc>
         <type name="utf8" c:type="const char*"/>
       </return-value>
       <parameters>
@@ -13555,6 +13820,15 @@ invocation).</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="format_options_get_default"
+              c:identifier="g_mime_format_options_get_default"
+              moved-to="FormatOptions.get_default">
+      <doc xml:space="preserve">Gets the default format options.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the default format options.</doc>
+        <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
+      </return-value>
+    </function>
     <function name="iconv_close"
               c:identifier="g_mime_iconv_close"
               introspectable="0">
@@ -13732,53 +14006,37 @@ user's locale charset.</doc>
     </function>
     <function name="locale_language" c:identifier="g_mime_locale_language">
       <doc xml:space="preserve">Gets the user's locale language code (or %NULL by default).</doc>
-      <return-value transfer-ownership="none">
+      <return-value transfer-ownership="none" nullable="1">
         <doc xml:space="preserve">the user's locale language code (or %NULL by default).</doc>
         <type name="utf8" c:type="const char*"/>
       </return-value>
     </function>
-    <function name="references_append"
-              c:identifier="g_mime_references_append"
-              moved-to="References.append">
-      <doc xml:space="preserve">Appends a reference to msgid to the list of references.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+    <function name="parser_options_get_default"
+              c:identifier="g_mime_parser_options_get_default"
+              moved-to="ParserOptions.get_default">
+      <doc xml:space="preserve">Gets the default parser options.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the default parser options.</doc>
+        <type name="ParserOptions" c:type="GMimeParserOptions*"/>
       </return-value>
-      <parameters>
-        <parameter name="refs" transfer-ownership="none">
-          <doc xml:space="preserve">the address of a #GMimeReferences list</doc>
-          <type name="References" c:type="GMimeReferences**"/>
-        </parameter>
-        <parameter name="msgid" transfer-ownership="none">
-          <doc xml:space="preserve">a message-id string</doc>
-          <type name="utf8" c:type="const char*"/>
-        </parameter>
-      </parameters>
     </function>
-    <function name="references_clear"
-              c:identifier="g_mime_references_clear"
-              moved-to="References.clear">
-      <doc xml:space="preserve">Clears the #GMimeReferences list and resets it to %NULL.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="refs" transfer-ownership="none">
-          <doc xml:space="preserve">address of a #GMimeReferences list</doc>
-          <type name="References" c:type="GMimeReferences**"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="references_decode"
-              c:identifier="g_mime_references_decode"
-              moved-to="References.decode">
+    <function name="references_parse"
+              c:identifier="g_mime_references_parse"
+              moved-to="References.parse">
       <doc xml:space="preserve">Decodes a list of msg-ids as in the References and/or In-Reply-To
 headers defined in rfc822.</doc>
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a list of referenced msg-ids.</doc>
+        <doc xml:space="preserve">a new #GMimeReferences containing the parsed message ids.</doc>
         <type name="References" c:type="GMimeReferences*"/>
       </return-value>
       <parameters>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
+          <type name="ParserOptions" c:type="GMimeParserOptions*"/>
+        </parameter>
         <parameter name="text" transfer-ownership="none">
           <doc xml:space="preserve">string containing a list of msg-ids</doc>
           <type name="utf8" c:type="const char*"/>
@@ -13804,7 +14062,9 @@ particular case means smallest output size)</doc>
       <parameters>
         <parameter name="text" transfer-ownership="none">
           <doc xml:space="preserve">text to encode</doc>
-          <type name="guint8" c:type="const unsigned char*"/>
+          <array length="1" zero-terminated="0" c:type="unsigned char*">
+            <type name="guint8"/>
+          </array>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">text length</doc>
@@ -13823,8 +14083,11 @@ into question-marks (?) in the returned string buffer.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeParserOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </parameter>
         <parameter name="text" transfer-ownership="none">
@@ -13871,25 +14134,16 @@ a Message-Id.</doc>
     </function>
     <function name="utils_header_decode_date"
               c:identifier="g_mime_utils_header_decode_date">
-      <doc xml:space="preserve">Decodes the rfc822 date string and saves the GMT offset into
-@tz_offset if non-NULL.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the time_t representation of the date string specified by
-@str or (time_t) %0 on error. If @tz_offset is non-NULL, the value
-of the timezone offset will be stored.</doc>
-        <type name="glong" c:type="time_t"/>
+      <doc xml:space="preserve">Parses the rfc822 date string.</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">the #GDateTime representation of the date
+string specified by @str or %NULL on error.</doc>
+        <type name="GLib.DateTime" c:type="GDateTime*"/>
       </return-value>
       <parameters>
         <parameter name="str" transfer-ownership="none">
           <doc xml:space="preserve">input date string</doc>
           <type name="utf8" c:type="const char*"/>
-        </parameter>
-        <parameter name="tz_offset"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">timezone offset</doc>
-          <type name="gint" c:type="int*"/>
         </parameter>
       </parameters>
     </function>
@@ -13902,8 +14156,11 @@ header.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeParserOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </parameter>
         <parameter name="phrase" transfer-ownership="none">
@@ -13921,8 +14178,11 @@ header.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeParserOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </parameter>
         <parameter name="text" transfer-ownership="none">
@@ -13940,15 +14200,21 @@ addresses.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </parameter>
         <parameter name="phrase" transfer-ownership="none">
           <doc xml:space="preserve">phrase to encode</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="charset" transfer-ownership="none">
+        <parameter name="charset"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">the charset to use or %NULL to use the default</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
@@ -13963,15 +14229,21 @@ headers like "Subject".</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </parameter>
         <parameter name="text" transfer-ownership="none">
           <doc xml:space="preserve">text to encode</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
-        <parameter name="charset" transfer-ownership="none">
+        <parameter name="charset"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">the charset to use or %NULL to use the default</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
@@ -13980,19 +14252,15 @@ headers like "Subject".</doc>
     <function name="utils_header_format_date"
               c:identifier="g_mime_utils_header_format_date">
       <doc xml:space="preserve">Allocates a string buffer containing the rfc822 formatted date
-string represented by @time and @tz_offset.</doc>
+string represented by @date.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a valid string representation of the date.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
         <parameter name="date" transfer-ownership="none">
-          <doc xml:space="preserve">time_t date representation</doc>
-          <type name="glong" c:type="time_t"/>
-        </parameter>
-        <parameter name="tz_offset" transfer-ownership="none">
-          <doc xml:space="preserve">Timezone offset</doc>
-          <type name="gint" c:type="int"/>
+          <doc xml:space="preserve">a #GDateTime</doc>
+          <type name="GLib.DateTime" c:type="GDateTime*"/>
         </parameter>
       </parameters>
     </function>
@@ -14007,12 +14275,18 @@ by @text and the following arguments.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeParserOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </parameter>
-        <parameter name="format" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+        <parameter name="format"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </parameter>
         <parameter name="text" transfer-ownership="none">
@@ -14050,12 +14324,18 @@ as defined by rfc2045.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeParserOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </parameter>
-        <parameter name="format" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+        <parameter name="format"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </parameter>
         <parameter name="header" transfer-ownership="none">
@@ -14076,7 +14356,9 @@ otherwise.</doc>
       <parameters>
         <parameter name="text" transfer-ownership="none">
           <doc xml:space="preserve">text to check for 8bit chars</doc>
-          <type name="guint8" c:type="const unsigned char*"/>
+          <array length="1" zero-terminated="0" c:type="unsigned char*">
+            <type name="guint8"/>
+          </array>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">text length</doc>
@@ -14105,12 +14387,18 @@ otherwise.</doc>
         <type name="utf8" c:type="char*"/>
       </return-value>
       <parameters>
-        <parameter name="options" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeParserOptions</doc>
+        <parameter name="options"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeParserOptions or %NULL</doc>
           <type name="ParserOptions" c:type="GMimeParserOptions*"/>
         </parameter>
-        <parameter name="format" transfer-ownership="none">
-          <doc xml:space="preserve">a #GMimeFormatOptions</doc>
+        <parameter name="format"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GMimeFormatOptions or %NULL</doc>
           <type name="FormatOptions" c:type="GMimeFormatOptions*"/>
         </parameter>
         <parameter name="header" transfer-ownership="none">

@@ -3902,7 +3902,7 @@ zeros before this function is called.</doc>
 to the #GObject implementation and should never be accessed directly.</doc>
       <constructor name="new"
                    c:identifier="g_object_new"
-                   shadowed-by="newv"
+                   shadowed-by="new_with_properties"
                    introspectable="0">
         <doc xml:space="preserve">Creates a new instance of a #GObject subtype and sets its properties.
 
@@ -3956,11 +3956,54 @@ which are not explicitly specified are set to their default values.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="newv" c:identifier="g_object_newv" shadows="new">
+      <constructor name="new_with_properties"
+                   c:identifier="g_object_new_with_properties"
+                   shadows="new"
+                   version="2.54">
+        <doc xml:space="preserve">Creates a new instance of a #GObject subtype and sets its properties using
+the provided arrays. Both arrays must have exactly @n_properties elements,
+and the names and values correspond by index.
+
+Construction parameters (see %G_PARAM_CONSTRUCT, %G_PARAM_CONSTRUCT_ONLY)
+which are not explicitly specified are set to their default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new instance of
+@object_type</doc>
+          <type name="Object" c:type="GObject*"/>
+        </return-value>
+        <parameters>
+          <parameter name="object_type" transfer-ownership="none">
+            <doc xml:space="preserve">the object type to instantiate</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="n_properties" transfer-ownership="none">
+            <doc xml:space="preserve">the number of properties</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="names" transfer-ownership="none">
+            <doc xml:space="preserve">the names of each property to be set</doc>
+            <array length="1" zero-terminated="0" c:type="char*">
+              <type name="utf8" c:type="char"/>
+            </array>
+          </parameter>
+          <parameter name="values" transfer-ownership="none">
+            <doc xml:space="preserve">the values of each property to be set</doc>
+            <array length="1" zero-terminated="0" c:type="GValue">
+              <type name="Value" c:type="GValue"/>
+            </array>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="newv"
+                   c:identifier="g_object_newv"
+                   deprecated="1"
+                   deprecated-version="2.54">
         <doc xml:space="preserve">Creates a new instance of a #GObject subtype and sets its properties.
 
 Construction parameters (see #G_PARAM_CONSTRUCT, #G_PARAM_CONSTRUCT_ONLY)
 which are not explicitly specified are set to their default values.</doc>
+        <doc-deprecated xml:space="preserve">Use g_object_new_with_properties() instead.
+deprecated. See #GParameter for more information.</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new instance of
 @object_type</doc>
@@ -4827,6 +4870,37 @@ See g_object_get().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="getv" c:identifier="g_object_getv" version="2.54">
+        <doc xml:space="preserve">Gets @n_properties properties for an @object.
+Obtained properties will be set to @values. All properties must be valid.
+Warnings will be emitted and undefined behaviour may result if invalid
+properties are passed in.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GObject</doc>
+            <type name="Object" c:type="GObject*"/>
+          </instance-parameter>
+          <parameter name="n_properties" transfer-ownership="none">
+            <doc xml:space="preserve">the number of properties</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="names" transfer-ownership="none">
+            <doc xml:space="preserve">the names of each property to get</doc>
+            <array length="0" zero-terminated="0" c:type="gchar*">
+              <type name="utf8" c:type="gchar"/>
+            </array>
+          </parameter>
+          <parameter name="values" transfer-ownership="none">
+            <doc xml:space="preserve">the values of each property to get</doc>
+            <array length="0" zero-terminated="0" c:type="GValue">
+              <type name="Value" c:type="GValue"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
       <method name="is_floating"
               c:identifier="g_object_is_floating"
               version="2.10">
@@ -5338,6 +5412,40 @@ with the same @quark.</doc>
             <doc xml:space="preserve">value for the first property, followed optionally by more
  name/value pairs, followed by %NULL</doc>
             <type name="va_list" c:type="va_list"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="setv"
+              c:identifier="g_object_setv"
+              version="2.54"
+              introspectable="0">
+        <doc xml:space="preserve">Sets @n_properties properties for an @object.
+Properties to be set will be taken from @values. All properties must be
+valid. Warnings will be emitted and undefined behaviour may result if invalid
+properties are passed in.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GObject</doc>
+            <type name="Object" c:type="GObject*"/>
+          </instance-parameter>
+          <parameter name="n_properties" transfer-ownership="none">
+            <doc xml:space="preserve">the number of properties</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="names" transfer-ownership="none">
+            <doc xml:space="preserve">the names of each property to be set</doc>
+            <array length="0" zero-terminated="0" c:type="gchar*">
+              <type name="utf8" c:type="gchar"/>
+            </array>
+          </parameter>
+          <parameter name="values" transfer-ownership="none">
+            <doc xml:space="preserve">the values of each property to be set</doc>
+            <array length="0" zero-terminated="0" c:type="GValue">
+              <type name="Value" c:type="GValue"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -7348,9 +7456,13 @@ g_param_type_register_static().</doc>
         </array>
       </field>
     </class>
-    <record name="Parameter" c:type="GParameter">
+    <record name="Parameter"
+            c:type="GParameter"
+            deprecated="1"
+            deprecated-version="2.54">
       <doc xml:space="preserve">The GParameter struct is an auxiliary structure used
 to hand parameter name/value pairs to g_object_newv().</doc>
+      <doc-deprecated xml:space="preserve">This type is not introspectable.</doc-deprecated>
       <field name="name" writable="1">
         <doc xml:space="preserve">the parameter name</doc>
         <type name="utf8" c:type="const gchar*"/>
@@ -12128,6 +12240,28 @@ definition  than to write one yourself using g_enum_register_static().</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="enum_to_string"
+              c:identifier="g_enum_to_string"
+              version="2.54">
+      <doc xml:space="preserve">Pretty-prints @value in the form of the enum’s name.
+
+This is intended to be used for debugging purposes. The format of the output
+may change in the future.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly-allocated text string</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="g_enum_type" transfer-ownership="none">
+          <doc xml:space="preserve">the type identifier of a #GEnumClass type</doc>
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">the value</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="flags_complete_type_info"
               c:identifier="g_flags_complete_type_info">
       <doc xml:space="preserve">This function is meant to be called from the complete_type_info()
@@ -12234,6 +12368,29 @@ definition than to write one yourself using g_flags_register_static().</doc>
  flags values. The array is terminated by a struct with all members being 0.
  GObject keeps a reference to the data, so it cannot be stack-allocated.</doc>
           <type name="FlagsValue" c:type="const GFlagsValue*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="flags_to_string"
+              c:identifier="g_flags_to_string"
+              version="2.54">
+      <doc xml:space="preserve">Pretty-prints @value in the form of the flag names separated by ` | ` and
+sorted. Any extra bits will be shown at the end as a hexadecimal number.
+
+This is intended to be used for debugging purposes. The format of the output
+may change in the future.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly-allocated text string</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="flags_type" transfer-ownership="none">
+          <doc xml:space="preserve">the type identifier of a #GFlagsClass type</doc>
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">the value</doc>
+          <type name="guint" c:type="guint"/>
         </parameter>
       </parameters>
     </function>

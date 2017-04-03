@@ -12234,12 +12234,12 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="0" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="7" c:type="NM_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="9" c:type="NM_MINOR_VERSION">
       <doc xml:space="preserve">Evaluates to the minor version number of NetworkManager which this source
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -14553,6 +14553,16 @@ supported for IPv6)</doc>
     <constant name="SETTING_TUN_VNET_HDR"
               value="vnet-hdr"
               c:type="NM_SETTING_TUN_VNET_HDR">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_USER_DATA"
+              value="data"
+              c:type="NM_SETTING_USER_DATA">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_USER_SETTING_NAME"
+              value="user"
+              c:type="NM_SETTING_USER_SETTING_NAME">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_VLAN_EGRESS_PRIORITY_MAP"
@@ -18924,7 +18934,9 @@ setting; the value is owned by the setting and must not be modified</doc>
       </method>
       <method name="get_valid_options"
               c:identifier="nm_setting_bond_get_valid_options">
-        <doc xml:space="preserve">Returns a list of valid bond options.</doc>
+        <doc xml:space="preserve">Returns a list of valid bond options.
+
+The @setting argument is unused and may be passed as %NULL.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a %NULL-terminated array of strings of valid bond options.</doc>
           <array c:type="const char**">
@@ -24752,6 +24764,142 @@ network header.</doc>
         <doc xml:space="preserve">a TAP device</doc>
       </member>
     </enumeration>
+    <class name="SettingUser"
+           c:symbol-prefix="setting_user"
+           c:type="NMSettingUser"
+           parent="Setting"
+           glib:type-name="NMSettingUser"
+           glib:get-type="nm_setting_user_get_type"
+           glib:type-struct="SettingUserClass">
+      <doc xml:space="preserve">General User Profile Settings</doc>
+      <constructor name="new" c:identifier="nm_setting_user_new">
+        <doc xml:space="preserve">Creates a new #NMSettingUser object with default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMSettingUser object</doc>
+          <type name="Setting" c:type="NMSetting*"/>
+        </return-value>
+      </constructor>
+      <function name="check_key"
+                c:identifier="nm_setting_user_check_key"
+                version="1.8"
+                throws="1">
+        <doc xml:space="preserve">Checks whether @key is a valid user data key. This means,
+key is not %NULL, not too large and valid ASCII. Also,
+only digits and numbers are allowed with a few special
+characters. The key must contain at least one '.' and
+look like a fully qualified DNS name.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @key is a valid user data key.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">the key to check</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="check_val"
+                c:identifier="nm_setting_user_check_val"
+                version="1.8"
+                throws="1">
+        <doc xml:space="preserve">Checks whether @val is a valid user data value. This means,
+value is not %NULL, not too large and valid UTF-8.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @val is a valid user data value.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="val" transfer-ownership="none">
+            <doc xml:space="preserve">the value to check</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_data"
+              c:identifier="nm_setting_user_get_data"
+              version="1.8">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the value associated with @key or %NULL if no such
+  value exists.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingUser instance</doc>
+            <type name="SettingUser" c:type="NMSettingUser*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">the key to lookup</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_keys" c:identifier="nm_setting_user_get_keys">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a
+  %NULL-terminated array containing each key from the table.</doc>
+          <array length="0" zero-terminated="0" c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingUser</doc>
+            <type name="SettingUser" c:type="NMSettingUser*"/>
+          </instance-parameter>
+          <parameter name="out_len"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">the length of the returned array</doc>
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_data"
+              c:identifier="nm_setting_user_set_data"
+              version="1.8"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the operation was successful. The operation
+  can fail if @key or @val are not valid strings according
+  to nm_setting_user_check_key() and nm_setting_user_check_val().</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingUser instance</doc>
+            <type name="SettingUser" c:type="NMSettingUser*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve">the key to set</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="val" transfer-ownership="none">
+            <doc xml:space="preserve">the value to set or %NULL to clear a key.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="data"
+                version="1.8"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">A dictionary of key/value pairs with user data. This data is ignored by NetworkManager
+and can be used at the users discretion. The keys only support a strict ascii format,
+but the values can be arbitrary UTF8 strings up to a certain length.</doc>
+        <type name="GLib.HashTable">
+          <type name="utf8"/>
+          <type name="utf8"/>
+        </type>
+      </property>
+    </class>
+    <record name="SettingUserClass"
+            c:type="NMSettingUserClass"
+            disguised="1"
+            glib:is-gtype-struct-for="SettingUser">
+    </record>
     <callback name="SettingValueIterFn" c:type="NMSettingValueIterFn">
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
@@ -26268,7 +26416,9 @@ conjunction with that device.</doc>
       </method>
       <method name="get_valid_s390_options"
               c:identifier="nm_setting_wired_get_valid_s390_options">
-        <doc xml:space="preserve">Returns a list of valid s390 options.</doc>
+        <doc xml:space="preserve">Returns a list of valid s390 options.
+
+The @setting argument is unused and %NULL may be passed instead.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a %NULL-terminated array of strings of valid s390 options.</doc>
           <array c:type="const char**">
@@ -31988,8 +32138,9 @@ or %NULL on error</doc>
               version="1.2">
       <doc xml:space="preserve">Converts an enum value to its string representation. If the enum is a
 %G_TYPE_FLAGS the function returns a comma-separated list of matching values.
-If the enum is a %G_TYPE_ENUM and the given value is not valid the
-function returns %NULL.</doc>
+If the value has no corresponding string representation, it is converted
+to a number. For enums it is converted to a decimal number, for flags
+to an (unsigned) hex number.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a newly allocated string or %NULL</doc>
         <type name="utf8" c:type="char*"/>
