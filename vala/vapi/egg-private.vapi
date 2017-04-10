@@ -7,6 +7,7 @@ namespace Egg {
 		[CCode (has_construct_function = false)]
 		protected Animation ();
 		public void add_property (GLib.ParamSpec pspec, GLib.Value value);
+		public static uint calculate_duration (Gdk.Monitor monitor, double from_value, double to_value);
 		public void start ();
 		public void stop ();
 		public uint duration { construct; }
@@ -68,6 +69,11 @@ namespace Egg {
 		public Egg.CounterArena @ref ();
 		public void register (Egg.Counter counter);
 		public void unref ();
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_elastic_bin_get_type ()")]
+	public class ElasticBin : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public ElasticBin ();
 	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_empty_state_get_type ()")]
 	public class EmptyState : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -321,6 +327,82 @@ namespace Egg {
 		public unowned string get_state ();
 		public void set_state (string state);
 		public string state { get; set; }
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_suggestion_get_type ()")]
+	public class Suggestion : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public Suggestion ();
+		public unowned string get_icon_name ();
+		public unowned string get_id ();
+		public unowned string get_subtitle ();
+		public unowned string get_title ();
+		public void set_icon_name (string icon_name);
+		public void set_id (string id);
+		public void set_subtitle (string subtitle);
+		public void set_title (string title);
+		public string icon_name { get; set; }
+		public string id { get; set; }
+		public string subtitle { get; set; }
+		public string title { get; set; }
+		[HasEmitter]
+		public virtual signal string replace_typed_text (string typed_text);
+		[HasEmitter]
+		public virtual signal string suggest_suffix (string typed_text);
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_suggestion_entry_get_type ()")]
+	public class SuggestionEntry : Gtk.Entry, Atk.Implementor, Gtk.Buildable, Gtk.CellEditable, Gtk.Editable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SuggestionEntry ();
+		public unowned GLib.ListModel? get_model ();
+		public unowned Egg.Suggestion? get_suggestion ();
+		public unowned string get_typed_text ();
+		public void set_model (GLib.ListModel model);
+		public void set_suggestion (Egg.Suggestion suggestion);
+		public GLib.ListModel model { get; set; }
+		public string typed_text { get; }
+		public signal void activate_suggestion ();
+		public virtual signal void hide_suggestions ();
+		public virtual signal void move_suggestion (int amount);
+		public virtual signal void show_suggestions ();
+		public virtual signal void suggestion_activated (Egg.Suggestion suggestion);
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_suggestion_entry_buffer_get_type ()")]
+	public class SuggestionEntryBuffer : Gtk.EntryBuffer {
+		[CCode (has_construct_function = false)]
+		public SuggestionEntryBuffer ();
+		public void commit ();
+		public unowned Egg.Suggestion? get_suggestion ();
+		public uint get_typed_length ();
+		public unowned string get_typed_text ();
+		public void set_suggestion (Egg.Suggestion? suggestion);
+		public Egg.Suggestion suggestion { get; set; }
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_suggestion_popover_get_type ()")]
+	public class SuggestionPopover : Gtk.Window, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SuggestionPopover ();
+		public void activate_selected ();
+		public unowned GLib.ListModel? get_model ();
+		public unowned Gtk.Widget? get_relative_to ();
+		public unowned Egg.Suggestion? get_selected ();
+		public void move_by (int amount);
+		public void popdown ();
+		public void popup ();
+		public void set_model (GLib.ListModel model);
+		public void set_relative_to (Gtk.Widget widget);
+		public void set_selected (Egg.Suggestion suggestion);
+		public Egg.Suggestion model { get; set; }
+		public Gtk.Widget relative_to { get; set; }
+		public Egg.Suggestion selected { get; set; }
+		public signal void suggestion_activated (Egg.Suggestion object);
+	}
+	[CCode (cheader_filename = "egg-private.h", type_id = "egg_suggestion_row_get_type ()")]
+	public class SuggestionRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SuggestionRow ();
+		public unowned Egg.Suggestion get_suggestion ();
+		public void set_suggestion (Egg.Suggestion suggestion);
+		public Egg.Suggestion suggestion { get; set; }
 	}
 	[CCode (cheader_filename = "egg-private.h", type_id = "egg_task_cache_get_type ()")]
 	public class TaskCache : GLib.Object {

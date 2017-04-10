@@ -376,12 +376,6 @@ namespace GMime {
 	[CCode (cheader_filename = "gmime/gmime.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "g_mime_format_options_get_type ()")]
 	[Compact]
 	public class FormatOptions {
-		public weak GLib.GenericArray<void*> hidden;
-		public bool international;
-		public uint maxline;
-		public GMime.ParamEncodingMethod method;
-		public bool mixed_charsets;
-		public GMime.NewLineFormat newline;
 		[CCode (cname = "g_mime_format_options_new", has_construct_function = false)]
 		public FormatOptions ();
 		[CCode (cname = "g_mime_format_options_add_hidden_header")]
@@ -550,10 +544,14 @@ namespace GMime {
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "InternetAddressMailbox", type_id = "internet_address_mailbox_get_type ()")]
 	public class InternetAddressMailbox : GMime.InternetAddress {
 		public weak string addr;
+		public int at;
+		public weak string idn_addr;
 		[CCode (cname = "internet_address_mailbox_new", has_construct_function = false, type = "InternetAddress*")]
 		public InternetAddressMailbox (string name, string addr);
 		[CCode (cname = "internet_address_mailbox_get_addr")]
 		public unowned string get_addr ();
+		[CCode (cname = "internet_address_mailbox_get_idn_addr")]
+		public unowned string get_idn_addr ();
 		[CCode (cname = "internet_address_mailbox_set_addr")]
 		public void set_addr (string addr);
 	}
@@ -846,10 +844,6 @@ namespace GMime {
 	[CCode (cheader_filename = "gmime/gmime.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "g_mime_parser_options_get_type ()")]
 	[Compact]
 	public class ParserOptions {
-		public GMime.RfcComplianceMode addresses;
-		public weak string charsets;
-		public GMime.RfcComplianceMode parameters;
-		public GMime.RfcComplianceMode rfc2047;
 		[CCode (cname = "g_mime_parser_options_new", has_construct_function = false)]
 		public ParserOptions ();
 		[CCode (cname = "g_mime_parser_options_clone")]

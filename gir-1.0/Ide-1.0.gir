@@ -2464,6 +2464,17 @@ See #IdeBuildManager:busy for more information.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_can_build"
+              c:identifier="ide_build_manager_get_can_build">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildManager" c:type="IdeBuildManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_last_build_time"
               c:identifier="ide_build_manager_get_last_build_time">
         <doc xml:space="preserve">This function returns a #GDateTime of the last build request. If
@@ -2579,6 +2590,13 @@ reloaded as build configurations change.</doc>
 executing. This can be bound to UI elements to display to the
 user that a build is active (and therefore other builds cannot
 be activated at the moment).</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="can-build" transfer-ownership="none">
+        <doc xml:space="preserve">Gets if the build manager can queue a build request.
+
+This might be false if the required runtime is not available or other
+errors in setting up the build pipeline.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="has-diagnostics" transfer-ownership="none">
@@ -30389,101 +30407,117 @@ the definition).</doc>
               c:identifier="IDE_SYMBOL_VARIABLE"
               glib:nick="variable">
       </member>
-      <member name="ui_attributes"
+      <member name="keyword"
               value="24"
+              c:identifier="IDE_SYMBOL_KEYWORD"
+              glib:nick="keyword">
+      </member>
+      <member name="ui_attributes"
+              value="25"
               c:identifier="IDE_SYMBOL_UI_ATTRIBUTES"
               glib:nick="ui-attributes">
       </member>
       <member name="ui_child"
-              value="25"
+              value="26"
               c:identifier="IDE_SYMBOL_UI_CHILD"
               glib:nick="ui-child">
       </member>
       <member name="ui_item"
-              value="26"
+              value="27"
               c:identifier="IDE_SYMBOL_UI_ITEM"
               glib:nick="ui-item">
       </member>
       <member name="ui_menu"
-              value="27"
+              value="28"
               c:identifier="IDE_SYMBOL_UI_MENU"
               glib:nick="ui-menu">
       </member>
       <member name="ui_menu_attribute"
-              value="28"
+              value="29"
               c:identifier="IDE_SYMBOL_UI_MENU_ATTRIBUTE"
               glib:nick="ui-menu-attribute">
       </member>
       <member name="ui_object"
-              value="29"
+              value="30"
               c:identifier="IDE_SYMBOL_UI_OBJECT"
               glib:nick="ui-object">
       </member>
       <member name="ui_packing"
-              value="30"
+              value="31"
               c:identifier="IDE_SYMBOL_UI_PACKING"
               glib:nick="ui-packing">
       </member>
       <member name="ui_property"
-              value="31"
+              value="32"
               c:identifier="IDE_SYMBOL_UI_PROPERTY"
               glib:nick="ui-property">
       </member>
       <member name="ui_section"
-              value="32"
+              value="33"
               c:identifier="IDE_SYMBOL_UI_SECTION"
               glib:nick="ui-section">
       </member>
       <member name="ui_signal"
-              value="33"
+              value="34"
               c:identifier="IDE_SYMBOL_UI_SIGNAL"
               glib:nick="ui-signal">
       </member>
       <member name="ui_style"
-              value="34"
+              value="35"
               c:identifier="IDE_SYMBOL_UI_STYLE"
               glib:nick="ui-style">
       </member>
       <member name="ui_style_class"
-              value="35"
+              value="36"
               c:identifier="IDE_SYMBOL_UI_STYLE_CLASS"
               glib:nick="ui-style-class">
       </member>
       <member name="ui_submenu"
-              value="36"
+              value="37"
               c:identifier="IDE_SYMBOL_UI_SUBMENU"
               glib:nick="ui-submenu">
       </member>
       <member name="ui_template"
-              value="37"
+              value="38"
               c:identifier="IDE_SYMBOL_UI_TEMPLATE"
               glib:nick="ui-template">
       </member>
       <member name="xml_attribute"
-              value="38"
+              value="39"
               c:identifier="IDE_SYMBOL_XML_ATTRIBUTE"
               glib:nick="xml-attribute">
       </member>
       <member name="xml_declaration"
-              value="39"
+              value="40"
               c:identifier="IDE_SYMBOL_XML_DECLARATION"
               glib:nick="xml-declaration">
       </member>
       <member name="xml_element"
-              value="40"
+              value="41"
               c:identifier="IDE_SYMBOL_XML_ELEMENT"
               glib:nick="xml-element">
       </member>
       <member name="xml_comment"
-              value="41"
+              value="42"
               c:identifier="IDE_SYMBOL_XML_COMMENT"
               glib:nick="xml-comment">
       </member>
       <member name="xml_cdata"
-              value="42"
+              value="43"
               c:identifier="IDE_SYMBOL_XML_CDATA"
               glib:nick="xml-cdata">
       </member>
+      <function name="get_icon_name"
+                c:identifier="ide_symbol_kind_get_icon_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <type name="SymbolKind" c:type="IdeSymbolKind"/>
+          </parameter>
+        </parameters>
+      </function>
     </enumeration>
     <class name="SymbolNode"
            c:symbol-prefix="symbol_node"
@@ -37596,6 +37630,28 @@ a different command when you are in the bundled flatpak version.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
     </function>
+    <function name="langserv_decode_completion_kind"
+              c:identifier="ide_langserv_decode_completion_kind">
+      <return-value transfer-ownership="none">
+        <type name="SymbolKind" c:type="IdeSymbolKind"/>
+      </return-value>
+      <parameters>
+        <parameter name="kind" transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="langserv_decode_symbol_kind"
+              c:identifier="ide_langserv_decode_symbol_kind">
+      <return-value transfer-ownership="none">
+        <type name="SymbolKind" c:type="IdeSymbolKind"/>
+      </return-value>
+      <parameters>
+        <parameter name="kind" transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="language_format_header"
               c:identifier="ide_language_format_header">
       <return-value transfer-ownership="full">
@@ -37758,6 +37814,18 @@ not be enabled, but path features such as ~user will be expanded.</doc>
         </parameter>
         <parameter name="tag" transfer-ownership="none">
           <type name="Gtk.TextTag" c:type="GtkTextTag*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="symbol_kind_get_icon_name"
+              c:identifier="ide_symbol_kind_get_icon_name"
+              moved-to="SymbolKind.get_icon_name">
+      <return-value transfer-ownership="none">
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="kind" transfer-ownership="none">
+          <type name="SymbolKind" c:type="IdeSymbolKind"/>
         </parameter>
       </parameters>
     </function>

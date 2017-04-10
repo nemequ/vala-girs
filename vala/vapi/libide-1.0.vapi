@@ -159,12 +159,14 @@ namespace Ide {
 		public async bool clean_async (Ide.BuildPhase phase, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool execute_async (Ide.BuildPhase phase, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_busy ();
+		public bool get_can_build ();
 		public unowned GLib.DateTime? get_last_build_time ();
 		public string get_message ();
 		public unowned Ide.BuildPipeline? get_pipeline ();
 		public GLib.TimeSpan get_running_time ();
 		public async bool rebuild_async (Ide.BuildPhase phase, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool busy { get; }
+		public bool can_build { get; }
 		[NoAccessorMethod]
 		public bool has_diagnostics { get; }
 		public GLib.DateTime last_build_time { get; }
@@ -2699,6 +2701,7 @@ namespace Ide {
 		STRUCT,
 		UNION,
 		VARIABLE,
+		KEYWORD,
 		UI_ATTRIBUTES,
 		UI_CHILD,
 		UI_ITEM,
@@ -2717,7 +2720,8 @@ namespace Ide {
 		XML_DECLARATION,
 		XML_ELEMENT,
 		XML_COMMENT,
-		XML_CDATA
+		XML_CDATA;
+		public static unowned string get_icon_name (Ide.SymbolKind kind);
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_THREAD_POOL_", type_id = "ide_thread_pool_kind_get_type ()")]
 	public enum ThreadPoolKind {
@@ -2865,6 +2869,10 @@ namespace Ide {
 	public static void gtk_text_buffer_remove_tag (Gtk.TextBuffer buffer, Gtk.TextTag tag, Gtk.TextIter start, Gtk.TextIter end, bool minimal_damage);
 	[CCode (cheader_filename = "ide.h")]
 	public static bool is_flatpak ();
+	[CCode (cheader_filename = "ide.h")]
+	public static Ide.SymbolKind langserv_decode_completion_kind (uint kind);
+	[CCode (cheader_filename = "ide.h")]
+	public static Ide.SymbolKind langserv_decode_symbol_kind (uint kind);
 	[CCode (cheader_filename = "ide.h")]
 	public static string language_format_header (Gtk.SourceLanguage language, string header);
 	[CCode (cheader_filename = "ide.h")]
