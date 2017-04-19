@@ -66,11 +66,15 @@ namespace AppStream {
 		[Version (since = "0.8.0")]
 		public void add_bundle (AppStream.Bundle bundle);
 		public void add_category (string category);
+		[Version (since = "0.11.0")]
+		public void add_content_rating (AppStream.ContentRating content_rating);
 		[Version (since = "0.7.0")]
 		public void add_extends (string cpt_id);
 		public void add_icon (AppStream.Icon icon);
 		[Version (since = "0.7.0")]
 		public void add_language (string? locale, int percentage);
+		[Version (since = "0.11.0")]
+		public void add_launchable (AppStream.Launchable launchable);
 		[Version (since = "0.6.2")]
 		public void add_provided (AppStream.Provided prov);
 		public void add_release (AppStream.Release release);
@@ -89,13 +93,17 @@ namespace AppStream {
 		public unowned GLib.GenericArray<AppStream.Bundle> get_bundles ();
 		public unowned GLib.GenericArray<string> get_categories ();
 		public unowned GLib.GenericArray<string> get_compulsory_for_desktops ();
+		[Version (since = "0.11.0")]
+		public unowned AppStream.ContentRating get_content_rating (string kind);
+		[Version (since = "0.11.0")]
+		public unowned GLib.GenericArray<AppStream.ContentRating> get_content_ratings ();
 		[Version (since = "0.10.5")]
 		public unowned GLib.HashTable<void*,void*> get_custom ();
 		[Version (since = "0.10.5")]
 		public string get_custom_value (string key);
 		public unowned string get_data_id ();
 		public unowned string get_description ();
-		[Version (since = "0.9.8")]
+		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.9.8")]
 		public unowned string get_desktop_id ();
 		public unowned string get_developer_name ();
 		[Version (since = "0.7.0")]
@@ -110,6 +118,8 @@ namespace AppStream {
 		public int get_language (string? locale);
 		[Version (since = "0.7.0")]
 		public GLib.List<weak string> get_languages ();
+		[Version (since = "0.11.0")]
+		public unowned AppStream.Launchable get_launchable (AppStream.LaunchableKind kind);
 		[Version (since = "0.9.8")]
 		public AppStream.MergeKind get_merge_kind ();
 		public unowned string get_metadata_license ();
@@ -190,6 +200,26 @@ namespace AppStream {
 		[NoAccessorMethod]
 		public GLib.HashTable<AppStream.UrlKind,string> urls { owned get; }
 	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_content_rating_get_type ()")]
+	public class ContentRating : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.5.12")]
+		public ContentRating ();
+		[Version (since = "0.11.0")]
+		public unowned string get_kind ();
+		[Version (since = "0.11.0")]
+		public uint get_minimum_age ();
+		[Version (since = "0.11.0")]
+		public AppStream.ContentRatingValue get_value (string id);
+		[Version (since = "0.11.0")]
+		public void set_kind (string kind);
+		[Version (since = "0.11.0")]
+		public void set_value (string id, AppStream.ContentRatingValue value);
+		[Version (since = "0.11.0")]
+		public static AppStream.ContentRatingValue value_from_string (string value);
+		[Version (since = "0.11.0")]
+		public static unowned string value_to_string (AppStream.ContentRatingValue value);
+	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_distro_details_get_type ()")]
 	public class DistroDetails : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -211,6 +241,8 @@ namespace AppStream {
 		public uint get_height ();
 		public AppStream.IconKind get_kind ();
 		public unowned string get_name ();
+		[Version (since = "0.11.0")]
+		public uint get_scale ();
 		public unowned string get_url ();
 		public uint get_width ();
 		public static AppStream.IconKind kind_from_string (string kind_str);
@@ -219,6 +251,8 @@ namespace AppStream {
 		public void set_height (uint height);
 		public void set_kind (AppStream.IconKind kind);
 		public void set_name (string name);
+		[Version (since = "0.11.0")]
+		public void set_scale (uint scale);
 		public void set_url (string url);
 		public void set_width (uint width);
 	}
@@ -240,6 +274,24 @@ namespace AppStream {
 		public void set_locale (string locale);
 		public void set_url (string url);
 		public void set_width (uint width);
+	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_launchable_get_type ()")]
+	public class Launchable : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.11.0")]
+		public Launchable ();
+		[Version (since = "0.11.0")]
+		public void add_entry (string entry);
+		[Version (since = "0.11.0")]
+		public unowned GLib.GenericArray<string> get_entries ();
+		[Version (since = "0.11.0")]
+		public AppStream.LaunchableKind get_kind ();
+		[Version (since = "0.11.0")]
+		public static AppStream.LaunchableKind kind_from_string (string kind_str);
+		[Version (since = "0.11.0")]
+		public static unowned string kind_to_string (AppStream.LaunchableKind kind);
+		[Version (since = "0.11.0")]
+		public void set_kind (AppStream.LaunchableKind kind);
 	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_metadata_get_type ()")]
 	public class Metadata : GLib.Object {
@@ -452,6 +504,14 @@ namespace AppStream {
 		public static AppStream.ComponentKind from_string (string kind_str);
 		public static unowned string to_string (AppStream.ComponentKind kind);
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_CONTENT_RATING_VALUE_", has_type_id = false)]
+	public enum ContentRatingValue {
+		UNKNOWN,
+		NONE,
+		MILD,
+		MODERATE,
+		INTENSE
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_FORMAT_KIND_", has_type_id = false)]
 	public enum FormatKind {
 		UNKNOWN,
@@ -475,7 +535,8 @@ namespace AppStream {
 		V0_7,
 		V0_8,
 		V0_9,
-		V0_10;
+		V0_10,
+		V0_11;
 		[Version (since = "0.10")]
 		public static AppStream.FormatVersion from_string (string version_str);
 		[Version (since = "0.10")]
@@ -520,6 +581,11 @@ namespace AppStream {
 		FILE_MISSING,
 		WRONG_NAME,
 		READ_ERROR
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_LAUNCHABLE_KIND_", has_type_id = false)]
+	public enum LaunchableKind {
+		UNKNOWN,
+		DESKTOP_ID
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_MERGE_KIND_", has_type_id = false)]
 	public enum MergeKind {
