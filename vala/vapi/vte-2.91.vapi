@@ -47,6 +47,8 @@ namespace Vte {
 		public void feed_child (string? text, ssize_t length);
 		public void feed_child_binary ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[]? data);
 		public bool get_allow_bold ();
+		[Version (since = "0.50")]
+		public bool get_allow_hyperlink ();
 		public bool get_audible_bell ();
 		public long get_char_height ();
 		public long get_char_width ();
@@ -74,6 +76,8 @@ namespace Vte {
 		public unowned string get_window_title ();
 		[Version (since = "0.40")]
 		public unowned string get_word_char_exceptions ();
+		[Version (since = "0.50")]
+		public string hyperlink_check_event (Gdk.Event event);
 		[Version (deprecated = true, deprecated_since = "0.46")]
 		public int match_add_gregex (GLib.Regex gregex, GLib.RegexMatchFlags gflags);
 		[Version (since = "0.46")]
@@ -104,6 +108,8 @@ namespace Vte {
 		public void search_set_wrap_around (bool wrap_around);
 		public void select_all ();
 		public void set_allow_bold (bool allow_bold);
+		[Version (since = "0.50")]
+		public void set_allow_hyperlink (bool allow_hyperlink);
 		public void set_audible_bell (bool is_audible);
 		public void set_backspace_binding (Vte.EraseBinding binding);
 		public void set_cjk_ambiguous_width (int width);
@@ -140,6 +146,8 @@ namespace Vte {
 		public void watch_child (GLib.Pid child_pid);
 		public bool write_contents_sync (GLib.OutputStream stream, Vte.WriteFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool allow_bold { get; set; }
+		[Version (since = "0.50")]
+		public bool allow_hyperlink { get; set; }
 		public bool audible_bell { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding backspace_binding { get; set; }
@@ -155,6 +163,9 @@ namespace Vte {
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }
 		public double font_scale { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "0.50")]
+		public string hyperlink_hover_uri { owned get; }
 		public string icon_title { get; }
 		public bool input_enabled { get; set; }
 		[NoAccessorMethod]
@@ -184,6 +195,7 @@ namespace Vte {
 		public virtual signal void deiconify_window ();
 		public virtual signal void encoding_changed ();
 		public virtual signal void eof ();
+		public signal void hyperlink_hover_uri_changed (string object, Gdk.Rectangle p0);
 		public virtual signal void icon_title_changed ();
 		public virtual signal void iconify_window ();
 		public virtual signal void increase_font_size ();

@@ -281,6 +281,8 @@ namespace Ide {
 		[CCode (has_construct_function = false)]
 		public BuildStageTransfer (Ide.Context context, Ide.Transfer transfer);
 		[NoAccessorMethod]
+		public bool disable_when_metered { get; set; }
+		[NoAccessorMethod]
 		public Ide.Transfer transfer { owned get; construct; }
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_buildconfig_configuration_get_type ()")]
@@ -1308,7 +1310,7 @@ namespace Ide {
 		public RunButton ();
 	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_run_manager_get_type ()")]
-	public class RunManager : Ide.Object, GLib.ActionGroup {
+	public class RunManager : Ide.Object, GLib.ActionGroup, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected RunManager ();
 		public void add_handler (string id, string title, string icon_name, string accel, owned Ide.RunHandler run_handler);
@@ -2776,6 +2778,12 @@ namespace Ide {
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_RUNTIME_ERROR_NO_SUCH_")]
 	public errordomain RuntimeError {
 		RUNTIME;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "ide.h", cprefix = "IDE_TRANSFER_ERROR_")]
+	public errordomain TransferError {
+		UNKNOWN,
+		CONNECTION_IS_METERED;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_URI_ERROR_")]

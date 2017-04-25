@@ -852,6 +852,8 @@ namespace GMime {
 		public void free ();
 		[CCode (cname = "g_mime_parser_options_get_address_compliance_mode")]
 		public GMime.RfcComplianceMode get_address_compliance_mode ();
+		[CCode (cname = "g_mime_parser_options_get_allow_addresses_without_domain")]
+		public bool get_allow_addresses_without_domain ();
 		[CCode (array_length = false, array_null_terminated = true, cname = "g_mime_parser_options_get_fallback_charsets")]
 		public unowned string[] get_fallback_charsets ();
 		[CCode (cname = "g_mime_parser_options_get_parameter_compliance_mode")]
@@ -860,6 +862,8 @@ namespace GMime {
 		public GMime.RfcComplianceMode get_rfc2047_compliance_mode ();
 		[CCode (cname = "g_mime_parser_options_set_address_compliance_mode")]
 		public void set_address_compliance_mode (GMime.RfcComplianceMode mode);
+		[CCode (cname = "g_mime_parser_options_set_allow_addresses_without_domain")]
+		public void set_allow_addresses_without_domain (bool allow);
 		[CCode (cname = "g_mime_parser_options_set_fallback_charsets")]
 		public void set_fallback_charsets (string charsets);
 		[CCode (cname = "g_mime_parser_options_set_parameter_compliance_mode")]

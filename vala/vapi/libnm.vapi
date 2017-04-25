@@ -4156,7 +4156,8 @@ namespace NM {
 		NONE,
 		NM_SUPPORTED,
 		CARRIER_DETECT,
-		IS_SOFTWARE
+		IS_SOFTWARE,
+		SRIOV
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_MODEM_CAPABILITY_", type_id = "nm_device_modem_capabilities_get_type ()")]
 	[Flags]
