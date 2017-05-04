@@ -3547,6 +3547,8 @@ namespace NM {
 		public const string SECURITY_LEAP_USERNAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PAIRWISE")]
 		public const string SECURITY_PAIRWISE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PMF")]
+		public const string SECURITY_PMF;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PROTO")]
 		public const string SECURITY_PROTO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PSK")]
@@ -3665,6 +3667,7 @@ namespace NM {
 		public uint32 get_num_pairwise ();
 		public uint32 get_num_protos ();
 		public unowned string get_pairwise (uint32 i);
+		public NM.SettingWirelessSecurityPmf get_pmf ();
 		public unowned string get_proto (uint32 i);
 		public unowned string get_psk ();
 		public NM.SettingSecretFlags get_psk_flags ();
@@ -3695,6 +3698,9 @@ namespace NM {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] pairwise { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public int pmf { get; set construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] proto { owned get; set; }
@@ -4490,6 +4496,13 @@ namespace NM {
 		IGNORE,
 		DISABLE,
 		ENABLE
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_SECURITY_PMF_", type_id = "nm_setting_wireless_security_pmf_get_type ()")]
+	public enum SettingWirelessSecurityPmf {
+		DEFAULT,
+		DISABLE,
+		OPTIONAL,
+		REQUIRED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_STATE_", type_id = "nm_state_get_type ()")]
 	public enum State {

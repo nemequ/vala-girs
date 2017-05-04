@@ -12916,7 +12916,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="1" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="2" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -17395,6 +17395,99 @@ in size automatically if necessary.</doc>
                      allow-none="1">
             <doc xml:space="preserve">the pointer to add</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="find"
+                c:identifier="g_ptr_array_find"
+                version="2.54"
+                introspectable="0">
+        <doc xml:space="preserve">Checks whether @needle exists in @haystack. If the element is found, %TRUE is
+returned and the element’s index is returned in @index_ (if non-%NULL).
+Otherwise, %FALSE is returned and @index_ is undefined. If @needle exists
+multiple times in @haystack, the index of the first instance is returned.
+
+This does pointer comparisons only. If you want to use more complex equality
+checks, such as string comparisons, use g_ptr_array_find_with_equal_func().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @needle is one of the elements of @haystack</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="haystack" transfer-ownership="none">
+            <doc xml:space="preserve">pointer array to be searched</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="gpointer" c:type="gpointer"/>
+            </array>
+          </parameter>
+          <parameter name="needle"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to look for</doc>
+            <type name="gpointer" c:type="gconstpointer"/>
+          </parameter>
+          <parameter name="index_"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for the index of
+   the element, if found</doc>
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="find_with_equal_func"
+                c:identifier="g_ptr_array_find_with_equal_func"
+                version="2.54"
+                introspectable="0">
+        <doc xml:space="preserve">Checks whether @needle exists in @haystack, using the given @equal_func.
+If the element is found, %TRUE is returned and the element’s index is
+returned in @index_ (if non-%NULL). Otherwise, %FALSE is returned and @index_
+is undefined. If @needle exists multiple times in @haystack, the index of
+the first instance is returned.
+
+@equal_func is called with the element from the array as its first parameter,
+and @needle as its second parameter. If @equal_func is %NULL, pointer
+equality is used.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @needle is one of the elements of @haystack</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="haystack" transfer-ownership="none">
+            <doc xml:space="preserve">pointer array to be searched</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="gpointer" c:type="gpointer"/>
+            </array>
+          </parameter>
+          <parameter name="needle"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to look for</doc>
+            <type name="gpointer" c:type="gconstpointer"/>
+          </parameter>
+          <parameter name="equal_func"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the function to call for each element, which should
+   return %TRUE when the desired element is found; or %NULL to use pointer
+   equality</doc>
+            <type name="EqualFunc" c:type="GEqualFunc"/>
+          </parameter>
+          <parameter name="index_"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for the index of
+   the element, if found</doc>
+            <type name="guint" c:type="guint*"/>
           </parameter>
         </parameters>
       </function>
@@ -29001,10 +29094,10 @@ For instance, if you want to create a #GVariant holding an integer value you
 can use:
 
 |[&lt;!-- language="C" --&gt;
-  GVariant *v = g_variant_new ('u', 40);
+  GVariant *v = g_variant_new ("u", 40);
 ]|
 
-The string 'u' in the first argument tells #GVariant that the data passed to
+The string "u" in the first argument tells #GVariant that the data passed to
 the constructor (40) is going to be an unsigned integer.
 
 More advanced examples of #GVariant in use can be found in documentation for
@@ -29436,10 +29529,10 @@ the new instance takes ownership of them as if via g_variant_ref_sink().</doc>
       <constructor name="new_fixed_array"
                    c:identifier="g_variant_new_fixed_array"
                    version="2.32">
-        <doc xml:space="preserve">Provides access to the serialised data for an array of fixed-sized
-items.
+        <doc xml:space="preserve">Constructs a new array #GVariant instance, where the elements are
+of @element_type type.
 
-@value must be an array with fixed-sized elements.  Numeric types are
+@elements must be an array with fixed-sized elements.  Numeric types are
 fixed-size as are tuples containing only other fixed-sized types.
 
 @element_size must be the size of a single element in the array.
@@ -29448,8 +29541,7 @@ you might say sizeof(gint32). This value isn't used except for the purpose
 of a double-check that the form of the serialised data matches the caller's
 expectation.
 
-@n_elements, which must be non-%NULL is set equal to the number of
-items in the array.</doc>
+@n_elements must be the length of the @elements array.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a floating reference to a new array #GVariant instance</doc>
           <type name="Variant" c:type="GVariant*"/>
@@ -30004,7 +30096,7 @@ pointing to the argument following the last.
 
 Note that the arguments in @app must be of the correct width for their
 types specified in @format_string when collected into the #va_list.
-See the [GVariant varargs documentation][gvariant-varargs.
+See the [GVariant varargs documentation][gvariant-varargs].
 
 These two generalisations allow mixing of multiple calls to
 g_variant_new_va() and g_variant_get_va() within a single actual
@@ -33048,7 +33140,7 @@ The meaning of each of the characters is as follows:
 - `s`: the type string of %G_VARIANT_TYPE_STRING; a string.
 - `o`: the type string of %G_VARIANT_TYPE_OBJECT_PATH; a string in the form
   of a D-Bus object path.
-- `g`: the type string of %G_VARIANT_TYPE_STRING; a string in the form of
+- `g`: the type string of %G_VARIANT_TYPE_SIGNATURE; a string in the form of
   a D-Bus type signature.
 - `?`: the type string of %G_VARIANT_TYPE_BASIC; an indefinite type that
   is a supertype of any of the basic types.
@@ -37526,6 +37618,7 @@ encoding used for filenames.</doc>
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full"
+                   nullable="1"
                    optional="1"
                    allow-none="1">
           <doc xml:space="preserve">Location to store hostname for the URI.
@@ -41367,7 +41460,9 @@ to take advantage of this feature is up to you.</doc>
         <parameter name="err"
                    direction="inout"
                    caller-allocates="0"
-                   transfer-ownership="full">
+                   transfer-ownership="full"
+                   nullable="1"
+                   allow-none="1">
           <doc xml:space="preserve">a return location for a #GError</doc>
           <type name="Error" c:type="GError**"/>
         </parameter>
@@ -41530,6 +41625,101 @@ g_prefix_error().</doc>
         <parameter name="..." transfer-ownership="none">
           <doc xml:space="preserve">arguments to @format</doc>
           <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ptr_array_find"
+              c:identifier="g_ptr_array_find"
+              moved-to="PtrArray.find"
+              version="2.54"
+              introspectable="0">
+      <doc xml:space="preserve">Checks whether @needle exists in @haystack. If the element is found, %TRUE is
+returned and the element’s index is returned in @index_ (if non-%NULL).
+Otherwise, %FALSE is returned and @index_ is undefined. If @needle exists
+multiple times in @haystack, the index of the first instance is returned.
+
+This does pointer comparisons only. If you want to use more complex equality
+checks, such as string comparisons, use g_ptr_array_find_with_equal_func().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @needle is one of the elements of @haystack</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="haystack" transfer-ownership="none">
+          <doc xml:space="preserve">pointer array to be searched</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </parameter>
+        <parameter name="needle"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">pointer to look for</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+        <parameter name="index_"
+                   direction="out"
+                   caller-allocates="1"
+                   transfer-ownership="none"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for the index of
+   the element, if found</doc>
+          <type name="guint" c:type="guint*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ptr_array_find_with_equal_func"
+              c:identifier="g_ptr_array_find_with_equal_func"
+              moved-to="PtrArray.find_with_equal_func"
+              version="2.54"
+              introspectable="0">
+      <doc xml:space="preserve">Checks whether @needle exists in @haystack, using the given @equal_func.
+If the element is found, %TRUE is returned and the element’s index is
+returned in @index_ (if non-%NULL). Otherwise, %FALSE is returned and @index_
+is undefined. If @needle exists multiple times in @haystack, the index of
+the first instance is returned.
+
+@equal_func is called with the element from the array as its first parameter,
+and @needle as its second parameter. If @equal_func is %NULL, pointer
+equality is used.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @needle is one of the elements of @haystack</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="haystack" transfer-ownership="none">
+          <doc xml:space="preserve">pointer array to be searched</doc>
+          <array name="GLib.PtrArray" c:type="GPtrArray*">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </parameter>
+        <parameter name="needle"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">pointer to look for</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+        <parameter name="equal_func"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the function to call for each element, which should
+   return %TRUE when the desired element is found; or %NULL to use pointer
+   equality</doc>
+          <type name="EqualFunc" c:type="GEqualFunc"/>
+        </parameter>
+        <parameter name="index_"
+                   direction="out"
+                   caller-allocates="1"
+                   transfer-ownership="none"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for the index of
+   the element, if found</doc>
+          <type name="guint" c:type="guint*"/>
         </parameter>
       </parameters>
     </function>
@@ -42927,10 +43117,11 @@ If @envp is %NULL, the child inherits its parent's environment.
 
 @flags should be the bitwise OR of any flags you want to affect the
 function's behaviour. The %G_SPAWN_DO_NOT_REAP_CHILD means that the
-child will not automatically be reaped; you must use a child watch to
-be notified about the death of the child process. Eventually you must
-call g_spawn_close_pid() on the @child_pid, in order to free
-resources which may be associated with the child process. (On Unix,
+child will not automatically be reaped; you must use a child watch
+(g_child_watch_add()) to be notified about the death of the child process,
+otherwise it will stay around as a zombie process until this process exits.
+Eventually you must call g_spawn_close_pid() on the @child_pid, in order to
+free resources which may be associated with the child process. (On Unix,
 using a child watch is equivalent to calling waitpid() or handling
 the %SIGCHLD signal manually. On Windows, calling g_spawn_close_pid()
 is equivalent to calling CloseHandle() on the process handle returned

@@ -5,64 +5,123 @@ namespace Cd {
 	[CCode (cheader_filename = "colord.h", type_id = "cd_client_get_type ()")]
 	public class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public Client ();
+		[Version (since = "0.1.6")]
 		public async bool connect (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public bool connect_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.Device create_device (string id, Cd.ObjectScope scope, GLib.HashTable<string,string>? properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.2")]
 		public Cd.Device create_device_sync (string id, Cd.ObjectScope scope, GLib.HashTable<string,string>? properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.Profile create_profile (string id, Cd.ObjectScope scope, GLib.HashTable<string,string>? properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.1.1")]
 		public async Cd.Profile create_profile_for_icc (Cd.Icc icc, Cd.ObjectScope scope, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.1.1")]
 		public Cd.Profile create_profile_for_icc_sync (Cd.Icc icc, Cd.ObjectScope scope, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.2")]
 		public Cd.Profile create_profile_sync (string id, Cd.ObjectScope scope, GLib.HashTable<string,string>? properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async bool delete_device (Cd.Device device, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool delete_device_sync (Cd.Device device, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async bool delete_profile (Cd.Profile profile, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool delete_profile_sync (Cd.Profile profile, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.26")]
 		public static Cd.ClientError error_from_string (string error_desc);
+		[Version (since = "0.1.0")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.26")]
 		public static unowned string error_to_string (Cd.ClientError error_enum);
+		[Version (since = "0.1.8")]
 		public async Cd.Device find_device (string id, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.Device find_device_by_property (string key, string value, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public Cd.Device find_device_by_property_sync (string key, string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public Cd.Device find_device_sync (string id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.Profile find_profile (string id, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.Profile find_profile_by_filename (string filename, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.3")]
 		public Cd.Profile find_profile_by_filename_sync (string filename, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.24")]
 		public async Cd.Profile find_profile_by_property (string key, string value, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.24")]
 		public Cd.Profile find_profile_by_property_sync (string key, string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public Cd.Profile find_profile_sync (string id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.26")]
 		public async Cd.Sensor find_sensor (string id, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.26")]
 		public Cd.Sensor find_sensor_sync (string id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.9")]
 		public bool get_connected ();
+		[Version (since = "0.1.0")]
 		public unowned string get_daemon_version ();
+		[Version (since = "0.1.8")]
 		public async GLib.GenericArray<Cd.Device> get_devices (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async GLib.GenericArray<Cd.Device> get_devices_by_kind (Cd.DeviceKind kind, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public GLib.GenericArray<weak Cd.Device> get_devices_by_kind_sync (Cd.DeviceKind kind, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public GLib.GenericArray<weak Cd.Device> get_devices_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.12")]
 		public bool get_has_server ();
+		[Version (since = "0.1.8")]
 		public async GLib.GenericArray<Cd.Profile> get_profiles (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public GLib.GenericArray<weak Cd.Profile> get_profiles_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async GLib.GenericArray<Cd.Sensor> get_sensors (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public GLib.GenericArray<weak Cd.Sensor> get_sensors_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.Profile get_standard_space (Cd.StandardSpace standard_space, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.2")]
 		public Cd.Profile get_standard_space_sync (Cd.StandardSpace standard_space, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0.2")]
 		public unowned string get_system_model ();
+		[Version (since = "1.0.2")]
 		public unowned string get_system_vendor ();
+		[Version (since = "0.1.12")]
 		public async Cd.Profile import_profile (GLib.File file, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.12")]
 		public Cd.Profile import_profile_sync (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.9")]
 		public string connected { get; }
+		[Version (since = "0.1.0")]
 		public string daemon_version { get; }
+		[Version (since = "1.0.2")]
 		public string system_model { get; }
+		[Version (since = "1.0.2")]
 		public string system_vendor { get; }
+		[Version (since = "0.1.0")]
 		public virtual signal void changed ();
+		[Version (since = "0.1.0")]
 		public virtual signal void device_added (Cd.Device device);
+		[Version (since = "0.1.2")]
 		public virtual signal void device_changed (Cd.Device device);
+		[Version (since = "0.1.0")]
 		public virtual signal void device_removed (Cd.Device device);
+		[Version (since = "0.1.2")]
 		public virtual signal void profile_added (Cd.Profile profile);
+		[Version (since = "0.1.2")]
 		public virtual signal void profile_changed (Cd.Profile profile);
+		[Version (since = "0.1.2")]
 		public virtual signal void profile_removed (Cd.Profile profile);
+		[Version (since = "0.1.6")]
 		public virtual signal void sensor_added (Cd.Sensor sensor);
+		[Version (since = "0.1.6")]
 		public virtual signal void sensor_changed (Cd.Sensor sensor);
+		[Version (since = "0.1.6")]
 		public virtual signal void sensor_removed (Cd.Sensor sensor);
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_color_lab_get_type ()")]
@@ -72,11 +131,17 @@ namespace Cd {
 		public double a;
 		public double b;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.32")]
 		public ColorLab ();
+		[Version (since = "0.1.32")]
 		public void copy (Cd.ColorLab dest);
+		[Version (since = "0.1.32")]
 		public double delta_e76 (Cd.ColorLab p2);
+		[Version (since = "0.1.32")]
 		public Cd.ColorLab dup ();
+		[Version (since = "0.1.32")]
 		public void free ();
+		[Version (since = "0.1.32")]
 		public void @set (double L, double a, double b);
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_color_rgb_get_type ()")]
@@ -86,27 +151,46 @@ namespace Cd {
 		public double G;
 		public double R;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public ColorRGB ();
+		[Version (since = "0.1.31")]
 		public static GLib.GenericArray<Cd.ColorRGB> array_interpolate (GLib.GenericArray<Cd.ColorRGB> array, uint new_length);
+		[Version (since = "0.1.31")]
 		public static bool array_is_monotonic (GLib.GenericArray<Cd.ColorRGB> array);
+		[Version (since = "0.1.31")]
 		public static GLib.GenericArray<Cd.ColorRGB> array_new ();
+		[Version (since = "0.1.27")]
 		public void copy (Cd.ColorRGB dest);
+		[Version (since = "0.1.27")]
 		public Cd.ColorRGB dup ();
+		[Version (since = "0.1.0")]
 		public void free ();
+		[Version (since = "1.3.4")]
+		public void from_wavelength (double wavelength);
+		[Version (since = "0.1.26")]
 		public void interpolate (Cd.ColorRGB p2, double index, Cd.ColorRGB result);
+		[Version (since = "0.1.27")]
 		public void @set (double R, double G, double B);
+		[Version (since = "0.1.27")]
 		public void to_rgb8 (Cd.ColorRGB8 dest);
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_color_swatch_get_type ()")]
 	[Compact]
 	public class ColorSwatch {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.32")]
 		public ColorSwatch ();
+		[Version (since = "0.1.32")]
 		public Cd.ColorSwatch dup ();
+		[Version (since = "0.1.32")]
 		public void free ();
+		[Version (since = "0.1.32")]
 		public unowned string get_name ();
+		[Version (since = "0.1.32")]
 		public unowned Cd.ColorLab get_value ();
+		[Version (since = "0.1.32")]
 		public void set_name (string name);
+		[Version (since = "0.1.32")]
 		public void set_value (Cd.ColorLab value);
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_color_uvw_get_type ()")]
@@ -116,12 +200,19 @@ namespace Cd {
 		public double V;
 		public double W;
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.1.6")]
 		public ColorUVW ();
+		[Version (since = "1.1.6")]
 		public void copy (Cd.ColorUVW dest);
+		[Version (since = "1.1.6")]
 		public Cd.ColorUVW dup ();
+		[Version (since = "1.1.6")]
 		public void free ();
+		[Version (since = "1.1.6")]
 		public double get_chroma_difference (Cd.ColorUVW p2);
+		[Version (since = "1.1.6")]
 		public void @set (double U, double V, double W);
+		[Version (since = "1.1.6")]
 		public void set_planckian_locus (double temp);
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_color_xyz_get_type ()")]
@@ -131,15 +222,25 @@ namespace Cd {
 		public double Y;
 		public double Z;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public ColorXYZ ();
+		[Version (since = "0.1.27")]
 		public void clear ();
+		[Version (since = "0.1.27")]
 		public void copy (Cd.ColorXYZ dest);
+		[Version (since = "0.1.27")]
 		public Cd.ColorXYZ dup ();
+		[Version (since = "0.1.0")]
 		public void free ();
+		[Version (since = "1.1.6")]
 		public void normalize (double max, Cd.ColorXYZ dest);
+		[Version (since = "0.1.27")]
 		public void @set (double X, double Y, double Z);
+		[Version (since = "1.1.6")]
 		public double to_cct ();
+		[Version (since = "1.1.6")]
 		public void to_uvw (Cd.ColorXYZ whitepoint, Cd.ColorUVW dest);
+		[Version (since = "0.1.27")]
 		public void to_yxy (Cd.ColorYxy dest);
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_color_yxy_get_type ()")]
@@ -149,203 +250,375 @@ namespace Cd {
 		public double x;
 		public double y;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public ColorYxy ();
+		[Version (since = "0.1.27")]
 		public void copy (Cd.ColorYxy dest);
+		[Version (since = "0.1.27")]
 		public Cd.ColorYxy dup ();
+		[Version (since = "0.1.0")]
 		public void free ();
+		[Version (since = "0.1.27")]
 		public void @set (double Y, double x, double y);
+		[Version (since = "1.1.6")]
 		public void to_uvw (Cd.ColorUVW dest);
+		[Version (since = "0.1.27")]
 		public void to_xyz (Cd.ColorXYZ dest);
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_device_get_type ()")]
 	public class Device : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public Device ();
+		[Version (since = "0.1.8")]
 		public async bool add_profile (Cd.DeviceRelation relation, Cd.Profile profile, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.3")]
 		public bool add_profile_sync (Cd.DeviceRelation relation, Cd.Profile profile, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async bool connect (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool connect_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool equal (Cd.Device device2);
+		[Version (since = "0.1.26")]
 		public static Cd.DeviceError error_from_string (string error_desc);
+		[Version (since = "0.1.0")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.26")]
 		public static unowned string error_to_string (Cd.DeviceError error_enum);
+		[Version (since = "0.1.1")]
 		public Cd.Colorspace get_colorspace ();
+		[Version (since = "0.1.9")]
 		public bool get_connected ();
+		[Version (since = "0.1.0")]
 		public uint64 get_created ();
+		[Version (since = "0.1.1")]
 		public Cd.Profile get_default_profile ();
+		[Version (since = "0.1.27")]
 		public bool get_embedded ();
+		[Version (since = "0.1.26")]
 		public bool get_enabled ();
+		[Version (since = "0.1.9")]
 		public unowned string get_format ();
+		[Version (since = "0.1.0")]
 		public unowned string get_id ();
+		[Version (since = "0.1.0")]
 		public Cd.DeviceKind get_kind ();
+		[Version (since = "0.1.5")]
 		public GLib.HashTable<weak string,weak string> get_metadata ();
+		[Version (since = "0.1.5")]
 		public unowned string get_metadata_item (string key);
+		[Version (since = "0.1.2")]
 		public Cd.DeviceMode get_mode ();
+		[Version (since = "0.1.0")]
 		public unowned string get_model ();
+		[Version (since = "0.1.1")]
 		public uint64 get_modified ();
+		[Version (since = "0.1.0")]
 		public unowned string get_object_path ();
+		[Version (since = "0.1.13")]
 		public uint get_owner ();
+		[Version (since = "0.1.8")]
 		public async Cd.Profile get_profile_for_qualifiers (string qualifiers, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public Cd.Profile get_profile_for_qualifiers_sync (string qualifiers, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async Cd.DeviceRelation get_profile_relation (Cd.Profile profile, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public Cd.DeviceRelation get_profile_relation_sync (Cd.Profile profile, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public GLib.GenericArray<weak Cd.Profile> get_profiles ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "0.1.17")]
 		public unowned string[] get_profiling_inhibitors ();
+		[Version (since = "0.1.10")]
 		public Cd.ObjectScope get_scope ();
+		[Version (since = "0.1.24")]
 		public unowned string get_seat ();
+		[Version (since = "0.1.0")]
 		public unowned string get_serial ();
+		[Version (since = "0.1.1")]
 		public unowned string get_vendor ();
+		[Version (since = "0.1.0")]
 		public static Cd.DeviceKind kind_from_string (string kind);
+		[Version (since = "0.1.6")]
 		public static Cd.ProfileKind kind_to_profile_kind (Cd.DeviceKind device_kind);
+		[Version (since = "0.1.0")]
 		public static unowned string kind_to_string (Cd.DeviceKind kind_enum);
+		[Version (since = "0.1.8")]
 		public async bool make_profile_default (Cd.Profile profile, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool make_profile_default_sync (Cd.Profile profile, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static Cd.DeviceMode mode_from_string (string device_mode);
 		public static unowned string mode_to_string (Cd.DeviceMode device_mode);
+		[Version (since = "0.1.8")]
 		public async bool profiling_inhibit (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.1")]
 		public bool profiling_inhibit_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public async bool profiling_uninhibit (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.1")]
 		public bool profiling_uninhibit_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static Cd.DeviceRelation relation_from_string (string device_relation);
 		public static unowned string relation_to_string (Cd.DeviceRelation device_relation);
+		[Version (since = "0.1.8")]
 		public async bool remove_profile (Cd.Profile profile, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.2")]
 		public bool remove_profile_sync (Cd.Profile profile, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.1")]
 		public bool set_colorspace_sync (Cd.Colorspace colorspace, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.26")]
 		public async bool set_enabled (bool enabled, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.26")]
 		public bool set_enabled_sync (bool enabled, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public bool set_kind_sync (Cd.DeviceKind kind, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.2")]
 		public bool set_mode_sync (Cd.DeviceMode mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public bool set_model_sync (string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public void set_object_path (string object_path);
+		[Version (since = "0.1.8")]
 		public async bool set_property (string key, string value, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool set_property_sync (string key, string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.1")]
 		public bool set_serial_sync (string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.1")]
 		public bool set_vendor_sync (string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public string to_string ();
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.8")]
 		public Device.with_object_path (string object_path);
+		[Version (since = "0.1.1")]
 		public uint colorspace { get; }
+		[Version (since = "0.1.9")]
 		public string connected { get; }
+		[Version (since = "0.1.0")]
 		public uint64 created { get; }
+		[Version (since = "0.1.27")]
 		public string embedded { get; }
+		[Version (since = "0.1.26")]
 		public bool enabled { get; }
+		[Version (since = "0.1.9")]
 		public string format { get; }
+		[Version (since = "0.1.0")]
 		public string id { get; }
+		[Version (since = "0.1.0")]
 		public uint kind { get; }
+		[Version (since = "0.1.2")]
 		public uint mode { get; }
+		[Version (since = "0.1.0")]
 		public string model { get; }
+		[Version (since = "0.1.1")]
 		public uint64 modified { get; }
+		[Version (since = "0.1.8")]
 		public string object_path { get; set construct; }
+		[Version (since = "0.1.13")]
 		public uint owner { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] profiling_inhibitors { get; }
+		[Version (since = "0.1.10")]
 		public uint scope { get; }
+		[Version (since = "0.1.24")]
 		public string seat { get; }
+		[Version (since = "0.1.1")]
 		public string serial { get; }
+		[Version (since = "0.1.1")]
 		public string vendor { get; }
+		[Version (since = "0.1.0")]
 		public virtual signal void changed ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_dom_get_type ()")]
 	public class Dom : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.31")]
 		public Dom ();
+		[Version (since = "0.1.31")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.31")]
 		public unowned GLib.Node get_node (GLib.Node root, string path);
+		[Version (since = "0.1.31")]
 		public static unowned string get_node_attribute (GLib.Node node, string key);
+		[Version (since = "0.1.31")]
 		public static unowned string get_node_data (GLib.Node node);
+		[Version (since = "0.1.32")]
 		public static double get_node_data_as_double (GLib.Node node);
+		[Version (since = "0.1.32")]
 		public static int get_node_data_as_int (GLib.Node node);
+		[Version (since = "0.1.31")]
 		public static bool get_node_lab (GLib.Node node, Cd.ColorLab lab);
+		[Version (since = "0.1.31")]
 		public static GLib.HashTable<void*,void*> get_node_localized (GLib.Node node, string key);
+		[Version (since = "0.1.31")]
 		public static unowned string get_node_name (GLib.Node node);
+		[Version (since = "0.1.31")]
 		public static bool get_node_rgb (GLib.Node node, Cd.ColorRGB rgb);
+		[Version (since = "0.1.31")]
 		public static bool get_node_yxy (GLib.Node node, Cd.ColorYxy yxy);
+		[Version (since = "0.1.31")]
 		public bool parse_xml_data (string data, ssize_t data_len) throws GLib.Error;
+		[Version (since = "0.1.31")]
 		public string to_string ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_edid_get_type ()")]
 	public class Edid : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.1.2")]
 		public Edid ();
+		[Version (since = "1.1.2")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "1.1.2")]
 		public unowned Cd.ColorYxy get_blue ();
+		[Version (since = "1.1.2")]
 		public unowned string get_checksum ();
+		[Version (since = "1.1.2")]
 		public unowned string get_eisa_id ();
+		[Version (since = "1.1.2")]
 		public double get_gamma ();
+		[Version (since = "1.1.2")]
 		public unowned Cd.ColorYxy get_green ();
+		[Version (since = "1.1.2")]
 		public uint get_height ();
+		[Version (since = "1.1.2")]
 		public unowned string get_monitor_name ();
+		[Version (since = "1.1.2")]
 		public unowned string get_pnp_id ();
+		[Version (since = "1.1.2")]
 		public unowned Cd.ColorYxy get_red ();
+		[Version (since = "1.1.2")]
 		public unowned string get_serial_number ();
+		[Version (since = "1.1.2")]
 		public unowned string get_vendor_name ();
+		[Version (since = "1.1.2")]
 		public unowned Cd.ColorYxy get_white ();
+		[Version (since = "1.1.2")]
 		public uint get_width ();
+		[Version (since = "1.1.2")]
 		public bool parse (GLib.Bytes edid_data) throws GLib.Error;
+		[Version (since = "1.1.2")]
 		public void reset ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_icc_get_type ()")]
 	public class Icc : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.32")]
 		public Icc ();
+		[Version (since = "0.1.32")]
 		public void add_metadata (string key, string value);
+		[Version (since = "1.1.2")]
 		public bool create_default () throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public bool create_from_edid (double gamma_value, Cd.ColorYxy red, Cd.ColorYxy green, Cd.ColorYxy blue, Cd.ColorYxy white) throws GLib.Error;
+		[Version (since = "1.1.2")]
 		public bool create_from_edid_data (Cd.Edid edid) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.32")]
 		public unowned Cd.ColorXYZ get_blue ();
+		[Version (since = "0.1.32")]
 		public bool get_can_delete ();
+		[Version (since = "1.1.1")]
 		public unowned string get_characterization_data ();
+		[Version (since = "0.1.32")]
 		public unowned string get_checksum ();
+		[Version (since = "0.1.32")]
 		public Cd.Colorspace get_colorspace ();
+		[Version (since = "1.1.7")]
 		public void* get_context ();
+		[Version (since = "0.1.32")]
 		public unowned string get_copyright (string locale) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public GLib.DateTime get_created ();
+		[Version (since = "0.1.32")]
 		public unowned string get_description (string locale) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public unowned string get_filename ();
+		[Version (since = "0.1.32")]
 		public unowned Cd.ColorXYZ get_green ();
 		public void* get_handle ();
+		[Version (since = "0.1.32")]
 		public Cd.ProfileKind get_kind ();
+		[Version (since = "0.1.32")]
 		public unowned string get_manufacturer (string locale) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public GLib.HashTable<weak void*,weak void*> get_metadata ();
+		[Version (since = "0.1.32")]
 		public unowned string get_metadata_item (string key);
+		[Version (since = "0.1.32")]
 		public unowned string get_model (string locale) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public GLib.GenericArray<weak Cd.ColorSwatch> get_named_colors ();
+		[Version (since = "0.1.32")]
 		public unowned Cd.ColorXYZ get_red ();
+		[Version (since = "0.1.34")]
 		public GLib.GenericArray<weak Cd.ColorRGB> get_response (uint size) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public uint32 get_size ();
+		[Version (since = "1.1.6")]
 		public GLib.Bytes get_tag_data (string tag) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.1.6")]
 		public string[] get_tags () throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public uint get_temperature ();
+		[Version (since = "0.1.34")]
 		public GLib.GenericArray<weak Cd.ColorRGB> get_vcgt (uint size) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public double get_version ();
+		[Version (since = "0.1.34")]
 		public GLib.Array<weak Cd.ProfileWarning> get_warnings ();
+		[Version (since = "0.1.32")]
 		public unowned Cd.ColorXYZ get_white ();
+		[Version (since = "0.1.32")]
 		public bool load_data (uint8 data, size_t data_len, Cd.IccLoadFlags flags) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public bool load_fd (int fd, Cd.IccLoadFlags flags) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public bool load_file (GLib.File file, Cd.IccLoadFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.33")]
 		public bool load_handle (void* handle, Cd.IccLoadFlags flags) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public void remove_metadata (string key);
+		[Version (since = "1.0.2")]
 		public GLib.Bytes save_data (Cd.IccSaveFlags flags) throws GLib.Error;
+		[Version (since = "1.1.1")]
 		public bool save_default (Cd.IccSaveFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public bool save_file (GLib.File file, Cd.IccSaveFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.1.1")]
 		public void set_characterization_data (string data);
+		[Version (since = "0.1.32")]
 		public void set_colorspace (Cd.Colorspace colorspace);
+		[Version (since = "0.1.32")]
 		public void set_copyright (string locale, string? value);
+		[Version (since = "0.1.32")]
 		public void set_copyright_items (GLib.HashTable<void*,void*> values);
+		[Version (since = "0.1.32")]
 		public void set_description (string locale, string? value);
+		[Version (since = "0.1.32")]
 		public void set_description_items (GLib.HashTable<void*,void*> values);
+		[Version (since = "1.1.1")]
 		public void set_filename (string filename);
+		[Version (since = "0.1.32")]
 		public void set_kind (Cd.ProfileKind kind);
+		[Version (since = "0.1.32")]
 		public void set_manufacturer (string locale, string? value);
+		[Version (since = "0.1.32")]
 		public void set_manufacturer_items (GLib.HashTable<void*,void*> values);
+		[Version (since = "0.1.32")]
 		public void set_model (string locale, string? value);
+		[Version (since = "0.1.32")]
 		public void set_model_items (GLib.HashTable<void*,void*> values);
+		[Version (since = "1.1.6")]
 		public bool set_tag_data (string tag, GLib.Bytes data) throws GLib.Error;
+		[Version (since = "0.1.34")]
 		public bool set_vcgt (GLib.GenericArray<Cd.ColorRGB> vcgt) throws GLib.Error;
+		[Version (since = "0.1.32")]
 		public void set_version (double version);
+		[Version (since = "0.1.32")]
 		public string to_string ();
 		public bool utils_get_coverage (Cd.Icc icc_reference, double coverage) throws GLib.Error;
 		public Cd.ColorXYZ blue { get; }
@@ -364,285 +637,515 @@ namespace Cd {
 	[CCode (cheader_filename = "colord.h", type_id = "cd_icc_store_get_type ()")]
 	public class IccStore : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.0.2")]
 		public IccStore ();
+		[Version (since = "1.0.2")]
 		public Cd.Icc find_by_checksum (string checksum);
+		[Version (since = "1.0.2")]
 		public Cd.Icc find_by_filename (string filename);
+		[Version (since = "1.0.2")]
 		public GLib.GenericArray<weak Cd.Icc> get_all ();
+		[Version (since = "1.0.2")]
 		public Cd.IccLoadFlags get_load_flags ();
+		[Version (since = "1.0.2")]
 		public bool search_kind (Cd.IccStoreSearchKind search_kind, Cd.IccStoreSearchFlags search_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0.2")]
 		public bool search_location (string location, Cd.IccStoreSearchFlags search_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0.2")]
 		public void set_cache (GLib.Resource cache);
+		[Version (since = "1.0.2")]
 		public void set_load_flags (Cd.IccLoadFlags load_flags);
+		[Version (since = "1.0.2")]
 		public virtual signal void added (Cd.Icc icc);
+		[Version (since = "1.0.2")]
 		public virtual signal void removed (Cd.Icc icc);
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_interp_get_type ()")]
 	public class Interp : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Interp ();
+		[Version (since = "0.1.31")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.31")]
 		public virtual double eval (double value) throws GLib.Error;
+		[Version (since = "0.1.31")]
 		public Cd.InterpKind get_kind ();
+		[Version (since = "0.1.31")]
 		public uint get_size ();
+		[Version (since = "0.1.31")]
 		public unowned GLib.Array<double> get_x ();
+		[Version (since = "0.1.31")]
 		public unowned GLib.Array<double> get_y ();
+		[Version (since = "0.1.31")]
 		public void insert (double x, double y);
 		public static unowned string kind_to_string (Cd.InterpKind kind);
+		[Version (since = "0.1.31")]
 		public virtual bool prepare () throws GLib.Error;
 		[NoAccessorMethod]
+		[Version (since = "0.1.20")]
 		public uint kind { get; set; }
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_interp_akima_get_type ()")]
 	public class InterpAkima : Cd.Interp {
 		[CCode (has_construct_function = false, type = "CdInterp*")]
+		[Version (since = "0.1.31")]
 		public InterpAkima ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_interp_linear_get_type ()")]
 	public class InterpLinear : Cd.Interp {
 		[CCode (has_construct_function = false, type = "CdInterp*")]
+		[Version (since = "0.1.31")]
 		public InterpLinear ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_it8_get_type ()")]
 	public class It8 : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.20")]
 		public It8 ();
+		[Version (since = "0.1.20")]
 		public void add_data (Cd.ColorRGB rgb, Cd.ColorXYZ xyz);
+		[Version (since = "0.1.20")]
 		public void add_option (string option);
+		[Version (since = "1.1.6")]
 		public void add_spectrum (Cd.Spectrum spectrum);
+		[Version (since = "0.1.0")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.20")]
 		public bool get_data_item (uint idx, Cd.ColorRGB rgb, Cd.ColorXYZ xyz);
+		[Version (since = "0.1.20")]
 		public uint get_data_size ();
+		[Version (since = "0.1.33")]
 		public bool get_enable_created ();
+		[Version (since = "0.1.20")]
 		public unowned string get_instrument ();
+		[Version (since = "0.1.20")]
 		public Cd.It8Kind get_kind ();
+		[Version (since = "0.1.20")]
 		public unowned Cd.Mat3x3? get_matrix ();
+		[Version (since = "0.1.20")]
 		public bool get_normalized ();
+		[Version (since = "0.1.20")]
 		public unowned string get_originator ();
+		[Version (since = "0.1.20")]
 		public unowned string get_reference ();
+		[Version (since = "0.1.20")]
 		public bool get_spectral ();
+		[Version (since = "1.1.6")]
 		public GLib.GenericArray<weak Cd.Spectrum> get_spectrum_array ();
+		[Version (since = "1.1.6")]
 		public unowned Cd.Spectrum get_spectrum_by_id (string id);
+		[Version (since = "0.1.20")]
 		public unowned string get_title ();
+		[Version (since = "1.2.6")]
 		public unowned Cd.ColorXYZ get_xyz_for_rgb (double R, double G, double B, double delta);
+		[Version (since = "0.1.20")]
 		public bool has_option (string option);
+		[Version (since = "0.1.20")]
 		public bool load_from_data (string data, size_t size) throws GLib.Error;
+		[Version (since = "0.1.20")]
 		public bool load_from_file (GLib.File file) throws GLib.Error;
+		[Version (since = "0.1.26")]
 		public bool save_to_data (string data, size_t size) throws GLib.Error;
+		[Version (since = "0.1.20")]
 		public bool save_to_file (GLib.File file) throws GLib.Error;
+		[Version (since = "0.1.33")]
 		public void set_enable_created (bool enable_created);
+		[Version (since = "0.1.20")]
 		public void set_instrument (string instrument);
+		[Version (since = "0.1.20")]
 		public void set_kind (Cd.It8Kind kind);
+		[Version (since = "0.1.20")]
 		public void set_matrix (Cd.Mat3x3 matrix);
+		[Version (since = "0.1.20")]
 		public void set_normalized (bool normalized);
+		[Version (since = "0.1.20")]
 		public void set_originator (string originator);
+		[Version (since = "0.1.20")]
 		public void set_reference (string reference);
+		[Version (since = "0.1.20")]
 		public void set_spectral (bool spectral);
+		[Version (since = "1.1.6")]
 		public void set_spectrum_array (owned GLib.GenericArray<weak Cd.Spectrum> data);
+		[Version (since = "0.1.20")]
 		public void set_title (string title);
 		public bool utils_calculate_ccmx (Cd.It8 it8_measured, Cd.It8 it8_ccmx) throws GLib.Error;
 		public bool utils_calculate_cri_from_cmf (Cd.It8 tcs, Cd.Spectrum illuminant, double value, double resolution) throws GLib.Error;
+		[Version (since = "0.2.6")]
 		public bool utils_calculate_gamma (double gamma_y) throws GLib.Error;
 		public bool utils_calculate_xyz_from_cmf (Cd.Spectrum illuminant, Cd.Spectrum spectrum, Cd.ColorXYZ value, double resolution) throws GLib.Error;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.20")]
 		public It8.with_kind (Cd.It8Kind kind);
+		[Version (since = "0.1.20")]
 		public string instrument { get; }
+		[Version (since = "0.1.20")]
 		public uint kind { get; set; }
+		[Version (since = "0.1.20")]
 		public bool normalized { get; }
+		[Version (since = "0.1.20")]
 		public string originator { get; }
+		[Version (since = "0.1.20")]
 		public string reference { get; }
+		[Version (since = "0.1.20")]
 		public bool spectral { get; }
+		[Version (since = "0.1.20")]
 		public string title { get; }
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_profile_get_type ()")]
 	public class Profile : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public Profile ();
+		[Version (since = "0.1.8")]
 		public async bool connect (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool connect_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool equal (Cd.Profile profile2);
+		[Version (since = "0.1.26")]
 		public static Cd.ProfileError error_from_string (string error_desc);
+		[Version (since = "0.1.0")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.26")]
 		public static unowned string error_to_string (Cd.ProfileError error_enum);
+		[Version (since = "0.1.8")]
 		public int64 get_age ();
+		[Version (since = "0.1.2")]
 		public Cd.Colorspace get_colorspace ();
+		[Version (since = "0.1.9")]
 		public bool get_connected ();
+		[Version (since = "0.1.8")]
 		public int64 get_created ();
+		[Version (since = "0.1.0")]
 		public unowned string get_filename ();
+		[Version (since = "0.1.4")]
 		public unowned string get_format ();
+		[Version (since = "0.1.2")]
 		public bool get_has_vcgt ();
+		[Version (since = "0.1.0")]
 		public unowned string get_id ();
+		[Version (since = "0.1.2")]
 		public bool get_is_system_wide ();
+		[Version (since = "0.1.1")]
 		public Cd.ProfileKind get_kind ();
+		[Version (since = "0.1.2")]
 		public GLib.HashTable<weak string,weak string> get_metadata ();
+		[Version (since = "0.1.5")]
 		public unowned string get_metadata_item (string key);
+		[Version (since = "0.1.0")]
 		public unowned string get_object_path ();
+		[Version (since = "0.1.13")]
 		public uint get_owner ();
+		[Version (since = "0.1.0")]
 		public unowned string get_qualifier ();
+		[Version (since = "0.1.10")]
 		public Cd.ObjectScope get_scope ();
+		[Version (since = "0.1.0")]
 		public unowned string get_title ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "0.1.25")]
 		public unowned string[] get_warnings ();
+		[Version (since = "0.1.13")]
 		public bool has_access ();
+		[Version (since = "0.1.8")]
 		public async bool install_system_wide (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool install_system_wide_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "2.91.1")]
 		public static Cd.ProfileKind kind_from_string (string profile_kind);
+		[Version (since = "2.91.1")]
 		public static unowned string kind_to_string (Cd.ProfileKind profile_kind);
+		[Version (since = "0.1.32")]
 		public Cd.Icc load_icc (Cd.IccLoadFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.27")]
 		public static Cd.ProfileQuality quality_from_string (string quality);
+		[Version (since = "0.1.27")]
 		public static unowned string quality_to_string (Cd.ProfileQuality quality_enum);
+		[Version (since = "0.1.8")]
 		public void set_object_path (string object_path);
+		[Version (since = "0.1.8")]
 		public async bool set_property (string key, string value, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool set_property_sync (string key, string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public string to_string ();
+		[Version (since = "0.1.25")]
 		public static Cd.ProfileWarning warning_from_string (string type);
+		[Version (since = "0.1.25")]
 		public static unowned string warning_to_string (Cd.ProfileWarning kind_enum);
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.8")]
 		public Profile.with_object_path (string object_path);
+		[Version (since = "0.1.2")]
 		public string colorspace { get; }
+		[Version (since = "0.1.9")]
 		public string connected { get; }
+		[Version (since = "0.1.8")]
 		public int64 created { get; }
+		[Version (since = "0.1.0")]
 		public string filename { get; }
+		[Version (since = "0.1.4")]
 		public string format { get; }
+		[Version (since = "0.1.2")]
 		public string has_vcgt { get; }
+		[Version (since = "0.1.0")]
 		public string id { get; }
+		[Version (since = "0.1.2")]
 		public string is_system_wide { get; }
+		[Version (since = "0.1.1")]
 		public string kind { get; }
+		[Version (since = "0.1.8")]
 		public string object_path { get; set construct; }
+		[Version (since = "0.1.13")]
 		public uint owner { get; }
+		[Version (since = "0.1.0")]
 		public string qualifier { get; }
+		[Version (since = "0.1.10")]
 		public uint scope { get; }
+		[Version (since = "0.1.0")]
 		public string title { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "0.1.25")]
 		public string[] warnings { get; }
+		[Version (since = "0.1.0")]
 		public virtual signal void changed ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_sensor_get_type ()")]
 	public class Sensor : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.6")]
 		public Sensor ();
 		public static Cd.SensorCap cap_from_string (string sensor_cap);
 		public static unowned string cap_to_string (Cd.SensorCap sensor_cap);
+		[Version (since = "0.1.8")]
 		public async bool connect (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool connect_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public bool equal (Cd.Sensor sensor2);
+		[Version (since = "0.1.26")]
 		public static Cd.SensorError error_from_string (string error_desc);
+		[Version (since = "0.1.6")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.26")]
 		public static unowned string error_to_string (Cd.SensorError error_enum);
+		[Version (since = "0.1.6")]
 		public uint64 get_caps ();
+		[Version (since = "0.1.9")]
 		public bool get_connected ();
+		[Version (since = "0.1.26")]
 		public bool get_embedded ();
+		[Version (since = "0.1.26")]
 		public unowned string get_id ();
+		[Version (since = "0.1.6")]
 		public Cd.SensorKind get_kind ();
+		[Version (since = "0.1.6")]
 		public bool get_locked ();
+		[Version (since = "0.1.28")]
 		public GLib.HashTable<weak string,weak string> get_metadata ();
+		[Version (since = "0.1.28")]
 		public unowned string get_metadata_item (string key);
+		[Version (since = "0.1.6")]
 		public Cd.SensorCap get_mode ();
+		[Version (since = "0.1.6")]
 		public unowned string get_model ();
+		[Version (since = "0.1.6")]
 		public bool get_native ();
+		[Version (since = "0.1.6")]
 		public unowned string get_object_path ();
+		[Version (since = "0.1.20")]
 		public unowned string get_option (string key);
+		[Version (since = "0.1.20")]
 		public GLib.HashTable<weak string,weak GLib.Variant> get_options ();
+		[Version (since = "0.1.8")]
 		public async Cd.ColorXYZ get_sample (Cd.SensorCap cap, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public Cd.ColorXYZ get_sample_sync (Cd.SensorCap cap, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.6")]
 		public unowned string get_serial ();
+		[Version (since = "1.3.1")]
 		public async Cd.Spectrum get_spectrum (Cd.SensorCap cap, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.3.1")]
 		public Cd.Spectrum get_spectrum_sync (Cd.SensorCap cap, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.6")]
 		public Cd.SensorState get_state ();
+		[Version (since = "0.1.6")]
 		public unowned string get_vendor ();
+		[Version (since = "0.1.6")]
 		public bool has_cap (Cd.SensorCap cap);
 		public static Cd.SensorKind kind_from_string (string sensor_kind);
 		public static unowned string kind_to_string (Cd.SensorKind sensor_kind);
+		[Version (since = "0.1.8")]
 		public async bool @lock (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.6")]
 		public bool lock_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.8")]
 		public void set_object_path (string object_path);
+		[Version (since = "0.1.20")]
 		public async bool set_options (GLib.HashTable<string,GLib.Variant> values, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.20")]
 		public bool set_options_sync (GLib.HashTable<string,GLib.Variant> values, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static Cd.SensorState state_from_string (string sensor_state);
 		public static unowned string state_to_string (Cd.SensorState sensor_state);
 		public string to_string ();
+		[Version (since = "0.1.8")]
 		public async bool unlock (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.1.6")]
 		public bool unlock_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.8")]
 		public Sensor.with_object_path (string object_path);
+		[Version (since = "0.1.9")]
 		public string connected { get; }
+		[Version (since = "0.1.26")]
 		public string embedded { get; }
+		[Version (since = "0.1.26")]
 		public string id { get; }
+		[Version (since = "0.1.6")]
 		public string kind { get; }
+		[Version (since = "0.1.6")]
 		public string locked { get; }
+		[Version (since = "0.1.6")]
 		public string mode { get; }
+		[Version (since = "0.1.6")]
 		public string model { get; }
+		[Version (since = "0.1.6")]
 		public string native { get; }
+		[Version (since = "0.1.8")]
 		public string object_path { get; set construct; }
+		[Version (since = "0.1.6")]
 		public string serial { get; }
+		[Version (since = "0.1.6")]
 		public string state { get; }
+		[Version (since = "0.1.6")]
 		public string vendor { get; }
+		[Version (since = "0.1.6")]
 		public virtual signal void button_pressed ();
 	}
 	[CCode (cheader_filename = "colord.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "cd_spectrum_get_type ()")]
 	[Compact]
 	public class Spectrum {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.1.6")]
 		public Spectrum ();
+		[Version (since = "1.1.6")]
 		public void add_value (double data);
+		[Version (since = "1.1.6")]
 		public Cd.Spectrum dup ();
+		[Version (since = "1.1.6")]
 		public void free ();
+		[Version (since = "1.1.6")]
 		public unowned GLib.Array<double> get_data ();
+		[Version (since = "1.1.6")]
 		public double get_end ();
+		[Version (since = "1.1.6")]
 		public unowned string get_id ();
+		[Version (since = "1.1.6")]
 		public double get_norm ();
+		[Version (since = "1.2.6")]
 		public double get_resolution ();
+		[Version (since = "1.1.6")]
 		public uint get_size ();
+		[Version (since = "1.1.6")]
 		public double get_start ();
+		[Version (since = "1.1.6")]
 		public double get_value (uint idx);
+		[Version (since = "1.1.6")]
 		public double get_value_for_nm (double wavelength);
+		[Version (since = "1.3.1")]
 		public double get_value_max ();
+		[Version (since = "1.3.1")]
 		public double get_value_min ();
+		[Version (since = "1.2.6")]
 		public double get_value_raw (uint idx);
+		[Version (since = "1.1.6")]
 		public double get_wavelength (uint idx);
+		[Version (since = "1.3.1")]
 		public void get_wavelength_cal (double c1, double c2, double c3);
+		[Version (since = "1.3.1")]
 		public void limit_max (double value);
+		[Version (since = "1.3.1")]
 		public void limit_min (double value);
+		[Version (since = "1.1.6")]
 		public Cd.Spectrum multiply (Cd.Spectrum s2, double resolution);
+		[Version (since = "1.3.5")]
+		public Cd.Spectrum multiply_scalar (double value);
+		[Version (since = "1.1.6")]
 		public void normalize (double wavelength, double value);
+		[Version (since = "1.2.6")]
 		public void normalize_max (double value);
 		[CCode (cname = "cd_spectrum_planckian_new", has_construct_function = false)]
+		[Version (since = "1.1.6")]
 		public Spectrum.planckian_new (double temperature);
 		[CCode (cname = "cd_spectrum_planckian_new_full", has_construct_function = false)]
+		[Version (since = "1.3.1")]
 		public Spectrum.planckian_new_full (double temperature, double start, double end, double resolution);
+		[Version (since = "1.3.1")]
 		public Cd.Spectrum resample (double start, double end, double resolution);
+		[Version (since = "1.3.4")]
+		public Cd.Spectrum resample_to_size (uint size);
+		[Version (since = "1.1.6")]
 		public void set_data (GLib.Array<double> value);
+		[Version (since = "1.1.6")]
 		public void set_end (double end);
+		[Version (since = "1.1.6")]
 		public void set_id (string id);
+		[Version (since = "1.1.6")]
 		public void set_norm (double norm);
+		[Version (since = "1.1.6")]
 		public void set_start (double start);
+		[Version (since = "1.2.6")]
 		public void set_value (uint idx, double data);
+		[Version (since = "1.3.1")]
 		public void set_wavelength_cal (double c1, double c2, double c3);
 		[CCode (cname = "cd_spectrum_sized_new", has_construct_function = false)]
+		[Version (since = "1.1.6")]
 		public Spectrum.sized_new (uint reserved_size);
+		[Version (since = "1.3.1")]
 		public Cd.Spectrum subtract (Cd.Spectrum s2, double resolution);
+		[Version (since = "1.3.1")]
 		public string to_string (uint max_width, uint max_height);
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_transform_get_type ()")]
 	public class Transform : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.34")]
 		public Transform ();
+		[Version (since = "0.1.34")]
 		public static GLib.Quark error_quark ();
+		[Version (since = "1.0.0")]
 		public unowned Cd.Icc get_abstract_icc ();
+		[Version (since = "1.0.0")]
 		public bool get_bpc ();
+		[Version (since = "1.0.0")]
 		public unowned Cd.Icc get_input_icc ();
+		[Version (since = "1.0.0")]
 		public Cd.PixelFormat get_input_pixel_format ();
+		[Version (since = "1.1.1")]
 		public uint get_max_threads ();
+		[Version (since = "1.0.0")]
 		public unowned Cd.Icc get_output_icc ();
+		[Version (since = "1.0.0")]
 		public Cd.PixelFormat get_output_pixel_format ();
+		[Version (since = "1.0.0")]
 		public Cd.RenderingIntent get_rendering_intent ();
+		[Version (since = "0.1.34")]
 		public bool process (void* data_in, void* data_out, uint width, uint height, uint rowstride, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0.0")]
 		public void set_abstract_icc (Cd.Icc icc);
+		[Version (since = "1.0.0")]
 		public void set_bpc (bool bpc);
+		[Version (since = "1.0.0")]
 		public void set_input_icc (Cd.Icc icc);
+		[Version (since = "1.0.0")]
 		public void set_input_pixel_format (Cd.PixelFormat pixel_format);
+		[Version (since = "1.1.1")]
 		public void set_max_threads (uint max_threads);
+		[Version (since = "1.0.0")]
 		public void set_output_icc (Cd.Icc icc);
+		[Version (since = "1.0.0")]
 		public void set_output_pixel_format (Cd.PixelFormat pixel_format);
+		[Version (since = "1.0.0")]
 		public void set_rendering_intent (Cd.RenderingIntent rendering_intent);
 		public Cd.Icc abstract_icc { get; set; }
 		public bool bpc { get; set; }
@@ -652,75 +1155,11 @@ namespace Cd {
 		public uint output_pixel_format { get; set; }
 		public uint rendering_intent { get; set; }
 	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Client_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct ColorLab_autoptr {
-	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct ColorRGB8 {
 		public uint8 R;
 		public uint8 G;
 		public uint8 B;
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct ColorRGB_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct ColorSwatch_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct ColorUVW_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct ColorXYZ_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct ColorYxy_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Device_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Dom_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Edid_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct IccStore_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Icc_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct InterpAkima_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct InterpLinear_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Interp_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct It8_autoptr {
 	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct Mat3x3 {
@@ -739,22 +1178,6 @@ namespace Cd {
 	public struct PixelFormat : uint32 {
 		public static Cd.PixelFormat from_string (string pixel_format);
 		public static unowned string to_string (Cd.PixelFormat pixel_format);
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Profile_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Sensor_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Spectrum_autoptr {
-	}
-	[CCode (cheader_filename = "colord.h")]
-	[SimpleType]
-	public struct Transform_autoptr {
 	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct Vec3 {
@@ -786,6 +1209,12 @@ namespace Cd {
 		NOT_FOUND,
 		INPUT_INVALID,
 		FILE_INVALID
+	}
+	[CCode (cheader_filename = "colord.h", cprefix = "CD_COLOR_BLACKBODY_FLAG_", has_type_id = false)]
+	[Version (since = "1.3.5")]
+	public enum ColorBlackbodyFlags {
+		NONE,
+		USE_PLANCKIAN
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_COLORSPACE_", has_type_id = false)]
 	public enum Colorspace {
@@ -850,6 +1279,7 @@ namespace Cd {
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_ICC_LOAD_FLAGS_", has_type_id = false)]
 	[Flags]
+	[Version (since = "0.1.32")]
 	public enum IccLoadFlags {
 		NONE,
 		NAMED_COLORS,
@@ -861,15 +1291,18 @@ namespace Cd {
 		ALL
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_ICC_SAVE_FLAGS_", has_type_id = false)]
+	[Version (since = "0.1.32")]
 	public enum IccSaveFlags {
 		NONE
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_ICC_STORE_SEARCH_FLAGS_", has_type_id = false)]
+	[Version (since = "1.1.1")]
 	public enum IccStoreSearchFlags {
 		NONE,
 		CREATE_LOCATION
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_ICC_STORE_SEARCH_KIND_", has_type_id = false)]
+	[Version (since = "1.1.1")]
 	public enum IccStoreSearchKind {
 		SYSTEM,
 		MACHINE,
@@ -985,6 +1418,7 @@ namespace Cd {
 		CALIBRATION_IRRADIANCE
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_ERROR_", has_type_id = false)]
+	[Version (since = "0.1.26")]
 	public enum SensorError {
 		NO_SUPPORT,
 		NO_DATA,
@@ -1046,6 +1480,7 @@ namespace Cd {
 		public static unowned string to_string (Cd.StandardSpace standard_space);
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_TRANSFORM_ERROR_", has_type_id = false)]
+	[Version (since = "0.1.34")]
 	public enum TransformError {
 		FAILED_TO_SETUP_TRANSFORM,
 		INVALID_COLORSPACE,
@@ -1276,8 +1711,13 @@ namespace Cd {
 	[CCode (cheader_filename = "colord.h")]
 	public static void buffer_write_uint32_le (uint8 buffer, uint32 value);
 	[CCode (cheader_filename = "colord.h")]
+	[Version (since = "0.1.26")]
 	public static bool color_get_blackbody_rgb (uint temp, Cd.ColorRGB result);
 	[CCode (cheader_filename = "colord.h")]
+	[Version (since = "1.3.5")]
+	public static bool color_get_blackbody_rgb_full (double temp, Cd.ColorRGB result, Cd.ColorBlackbodyFlags flags);
+	[CCode (cheader_filename = "colord.h")]
+	[Version (since = "0.1.27")]
 	public static void color_rgb8_to_rgb (Cd.ColorRGB8 src, Cd.ColorRGB dest);
 	[CCode (cheader_filename = "colord.h")]
 	public static bool context_lcms_error_check (void* ctx) throws GLib.Error;

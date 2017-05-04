@@ -195,7 +195,8 @@ namespace Vte {
 		public virtual signal void deiconify_window ();
 		public virtual signal void encoding_changed ();
 		public virtual signal void eof ();
-		public signal void hyperlink_hover_uri_changed (string object, Gdk.Rectangle p0);
+		[Version (since = "0.50")]
+		public signal void hyperlink_hover_uri_changed (string uri, Gdk.Rectangle bbox);
 		public virtual signal void icon_title_changed ();
 		public virtual signal void iconify_window ();
 		public virtual signal void increase_font_size ();
