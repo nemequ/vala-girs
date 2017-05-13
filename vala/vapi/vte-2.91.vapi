@@ -38,6 +38,8 @@ namespace Vte {
 	public class Terminal : Gtk.Widget, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Terminal ();
+		[Version (since = "0.50")]
+		public void copy_clipboard_format (Vte.Format format);
 		public void copy_primary ();
 		[Version (deprecated = true, deprecated_since = "0.46", since = "0.44")]
 		public bool event_check_gregex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] GLib.Regex[] regexes, GLib.RegexMatchFlags match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
@@ -238,6 +240,12 @@ namespace Vte {
 		ASCII_DELETE,
 		DELETE_SEQUENCE,
 		TTY
+	}
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_FORMAT_", type_id = "vte_format_get_type ()")]
+	[Version (since = "0.50")]
+	public enum Format {
+		TEXT,
+		HTML
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_PTY_", type_id = "vte_pty_flags_get_type ()")]
 	[Flags]

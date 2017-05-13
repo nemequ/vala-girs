@@ -8003,6 +8003,96 @@ startup.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
+    <class name="Cursor"
+           c:symbol-prefix="cursor"
+           c:type="IdeCursor"
+           parent="GObject.Object"
+           glib:type-name="IdeCursor"
+           glib:get-type="ide_cursor_get_type"
+           glib:type-struct="CursorClass">
+      <method name="add_cursor" c:identifier="ide_cursor_add_cursor">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Cursor" c:type="IdeCursor*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="insert_text" c:identifier="ide_cursor_insert_text">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Cursor" c:type="IdeCursor*"/>
+          </instance-parameter>
+          <parameter name="text" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="len" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_enabled" c:identifier="ide_cursor_is_enabled">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Cursor" c:type="IdeCursor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_cursors" c:identifier="ide_cursor_remove_cursors">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Cursor" c:type="IdeCursor*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="ide-source-view"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="SourceView"/>
+      </property>
+    </class>
+    <record name="CursorClass"
+            c:type="IdeCursorClass"
+            glib:is-gtype-struct-for="Cursor">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <enumeration name="CursorType"
+                 glib:type-name="IdeCursorType"
+                 glib:get-type="ide_cursor_type_get_type"
+                 c:type="IdeCursorType">
+      <member name="column"
+              value="0"
+              c:identifier="IDE_CURSOR_COLUMN"
+              glib:nick="column">
+      </member>
+      <member name="select"
+              value="1"
+              c:identifier="IDE_CURSOR_SELECT"
+              glib:nick="select">
+      </member>
+      <member name="match"
+              value="2"
+              c:identifier="IDE_CURSOR_MATCH"
+              glib:nick="match">
+      </member>
+    </enumeration>
     <class name="Device"
            c:symbol-prefix="device"
            c:type="IdeDevice"
@@ -24398,6 +24488,19 @@ chunks during the insertion/edit phase.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Scrollable"/>
+      <virtual-method name="add_cursor">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SourceView" c:type="IdeSourceView*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="append_to_count">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -24742,6 +24845,16 @@ chunks during the insertion/edit phase.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="rebuild_highlight">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SourceView" c:type="IdeSourceView*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="remove_cursors">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -25888,6 +26001,16 @@ to generate diagnostics.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="add-cursor" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="CursorType"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="append-to-count" when="last" action="1">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -26187,6 +26310,11 @@ mark if @iter is not provided.</doc>
         </return-value>
       </glib:signal>
       <glib:signal name="reindent" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="remove-cursors" when="last" action="1">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -26969,6 +27097,33 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
           </parameters>
         </callback>
       </field>
+      <field name="add_cursor">
+        <callback name="add_cursor">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SourceView" c:type="IdeSourceView*"/>
+            </parameter>
+            <parameter name="type" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="remove_cursors">
+        <callback name="remove_cursors">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SourceView" c:type="IdeSourceView*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_reserved1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
@@ -27168,6 +27323,16 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
           </parameter>
           <parameter name="p1" transfer-ownership="none">
             <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="add-cursor" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="CursorType"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -27537,6 +27702,11 @@ The lines are sorted using qsort() and either strcmp() or strcasecmp().</doc>
         </return-value>
       </glib:signal>
       <glib:signal name="reindent" when="last" action="1">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="remove-cursors" when="last" action="1">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>

@@ -6531,6 +6531,16 @@
 				</parameter>
 			</parameters>
 		</method>
+		<method name="create_stream" c:identifier="gxml_gom_document_create_stream" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gio.InputStream" c:type="GInputStream*"/>
+			</return-value>
+		</method>
+		<method name="write_string" c:identifier="gxml_gom_document_write_string" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="utf8" c:type="gchar*"/>
+			</return-value>
+		</method>
 		<method name="read_from_file" c:identifier="gxml_gom_document_read_from_file" throws="1">
 			<return-value transfer-ownership="full">
 				<type name="none"/>
@@ -6757,6 +6767,11 @@
 				</parameter>
 			</parameters>
 		</method>
+		<method name="create_stream" c:identifier="gxml_gom_element_create_stream" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gio.InputStream" c:type="GInputStream*"/>
+			</return-value>
+		</method>
 		<method name="lookup_prefix" c:identifier="gxml_gom_element_lookup_prefix">
 			<return-value transfer-ownership="full" allow-none="1">
 				<type name="utf8" c:type="gchar*"/>
@@ -6835,11 +6850,52 @@
 				</parameter>
 			</parameters>
 		</method>
+		<method name="read_unparsed" c:identifier="gxml_gom_element_read_unparsed" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="none"/>
+			</return-value>
+		</method>
 		<constructor name="new" c:identifier="gxml_gom_element_new">
 			<return-value transfer-ownership="full">
 				<type name="GXml.GomElement" c:type="GXmlGomElement*"/>
 			</return-value>
 		</constructor>
+		<property name="parse-children" writable="1">
+			<type name="gboolean" c:type="gboolean"/>
+		</property>
+		<method name="get_parse_children" c:identifier="gxml_gom_element_get_parse_children">
+			<return-value transfer-ownership="none">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<method name="set_parse_children" c:identifier="gxml_gom_element_set_parse_children">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gboolean" c:type="gboolean"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="unparsed" writable="1">
+			<type name="utf8" c:type="gchar*"/>
+		</property>
+		<method name="get_unparsed" c:identifier="gxml_gom_element_get_unparsed">
+			<return-value transfer-ownership="none">
+				<type name="utf8" c:type="const gchar*"/>
+			</return-value>
+		</method>
+		<method name="set_unparsed" c:identifier="gxml_gom_element_set_unparsed">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="utf8" c:type="const gchar*"/>
+				</parameter>
+			</parameters>
+		</method>
 	</class>
 	<record name="GomElementClass" c:type="GXmlGomElementClass" glib:is-gtype-struct-for="GomElement">
 		<field name="parent_class">
@@ -8373,6 +8429,16 @@
 				</parameter>
 			</parameters>
 		</constructor>
+		<method name="create_stream" c:identifier="gxml_xparser_create_stream" throws="1">
+			<return-value transfer-ownership="full">
+				<type name="Gio.InputStream" c:type="GInputStream*"/>
+			</return-value>
+			<parameters>
+				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
+					<type name="Gio.Cancellable" c:type="GCancellable*"/>
+				</parameter>
+			</parameters>
+		</method>
 		<method name="read_child_nodes_stream" c:identifier="gxml_xparser_read_child_nodes_stream" throws="1">
 			<return-value transfer-ownership="full">
 				<type name="none"/>
@@ -12125,6 +12191,15 @@
 					</parameter>
 				</parameters>
 			</callback>
+		</field>
+	</record>
+	<interface name="Entity" c:type="GXmlEntity" glib:type-name="GXmlEntity" glib:get-type="gxml_entity_get_type" glib:type-struct="EntityIface">
+		<prerequisite name="GObject.Object"/>
+		<prerequisite name="GXml.Node"/>
+	</interface>
+	<record name="EntityIface" c:type="GXmlEntityIface" glib:is-gtype-struct-for="Entity">
+		<field name="parent_iface">
+			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
 		</field>
 	</record>
 	<interface name="ProcessingInstruction" c:type="GXmlProcessingInstruction" glib:type-name="GXmlProcessingInstruction" glib:get-type="gxml_processing_instruction_get_type" glib:type-struct="ProcessingInstructionIface">
@@ -20536,16 +20611,6 @@
 		<prerequisite name="GObject.Object"/>
 		<prerequisite name="GXml.DomNode"/>
 		<prerequisite name="GXml.DomElement"/>
-		<method name="read_unparsed" c:identifier="gxml_gom_object_read_unparsed" throws="1">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-		</method>
-		<virtual-method name="read_unparsed" invoker="read_unparsed" throws="1">
-			<return-value transfer-ownership="full">
-				<type name="none"/>
-			</return-value>
-		</virtual-method>
 		<method name="get_properties_list" c:identifier="gxml_gom_object_get_properties_list">
 			<return-value transfer-ownership="full">
 				<type name="GLib.List" c:type="GList*">
@@ -20780,88 +20845,10 @@
 				</parameter>
 			</parameters>
 		</virtual-method>
-		<property name="parse-children" writable="1">
-			<type name="gboolean" c:type="gboolean"/>
-		</property>
-		<method name="get_parse_children" c:identifier="gxml_gom_object_get_parse_children">
-			<return-value transfer-ownership="none">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</method>
-		<virtual-method name="get_parse_children" invoker="get_parse_children">
-			<return-value transfer-ownership="none">
-				<type name="gboolean" c:type="gboolean"/>
-			</return-value>
-		</virtual-method>
-		<method name="set_parse_children" c:identifier="gxml_gom_object_set_parse_children">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</parameter>
-			</parameters>
-		</method>
-		<virtual-method name="set_parse_children" invoker="set_parse_children">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</parameter>
-			</parameters>
-		</virtual-method>
-		<property name="unparsed" writable="1">
-			<type name="utf8" c:type="gchar*"/>
-		</property>
-		<method name="get_unparsed" c:identifier="gxml_gom_object_get_unparsed">
-			<return-value transfer-ownership="none">
-				<type name="utf8" c:type="const gchar*"/>
-			</return-value>
-		</method>
-		<virtual-method name="get_unparsed" invoker="get_unparsed">
-			<return-value transfer-ownership="none">
-				<type name="utf8" c:type="const gchar*"/>
-			</return-value>
-		</virtual-method>
-		<method name="set_unparsed" c:identifier="gxml_gom_object_set_unparsed">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</method>
-		<virtual-method name="set_unparsed" invoker="set_unparsed">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</parameter>
-			</parameters>
-		</virtual-method>
 	</interface>
 	<record name="GomObjectIface" c:type="GXmlGomObjectIface" glib:is-gtype-struct-for="GomObject">
 		<field name="parent_iface">
 			<type name="GObject.TypeInterface" c:type="GTypeInterface"/>
-		</field>
-		<field name="read_unparsed">
-			<callback name="read_unparsed" c:type="read_unparsed" throws="1">
-				<return-value transfer-ownership="full">
-					<type name="none"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="GXml.GomObject" c:type="GXmlGomObject*"/>
-					</parameter>
-				</parameters>
-			</callback>
 		</field>
 		<field name="get_properties_list">
 			<callback name="get_properties_list" c:type="get_properties_list">
@@ -21039,60 +21026,6 @@
 						<type name="GXml.GomObject" c:type="GXmlGomObject*"/>
 					</parameter>
 					<parameter name="name" transfer-ownership="none">
-						<type name="utf8" c:type="const gchar*"/>
-					</parameter>
-				</parameters>
-			</callback>
-		</field>
-		<field name="get_parse_children">
-			<callback name="get_parse_children" c:type="get_parse_children">
-				<return-value transfer-ownership="none">
-					<type name="gboolean" c:type="gboolean"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="GXml.GomObject" c:type="GXmlGomObject*"/>
-					</parameter>
-				</parameters>
-			</callback>
-		</field>
-		<field name="set_parse_children">
-			<callback name="set_parse_children" c:type="set_parse_children">
-				<return-value transfer-ownership="none">
-					<type name="none"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="GXml.GomObject" c:type="GXmlGomObject*"/>
-					</parameter>
-					<parameter name="value" transfer-ownership="none">
-						<type name="gboolean" c:type="gboolean"/>
-					</parameter>
-				</parameters>
-			</callback>
-		</field>
-		<field name="get_unparsed">
-			<callback name="get_unparsed" c:type="get_unparsed">
-				<return-value transfer-ownership="none">
-					<type name="utf8" c:type="const gchar*"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="GXml.GomObject" c:type="GXmlGomObject*"/>
-					</parameter>
-				</parameters>
-			</callback>
-		</field>
-		<field name="set_unparsed">
-			<callback name="set_unparsed" c:type="set_unparsed">
-				<return-value transfer-ownership="none">
-					<type name="none"/>
-				</return-value>
-				<parameters>
-					<parameter name="self" transfer-ownership="none">
-						<type name="GXml.GomObject" c:type="GXmlGomObject*"/>
-					</parameter>
-					<parameter name="value" transfer-ownership="none">
 						<type name="utf8" c:type="const gchar*"/>
 					</parameter>
 				</parameters>

@@ -102,8 +102,8 @@ and/or use gtk-doc annotations.  -->
           <type name="Book" c:type="DhBook*"/>
         </return-value>
         <parameters>
-          <parameter name="book_path" transfer-ownership="none">
-            <doc xml:space="preserve">the path of the book</doc>
+          <parameter name="index_file_path" transfer-ownership="none">
+            <doc xml:space="preserve">the path to the index file.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -127,7 +127,7 @@ or &gt; than @b.</doc>
         </parameters>
       </method>
       <method name="cmp_by_path" c:identifier="dh_book_cmp_by_path">
-        <doc xml:space="preserve">Compares the #DhBook's by their paths.</doc>
+        <doc xml:space="preserve">Compares the #DhBook's by their path to the index file.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an integer less than, equal to, or greater than zero, if @a is &lt;, ==
 or &gt; than @b.</doc>
@@ -192,7 +192,8 @@ associated with the book.</doc>
       <method name="get_keywords" c:identifier="dh_book_get_keywords">
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the list of
-#DhLink's part of @book.</doc>
+&lt;emphasis&gt;all&lt;/emphasis&gt; #DhLink's part of @book, or %NULL if the book is
+disabled.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Link"/>
           </type>
@@ -230,7 +231,7 @@ associated with the book.</doc>
       </method>
       <method name="get_path" c:identifier="dh_book_get_path">
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the book path.</doc>
+          <doc xml:space="preserve">the path to the index file.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -253,8 +254,14 @@ associated with the book.</doc>
         </parameters>
       </method>
       <method name="get_tree" c:identifier="dh_book_get_tree">
+        <doc xml:space="preserve">Gets the general structure of the book, as a tree. The tree contains only
+#DhLink's of type %DH_LINK_TYPE_BOOK or %DH_LINK_TYPE_PAGE. The other
+#DhLink's are not contained in the tree. To have a list of
+&lt;emphasis&gt;all&lt;/emphasis&gt; #DhLink's part of the book, you need to call
+dh_book_get_keywords().</doc>
         <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">the tree of #DhLink's part of the @book.</doc>
+          <doc xml:space="preserve">the tree of #DhLink's part of the @book,
+or %NULL if the book is disabled.</doc>
           <type name="GLib.Node" c:type="GNode*"/>
         </return-value>
         <parameters>
@@ -329,14 +336,9 @@ unref it when no longer needed.</doc>
           <type name="BookManager" c:type="DhBookManager*"/>
         </return-value>
       </constructor>
-      <function name="free_singleton"
-                c:identifier="dh_book_manager_free_singleton">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </function>
       <function name="get_singleton"
-                c:identifier="dh_book_manager_get_singleton">
+                c:identifier="dh_book_manager_get_singleton"
+                version="3.26">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #DhBookManager singleton instance.</doc>
           <type name="BookManager" c:type="DhBookManager*"/>
@@ -621,23 +623,34 @@ object is created, there is no need to call this function anymore.</doc-deprecat
       <constructor name="new" c:identifier="dh_link_new">
         <doc xml:space="preserve">Creates a new #DhLink.
 
+@base_path and @book_id must be provided only for a link of type
+%DH_LINK_TYPE_BOOK.
+
 If @type is not a #DH_LINK_TYPE_BOOK and not a #DH_LINK_TYPE_PAGE, then the
-@book and @page links must be provided.</doc>
+@book and @page links must be provided.
+
+@name and @relative_url must always be provided.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #DhLink.</doc>
           <type name="Link" c:type="DhLink*"/>
         </return-value>
         <parameters>
           <parameter name="type" transfer-ownership="none">
-            <doc xml:space="preserve">the type of the content the link is pointing to.</doc>
+            <doc xml:space="preserve">the #DhLinkType.</doc>
             <type name="LinkType" c:type="DhLinkType"/>
           </parameter>
-          <parameter name="base" transfer-ownership="none">
-            <doc xml:space="preserve">the base path of the link.</doc>
+          <parameter name="base_path"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the base path for the book, or %NULL.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="id" transfer-ownership="none">
-            <doc xml:space="preserve">the id of the link.</doc>
+          <parameter name="book_id"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the book ID, or %NULL.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="name" transfer-ownership="none">
@@ -655,11 +668,13 @@ If @type is not a #DH_LINK_TYPE_BOOK and not a #DH_LINK_TYPE_PAGE, then the
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">the page that the link is contained in, or %NULL.</doc>
+            <doc xml:space="preserve">the page that the link is contained in, or %NULL. This
+parameter is actually broken.</doc>
             <type name="Link" c:type="DhLink*"/>
           </parameter>
-          <parameter name="filename" transfer-ownership="none">
-            <doc xml:space="preserve">the filename.</doc>
+          <parameter name="relative_url" transfer-ownership="none">
+            <doc xml:space="preserve">the URL relative to the book @base_path. Can contain an
+anchor.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -760,7 +775,8 @@ before @a.</doc>
               c:identifier="dh_link_get_page_name"
               deprecated="1"
               deprecated-version="3.26">
-        <doc-deprecated xml:space="preserve">This function is used nowhere.</doc-deprecated>
+        <doc-deprecated xml:space="preserve">This function is used nowhere and is actually broken, it
+returns the book name.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the name of the page that the @link is contained in.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -788,7 +804,7 @@ the current language.</doc>
       </method>
       <method name="get_uri" c:identifier="dh_link_get_uri">
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the @link URI.</doc>
+          <doc xml:space="preserve">the @link URI. Free with g_free() when no longer needed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -866,61 +882,61 @@ the current language.</doc>
               value="0"
               c:identifier="DH_LINK_TYPE_BOOK"
               glib:nick="book">
-        <doc xml:space="preserve">a book</doc>
+        <doc xml:space="preserve">The top-level page of a #DhBook.</doc>
       </member>
       <member name="page"
               value="1"
               c:identifier="DH_LINK_TYPE_PAGE"
               glib:nick="page">
-        <doc xml:space="preserve">a page</doc>
+        <doc xml:space="preserve">A page.</doc>
       </member>
       <member name="keyword"
               value="2"
               c:identifier="DH_LINK_TYPE_KEYWORD"
               glib:nick="keyword">
-        <doc xml:space="preserve">a keyword</doc>
+        <doc xml:space="preserve">Another kind of keyword.</doc>
       </member>
       <member name="function"
               value="3"
               c:identifier="DH_LINK_TYPE_FUNCTION"
               glib:nick="function">
-        <doc xml:space="preserve">a function</doc>
+        <doc xml:space="preserve">A function keyword.</doc>
       </member>
       <member name="struct"
               value="4"
               c:identifier="DH_LINK_TYPE_STRUCT"
               glib:nick="struct">
-        <doc xml:space="preserve">a struct</doc>
+        <doc xml:space="preserve">A struct keyword.</doc>
       </member>
       <member name="macro"
               value="5"
               c:identifier="DH_LINK_TYPE_MACRO"
               glib:nick="macro">
-        <doc xml:space="preserve">a macro</doc>
+        <doc xml:space="preserve">A macro keyword.</doc>
       </member>
       <member name="enum"
               value="6"
               c:identifier="DH_LINK_TYPE_ENUM"
               glib:nick="enum">
-        <doc xml:space="preserve">an enum</doc>
+        <doc xml:space="preserve">An enum keyword.</doc>
       </member>
       <member name="typedef"
               value="7"
               c:identifier="DH_LINK_TYPE_TYPEDEF"
               glib:nick="typedef">
-        <doc xml:space="preserve">a typedef</doc>
+        <doc xml:space="preserve">A typedef keyword.</doc>
       </member>
       <member name="property"
               value="8"
               c:identifier="DH_LINK_TYPE_PROPERTY"
               glib:nick="property">
-        <doc xml:space="preserve">a property</doc>
+        <doc xml:space="preserve">A property keyword.</doc>
       </member>
       <member name="signal"
               value="9"
               c:identifier="DH_LINK_TYPE_SIGNAL"
               glib:nick="signal">
-        <doc xml:space="preserve">a signal</doc>
+        <doc xml:space="preserve">A signal keyword.</doc>
       </member>
     </enumeration>
     <class name="Sidebar"
@@ -939,9 +955,12 @@ the current language.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
         <parameters>
-          <parameter name="book_manager" transfer-ownership="none">
-            <doc xml:space="preserve">a #DhBookManager. This parameter is deprecated, you can just
-pass %NULL.</doc>
+          <parameter name="book_manager"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #DhBookManager. This parameter is deprecated,
+you should just pass %NULL.</doc>
             <type name="BookManager" c:type="DhBookManager*"/>
           </parameter>
         </parameters>
@@ -1054,7 +1073,24 @@ pass %NULL.</doc>
         </callback>
       </field>
     </record>
+    <function name="free_resources"
+              c:identifier="dh_free_resources"
+              version="3.26">
+      <doc xml:space="preserve">Free the resources allocated by Devhelp. For example it unrefs the singleton
+objects.
+
+It is not mandatory to call this function, it's just to be friendlier to
+memory debugging tools. This function is meant to be called at the end of
+main().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
     <function name="init" c:identifier="dh_init">
+      <doc xml:space="preserve">Initializes the Devhelp library (e.g. for the internationalization).
+
+This function can be called several times, but is meant to be called at the
+beginning of main(), before any other Devhelp function call.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

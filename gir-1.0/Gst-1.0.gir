@@ -1807,6 +1807,36 @@ unsuccessful.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="add_reference_timestamp_meta"
+              c:identifier="gst_buffer_add_reference_timestamp_meta"
+              version="1.14">
+        <doc xml:space="preserve">Add a #GstReferenceTimestampMeta to @buffer that holds a @timestamp and
+optionally @duration based on a specific timestamp @reference. See the
+documentation of #GstReferenceTimestampMeta for details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GstReferenceTimestampMeta that was added to the buffer</doc>
+          <type name="ReferenceTimestampMeta"
+                c:type="GstReferenceTimestampMeta*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstBuffer</doc>
+            <type name="Buffer" c:type="GstBuffer*"/>
+          </instance-parameter>
+          <parameter name="reference" transfer-ownership="none">
+            <doc xml:space="preserve">identifier for the timestamp reference.</doc>
+            <type name="Caps" c:type="GstCaps*"/>
+          </parameter>
+          <parameter name="timestamp" transfer-ownership="none">
+            <doc xml:space="preserve">timestamp</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="duration" transfer-ownership="none">
+            <doc xml:space="preserve">duration, or %GST_CLOCK_TIME_NONE</doc>
+            <type name="ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="append" c:identifier="gst_buffer_append">
         <doc xml:space="preserve">Append all the memory from @buf2 to @buf1. The result buffer will contain a
 concatenation of the memory of @buf1 and @buf2.</doc>
@@ -2235,6 +2265,34 @@ and check the meta-&gt;info.api member for the API type.</doc>
           <parameter name="api" transfer-ownership="none">
             <doc xml:space="preserve">the #GType of an API</doc>
             <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_reference_timestamp_meta"
+              c:identifier="gst_buffer_get_reference_timestamp_meta"
+              version="1.14">
+        <doc xml:space="preserve">Find the first #GstReferenceTimestampMeta on @buffer that conforms to
+@reference. Conformance is tested by checking if the meta's reference is a
+subset of @reference.
+
+Buffers can contain multiple #GstReferenceTimestampMeta metadata items.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GstReferenceTimestampMeta or %NULL when there
+is no such metadata on @buffer.</doc>
+          <type name="ReferenceTimestampMeta"
+                c:type="GstReferenceTimestampMeta*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstBuffer</doc>
+            <type name="Buffer" c:type="GstBuffer*"/>
+          </instance-parameter>
+          <parameter name="reference"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a reference #GstCaps</doc>
+            <type name="Caps" c:type="GstCaps*"/>
           </parameter>
         </parameters>
       </method>
@@ -4667,6 +4725,31 @@ MT safe.</doc>
             <doc xml:space="preserve">a #GstBus on which you want to receive the "sync-message" signal</doc>
             <type name="Bus" c:type="GstBus*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pollfd"
+              c:identifier="gst_bus_get_pollfd"
+              version="1.14">
+        <doc xml:space="preserve">Gets the file descriptor from the bus which can be used to get notified about
+messages being available with functions like g_poll(), and allows integration
+into other event loops based on file descriptors.
+Whenever a message is available, the %POLLIN / %G_IO_IN event is set.
+
+Warning: NEVER read or write anything to the returned fd but only use it
+for getting notifications via g_poll() or similar and then use the normal
+GstBus API, e.g. gst_bus_pop().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="bus" transfer-ownership="none">
+            <doc xml:space="preserve">A #GstBus</doc>
+            <type name="Bus" c:type="GstBus*"/>
+          </instance-parameter>
+          <parameter name="fd" transfer-ownership="none">
+            <doc xml:space="preserve">A GPollFD to fill</doc>
+            <type name="GLib.PollFD" c:type="GPollFD*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="have_pending" c:identifier="gst_bus_have_pending">
@@ -33381,6 +33464,45 @@ These constants serve as a rough guidance for defining the rank of a
         <doc xml:space="preserve">will be chosen first</doc>
       </member>
     </enumeration>
+    <record name="ReferenceTimestampMeta"
+            c:type="GstReferenceTimestampMeta"
+            version="1.14">
+      <doc xml:space="preserve">#GstReferenceTimestampMeta can be used to attach alternative timestamps and
+possibly durations to a #GstBuffer. These are generally not according to
+the pipeline clock and could be e.g. the NTP timestamp when the media was
+captured.
+
+The reference is stored as a #GstCaps in @reference. Examples of valid
+references would be "timestamp/x-drivername-stream" for timestamps that are locally
+generated by some driver named "drivername" when generating the stream,
+e.g. based on a frame counter, or "timestamp/x-ntp, host=pool.ntp.org,
+port=123" for timestamps based on a specific NTP server.</doc>
+      <field name="parent" writable="1">
+        <doc xml:space="preserve">the parent #GstMeta structure</doc>
+        <type name="Meta" c:type="GstMeta"/>
+      </field>
+      <field name="reference" writable="1">
+        <doc xml:space="preserve">identifier for the timestamp reference.</doc>
+        <type name="Caps" c:type="GstCaps*"/>
+      </field>
+      <field name="timestamp" writable="1">
+        <doc xml:space="preserve">timestamp</doc>
+        <type name="ClockTime" c:type="GstClockTime"/>
+      </field>
+      <field name="duration" writable="1">
+        <doc xml:space="preserve">duration, or %GST_CLOCK_TIME_NONE</doc>
+        <type name="ClockTime" c:type="GstClockTime"/>
+      </field>
+      <function name="get_info"
+                c:identifier="gst_reference_timestamp_meta_get_info"
+                version="1.14">
+        <doc xml:space="preserve">Get the global #GstMetaInfo describing  the #GstReferenceTimestampMeta meta.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GstMetaInfo</doc>
+          <type name="MetaInfo" c:type="const GstMetaInfo*"/>
+        </return-value>
+      </function>
+    </record>
     <class name="Registry"
            c:symbol-prefix="registry"
            c:type="GstRegistry"
@@ -43732,11 +43854,11 @@ determine a order for the two provided values.</doc>
       <doc xml:space="preserve">The micro version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MINOR" value="12" c:type="GST_VERSION_MINOR">
+    <constant name="VERSION_MINOR" value="13" c:type="GST_VERSION_MINOR">
       <doc xml:space="preserve">The minor version of GStreamer at compile time:</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_NANO" value="0" c:type="GST_VERSION_NANO">
+    <constant name="VERSION_NANO" value="1" c:type="GST_VERSION_NANO">
       <doc xml:space="preserve">The nano version of GStreamer at compile time:
 Actual releases have 0, GIT versions have 1, prerelease versions have 2-...</doc>
       <type name="gint" c:type="gint"/>
@@ -45974,6 +46096,22 @@ checked.</doc>
           <type name="QueryType" c:type="GstQueryType"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="reference_timestamp_meta_api_get_type"
+              c:identifier="gst_reference_timestamp_meta_api_get_type">
+      <return-value transfer-ownership="none">
+        <type name="GType" c:type="GType"/>
+      </return-value>
+    </function>
+    <function name="reference_timestamp_meta_get_info"
+              c:identifier="gst_reference_timestamp_meta_get_info"
+              moved-to="ReferenceTimestampMeta.get_info"
+              version="1.14">
+      <doc xml:space="preserve">Get the global #GstMetaInfo describing  the #GstReferenceTimestampMeta meta.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">The #GstMetaInfo</doc>
+        <type name="MetaInfo" c:type="const GstMetaInfo*"/>
+      </return-value>
     </function>
     <function name="resource_error_quark"
               c:identifier="gst_resource_error_quark"

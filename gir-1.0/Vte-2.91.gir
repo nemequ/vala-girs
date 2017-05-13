@@ -125,6 +125,26 @@ keys.</doc>
         <doc xml:space="preserve">Send terminal's "erase" setting.</doc>
       </member>
     </enumeration>
+    <enumeration name="Format"
+                 version="0.50"
+                 glib:type-name="VteFormat"
+                 glib:get-type="vte_format_get_type"
+                 c:type="VteFormat">
+      <doc xml:space="preserve">An enumeratio type that can be used to specify the format the selection
+should be copied to the clipboard in.</doc>
+      <member name="text"
+              value="1"
+              c:identifier="VTE_FORMAT_TEXT"
+              glib:nick="text">
+        <doc xml:space="preserve">Export as plain text</doc>
+      </member>
+      <member name="html"
+              value="2"
+              c:identifier="VTE_FORMAT_HTML"
+              glib:nick="html">
+        <doc xml:space="preserve">Export as HTML formatted text</doc>
+      </member>
+    </enumeration>
     <constant name="MAJOR_VERSION" value="0" c:type="VTE_MAJOR_VERSION">
       <doc xml:space="preserve">The major version number of the VTE library
 (e.g. in version 3.1.4 this is 3).</doc>
@@ -773,9 +793,14 @@ a cell has to be selected or not.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="copy_clipboard" invoker="copy_clipboard">
+      <virtual-method name="copy_clipboard"
+                      invoker="copy_clipboard"
+                      deprecated="1"
+                      deprecated-version="0.50">
         <doc xml:space="preserve">Places the selected text in the terminal in the #GDK_SELECTION_CLIPBOARD
 selection.</doc>
+        <doc-deprecated xml:space="preserve">Use vte_terminal_copy_clipboard_format() with %VTE_FORMAT_TEXT
+  instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1026,9 +1051,14 @@ user presses Shift+Insert.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <method name="copy_clipboard" c:identifier="vte_terminal_copy_clipboard">
+      <method name="copy_clipboard"
+              c:identifier="vte_terminal_copy_clipboard"
+              deprecated="1"
+              deprecated-version="0.50">
         <doc xml:space="preserve">Places the selected text in the terminal in the #GDK_SELECTION_CLIPBOARD
 selection.</doc>
+        <doc-deprecated xml:space="preserve">Use vte_terminal_copy_clipboard_format() with %VTE_FORMAT_TEXT
+  instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1037,6 +1067,32 @@ selection.</doc>
             <doc xml:space="preserve">a #VteTerminal</doc>
             <type name="Terminal" c:type="VteTerminal*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="copy_clipboard_format"
+              c:identifier="vte_terminal_copy_clipboard_format"
+              version="0.50">
+        <doc xml:space="preserve">Places the selected text in the terminal in the #GDK_SELECTION_CLIPBOARD
+selection in the form specified by @format.
+
+For all formats, the selection data (see #GtkSelectionData) will include the
+text targets (see gtk_target_list_add_text_targets() and
+gtk_selection_data_targets_includes_text()). For %VTE_FORMAT_HTML,
+the selection will also include the "text/html" target, which when requested,
+returns the HTML data in UTF-16 with a U+FEFF BYTE ORDER MARK character at
+the start.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">a #VteFormat</doc>
+            <type name="Format" c:type="VteFormat"/>
+          </parameter>
         </parameters>
       </method>
       <method name="copy_primary" c:identifier="vte_terminal_copy_primary">

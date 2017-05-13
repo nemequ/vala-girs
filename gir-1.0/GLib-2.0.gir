@@ -15916,6 +15916,22 @@ should generally be normalized before comparing them.</doc>
         <doc xml:space="preserve">another name for %G_NORMALIZE_ALL_COMPOSE</doc>
       </member>
     </enumeration>
+    <enumeration name="NumberParserError"
+                 version="2.54"
+                 c:type="GNumberParserError"
+                 glib:error-domain="g-number-parser-error-quark">
+      <doc xml:space="preserve">Error codes returned by functions converting a string to a number.</doc>
+      <member name="invalid"
+              value="0"
+              c:identifier="G_NUMBER_PARSER_ERROR_INVALID">
+        <doc xml:space="preserve">String was not a valid number.</doc>
+      </member>
+      <member name="out_of_bounds"
+              value="1"
+              c:identifier="G_NUMBER_PARSER_ERROR_OUT_OF_BOUNDS">
+        <doc xml:space="preserve">String was a number, but out of bounds.</doc>
+      </member>
+    </enumeration>
     <constant name="OPTION_REMAINING"
               value=""
               c:type="G_OPTION_REMAINING"
@@ -26759,9 +26775,16 @@ the W3C Note
 Both of these documents are profiles of ISO 8601.
 
 Use g_date_time_format() or g_strdup_printf() if a different
-variation of ISO 8601 format is required.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly allocated string containing an ISO 8601 date</doc>
+variation of ISO 8601 format is required.
+
+If @time_ represents a date which is too large to fit into a `struct tm`,
+%NULL will be returned. This is platform dependent, but it is safe to assume
+years up to 3000 are supported. The return value of g_time_val_to_iso8601()
+has been nullable since GLib 2.54; before then, GLib would crash under the
+same conditions.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a newly allocated string containing an ISO 8601 date,
+   or %NULL if @time_ was too large</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -33992,6 +34015,120 @@ Both @s1 and @s2 must be non-%NULL.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="ascii_string_to_signed"
+              c:identifier="g_ascii_string_to_signed"
+              version="2.54"
+              throws="1">
+      <doc xml:space="preserve">A convenience function for converting a string to a signed number.
+
+This function assumes that @str contains only a number of the given
+@base that is within inclusive bounds limited by @min and @max. If
+this is true, then the converted number is stored in @out_num. An
+empty string is not a valid input. A string with leading or
+trailing whitespace is also an invalid input.
+
+@base can be between 2 and 36 inclusive. Hexadecimal numbers must
+not be prefixed with "0x" or "0X". Such a problem does not exist
+for octal numbers, since they were usually prefixed with a zero
+which does not change the value of the parsed number.
+
+Parsing failures result in an error with the %G_NUMBER_PARSER_ERROR
+domain. If the input is invalid, the error code will be
+%G_NUMBER_PARSER_ERROR_INVALID. If the parsed number is out of
+bounds - %G_NUMBER_PARSER_ERROR_OUT_OF_BOUNDS.
+
+See g_ascii_strtoll() if you have more complex needs such as
+parsing a string which starts with a number, but then has other
+characters.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @str was a number, otherwise %FALSE.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="base" transfer-ownership="none">
+          <doc xml:space="preserve">base of a parsed number</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="min" transfer-ownership="none">
+          <doc xml:space="preserve">a lower bound (inclusive)</doc>
+          <type name="gint64" c:type="gint64"/>
+        </parameter>
+        <parameter name="max" transfer-ownership="none">
+          <doc xml:space="preserve">an upper bound (inclusive)</doc>
+          <type name="gint64" c:type="gint64"/>
+        </parameter>
+        <parameter name="out_num"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a return location for a number</doc>
+          <type name="gint64" c:type="gint64*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ascii_string_to_unsigned"
+              c:identifier="g_ascii_string_to_unsigned"
+              version="2.54"
+              throws="1">
+      <doc xml:space="preserve">A convenience function for converting a string to an unsigned number.
+
+This function assumes that @str contains only a number of the given
+@base that is within inclusive bounds limited by @min and @max. If
+this is true, then the converted number is stored in @out_num. An
+empty string is not a valid input. A string with leading or
+trailing whitespace is also an invalid input.
+
+@base can be between 2 and 36 inclusive. Hexadecimal numbers must
+not be prefixed with "0x" or "0X". Such a problem does not exist
+for octal numbers, since they were usually prefixed with a zero
+which does not change the value of the parsed number.
+
+Parsing failures result in an error with the %G_NUMBER_PARSER_ERROR
+domain. If the input is invalid, the error code will be
+%G_NUMBER_PARSER_ERROR_INVALID. If the parsed number is out of
+bounds - %G_NUMBER_PARSER_ERROR_OUT_OF_BOUNDS.
+
+See g_ascii_strtoull() if you have more complex needs such as
+parsing a string which starts with a number, but then has other
+characters.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if @str was a number, otherwise %FALSE.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="base" transfer-ownership="none">
+          <doc xml:space="preserve">base of a parsed number</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="min" transfer-ownership="none">
+          <doc xml:space="preserve">a lower bound (inclusive)</doc>
+          <type name="guint64" c:type="guint64"/>
+        </parameter>
+        <parameter name="max" transfer-ownership="none">
+          <doc xml:space="preserve">an upper bound (inclusive)</doc>
+          <type name="guint64" c:type="guint64"/>
+        </parameter>
+        <parameter name="out_num"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a return location for a number</doc>
+          <type name="guint64" c:type="guint64*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="ascii_strncasecmp" c:identifier="g_ascii_strncasecmp">
       <doc xml:space="preserve">Compare @s1 and @s2, ignoring the case of ASCII characters and any
 characters after the first @n in each string.
@@ -40979,6 +41116,12 @@ on Windows it should be in UTF-8.</doc>
           <type name="gpointer" c:type="gpointer*"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="number_parser_error_quark"
+              c:identifier="g_number_parser_error_quark">
+      <return-value transfer-ownership="none">
+        <type name="Quark" c:type="GQuark"/>
+      </return-value>
     </function>
     <function name="on_error_query" c:identifier="g_on_error_query">
       <doc xml:space="preserve">Prompts the user with

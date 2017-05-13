@@ -3167,7 +3167,7 @@ namespace NM {
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		public unowned string[] get_keys ();
 		[Version (since = "1.8")]
-		public bool set_data (string key, string val) throws GLib.Error;
+		public bool set_data (string key, string? val) throws GLib.Error;
 		[NoAccessorMethod]
 		[Version (since = "1.8")]
 		public GLib.HashTable<string,string> data { owned get; set; }

@@ -477,6 +477,17 @@ namespace Ide {
 		public Ide.Vcs vcs { get; }
 		public signal void loaded ();
 	}
+	[CCode (cheader_filename = "ide.h", type_id = "ide_cursor_get_type ()")]
+	public class Cursor : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Cursor ();
+		public void add_cursor (uint type);
+		public void insert_text (string text, int len);
+		public bool is_enabled ();
+		public void remove_cursors ();
+		[NoAccessorMethod]
+		public Ide.SourceView ide_source_view { owned get; set construct; }
+	}
 	[CCode (cheader_filename = "ide.h", type_id = "ide_device_get_type ()")]
 	public abstract class Device : Ide.Object {
 		[CCode (has_construct_function = false)]
@@ -1672,6 +1683,7 @@ namespace Ide {
 		public bool snippet_completion { get; set; }
 		public bool spell_checking { get; set; }
 		public signal void action (string object, string p0, string p1);
+		public virtual signal void add_cursor (Ide.CursorType type);
 		public virtual signal void append_to_count (int digit);
 		public virtual signal void begin_macro ();
 		public virtual signal void begin_rename ();
@@ -1712,6 +1724,7 @@ namespace Ide {
 		public signal void push_snippet (Ide.SourceSnippet snippet, Gtk.TextIter? location);
 		public virtual signal void rebuild_highlight ();
 		public signal void reindent ();
+		public virtual signal void remove_cursors ();
 		public virtual signal void replay_macro (bool use_count);
 		public virtual signal void request_documentation ();
 		public virtual signal void reset_font_size ();
@@ -1742,6 +1755,7 @@ namespace Ide {
 		public void set_has_indenter (bool has_indenter);
 		public string name { get; }
 		public signal void action (string object, string p0, string p1);
+		public signal void add_cursor (Ide.CursorType object);
 		public signal void append_to_count (int object);
 		public signal void backspace ();
 		public signal void begin_macro ();
@@ -1789,6 +1803,7 @@ namespace Ide {
 		public signal void rebuild_highlight ();
 		public signal void redo ();
 		public signal void reindent ();
+		public signal void remove_cursors ();
 		public signal void replay_macro (bool object);
 		public signal void request_documentation ();
 		public signal void reset_font_size ();
@@ -2572,6 +2587,12 @@ namespace Ide {
 		AFTER,
 		FINISHED,
 		FAILED
+	}
+	[CCode (cheader_filename = "ide.h", cprefix = "IDE_CURSOR_", type_id = "ide_cursor_type_get_type ()")]
+	public enum CursorType {
+		COLUMN,
+		SELECT,
+		MATCH
 	}
 	[CCode (cheader_filename = "ide.h", cprefix = "IDE_DIAGNOSTIC_", type_id = "ide_diagnostic_severity_get_type ()")]
 	public enum DiagnosticSeverity {
