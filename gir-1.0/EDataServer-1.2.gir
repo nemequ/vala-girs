@@ -4700,6 +4700,389 @@ will return %FALSE after the given number of seconds have elapsed.</doc>
             c:type="ESoupAuthBearerPrivate"
             disguised="1">
     </record>
+    <class name="SoupSession"
+           c:symbol-prefix="soup_session"
+           c:type="ESoupSession"
+           version="3.26"
+           parent="Soup.Session"
+           glib:type-name="ESoupSession"
+           glib:get-type="e_soup_session_get_type"
+           glib:type-struct="SoupSessionClass">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <constructor name="new" c:identifier="e_soup_session_new" version="3.26">
+        <doc xml:space="preserve">Creates a new #ESoupSession associated with given @source.
+The @source can be used to store and read SSL trust settings, but only if
+it already contains an #ESourceWebdav extension. Otherwise the SSL trust
+settings are ignored.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #ESoupSession; free it with g_object_unref(),
+   when no longer needed.</doc>
+          <type name="SoupSession" c:type="ESoupSession*"/>
+        </return-value>
+        <parameters>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="util_status_to_string"
+                c:identifier="e_soup_session_util_status_to_string"
+                version="3.26">
+        <doc xml:space="preserve">Returns the @reason_phrase, if it's non-%NULL and non-empty, a static string
+corresponding to @status_code. In case neither that can be found a localized
+"Unknown error" message is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Error text based on given arguments. The returned
+   value is valid as long as @reason_phrase is not freed.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="status_code" transfer-ownership="none">
+            <doc xml:space="preserve">an HTTP status code</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="reason_phrase"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">preferred string to use for the message, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="check_result"
+              c:identifier="e_soup_session_check_result"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Checks result of the @request and sets the @error if it failed.
+When it failed and the @read_bytes is provided, then these are
+set to @request's message response_body, thus it can be used
+later.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded, aka %TRUE, when no error recognized
+   and %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="request" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupRequestHTTP</doc>
+            <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+          </parameter>
+          <parameter name="read_bytes"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional bytes which had been read from the stream, or %NULL</doc>
+            <type name="gpointer" c:type="gconstpointer"/>
+          </parameter>
+          <parameter name="bytes_length" transfer-ownership="none">
+            <doc xml:space="preserve">how many bytes had been read; ignored when @read_bytes is %NULL</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="dup_credentials"
+              c:identifier="e_soup_session_dup_credentials"
+              version="3.26">
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">A copy of the credentials being
+   previously set with e_soup_session_set_credentials(), or %NULL when
+   none are set. Free the returned pointer with e_named_parameters_free(),
+   when no longer needed.</doc>
+          <type name="NamedParameters" c:type="ENamedParameters*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_log_level"
+              c:identifier="e_soup_session_get_log_level"
+              version="3.26">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Current log level, as #SoupLoggerLogLevel</doc>
+          <type name="Soup.LoggerLogLevel" c:type="SoupLoggerLogLevel"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_source"
+              c:identifier="e_soup_session_get_source"
+              version="3.26">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Associated #ESource with the @session.</doc>
+          <type name="Source" c:type="ESource*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_ssl_error_details"
+              c:identifier="e_soup_session_get_ssl_error_details"
+              version="3.26">
+        <doc xml:space="preserve">Populates @out_certificate_pem and @out_certificate_errors with the last values
+returned on #SOUP_STATUS_SSL_FAILED error.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether the information was available and set to the out parameters.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="out_certificate_pem"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a server TLS/SSL certificate
+  in PEM format, when the last operation failed with a TLS/SSL error</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_certificate_errors"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a #GTlsCertificateFlags,
+  with certificate error flags when the the operation failed with a TLS/SSL error</doc>
+            <type name="Gio.TlsCertificateFlags"
+                  c:type="GTlsCertificateFlags*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_request"
+              c:identifier="e_soup_session_new_request"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Creates a new #SoupRequestHTTP, similar to soup_session_request_http_uri(),
+but also presets request headers with "User-Agent" to be "Evolution/version"
+and with "Connection" to be "close".
+
+See also e_soup_session_new_request().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #SoupRequestHTTP, or %NULL on error</doc>
+          <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="method" transfer-ownership="none">
+            <doc xml:space="preserve">an HTTP method</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="uri_string" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_request_uri"
+              c:identifier="e_soup_session_new_request_uri"
+              introspectable="0"
+              throws="1">
+        <return-value>
+          <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="method" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <type name="Soup.URI" c:type="SoupURI*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_request_simple_sync"
+              c:identifier="e_soup_session_send_request_simple_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Similar to e_soup_session_send_request_sync(), except it reads
+whole response content into memory and returns it as a #GByteArray.
+Use e_soup_session_send_request_sync() when you want to have
+more control on the content read.
+
+The function prints read content to stdout when
+e_soup_session_get_log_level() returns #SOUP_LOGGER_LOG_BODY.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly allocated #GByteArray,
+   which contains whole content from the URI pointed to by @request.</doc>
+          <array name="GLib.ByteArray" c:type="GByteArray*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="request" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupRequestHTTP to send</doc>
+            <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_request_sync"
+              c:identifier="e_soup_session_send_request_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Synchronously sends prepared request and returns #GInputStream
+that can be used to read its contents.
+
+This calls soup_request_send() internally, but it also setups
+the request according to #ESoupSession:source authentication
+settings. It also extracts information about used certificate,
+in case of SOUP_STATUS_SSL_FAILED error and keeps it for later use
+by e_soup_session_get_ssl_error_details().
+
+Use e_soup_session_send_request_simple_sync() to read whole
+content into a #GByteArray.
+
+Note that SoupSession doesn't log content read from GInputStream,
+thus the caller may print the read content on its own when needed.
+
+Note the @request is fully filled only after there is anything
+read from the resulting #GInputStream, thus use
+e_soup_session_check_result() to verify that the receive had
+been finished properly.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly allocated #GInputStream,
+   that can be used to read from the URI pointed to by @request.
+   Free it with g_object_unref(), when no longer needed.</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="request" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupRequestHTTP to send</doc>
+            <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_credentials"
+              c:identifier="e_soup_session_set_credentials"
+              version="3.26">
+        <doc xml:space="preserve">Sets credentials to use for connection. Using %NULL for @credentials
+unsets previous value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="credentials"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #ENamedParameters with credentials to use, or %NULL</doc>
+            <type name="NamedParameters" c:type="const ENamedParameters*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="setup_logging"
+              c:identifier="e_soup_session_setup_logging"
+              version="3.26">
+        <doc xml:space="preserve">Setups logging for the @session. The @logging_level can be one of:
+"all" - log whole raw communication;
+"body" - the same as "all";
+"headers" - log the headers only;
+"min" - minimal logging;
+"1" - the same as "all".
+Any other value, including %NULL, disables logging.
+
+Use e_soup_session_get_log_level() to get current log level.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+          <parameter name="logging_level"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">logging level to setup, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="credentials"
+                version="3.26"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #ENamedParameters containing login credentials.</doc>
+        <type name="NamedParameters"/>
+      </property>
+      <property name="source"
+                version="3.26"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #ESource being used for this soup session.</doc>
+        <type name="Source"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="Soup.Session" c:type="SoupSession"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="SoupSessionPrivate" c:type="ESoupSessionPrivate*"/>
+      </field>
+    </class>
+    <record name="SoupSessionClass"
+            c:type="ESoupSessionClass"
+            glib:is-gtype-struct-for="SoupSession">
+      <field name="parent_class">
+        <type name="Soup.SessionClass" c:type="SoupSessionClass"/>
+      </field>
+      <field name="reserved">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="SoupSessionPrivate"
+            c:type="ESoupSessionPrivate"
+            disguised="1">
+    </record>
     <class name="Source"
            c:symbol-prefix="source"
            c:type="ESource"
@@ -8797,6 +9180,12 @@ instead.</doc>
                  glib:get-type="e_source_authentication_result_get_type"
                  c:type="ESourceAuthenticationResult">
       <doc xml:space="preserve">Status codes used by the #EBackend authentication wrapper.</doc>
+      <member name="unknown"
+              value="-1"
+              c:identifier="E_SOURCE_AUTHENTICATION_UNKNOWN"
+              glib:nick="unknown">
+        <doc xml:space="preserve">Unknown error occurred while authenticating. Since: 3.26</doc>
+      </member>
       <member name="error"
               value="0"
               c:identifier="E_SOURCE_AUTHENTICATION_ERROR"
@@ -18211,6 +18600,367 @@ with e_source_webdav_update_ssl_trust().</doc>
         </parameter>
       </parameters>
     </callback>
+    <constant name="WEBDAV_CAPABILITY_ACCESS_CONTROL"
+              value="access-control"
+              c:type="E_WEBDAV_CAPABILITY_ACCESS_CONTROL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_ADDRESSBOOK"
+              value="addressbook"
+              c:type="E_WEBDAV_CAPABILITY_ADDRESSBOOK">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_BIND"
+              value="bind"
+              c:type="E_WEBDAV_CAPABILITY_BIND">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CALENDAR_ACCESS"
+              value="calendar-access"
+              c:type="E_WEBDAV_CAPABILITY_CALENDAR_ACCESS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CALENDAR_AUTO_SCHEDULE"
+              value="calendar-auto-schedule"
+              c:type="E_WEBDAV_CAPABILITY_CALENDAR_AUTO_SCHEDULE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CALENDAR_PROXY"
+              value="calendar-proxy"
+              c:type="E_WEBDAV_CAPABILITY_CALENDAR_PROXY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CALENDAR_SCHEDULE"
+              value="calendar-schedule"
+              c:type="E_WEBDAV_CAPABILITY_CALENDAR_SCHEDULE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CLASS_1"
+              value="1"
+              c:type="E_WEBDAV_CAPABILITY_CLASS_1">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CLASS_2"
+              value="2"
+              c:type="E_WEBDAV_CAPABILITY_CLASS_2">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_CLASS_3"
+              value="3"
+              c:type="E_WEBDAV_CAPABILITY_CLASS_3">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CAPABILITY_EXTENDED_MKCOL"
+              value="extended-mkcol"
+              c:type="E_WEBDAV_CAPABILITY_EXTENDED_MKCOL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_ASCII_CASEMAP"
+              value="i;"
+              c:type="E_WEBDAV_COLLATION_ASCII_CASEMAP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_ASCII_CASEMAP_SUFFIX"
+              value="ascii-casemap"
+              c:type="E_WEBDAV_COLLATION_ASCII_CASEMAP_SUFFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_ASCII_NUMERIC"
+              value="i;"
+              c:type="E_WEBDAV_COLLATION_ASCII_NUMERIC">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_ASCII_NUMERIC_SUFFIX"
+              value="ascii-numeric"
+              c:type="E_WEBDAV_COLLATION_ASCII_NUMERIC_SUFFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_OCTET"
+              value="i;"
+              c:type="E_WEBDAV_COLLATION_OCTET">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_OCTET_SUFFIX"
+              value="octet"
+              c:type="E_WEBDAV_COLLATION_OCTET_SUFFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_UNICODE_CASEMAP"
+              value="i;"
+              c:type="E_WEBDAV_COLLATION_UNICODE_CASEMAP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_COLLATION_UNICODE_CASEMAP_SUFFIX"
+              value="unicode-casemap"
+              c:type="E_WEBDAV_COLLATION_UNICODE_CASEMAP_SUFFIX">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CONTENT_TYPE_CALENDAR"
+              value="text/calendar; charset=&quot;utf-8&quot;"
+              c:type="E_WEBDAV_CONTENT_TYPE_CALENDAR">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CONTENT_TYPE_VCARD"
+              value="text/vcard; charset=&quot;utf-8&quot;"
+              c:type="E_WEBDAV_CONTENT_TYPE_VCARD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_CONTENT_TYPE_XML"
+              value="application/xml; charset=&quot;utf-8&quot;"
+              c:type="E_WEBDAV_CONTENT_TYPE_XML">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_DEPTH_INFINITY"
+              value="infinity"
+              c:type="E_WEBDAV_DEPTH_INFINITY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_DEPTH_THIS" value="0" c:type="E_WEBDAV_DEPTH_THIS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_DEPTH_THIS_AND_CHILDREN"
+              value="1"
+              c:type="E_WEBDAV_DEPTH_THIS_AND_CHILDREN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_NS_CALDAV"
+              value="urn:ietf:params:xml:ns:caldav"
+              c:type="E_WEBDAV_NS_CALDAV">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_NS_CALENDARSERVER"
+              value="http://calendarserver.org/ns/"
+              c:type="E_WEBDAV_NS_CALENDARSERVER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_NS_CARDDAV"
+              value="urn:ietf:params:xml:ns:carddav"
+              c:type="E_WEBDAV_NS_CARDDAV">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_NS_DAV" value="DAV:" c:type="E_WEBDAV_NS_DAV">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="WEBDAV_NS_ICAL"
+              value="http://apple.com/ns/ical/"
+              c:type="E_WEBDAV_NS_ICAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <bitfield name="WebDAVACEFlag" c:type="EWebDAVACEFlag">
+      <member name="unknown"
+              value="0"
+              c:identifier="E_WEBDAV_ACE_FLAG_UNKNOWN">
+      </member>
+      <member name="grant" value="1" c:identifier="E_WEBDAV_ACE_FLAG_GRANT">
+      </member>
+      <member name="deny" value="2" c:identifier="E_WEBDAV_ACE_FLAG_DENY">
+      </member>
+      <member name="invert" value="4" c:identifier="E_WEBDAV_ACE_FLAG_INVERT">
+      </member>
+      <member name="protected"
+              value="8"
+              c:identifier="E_WEBDAV_ACE_FLAG_PROTECTED">
+      </member>
+      <member name="inherited"
+              value="16"
+              c:identifier="E_WEBDAV_ACE_FLAG_INHERITED">
+      </member>
+    </bitfield>
+    <enumeration name="WebDAVACEPrincipalKind"
+                 c:type="EWebDAVACEPrincipalKind">
+      <member name="unknown"
+              value="0"
+              c:identifier="E_WEBDAV_ACE_PRINCIPAL_UNKNOWN">
+      </member>
+      <member name="href" value="1" c:identifier="E_WEBDAV_ACE_PRINCIPAL_HREF">
+      </member>
+      <member name="all" value="2" c:identifier="E_WEBDAV_ACE_PRINCIPAL_ALL">
+      </member>
+      <member name="authenticated"
+              value="3"
+              c:identifier="E_WEBDAV_ACE_PRINCIPAL_AUTHENTICATED">
+      </member>
+      <member name="unauthenticated"
+              value="4"
+              c:identifier="E_WEBDAV_ACE_PRINCIPAL_UNAUTHENTICATED">
+      </member>
+      <member name="property"
+              value="5"
+              c:identifier="E_WEBDAV_ACE_PRINCIPAL_PROPERTY">
+      </member>
+      <member name="self" value="6" c:identifier="E_WEBDAV_ACE_PRINCIPAL_SELF">
+      </member>
+      <member name="owner"
+              value="7"
+              c:identifier="E_WEBDAV_ACE_PRINCIPAL_OWNER">
+      </member>
+    </enumeration>
+    <bitfield name="WebDAVACLRestrictions" c:type="EWebDAVACLRestrictions">
+      <member name="none"
+              value="0"
+              c:identifier="E_WEBDAV_ACL_RESTRICTION_NONE">
+      </member>
+      <member name="grant_only"
+              value="1"
+              c:identifier="E_WEBDAV_ACL_RESTRICTION_GRANT_ONLY">
+      </member>
+      <member name="no_invert"
+              value="2"
+              c:identifier="E_WEBDAV_ACL_RESTRICTION_NO_INVERT">
+      </member>
+      <member name="deny_before_grant"
+              value="4"
+              c:identifier="E_WEBDAV_ACL_RESTRICTION_DENY_BEFORE_GRANT">
+      </member>
+      <member name="required_principal"
+              value="8"
+              c:identifier="E_WEBDAV_ACL_RESTRICTION_REQUIRED_PRINCIPAL">
+      </member>
+    </bitfield>
+    <record name="WebDAVAccessControlEntry"
+            c:type="EWebDAVAccessControlEntry"
+            glib:type-name="EWebDAVAccessControlEntry"
+            glib:get-type="e_webdav_access_control_entry_get_type"
+            c:symbol-prefix="webdav_access_control_entry">
+      <field name="principal_kind" writable="1">
+        <type name="WebDAVACEPrincipalKind" c:type="EWebDAVACEPrincipalKind"/>
+      </field>
+      <field name="principal_href" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="flags" writable="1">
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="inherited_href" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="privileges" writable="1">
+        <type name="GLib.SList" c:type="GSList*">
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
+      <constructor name="new"
+                   c:identifier="e_webdav_access_control_entry_new"
+                   version="3.26">
+        <doc xml:space="preserve">Describes one Access Control Entry (ACE).
+
+The @flags should always contain either %E_WEBDAV_ACE_FLAG_GRANT or
+%E_WEBDAV_ACE_FLAG_DENY value.
+
+Use e_webdav_access_control_entry_append_privilege() to add respective
+privileges to the entry.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly created #EWebDAVAccessControlEntry, prefilled with
+   given values. Free it with e_webdav_access_control_entry_free(), when no longer needed.</doc>
+          <type name="WebDAVAccessControlEntry"
+                c:type="EWebDAVAccessControlEntry*"/>
+        </return-value>
+        <parameters>
+          <parameter name="principal_kind" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVACEPrincipalKind</doc>
+            <type name="WebDAVACEPrincipalKind"
+                  c:type="EWebDAVACEPrincipalKind"/>
+          </parameter>
+          <parameter name="principal_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">principal href; should be set only if @principal_kind is @E_WEBDAV_ACE_PRINCIPAL_HREF</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">bit-or of #EWebDAVACEFlag values</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="inherited_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">href of the resource from which inherits; should be set only if @flags contain E_WEBDAV_ACE_FLAG_INHERITED</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="append_privilege"
+              c:identifier="e_webdav_access_control_entry_append_privilege"
+              version="3.26">
+        <doc xml:space="preserve">Appends a new @privilege to the list of privileges for the @ace.
+The function assumes ownership of the @privilege, which is freed
+together with the @ace.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="ace" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVAccessControlEntry</doc>
+            <type name="WebDAVAccessControlEntry"
+                  c:type="EWebDAVAccessControlEntry*"/>
+          </instance-parameter>
+          <parameter name="privilege" transfer-ownership="full">
+            <doc xml:space="preserve">an #EWebDAVPrivilege</doc>
+            <type name="WebDAVPrivilege" c:type="EWebDAVPrivilege*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="copy"
+              c:identifier="e_webdav_access_control_entry_copy"
+              version="3.26">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #EWebDAVAccessControlEntry prefilled with
+   the same values as @src, or %NULL, when @src is %NULL.
+   Free it with e_webdav_access_control_entry_free(), when no longer needed.</doc>
+          <type name="WebDAVAccessControlEntry"
+                c:type="EWebDAVAccessControlEntry*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVAccessControlEntry to make a copy of</doc>
+            <type name="WebDAVAccessControlEntry"
+                  c:type="const EWebDAVAccessControlEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_privileges"
+              c:identifier="e_webdav_access_control_entry_get_privileges"
+              version="3.26">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GSList of #EWebDAVPrivilege
+   with the list of privileges for the @ace. The reurned #GSList, together with its data
+   is owned by the @ace.</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="WebDAVPrivilege"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="ace" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVAccessControlEntry</doc>
+            <type name="WebDAVAccessControlEntry"
+                  c:type="EWebDAVAccessControlEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="free"
+                c:identifier="e_webdav_access_control_entry_free"
+                version="3.26">
+        <doc xml:space="preserve">Frees an #EWebDAVAccessControlEntry previously created with e_webdav_access_control_entry_new()
+or e_webdav_access_control_entry_copy(). The function does nothing, if @ptr is %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="ptr"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVAccessControlEntry</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
     <bitfield name="WebDAVDiscoverSupports" c:type="EWebDAVDiscoverSupports">
       <member name="none"
               value="0"
@@ -18249,6 +18999,3046 @@ with e_source_webdav_update_ssl_trust().</doc>
       <field name="color" writable="1">
         <type name="utf8" c:type="gchar*"/>
       </field>
+    </record>
+    <bitfield name="WebDAVListFlags" c:type="EWebDAVListFlags">
+      <member name="all" value="4294967295" c:identifier="E_WEBDAV_LIST_ALL">
+      </member>
+      <member name="none" value="0" c:identifier="E_WEBDAV_LIST_NONE">
+      </member>
+      <member name="supports" value="1" c:identifier="E_WEBDAV_LIST_SUPPORTS">
+      </member>
+      <member name="etag" value="2" c:identifier="E_WEBDAV_LIST_ETAG">
+      </member>
+      <member name="display_name"
+              value="4"
+              c:identifier="E_WEBDAV_LIST_DISPLAY_NAME">
+      </member>
+      <member name="content_type"
+              value="8"
+              c:identifier="E_WEBDAV_LIST_CONTENT_TYPE">
+      </member>
+      <member name="content_length"
+              value="16"
+              c:identifier="E_WEBDAV_LIST_CONTENT_LENGTH">
+      </member>
+      <member name="creation_date"
+              value="32"
+              c:identifier="E_WEBDAV_LIST_CREATION_DATE">
+      </member>
+      <member name="last_modified"
+              value="64"
+              c:identifier="E_WEBDAV_LIST_LAST_MODIFIED">
+      </member>
+      <member name="description"
+              value="128"
+              c:identifier="E_WEBDAV_LIST_DESCRIPTION">
+      </member>
+      <member name="color" value="256" c:identifier="E_WEBDAV_LIST_COLOR">
+      </member>
+    </bitfield>
+    <enumeration name="WebDAVLockScope" c:type="EWebDAVLockScope">
+      <member name="exclusive"
+              value="0"
+              c:identifier="E_WEBDAV_LOCK_EXCLUSIVE">
+      </member>
+      <member name="shared" value="1" c:identifier="E_WEBDAV_LOCK_SHARED">
+      </member>
+    </enumeration>
+    <record name="WebDAVPrivilege"
+            c:type="EWebDAVPrivilege"
+            glib:type-name="EWebDAVPrivilege"
+            glib:get-type="e_webdav_privilege_get_type"
+            c:symbol-prefix="webdav_privilege">
+      <field name="ns_uri" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="name" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="description" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="kind" writable="1">
+        <type name="WebDAVPrivilegeKind" c:type="EWebDAVPrivilegeKind"/>
+      </field>
+      <field name="hint" writable="1">
+        <type name="WebDAVPrivilegeHint" c:type="EWebDAVPrivilegeHint"/>
+      </field>
+      <constructor name="new"
+                   c:identifier="e_webdav_privilege_new"
+                   version="3.26">
+        <doc xml:space="preserve">Describes one privilege entry. The @hint can be %E_WEBDAV_PRIVILEGE_HINT_UNKNOWN
+for privileges which are not known to the #EWebDAVSession. It's possible, because
+the servers can define their own privileges. The hint is also tried to pair with
+known hnts when it's %E_WEBDAV_PRIVILEGE_HINT_UNKNOWN.
+
+The @ns_uri and @name can be %NULL only if the @hint is one of the known
+privileges. Otherwise it's an error to pass either of the two as %NULL.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly created #EWebDAVPrivilege, prefilled with
+   given values. Free it with e_webdav_privilege_free(), when no longer needed.</doc>
+          <type name="WebDAVPrivilege" c:type="EWebDAVPrivilege*"/>
+        </return-value>
+        <parameters>
+          <parameter name="ns_uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a namespace URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">element name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="description"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">human read-able description, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVPrivilegeKind</doc>
+            <type name="WebDAVPrivilegeKind" c:type="EWebDAVPrivilegeKind"/>
+          </parameter>
+          <parameter name="hint" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVPrivilegeHint</doc>
+            <type name="WebDAVPrivilegeHint" c:type="EWebDAVPrivilegeHint"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="copy"
+              c:identifier="e_webdav_privilege_copy"
+              version="3.26">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #EWebDAVPrivilege prefilled with
+   the same values as @src, or %NULL, when @src is %NULL.
+   Free it with e_webdav_privilege_free(), when no longer needed.</doc>
+          <type name="WebDAVPrivilege" c:type="EWebDAVPrivilege*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVPrivilege to make a copy of</doc>
+            <type name="WebDAVPrivilege" c:type="const EWebDAVPrivilege*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="free"
+                c:identifier="e_webdav_privilege_free"
+                version="3.26">
+        <doc xml:space="preserve">Frees an #EWebDAVPrivilege previously created with e_webdav_privilege_new()
+or e_webdav_privilege_copy(). The function does nothing, if @ptr is %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="ptr"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVPrivilege</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <enumeration name="WebDAVPrivilegeHint" c:type="EWebDAVPrivilegeHint">
+      <member name="unknown"
+              value="0"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_UNKNOWN">
+      </member>
+      <member name="read"
+              value="1"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_READ">
+      </member>
+      <member name="write"
+              value="2"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_WRITE">
+      </member>
+      <member name="write_properties"
+              value="3"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_WRITE_PROPERTIES">
+      </member>
+      <member name="write_content"
+              value="4"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_WRITE_CONTENT">
+      </member>
+      <member name="unlock"
+              value="5"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_UNLOCK">
+      </member>
+      <member name="read_acl"
+              value="6"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_READ_ACL">
+      </member>
+      <member name="write_acl"
+              value="7"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_WRITE_ACL">
+      </member>
+      <member name="read_current_user_privilege_set"
+              value="8"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_READ_CURRENT_USER_PRIVILEGE_SET">
+      </member>
+      <member name="bind"
+              value="9"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_BIND">
+      </member>
+      <member name="unbind"
+              value="10"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_UNBIND">
+      </member>
+      <member name="all" value="11" c:identifier="E_WEBDAV_PRIVILEGE_HINT_ALL">
+      </member>
+      <member name="caldav_read_free_busy"
+              value="12"
+              c:identifier="E_WEBDAV_PRIVILEGE_HINT_CALDAV_READ_FREE_BUSY">
+      </member>
+    </enumeration>
+    <enumeration name="WebDAVPrivilegeKind" c:type="EWebDAVPrivilegeKind">
+      <member name="unknown"
+              value="0"
+              c:identifier="E_WEBDAV_PRIVILEGE_KIND_UNKNOWN">
+      </member>
+      <member name="abstract"
+              value="1"
+              c:identifier="E_WEBDAV_PRIVILEGE_KIND_ABSTRACT">
+      </member>
+      <member name="aggregate"
+              value="2"
+              c:identifier="E_WEBDAV_PRIVILEGE_KIND_AGGREGATE">
+      </member>
+      <member name="common"
+              value="3"
+              c:identifier="E_WEBDAV_PRIVILEGE_KIND_COMMON">
+      </member>
+    </enumeration>
+    <record name="WebDAVPropertyChange"
+            c:type="EWebDAVPropertyChange"
+            glib:type-name="EWebDAVPropertyChange"
+            glib:get-type="e_webdav_property_change_get_type"
+            c:symbol-prefix="webdav_property_change">
+      <field name="kind" writable="1">
+        <type name="WebDAVPropertyChangeKind"
+              c:type="EWebDAVPropertyChangeKind"/>
+      </field>
+      <field name="ns_uri" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="name" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="value" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <constructor name="new_remove"
+                   c:identifier="e_webdav_property_change_new_remove"
+                   version="3.26">
+        <doc xml:space="preserve">Creates a new #EWebDAVPropertyChange of kind %E_WEBDAV_PROPERTY_REMOVE,
+which is used to remove the given property. To change property value
+use e_webdav_property_change_new_set() instead.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #EWebDAVPropertyChange. Free it with
+   e_webdav_property_change_free(), when no longer needed.</doc>
+          <type name="WebDAVPropertyChange" c:type="EWebDAVPropertyChange*"/>
+        </return-value>
+        <parameters>
+          <parameter name="ns_uri" transfer-ownership="none">
+            <doc xml:space="preserve">namespace URI of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_set"
+                   c:identifier="e_webdav_property_change_new_set"
+                   version="3.26">
+        <doc xml:space="preserve">Creates a new #EWebDAVPropertyChange of kind %E_WEBDAV_PROPERTY_SET,
+which is used to modify or set the property value. The @value is a string
+representation of the value to store. It can be %NULL, but it means
+an empty value, not to remove it. To remove property use
+e_webdav_property_change_new_remove() instead.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #EWebDAVPropertyChange. Free it with
+   e_webdav_property_change_free(), when no longer needed.</doc>
+          <type name="WebDAVPropertyChange" c:type="EWebDAVPropertyChange*"/>
+        </return-value>
+        <parameters>
+          <parameter name="ns_uri" transfer-ownership="none">
+            <doc xml:space="preserve">namespace URI of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">value of the property, or %NULL for empty value</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="copy"
+              c:identifier="e_webdav_property_change_copy"
+              version="3.26">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #EWebDAVPropertyChange prefilled with
+   the same values as @src, or %NULL, when @src is %NULL.
+   Free it with e_webdav_property_change_free(), when no longer needed.</doc>
+          <type name="WebDAVPropertyChange" c:type="EWebDAVPropertyChange*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVPropertyChange to make a copy of</doc>
+            <type name="WebDAVPropertyChange"
+                  c:type="const EWebDAVPropertyChange*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="free"
+                c:identifier="e_webdav_property_change_free"
+                version="3.26">
+        <doc xml:space="preserve">Frees an #EWebDAVPropertyChange previously created with e_webdav_property_change_new_set(),
+e_webdav_property_change_new_remove() or or e_webdav_property_change_copy().
+The function does nothing, if @ptr is %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="ptr"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVPropertyChange</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <enumeration name="WebDAVPropertyChangeKind"
+                 c:type="EWebDAVPropertyChangeKind">
+      <member name="set" value="0" c:identifier="E_WEBDAV_PROPERTY_SET">
+      </member>
+      <member name="remove" value="1" c:identifier="E_WEBDAV_PROPERTY_REMOVE">
+      </member>
+    </enumeration>
+    <callback name="WebDAVPropstatTraverseFunc"
+              c:type="EWebDAVPropstatTraverseFunc"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">A callback function for e_webdav_session_propfind_sync(),
+e_webdav_session_report_sync() and other XML response with DAV:propstat
+elements traversal functions.
+
+The @xpath_prop_prefix can be %NULL only once, for the first time,
+which is meant to let the caller setup the @xpath_ctx, like to register
+its own namespaces to it with e_xml_xpath_context_register_namespaces().
+All other invocations of the function will have @xpath_prop_prefix non-%NULL.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE to continue traversal of the returned response, %FALSE otherwise.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="webdav" transfer-ownership="none">
+          <doc xml:space="preserve">an #EWebDAVSession</doc>
+          <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+        </parameter>
+        <parameter name="xpath_ctx" transfer-ownership="none">
+          <doc xml:space="preserve">an #xmlXPathContextPtr</doc>
+          <type c:type="xmlXPathContext*"/>
+        </parameter>
+        <parameter name="xpath_prop_prefix"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">an XPath prefix for the current prop element, without trailing forward slash</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="request_uri" transfer-ownership="none">
+          <doc xml:space="preserve">a #SoupURI, containing the request URI, maybe redirected by the server</doc>
+          <type name="Soup.URI" c:type="const SoupURI*"/>
+        </parameter>
+        <parameter name="href"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a full URI to which the property belongs, or %NULL, when not found</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="status_code" transfer-ownership="none">
+          <doc xml:space="preserve">an HTTP status code for this property</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="6">
+          <doc xml:space="preserve">user data, as passed to e_webdav_session_propfind_sync()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <record name="WebDAVResource"
+            c:type="EWebDAVResource"
+            glib:type-name="EWebDAVResource"
+            glib:get-type="e_webdav_resource_get_type"
+            c:symbol-prefix="webdav_resource">
+      <field name="kind" writable="1">
+        <type name="WebDAVResourceKind" c:type="EWebDAVResourceKind"/>
+      </field>
+      <field name="supports" writable="1">
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="href" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="etag" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="display_name" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="content_type" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="content_length" writable="1">
+        <type name="gsize" c:type="gsize"/>
+      </field>
+      <field name="creation_date" writable="1">
+        <type name="glong" c:type="glong"/>
+      </field>
+      <field name="last_modified" writable="1">
+        <type name="glong" c:type="glong"/>
+      </field>
+      <field name="description" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="color" writable="1">
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <constructor name="new"
+                   c:identifier="e_webdav_resource_new"
+                   version="3.26">
+        <doc xml:space="preserve">Some values of the resource are not always valid, depending on the @kind,
+but also whether server stores such values and whether it had been asked
+for them to be fetched.
+
+The @etag for %E_WEBDAV_RESOURCE_KIND_COLLECTION can be a change tag instead.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly created #EWebDAVResource, prefilled with
+   given values. Free it with e_webdav_resource_free(), when no longer needed.</doc>
+          <type name="WebDAVResource" c:type="EWebDAVResource*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVResourceKind of the resource</doc>
+            <type name="WebDAVResourceKind" c:type="EWebDAVResourceKind"/>
+          </parameter>
+          <parameter name="supports" transfer-ownership="none">
+            <doc xml:space="preserve">bit-or of #EWebDAVResourceSupports values</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="href" transfer-ownership="none">
+            <doc xml:space="preserve">href of the resource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="etag"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional ETag of the resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="display_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional display name of the resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="content_length" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="creation_date" transfer-ownership="none">
+            <type name="glong" c:type="glong"/>
+          </parameter>
+          <parameter name="last_modified" transfer-ownership="none">
+            <type name="glong" c:type="glong"/>
+          </parameter>
+          <parameter name="description"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional description of the resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="color"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional color of the resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="copy" c:identifier="e_webdav_resource_copy" version="3.26">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #EWebDAVResource prefilled with
+   the same values as @src, or %NULL, when @src is %NULL.
+   Free it with e_webdav_resource_free(), when no longer needed.</doc>
+          <type name="WebDAVResource" c:type="EWebDAVResource*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVResource to make a copy of</doc>
+            <type name="WebDAVResource" c:type="const EWebDAVResource*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="free"
+                c:identifier="e_webdav_resource_free"
+                version="3.26">
+        <doc xml:space="preserve">Frees an #EWebDAVResource previously created with e_webdav_resource_new()
+or e_webdav_resource_copy(). The function does nothing, if @ptr is %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="ptr"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #EWebDAVResource</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <enumeration name="WebDAVResourceKind" c:type="EWebDAVResourceKind">
+      <member name="unknown"
+              value="0"
+              c:identifier="E_WEBDAV_RESOURCE_KIND_UNKNOWN">
+      </member>
+      <member name="addressbook"
+              value="1"
+              c:identifier="E_WEBDAV_RESOURCE_KIND_ADDRESSBOOK">
+      </member>
+      <member name="calendar"
+              value="2"
+              c:identifier="E_WEBDAV_RESOURCE_KIND_CALENDAR">
+      </member>
+      <member name="principal"
+              value="3"
+              c:identifier="E_WEBDAV_RESOURCE_KIND_PRINCIPAL">
+      </member>
+      <member name="collection"
+              value="4"
+              c:identifier="E_WEBDAV_RESOURCE_KIND_COLLECTION">
+      </member>
+      <member name="resource"
+              value="5"
+              c:identifier="E_WEBDAV_RESOURCE_KIND_RESOURCE">
+      </member>
+    </enumeration>
+    <bitfield name="WebDAVResourceSupports" c:type="EWebDAVResourceSupports">
+      <member name="none"
+              value="0"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_NONE">
+      </member>
+      <member name="contacts"
+              value="1"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_CONTACTS">
+      </member>
+      <member name="events"
+              value="2"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_EVENTS">
+      </member>
+      <member name="memos"
+              value="4"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_MEMOS">
+      </member>
+      <member name="tasks"
+              value="8"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_TASKS">
+      </member>
+      <member name="freebusy"
+              value="16"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_FREEBUSY">
+      </member>
+      <member name="timezone"
+              value="32"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_TIMEZONE">
+      </member>
+    </bitfield>
+    <class name="WebDAVSession"
+           c:symbol-prefix="webdav_session"
+           c:type="EWebDAVSession"
+           version="3.26"
+           parent="SoupSession"
+           glib:type-name="EWebDAVSession"
+           glib:get-type="e_webdav_session_get_type"
+           glib:type-struct="WebDAVSessionClass">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <constructor name="new"
+                   c:identifier="e_webdav_session_new"
+                   version="3.26">
+        <doc xml:space="preserve">Creates a new #EWebDAVSession associated with given @source. It's
+a user's error to try to create the #EWebDAVSession for a source
+which doesn't have #ESourceWebdav extension properly defined.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #EWebDAVSession; free it with g_object_unref(),
+   when no longer needed.</doc>
+          <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+        </return-value>
+        <parameters>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="util_free_privileges"
+                c:identifier="e_webdav_session_util_free_privileges"
+                version="3.26">
+        <doc xml:space="preserve">Frees @privileges returned by e_webdav_session_get_supported_privilege_set_sync().
+The function does nothing, if @privileges is %NULL.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="privileges"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a tree of #EWebDAVPrivilege structures</doc>
+            <type name="GLib.Node" c:type="GNode*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="util_maybe_dequote"
+                c:identifier="e_webdav_session_util_maybe_dequote"
+                version="3.26">
+        <doc xml:space="preserve">Dequotes @text, if it's enclosed in double-quotes. The function
+changes @text, it doesn't allocate new string. The function does
+nothing when the @text is not enclosed in double-quotes.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">possibly dequoted @text</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="text"
+                     direction="inout"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">text to dequote</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="acl_sync"
+              c:identifier="e_webdav_session_acl_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Issues ACL request on the provided @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">the request itself, as an #EXmlDocument, the root element should be DAV:acl</doc>
+            <type name="XmlDocument" c:type="const EXmlDocument*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="copy_sync"
+              c:identifier="e_webdav_session_copy_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Copies a resource identified by @source_uri to @destination_uri on the server.
+The @source_uri can reference also collections, in which case the @depth influences
+whether only the collection itself is copied (%E_WEBDAV_DEPTH_THIS) or whether
+the collection with all its children is copied (%E_WEBDAV_DEPTH_INFINITY).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="source_uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource or collection to copy</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="destination_uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the destination</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="depth" transfer-ownership="none">
+            <doc xml:space="preserve">requested depth, can be one of %E_WEBDAV_DEPTH_THIS or %E_WEBDAV_DEPTH_INFINITY</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="can_overwrite" transfer-ownership="none">
+            <doc xml:space="preserve">whether can overwrite @destination_uri, when it exists</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="delete_sync"
+              c:identifier="e_webdav_session_delete_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Deletes a resource identified by @uri on the server. The URI can
+reference a collection, in which case @depth should be %E_WEBDAV_DEPTH_INFINITY.
+Use @depth %E_WEBDAV_DEPTH_THIS when deleting a regular resource, or %NULL,
+to let the server use default Depth.
+
+The @etag argument is used to avoid clashes when overwriting existing resources.
+Use %NULL @etag when deleting collection resources or to force the deletion,
+otherwise provide a valid ETag of a non-collection resource to verify that
+the version requested to delete is the same as on the server.
+
+Note that the actual usage of @etag is also influenced by #ESourceWebdav:avoid-ifmatch
+property of the associated #ESource.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource to delete</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="depth"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional requested depth, can be one of %E_WEBDAV_DEPTH_THIS or %E_WEBDAV_DEPTH_INFINITY, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="etag"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional ETag of the resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="ensure_full_uri"
+              c:identifier="e_webdav_session_ensure_full_uri"
+              version="3.24">
+        <doc xml:space="preserve">Converts possibly path-only @href into a full URI under the @request_uri.
+When the @request_uri is %NULL, the URI defined in associated #ESource is
+used instead.
+
+Free the returned pointer with g_free(), when no longer needed.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The @href as a full URI</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="request_uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #SoupURI to which the @href belongs, or %NULL</doc>
+            <type name="Soup.URI" c:type="const SoupURI*"/>
+          </parameter>
+          <parameter name="href" transfer-ownership="none">
+            <doc xml:space="preserve">a possibly path-only href</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_acl_restrictions_sync"
+              c:identifier="e_webdav_session_get_acl_restrictions_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Gets Access Control List (ACL) restrictions for the @uri, or, in case it's %NULL,
+for the URI defined in associated #ESource. The @out_principal_kind is valid only
+if the @out_restrictions contains #E_WEBDAV_ACL_RESTRICTION_REQUIRED_PRINCIPAL.
+The @out_principal_hrefs is valid only if the @out_principal_kind is valid and when
+it is #E_WEBDAV_ACE_PRINCIPAL_HREF.
+
+Free the returned @out_principal_hrefs with
+g_slist_free_full (entries, g_free);
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_restrictions"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for bit-or of #EWebDAVACLRestrictions</doc>
+            <type name="guint32" c:type="guint32*"/>
+          </parameter>
+          <parameter name="out_principal_kind"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for principal kind</doc>
+            <type name="WebDAVACEPrincipalKind"
+                  c:type="EWebDAVACEPrincipalKind*"/>
+          </parameter>
+          <parameter name="out_principal_hrefs"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a #GSList of principal href-s</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="utf8"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_acl_sync"
+              c:identifier="e_webdav_session_get_acl_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Gets Access Control List (ACL) for the @uri, or, in case it's %NULL, for the URI
+defined in associated #ESource.
+
+This function doesn't read general #E_WEBDAV_ACE_PRINCIPAL_PROPERTY.
+
+Free the returned @out_entries with
+g_slist_free_full (entries, e_webdav_access_control_entry_free);
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_entries"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a #GSList of #EWebDAVAccessControlEntry</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="WebDAVAccessControlEntry"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_current_user_privilege_set_sync"
+              c:identifier="e_webdav_session_get_current_user_privilege_set_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Gets current user privileges for the @uri, or, in case it's %NULL, for the URI
+defined in associated #ESource.
+
+Free the returned @out_privileges with
+g_slist_free_full (privileges, e_webdav_privilege_free);
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_privileges"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a %GSList of #EWebDAVPrivilege</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="WebDAVPrivilege"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_data_sync"
+              c:identifier="e_webdav_session_get_data_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Reads a resource identified by @uri from the server. The URI cannot
+reference a collection.
+
+The @out_bytes is filled by actual data being read. If not %NULL, @out_length
+is populated with how many bytes had been read. The @out_bytes is always
+NUL-terminated, while this termination byte is not part of @out_length.
+Free the @out_bytes with g_free(), when no longer needed.
+
+Free returned pointer of @out_href and @out_etag, if not %NULL, with g_free(),
+when no longer needed.
+
+To read large data use e_webdav_session_get_sync() instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource to read</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_href"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for href of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_etag"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for etag of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_bytes"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for bytes being read</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_length"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">option return location for length of bytes being read, or %NULL</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_principal_collection_set_sync"
+              c:identifier="e_webdav_session_get_principal_collection_set_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Gets list of principal collection href for the @uri, or, in case it's %NULL,
+for the URI defined in associated #ESource. The @out_principal_hrefs are root
+collections that contain the principals that are available on the server that
+implements this resource.
+
+Free the returned @out_principal_hrefs with
+g_slist_free_full (entries, g_free);
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_principal_hrefs"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a #GSList of principal href-s</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="utf8"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_supported_privilege_set_sync"
+              c:identifier="e_webdav_session_get_supported_privilege_set_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Gets supported privileges for the @uri, or, in case it's %NULL, for the URI
+defined in associated #ESource.
+
+The root node of @out_privileges has always %NULL data.
+
+Free the returned @out_privileges with e_webdav_session_util_free_privileges()
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_privileges"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for the tree of supported privileges</doc>
+            <type name="GLib.Node" c:type="GNode**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_sync"
+              c:identifier="e_webdav_session_get_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Reads a resource identified by @uri from the server and writes it
+to the @stream. The URI cannot reference a collection.
+
+Free returned pointer of @out_href and @out_etag, if not %NULL, with g_free(),
+when no longer needed.
+
+The e_webdav_session_get_data_sync() can be used to read the resource data
+directly to memory.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource to read</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_href"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for href of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_etag"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for etag of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_stream"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">a #GOutputStream to write data to</doc>
+            <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="getctag_sync"
+              c:identifier="e_webdav_session_getctag_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Issues a getctag property request for a collection identified by @uri, or,
+in case it's %NULL, on the URI defined in associated #ESource. The ctag is
+a collection tag, which changes whenever the collection changes (similar
+to etag). The getctag is an extension, thus the function can fail when
+the server doesn't support it.
+
+Free the returned @out_ctag with g_free(), when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_ctag"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for the ctag</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="list_sync"
+              c:identifier="e_webdav_session_list_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Lists content of the @uri, or, in case it's %NULL, of the URI defined
+in associated #ESource, which should point to a collection. The @flags
+influences which properties are read for the resources.
+
+The @out_resources is in no particular order.
+
+Free the returned @out_resources with
+g_slist_free_full (resources, e_webdav_resource_free);
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="depth" transfer-ownership="none">
+            <doc xml:space="preserve">requested depth, can be one of %E_WEBDAV_DEPTH_THIS, %E_WEBDAV_DEPTH_THIS_AND_CHILDREN or %E_WEBDAV_DEPTH_INFINITY</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">a bit-or of #EWebDAVListFlags, claiming what properties to read</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="out_resources"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for the resources</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="WebDAVResource"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="lock_resource_sync"
+              c:identifier="e_webdav_session_lock_resource_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Locks a resource identified by @uri, or, in case it's %NULL, by the URI defined
+in associated #ESource. It obtains a write lock with the given @lock_scope.
+
+The @owner is used to identify the lock owner. When it's an http:// or https://,
+then it's referenced as DAV:href, otherwise the value is treated as plain text.
+If it's %NULL, then the user name from the associated #ESource is used.
+
+The @out_lock_token can be refreshed with e_webdav_session_refresh_lock_sync().
+Release the lock with e_webdav_session_unlock_sync().
+Free the returned @out_lock_token with g_free(), when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to lock, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="lock_scope" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVLockScope to define the scope of the lock</doc>
+            <type name="WebDAVLockScope" c:type="EWebDAVLockScope"/>
+          </parameter>
+          <parameter name="lock_timeout" transfer-ownership="none">
+            <doc xml:space="preserve">timeout for the lock, in seconds, on 0 to infinity</doc>
+            <type name="gint32" c:type="gint32"/>
+          </parameter>
+          <parameter name="owner"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional identificator of the owner of the lock, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_lock_token"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location of the obtained or refreshed lock token</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="lock_sync"
+              c:identifier="e_webdav_session_lock_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Locks a resource identified by @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource.
+
+The @out_lock_token can be refreshed with e_webdav_session_refresh_lock_sync().
+Release the lock with e_webdav_session_unlock_sync().
+Free the returned @out_lock_token with g_free(), when no longer needed.
+
+If provided, free the returned @out_xml_response with xmlFreeDoc(),
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to lock, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="depth" transfer-ownership="none">
+            <doc xml:space="preserve">requested depth, can be one of %E_WEBDAV_DEPTH_THIS or %E_WEBDAV_DEPTH_INFINITY</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="lock_timeout" transfer-ownership="none">
+            <doc xml:space="preserve">timeout for the lock, in seconds, on 0 to infinity</doc>
+            <type name="gint32" c:type="gint32"/>
+          </parameter>
+          <parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an XML describing the lock request, with DAV:lockinfo root element</doc>
+            <type name="XmlDocument" c:type="const EXmlDocument*"/>
+          </parameter>
+          <parameter name="out_lock_token"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location of the obtained or refreshed lock token</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_xml_response"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for the server response as #xmlDocPtr</doc>
+            <type name="libxml2.Doc" c:type="xmlDoc**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="mkcalendar_sync"
+              c:identifier="e_webdav_session_mkcalendar_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Creates a new calendar collection identified by @uri on the server.
+The @supports defines what component types can be stored into
+the created calendar collection. Only %E_WEBDAV_RESOURCE_SUPPORTS_NONE
+and values related to iCalendar content can be used here.
+Using %E_WEBDAV_RESOURCE_SUPPORTS_NONE means that everything is supported.
+
+Note that CalDAV RFC 4791 Section 4.2 forbids to create calendar
+resources under other calendar resources (no nested calendars
+are allowed).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the collection to create</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="display_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a human-readable display name to set, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="description"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a human-readable description of the calendar, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="color"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a color to set, in format "#RRGGBB", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="supports" transfer-ownership="none">
+            <doc xml:space="preserve">a bit-or of EWebDAVResourceSupports values</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="mkcol_addressbook_sync"
+              c:identifier="e_webdav_session_mkcol_addressbook_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Creates a new address book collection identified by @uri on the server.
+
+Note that CardDAV RFC 6352 Section 5.2 forbids to create address book
+resources under other address book resources (no nested address books
+are allowed).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the collection to create</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="display_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a human-readable display name to set, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="description"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a human-readable description of the address book, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="mkcol_sync"
+              c:identifier="e_webdav_session_mkcol_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Creates a new generic collection identified by @uri on the server.
+To create specific collections use e_webdav_session_mkcalendar_sync()
+or e_webdav_session_mkcol_addressbook_sync().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the collection to create</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="move_sync"
+              c:identifier="e_webdav_session_move_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Moves a resource identified by @source_uri to @destination_uri on the server.
+The @source_uri can reference also collections.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="source_uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource or collection to copy</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="destination_uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the destination</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="can_overwrite" transfer-ownership="none">
+            <doc xml:space="preserve">whether can overwrite @destination_uri, when it exists</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="new_request"
+              c:identifier="e_webdav_session_new_request"
+              version="3.26"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new #SoupRequestHTTP for the given @uri, or, when %NULL,
+   for the URI stored in the associated #ESource. Free the returned structure
+   with g_object_unref(), when no longer needed.</doc>
+          <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="method" transfer-ownership="none">
+            <doc xml:space="preserve">an HTTP method</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to create the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="options_sync"
+              c:identifier="e_webdav_session_options_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Issues OPTIONS request on the provided @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource.
+
+The @out_capabilities contains a set of returned capabilities. Some known are
+defined as E_WEBDAV_CAPABILITY_CLASS_1, and so on. The 'value' of the #GHashTable
+doesn't have any particular meaning and the strings are compared case insensitively.
+Free the hash table with g_hash_table_destroy(), when no longer needed. The returned
+value can be %NULL on success, it's when the server doesn't provide the information.
+
+The @out_allows contains a set of allowed methods returned by the server. Some known
+are defined as %SOUP_METHOD_OPTIONS, and so on. The 'value' of the #GHashTable
+doesn't have any particular meaning and the strings are compared case insensitively.
+Free the hash table with g_hash_table_destroy(), when no longer needed. The returned
+value can be %NULL on success, it's when the server doesn't provide the information.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_capabilities"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for DAV capabilities</doc>
+            <type name="GLib.HashTable" c:type="GHashTable**">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="out_allows"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for allowed operations</doc>
+            <type name="GLib.HashTable" c:type="GHashTable**">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="post_sync"
+              c:identifier="e_webdav_session_post_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Issues POST request on the provided @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource.
+
+The optional @out_content_type can be used to get content type of the response.
+Free it with g_free(), when no longer needed.
+
+The optional @out_content can be used to get actual result content. Free it
+with g_byte_array_free(), when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">data to post to the server</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="data_length" transfer-ownership="none">
+            <doc xml:space="preserve">length of @data, or -1, when @data is NUL-terminated</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="out_content_type"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for response Content-Type, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_content"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for response content, or %NULL</doc>
+            <array name="GLib.ByteArray" c:type="GByteArray**">
+              <type name="guint8" c:type="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="principal_property_search_sync"
+              c:identifier="e_webdav_session_principal_property_search_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Issues a DAV:principal-property-search for the @uri, or, in case it's %NULL,
+for the URI defined in associated #ESource. The DAV:principal-property-search
+performs a search for all principals whose properties contain character data
+that matches the search criteria @match_value in @match_property property
+of namespace @match_ns_uri.
+
+By default, the function searches all members (at any depth) of the collection
+identified by the @uri. If @apply_to_principal_collection_set is set to %TRUE,
+the search is applied instead to each collection returned by
+e_webdav_session_get_principal_collection_set_sync() for the @uri.
+
+The @out_principals is a #GSList of #EWebDAVResource, where the kind
+is set to %E_WEBDAV_RESOURCE_KIND_PRINCIPAL and only href with displayname
+are filled. All other members of #EWebDAVResource are not set.
+
+Free the returned @out_principals with
+g_slist_free_full (principals, e_webdav_resource_free);
+when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded. Note it can report success also when no matching
+   principal had been found.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="apply_to_principal_collection_set"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">whether to apply to principal-collection-set</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="match_ns_uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">namespace URI of the property to search in, or %NULL for %E_WEBDAV_NS_DAV</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="match_property" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property to search in</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="match_value" transfer-ownership="none">
+            <doc xml:space="preserve">a string value to search for</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_principals"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for matching principals</doc>
+            <type name="GLib.SList" c:type="GSList**">
+              <type name="WebDAVResource"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="propfind_sync"
+              c:identifier="e_webdav_session_propfind_sync"
+              version="3.26"
+              introspectable="0"
+              throws="1">
+        <doc xml:space="preserve">Issues PROPFIND request on the provided @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource. On success, calls @func for each returned
+DAV:propstat. The provided XPath context has registered %E_WEBDAV_NS_DAV namespace
+with prefix "D". It doesn't have any other namespace registered.
+
+The @func is called always at least once, with %NULL xpath_prop_prefix, which
+is meant to let the caller setup the xpath_ctx, like to register its own namespaces
+to it with e_xml_xpath_context_register_namespaces(). All other invocations of @func
+will have xpath_prop_prefix non-%NULL.
+
+The @xml can be %NULL, in which case the server should behave like DAV:allprop request.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="depth" transfer-ownership="none">
+            <doc xml:space="preserve">requested depth, can be one of %E_WEBDAV_DEPTH_THIS, %E_WEBDAV_DEPTH_THIS_AND_CHILDREN or %E_WEBDAV_DEPTH_INFINITY</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="xml"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the request itself, as an #EXmlDocument, the root element should be DAV:propfind, or %NULL</doc>
+            <type name="XmlDocument" c:type="const EXmlDocument*"/>
+          </parameter>
+          <parameter name="func" transfer-ownership="none" closure="4">
+            <doc xml:space="preserve">an #EWebDAVPropstatTraverseFunc function to call for each DAV:propstat in the multistatus response</doc>
+            <type name="WebDAVPropstatTraverseFunc"
+                  c:type="EWebDAVPropstatTraverseFunc"/>
+          </parameter>
+          <parameter name="func_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="proppatch_sync"
+              c:identifier="e_webdav_session_proppatch_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Issues PROPPATCH request on the provided @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource, with the @changes. The order of requested changes
+inside @xml is significant, unlike on other places.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument with request changes, its root element should be DAV:propertyupdate</doc>
+            <type name="XmlDocument" c:type="const EXmlDocument*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="put_data_sync"
+              c:identifier="e_webdav_session_put_data_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Writes data to a resource identified by @uri to the server. The URI cannot
+reference a collection.
+
+The @etag argument is used to avoid clashes when overwriting existing
+resources. It can contain three values:
+ - %NULL - to write completely new resource
+ - empty string - write new resource or overwrite any existing, regardless changes on the server
+ - valid ETag - overwrite existing resource only if it wasn't changed on the server.
+
+Note that the actual usage of @etag is also influenced by #ESourceWebdav:avoid-ifmatch
+property of the associated #ESource.
+
+The @out_href, if provided, is filled with the resulting URI
+of the written resource. It can be different from the @uri when the server
+redirected to a different location.
+
+The @out_etag contains ETag of the resource after it had been saved.
+
+To read large data use e_webdav_session_put_sync() instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource to write</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="etag"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an ETag of the resource, if it's an existing resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:space="preserve">Content-Type of the @bytes to be written</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="bytes" transfer-ownership="none">
+            <doc xml:space="preserve">actual bytes to be written</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:space="preserve">how many bytes to write, or -1, when the @bytes is NUL-terminated</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="out_href"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for href of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_etag"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for etag of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="put_sync"
+              c:identifier="e_webdav_session_put_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Writes data from @stream to a resource identified by @uri to the server.
+The URI cannot reference a collection.
+
+The @etag argument is used to avoid clashes when overwriting existing
+resources. It can contain three values:
+ - %NULL - to write completely new resource
+ - empty string - write new resource or overwrite any existing, regardless changes on the server
+ - valid ETag - overwrite existing resource only if it wasn't changed on the server.
+
+Note that the actual behaviour is also influenced by #ESourceWebdav:avoid-ifmatch
+property of the associated #ESource.
+
+The @out_href, if provided, is filled with the resulting URI
+of the written resource. It can be different from the @uri when the server
+redirected to a different location.
+
+The @out_etag contains ETag of the resource after it had been saved.
+
+The @stream should support also #GSeekable interface, because the data
+send can require restart of the send due to redirect or other reasons.
+
+The e_webdav_session_put_data_sync() can be used to write data stored in memory.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">URI of the resource to write</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="etag"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an ETag of the resource, if it's an existing resource, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <doc xml:space="preserve">Content-Type of the @bytes to be written</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GInputStream with data to be written</doc>
+            <type name="Gio.InputStream" c:type="GInputStream*"/>
+          </parameter>
+          <parameter name="out_href"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for href of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_etag"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for etag of the resource, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="refresh_lock_sync"
+              c:identifier="e_webdav_session_refresh_lock_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Refreshes existing lock @lock_token for a resource identified by @uri,
+or, in case it's %NULL, on the URI defined in associated #ESource.
+The @lock_token is returned from e_webdav_session_lock_sync() and
+the @uri should be the same as that used with e_webdav_session_lock_sync().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to lock, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="lock_token" transfer-ownership="none">
+            <doc xml:space="preserve">token of an existing lock</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="lock_timeout" transfer-ownership="none">
+            <doc xml:space="preserve">timeout for the lock, in seconds, on 0 to infinity</doc>
+            <type name="gint32" c:type="gint32"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="replace_with_detailed_error"
+              c:identifier="e_webdav_session_replace_with_detailed_error"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Tries to read detailed error information from @response_data,
+if not provided, then from @request's response_body. If the detailed
+error cannot be found, then does nothing, otherwise frees the content
+of @inout_error, if any, and then populates it with an error message
+prefixed with @prefix.
+
+The @prefix might be of form "Failed to something", because the resulting
+error message will be:
+"Failed to something: HTTP error code XXX (reason_phrase): detailed_error".
+When @prefix is %NULL, the error message will be:
+"Failed with HTTP error code XXX (reason phrase): detailed_error".
+
+As the caller might not be interested in errors, also the @inout_error
+can be %NULL, in which case the function does nothing.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether any detailed error had been recognized.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="request" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupRequestHTTP</doc>
+            <type name="Soup.RequestHTTP" c:type="SoupRequestHTTP*"/>
+          </parameter>
+          <parameter name="response_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">received response data, or %NULL</doc>
+            <array name="GLib.ByteArray" c:type="const GByteArray*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="ignore_multistatus" transfer-ownership="none">
+            <doc xml:space="preserve">whether to ignore multistatus responses</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="prefix"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">error message prefix, used when replacing, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="report_sync"
+              c:identifier="e_webdav_session_report_sync"
+              version="3.26"
+              introspectable="0"
+              throws="1">
+        <doc xml:space="preserve">Issues REPORT request on the provided @uri, or, in case it's %NULL, on the URI
+defined in associated #ESource. On success, calls @func for each returned
+DAV:propstat. The provided XPath context has registered %E_WEBDAV_NS_DAV namespace
+with prefix "D". It doesn't have any other namespace registered.
+
+The report can result in a multistatus response, but also to raw data. In case
+the @func is provided and the result is a multistatus response, then it is traversed
+using this @func. The @func is called always at least once, with %NULL xpath_prop_prefix,
+which is meant to let the caller setup the xpath_ctx, like to register its own namespaces
+to it with e_xml_xpath_context_register_namespaces(). All other invocations of @func
+will have xpath_prop_prefix non-%NULL.
+
+The optional @out_content_type can be used to get content type of the response.
+Free it with g_free(), when no longer needed.
+
+The optional @out_content can be used to get actual result content. Free it
+with g_byte_array_free(), when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="depth"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">requested depth, can be %NULL, then no Depth header is sent</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">the request itself, as an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="const EXmlDocument*"/>
+          </parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="4">
+            <doc xml:space="preserve">an #EWebDAVPropstatTraverseFunc function to call for each DAV:propstat in the multistatus response, or %NULL</doc>
+            <type name="WebDAVPropstatTraverseFunc"
+                  c:type="EWebDAVPropstatTraverseFunc"/>
+          </parameter>
+          <parameter name="func_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="out_content_type"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for response Content-Type, or %NULL</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_content"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for response content, or %NULL</doc>
+            <array name="GLib.ByteArray" c:type="GByteArray**">
+              <type name="guint8" c:type="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_acl_sync"
+              c:identifier="e_webdav_session_set_acl_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Changes Access Control List (ACL) for the @uri, or, in case it's %NULL,
+for the URI defined in associated #ESource.
+
+Make sure that the @entries satisfy ACL restrictions, as returned
+by e_webdav_session_get_acl_restrictions_sync(). The order in the @entries
+is preserved. It cannot contain any %E_WEBDAV_ACE_FLAG_PROTECTED,
+nor @E_WEBDAV_ACE_FLAG_INHERITED, items.
+
+Use e_webdav_session_get_acl_sync() to read currently known ACL entries,
+remove from the list those protected and inherited, and then modify
+the rest with the required changed.
+
+Note this function doesn't support general %E_WEBDAV_ACE_PRINCIPAL_PROPERTY and
+returns %G_IO_ERROR_NOT_SUPPORTED error when any such is tried to be written.
+
+In case the returned entries contain any %E_WEBDAV_ACE_PRINCIPAL_PROPERTY,
+or there's a need to write such Access Control Entry, then do not use
+e_webdav_session_get_acl_sync(), neither e_webdav_session_set_acl_sync(),
+and write more generic implementation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="entries" transfer-ownership="none">
+            <doc xml:space="preserve">entries to write</doc>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="WebDAVAccessControlEntry"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="traverse_mkcalendar_response"
+              c:identifier="e_webdav_session_traverse_mkcalendar_response"
+              version="3.26"
+              introspectable="0"
+              throws="1">
+        <doc xml:space="preserve">Traverses a CALDAV:mkcalendar-response response and calls @func for each returned DAV:propstat.
+The provided XPath context has registered %E_WEBDAV_NS_DAV namespace with prefix "D" and
+%E_WEBDAV_NS_CALDAV namespace with prefix "C". It doesn't have any other namespace registered.
+
+The @message, if provided, is used to verify that the response is an XML Content-Type.
+It's used to get the request URI as well.
+
+The @func is called always at least once, with %NULL xpath_prop_prefix, which
+is meant to let the caller setup the xpath_ctx, like to register its own namespaces
+to it with e_xml_xpath_context_register_namespaces(). All other invocations of @func
+will have xpath_prop_prefix non-%NULL.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="message"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional #SoupMessage corresponding to the response, or %NULL</doc>
+            <type name="Soup.Message" c:type="const SoupMessage*"/>
+          </parameter>
+          <parameter name="xml_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #GByteArray containing CALDAV:mkcalendar-response response</doc>
+            <array name="GLib.ByteArray" c:type="const GByteArray*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="func" transfer-ownership="none" closure="3">
+            <doc xml:space="preserve">an #EWebDAVPropstatTraverseFunc function to call for each DAV:propstat in the response</doc>
+            <type name="WebDAVPropstatTraverseFunc"
+                  c:type="EWebDAVPropstatTraverseFunc"/>
+          </parameter>
+          <parameter name="func_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="traverse_mkcol_response"
+              c:identifier="e_webdav_session_traverse_mkcol_response"
+              version="3.26"
+              introspectable="0"
+              throws="1">
+        <doc xml:space="preserve">Traverses a DAV:mkcol-response response and calls @func for each returned DAV:propstat.
+The provided XPath context has registered %E_WEBDAV_NS_DAV namespace with prefix "D".
+It doesn't have any other namespace registered.
+
+The @message, if provided, is used to verify that the response is an XML Content-Type.
+It's used to get the request URI as well.
+
+The @func is called always at least once, with %NULL xpath_prop_prefix, which
+is meant to let the caller setup the xpath_ctx, like to register its own namespaces
+to it with e_xml_xpath_context_register_namespaces(). All other invocations of @func
+will have xpath_prop_prefix non-%NULL.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="message"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional #SoupMessage corresponding to the response, or %NULL</doc>
+            <type name="Soup.Message" c:type="const SoupMessage*"/>
+          </parameter>
+          <parameter name="xml_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #GByteArray containing DAV:mkcol-response response</doc>
+            <array name="GLib.ByteArray" c:type="const GByteArray*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="func" transfer-ownership="none" closure="3">
+            <doc xml:space="preserve">an #EWebDAVPropstatTraverseFunc function to call for each DAV:propstat in the response</doc>
+            <type name="WebDAVPropstatTraverseFunc"
+                  c:type="EWebDAVPropstatTraverseFunc"/>
+          </parameter>
+          <parameter name="func_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="traverse_multistatus_response"
+              c:identifier="e_webdav_session_traverse_multistatus_response"
+              version="3.26"
+              introspectable="0"
+              throws="1">
+        <doc xml:space="preserve">Traverses a DAV:multistatus response and calls @func for each returned DAV:propstat.
+The provided XPath context has registered %E_WEBDAV_NS_DAV namespace with prefix "D".
+It doesn't have any other namespace registered.
+
+The @message, if provided, is used to verify that the response is a multi-status
+and that the Content-Type is properly set. It's used to get a request URI as well.
+
+The @func is called always at least once, with %NULL xpath_prop_prefix, which
+is meant to let the caller setup the xpath_ctx, like to register its own namespaces
+to it with e_xml_xpath_context_register_namespaces(). All other invocations of @func
+will have xpath_prop_prefix non-%NULL.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="message"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional #SoupMessage corresponding to the response, or %NULL</doc>
+            <type name="Soup.Message" c:type="const SoupMessage*"/>
+          </parameter>
+          <parameter name="xml_data" transfer-ownership="none">
+            <doc xml:space="preserve">a #GByteArray containing DAV:multistatus response</doc>
+            <array name="GLib.ByteArray" c:type="const GByteArray*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="func" transfer-ownership="none" closure="3">
+            <doc xml:space="preserve">an #EWebDAVPropstatTraverseFunc function to call for each DAV:propstat in the multistatus response</doc>
+            <type name="WebDAVPropstatTraverseFunc"
+                  c:type="EWebDAVPropstatTraverseFunc"/>
+          </parameter>
+          <parameter name="func_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unlock_sync"
+              c:identifier="e_webdav_session_unlock_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Releases (unlocks) existing lock @lock_token for a resource identified by @uri,
+or, in case it's %NULL, on the URI defined in associated #ESource.
+The @lock_token is returned from e_webdav_session_lock_sync() and
+the @uri should be the same as that used with e_webdav_session_lock_sync().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to lock, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="lock_token" transfer-ownership="none">
+            <doc xml:space="preserve">token of an existing lock</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_properties_sync"
+              c:identifier="e_webdav_session_update_properties_sync"
+              version="3.26"
+              throws="1">
+        <doc xml:space="preserve">Updates properties (set/remove) on the provided @uri, or, in case it's %NULL,
+on the URI defined in associated #ESource, with the @changes. The order
+of @changes is significant, unlike on other places.
+
+This function supports only flat properties, those not under other element.
+To support more complex property tries use e_webdav_session_proppatch_sync()
+directly.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="webdav" transfer-ownership="none">
+            <doc xml:space="preserve">an #EWebDAVSession</doc>
+            <type name="WebDAVSession" c:type="EWebDAVSession*"/>
+          </instance-parameter>
+          <parameter name="uri"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">URI to issue the request for, or %NULL to read from #ESource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="changes" transfer-ownership="none">
+            <doc xml:space="preserve">a #GSList with request changes</doc>
+            <type name="GLib.SList" c:type="const GSList*">
+              <type name="WebDAVResource"/>
+            </type>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent" readable="0" private="1">
+        <type name="SoupSession" c:type="ESoupSession"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="WebDAVSessionPrivate" c:type="EWebDAVSessionPrivate*"/>
+      </field>
+    </class>
+    <record name="WebDAVSessionClass"
+            c:type="EWebDAVSessionClass"
+            glib:is-gtype-struct-for="WebDAVSession">
+      <field name="parent_class">
+        <type name="SoupSessionClass" c:type="ESoupSessionClass"/>
+      </field>
+      <field name="reserved">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="WebDAVSessionPrivate"
+            c:type="EWebDAVSessionPrivate"
+            disguised="1">
+    </record>
+    <class name="XmlDocument"
+           c:symbol-prefix="xml_document"
+           c:type="EXmlDocument"
+           version="3.26"
+           parent="GObject.Object"
+           glib:type-name="EXmlDocument"
+           glib:get-type="e_xml_document_get_type"
+           glib:type-struct="XmlDocumentClass">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <constructor name="new" c:identifier="e_xml_document_new" version="3.26">
+        <doc xml:space="preserve">Creates a new #EXmlDocument with root element @root_element and optionally
+also with set default namespace @ns_href.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #EXmlDocument; free it with g_object_unref(),
+   when no longer needed.</doc>
+          <type name="XmlDocument" c:type="EXmlDocument*"/>
+        </return-value>
+        <parameters>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">default namespace href to use, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="root_element" transfer-ownership="none">
+            <doc xml:space="preserve">root element name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_attribute"
+              c:identifier="e_xml_document_add_attribute"
+              version="3.26">
+        <doc xml:space="preserve">Adds a new attribute to the current element.
+Use %NULL @ns_href, to use the default namespace, otherwise either previously
+added namespace with the same href from e_xml_document_add_namespaces() is picked,
+or a new namespace with generated prefix is added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new attribute, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the attribute</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value of the attribute</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_attribute_double"
+              c:identifier="e_xml_document_add_attribute_double"
+              version="3.26">
+        <doc xml:space="preserve">Adds a new attribute with a double value to the current element.
+Use %NULL @ns_href, to use the default namespace, otherwise either previously
+added namespace with the same href from e_xml_document_add_namespaces() is picked,
+or a new namespace with generated prefix is added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new attribute, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the attribute</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">double value of the attribute</doc>
+            <type name="gdouble" c:type="gdouble"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_attribute_int"
+              c:identifier="e_xml_document_add_attribute_int"
+              version="3.26">
+        <doc xml:space="preserve">Adds a new attribute with an integer value to the current element.
+Use %NULL @ns_href, to use the default namespace, otherwise either previously
+added namespace with the same href from e_xml_document_add_namespaces() is picked,
+or a new namespace with generated prefix is added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new attribute, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the attribute</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">integer value of the attribute</doc>
+            <type name="gint64" c:type="gint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_attribute_time"
+              c:identifier="e_xml_document_add_attribute_time"
+              version="3.26">
+        <doc xml:space="preserve">Adds a new attribute with a time_t value in ISO 8601 format to the current element.
+The format is "YYYY-MM-DDTHH:MM:SSZ".
+Use %NULL @ns_href, to use the default namespace, otherwise either previously
+added namespace with the same href from e_xml_document_add_namespaces() is picked,
+or a new namespace with generated prefix is added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new attribute, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the attribute</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">time_t value of the attribute</doc>
+            <type name="glong" c:type="time_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_empty_element"
+              c:identifier="e_xml_document_add_empty_element"
+              version="3.26">
+        <doc xml:space="preserve">Adds an empty element, which is an element with no attribute and no value.
+
+It's the same as calling e_xml_document_start_element() immediately
+followed by e_xml_document_end_element().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new element, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the new element</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_namespaces"
+              c:identifier="e_xml_document_add_namespaces"
+              version="3.26"
+              introspectable="0">
+        <doc xml:space="preserve">Adds one or more namespaces to @xml, which can be referenced
+later by @ns_href. The caller should take care that neither
+used @ns_prefix, nor @ns_href, is already used by @xml.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_prefix" transfer-ownership="none">
+            <doc xml:space="preserve">namespace prefix to use for this namespace</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="ns_href" transfer-ownership="none">
+            <doc xml:space="preserve">namespace href</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">%NULL-terminated pairs of (ns_prefix, ns_href)</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="end_element"
+              c:identifier="e_xml_document_end_element"
+              version="3.26">
+        <doc xml:space="preserve">This is a pair function for e_xml_document_start_element() and
+e_xml_document_start_text_element(), which changes current
+element to the parent of that element.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_content"
+              c:identifier="e_xml_document_get_content"
+              version="3.26">
+        <doc xml:space="preserve">Gets content of the @xml as string. The string is nul-terminated, but
+if @out_length is also provided, then it doesn't contain this additional
+nul character.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">Content of the @xml as newly allocated string.
+   Free it with g_free(), when no longer needed.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="const EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="out_length"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1">
+            <doc xml:space="preserve">optional return location for length of the content, or %NULL</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_xmldoc"
+              c:identifier="e_xml_document_get_xmldoc"
+              version="3.26">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Underlying #xmlDocPtr.</doc>
+          <type name="libxml2.Doc" c:type="xmlDoc*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="start_element"
+              c:identifier="e_xml_document_start_element"
+              version="3.26">
+        <doc xml:space="preserve">Starts a new non-text element as a child of the current element.
+Each such call should be ended with corresponding e_xml_document_end_element().
+Use %NULL @ns_href, to use the default namespace, otherwise either previously
+added namespace with the same href from e_xml_document_add_namespaces() is picked,
+or a new namespace with generated prefix is added.
+
+To start a text node use e_xml_document_start_text_element().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new element, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the new element</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="start_text_element"
+              c:identifier="e_xml_document_start_text_element"
+              version="3.26">
+        <doc xml:space="preserve">Starts a new text element as a child of the current element.
+Each such call should be ended with corresponding e_xml_document_end_element().
+Use %NULL @ns_href, to use the default namespace, otherwise either previously
+added namespace with the same href from e_xml_document_add_namespaces() is picked,
+or a new namespace with generated prefix is added.
+
+To start a non-text node use e_xml_document_start_element().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="ns_href"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional namespace href for the new element, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the new element</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_base64"
+              c:identifier="e_xml_document_write_base64"
+              version="3.26">
+        <doc xml:space="preserve">Writes @value of length @len, encoded to base64, as content of the current element.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value to write as the content</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="len" transfer-ownership="none">
+            <doc xml:space="preserve">length of @value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_buffer"
+              c:identifier="e_xml_document_write_buffer"
+              version="3.26">
+        <doc xml:space="preserve">Writes @value of length @len as content of the current element.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value to write as the content</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="len" transfer-ownership="none">
+            <doc xml:space="preserve">length of @value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_double"
+              c:identifier="e_xml_document_write_double"
+              version="3.26">
+        <doc xml:space="preserve">Writes @value as content of the current element.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value to write as the content</doc>
+            <type name="gdouble" c:type="gdouble"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_int"
+              c:identifier="e_xml_document_write_int"
+              version="3.26">
+        <doc xml:space="preserve">Writes @value as content of the current element.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value to write as the content</doc>
+            <type name="gint64" c:type="gint64"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_string"
+              c:identifier="e_xml_document_write_string"
+              version="3.26">
+        <doc xml:space="preserve">Writes @value as content of the current element.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value to write as the content</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_time"
+              c:identifier="e_xml_document_write_time"
+              version="3.26">
+        <doc xml:space="preserve">Writes @value in ISO 8601 format as content of the current element.
+The format is "YYYY-MM-DDTHH:MM:SSZ".</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="xml" transfer-ownership="none">
+            <doc xml:space="preserve">an #EXmlDocument</doc>
+            <type name="XmlDocument" c:type="EXmlDocument*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">value to write as the content</doc>
+            <type name="glong" c:type="time_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="XmlDocumentPrivate" c:type="EXmlDocumentPrivate*"/>
+      </field>
+    </class>
+    <record name="XmlDocumentClass"
+            c:type="EXmlDocumentClass"
+            glib:is-gtype-struct-for="XmlDocument">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="reserved">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="XmlDocumentPrivate"
+            c:type="EXmlDocumentPrivate"
+            disguised="1">
     </record>
     <record name="XmlHash" c:type="EXmlHash" disguised="1">
       <doc xml:space="preserve">A hash table representation of an XML file.</doc>
@@ -20517,6 +24307,25 @@ Note: Pair function for this is e_util_slist_to_strv().</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="util_unref_in_thread"
+              c:identifier="e_util_unref_in_thread"
+              version="3.26">
+      <doc xml:space="preserve">Unrefs the given @object in a dedicated thread. This is useful when unreffing
+object deep in call stack when the caller might still use the object and
+this being the last reference to it.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="object"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a #GObject</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="util_utf8_data_make_valid"
               c:identifier="e_util_utf8_data_make_valid"
               version="3.6">
@@ -20535,6 +24344,24 @@ For %NULL @data returns newly allocated empty string ("").</doc>
         <parameter name="data_bytes" transfer-ownership="none">
           <doc xml:space="preserve">length of the binary data</doc>
           <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="util_utf8_decompose"
+              c:identifier="e_util_utf8_decompose"
+              version="3.26">
+      <doc xml:space="preserve">Converts the @text into a decomposed variant and strips it, which
+allows also cheap case insensitive comparision afterwards. This
+produces an output as being used in e_util_utf8_strstrcasedecomp().</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">A newly allocated string, a decomposed
+   variant of the @text. Free with g_free(), when no longer needed.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="text" transfer-ownership="none">
+          <doc xml:space="preserve">a UTF-8 string</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
@@ -20679,6 +24506,25 @@ Free the returned #GWeakRef with e_weak_ref_free().</doc>
                    nullable="1"
                    allow-none="1">
           <doc xml:space="preserve">a #GObject or %NULL</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_access_control_entry_free"
+              c:identifier="e_webdav_access_control_entry_free"
+              moved-to="WebDAVAccessControlEntry.free"
+              version="3.26">
+      <doc xml:space="preserve">Frees an #EWebDAVAccessControlEntry previously created with e_webdav_access_control_entry_new()
+or e_webdav_access_control_entry_copy(). The function does nothing, if @ptr is %NULL.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="ptr"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">an #EWebDAVAccessControlEntry</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -20945,6 +24791,64 @@ no longer needed.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="webdav_privilege_free"
+              c:identifier="e_webdav_privilege_free"
+              moved-to="WebDAVPrivilege.free"
+              version="3.26">
+      <doc xml:space="preserve">Frees an #EWebDAVPrivilege previously created with e_webdav_privilege_new()
+or e_webdav_privilege_copy(). The function does nothing, if @ptr is %NULL.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="ptr"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">an #EWebDAVPrivilege</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_property_change_free"
+              c:identifier="e_webdav_property_change_free"
+              moved-to="WebDAVPropertyChange.free"
+              version="3.26">
+      <doc xml:space="preserve">Frees an #EWebDAVPropertyChange previously created with e_webdav_property_change_new_set(),
+e_webdav_property_change_new_remove() or or e_webdav_property_change_copy().
+The function does nothing, if @ptr is %NULL.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="ptr"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">an #EWebDAVPropertyChange</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="webdav_resource_free"
+              c:identifier="e_webdav_resource_free"
+              moved-to="WebDAVResource.free"
+              version="3.26">
+      <doc xml:space="preserve">Frees an #EWebDAVResource previously created with e_webdav_resource_new()
+or e_webdav_resource_copy(). The function does nothing, if @ptr is %NULL.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="ptr"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">an #EWebDAVResource</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="xml_destroy_hash" c:identifier="e_xml_destroy_hash">
       <doc xml:space="preserve">Frees the memory used by @hash and its contents.</doc>
       <return-value transfer-ownership="none">
@@ -21007,6 +24911,54 @@ If no such child exists, the function returns %NULL.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="xml_new_xpath_context_with_namespaces"
+              c:identifier="e_xml_new_xpath_context_with_namespaces"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">Creates a new #xmlXPathContextPtr on @doc with preregistered
+namespaces. The namepsaces are pair of (prefix, href), terminated
+by %NULL.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a new #xmlXPathContextPtr. Free the returned
+   pointer with xmlXPathFreeContext() when no longer needed.</doc>
+        <type c:type="xmlXPathContext*"/>
+      </return-value>
+      <parameters>
+        <parameter name="doc" transfer-ownership="none">
+          <doc xml:space="preserve">an #xmlDocPtr</doc>
+          <type name="libxml2.Doc" c:type="xmlDoc*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">%NULL-terminated list of pairs (prefix, href) with namespaces</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xml_parse_data"
+              c:identifier="e_xml_parse_data"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">Parses XML data into an #xmlDocPtr. Free returned pointer
+with xmlFreeDoc(), when no longer needed.</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">a new #xmlDocPtr with parsed @data,
+   or %NULL on error.</doc>
+        <type name="libxml2.Doc" c:type="xmlDoc*"/>
+      </return-value>
+      <parameters>
+        <parameter name="data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">an XML data</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <doc xml:space="preserve">length of data, should be greated than zero</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="xml_parse_file"
               c:identifier="e_xml_parse_file"
               introspectable="0">
@@ -21015,7 +24967,7 @@ structure.  If the XML file cannot be read or its contents are malformed,
 the function returns %NULL.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">an XML document structure, or %NULL</doc>
-        <type name="libxml2.DocPtr" c:type="xmlDocPtr"/>
+        <type name="libxml2.Doc" c:type="xmlDoc*"/>
       </return-value>
       <parameters>
         <parameter name="filename" transfer-ownership="none">
@@ -21038,7 +24990,7 @@ If an error occurs while saving, the function returns -1 and sets errno.</doc>
         </parameter>
         <parameter name="doc" transfer-ownership="none">
           <doc xml:space="preserve">an XML document structure</doc>
-          <type name="libxml2.DocPtr" c:type="xmlDocPtr"/>
+          <type name="libxml2.Doc" c:type="xmlDoc*"/>
         </parameter>
       </parameters>
     </function>
@@ -21064,6 +25016,117 @@ of @doc.</doc>
         <parameter name="type" transfer-ownership="none">
           <doc xml:space="preserve">The value type to use as a key in the hash table.</doc>
           <type name="XmlHashType" c:type="EXmlHashType"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xml_xpath_context_register_namespaces"
+              c:identifier="e_xml_xpath_context_register_namespaces"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">Registers one or more additional namespaces. It's a caller's error
+to try to register a namespace with the same prefix again, unless
+the prefix uses the same namespace href.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="xpath_ctx" transfer-ownership="none">
+          <doc xml:space="preserve">an #xmlXPathContextPtr</doc>
+          <type c:type="xmlXPathContext*"/>
+        </parameter>
+        <parameter name="prefix" transfer-ownership="none">
+          <doc xml:space="preserve">namespace prefix</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="href" transfer-ownership="none">
+          <doc xml:space="preserve">namespace href</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">%NULL-terminated list of pairs (prefix, href) with additional namespaces</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xml_xpath_eval"
+              c:identifier="e_xml_xpath_eval"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">Evaluates path specified by @format and returns its #xmlXPathObjectPtr,
+in case the path evaluates to a non-empty node set. See also
+e_xml_xpath_eval_as_string() which evaluates the path to string.</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">a new #xmlXPathObjectPtr which
+   references given path, or %NULL if path cannot be found or when
+   it evaluates to an empty nodeset. Free returned pointer with
+   xmlXPathFreeObject(), when no longer needed.</doc>
+        <type c:type="xmlXPathObject*"/>
+      </return-value>
+      <parameters>
+        <parameter name="xpath_ctx" transfer-ownership="none">
+          <doc xml:space="preserve">an #xmlXPathContextPtr</doc>
+          <type c:type="xmlXPathContext*"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">printf-like format specifier of path to evaluate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">arguments for the @format</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xml_xpath_eval_as_string"
+              c:identifier="e_xml_xpath_eval_as_string"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">Evaluates path specified by @format and returns its result as string,
+in case the path evaluates to a non-empty node set. See also
+e_xml_xpath_eval() which evaluates the path to an #xmlXPathObjectPtr.</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">a new string which contains value
+   of the given path, or %NULL if path cannot be found or when
+   it evaluates to an empty nodeset. Free returned pointer with
+   g_free(), when no longer needed.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="xpath_ctx" transfer-ownership="none">
+          <doc xml:space="preserve">an #xmlXPathContextPtr</doc>
+          <type c:type="xmlXPathContext*"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">printf-like format specifier of path to evaluate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">arguments for the @format</doc>
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="xml_xpath_eval_exists"
+              c:identifier="e_xml_xpath_eval_exists"
+              version="3.26"
+              introspectable="0">
+      <doc xml:space="preserve">Evaluates path specified by @format and returns whether it exists.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE, when the given XPath exists, %FALSE otherwise.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="xpath_ctx" transfer-ownership="none">
+          <doc xml:space="preserve">an #xmlXPathContextPtr</doc>
+          <type c:type="xmlXPathContext*"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">printf-like format specifier of path to evaluate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <doc xml:space="preserve">arguments for the @format</doc>
+          <varargs/>
         </parameter>
       </parameters>
     </function>

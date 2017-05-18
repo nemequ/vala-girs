@@ -304,6 +304,7 @@ namespace Ide {
 	public class BuildconfigConfigurationProvider : GLib.Object, Ide.ConfigurationProvider {
 		[CCode (has_construct_function = false)]
 		protected BuildconfigConfigurationProvider ();
+		public void track_config (Ide.BuildconfigConfiguration config);
 	}
 	[CCode (cheader_filename = "ide.h", has_type_id = false)]
 	[Compact]
@@ -2275,7 +2276,7 @@ namespace Ide {
 	}
 	[CCode (cheader_filename = "ide.h", type_cname = "IdeConfigurationProviderInterface", type_id = "ide_configuration_provider_get_type ()")]
 	public interface ConfigurationProvider : GLib.Object {
-		public abstract void load (Ide.ConfigurationManager manager);
+		public abstract async bool load_async (Ide.ConfigurationManager manager, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract void unload (Ide.ConfigurationManager manager);
 	}

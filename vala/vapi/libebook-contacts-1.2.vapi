@@ -518,6 +518,10 @@ namespace E {
 		public void remove_attributes (string? attr_group, string attr_name);
 		public string to_string (E.VCardFormat format);
 		public static string unescape_string (string s);
+		[Version (since = "3.26")]
+		public string? util_dup_x_attribute (string x_name);
+		[Version (since = "3.26")]
+		public void util_set_x_attribute (string x_name, string? value);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_vcard_attribute_get_type ()")]
 	[Compact]

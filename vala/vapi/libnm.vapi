@@ -3571,6 +3571,8 @@ namespace NM {
 		public const string SECURITY_WEP_KEY_TYPE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_TX_KEYIDX")]
 		public const string SECURITY_WEP_TX_KEYIDX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WPS_METHOD")]
+		public const string SECURITY_WPS_METHOD;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SEEN_BSSIDS")]
 		public const string SEEN_BSSIDS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SETTING_NAME")]
@@ -3675,6 +3677,8 @@ namespace NM {
 		public NM.SettingSecretFlags get_wep_key_flags ();
 		public NM.WepKeyType get_wep_key_type ();
 		public uint32 get_wep_tx_keyidx ();
+		[Version (since = "1.10")]
+		public NM.SettingWirelessSecurityWpsMethod get_wps_method ();
 		public void remove_group (uint32 i);
 		public bool remove_group_by_value (string group);
 		public void remove_pairwise (uint32 i);
@@ -3722,6 +3726,9 @@ namespace NM {
 		public NM.WepKeyType wep_key_type { get; set construct; }
 		[NoAccessorMethod]
 		public uint wep_tx_keyidx { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public uint wps_method { get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_simple_connection_get_type ()")]
 	public class SimpleConnection : GLib.Object, NM.Connection {
@@ -4044,7 +4051,10 @@ namespace NM {
 	[Flags]
 	public enum @80211ApFlags {
 		NONE,
-		PRIVACY
+		PRIVACY,
+		WPS,
+		WPS_PBC,
+		WPS_PIN
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_AP_SEC_", type_id = "nm_802_11_ap_security_flags_get_type ()")]
 	[Flags]
@@ -4343,6 +4353,7 @@ namespace NM {
 		ALLOW_INTERACTION,
 		REQUEST_NEW,
 		USER_REQUESTED,
+		WPS_PBC_ACTIVE,
 		ONLY_SYSTEM,
 		NO_ERRORS
 	}
@@ -4503,6 +4514,15 @@ namespace NM {
 		DISABLE,
 		OPTIONAL,
 		REQUIRED
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_", type_id = "nm_setting_wireless_security_wps_method_get_type ()")]
+	[Version (since = "1.10")]
+	public enum SettingWirelessSecurityWpsMethod {
+		DEFAULT,
+		DISABLED,
+		AUTO,
+		PBC,
+		PIN
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_STATE_", type_id = "nm_state_get_type ()")]
 	public enum State {

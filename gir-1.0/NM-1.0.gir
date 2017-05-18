@@ -31,6 +31,24 @@ and/or use gtk-doc annotations.  -->
         <doc xml:space="preserve">access point requires authentication and
 encryption (usually means WEP)</doc>
       </member>
+      <member name="wps"
+              value="2"
+              c:identifier="NM_802_11_AP_FLAGS_WPS"
+              glib:nick="wps">
+        <doc xml:space="preserve">access point supports some WPS method</doc>
+      </member>
+      <member name="wps_pbc"
+              value="4"
+              c:identifier="NM_802_11_AP_FLAGS_WPS_PBC"
+              glib:nick="wps-pbc">
+        <doc xml:space="preserve">access point supports push-button WPS</doc>
+      </member>
+      <member name="wps_pin"
+              value="8"
+              c:identifier="NM_802_11_AP_FLAGS_WPS_PIN"
+              glib:nick="wps-pin">
+        <doc xml:space="preserve">access point supports PIN-based WPS</doc>
+      </member>
     </bitfield>
     <bitfield name="80211ApSecurityFlags"
               glib:type-name="NM80211ApSecurityFlags"
@@ -1543,7 +1561,7 @@ If @connection is not given for a device-based activation, NetworkManager
 picks the best available connection for the device and activates it.
 
 Note that the callback is invoked when NetworkManager has started activating
-the new connection, not when it finishes. You can used the returned
+the new connection, not when it finishes. You can use the returned
 #NMActiveConnection object (in particular, #NMActiveConnection:state) to
 track the activation to its completion.</doc>
         <return-value transfer-ownership="none">
@@ -14987,6 +15005,11 @@ for this connection.</doc>
               c:type="NM_SETTING_WIRELESS_SECURITY_WEP_TX_KEYIDX">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_WIRELESS_SECURITY_WPS_METHOD"
+              value="wps-method"
+              c:type="NM_SETTING_WIRELESS_SECURITY_WPS_METHOD">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_WIRELESS_SEEN_BSSIDS"
               value="seen-bssids"
               c:type="NM_SETTING_WIRELESS_SEEN_BSSIDS">
@@ -15129,6 +15152,14 @@ corresponding #NMAgentManagerError codes.</doc>
   initiated by user-requested action via the D-Bus interface, as opposed to
   automatically initiated by NetworkManager in response to (for example) scan
   results or carrier changes.</doc>
+      </member>
+      <member name="wps_pbc_active"
+              value="8"
+              c:identifier="NM_SECRET_AGENT_GET_SECRETS_FLAG_WPS_PBC_ACTIVE"
+              glib:nick="wps-pbc-active">
+        <doc xml:space="preserve">indicates that WPS enrollment
+  is active with PBC method. The agent may suggest that the user pushes a button
+  on the router instead of supplying a PSK.</doc>
       </member>
       <member name="only_system"
               value="2147483648"
@@ -27809,6 +27840,22 @@ list.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_wps_method"
+              c:identifier="nm_setting_wireless_security_get_wps_method"
+              version="1.10">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingWirelessSecurity:wps-method property of the setting</doc>
+          <type name="SettingWirelessSecurityWpsMethod"
+                c:type="NMSettingWirelessSecurityWpsMethod"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWirelessSecurity</doc>
+            <type name="SettingWirelessSecurity"
+                  c:type="NMSettingWirelessSecurity*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="remove_group"
               c:identifier="nm_setting_wireless_security_remove_group">
         <doc xml:space="preserve">Removes an encryption algorithm from the allowed groupwise encryption
@@ -28084,6 +28131,20 @@ index is used by the AP, put that WEP key index here.  Valid values are 0
 Linksys WRT54G) number the keys 1 - 4.</doc>
         <type name="guint" c:type="guint"/>
       </property>
+      <property name="wps-method"
+                version="1.10"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Flags indicating which mode of WPS is to be used if any.
+
+There's little point in changing the default setting as NetworkManager will
+automatically determine whether it's feasible to start WPS enrollment from
+the Access Point capabilities.
+
+WPS can by disabled by setting this property to a value of 1.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
       </field>
@@ -28128,6 +28189,43 @@ Linksys WRT54G) number the keys 1 - 4.</doc>
               c:identifier="NM_SETTING_WIRELESS_SECURITY_PMF_REQUIRED"
               glib:nick="required">
         <doc xml:space="preserve">require PMF and fail if not available</doc>
+      </member>
+    </enumeration>
+    <enumeration name="SettingWirelessSecurityWpsMethod"
+                 version="1.10"
+                 glib:type-name="NMSettingWirelessSecurityWpsMethod"
+                 glib:get-type="nm_setting_wireless_security_wps_method_get_type"
+                 c:type="NMSettingWirelessSecurityWpsMethod">
+      <doc xml:space="preserve">Configure the use of WPS by a connection while it activates.</doc>
+      <member name="default"
+              value="0"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">Attempt whichever method AP supports</doc>
+      </member>
+      <member name="disabled"
+              value="1"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_DISABLED"
+              glib:nick="disabled">
+        <doc xml:space="preserve">WPS can not be used.</doc>
+      </member>
+      <member name="auto"
+              value="2"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_AUTO"
+              glib:nick="auto">
+        <doc xml:space="preserve">Use WPS, any method</doc>
+      </member>
+      <member name="pbc"
+              value="4"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_PBC"
+              glib:nick="pbc">
+        <doc xml:space="preserve">use WPS push-buthon method</doc>
+      </member>
+      <member name="pin"
+              value="8"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_PIN"
+              glib:nick="pin">
+        <doc xml:space="preserve">use PIN method</doc>
       </member>
     </enumeration>
     <enumeration name="SettingsError"

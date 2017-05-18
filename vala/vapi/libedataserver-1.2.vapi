@@ -198,6 +198,26 @@ namespace E {
 		public bool is_expired ();
 		public void set_access_token (string access_token, int expires_in_seconds);
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_soup_session_get_type ()")]
+	[Version (since = "3.26")]
+	public class SoupSession : Soup.Session {
+		[CCode (has_construct_function = false)]
+		public SoupSession (E.Source source);
+		public bool check_result (Soup.RequestHTTP request, void* read_bytes, size_t bytes_length) throws GLib.Error;
+		public E.NamedParameters? dup_credentials ();
+		public Soup.LoggerLogLevel get_log_level ();
+		public unowned E.Source get_source ();
+		public bool get_ssl_error_details (out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors);
+		public Soup.RequestHTTP new_request (string method, string uri_string) throws GLib.Error;
+		public GLib.ByteArray send_request_simple_sync (Soup.RequestHTTP request, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public GLib.InputStream send_request_sync (Soup.RequestHTTP request, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void set_credentials (E.NamedParameters? credentials);
+		public void setup_logging (string? logging_level);
+		public static unowned string util_status_to_string (uint status_code, string? reason_phrase);
+		[NoAccessorMethod]
+		public E.NamedParameters credentials { owned get; set; }
+		public E.Source source { get; construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_get_type ()")]
 	[Version (since = "3.6")]
 	public class Source : GLib.Object, GLib.Initable, GLib.ProxyResolver {
@@ -1058,6 +1078,144 @@ namespace E {
 		public Soup.URI soup_uri { owned get; set; }
 		public string ssl_trust { get; set construct; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "webdav_access_control_entry", type_id = "e_webdav_access_control_entry_get_type ()")]
+	[Compact]
+	public class WebDAVAccessControlEntry {
+		public uint32 flags;
+		public weak string inherited_href;
+		public weak string principal_href;
+		public E.WebDAVACEPrincipalKind principal_kind;
+		public weak GLib.SList<void*> privileges;
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public WebDAVAccessControlEntry (E.WebDAVACEPrincipalKind principal_kind, string? principal_href, uint32 flags, string? inherited_href);
+		[Version (since = "3.26")]
+		public void append_privilege (owned E.WebDAVPrivilege privilege);
+		[Version (since = "3.26")]
+		public E.WebDAVAccessControlEntry copy ();
+		[Version (since = "3.26")]
+		public static void free (void* ptr);
+		[Version (since = "3.26")]
+		public unowned GLib.SList<E.WebDAVPrivilege> get_privileges ();
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "webdav_privilege", type_id = "e_webdav_privilege_get_type ()")]
+	[Compact]
+	public class WebDAVPrivilege {
+		public weak string description;
+		public E.WebDAVPrivilegeHint hint;
+		public E.WebDAVPrivilegeKind kind;
+		public weak string name;
+		public weak string ns_uri;
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public WebDAVPrivilege (string? ns_uri, string? name, string? description, E.WebDAVPrivilegeKind kind, E.WebDAVPrivilegeHint hint);
+		[Version (since = "3.26")]
+		public E.WebDAVPrivilege copy ();
+		[Version (since = "3.26")]
+		public static void free (void* ptr);
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "webdav_property_change", type_id = "e_webdav_property_change_get_type ()")]
+	[Compact]
+	public class WebDAVPropertyChange {
+		public E.WebDAVPropertyChangeKind kind;
+		public weak string name;
+		public weak string ns_uri;
+		public weak string value;
+		[Version (since = "3.26")]
+		public E.WebDAVPropertyChange copy ();
+		[Version (since = "3.26")]
+		public static void free (void* ptr);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public WebDAVPropertyChange.remove (string ns_uri, string name);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public WebDAVPropertyChange.@set (string ns_uri, string name, string? value);
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "webdav_resource", type_id = "e_webdav_resource_get_type ()")]
+	[Compact]
+	public class WebDAVResource {
+		public weak string color;
+		public size_t content_length;
+		public weak string content_type;
+		public long creation_date;
+		public weak string description;
+		public weak string display_name;
+		public weak string etag;
+		public weak string href;
+		public E.WebDAVResourceKind kind;
+		public long last_modified;
+		public uint32 supports;
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public WebDAVResource (E.WebDAVResourceKind kind, uint32 supports, string href, string? etag, string? display_name, string content_type, size_t content_length, long creation_date, long last_modified, string? description, string? color);
+		[Version (since = "3.26")]
+		public E.WebDAVResource copy ();
+		[Version (since = "3.26")]
+		public static void free (void* ptr);
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", lower_case_csuffix = "webdav_session", type_id = "e_webdav_session_get_type ()")]
+	[Version (since = "3.26")]
+	public class WebDAVSession : E.SoupSession {
+		[CCode (has_construct_function = false)]
+		public WebDAVSession (E.Source source);
+		public bool acl_sync (string? uri, E.XmlDocument xml, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool copy_sync (string source_uri, string destination_uri, string depth, bool can_overwrite, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool delete_sync (string uri, string? depth, string? etag, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.24")]
+		public string ensure_full_uri (Soup.URI? request_uri, string href);
+		public bool get_acl_restrictions_sync (string? uri, out uint32 out_restrictions, out E.WebDAVACEPrincipalKind out_principal_kind, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_acl_sync (string? uri, out GLib.SList<E.WebDAVAccessControlEntry> out_entries, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_current_user_privilege_set_sync (string? uri, out GLib.SList<E.WebDAVPrivilege> out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out string out_bytes, out size_t? out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_principal_collection_set_sync (string? uri, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_supported_privilege_set_sync (string? uri, out GLib.Node out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_sync (string uri, out string? out_href, out string? out_etag, out GLib.OutputStream out_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool getctag_sync (string? uri, out string out_ctag, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool list_sync (string? uri, string depth, uint32 flags, out GLib.SList<E.WebDAVResource> out_resources, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool lock_resource_sync (string? uri, E.WebDAVLockScope lock_scope, int32 lock_timeout, string? owner, out string out_lock_token, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool lock_sync (string? uri, string depth, int32 lock_timeout, E.XmlDocument xml, out string out_lock_token, out Xml.Doc? out_xml_response, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool mkcalendar_sync (string uri, string? display_name, string? description, string? color, uint32 supports, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool mkcol_addressbook_sync (string uri, string? display_name, string? description, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool mkcol_sync (string uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool move_sync (string source_uri, string destination_uri, bool can_overwrite, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public Soup.RequestHTTP new_request (string method, string? uri) throws GLib.Error;
+		public bool options_sync (string? uri, out GLib.HashTable<void*,void*> out_capabilities, out GLib.HashTable<void*,void*> out_allows, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool post_sync (string? uri, string data, size_t data_length, owned string? out_content_type, owned GLib.ByteArray? out_content, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool principal_property_search_sync (string? uri, bool apply_to_principal_collection_set, string? match_ns_uri, string match_property, string match_value, out GLib.SList<E.WebDAVResource> out_principals, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool proppatch_sync (string? uri, E.XmlDocument xml, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool put_data_sync (string uri, string? etag, string content_type, string bytes, size_t length, out string? out_href, out string? out_etag, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool put_sync (string uri, string? etag, string content_type, GLib.InputStream stream, out string? out_href, out string? out_etag, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool refresh_lock_sync (string? uri, string lock_token, int32 lock_timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool replace_with_detailed_error (Soup.RequestHTTP request, GLib.ByteArray? response_data, bool ignore_multistatus, string? prefix) throws GLib.Error;
+		public bool set_acl_sync (string? uri, GLib.SList<E.WebDAVAccessControlEntry> entries, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool unlock_sync (string? uri, string lock_token, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool update_properties_sync (string? uri, GLib.SList<E.WebDAVResource> changes, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static void util_free_privileges (GLib.Node? privileges);
+		public static string util_maybe_dequote (ref string? text);
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_xml_document_get_type ()")]
+	[Version (since = "3.26")]
+	public class XmlDocument : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public XmlDocument (string? ns_href, string root_element);
+		public void add_attribute (string? ns_href, string name, string value);
+		public void add_attribute_double (string? ns_href, string name, double value);
+		public void add_attribute_int (string? ns_href, string name, int64 value);
+		public void add_attribute_time (string? ns_href, string name, long value);
+		public void add_empty_element (string? ns_href, string name);
+		public void end_element ();
+		public string get_content (out size_t? out_length);
+		public unowned Xml.Doc get_xmldoc ();
+		public void start_element (string? ns_href, string name);
+		public void start_text_element (string? ns_href, string name);
+		public void write_base64 (string value, int len);
+		public void write_buffer (string value, int len);
+		public void write_double (double value);
+		public void write_int (int64 value);
+		public void write_string (string value);
+		public void write_time (long value);
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	public class XmlHash {
@@ -1147,6 +1305,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_SOURCE_AUTHENTICATION_", type_id = "e_source_authentication_result_get_type ()")]
 	[Version (since = "3.6")]
 	public enum SourceAuthenticationResult {
+		UNKNOWN,
 		ERROR,
 		ERROR_SSL_FAILED,
 		ACCEPTED,
@@ -1222,6 +1381,36 @@ namespace E {
 		ACCEPT_TEMPORARILY,
 		REJECT_TEMPORARILY
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_ACE_FLAG_", has_type_id = false)]
+	[Flags]
+	public enum WebDAVACEFlag {
+		UNKNOWN,
+		GRANT,
+		DENY,
+		INVERT,
+		PROTECTED,
+		INHERITED
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_ACE_PRINCIPAL_", has_type_id = false)]
+	public enum WebDAVACEPrincipalKind {
+		UNKNOWN,
+		HREF,
+		ALL,
+		AUTHENTICATED,
+		UNAUTHENTICATED,
+		PROPERTY,
+		SELF,
+		OWNER
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_ACL_RESTRICTION_", has_type_id = false)]
+	[Flags]
+	public enum WebDAVACLRestrictions {
+		NONE,
+		GRANT_ONLY,
+		NO_INVERT,
+		DENY_BEFORE_GRANT,
+		REQUIRED_PRINCIPAL
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_DISCOVER_SUPPORTS_", has_type_id = false)]
 	[Flags]
 	public enum WebDAVDiscoverSupports {
@@ -1230,6 +1419,74 @@ namespace E {
 		EVENTS,
 		MEMOS,
 		TASKS
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_LIST_", has_type_id = false)]
+	[Flags]
+	public enum WebDAVListFlags {
+		ALL,
+		NONE,
+		SUPPORTS,
+		ETAG,
+		DISPLAY_NAME,
+		CONTENT_TYPE,
+		CONTENT_LENGTH,
+		CREATION_DATE,
+		LAST_MODIFIED,
+		DESCRIPTION,
+		COLOR
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_LOCK_", has_type_id = false)]
+	public enum WebDAVLockScope {
+		EXCLUSIVE,
+		SHARED
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_PRIVILEGE_HINT_", has_type_id = false)]
+	public enum WebDAVPrivilegeHint {
+		UNKNOWN,
+		READ,
+		WRITE,
+		WRITE_PROPERTIES,
+		WRITE_CONTENT,
+		UNLOCK,
+		READ_ACL,
+		WRITE_ACL,
+		READ_CURRENT_USER_PRIVILEGE_SET,
+		BIND,
+		UNBIND,
+		ALL,
+		CALDAV_READ_FREE_BUSY
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_PRIVILEGE_KIND_", has_type_id = false)]
+	public enum WebDAVPrivilegeKind {
+		UNKNOWN,
+		ABSTRACT,
+		AGGREGATE,
+		COMMON
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_PROPERTY_", has_type_id = false)]
+	public enum WebDAVPropertyChangeKind {
+		SET,
+		REMOVE
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_RESOURCE_KIND_", has_type_id = false)]
+	public enum WebDAVResourceKind {
+		UNKNOWN,
+		ADDRESSBOOK,
+		CALENDAR,
+		PRINCIPAL,
+		COLLECTION,
+		RESOURCE
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_RESOURCE_SUPPORTS_", has_type_id = false)]
+	[Flags]
+	public enum WebDAVResourceSupports {
+		NONE,
+		CONTACTS,
+		EVENTS,
+		MEMOS,
+		TASKS,
+		FREEBUSY,
+		TIMEZONE
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_XMLHASH_STATUS_", has_type_id = false)]
 	public enum XmlHashStatus {
@@ -1409,6 +1666,66 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_PARAM_SETTING")]
 	[Version (since = "3.6")]
 	public const int SOURCE_PARAM_SETTING;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_ACCESS_CONTROL")]
+	public const string WEBDAV_CAPABILITY_ACCESS_CONTROL;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_ADDRESSBOOK")]
+	public const string WEBDAV_CAPABILITY_ADDRESSBOOK;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_BIND")]
+	public const string WEBDAV_CAPABILITY_BIND;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CALENDAR_ACCESS")]
+	public const string WEBDAV_CAPABILITY_CALENDAR_ACCESS;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CALENDAR_AUTO_SCHEDULE")]
+	public const string WEBDAV_CAPABILITY_CALENDAR_AUTO_SCHEDULE;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CALENDAR_PROXY")]
+	public const string WEBDAV_CAPABILITY_CALENDAR_PROXY;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CALENDAR_SCHEDULE")]
+	public const string WEBDAV_CAPABILITY_CALENDAR_SCHEDULE;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CLASS_1")]
+	public const string WEBDAV_CAPABILITY_CLASS_1;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CLASS_2")]
+	public const string WEBDAV_CAPABILITY_CLASS_2;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_CLASS_3")]
+	public const string WEBDAV_CAPABILITY_CLASS_3;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CAPABILITY_EXTENDED_MKCOL")]
+	public const string WEBDAV_CAPABILITY_EXTENDED_MKCOL;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_ASCII_CASEMAP")]
+	public const string WEBDAV_COLLATION_ASCII_CASEMAP;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_ASCII_CASEMAP_SUFFIX")]
+	public const string WEBDAV_COLLATION_ASCII_CASEMAP_SUFFIX;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_ASCII_NUMERIC")]
+	public const string WEBDAV_COLLATION_ASCII_NUMERIC;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_ASCII_NUMERIC_SUFFIX")]
+	public const string WEBDAV_COLLATION_ASCII_NUMERIC_SUFFIX;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_OCTET")]
+	public const string WEBDAV_COLLATION_OCTET;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_OCTET_SUFFIX")]
+	public const string WEBDAV_COLLATION_OCTET_SUFFIX;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_UNICODE_CASEMAP")]
+	public const string WEBDAV_COLLATION_UNICODE_CASEMAP;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_COLLATION_UNICODE_CASEMAP_SUFFIX")]
+	public const string WEBDAV_COLLATION_UNICODE_CASEMAP_SUFFIX;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CONTENT_TYPE_CALENDAR")]
+	public const string WEBDAV_CONTENT_TYPE_CALENDAR;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CONTENT_TYPE_VCARD")]
+	public const string WEBDAV_CONTENT_TYPE_VCARD;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_CONTENT_TYPE_XML")]
+	public const string WEBDAV_CONTENT_TYPE_XML;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_DEPTH_INFINITY")]
+	public const string WEBDAV_DEPTH_INFINITY;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_DEPTH_THIS")]
+	public const string WEBDAV_DEPTH_THIS;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_DEPTH_THIS_AND_CHILDREN")]
+	public const string WEBDAV_DEPTH_THIS_AND_CHILDREN;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_NS_CALDAV")]
+	public const string WEBDAV_NS_CALDAV;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_NS_CALENDARSERVER")]
+	public const string WEBDAV_NS_CALENDARSERVER;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_NS_CARDDAV")]
+	public const string WEBDAV_NS_CARDDAV;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_NS_DAV")]
+	public const string WEBDAV_NS_DAV;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_WEBDAV_NS_ICAL")]
+	public const string WEBDAV_NS_ICAL;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
 	public static unowned GLib.Binding binding_bind_property (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags);
@@ -1615,8 +1932,14 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_unicode_get_utf8 (string text, unichar @out);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.26")]
+	public static void util_unref_in_thread (void* object);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.6")]
 	public static string util_utf8_data_make_valid (string data, size_t data_bytes);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.26")]
+	public static string util_utf8_decompose (string text);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.0")]
 	public static string util_utf8_make_valid (string str);
@@ -1650,7 +1973,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static Xml.Doc* xml_parse_file (string filename);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static int xml_save_file (string filename, [CCode (type = "xmlDocPtr")] Xml.Doc* doc);
+	public static int xml_save_file (string filename, [CCode (type = "xmlDoc*")] Xml.Doc* doc);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static GLib.HashTable<string,string> xml_to_hash (Xml.Doc doc, E.XmlHashType type);
 }

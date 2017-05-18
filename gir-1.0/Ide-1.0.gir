@@ -5561,6 +5561,22 @@ by locating project files.</doc>
            glib:get-type="ide_buildconfig_configuration_provider_get_type"
            glib:type-struct="BuildconfigConfigurationProviderClass">
       <implements name="ConfigurationProvider"/>
+      <method name="track_config"
+              c:identifier="ide_buildconfig_configuration_provider_track_config">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="BuildconfigConfigurationProvider"
+                  c:type="IdeBuildconfigConfigurationProvider*"/>
+          </instance-parameter>
+          <parameter name="config" transfer-ownership="none">
+            <type name="BuildconfigConfiguration"
+                  c:type="IdeBuildconfigConfiguration*"/>
+          </parameter>
+        </parameters>
+      </method>
     </class>
     <record name="BuildconfigConfigurationProviderClass"
             c:type="IdeBuildconfigConfigurationProviderClass"
@@ -7160,7 +7176,7 @@ currently selected configurations state changes.</doc>
                glib:type-name="IdeConfigurationProvider"
                glib:get-type="ide_configuration_provider_get_type"
                glib:type-struct="ConfigurationProviderInterface">
-      <virtual-method name="load" invoker="load">
+      <virtual-method name="load_async" invoker="load_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7172,6 +7188,41 @@ currently selected configurations state changes.</doc>
           <parameter name="manager" transfer-ownership="none">
             <type name="ConfigurationManager"
                   c:type="IdeConfigurationManager*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="3">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="load_finish" invoker="load_finish" throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationProvider"
+                  c:type="IdeConfigurationProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -7236,7 +7287,8 @@ currently selected configurations state changes.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="load" c:identifier="ide_configuration_provider_load">
+      <method name="load_async"
+              c:identifier="ide_configuration_provider_load_async">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7248,6 +7300,42 @@ currently selected configurations state changes.</doc>
           <parameter name="manager" transfer-ownership="none">
             <type name="ConfigurationManager"
                   c:type="IdeConfigurationManager*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="load_finish"
+              c:identifier="ide_configuration_provider_load_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ConfigurationProvider"
+                  c:type="IdeConfigurationProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
       </method>
@@ -7321,8 +7409,8 @@ currently selected configurations state changes.</doc>
       <field name="parent">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="load">
-        <callback name="load">
+      <field name="load_async">
+        <callback name="load_async">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -7334,6 +7422,44 @@ currently selected configurations state changes.</doc>
             <parameter name="manager" transfer-ownership="none">
               <type name="ConfigurationManager"
                     c:type="IdeConfigurationManager*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="4">
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="4">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="load_finish">
+        <callback name="load_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="ConfigurationProvider"
+                    c:type="IdeConfigurationProvider*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
           </parameters>
         </callback>
