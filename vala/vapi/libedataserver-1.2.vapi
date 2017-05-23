@@ -209,6 +209,7 @@ namespace E {
 		public unowned E.Source get_source ();
 		public bool get_ssl_error_details (out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors);
 		public Soup.RequestHTTP new_request (string method, string uri_string) throws GLib.Error;
+		public Soup.RequestHTTP new_request_uri (string method, Soup.URI uri) throws GLib.Error;
 		public GLib.ByteArray send_request_simple_sync (Soup.RequestHTTP request, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.InputStream send_request_sync (Soup.RequestHTTP request, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_credentials (E.NamedParameters? credentials);
@@ -350,9 +351,9 @@ namespace E {
 	public class SourceAlarms : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceAlarms ();
-		public string dup_last_notified ();
+		public string? dup_last_notified ();
 		public bool get_include_me ();
-		public unowned string get_last_notified ();
+		public unowned string? get_last_notified ();
 		public void set_include_me (bool include_me);
 		public void set_last_notified (string? last_notified);
 		public bool include_me { get; set construct; }
@@ -664,8 +665,8 @@ namespace E {
 		public E.SourceMailCompositionReplyStyle get_reply_style ();
 		public bool get_sign_imip ();
 		public unowned string get_templates_folder ();
-		public void set_bcc (string? bcc);
-		public void set_cc (string? cc);
+		public void set_bcc ([CCode (array_length = false, array_null_terminated = true)] string[] bcc);
+		public void set_cc ([CCode (array_length = false, array_null_terminated = true)] string[] cc);
 		public void set_drafts_folder (string? drafts_folder);
 		[Version (since = "3.20")]
 		public void set_reply_style (E.SourceMailCompositionReplyStyle reply_style);
@@ -696,7 +697,7 @@ namespace E {
 		[Version (since = "3.24")]
 		public unowned string get_aliases ();
 		[Version (since = "3.24")]
-		public GLib.HashTable<void*,void*> get_aliases_as_hash_table ();
+		public GLib.HashTable<string,string>? get_aliases_as_hash_table ();
 		public unowned string get_name ();
 		public unowned string get_organization ();
 		public unowned string get_reply_to ();
@@ -720,9 +721,9 @@ namespace E {
 	public class SourceMailSignature : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailSignature ();
-		public string dup_mime_type ();
+		public string? dup_mime_type ();
 		public unowned GLib.File get_file ();
-		public unowned string get_mime_type ();
+		public unowned string? get_mime_type ();
 		public void set_mime_type (string? mime_type);
 		public GLib.File file { get; }
 		public string mime_type { get; set construct; }
@@ -1148,7 +1149,7 @@ namespace E {
 		public uint32 supports;
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.26")]
-		public WebDAVResource (E.WebDAVResourceKind kind, uint32 supports, string href, string? etag, string? display_name, string content_type, size_t content_length, long creation_date, long last_modified, string? description, string? color);
+		public WebDAVResource (E.WebDAVResourceKind kind, uint32 supports, string href, string? etag, string? display_name, string? content_type, size_t content_length, long creation_date, long last_modified, string? description, string? color);
 		[Version (since = "3.26")]
 		public E.WebDAVResource copy ();
 		[Version (since = "3.26")]
@@ -1170,7 +1171,7 @@ namespace E {
 		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out string out_bytes, out size_t? out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_principal_collection_set_sync (string? uri, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_supported_privilege_set_sync (string? uri, out GLib.Node out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool get_sync (string uri, out string? out_href, out string? out_etag, out GLib.OutputStream out_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_sync (string uri, out string? out_href, out string? out_etag, out unowned GLib.OutputStream out_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool getctag_sync (string? uri, out string out_ctag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool list_sync (string? uri, string depth, uint32 flags, out GLib.SList<E.WebDAVResource> out_resources, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool lock_resource_sync (string? uri, E.WebDAVLockScope lock_scope, int32 lock_timeout, string? owner, out string out_lock_token, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1596,13 +1597,16 @@ namespace E {
 	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_COLLECTION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_CONTACTS_BACKEND")]
+	[Version (since = "3.18")]
 	public const string SOURCE_EXTENSION_CONTACTS_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_GOA")]
 	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_GOA;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_LDAP_BACKEND")]
+	[Version (since = "3.18")]
 	public const string SOURCE_EXTENSION_LDAP_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_LOCAL_BACKEND")]
+	[Version (since = "3.18")]
 	public const string SOURCE_EXTENSION_LOCAL_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_MAIL_ACCOUNT")]
 	[Version (since = "3.6")]
@@ -1659,6 +1663,7 @@ namespace E {
 	[Version (since = "3.8")]
 	public const string SOURCE_EXTENSION_UOA;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEATHER_BACKEND")]
+	[Version (since = "3.18")]
 	public const string SOURCE_EXTENSION_WEATHER_BACKEND;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEBDAV_BACKEND")]
 	[Version (since = "3.6")]
@@ -1906,6 +1911,9 @@ namespace E {
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
 	public static void util_free_string_slist (GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.26")]
+	public static string util_generate_uid ();
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_get_source_full_name (void* registry, void* source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static bool util_get_source_oauth2_access_token_sync (void* source, E.NamedParameters credentials, out string out_access_token, out int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1973,7 +1981,7 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static Xml.Doc* xml_parse_file (string filename);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static int xml_save_file (string filename, [CCode (type = "xmlDoc*")] Xml.Doc* doc);
+	public static int xml_save_file (string filename, Xml.Doc doc);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static GLib.HashTable<string,string> xml_to_hash (Xml.Doc doc, E.XmlHashType type);
 }

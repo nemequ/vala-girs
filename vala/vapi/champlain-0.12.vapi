@@ -359,11 +359,15 @@ namespace Champlain {
 		[Version (since = "0.10")]
 		public void load_map_data (Champlain.BoundingBox bbox);
 		public void set_api_uri (string api_uri);
+		[Version (since = "0.12.16")]
+		public void set_user_agent (string user_agent);
 		public string api_uri { get; set; }
 		[NoAccessorMethod]
 		public string proxy_uri { owned get; set; }
 		[NoAccessorMethod]
 		public Champlain.State state { get; set; }
+		[Version (since = "0.12.16")]
+		public string user_agent { set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_network_tile_source_get_type ()")]
 	[Version (since = "0.6")]
@@ -384,6 +388,8 @@ namespace Champlain {
 		public void set_proxy_uri (string proxy_uri);
 		[Version (since = "0.4")]
 		public void set_uri_format (string uri_format);
+		[Version (since = "0.12.16")]
+		public void set_user_agent (string user_agent);
 		[Version (since = "0.12.14")]
 		public int max_conns { get; set; }
 		[Version (since = "0.4")]
@@ -392,6 +398,8 @@ namespace Champlain {
 		public string proxy_uri { get; set; }
 		[Version (since = "0.4")]
 		public string uri_format { get; set construct; }
+		[Version (since = "0.12.16")]
+		public string user_agent { set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_null_tile_source_get_type ()")]
 	[Version (since = "0.8")]
