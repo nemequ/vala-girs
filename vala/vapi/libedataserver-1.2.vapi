@@ -1889,6 +1889,7 @@ namespace E {
 	[Version (since = "3.4")]
 	public static void type_traverse (GLib.Type parent_type, E.TypeFunc func);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (deprecated = true, deprecated_since = "3.26")]
 	public static string uid_new ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t utf8_strftime (string string, size_t max, string fmt, [CCode (type = "const tm*")] Posix.tm tm);

@@ -1954,6 +1954,8 @@ namespace NM {
 		public const string TYPE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE_DUN")]
 		public const string TYPE_DUN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE_NAP")]
+		public const string TYPE_NAP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE_PANU")]
 		public const string TYPE_PANU;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
@@ -4602,8 +4604,7 @@ namespace NM {
 	public enum WepKeyType {
 		UNKNOWN,
 		KEY,
-		PASSPHRASE,
-		LAST
+		PASSPHRASE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIMAX_NSP_NETWORK_TYPE_", type_id = "nm_wimax_nsp_network_type_get_type ()")]
 	public enum WimaxNspNetworkType {
