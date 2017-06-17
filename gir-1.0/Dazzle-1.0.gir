@@ -190,11 +190,15 @@ animated.</doc>
            glib:type-struct="ApplicationClass">
       <implements name="Gio.ActionGroup"/>
       <implements name="Gio.ActionMap"/>
-      <virtual-method name="add_resource_path" invoker="add_resource_path">
-        <doc xml:space="preserve">This adds @resource_path to the list of automatic resources.
+      <virtual-method name="add_resources" invoker="add_resources">
+        <doc xml:space="preserve">This adds @resource_path to the list of "automatic resources".
+
+If @resource_path starts with "resource://", then the corresponding
+#GResources path will be searched for resources. Otherwise, @resource_path
+should be a path to a location on disk.
 
 The #DzlApplication will locate resources such as CSS themes, icons, and
-keybindings.</doc>
+keyboard shortcuts using @resource_path.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -204,16 +208,14 @@ keybindings.</doc>
             <type name="Application" c:type="DzlApplication*"/>
           </instance-parameter>
           <parameter name="resource_path" transfer-ownership="none">
-            <doc xml:space="preserve">a path to a #GResources path</doc>
+            <doc xml:space="preserve">the location of the resources.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="remove_resource_path"
-                      invoker="remove_resource_path">
-        <doc xml:space="preserve">This removes @resource_path to the list of automatic resources. This
-directory should have been previously registered with
-dzl_application_add_resource_path().</doc>
+      <virtual-method name="remove_resources" invoker="remove_resources">
+        <doc xml:space="preserve">This attempts to undo as many side-effects as possible from a call to
+dzl_application_add_resources().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -223,17 +225,21 @@ dzl_application_add_resource_path().</doc>
             <type name="Application" c:type="DzlApplication*"/>
           </instance-parameter>
           <parameter name="resource_path" transfer-ownership="none">
-            <doc xml:space="preserve">a path to a #GResources path</doc>
+            <doc xml:space="preserve">the location of the resources.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="add_resource_path"
-              c:identifier="dzl_application_add_resource_path">
-        <doc xml:space="preserve">This adds @resource_path to the list of automatic resources.
+      <method name="add_resources"
+              c:identifier="dzl_application_add_resources">
+        <doc xml:space="preserve">This adds @resource_path to the list of "automatic resources".
+
+If @resource_path starts with "resource://", then the corresponding
+#GResources path will be searched for resources. Otherwise, @resource_path
+should be a path to a location on disk.
 
 The #DzlApplication will locate resources such as CSS themes, icons, and
-keybindings.</doc>
+keyboard shortcuts using @resource_path.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -243,7 +249,7 @@ keybindings.</doc>
             <type name="Application" c:type="DzlApplication*"/>
           </instance-parameter>
           <parameter name="resource_path" transfer-ownership="none">
-            <doc xml:space="preserve">a path to a #GResources path</doc>
+            <doc xml:space="preserve">the location of the resources.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -309,11 +315,10 @@ menu merging which could have occurred upon loading plugins.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="remove_resource_path"
-              c:identifier="dzl_application_remove_resource_path">
-        <doc xml:space="preserve">This removes @resource_path to the list of automatic resources. This
-directory should have been previously registered with
-dzl_application_add_resource_path().</doc>
+      <method name="remove_resources"
+              c:identifier="dzl_application_remove_resources">
+        <doc xml:space="preserve">This attempts to undo as many side-effects as possible from a call to
+dzl_application_add_resources().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -323,11 +328,20 @@ dzl_application_add_resource_path().</doc>
             <type name="Application" c:type="DzlApplication*"/>
           </instance-parameter>
           <parameter name="resource_path" transfer-ownership="none">
-            <doc xml:space="preserve">a path to a #GResources path</doc>
+            <doc xml:space="preserve">the location of the resources.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
+      <property name="menu-manager" transfer-ownership="none">
+        <type name="MenuManager"/>
+      </property>
+      <property name="shortcut-manager" transfer-ownership="none">
+        <type name="ShortcutManager"/>
+      </property>
+      <property name="theme-manager" transfer-ownership="none">
+        <type name="ThemeManager"/>
+      </property>
       <field name="parent_instance">
         <type name="Gtk.Application" c:type="GtkApplication"/>
       </field>
@@ -338,8 +352,8 @@ dzl_application_add_resource_path().</doc>
       <field name="parent_class">
         <type name="Gtk.ApplicationClass" c:type="GtkApplicationClass"/>
       </field>
-      <field name="add_resource_path">
-        <callback name="add_resource_path">
+      <field name="add_resources">
+        <callback name="add_resources">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -349,14 +363,14 @@ dzl_application_add_resource_path().</doc>
               <type name="Application" c:type="DzlApplication*"/>
             </parameter>
             <parameter name="resource_path" transfer-ownership="none">
-              <doc xml:space="preserve">a path to a #GResources path</doc>
+              <doc xml:space="preserve">the location of the resources.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
         </callback>
       </field>
-      <field name="remove_resource_path">
-        <callback name="remove_resource_path">
+      <field name="remove_resources">
+        <callback name="remove_resources">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -366,7 +380,7 @@ dzl_application_add_resource_path().</doc>
               <type name="Application" c:type="DzlApplication*"/>
             </parameter>
             <parameter name="resource_path" transfer-ownership="none">
-              <doc xml:space="preserve">a path to a #GResources path</doc>
+              <doc xml:space="preserve">the location of the resources.</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
@@ -1157,6 +1171,69 @@ property of @container changes for @child.</doc>
         <array zero-terminated="0" c:type="gint64" fixed-size="7">
           <type name="gint64" c:type="gint64"/>
         </array>
+      </field>
+    </record>
+    <class name="CountersWindow"
+           c:symbol-prefix="counters_window"
+           c:type="DzlCountersWindow"
+           parent="Gtk.Window"
+           glib:type-name="DzlCountersWindow"
+           glib:get-type="dzl_counters_window_get_type"
+           glib:type-struct="CountersWindowClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <constructor name="new" c:identifier="dzl_counters_window_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+      <method name="get_arena" c:identifier="dzl_counters_window_get_arena">
+        <doc xml:space="preserve">Gets the currently viewed arena, if any.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #DzlCounterArena or %NULL.</doc>
+          <type name="CounterArena" c:type="DzlCounterArena*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlCountersWindow</doc>
+            <type name="CountersWindow" c:type="DzlCountersWindow*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_arena" c:identifier="dzl_counters_window_set_arena">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CountersWindow" c:type="DzlCountersWindow*"/>
+          </instance-parameter>
+          <parameter name="arena" transfer-ownership="none">
+            <type name="CounterArena" c:type="DzlCounterArena*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
+        <type name="Gtk.Window" c:type="GtkWindow"/>
+      </field>
+    </class>
+    <record name="CountersWindowClass"
+            c:type="DzlCountersWindowClass"
+            glib:is-gtype-struct-for="CountersWindow">
+      <field name="parent_class">
+        <type name="Gtk.WindowClass" c:type="GtkWindowClass"/>
+      </field>
+      <field name="_reserved1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved2">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved3">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="_reserved4">
+        <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
     <class name="CpuGraph"
@@ -3553,6 +3630,9 @@ animating into and out of view.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
+    <constant name="ENABLE_TRACE" value="0" c:type="DZL_ENABLE_TRACE">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <class name="ElasticBin"
            c:symbol-prefix="elastic_bin"
            c:type="DzlElasticBin"
@@ -5376,6 +5456,12 @@ when the reference count reaches zero.</doc>
         </parameters>
       </method>
     </record>
+    <constant name="LOG_LEVEL_TRACE"
+              value="1"
+              c:type="DZL_LOG_LEVEL_TRACE"
+              introspectable="0">
+      <type name="GLib.LogLevelFlags" c:type="GLogLevelFlags"/>
+    </constant>
     <class name="ListBox"
            c:symbol-prefix="list_box"
            c:type="DzlListBox"
@@ -5763,6 +5849,310 @@ two children to the widget. For each additional child added to the
       </field>
       <field name="_reserved8">
         <type name="gpointer" c:type="gpointer"/>
+      </field>
+    </record>
+    <class name="Path"
+           c:symbol-prefix="path"
+           c:type="DzlPath"
+           parent="GObject.Object"
+           glib:type-name="DzlPath"
+           glib:get-type="dzl_path_get_type"
+           glib:type-struct="PathClass">
+      <constructor name="new" c:identifier="dzl_path_new">
+        <return-value transfer-ownership="full">
+          <type name="Path" c:type="DzlPath*"/>
+        </return-value>
+      </constructor>
+      <method name="append" c:identifier="dzl_path_append">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <type name="PathElement" c:type="DzlPathElement*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_element" c:identifier="dzl_path_get_element">
+        <doc xml:space="preserve">Gets the path element found at @index.
+
+Indexes start from zero.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">An #DzlPathElement.</doc>
+          <type name="PathElement" c:type="DzlPathElement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_elements" c:identifier="dzl_path_get_elements">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The elements of the path.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="PathElement"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_length" c:identifier="dzl_path_get_length">
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="has_prefix" c:identifier="dzl_path_has_prefix">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+          <parameter name="prefix" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_empty" c:identifier="dzl_path_is_empty">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="prepend" c:identifier="dzl_path_prepend">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <type name="PathElement" c:type="DzlPathElement*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="printf" c:identifier="dzl_path_printf">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <class name="PathBar"
+           c:symbol-prefix="path_bar"
+           c:type="DzlPathBar"
+           parent="Gtk.Box"
+           glib:type-name="DzlPathBar"
+           glib:get-type="dzl_path_bar_get_type"
+           glib:type-struct="PathBarClass">
+      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <constructor name="new" c:identifier="dzl_path_bar_new">
+        <return-value transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+      </constructor>
+      <method name="get_path" c:identifier="dzl_path_bar_get_path">
+        <doc xml:space="preserve">Gets the path for the view.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #DzlPath.</doc>
+          <type name="Path" c:type="DzlPath*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PathBar" c:type="DzlPathBar*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_path" c:identifier="dzl_path_bar_set_path">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PathBar" c:type="DzlPathBar*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="Path" c:type="DzlPath*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_selected_index"
+              c:identifier="dzl_path_bar_set_selected_index">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PathBar" c:type="DzlPathBar*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="path" writable="1" transfer-ownership="none">
+        <type name="Path"/>
+      </property>
+      <glib:signal name="element-selected" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Path"/>
+          </parameter>
+          <parameter name="p0" transfer-ownership="none">
+            <type name="PathElement"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="populate-menu" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="Path"/>
+          </parameter>
+          <parameter name="p0" transfer-ownership="none">
+            <type name="PathElement"/>
+          </parameter>
+          <parameter name="p1" transfer-ownership="none">
+            <type name="Gio.Menu"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <record name="PathBarClass"
+            c:type="DzlPathBarClass"
+            glib:is-gtype-struct-for="PathBar">
+      <field name="parent_class">
+        <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
+      </field>
+    </record>
+    <record name="PathClass"
+            c:type="DzlPathClass"
+            glib:is-gtype-struct-for="Path">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <class name="PathElement"
+           c:symbol-prefix="path_element"
+           c:type="DzlPathElement"
+           parent="GObject.Object"
+           glib:type-name="DzlPathElement"
+           glib:get-type="dzl_path_element_get_type"
+           glib:type-struct="PathElementClass">
+      <constructor name="new" c:identifier="dzl_path_element_new">
+        <doc xml:space="preserve">Creates a new path element for an #DzlPath.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #DzlPathElement</doc>
+          <type name="PathElement" c:type="DzlPathElement*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An id for the path element.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="icon_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional icon name for the element</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="title" transfer-ownership="none">
+            <doc xml:space="preserve">The title of the element.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_icon_name"
+              c:identifier="dzl_path_element_get_icon_name">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PathElement" c:type="DzlPathElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_id" c:identifier="dzl_path_element_get_id">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PathElement" c:type="DzlPathElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_title" c:identifier="dzl_path_element_get_title">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="PathElement" c:type="DzlPathElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="icon-name"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="id"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="title"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+    </class>
+    <record name="PathElementClass"
+            c:type="DzlPathElementClass"
+            glib:is-gtype-struct-for="PathElement">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
     <record name="PatternSpec"
@@ -7905,6 +8295,24 @@ two children to the widget. For each additional child added to the
           </instance-parameter>
         </parameters>
       </method>
+      <method name="reset_theatrics"
+              c:identifier="dzl_progress_menu_button_reset_theatrics">
+        <doc xml:space="preserve">To avoid suprious animations from the button, you must call this function any
+time you want to allow animations to continue. This is because animations are
+automatically started upon reaching a progress of 1.0.
+
+If you are performing operations in the background, calling this function
+every time you add an operation is a good strategry.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlProgressMenuButton</doc>
+            <type name="ProgressMenuButton" c:type="DzlProgressMenuButton*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="set_progress"
               c:identifier="dzl_progress_menu_button_set_progress">
         <return-value transfer-ownership="none">
@@ -8989,6 +9397,34 @@ from the resolved value via the settings sandwich.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="foreach" c:identifier="dzl_shortcut_chord_table_foreach">
+        <doc xml:space="preserve">This function will call @foreach_func for each chord in the table.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlShortcutChordTable</doc>
+            <type name="ShortcutChordTable"
+                  c:type="const DzlShortcutChordTable*"/>
+          </instance-parameter>
+          <parameter name="foreach_func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="1">
+            <doc xml:space="preserve">A callback for each chord</doc>
+            <type name="ShortcutChordTableForeach"
+                  c:type="DzlShortcutChordTableForeach"/>
+          </parameter>
+          <parameter name="foreach_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data for @foreach_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="free" c:identifier="dzl_shortcut_chord_table_free">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -9109,6 +9545,30 @@ from the resolved value via the settings sandwich.</doc>
         </return-value>
       </function>
     </record>
+    <callback name="ShortcutChordTableForeach"
+              c:type="DzlShortcutChordTableForeach">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="chord" transfer-ownership="none">
+          <type name="ShortcutChord" c:type="const DzlShortcutChord*"/>
+        </parameter>
+        <parameter name="chord_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="ShortcutContext"
            c:symbol-prefix="shortcut_context"
            c:type="DzlShortcutContext"
@@ -9865,19 +10325,6 @@ so that they may be overriden by themes or the end user.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="add_theme" c:identifier="dzl_shortcut_manager_add_theme">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="ShortcutManager" c:type="DzlShortcutManager*"/>
-          </instance-parameter>
-          <parameter name="theme" transfer-ownership="none">
-            <type name="ShortcutTheme" c:type="DzlShortcutTheme*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="append_search_path"
               c:identifier="dzl_shortcut_manager_append_search_path">
         <return-value transfer-ownership="none">
@@ -9910,7 +10357,11 @@ so that they may be overriden by themes or the end user.</doc>
       </method>
       <method name="get_theme_by_name"
               c:identifier="dzl_shortcut_manager_get_theme_by_name">
-        <doc xml:space="preserve">Locates a theme by the name of the theme.</doc>
+        <doc xml:space="preserve">Locates a theme by the name of the theme.
+
+If @theme_name is %NULL, then the internal theme is used. You probably dont
+need to use that as it is used by various controllers to hook up their
+default actions.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">A #DzlShortcutTheme or %NULL.</doc>
           <type name="ShortcutTheme" c:type="DzlShortcutTheme*"/>
@@ -9920,7 +10371,11 @@ so that they may be overriden by themes or the end user.</doc>
             <doc xml:space="preserve">a #DzlShortcutManager</doc>
             <type name="ShortcutManager" c:type="DzlShortcutManager*"/>
           </instance-parameter>
-          <parameter name="theme_name" transfer-ownership="none">
+          <parameter name="theme_name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the name of a theme or %NULL of the internal theme</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9990,6 +10445,33 @@ You should call this from #GtkWidget::key-press-event handler in your
           </parameter>
         </parameters>
       </method>
+      <method name="queue_reload"
+              c:identifier="dzl_shortcut_manager_queue_reload">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShortcutManager" c:type="DzlShortcutManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reload" c:identifier="dzl_shortcut_manager_reload">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShortcutManager" c:type="DzlShortcutManager*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="remove_search_path"
               c:identifier="dzl_shortcut_manager_remove_search_path">
         <return-value transfer-ownership="none">
@@ -10001,20 +10483,6 @@ You should call this from #GtkWidget::key-press-event handler in your
           </instance-parameter>
           <parameter name="directory" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="remove_theme"
-              c:identifier="dzl_shortcut_manager_remove_theme">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <type name="ShortcutManager" c:type="DzlShortcutManager*"/>
-          </instance-parameter>
-          <parameter name="theme" transfer-ownership="none">
-            <type name="ShortcutTheme" c:type="DzlShortcutTheme*"/>
           </parameter>
         </parameters>
       </method>
@@ -10287,6 +10755,20 @@ You should call this from #GtkWidget::key-press-event handler in your
           </parameter>
         </parameters>
       </method>
+      <method name="add_css_resource"
+              c:identifier="dzl_shortcut_theme_add_css_resource">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShortcutTheme" c:type="DzlShortcutTheme*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="find_context_by_name"
               c:identifier="dzl_shortcut_theme_find_context_by_name">
         <doc xml:space="preserve">Gets the context named @name. If the context does not exist, it will
@@ -10470,6 +10952,20 @@ copy-on-write (CoW).</doc>
                      nullable="1"
                      allow-none="1">
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_css_resource"
+              c:identifier="dzl_shortcut_theme_remove_css_resource">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="ShortcutTheme" c:type="DzlShortcutTheme*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -10962,11 +11458,11 @@ It is also possible to specify ranges of shortcuts, using ... between the keys.
 Sequences of keys can be specified using a + or &amp; between the keys.
 
 Examples:
-- A single shortcut: &lt;ctl&gt;&lt;alt&gt;delete
-- Two alternative shortcuts: &lt;shift&gt;a Home
-- A range of shortcuts: &lt;alt&gt;1...&lt;alt&gt;9
+- A single shortcut: &amp;lt;ctl&amp;rt;&amp;lt;alt&amp;gt;delete
+- Two alternative shortcuts: &amp;lt;shift&amp;gt;a Home
+- A range of shortcuts: &amp;lt;alt&amp;gt;1...&amp;lt;alt&amp;gt;9
 - Several keys pressed together: Control_L&amp;Control_R
-- A sequence of shortcuts or keys: &lt;ctl&gt;c+&lt;ctl&gt;x
+- A sequence of shortcuts or keys: &amp;lt;ctl&amp;gt;c+&amp;lt;ctl&amp;gt;x
 
 Use + instead of &amp; when the keys may (or have to be) pressed sequentially (e.g
 use t+t for 'press the t key twice').
@@ -14095,15 +14591,21 @@ g_task_return_error() or g_task_return_new_error().</doc>
           <type name="ThemeManager" c:type="DzlThemeManager*"/>
         </return-value>
       </constructor>
-      <method name="add_resource_path"
-              c:identifier="dzl_theme_manager_add_resource_path">
+      <method name="add_resources"
+              c:identifier="dzl_theme_manager_add_resources">
         <doc xml:space="preserve">This will automatically register resources found within @resource_path.
+
+If @resource_path starts with "resource://", embedded #GResources will be
+used to locate the theme files. Otherwise, @resource_path is expected to be
+a path on disk that may or may not exist.
 
 If the @resource_path contains a directory named "themes", that directory
 will be traversed for files matching the theme name and variant. For
 example, if using the Adwaita theme, "themes/Adwaita.css" will be loaded. If
 the dark variant is being used, "themes/Adwaita-dark.css" will be loaeded. If
 no matching theme file is located, "themes/shared.css" will be loaded.
+
+When the current theme changes, the CSS will be reloaded to adapt.
 
 The "icons" sub-directory will be used to locate icon themes.</doc>
         <return-value transfer-ownership="none">
@@ -14120,11 +14622,11 @@ The "icons" sub-directory will be used to locate icon themes.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="remove_resource_path"
-              c:identifier="dzl_theme_manager_remove_resource_path">
+      <method name="remove_resources"
+              c:identifier="dzl_theme_manager_remove_resources">
         <doc xml:space="preserve">This removes the CSS providers that were registered using @resource_path.
 
-You must have previously called dzl_theme_manager_add_resource_path() for
+You must have previously called dzl_theme_manager_add_resources() for
 this function to do anything.
 
 Since icons cannot be unloaded, previously loaded icons will continue to
@@ -15564,11 +16066,11 @@ expansion).</doc>
             glib:get-type="dzl_trie_get_type"
             c:symbol-prefix="trie">
       <constructor name="new" c:identifier="dzl_trie_new">
-        <doc xml:space="preserve">Creates a new #Trie. When a value is removed from the trie, @value_destroy
+        <doc xml:space="preserve">Creates a new #DzlTrie. When a value is removed from the trie, @value_destroy
 will be called to allow you to release any resources.</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A newly allocated #Trie that should be freed
-  with dzl_trie_free().</doc>
+          <doc xml:space="preserve">A newly allocated #DzlTrie that should be freed
+  with dzl_trie_unref().</doc>
           <type name="Trie" c:type="DzlTrie*"/>
         </return-value>
         <parameters>
@@ -15587,7 +16089,7 @@ will be called to allow you to release any resources.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="trie" transfer-ownership="none">
-            <doc xml:space="preserve">A #Trie or %NULL.</doc>
+            <doc xml:space="preserve">A #DzlTrie or %NULL.</doc>
             <type name="Trie" c:type="DzlTrie*"/>
           </instance-parameter>
         </parameters>
@@ -15599,7 +16101,7 @@ will be called to allow you to release any resources.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="trie" transfer-ownership="none">
-            <doc xml:space="preserve">A #Trie.</doc>
+            <doc xml:space="preserve">A #DzlTrie.</doc>
             <type name="Trie" c:type="DzlTrie*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
@@ -15623,7 +16125,7 @@ will be called to allow you to release any resources.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="trie" transfer-ownership="none">
-            <doc xml:space="preserve">A #Trie.</doc>
+            <doc xml:space="preserve">A #DzlTrie.</doc>
             <type name="Trie" c:type="DzlTrie*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
@@ -15651,7 +16153,7 @@ the key.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="trie" transfer-ownership="none">
-            <doc xml:space="preserve">A #Trie.</doc>
+            <doc xml:space="preserve">A #DzlTrie.</doc>
             <type name="Trie" c:type="DzlTrie*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
@@ -15673,7 +16175,7 @@ If max_depth is 1, then only the root will be traversed.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="trie" transfer-ownership="none">
-            <doc xml:space="preserve">A #Trie.</doc>
+            <doc xml:space="preserve">A #DzlTrie.</doc>
             <type name="Trie" c:type="DzlTrie*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
@@ -15716,7 +16218,7 @@ structure is freed.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="trie" transfer-ownership="none">
-            <doc xml:space="preserve">A #Trie or %NULL.</doc>
+            <doc xml:space="preserve">A #DzlTrie or %NULL.</doc>
             <type name="Trie" c:type="DzlTrie*"/>
           </instance-parameter>
         </parameters>

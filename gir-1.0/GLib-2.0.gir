@@ -12818,7 +12818,14 @@ can write arbitrary binary output, as field values may be arbitrary binary.
 
 @log_level is guaranteed to be included in @fields as the `PRIORITY` field,
 but is provided separately for convenience of deciding whether or where to
-output the log entry.</doc>
+output the log entry.
+
+Writer functions should return %G_LOG_WRITER_HANDLED if they handled the log
+message successfully or if they deliberately ignored it. If there was an
+error handling the message (for example, if the writer function is meant to
+send messages to a remote logging server and there is a network error), it
+should return %G_LOG_WRITER_UNHANDLED. This allows writer functions to be
+chained and fall back to simpler handlers in case of failure.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%G_LOG_WRITER_HANDLED if the log entry was handled successfully;
    %G_LOG_WRITER_UNHANDLED otherwise</doc>
@@ -38316,9 +38323,11 @@ similar cases.</doc>
       <doc xml:space="preserve">Gets the name of the program. This name should not be localized,
 in contrast to g_get_application_name().
 
-If you are using GDK or GTK+ the program name is set in gdk_init(),
-which is called by gtk_init(). The program name is found by taking
-the last component of @argv[0].</doc>
+If you are using #GApplication the program name is set in
+g_application_run(). In case of GDK or GTK+ it is set in
+gdk_init(), which is called by gtk_init() and the
+#GtkApplication::startup handler. The program name is found by
+taking the last component of @argv[0].</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the name of the program. The returned string belongs
     to GLib and must not be modified or freed.</doc>
@@ -40072,7 +40081,10 @@ There can only be one writer function. It is an error to set more than one.</doc
       <doc xml:space="preserve">Log a message with structured data. The message will be passed through to
 the log writer set by the application using g_log_set_writer_func(). If the
 message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
-be aborted at the end of this function.
+be aborted at the end of this function. If the log writer returns
+%G_LOG_WRITER_UNHANDLED (failure), no other fallback writers will be tried.
+See the documentation for #GLogWriterFunc for information on chaining
+writers.
 
 The structured data is provided as key–value pairs, where keys are UTF-8
 strings, and values are arbitrary pointers — typically pointing to UTF-8
@@ -42591,6 +42603,12 @@ that could include printf() escape sequences.</doc>
     <function name="set_prgname" c:identifier="g_set_prgname">
       <doc xml:space="preserve">Sets the name of the program. This name should not be localized,
 in contrast to g_set_application_name().
+
+If you are using #GApplication the program name is set in
+g_application_run(). In case of GDK or GTK+ it is set in
+gdk_init(), which is called by gtk_init() and the
+#GtkApplication::startup handler. The program name is found by
+taking the last component of @argv[0].
 
 Note that for thread-safety reasons this function can only be called once.</doc>
       <return-value transfer-ownership="none">

@@ -504,6 +504,12 @@ namespace AppStream {
 		public static AppStream.ComponentKind from_string (string kind_str);
 		public static unowned string to_string (AppStream.ComponentKind kind);
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COMPONENT_SCOPE_", has_type_id = false)]
+	public enum ComponentScope {
+		UNKNOWN,
+		SYSTEM,
+		USER
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_CONTENT_RATING_VALUE_", has_type_id = false)]
 	public enum ContentRatingValue {
 		UNKNOWN,
@@ -600,7 +606,8 @@ namespace AppStream {
 		FAILED,
 		PARSE,
 		FORMAT_UNEXPECTED,
-		NO_COMPONENT
+		NO_COMPONENT,
+		VALUE_MISSING
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_POOL_ERROR_", has_type_id = false)]
 	public enum PoolError {

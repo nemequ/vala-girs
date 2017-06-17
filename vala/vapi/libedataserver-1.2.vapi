@@ -936,6 +936,28 @@ namespace E {
 		public virtual signal void source_enabled (E.Source source);
 		public virtual signal void source_removed (E.Source source);
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_registry_watcher_get_type ()")]
+	public class SourceRegistryWatcher : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public SourceRegistryWatcher (E.SourceRegistry registry, string? extension_name);
+		[Version (since = "3.26")]
+		public unowned string? get_extension_name ();
+		[Version (since = "3.26")]
+		public unowned E.SourceRegistry get_registry ();
+		[Version (since = "3.26")]
+		public void reclaim ();
+		[Version (since = "3.26")]
+		public string extension_name { get; construct; }
+		[Version (since = "3.26")]
+		public E.SourceRegistry registry { get; construct; }
+		[Version (since = "3.26")]
+		public virtual signal void appeared (E.Source source);
+		[Version (since = "3.26")]
+		public virtual signal void disappeared (E.Source source);
+		[Version (since = "3.26")]
+		public virtual signal bool filter (E.Source source);
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_resource_get_type ()")]
 	[Version (since = "3.6")]
 	public class SourceResource : E.SourceExtension {

@@ -20,12 +20,15 @@ namespace Dazzle {
 	public class Application : Gtk.Application, GLib.ActionGroup, GLib.ActionMap {
 		[CCode (has_construct_function = false)]
 		protected Application ();
-		public virtual void add_resource_path (string resource_path);
+		public virtual void add_resources (string resource_path);
 		public unowned GLib.Menu get_menu_by_id (string menu_id);
 		public unowned Dazzle.MenuManager get_menu_manager ();
 		public unowned Dazzle.ShortcutManager get_shortcut_manager ();
 		public unowned Dazzle.ThemeManager get_theme_manager ();
-		public virtual void remove_resource_path (string resource_path);
+		public virtual void remove_resources (string resource_path);
+		public Dazzle.MenuManager menu_manager { get; }
+		public Dazzle.ShortcutManager shortcut_manager { get; }
+		public Dazzle.ThemeManager theme_manager { get; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_bin_get_type ()")]
 	public class Bin : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -125,6 +128,13 @@ namespace Dazzle {
 		public Dazzle.CounterArena @ref ();
 		public void register (Dazzle.Counter counter);
 		public void unref ();
+	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_counters_window_get_type ()")]
+	public class CountersWindow : Gtk.Window, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public CountersWindow ();
+		public unowned Dazzle.CounterArena? get_arena ();
+		public void set_arena (Dazzle.CounterArena arena);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_cpu_graph_get_type ()")]
 	public class CpuGraph : Dazzle.GraphView, Atk.Implementor, Gtk.Buildable {
@@ -532,6 +542,41 @@ namespace Dazzle {
 		public virtual signal void resize_drag_begin (Gtk.Widget child);
 		public virtual signal void resize_drag_end (Gtk.Widget child);
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_get_type ()")]
+	public class Path : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public Path ();
+		public void append (Dazzle.PathElement element);
+		public unowned Dazzle.PathElement? get_element (uint index);
+		public unowned GLib.List<Dazzle.PathElement> get_elements ();
+		public uint get_length ();
+		public bool has_prefix (Dazzle.Path prefix);
+		public bool is_empty ();
+		public void prepend (Dazzle.PathElement element);
+		public string printf ();
+	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_bar_get_type ()")]
+	public class PathBar : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public PathBar ();
+		public unowned Dazzle.Path get_path ();
+		public void set_path (Dazzle.Path path);
+		public void set_selected_index (uint index);
+		public Dazzle.Path path { get; set; }
+		public signal void element_selected (Dazzle.Path object, Dazzle.PathElement p0);
+		public signal void populate_menu (Dazzle.Path object, Dazzle.PathElement p0, GLib.Menu p1);
+	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_element_get_type ()")]
+	public class PathElement : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public PathElement (string? id, string? icon_name, string title);
+		public unowned string get_icon_name ();
+		public unowned string get_id ();
+		public unowned string get_title ();
+		public string icon_name { get; construct; }
+		public string id { get; construct; }
+		public string title { get; construct; }
+	}
 	[CCode (cheader_filename = "dazzle.h", ref_function = "dzl_pattern_spec_ref", type_id = "dzl_pattern_spec_get_type ()", unref_function = "dzl_pattern_spec_unref")]
 	[Compact]
 	public class PatternSpec {
@@ -703,6 +748,7 @@ namespace Dazzle {
 		public ProgressMenuButton ();
 		public double get_progress ();
 		public bool get_show_theatric ();
+		public void reset_theatrics ();
 		public void set_progress (double progress);
 		public void set_show_theatric (bool show_theatic);
 		public double progress { get; set; }
@@ -834,6 +880,7 @@ namespace Dazzle {
 	[Compact]
 	public class ShortcutChordTable {
 		public void add (Dazzle.ShortcutChord chord, void* data);
+		public void @foreach (Dazzle.ShortcutChordTableForeach foreach_func);
 		public void free ();
 		[CCode (cheader_filename = "dazzle.h")]
 		public static GLib.Type get_type ();
@@ -903,17 +950,17 @@ namespace Dazzle {
 		public void add_command (string command, string section, string group, string title, string subtitle);
 		public void add_shortcut_entries ([CCode (array_length_cname = "n_shortcuts", array_length_pos = 1.5, array_length_type = "guint")] Dazzle.ShortcutEntry[] shortcuts, string? translation_domain);
 		public void add_shortcuts_to_window (Dazzle.ShortcutsWindow window);
-		public void add_theme (Dazzle.ShortcutTheme theme);
 		public void append_search_path (string directory);
 		public static unowned Dazzle.ShortcutManager get_default ();
 		public unowned Dazzle.ShortcutTheme get_theme ();
-		public unowned Dazzle.ShortcutTheme? get_theme_by_name (string theme_name);
+		public unowned Dazzle.ShortcutTheme? get_theme_by_name (string? theme_name);
 		public unowned string get_theme_name ();
 		public unowned string get_user_dir ();
 		public bool handle_event (Gdk.EventKey event, Gtk.Widget toplevel);
 		public void prepend_search_path (string directory);
+		public void queue_reload ();
+		public void reload (GLib.Cancellable? cancellable = null);
 		public void remove_search_path (string directory);
-		public void remove_theme (Dazzle.ShortcutTheme theme);
 		public void set_theme (Dazzle.ShortcutTheme theme);
 		public void set_theme_name (string theme_name);
 		public void set_user_dir (string user_dir);
@@ -942,6 +989,7 @@ namespace Dazzle {
 		public ShortcutTheme (string name);
 		public void add_command (string accelerator, string command);
 		public void add_context (Dazzle.ShortcutContext context);
+		public void add_css_resource (string path);
 		public unowned Dazzle.ShortcutContext find_context_by_name (string name);
 		public unowned Dazzle.ShortcutContext? find_default_context (Gtk.Widget widget);
 		public unowned Dazzle.ShortcutChord get_chord_for_action (string detailed_action_name);
@@ -954,6 +1002,7 @@ namespace Dazzle {
 		public bool load_from_data (string data, ssize_t len) throws GLib.Error;
 		public bool load_from_file (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool load_from_path (string path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void remove_css_resource (string path);
 		public bool save_to_file (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool save_to_path (string path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool save_to_stream (GLib.OutputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1275,8 +1324,8 @@ namespace Dazzle {
 	public class ThemeManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ThemeManager ();
-		public void add_resource_path (string resource_path);
-		public void remove_resource_path (string resource_path);
+		public void add_resources (string resource_path);
+		public void remove_resources (string resource_path);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_three_grid_get_type ()")]
 	public class ThreeGrid : Gtk.Container, Atk.Implementor, Gtk.Buildable {
@@ -1549,6 +1598,8 @@ namespace Dazzle {
 	public delegate void CounterForeachFunc (Dazzle.Counter counter);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
 	public delegate bool DirectoryModelVisibleFunc (Dazzle.DirectoryModel self, GLib.File directory, GLib.FileInfo file_info);
+	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]
+	public delegate void ShortcutChordTableForeach (Dazzle.ShortcutChord chord, void* chord_data);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
 	public delegate void TaskCacheCallback (Dazzle.TaskCache self, void* key, GLib.Task task);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]
@@ -1563,6 +1614,8 @@ namespace Dazzle {
 	public const int COUNTER_REQUIRES_ATOMIC;
 	[CCode (cheader_filename = "dazzle.h", cname = "DZL_DOCK_BIN_STYLE_CLASS_PINNED")]
 	public const string DOCK_BIN_STYLE_CLASS_PINNED;
+	[CCode (cheader_filename = "dazzle.h", cname = "DZL_ENABLE_TRACE")]
+	public const int ENABLE_TRACE;
 	[CCode (cheader_filename = "dazzle.h", cname = "DZL_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "dazzle.h", cname = "DZL_MICRO_VERSION")]
