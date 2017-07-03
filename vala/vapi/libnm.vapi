@@ -563,6 +563,8 @@ namespace NM {
 		public const string DRIVER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DRIVER_VERSION")]
 		public const string DRIVER_VERSION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DUMMY_HW_ADDRESS")]
+		public const string DUMMY_HW_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_FIRMWARE_MISSING")]
 		public const string FIRMWARE_MISSING;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_FIRMWARE_VERSION")]
@@ -867,6 +869,10 @@ namespace NM {
 	public class DeviceDummy : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected DeviceDummy ();
+		[Version (since = "1.10")]
+		public unowned string get_hw_address ();
+		[Version (since = "1.10")]
+		public string hw_address { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ethernet_get_type ()")]
 	public class DeviceEthernet : NM.Device, GLib.AsyncInitable, GLib.Initable {

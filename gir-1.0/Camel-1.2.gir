@@ -4361,6 +4361,40 @@ unreferenced with g_object_unref() when finished with it.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="foreach_remove"
+              c:identifier="camel_data_cache_foreach_remove"
+              version="3.26">
+        <doc xml:space="preserve">Traverses the @cdc sub-cache identified by @path and calls @func for each found file.
+If the @func returns %TRUE, then the file is removed, if %FALSE, it's kept in the cache.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cdc" transfer-ownership="none">
+            <doc xml:space="preserve">a #CamelDataCache</doc>
+            <type name="DataCache" c:type="CamelDataCache*"/>
+          </instance-parameter>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:space="preserve">Path to the (sub) cache the items exist in</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="2">
+            <doc xml:space="preserve">a callback to call for each found file in the cache</doc>
+            <type name="DataCacheRemoveFunc"
+                  c:type="CamelDataCacheRemoveFunc"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get" c:identifier="camel_data_cache_get" throws="1">
         <doc xml:space="preserve">Lookup an item in the cache.  If the item exists, a #GIOStream is returned
 for the item.  The stream may be shared by multiple callers, so ensure the
@@ -4592,6 +4626,35 @@ any of the two times, still behaves like not having expiry enabled.</doc>
             c:type="CamelDataCachePrivate"
             disguised="1">
     </record>
+    <callback name="DataCacheRemoveFunc"
+              c:type="CamelDataCacheRemoveFunc"
+              version="3.26">
+      <doc xml:space="preserve">A callback called for each found file in the cache, used
+by camel_data_cache_foreach_remove(). The @filename corresponds
+to the result of camel_data_cache_get_filename().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE, to delete the file, %FALSE to keep in in the cache</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="cdc" transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelDataCache</doc>
+          <type name="DataCache" c:type="CamelDataCache*"/>
+        </parameter>
+        <parameter name="filename" transfer-ownership="none">
+          <doc xml:space="preserve">a file name found in the cache</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <doc xml:space="preserve">user data passed to camel_data_cache_foreach_remove()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="DataWrapper"
            c:symbol-prefix="data_wrapper"
            c:type="CamelDataWrapper"
@@ -6100,11 +6163,13 @@ provider modules are loaded from.</doc>
       </field>
     </record>
     <constant name="FOLDER_TYPE_BIT" value="10" c:type="CAMEL_FOLDER_TYPE_BIT">
+      <doc xml:space="preserve">The folder type bitshift value.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="FOLDER_TYPE_MASK"
-              value="63"
+              value="64512"
               c:type="CAMEL_FOLDER_TYPE_MASK">
+      <doc xml:space="preserve">The folder type mask value.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="FOLD_MAX_SIZE" value="998" c:type="CAMEL_FOLD_MAX_SIZE">
@@ -25391,12 +25456,10 @@ to unreference it.</doc>
         <doc xml:space="preserve">Returns a #GPtrArray of all the objects in the bag.  The caller owns
 both the array and the object references, so to free the array use:
 
-&lt;informalexample&gt;
-  &lt;programlisting&gt;
+|[
     g_ptr_array_foreach (array, (GFunc) g_object_unref, NULL);
     g_ptr_array_free (array, TRUE);
-  &lt;/programlisting&gt;
-&lt;/informalexample&gt;</doc>
+]|</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">an array of objects in @bag</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
@@ -27835,11 +27898,13 @@ when the @result is %NULL.</doc>
     <constant name="STORE_INFO_FOLDER_TYPE_BIT"
               value="10"
               c:type="CAMEL_STORE_INFO_FOLDER_TYPE_BIT">
+      <doc xml:space="preserve">The folder store info type bitshift value.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="STORE_INFO_FOLDER_TYPE_MASK"
-              value="63"
+              value="64512"
               c:type="CAMEL_STORE_INFO_FOLDER_TYPE_MASK">
+      <doc xml:space="preserve">The folder store info type mask value.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="STORE_INFO_FOLDER_UNKNOWN"
@@ -32687,12 +32752,10 @@ call camel_store_delete_folder_finish() to get the result of the operation.</doc
         <doc xml:space="preserve">Returns a #GPtrArray of all the opened folders for the @store. The caller owns
 both the array and the folder references, so to free the array use:
 
-&lt;informalexample&gt;
-  &lt;programlisting&gt;
+|[
     g_ptr_array_foreach (array, (GFunc) g_object_unref, NULL);
     g_ptr_array_free (array, TRUE);
-  &lt;/programlisting&gt;
-&lt;/informalexample&gt;</doc>
+]|</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">an array with all currently
   opened folders for the @store.</doc>

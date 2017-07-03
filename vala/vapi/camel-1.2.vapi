@@ -234,6 +234,8 @@ namespace Camel {
 		public GLib.IOStream add (string path, string key) throws GLib.Error;
 		[Version (since = "3.2")]
 		public void clear (string path);
+		[Version (since = "3.26")]
+		public void foreach_remove (string path, Camel.DataCacheRemoveFunc func);
 		public GLib.IOStream @get (string path, string key) throws GLib.Error;
 		[Version (since = "3.24")]
 		public bool get_expire_enabled ();
@@ -3234,6 +3236,9 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 0.9)]
 	[Version (since = "2.24")]
 	public delegate int DBSelectCB ([CCode (array_length_cname = "ncol", array_length_pos = 0.666667)] string[] colvalues, [CCode (array_length_cname = "ncol", array_length_pos = 0.666667)] string[] colnames);
+	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
+	[Version (since = "3.26")]
+	public delegate bool DataCacheRemoveFunc (Camel.DataCache cdc, string filename);
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	public delegate unowned Camel.Folder FilterGetFolderFunc (Camel.FilterDriver driver, string uri) throws GLib.Error;
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]

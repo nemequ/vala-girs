@@ -10459,7 +10459,7 @@ The array of returned groups will be %NULL-terminated, so
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a newly-allocated %NULL-terminated array of strings.
   Use g_strfreev() to free it.</doc>
-          <array c:type="gchar**">
+          <array length="0" zero-terminated="1" c:type="gchar**">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -10593,7 +10593,7 @@ be found, %NULL is returned and @error is set to
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a newly-allocated %NULL-terminated array of strings.
     Use g_strfreev() to free it.</doc>
-          <array c:type="gchar**">
+          <array length="1" zero-terminated="1" c:type="gchar**">
             <type name="utf8"/>
           </array>
         </return-value>
@@ -11670,7 +11670,9 @@ so it is safe to pass %NULL as @error.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a newly allocated string holding
   the contents of the #GKeyFile</doc>
-          <type name="utf8" c:type="gchar*"/>
+          <array length="0" zero-terminated="0" c:type="gchar*">
+            <type name="utf8" c:type="gchar"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="key_file" transfer-ownership="none">
@@ -12923,7 +12925,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -48203,9 +48205,15 @@ Note that this function depends on the [current locale][setlocale].</doc>
 
 @p does not have to be at the beginning of a UTF-8 character. No check
 is made to see if the character found is actually valid other than
-it starts with an appropriate byte.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a pointer to the found character or %NULL</doc>
+it starts with an appropriate byte.
+
+If @end is %NULL, the return value will never be %NULL: if the end of the
+string is reached, a pointer to the terminating nul byte is returned. If
+@end is non-%NULL, the return value will be %NULL if the end of the string
+is reached.</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">a pointer to the found character or %NULL if @end is
+   set and is reached</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
       <parameters>
@@ -48269,7 +48277,11 @@ instead.</doc>
       <doc xml:space="preserve">Convert a sequence of bytes encoded as UTF-8 to a Unicode character.
 This function checks for incomplete characters, for invalid characters
 such as characters that are out of the range of Unicode, and for
-overlong encodings of valid characters.</doc>
+overlong encodings of valid characters.
+
+Note that g_utf8_get_char_validated() returns (gunichar)-2 if
+@max_len is positive and any of the bytes in the first UTF-8 character
+sequence are nul.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the resulting character. If @p points to a partial
     sequence at the end of a string that could begin a valid

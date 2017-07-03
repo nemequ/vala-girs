@@ -5,22 +5,37 @@ namespace Jsonrpc {
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_client_get_type ()")]
 	public class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
 		public Client (GLib.IOStream io_stream);
+		[Version (since = "3.26")]
 		public bool call (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool call_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		[Version (since = "3.26")]
 		public bool close (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool close_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
+		[Version (since = "3.26")]
 		public bool get_use_gvariant ();
+		[Version (since = "3.26")]
 		public bool reply (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool reply_async (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.26")]
 		public bool send_notification (string method, owned GLib.Variant? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool send_notification_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.26")]
 		public void set_use_gvariant (bool use_gvariant);
+		[Version (since = "3.26")]
 		public void start_listening ();
+		[Version (since = "3.26")]
 		public GLib.IOStream io_stream { construct; }
+		[Version (since = "3.26")]
 		public bool use_gvariant { get; set; }
+		[Version (since = "3.26")]
 		public virtual signal bool handle_call (string method, GLib.Variant id, GLib.Variant? @params);
+		[Version (since = "3.26")]
 		public virtual signal void notification (string method_name, GLib.Variant? @params);
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_input_stream_get_type ()")]
@@ -43,9 +58,17 @@ namespace Jsonrpc {
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_server_get_type ()")]
 	public class Server : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
 		public Server ();
-		public void accept_io_stream (GLib.IOStream stream);
+		[Version (since = "3.26")]
+		public void accept_io_stream (GLib.IOStream io_stream);
+		[Version (since = "3.26")]
+		public uint add_handler (string method, owned Jsonrpc.ServerHandler handler);
+		[Version (since = "3.26")]
+		public void remove_handler (uint handler_id);
+		[Version (since = "3.26")]
 		public virtual signal bool handle_call (Jsonrpc.Client client, string method, GLib.Variant id, GLib.Variant @params);
+		[Version (since = "3.26")]
 		public virtual signal void notification (Jsonrpc.Client client, string method, GLib.Variant @params);
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
@@ -121,6 +144,14 @@ namespace Jsonrpc {
 		public Jsonrpc.MessageMagic magic;
 		public weak string val;
 	}
+	[CCode (cheader_filename = "jsonrpc-glib.h", instance_pos = 5.9)]
+	public delegate void ServerHandler (Jsonrpc.Server self, Jsonrpc.Client client, string method, GLib.Variant id, GLib.Variant @params);
+	[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_VERSION_S")]
 	public const string VERSION_S;
 }

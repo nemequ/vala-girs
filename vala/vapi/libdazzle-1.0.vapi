@@ -50,7 +50,9 @@ namespace Dazzle {
 	public class BoldingLabel : Gtk.Label, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected BoldingLabel ();
+		public void set_bold (bool bold);
 		public void set_weight (Pango.Weight weight);
+		public bool bold { set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_box_get_type ()")]
 	public class Box : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
@@ -72,6 +74,7 @@ namespace Dazzle {
 		public int height { get; set; }
 		[NoAccessorMethod]
 		public GLib.Icon icon { owned get; set; }
+		public void* surface { construct; }
 		[NoAccessorMethod]
 		public Gtk.Widget target { owned get; construct; }
 		[NoAccessorMethod]
@@ -506,6 +509,16 @@ namespace Dazzle {
 		public Dazzle.Heap @ref ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_joined_menu_get_type ()")]
+	public class JoinedMenu : GLib.MenuModel {
+		[CCode (has_construct_function = false)]
+		public JoinedMenu ();
+		public void append_menu (GLib.MenuModel model);
+		public uint get_n_joined ();
+		public void prepend_menu (GLib.MenuModel model);
+		public void remove_index (uint index);
+		public void remove_menu (GLib.MenuModel model);
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_box_get_type ()")]
 	public class ListBox : Gtk.ListBox, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -537,8 +550,9 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public MultiPaned ();
 		public uint get_n_children ();
+		public unowned Gtk.Widget get_nth_child (uint nth);
 		[NoAccessorMethod]
-		public Gtk.Orientation orientation { get; set construct; }
+		public Gtk.Orientation orientation { get; set; }
 		public virtual signal void resize_drag_begin (Gtk.Widget child);
 		public virtual signal void resize_drag_end (Gtk.Widget child);
 	}
@@ -1656,6 +1670,8 @@ namespace Dazzle {
 	public static void* gtk_widget_find_child_typed (Gtk.Widget widget, GLib.Type type);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_hide_with_fade (Gtk.Widget widget);
+	[CCode (cheader_filename = "dazzle.h")]
+	public static void gtk_widget_mux_action_groups (Gtk.Widget widget, Gtk.Widget from_widget, string mux_key);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_show_with_fade (Gtk.Widget widget);
 	[CCode (cheader_filename = "dazzle.h")]

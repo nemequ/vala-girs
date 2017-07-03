@@ -1944,6 +1944,9 @@ namespace E {
 	[Version (since = "2.32")]
 	public static uint64 util_gthread_id (GLib.Thread thread);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.26")]
+	public static bool util_identity_can_send (void* registry, void* identity_source);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
 	public static void util_safe_free_string (string str);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
