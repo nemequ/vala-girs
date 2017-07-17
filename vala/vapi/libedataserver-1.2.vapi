@@ -664,14 +664,22 @@ namespace E {
 		[Version (since = "3.20")]
 		public E.SourceMailCompositionReplyStyle get_reply_style ();
 		public bool get_sign_imip ();
+		[Version (since = "3.26")]
+		public E.ThreeState get_start_bottom ();
 		public unowned string get_templates_folder ();
+		[Version (since = "3.26")]
+		public E.ThreeState get_top_signature ();
 		public void set_bcc ([CCode (array_length = false, array_null_terminated = true)] string[] bcc);
 		public void set_cc ([CCode (array_length = false, array_null_terminated = true)] string[] cc);
 		public void set_drafts_folder (string? drafts_folder);
 		[Version (since = "3.20")]
 		public void set_reply_style (E.SourceMailCompositionReplyStyle reply_style);
 		public void set_sign_imip (bool sign_imip);
+		[Version (since = "3.26")]
+		public void set_start_bottom (E.ThreeState start_bottom);
 		public void set_templates_folder (string? templates_folder);
+		[Version (since = "3.26")]
+		public void set_top_signature (E.ThreeState top_signature);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] bcc { get; set construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -679,7 +687,9 @@ namespace E {
 		public string drafts_folder { get; set construct; }
 		public E.SourceMailCompositionReplyStyle reply_style { get; set construct; }
 		public bool sign_imip { get; set construct; }
+		public E.ThreeState start_bottom { get; set construct; }
 		public string templates_folder { get; set construct; }
+		public E.ThreeState top_signature { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_identity_get_type ()")]
 	[Version (since = "3.6")]
@@ -739,13 +749,18 @@ namespace E {
 		public bool get_replies_to_origin_folder ();
 		public unowned string get_sent_folder ();
 		public unowned string get_transport_uid ();
+		[Version (since = "3.26")]
+		public bool get_use_sent_folder ();
 		[Version (since = "3.8")]
 		public void set_replies_to_origin_folder (bool replies_to_origin_folder);
 		public void set_sent_folder (string? sent_folder);
 		public void set_transport_uid (string? transport_uid);
+		[Version (since = "3.26")]
+		public void set_use_sent_folder (bool use_sent_folder);
 		public bool replies_to_origin_folder { get; set construct; }
 		public string sent_folder { get; set construct; }
 		public string transport_uid { get; set construct; }
+		public bool use_sent_folder { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_transport_get_type ()")]
 	[Version (since = "3.6")]
@@ -1388,6 +1403,13 @@ namespace E {
 		FAHRENHEIT,
 		CENTIGRADE,
 		KELVIN
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_THREE_STATE_", type_id = "e_three_state_get_type ()")]
+	[Version (since = "3.26")]
+	public enum ThreeState {
+		OFF,
+		ON,
+		INCONSISTENT
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_TIME_PARSE_", has_type_id = false)]
 	public enum TimeParseStatus {

@@ -30,6 +30,20 @@ namespace Dazzle {
 		public Dazzle.ShortcutManager shortcut_manager { get; }
 		public Dazzle.ThemeManager theme_manager { get; }
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_application_window_get_type ()")]
+	public class ApplicationWindow : Gtk.ApplicationWindow, Atk.Implementor, GLib.ActionGroup, GLib.ActionMap, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected ApplicationWindow ();
+		[Version (since = "3.26")]
+		public virtual bool get_fullscreen ();
+		[Version (since = "3.26")]
+		public unowned Gtk.Widget get_titlebar ();
+		[Version (since = "3.26")]
+		public virtual void set_fullscreen (bool fullscreen);
+		[Version (since = "3.26")]
+		public void set_titlebar (Gtk.Widget titlebar);
+		public bool fullscreen { get; set; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_bin_get_type ()")]
 	public class Bin : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
@@ -59,6 +73,7 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Box ();
 		public int get_max_width_request ();
+		public unowned Gtk.Widget? get_nth_child (uint nth);
 		public void set_max_width_request (int max_width_request);
 		public int max_width_request { get; set; }
 	}
@@ -251,6 +266,7 @@ namespace Dazzle {
 		public bool get_reveal_child ();
 		public uint get_transition_duration ();
 		public Dazzle.DockRevealerTransitionType get_transition_type ();
+		public bool is_animating ();
 		public void set_position (int position);
 		public void set_position_set (bool position_set);
 		public void set_reveal_child (bool reveal_child);
@@ -536,6 +552,36 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ListBoxRow ();
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_menu_button_get_type ()")]
+	public class MenuButton : Gtk.MenuButton, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected MenuButton ();
+		[Version (since = "3.26")]
+		public unowned GLib.MenuModel? get_model ();
+		public bool get_show_accels ();
+		public bool get_show_arrow ();
+		public bool get_show_icons ();
+		public void set_model (GLib.MenuModel model);
+		[Version (since = "3.26")]
+		public void set_show_accels (bool show_accels);
+		[Version (since = "3.26")]
+		public void set_show_arrow (bool show_arrow);
+		[Version (since = "3.26")]
+		public void set_show_icons (bool show_icons);
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public MenuButton.with_model (string icon_name, GLib.MenuModel? model);
+		[NoAccessorMethod]
+		public string icon_name { set; }
+		[NoAccessorMethod]
+		[Version (since = "3.26")]
+		public string menu_id { set; }
+		public GLib.MenuModel model { get; set; }
+		public bool show_accels { get; set; }
+		public bool show_arrow { get; set; }
+		public bool show_icons { get; set; }
+		[NoAccessorMethod]
+		public bool transitions_enabled { get; set; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_menu_manager_get_type ()")]
 	public class MenuManager : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -543,6 +589,7 @@ namespace Dazzle {
 		public uint add_filename (string filename) throws GLib.Error;
 		public uint add_resource (string resource) throws GLib.Error;
 		public unowned GLib.Menu get_menu_by_id (string menu_id);
+		public uint merge (string menu_id, GLib.MenuModel model);
 		public void remove (uint merge_id);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_multi_paned_get_type ()")]
@@ -583,12 +630,19 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_element_get_type ()")]
 	public class PathElement : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
 		public PathElement (string? id, string? icon_name, string title);
-		public unowned string get_icon_name ();
+		[Version (since = "3.26")]
+		public unowned string? get_icon_name ();
+		[Version (since = "3.26")]
 		public unowned string get_id ();
-		public unowned string get_title ();
+		[Version (since = "3.26")]
+		public unowned string? get_title ();
+		[Version (since = "3.26")]
 		public string icon_name { get; construct; }
+		[Version (since = "3.26")]
 		public string id { get; construct; }
+		[Version (since = "3.26")]
 		public string title { get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", ref_function = "dzl_pattern_spec_ref", type_id = "dzl_pattern_spec_get_type ()", unref_function = "dzl_pattern_spec_unref")]
@@ -771,6 +825,26 @@ namespace Dazzle {
 		public string theatric_icon_name { owned get; set; }
 		[NoAccessorMethod]
 		public uint transition_duration { get; set; }
+	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_properties_group_get_type ()")]
+	public class PropertiesGroup : GLib.Object, GLib.ActionGroup {
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
+		public PropertiesGroup (GLib.Object object);
+		[Version (since = "3.26")]
+		public void add_all_properties ();
+		[Version (since = "3.26")]
+		public void add_property (string name, string property_name);
+		[Version (since = "3.26")]
+		public void add_property_full (string name, string property_name, Dazzle.PropertiesFlags flags);
+		[CCode (has_construct_function = false)]
+		public PropertiesGroup.for_type (GLib.Type object_type);
+		[Version (since = "3.26")]
+		public void remove (string name);
+		[NoAccessorMethod]
+		public GLib.Object object { owned get; set; }
+		[NoAccessorMethod]
+		public GLib.Type object_type { get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_radio_box_get_type ()")]
 	public class RadioBox : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -997,6 +1071,25 @@ namespace Dazzle {
 		public Dazzle.ShortcutManager manager { get; set; }
 		public Dazzle.ShortcutTheme theme { get; set; }
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_simple_label_get_type ()")]
+	public class ShortcutSimpleLabel : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public ShortcutSimpleLabel ();
+		public unowned string get_accel ();
+		public unowned string get_action ();
+		public unowned string get_command ();
+		public unowned string get_title ();
+		public void set_accel (string accel);
+		public void set_action (string action);
+		public void set_command (string command);
+		public void set_title (string title);
+		public string accel { get; set; }
+		public string action { get; set; }
+		public string command { get; set; }
+		[NoAccessorMethod]
+		public bool show_accel { get; set; }
+		public string title { get; set; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_theme_get_type ()")]
 	public class ShortcutTheme : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -1220,11 +1313,15 @@ namespace Dazzle {
 	public class SuggestionEntry : Gtk.Entry, Atk.Implementor, Gtk.Buildable, Gtk.CellEditable, Gtk.Editable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SuggestionEntry ();
+		public void default_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
 		public unowned GLib.ListModel? get_model ();
 		public unowned Dazzle.Suggestion? get_suggestion ();
 		public unowned string get_typed_text ();
 		public void set_model (GLib.ListModel model);
+		[Version (since = "3.26")]
+		public void set_position_func (owned Dazzle.SuggestionPositionFunc? func);
 		public void set_suggestion (Dazzle.Suggestion suggestion);
+		public void window_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
 		public GLib.ListModel model { get; set; }
 		public string typed_text { get; }
 		public signal void activate_suggestion ();
@@ -1569,6 +1666,12 @@ namespace Dazzle {
 		SLIDE_UP,
 		SLIDE_DOWN
 	}
+	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_PROPERTIES_FLAGS_", has_type_id = false)]
+	[Flags]
+	public enum PropertiesFlags {
+		NONE,
+		STATEFUL_BOOLEANS
+	}
 	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_SHORTCUT_MATCH_", type_id = "dzl_shortcut_match_get_type ()")]
 	public enum ShortcutMatch {
 		NONE,
@@ -1615,6 +1718,9 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]
 	public delegate void ShortcutChordTableForeach (Dazzle.ShortcutChord chord, void* chord_data);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
+	[Version (since = "3.26")]
+	public delegate void SuggestionPositionFunc (Dazzle.SuggestionEntry entry, ref Gdk.Rectangle area, ref bool is_absolute);
+	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
 	public delegate void TaskCacheCallback (Dazzle.TaskCache self, void* key, GLib.Task task);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]
 	public delegate bool TreeFilterFunc (Dazzle.Tree tree, Dazzle.TreeNode node);
@@ -1659,6 +1765,9 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h")]
 	public static uint get_current_cpu_call ();
 	[CCode (cheader_filename = "dazzle.h")]
+	[Version (since = "3.26")]
+	public static void gtk_list_store_insert_sorted (Gtk.ListStore store, out Gtk.TreeIter iter, void* key, uint compare_column, GLib.CompareDataFunc compare_func);
+	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_text_buffer_remove_tag (Gtk.TextBuffer buffer, Gtk.TextTag tag, Gtk.TextIter start, Gtk.TextIter end, bool minimal_damage);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static bool gtk_widget_action (Gtk.Widget widget, string group, string name, GLib.Variant param);
@@ -1669,9 +1778,14 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void* gtk_widget_find_child_typed (Gtk.Widget widget, GLib.Type type);
 	[CCode (cheader_filename = "dazzle.h")]
+	public static unowned Gtk.Widget? gtk_widget_get_relative (Gtk.Widget widget, GLib.Type relative_type);
+	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_hide_with_fade (Gtk.Widget widget);
 	[CCode (cheader_filename = "dazzle.h")]
-	public static void gtk_widget_mux_action_groups (Gtk.Widget widget, Gtk.Widget from_widget, string mux_key);
+	[Version (since = "3.26")]
+	public static bool gtk_widget_is_ancestor_or_relative (Gtk.Widget widget, Gtk.Widget ancestor);
+	[CCode (cheader_filename = "dazzle.h")]
+	public static void gtk_widget_mux_action_groups (Gtk.Widget widget, Gtk.Widget from_widget, string? mux_key);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_show_with_fade (Gtk.Widget widget);
 	[CCode (cheader_filename = "dazzle.h")]

@@ -935,13 +935,10 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		public SubmoduleUpdateOptions ();
 		public unowned Ggit.CheckoutOptions get_checkout_options ();
-		public Ggit.CheckoutStrategy get_clone_checkout_strategy ();
 		public Ggit.FetchOptions get_fetch_options ();
 		public void set_checkout_options (Ggit.CheckoutOptions? checkout_options);
-		public void set_clone_checkout_strategy (Ggit.CheckoutStrategy checkout_strategy);
 		public void set_fetch_options (Ggit.FetchOptions? fetch_options);
 		public Ggit.CheckoutOptions checkout_options { get; set; }
-		public Ggit.CheckoutStrategy clone_checkout_strategy { get; set; }
 		public Ggit.FetchOptions fetch_options { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_tag_get_type ()")]
