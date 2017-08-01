@@ -629,8 +629,8 @@ namespace Camel {
 		public virtual string next_uid_string ();
 		[Version (since = "2.26")]
 		public Camel.MessageInfo? peek_loaded (string uid);
-		[Version (since = "2.32")]
-		public void prepare_fetch_all () throws GLib.Error;
+		[NoWrapper]
+		public virtual void prepare_fetch_all ();
 		public bool remove (Camel.MessageInfo info);
 		public bool remove_uid (string uid);
 		[Version (since = "3.6")]
@@ -661,6 +661,7 @@ namespace Camel {
 		public uint saved_count { get; }
 		public uint unread_count { get; }
 		public uint visible_count { get; }
+		public signal void changed ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", lower_case_csuffix = "folder_thread_messages", ref_function = "camel_folder_thread_messages_ref", type_id = "camel_folder_thread_messages_get_type ()", unref_function = "camel_folder_thread_messages_unref")]
 	[Compact]
@@ -1469,6 +1470,8 @@ namespace Camel {
 		public bool prepare_for_offline_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.12")]
 		public bool requires_downsync ();
+		[Version (since = "3.26")]
+		public async bool set_online (bool online, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_online_sync (bool online, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool online { get; }
 	}
@@ -3081,6 +3084,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_FOLDER_", has_type_id = false)]
 	[Flags]
 	public enum StoreGetFolderFlags {
+		NONE,
 		CREATE,
 		EXCL,
 		BODY_INDEX,

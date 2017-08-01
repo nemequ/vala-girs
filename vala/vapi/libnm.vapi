@@ -2053,6 +2053,8 @@ namespace NM {
 		public const string AGEING_TIME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]
 		public const string FORWARD_DELAY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_GROUP_FORWARD_MASK")]
+		public const string GROUP_FORWARD_MASK;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_HELLO_TIME")]
 		public const string HELLO_TIME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MAC_ADDRESS")]
@@ -2079,6 +2081,8 @@ namespace NM {
 		public SettingBridge ();
 		public uint32 get_ageing_time ();
 		public uint16 get_forward_delay ();
+		[Version (since = "1.10")]
+		public uint16 get_group_forward_mask ();
 		public uint16 get_hello_time ();
 		public unowned string get_mac_address ();
 		public uint16 get_max_age ();
@@ -2090,6 +2094,9 @@ namespace NM {
 		public uint ageing_time { get; set construct; }
 		[NoAccessorMethod]
 		public uint forward_delay { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public uint group_forward_mask { get; set construct; }
 		[NoAccessorMethod]
 		public uint hello_time { get; set construct; }
 		[NoAccessorMethod]

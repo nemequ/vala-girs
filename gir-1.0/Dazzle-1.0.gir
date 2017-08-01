@@ -2880,6 +2880,28 @@ need to implement themselves.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="pause_grabs"
+              c:identifier="dzl_dock_manager_pause_grabs"
+              version="3.26">
+        <doc xml:space="preserve">Requests that the transient grab monitoring stop until
+dzl_dock_manager_unpause_grabs() is called.
+
+This might be useful while setting up UI so that you don't focus
+something unexpectedly.
+
+This function may be called multiple times and after an equivalent
+number of calls to dzl_dock_manager_unpause_grabs(), transient
+grab monitoring will continue.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlDockManager</doc>
+            <type name="DockManager" c:type="DzlDockManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="register_dock"
               c:identifier="dzl_dock_manager_register_dock">
         <return-value transfer-ownership="none">
@@ -2892,6 +2914,23 @@ need to implement themselves.</doc>
           <parameter name="dock" transfer-ownership="none">
             <type name="Dock" c:type="DzlDock*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="unpause_grabs"
+              c:identifier="dzl_dock_manager_unpause_grabs"
+              version="3.26">
+        <doc xml:space="preserve">Unpauses a previous call to dzl_dock_manager_pause_grabs().
+
+Once the pause count returns to zero, transient grab monitoring
+will be restored.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlDockManager</doc>
+            <type name="DockManager" c:type="DzlDockManager*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="unregister_dock"
@@ -5956,7 +5995,7 @@ when the reference count reaches zero.</doc>
       <doc xml:space="preserve">Dzl major version component (e.g. 1 if %DZL_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="DZL_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="5" c:type="DZL_MICRO_VERSION">
       <doc xml:space="preserve">Dzl micro version component (e.g. 3 if %DZL_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -10646,6 +10685,9 @@ If no controller is found, %NULL is returned.</doc>
           <parameter name="default_accel" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
+          </parameter>
           <parameter name="action" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -10666,11 +10708,14 @@ If no controller is found, %NULL is returned.</doc>
           <parameter name="default_accel" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
+          </parameter>
           <parameter name="callback"
                      transfer-ownership="none"
                      scope="notified"
-                     closure="3"
-                     destroy="4">
+                     closure="4"
+                     destroy="5">
             <type name="Gtk.Callback" c:type="GtkCallback"/>
           </parameter>
           <parameter name="callback_data"
@@ -10701,6 +10746,9 @@ If no controller is found, %NULL is returned.</doc>
           </parameter>
           <parameter name="default_accel" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
           </parameter>
           <parameter name="signal_name" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
@@ -10734,13 +10782,14 @@ If the command is not found, %FALSE is returned.</doc>
         </parameters>
       </method>
       <method name="get_context"
-              c:identifier="dzl_shortcut_controller_get_context">
+              c:identifier="dzl_shortcut_controller_get_context"
+              version="3.26">
         <doc xml:space="preserve">This function gets the #DzlShortcutController:context property, which
 is the current context to dispatch events to. An #DzlShortcutContext
 is a group of keybindings that may be activated in response to a
 single or series of #GdkEventKey.</doc>
         <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">An #DzlShortcutContext or %NULL.</doc>
+          <doc xml:space="preserve">A #DzlShortcutContext or %NULL.</doc>
           <type name="ShortcutContext" c:type="DzlShortcutContext*"/>
         </return-value>
         <parameters>
@@ -10750,11 +10799,35 @@ single or series of #GdkEventKey.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_context_for_phase"
+              c:identifier="dzl_shortcut_controller_get_context_for_phase"
+              version="3.26">
+        <doc xml:space="preserve">Controllers can have a different context for a particular phase, which allows
+them to activate different keybindings depending if the event in capture,
+bubble, or dispatch.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A #DzlShortcutContext or %NULL.</doc>
+          <type name="ShortcutContext" c:type="DzlShortcutContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlShortcutController</doc>
+            <type name="ShortcutController" c:type="DzlShortcutController*"/>
+          </instance-parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <doc xml:space="preserve">the phase for the shorcut delivery</doc>
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_current_chord"
               c:identifier="dzl_shortcut_controller_get_current_chord">
         <doc xml:space="preserve">This method gets the #DzlShortcutController:current-chord property.
+This is useful if you want to monitor in-progress chord building.
 
-This is useful if you want to monitor in-progress chord building.</doc>
+Note that this value will only be valid on the controller for the
+toplevel widget (a #GtkWindow). Chords are not tracked at the
+individual widget controller level.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">A #DzlShortcutChord or %NULL.</doc>
           <type name="ShortcutChord" c:type="const DzlShortcutChord*"/>
@@ -10783,39 +10856,27 @@ matching managers in a single window hierarchy is not supported.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="handle_event"
-              c:identifier="dzl_shortcut_controller_handle_event">
-        <doc xml:space="preserve">This function uses @event to determine if the current context has a shortcut
-registered matching the event. If so, the shortcut will be dispatched and
-%TRUE is returned.
+      <method name="set_context_by_name"
+              c:identifier="dzl_shortcut_controller_set_context_by_name"
+              version="3.26">
+        <doc xml:space="preserve">Changes the context for the controller to the context matching @name.
 
-Otherwise, %FALSE is returned.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if @event has been handled, otherwise %FALSE.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">An #DzlShortcutController</doc>
-            <type name="ShortcutController" c:type="DzlShortcutController*"/>
-          </instance-parameter>
-          <parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve">A #GdkEventKey</doc>
-            <type name="Gdk.EventKey" c:type="const GdkEventKey*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_context"
-              c:identifier="dzl_shortcut_controller_set_context">
+Contexts are resolved at runtime through the current theme (and possibly
+a parent theme if it inherits from one).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlShortcutController</doc>
             <type name="ShortcutController" c:type="DzlShortcutController*"/>
           </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <type name="ShortcutContext" c:type="DzlShortcutContext*"/>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The name of the context</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -10842,7 +10903,7 @@ for the process.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="context" writable="1" transfer-ownership="none">
+      <property name="context" transfer-ownership="none">
         <type name="ShortcutContext"/>
       </property>
       <property name="current-chord" transfer-ownership="none">
@@ -10896,6 +10957,10 @@ commands that can be changed using the keytheme components.</doc>
       <field name="command" writable="1">
         <doc xml:space="preserve">the command identifier</doc>
         <type name="utf8" c:type="const gchar*"/>
+      </field>
+      <field name="phase" writable="1">
+        <doc xml:space="preserve">the phase for activation, or 0 for the default</doc>
+        <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
       </field>
       <field name="default_accel" writable="1">
         <doc xml:space="preserve">the default accelerator for the command, if any</doc>
@@ -11504,6 +11569,34 @@ You should call this from #GtkWidget::key-press-event handler in your
         <type name="Gtk.TreeStoreClass" c:type="GtkTreeStoreClass"/>
       </field>
     </record>
+    <bitfield name="ShortcutPhase"
+              glib:type-name="DzlShortcutPhase"
+              glib:get-type="dzl_shortcut_phase_get_type"
+              c:type="DzlShortcutPhase">
+      <member name="dispatch"
+              value="0"
+              c:identifier="DZL_SHORTCUT_PHASE_DISPATCH"
+              glib:nick="dispatch">
+      </member>
+      <member name="capture"
+              value="1"
+              c:identifier="DZL_SHORTCUT_PHASE_CAPTURE"
+              glib:nick="capture">
+        <doc xml:space="preserve">Indicates the capture phase of the shortcut
+  activation. This allows parent widgets to intercept the keybinding before
+  it is dispatched to the target #GdkWindow.</doc>
+      </member>
+      <member name="bubble"
+              value="2"
+              c:identifier="DZL_SHORTCUT_PHASE_BUBBLE"
+              glib:nick="bubble">
+      </member>
+      <member name="global"
+              value="4"
+              c:identifier="DZL_SHORTCUT_PHASE_GLOBAL"
+              glib:nick="global">
+      </member>
+    </bitfield>
     <class name="ShortcutSimpleLabel"
            c:symbol-prefix="shortcut_simple_label"
            c:type="DzlShortcutSimpleLabel"
@@ -11980,6 +12073,9 @@ copy-on-write (CoW).</doc>
           <parameter name="accel" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_accel_for_command"
@@ -12009,6 +12105,10 @@ accelerators for @command will be cleared.</doc>
             <doc xml:space="preserve">the shortcut accelerator</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <doc xml:space="preserve">the phase to activate within, or 0 for the default</doc>
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_chord_for_action"
@@ -12025,6 +12125,9 @@ accelerators for @command will be cleared.</doc>
           </parameter>
           <parameter name="chord" transfer-ownership="none">
             <type name="ShortcutChord" c:type="const DzlShortcutChord*"/>
+          </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
           </parameter>
         </parameters>
       </method>
@@ -12054,6 +12157,10 @@ accelerators for @command will be cleared.</doc>
                      allow-none="1">
             <doc xml:space="preserve">the chord for the command</doc>
             <type name="ShortcutChord" c:type="const DzlShortcutChord*"/>
+          </parameter>
+          <parameter name="phase" transfer-ownership="none">
+            <doc xml:space="preserve">the phase to activate within, or 0 for the default</doc>
+            <type name="ShortcutPhase" c:type="DzlShortcutPhase"/>
           </parameter>
         </parameters>
       </method>
@@ -16119,6 +16226,12 @@ to the self, but the direct children will be.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="always-expand"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="context-menu" writable="1" transfer-ownership="none">
         <type name="Gio.MenuModel"/>
       </property>
@@ -17065,6 +17178,11 @@ and simply hide the arrow if there were in fact no children (upon
 expansion).</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
+      <property name="expanded-icon-name"
+                writable="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="gicon" transfer-ownership="none">
         <doc xml:space="preserve">The cached GIcon to display.</doc>
         <type name="Gio.Icon"/>
@@ -17315,7 +17433,7 @@ structure is freed.</doc>
         </parameter>
       </parameters>
     </callback>
-    <constant name="VERSION_S" value="3.25.3" c:type="DZL_VERSION_S">
+    <constant name="VERSION_S" value="3.25.5" c:type="DZL_VERSION_S">
       <doc xml:space="preserve">Dazzle version, encoded as a string, useful for printing and
 concatenation.</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -17825,6 +17943,20 @@ seen again, the previous muxings will be removed.</doc>
                    nullable="1"
                    allow-none="1">
           <doc xml:space="preserve">a unique key to represent the muxing</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="gtk_widget_remove_style_class"
+              c:identifier="dzl_gtk_widget_remove_style_class">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="widget" transfer-ownership="none">
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </parameter>
+        <parameter name="class_name" transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

@@ -13018,7 +13018,9 @@ If after calling this method the element still has not reached
 the pending state, the next state change is performed.
 
 This method is used internally and should normally not be called by plugins
-or applications.</doc>
+or applications.
+
+This function must be called with STATE_LOCK held.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The result of the commit state change.
 
@@ -34805,7 +34807,12 @@ has been changed but not the playback position.</doc>
             <doc xml:space="preserve">the seek stop value</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
-          <parameter name="update" transfer-ownership="none">
+          <parameter name="update"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
             <doc xml:space="preserve">boolean holding whether position was updated.</doc>
             <type name="gboolean" c:type="gboolean*"/>
           </parameter>
@@ -34948,7 +34955,10 @@ to get the real negative segment position.</doc>
             <doc xml:space="preserve">the running-time</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
-          <parameter name="position" transfer-ownership="none">
+          <parameter name="position"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">the resulting position in the segment</doc>
             <type name="guint64" c:type="guint64*"/>
           </parameter>
@@ -35014,7 +35024,10 @@ to get the real negative segment position.</doc>
             <doc xml:space="preserve">the stream-time</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
-          <parameter name="position" transfer-ownership="none">
+          <parameter name="position"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">the resulting position in the segment</doc>
             <type name="guint64" c:type="guint64*"/>
           </parameter>
@@ -35135,7 +35148,12 @@ to get the real negative running time.</doc>
             <doc xml:space="preserve">the position in the segment</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
-          <parameter name="running_time" transfer-ownership="none">
+          <parameter name="running_time"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
             <doc xml:space="preserve">result running-time</doc>
             <type name="guint64" c:type="guint64*"/>
           </parameter>
@@ -35209,7 +35227,10 @@ to get the real negative stream time.</doc>
             <doc xml:space="preserve">the position in the segment</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
-          <parameter name="stream_time" transfer-ownership="none">
+          <parameter name="stream_time"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">result stream-time</doc>
             <type name="guint64" c:type="guint64*"/>
           </parameter>
@@ -35321,10 +35342,10 @@ gst_element_set_state() and checked using gst_element_get_state().</doc>
                          the data is flowing.</doc>
       </member>
     </enumeration>
-    <enumeration name="StateChange"
-                 glib:type-name="GstStateChange"
-                 glib:get-type="gst_state_change_get_type"
-                 c:type="GstStateChange">
+    <bitfield name="StateChange"
+              glib:type-name="GstStateChange"
+              glib:get-type="gst_state_change_get_type"
+              c:type="GstStateChange">
       <doc xml:space="preserve">These are the different state changes an element goes through.
 %GST_STATE_NULL &amp;rArr; %GST_STATE_PLAYING is called an upwards state change
 and %GST_STATE_PLAYING &amp;rArr; %GST_STATE_NULL a downwards state change.</doc>
@@ -35456,7 +35477,7 @@ they should make sure to go back to real 'PAUSED' state (prerolling for example)
           </parameter>
         </parameters>
       </function>
-    </enumeration>
+    </bitfield>
     <enumeration name="StateChangeReturn"
                  glib:type-name="GstStateChangeReturn"
                  glib:get-type="gst_state_change_return_get_type"
@@ -44401,6 +44422,30 @@ Be sure to use #G_GNUC_NO_INSTRUMENT on that function, it is needed.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="debug_add_ring_buffer_logger"
+              c:identifier="gst_debug_add_ring_buffer_logger"
+              version="1.14">
+      <doc xml:space="preserve">Adds a memory ringbuffer based debug logger that stores up to
+@max_size_per_thread bytes of logs per thread and times out threads after
+@thread_timeout seconds of inactivity.
+
+Logs can be fetched with gst_debug_ring_buffer_logger_get_logs() and the
+logger can be removed again with gst_debug_remove_ring_buffer_logger().
+Only one logger at a time is possible.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="max_size_per_thread" transfer-ownership="none">
+          <doc xml:space="preserve">Maximum size of log per thread in bytes</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="thread_timeout" transfer-ownership="none">
+          <doc xml:space="preserve">Timeout for threads in seconds</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="debug_bin_to_dot_data"
               c:identifier="gst_debug_bin_to_dot_data">
       <return-value transfer-ownership="full">
@@ -44747,6 +44792,28 @@ a stack trace is printed.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="debug_remove_ring_buffer_logger"
+              c:identifier="gst_debug_remove_ring_buffer_logger"
+              version="1.14">
+      <doc xml:space="preserve">Removes any previously added ring buffer logger with
+gst_debug_add_ring_buffer_logger().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
+    <function name="debug_ring_buffer_logger_get_logs"
+              c:identifier="gst_debug_ring_buffer_logger_get_logs"
+              version="1.14">
+      <doc xml:space="preserve">Fetches the current logs per thread from the ring buffer logger. See
+gst_debug_add_ring_buffer_logger() for details.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">NULL-terminated array of
+strings with the debug output per thread</doc>
+        <array c:type="gchar**">
+          <type name="utf8"/>
+        </array>
+      </return-value>
     </function>
     <function name="debug_set_active" c:identifier="gst_debug_set_active">
       <doc xml:space="preserve">If activated, debugging messages are sent to the debugging

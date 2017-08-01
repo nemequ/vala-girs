@@ -1364,13 +1364,13 @@ extensions.</doc>
               value="2"
               c:identifier="NM_CHECKPOINT_CREATE_FLAG_DELETE_NEW_CONNECTIONS">
         <doc xml:space="preserve">upon rollback,
-  delete any new connection added after the checkpoint.</doc>
+  delete any new connection added after the checkpoint (Since: 1.6)</doc>
       </member>
       <member name="disconnect_new_devices"
               value="4"
               c:identifier="NM_CHECKPOINT_CREATE_FLAG_DISCONNECT_NEW_DEVICES">
         <doc xml:space="preserve">upon rollback,
-  disconnect any new device appeared after the checkpoint.</doc>
+  disconnect any new device appeared after the checkpoint (Since: 1.6)</doc>
       </member>
     </enumeration>
     <class name="Client"
@@ -13531,6 +13531,11 @@ Access Point).</doc>
               c:type="NM_SETTING_BRIDGE_FORWARD_DELAY">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_BRIDGE_GROUP_FORWARD_MASK"
+              value="group-forward-mask"
+              c:type="NM_SETTING_BRIDGE_GROUP_FORWARD_MASK">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_BRIDGE_HELLO_TIME"
               value="hello-time"
               c:type="NM_SETTING_BRIDGE_HELLO_TIME">
@@ -19121,6 +19126,20 @@ must be strings. Option names must contain only alphanumeric characters
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_group_forward_mask"
+              c:identifier="nm_setting_bridge_get_group_forward_mask"
+              version="1.10">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingBridge:group-forward-mask property of the setting</doc>
+          <type name="guint16" c:type="guint16"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingBridge</doc>
+            <type name="SettingBridge" c:type="NMSettingBridge*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_hello_time"
               c:identifier="nm_setting_bridge_get_hello_time">
         <return-value transfer-ownership="none">
@@ -19212,6 +19231,19 @@ must be strings. Option names must contain only alphanumeric characters
         <doc xml:space="preserve">The Spanning Tree Protocol (STP) forwarding delay, in seconds.</doc>
         <type name="guint" c:type="guint"/>
       </property>
+      <property name="group-forward-mask"
+                version="1.10"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">A mask of group addresses to forward. Usually, group addresses in
+the range from 01:80:C2:00:00:00 to 01:80:C2:00:00:0F are not
+forwarded according to standards. This property is a mask of 16 bits,
+each corrisponding to a group address in that range that must be
+forwarded. The mask can't have bits 0, 1 or 2 set because they are
+used for STP, MAC pause frames and LACP.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
       <property name="hello-time"
                 writable="1"
                 construct="1"
@@ -19221,8 +19253,13 @@ must be strings. Option names must contain only alphanumeric characters
       </property>
       <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, the MAC address of bridge. When creating a new bridge, this
-MAC address will be set. When matching an existing (outside
-NetworkManager created) bridge, this MAC address must match.</doc>
+MAC address will be set.
+
+If this field is left unspecified, the "ethernet.cloned-mac-address" is
+referred instead to generate the initial MAC address. Note that setting
+"ethernet.cloned-mac-address" anyway overwrites the MAC address of
+the bridge later while activating the bridge. Hence, this property
+is deprecated.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="max-age"
@@ -20371,9 +20408,10 @@ the change takes effect immediately.</doc>
       <property name="permissions" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">An array of strings defining what access a given user has to this
 connection.  If this is %NULL or empty, all users are allowed to access
-this connection.  Otherwise a user is allowed to access this connection
-if and only if they are in this list. Each entry is of the form
-"[type]:[id]:[reserved]"; for example, "user:dcbw:blah".
+this connection; otherwise users are allowed if and only if they are in
+this list.  When this is not empty, the connection can be active only when
+one of the specified users is logged into an active session.  Each entry
+is of the form "[type]:[id]:[reserved]"; for example, "user:dcbw:blah".
 
 At this time only the "user" [type] is allowed.  Any other values are
 ignored and reserved for future use.  [id] is the username that this
@@ -21564,7 +21602,14 @@ property.</doc>
       </method>
       <property name="dhcp-client-id" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">A string sent to the DHCP server to identify the local machine which the
-DHCP server may use to customize the DHCP lease and options.</doc>
+DHCP server may use to customize the DHCP lease and options.
+When the property is a hex string ('aa:bb:cc') it is interpreted as a
+binary client ID, in which case the first byte is assumed to be the
+'type' field as per RFC 2132 section 9.14 and the remaining bytes may be
+an hardware address (e.g. '01:xx:xx:xx:xx:xx:xx' where 1 is the Ethernet
+ARP type and the rest is a MAC address).
+If the property is not a hex string it is considered as a
+non-hardware-address client ID and the 'type' field is set to 0.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="dhcp-fqdn"
@@ -26628,7 +26673,8 @@ This is known as MAC cloning or spoofing.
 Beside explicitly specifying a MAC address, the special values "preserve", "permanent",
 "random" and "stable" are supported.
 "preserve" means not to touch the MAC address on activation.
-"permanent" means to use the permanent hardware address of the device.
+"permanent" means to use the permanent hardware address if the device
+has one (otherwise this is treated as "preserve").
 "random" creates a random MAC address on each connect.
 "stable" creates a hashed MAC address based on connection.stable-id and a
 machine dependent key.

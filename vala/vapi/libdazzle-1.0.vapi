@@ -226,6 +226,10 @@ namespace Dazzle {
 	public class DockManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public DockManager ();
+		[Version (since = "3.26")]
+		public void pause_grabs ();
+		[Version (since = "3.26")]
+		public void unpause_grabs ();
 		[HasEmitter]
 		public virtual signal void register_dock (Dazzle.Dock dock);
 		[HasEmitter]
@@ -1000,18 +1004,21 @@ namespace Dazzle {
 	public class ShortcutController : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ShortcutController (Gtk.Widget widget);
-		public void add_command_action (string command_id, string default_accel, string action);
-		public void add_command_callback (string command_id, string default_accel, owned Gtk.Callback callback);
+		public void add_command_action (string command_id, string default_accel, Dazzle.ShortcutPhase phase, string action);
+		public void add_command_callback (string command_id, string default_accel, Dazzle.ShortcutPhase phase, owned Gtk.Callback callback);
 		public bool execute_command (string command);
 		public static unowned Dazzle.ShortcutController find (Gtk.Widget widget);
+		[Version (since = "3.26")]
 		public unowned Dazzle.ShortcutContext? get_context ();
+		[Version (since = "3.26")]
+		public unowned Dazzle.ShortcutContext? get_context_for_phase (Dazzle.ShortcutPhase phase);
 		public unowned Dazzle.ShortcutChord? get_current_chord ();
 		public unowned Dazzle.ShortcutManager get_manager ();
-		public bool handle_event (Gdk.EventKey event);
-		public void set_context (Dazzle.ShortcutContext context);
+		[Version (since = "3.26")]
+		public void set_context_by_name (string? name);
 		public void set_manager (Dazzle.ShortcutManager? manager);
 		public static unowned Dazzle.ShortcutController? try_find (Gtk.Widget widget);
-		public Dazzle.ShortcutContext context { get; set; }
+		public Dazzle.ShortcutContext context { get; }
 		public Dazzle.ShortcutChord current_chord { get; }
 		public Dazzle.ShortcutManager manager { get; set; }
 		[NoAccessorMethod]
@@ -1113,10 +1120,10 @@ namespace Dazzle {
 		public bool save_to_file (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool save_to_path (string path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool save_to_stream (GLib.OutputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public void set_accel_for_action (string detailed_action_name, string accel);
-		public void set_accel_for_command (string? command, string? accel);
-		public void set_chord_for_action (string detailed_action_name, Dazzle.ShortcutChord chord);
-		public void set_chord_for_command (string? command, Dazzle.ShortcutChord? chord);
+		public void set_accel_for_action (string detailed_action_name, string accel, Dazzle.ShortcutPhase phase);
+		public void set_accel_for_command (string? command, string? accel, Dazzle.ShortcutPhase phase);
+		public void set_chord_for_action (string detailed_action_name, Dazzle.ShortcutChord chord, Dazzle.ShortcutPhase phase);
+		public void set_chord_for_command (string? command, Dazzle.ShortcutChord? chord, Dazzle.ShortcutPhase phase);
 		public void set_parent_name (string parent_name);
 		public string name { get; construct; }
 		public string parent_name { get; set; }
@@ -1468,6 +1475,8 @@ namespace Dazzle {
 		public void set_root (Dazzle.TreeNode node);
 		public void set_show_icons (bool show_icons);
 		public void unselect_all ();
+		[NoAccessorMethod]
+		public bool always_expand { get; construct; }
 		public GLib.MenuModel context_menu { get; set; }
 		public Dazzle.TreeNode root { get; set; }
 		[NoAccessorMethod]
@@ -1529,6 +1538,8 @@ namespace Dazzle {
 		public void set_use_markup (bool use_markup);
 		public void show_popover (Gtk.Popover popover);
 		public bool children_possible { get; set; }
+		[NoAccessorMethod]
+		public string expanded_icon_name { owned get; set; }
 		public GLib.Icon gicon { get; }
 		public string icon_name { get; set; }
 		public GLib.Object item { get; set; }
@@ -1638,6 +1649,7 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", has_type_id = false)]
 	public struct ShortcutEntry {
 		public weak string command;
+		public Dazzle.ShortcutPhase phase;
 		public weak string default_accel;
 		public weak string section;
 		public weak string group;
@@ -1677,6 +1689,14 @@ namespace Dazzle {
 		NONE,
 		EQUAL,
 		PARTIAL
+	}
+	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_SHORTCUT_PHASE_", type_id = "dzl_shortcut_phase_get_type ()")]
+	[Flags]
+	public enum ShortcutPhase {
+		DISPATCH,
+		CAPTURE,
+		BUBBLE,
+		GLOBAL
 	}
 	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_SHORTCUT_", has_type_id = false)]
 	[Version (since = "3.20")]
@@ -1786,6 +1806,8 @@ namespace Dazzle {
 	public static bool gtk_widget_is_ancestor_or_relative (Gtk.Widget widget, Gtk.Widget ancestor);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_mux_action_groups (Gtk.Widget widget, Gtk.Widget from_widget, string? mux_key);
+	[CCode (cheader_filename = "dazzle.h")]
+	public static void gtk_widget_remove_style_class (Gtk.Widget widget, string class_name);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_show_with_fade (Gtk.Widget widget);
 	[CCode (cheader_filename = "dazzle.h")]
