@@ -817,11 +817,15 @@ namespace Ggit {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[]? list_tags_match (string? pattern) throws GLib.Error;
 		public Ggit.Object lookup (Ggit.OId oid, GLib.Type gtype) throws GLib.Error;
+		public Ggit.Blob? lookup_blob (Ggit.OId oid) throws GLib.Error;
 		public Ggit.Branch? lookup_branch (string branch_name, Ggit.BranchType branch_type) throws GLib.Error;
+		public Ggit.Commit? lookup_commit (Ggit.OId oid) throws GLib.Error;
 		public Ggit.Ref lookup_reference (string name) throws GLib.Error;
 		public Ggit.Ref lookup_reference_dwim (string short_name) throws GLib.Error;
 		public Ggit.Remote? lookup_remote (string name) throws GLib.Error;
 		public Ggit.Submodule? lookup_submodule (string name) throws GLib.Error;
+		public Ggit.Tag? lookup_tag (Ggit.OId oid) throws GLib.Error;
+		public Ggit.Tree? lookup_tree (Ggit.OId oid) throws GLib.Error;
 		public Ggit.Index merge_commits (Ggit.Commit our_commit, Ggit.Commit their_commit, Ggit.MergeOptions merge_options) throws GLib.Error;
 		public Ggit.Index merge_trees (Ggit.Tree ancestor_tree, Ggit.Tree our_tree, Ggit.Tree their_tree, Ggit.MergeOptions merge_options) throws GLib.Error;
 		public bool note_foreach (string? notes_ref, Ggit.NoteCallback callback) throws GLib.Error;

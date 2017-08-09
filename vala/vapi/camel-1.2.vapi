@@ -629,8 +629,11 @@ namespace Camel {
 		public virtual string next_uid_string ();
 		[Version (since = "2.26")]
 		public Camel.MessageInfo? peek_loaded (string uid);
+		[Version (since = "2.32")]
+		public void prepare_fetch_all () throws GLib.Error;
+		[CCode (vfunc_name = "prepare_fetch_all")]
 		[NoWrapper]
-		public virtual void prepare_fetch_all ();
+		public virtual void prepare_fetch_all_v ();
 		public bool remove (Camel.MessageInfo info);
 		public bool remove_uid (string uid);
 		[Version (since = "3.6")]

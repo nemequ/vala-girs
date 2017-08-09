@@ -1095,6 +1095,11 @@ namespace NM {
 		public NM.DeviceWifi companion { get; }
 		public string hw_address { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
+	public class DevicePpp : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DevicePpp ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_team_get_type ()")]
 	public class DeviceTeam : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_CARRIER")]
@@ -3002,6 +3007,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_pppoe_get_type ()")]
 	public class SettingPppoe : NM.Setting {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_PARENT")]
+		public const string PARENT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_PASSWORD")]
 		public const string PASSWORD;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_PASSWORD_FLAGS")]
@@ -3014,10 +3021,15 @@ namespace NM {
 		public const string USERNAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingPppoe ();
+		[Version (since = "1.10")]
+		public unowned string get_parent ();
 		public unowned string get_password ();
 		public NM.SettingSecretFlags get_password_flags ();
 		public unowned string get_service ();
 		public unowned string get_username ();
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string parent { owned get; set construct; }
 		[NoAccessorMethod]
 		public string password { owned get; set; }
 		[NoAccessorMethod]
@@ -4305,7 +4317,8 @@ namespace NM {
 		VXLAN,
 		VETH,
 		MACSEC,
-		DUMMY
+		DUMMY,
+		PPP
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]

@@ -456,17 +456,31 @@ namespace E {
 	public class SourceCollection : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceCollection ();
+		[Version (since = "3.26")]
+		public string dup_calendar_url ();
+		[Version (since = "3.26")]
+		public string dup_contacts_url ();
 		public string dup_identity ();
 		public bool get_calendar_enabled ();
+		[Version (since = "3.26")]
+		public unowned string? get_calendar_url ();
 		public bool get_contacts_enabled ();
+		[Version (since = "3.26")]
+		public unowned string? get_contacts_url ();
 		public unowned string get_identity ();
 		public bool get_mail_enabled ();
 		public void set_calendar_enabled (bool calendar_enabled);
+		[Version (since = "3.26")]
+		public void set_calendar_url (string? calendar_url);
 		public void set_contacts_enabled (bool contacts_enabled);
+		[Version (since = "3.26")]
+		public void set_contacts_url (string? contacts_url);
 		public void set_identity (string? identity);
 		public void set_mail_enabled (bool mail_enabled);
 		public bool calendar_enabled { get; set construct; }
+		public string calendar_url { get; set construct; }
 		public bool contacts_enabled { get; set construct; }
+		public string contacts_url { get; set construct; }
 		public string identity { get; set construct; }
 		public bool mail_enabled { get; set construct; }
 	}
