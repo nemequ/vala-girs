@@ -556,6 +556,15 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ListBoxRow ();
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_store_adapter_get_type ()")]
+	public class ListStoreAdapter : GLib.Object, Gtk.TreeModel {
+		[CCode (has_construct_function = false)]
+		public ListStoreAdapter (GLib.ListModel model);
+		[Version (since = "3.26")]
+		public unowned GLib.ListModel get_model ();
+		public void set_model (GLib.ListModel model);
+		public GLib.ListModel model { get; set; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_menu_button_get_type ()")]
 	public class MenuButton : Gtk.MenuButton, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
 		[CCode (has_construct_function = false)]

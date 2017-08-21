@@ -399,6 +399,10 @@ namespace NM {
 		public const string CONNECTION_REMOVED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY")]
 		public const string CONNECTIVITY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_AVAILABLE")]
+		public const string CONNECTIVITY_CHECK_AVAILABLE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_ENABLED")]
+		public const string CONNECTIVITY_CHECK_ENABLED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICES")]
 		public const string DEVICES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICE_ADDED")]
@@ -448,6 +452,12 @@ namespace NM {
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.10")]
+		public bool connectivity_check_get_available ();
+		[Version (since = "1.10")]
+		public bool connectivity_check_get_enabled ();
+		[Version (since = "1.10")]
+		public void connectivity_check_set_enabled (bool enabled);
 		public bool deactivate_connection (NM.ActiveConnection active, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool deactivate_connection_async (NM.ActiveConnection active, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned NM.ActiveConnection get_activating_connection ();
@@ -502,6 +512,10 @@ namespace NM {
 		public bool can_modify { get; }
 		public GLib.GenericArray<void*> connections { get; }
 		public NM.ConnectivityState connectivity { get; }
+		[NoAccessorMethod]
+		public bool connectivity_check_available { get; }
+		[NoAccessorMethod]
+		public bool connectivity_check_enabled { get; set; }
 		public GLib.GenericArray<void*> devices { get; }
 		[Version (since = "1.6")]
 		public GLib.GenericArray<void*> dns_configuration { get; }
@@ -4169,6 +4183,7 @@ namespace NM {
 		RELOAD,
 		CHECKPOINT_ROLLBACK,
 		ENABLE_DISABLE_STATISTICS,
+		ENABLE_DISABLE_CONNECTIVITY_CHECK,
 		LAST
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_PERMISSION_RESULT_", type_id = "nm_client_permission_result_get_type ()")]

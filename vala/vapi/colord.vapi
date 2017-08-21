@@ -431,38 +431,6 @@ namespace Cd {
 		[Version (since = "0.1.0")]
 		public virtual signal void changed ();
 	}
-	[CCode (cheader_filename = "colord.h", type_id = "cd_dom_get_type ()")]
-	public class Dom : GLib.Object {
-		[CCode (has_construct_function = false)]
-		[Version (since = "0.1.31")]
-		public Dom ();
-		[Version (since = "0.1.31")]
-		public static GLib.Quark error_quark ();
-		[Version (since = "0.1.31")]
-		public unowned GLib.Node get_node (GLib.Node root, string path);
-		[Version (since = "0.1.31")]
-		public static unowned string get_node_attribute (GLib.Node node, string key);
-		[Version (since = "0.1.31")]
-		public static unowned string get_node_data (GLib.Node node);
-		[Version (since = "0.1.32")]
-		public static double get_node_data_as_double (GLib.Node node);
-		[Version (since = "0.1.32")]
-		public static int get_node_data_as_int (GLib.Node node);
-		[Version (since = "0.1.31")]
-		public static bool get_node_lab (GLib.Node node, Cd.ColorLab lab);
-		[Version (since = "0.1.31")]
-		public static GLib.HashTable<void*,void*> get_node_localized (GLib.Node node, string key);
-		[Version (since = "0.1.31")]
-		public static unowned string get_node_name (GLib.Node node);
-		[Version (since = "0.1.31")]
-		public static bool get_node_rgb (GLib.Node node, Cd.ColorRGB rgb);
-		[Version (since = "0.1.31")]
-		public static bool get_node_yxy (GLib.Node node, Cd.ColorYxy yxy);
-		[Version (since = "0.1.31")]
-		public bool parse_xml_data (string data, ssize_t data_len) throws GLib.Error;
-		[Version (since = "0.1.31")]
-		public string to_string ();
-	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_edid_get_type ()")]
 	public class Edid : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -620,7 +588,6 @@ namespace Cd {
 		public void set_version (double version);
 		[Version (since = "0.1.32")]
 		public string to_string ();
-		public bool utils_get_coverage (Cd.Icc icc_reference, double coverage) throws GLib.Error;
 		public Cd.ColorXYZ blue { get; }
 		public bool can_delete { get; }
 		public string checksum { get; }
@@ -633,69 +600,6 @@ namespace Cd {
 		public uint temperature { get; }
 		public double version { get; set; }
 		public Cd.ColorXYZ white { get; }
-	}
-	[CCode (cheader_filename = "colord.h", type_id = "cd_icc_store_get_type ()")]
-	public class IccStore : GLib.Object {
-		[CCode (has_construct_function = false)]
-		[Version (since = "1.0.2")]
-		public IccStore ();
-		[Version (since = "1.0.2")]
-		public Cd.Icc find_by_checksum (string checksum);
-		[Version (since = "1.0.2")]
-		public Cd.Icc find_by_filename (string filename);
-		[Version (since = "1.0.2")]
-		public GLib.GenericArray<weak Cd.Icc> get_all ();
-		[Version (since = "1.0.2")]
-		public Cd.IccLoadFlags get_load_flags ();
-		[Version (since = "1.0.2")]
-		public bool search_kind (Cd.IccStoreSearchKind search_kind, Cd.IccStoreSearchFlags search_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.0.2")]
-		public bool search_location (string location, Cd.IccStoreSearchFlags search_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.0.2")]
-		public void set_cache (GLib.Resource cache);
-		[Version (since = "1.0.2")]
-		public void set_load_flags (Cd.IccLoadFlags load_flags);
-		[Version (since = "1.0.2")]
-		public virtual signal void added (Cd.Icc icc);
-		[Version (since = "1.0.2")]
-		public virtual signal void removed (Cd.Icc icc);
-	}
-	[CCode (cheader_filename = "colord.h", type_id = "cd_interp_get_type ()")]
-	public class Interp : GLib.Object {
-		[CCode (has_construct_function = false)]
-		protected Interp ();
-		[Version (since = "0.1.31")]
-		public static GLib.Quark error_quark ();
-		[Version (since = "0.1.31")]
-		public virtual double eval (double value) throws GLib.Error;
-		[Version (since = "0.1.31")]
-		public Cd.InterpKind get_kind ();
-		[Version (since = "0.1.31")]
-		public uint get_size ();
-		[Version (since = "0.1.31")]
-		public unowned GLib.Array<double> get_x ();
-		[Version (since = "0.1.31")]
-		public unowned GLib.Array<double> get_y ();
-		[Version (since = "0.1.31")]
-		public void insert (double x, double y);
-		public static unowned string kind_to_string (Cd.InterpKind kind);
-		[Version (since = "0.1.31")]
-		public virtual bool prepare () throws GLib.Error;
-		[NoAccessorMethod]
-		[Version (since = "0.1.20")]
-		public uint kind { get; set; }
-	}
-	[CCode (cheader_filename = "colord.h", type_id = "cd_interp_akima_get_type ()")]
-	public class InterpAkima : Cd.Interp {
-		[CCode (has_construct_function = false, type = "CdInterp*")]
-		[Version (since = "0.1.31")]
-		public InterpAkima ();
-	}
-	[CCode (cheader_filename = "colord.h", type_id = "cd_interp_linear_get_type ()")]
-	public class InterpLinear : Cd.Interp {
-		[CCode (has_construct_function = false, type = "CdInterp*")]
-		[Version (since = "0.1.31")]
-		public InterpLinear ();
 	}
 	[CCode (cheader_filename = "colord.h", type_id = "cd_it8_get_type ()")]
 	public class It8 : GLib.Object {
@@ -768,11 +672,6 @@ namespace Cd {
 		public void set_spectrum_array (owned GLib.GenericArray<weak Cd.Spectrum> data);
 		[Version (since = "0.1.20")]
 		public void set_title (string title);
-		public bool utils_calculate_ccmx (Cd.It8 it8_measured, Cd.It8 it8_ccmx) throws GLib.Error;
-		public bool utils_calculate_cri_from_cmf (Cd.It8 tcs, Cd.Spectrum illuminant, double value, double resolution) throws GLib.Error;
-		[Version (since = "0.2.6")]
-		public bool utils_calculate_gamma (double gamma_y) throws GLib.Error;
-		public bool utils_calculate_xyz_from_cmf (Cd.Spectrum illuminant, Cd.Spectrum spectrum, Cd.ColorXYZ value, double resolution) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.1.20")]
 		public It8.with_kind (Cd.It8Kind kind);
@@ -1106,55 +1005,6 @@ namespace Cd {
 		[Version (since = "1.3.1")]
 		public string to_string (uint max_width, uint max_height);
 	}
-	[CCode (cheader_filename = "colord.h", type_id = "cd_transform_get_type ()")]
-	public class Transform : GLib.Object {
-		[CCode (has_construct_function = false)]
-		[Version (since = "0.1.34")]
-		public Transform ();
-		[Version (since = "0.1.34")]
-		public static GLib.Quark error_quark ();
-		[Version (since = "1.0.0")]
-		public unowned Cd.Icc get_abstract_icc ();
-		[Version (since = "1.0.0")]
-		public bool get_bpc ();
-		[Version (since = "1.0.0")]
-		public unowned Cd.Icc get_input_icc ();
-		[Version (since = "1.0.0")]
-		public Cd.PixelFormat get_input_pixel_format ();
-		[Version (since = "1.1.1")]
-		public uint get_max_threads ();
-		[Version (since = "1.0.0")]
-		public unowned Cd.Icc get_output_icc ();
-		[Version (since = "1.0.0")]
-		public Cd.PixelFormat get_output_pixel_format ();
-		[Version (since = "1.0.0")]
-		public Cd.RenderingIntent get_rendering_intent ();
-		[Version (since = "0.1.34")]
-		public bool process (void* data_in, void* data_out, uint width, uint height, uint rowstride, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.0.0")]
-		public void set_abstract_icc (Cd.Icc icc);
-		[Version (since = "1.0.0")]
-		public void set_bpc (bool bpc);
-		[Version (since = "1.0.0")]
-		public void set_input_icc (Cd.Icc icc);
-		[Version (since = "1.0.0")]
-		public void set_input_pixel_format (Cd.PixelFormat pixel_format);
-		[Version (since = "1.1.1")]
-		public void set_max_threads (uint max_threads);
-		[Version (since = "1.0.0")]
-		public void set_output_icc (Cd.Icc icc);
-		[Version (since = "1.0.0")]
-		public void set_output_pixel_format (Cd.PixelFormat pixel_format);
-		[Version (since = "1.0.0")]
-		public void set_rendering_intent (Cd.RenderingIntent rendering_intent);
-		public Cd.Icc abstract_icc { get; set; }
-		public bool bpc { get; set; }
-		public Cd.Icc input_icc { get; set; }
-		public uint input_pixel_format { get; set; }
-		public Cd.Icc output_icc { get; set; }
-		public uint output_pixel_format { get; set; }
-		public uint rendering_intent { get; set; }
-	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct ColorRGB8 {
 		public uint8 R;
@@ -1193,12 +1043,6 @@ namespace Cd {
 		public double squared_error (Cd.Vec3 src2);
 		public void subtract (Cd.Vec3 src2, Cd.Vec3 dest);
 		public string to_string ();
-	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_BUFFER_KIND_", has_type_id = false)]
-	public enum BufferKind {
-		REQUEST,
-		RESPONSE,
-		UNKNOWN
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {
@@ -1294,28 +1138,6 @@ namespace Cd {
 	[Version (since = "0.1.32")]
 	public enum IccSaveFlags {
 		NONE
-	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_ICC_STORE_SEARCH_FLAGS_", has_type_id = false)]
-	[Version (since = "1.1.1")]
-	public enum IccStoreSearchFlags {
-		NONE,
-		CREATE_LOCATION
-	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_ICC_STORE_SEARCH_KIND_", has_type_id = false)]
-	[Version (since = "1.1.1")]
-	public enum IccStoreSearchKind {
-		SYSTEM,
-		MACHINE,
-		USER
-	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_INTERP_ERROR_", has_type_id = false)]
-	public enum InterpError {
-		FAILED
-	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_INTERP_KIND_", has_type_id = false)]
-	public enum InterpKind {
-		LINEAR,
-		AKIMA
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_IT8_ERROR_", has_type_id = false)]
 	public enum It8Error {
@@ -1479,13 +1301,6 @@ namespace Cd {
 		public static Cd.StandardSpace from_string (string standard_space);
 		public static unowned string to_string (Cd.StandardSpace standard_space);
 	}
-	[CCode (cheader_filename = "colord.h", cprefix = "CD_TRANSFORM_ERROR_", has_type_id = false)]
-	[Version (since = "0.1.34")]
-	public enum TransformError {
-		FAILED_TO_SETUP_TRANSFORM,
-		INVALID_COLORSPACE,
-		LAST
-	}
 	[CCode (cheader_filename = "colord.h", cname = "CD_CLIENT_PROPERTY_DAEMON_VERSION")]
 	public const string CLIENT_PROPERTY_DAEMON_VERSION;
 	[CCode (cheader_filename = "colord.h", cname = "CD_CLIENT_PROPERTY_SYSTEM_MODEL")]
@@ -1540,12 +1355,6 @@ namespace Cd {
 	public const string DEVICE_PROPERTY_SERIAL;
 	[CCode (cheader_filename = "colord.h", cname = "CD_DEVICE_PROPERTY_VENDOR")]
 	public const string DEVICE_PROPERTY_VENDOR;
-	[CCode (cheader_filename = "colord.h", cname = "CD_MAJOR_VERSION")]
-	public const int MAJOR_VERSION;
-	[CCode (cheader_filename = "colord.h", cname = "CD_MICRO_VERSION")]
-	public const int MICRO_VERSION;
-	[CCode (cheader_filename = "colord.h", cname = "CD_MINOR_VERSION")]
-	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "colord.h", cname = "CD_PIXEL_FORMAT_ARGB32")]
 	public const int PIXEL_FORMAT_ARGB32;
 	[CCode (cheader_filename = "colord.h", cname = "CD_PIXEL_FORMAT_BGRA32")]
@@ -1693,24 +1502,6 @@ namespace Cd {
 	[CCode (cheader_filename = "colord.h", cname = "CD_SENSOR_PROPERTY_VENDOR")]
 	public const string SENSOR_PROPERTY_VENDOR;
 	[CCode (cheader_filename = "colord.h")]
-	public static void buffer_debug (Cd.BufferKind buffer_kind, uint8 data, size_t length);
-	[CCode (cheader_filename = "colord.h")]
-	public static uint16 buffer_read_uint16_be (uint8 buffer);
-	[CCode (cheader_filename = "colord.h")]
-	public static uint16 buffer_read_uint16_le (uint8 buffer);
-	[CCode (cheader_filename = "colord.h")]
-	public static uint32 buffer_read_uint32_be (uint8 buffer);
-	[CCode (cheader_filename = "colord.h")]
-	public static uint32 buffer_read_uint32_le (uint8 buffer);
-	[CCode (cheader_filename = "colord.h")]
-	public static void buffer_write_uint16_be (uint8 buffer, uint16 value);
-	[CCode (cheader_filename = "colord.h")]
-	public static void buffer_write_uint16_le (uint8 buffer, uint16 value);
-	[CCode (cheader_filename = "colord.h")]
-	public static void buffer_write_uint32_be (uint8 buffer, uint32 value);
-	[CCode (cheader_filename = "colord.h")]
-	public static void buffer_write_uint32_le (uint8 buffer, uint32 value);
-	[CCode (cheader_filename = "colord.h")]
 	[Version (since = "0.1.26")]
 	public static bool color_get_blackbody_rgb (uint temp, Cd.ColorRGB result);
 	[CCode (cheader_filename = "colord.h")]
@@ -1719,14 +1510,6 @@ namespace Cd {
 	[CCode (cheader_filename = "colord.h")]
 	[Version (since = "0.1.27")]
 	public static void color_rgb8_to_rgb (Cd.ColorRGB8 src, Cd.ColorRGB dest);
-	[CCode (cheader_filename = "colord.h")]
-	public static bool context_lcms_error_check (void* ctx) throws GLib.Error;
-	[CCode (cheader_filename = "colord.h")]
-	public static void context_lcms_error_clear (void* ctx);
-	[CCode (cheader_filename = "colord.h")]
-	public static void context_lcms_free (void* ctx);
-	[CCode (cheader_filename = "colord.h")]
-	public static void* context_lcms_new ();
 	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_clear (Cd.Mat3x3 src);
 	[CCode (cheader_filename = "colord.h")]
@@ -1751,6 +1534,4 @@ namespace Cd {
 	public static string mat33_to_string (Cd.Mat3x3 src);
 	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_vector_multiply (Cd.Mat3x3 mat_src, Cd.Vec3 vec_src, Cd.Vec3 vec_dest);
-	[CCode (cheader_filename = "colord.h")]
-	public static string quirk_vendor_name (string vendor);
 }
