@@ -140,6 +140,7 @@ namespace GWeather {
 		public GWeather.ConditionPhenomenon phenomenon;
 		public GWeather.ConditionQualifier qualifier;
 		public unowned string to_string ();
+		public unowned string to_string_full (GWeather.FormatOptions options);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h")]
 	[SimpleType]
@@ -210,6 +211,13 @@ namespace GWeather {
 		ZONE,
 		LIST
 	}
+	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_FORMAT_OPTION_", type_id = "gweather_format_options_get_type ()")]
+	[Flags]
+	public enum FormatOptions {
+		DEFAULT,
+		SENTENCE_CAPITALIZATION,
+		NO_CAPITALIZATION
+	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_LOCATION_", type_id = "gweather_location_level_get_type ()")]
 	public enum LocationLevel {
 		WORLD,
@@ -253,6 +261,7 @@ namespace GWeather {
 		OVERCAST,
 		LAST;
 		public static unowned string to_string (GWeather.Sky sky);
+		public static unowned string to_string_full (GWeather.Sky sky, GWeather.FormatOptions options);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_SPEED_UNIT_", type_id = "gweather_speed_unit_get_type ()")]
 	public enum SpeedUnit {
@@ -295,6 +304,7 @@ namespace GWeather {
 		NNW,
 		LAST;
 		public static unowned string to_string (GWeather.WindDirection wind);
+		public static unowned string to_string_full (GWeather.WindDirection wind, GWeather.FormatOptions options);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", instance_pos = 1.9)]
 	public delegate bool FilterFunc (GWeather.Location location);
