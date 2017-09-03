@@ -603,6 +603,7 @@ namespace Dazzle {
 		public uint add_resource (string resource) throws GLib.Error;
 		public unowned GLib.Menu get_menu_by_id (string menu_id);
 		public uint merge (string menu_id, GLib.MenuModel model);
+		[Version (since = "3.26")]
 		public void remove (uint merge_id);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_multi_paned_get_type ()")]
@@ -1416,11 +1417,9 @@ namespace Dazzle {
 		public TabStrip ();
 		public void add_control (Gtk.Widget widget);
 		public Gtk.PositionType get_edge ();
-		public bool get_show_labels ();
 		public unowned Gtk.Stack? get_stack ();
 		public Dazzle.TabStyle get_style ();
 		public void set_edge (Gtk.PositionType edge);
-		public void set_show_labels (bool show_labels);
 		public void set_stack (Gtk.Stack stack);
 		public void set_style (Dazzle.TabStyle style);
 		public Gtk.PositionType edge { get; set; }

@@ -5,15 +5,15 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_annotated_commit_ref", type_id = "ggit_annotated_commit_get_type ()", unref_function = "ggit_annotated_commit_unref")]
 	[Compact]
 	public class AnnotatedCommit {
-		public Ggit.OId get_id ();
-		public unowned Ggit.AnnotatedCommit @ref ();
+		public Ggit.OId? get_id ();
+		public unowned Ggit.AnnotatedCommit? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_blame_get_type ()")]
 	public class Blame : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		protected Blame ();
-		public Ggit.Blame from_buffer ([CCode (array_length_cname = "buffer_length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer) throws GLib.Error;
+		public Ggit.Blame? from_buffer ([CCode (array_length_cname = "buffer_length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer) throws GLib.Error;
 		public static Ggit.BlameFlags get_flags (Ggit.BlameOptions blame_options);
 		public Ggit.BlameHunk get_hunk_by_index (uint32 idx);
 		public Ggit.BlameHunk get_hunk_by_line (uint32 line);
@@ -23,16 +23,16 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_blame_hunk_ref", type_id = "ggit_blame_hunk_get_type ()", unref_function = "ggit_blame_hunk_unref")]
 	[Compact]
 	public class BlameHunk {
-		public unowned Ggit.OId get_final_commit_id ();
-		public unowned Ggit.Signature get_final_signature ();
+		public unowned Ggit.OId? get_final_commit_id ();
+		public unowned Ggit.Signature? get_final_signature ();
 		public uint16 get_final_start_line_number ();
 		public uint16 get_lines_in_hunk ();
-		public unowned Ggit.OId get_orig_commit_id ();
-		public unowned string get_orig_path ();
-		public unowned Ggit.Signature get_orig_signature ();
+		public unowned Ggit.OId? get_orig_commit_id ();
+		public unowned string? get_orig_path ();
+		public unowned Ggit.Signature? get_orig_signature ();
 		public uint16 get_orig_start_line_number ();
 		public bool is_boundary ();
-		public unowned Ggit.BlameHunk @ref ();
+		public unowned Ggit.BlameHunk? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_blame_options_get_type ()")]
@@ -40,13 +40,13 @@ namespace Ggit {
 	public class BlameOptions {
 		[CCode (has_construct_function = false)]
 		public BlameOptions ();
-		public Ggit.BlameOptions copy ();
+		public Ggit.BlameOptions? copy ();
 		public void free ();
 		public uint32 get_maximum_line ();
 		public uint32 get_minimum_line ();
 		public uint16 get_minimum_match_characters ();
-		public Ggit.OId get_newest_commit ();
-		public Ggit.OId get_oldest_commit ();
+		public Ggit.OId? get_newest_commit ();
+		public Ggit.OId? get_oldest_commit ();
 		public void set_maximum_line (uint32 line);
 		public void set_minimum_line (uint32 line);
 		public void set_minimum_match_characters (uint16 characters);
@@ -58,14 +58,14 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		protected Blob ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
-		public unowned uint8[] get_raw_content ();
+		public unowned uint8[]? get_raw_content ();
 		public bool is_binary ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_blob_output_stream_get_type ()")]
 	public class BlobOutputStream : GLib.OutputStream {
 		[CCode (has_construct_function = false)]
 		protected BlobOutputStream ();
-		public Ggit.OId get_id () throws GLib.Error;
+		public Ggit.OId? get_id () throws GLib.Error;
 		public Ggit.Repository repository { construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_branch_get_type ()")]
@@ -73,18 +73,18 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		protected Branch ();
 		public void @delete () throws GLib.Error;
-		public unowned string get_name () throws GLib.Error;
+		public unowned string? get_name () throws GLib.Error;
 		public Ggit.Ref? get_upstream () throws GLib.Error;
 		public bool is_head () throws GLib.Error;
-		public Ggit.Branch move (string new_branch_name, Ggit.CreateFlags flags) throws GLib.Error;
+		public Ggit.Branch? move (string new_branch_name, Ggit.CreateFlags flags) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_branch_enumerator_ref", type_id = "ggit_branch_enumerator_get_type ()", unref_function = "ggit_branch_enumerator_unref")]
 	[Compact]
 	public class BranchEnumerator {
-		public Ggit.Ref @get ();
-		public unowned Ggit.BranchEnumerator iterator ();
+		public Ggit.Ref? @get ();
+		public unowned Ggit.BranchEnumerator? iterator ();
 		public bool next ();
-		public Ggit.BranchEnumerator @ref ();
+		public Ggit.BranchEnumerator? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_checkout_options_get_type ()")]
@@ -92,7 +92,7 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		public CheckoutOptions ();
 		public unowned string? get_ancestor_label ();
-		public unowned Ggit.Tree get_baseline ();
+		public unowned Ggit.Tree? get_baseline ();
 		public uint get_dir_mode ();
 		public bool get_disable_filters ();
 		public uint get_file_mode ();
@@ -167,23 +167,23 @@ namespace Ggit {
 	public class Commit : Ggit.Object {
 		[CCode (has_construct_function = false)]
 		protected Commit ();
-		public Ggit.OId amend (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.Tree tree) throws GLib.Error;
-		public Ggit.Signature get_author ();
-		public Ggit.Signature get_committer ();
-		public unowned string get_message ();
-		public unowned string get_message_encoding ();
-		public Ggit.Commit get_nth_ancestor (uint n) throws GLib.Error;
-		public Ggit.CommitParents get_parents ();
-		public unowned string get_subject ();
-		public Ggit.Tree get_tree ();
-		public Ggit.OId get_tree_id ();
+		public Ggit.OId? amend (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.Tree tree) throws GLib.Error;
+		public Ggit.Signature? get_author ();
+		public Ggit.Signature? get_committer ();
+		public unowned string? get_message ();
+		public unowned string? get_message_encoding ();
+		public Ggit.Commit? get_nth_ancestor (uint n) throws GLib.Error;
+		public Ggit.CommitParents? get_parents ();
+		public unowned string? get_subject ();
+		public Ggit.Tree? get_tree ();
+		public Ggit.OId? get_tree_id ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_commit_parents_get_type ()")]
 	public class CommitParents : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public CommitParents (Ggit.Commit commit);
-		public Ggit.Commit @get (uint idx);
-		public Ggit.OId get_id (uint idx);
+		public Ggit.Commit? @get (uint idx);
+		public Ggit.OId? get_id (uint idx);
 		public uint get_size ();
 		[NoAccessorMethod]
 		public Ggit.Commit commit { owned get; construct; }
@@ -220,9 +220,9 @@ namespace Ggit {
 	[Compact]
 	public class ConfigEntry {
 		public Ggit.ConfigLevel get_level ();
-		public unowned string get_name ();
-		public unowned string get_value ();
-		public unowned Ggit.ConfigEntry @ref ();
+		public unowned string? get_name ();
+		public unowned string? get_value ();
+		public unowned Ggit.ConfigEntry? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_cred_get_type ()")]
@@ -266,7 +266,7 @@ namespace Ggit {
 	public class CredSshKeyFromAgent : Ggit.Cred, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public CredSshKeyFromAgent (string username) throws GLib.Error;
-		public unowned string get_username ();
+		public unowned string? get_username ();
 		public string username { get; construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_diff_get_type ()")]
@@ -277,8 +277,8 @@ namespace Ggit {
 		public static void blobs (Ggit.Blob? old_blob, string? old_as_path, Ggit.Blob? new_blob, string? new_as_path, Ggit.DiffOptions? diff_options, [CCode (delegate_target_pos = 9.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 9.1)] Ggit.DiffBinaryCallback? binary_cb, [CCode (delegate_target_pos = 9.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
 		public bool find_similar (Ggit.DiffFindOptions? options) throws GLib.Error;
 		public void @foreach ([CCode (delegate_target_pos = 4.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 4.1)] Ggit.DiffBinaryCallback? binary_cb, [CCode (delegate_target_pos = 4.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
-		public string format_email (Ggit.DiffFormatEmailOptions options) throws GLib.Error;
-		public Ggit.DiffDelta get_delta (size_t index);
+		public string? format_email (Ggit.DiffFormatEmailOptions options) throws GLib.Error;
+		public Ggit.DiffDelta? get_delta (size_t index);
 		public size_t get_num_deltas ();
 		[CCode (has_construct_function = false)]
 		public Diff.index_to_workdir (Ggit.Repository repository, Ggit.Index? index, Ggit.DiffOptions? diff_options) throws GLib.Error;
@@ -296,9 +296,9 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_diff_binary_ref", type_id = "ggit_diff_binary_get_type ()", unref_function = "ggit_diff_binary_unref")]
 	[Compact]
 	public class DiffBinary {
-		public unowned Ggit.DiffBinaryFile get_new_file ();
-		public unowned Ggit.DiffBinaryFile get_old_file ();
-		public Ggit.DiffBinary @ref ();
+		public unowned Ggit.DiffBinaryFile? get_new_file ();
+		public unowned Ggit.DiffBinaryFile? get_old_file ();
+		public unowned Ggit.DiffBinary? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_diff_binary_file_ref", type_id = "ggit_diff_binary_file_get_type ()", unref_function = "ggit_diff_binary_file_unref")]
@@ -314,11 +314,11 @@ namespace Ggit {
 	[Compact]
 	public class DiffDelta {
 		public Ggit.DiffFlag get_flags ();
-		public unowned Ggit.DiffFile get_new_file ();
-		public unowned Ggit.DiffFile get_old_file ();
+		public unowned Ggit.DiffFile? get_new_file ();
+		public unowned Ggit.DiffFile? get_old_file ();
 		public uint get_similarity ();
 		public Ggit.DeltaType get_status ();
-		public Ggit.DiffDelta @ref ();
+		public unowned Ggit.DiffDelta? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_diff_file_ref", type_id = "ggit_diff_file_get_type ()", unref_function = "ggit_diff_file_unref")]
@@ -326,10 +326,10 @@ namespace Ggit {
 	public class DiffFile {
 		public Ggit.DiffFlag get_flags ();
 		public uint16 get_mode ();
-		public unowned Ggit.OId get_oid ();
+		public unowned Ggit.OId? get_oid ();
 		public unowned string? get_path ();
 		public int64 get_size ();
-		public Ggit.DiffFile @ref ();
+		public unowned Ggit.DiffFile? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_diff_find_options_get_type ()")]
@@ -338,7 +338,7 @@ namespace Ggit {
 		public DiffFindOptions ();
 		public uint get_copy_threshold ();
 		public Ggit.DiffFindFlags get_flags ();
-		public unowned Ggit.DiffSimilarityMetric get_metric ();
+		public unowned Ggit.DiffSimilarityMetric? get_metric ();
 		public uint get_rename_from_rewrite_threshold ();
 		public size_t get_rename_limit ();
 		public uint get_rename_threshold ();
@@ -359,11 +359,11 @@ namespace Ggit {
 	public class DiffFormatEmailOptions : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public DiffFormatEmailOptions ();
-		public unowned Ggit.Signature get_author ();
+		public unowned Ggit.Signature? get_author ();
 		public Ggit.DiffFormatEmailFlags get_flags ();
-		public unowned Ggit.OId get_id ();
+		public unowned Ggit.OId? get_id ();
 		public size_t get_patch_number ();
-		public unowned string get_summary ();
+		public unowned string? get_summary ();
 		public size_t get_total_patches ();
 		public void set_author (Ggit.Signature? author);
 		public void set_flags (Ggit.DiffFormatEmailFlags flags);
@@ -386,7 +386,7 @@ namespace Ggit {
 		public int get_new_start ();
 		public int get_old_lines ();
 		public int get_old_start ();
-		public Ggit.DiffHunk @ref ();
+		public unowned Ggit.DiffHunk? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_diff_line_ref", type_id = "ggit_diff_line_get_type ()", unref_function = "ggit_diff_line_unref")]
@@ -398,8 +398,8 @@ namespace Ggit {
 		public int get_new_lineno ();
 		public int get_old_lineno ();
 		public Ggit.DiffLineType get_origin ();
-		public unowned string get_text ();
-		public Ggit.DiffLine @ref ();
+		public unowned string? get_text ();
+		public unowned Ggit.DiffLine? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_diff_options_get_type ()")]
@@ -409,10 +409,10 @@ namespace Ggit {
 		public Ggit.DiffOption get_flags ();
 		public int get_n_context_lines ();
 		public int get_n_interhunk_lines ();
-		public unowned string get_new_prefix ();
-		public unowned string get_old_prefix ();
+		public unowned string? get_new_prefix ();
+		public string? get_old_prefix ();
 		[CCode (array_length = false, array_null_terminated = true)]
-		public unowned string[] get_pathspec ();
+		public unowned string[]? get_pathspec ();
 		public void set_flags (Ggit.DiffOption flags);
 		public void set_n_context_lines (int n);
 		public void set_n_interhunk_lines (int n);
@@ -423,7 +423,7 @@ namespace Ggit {
 		public int n_context_lines { get; set construct; }
 		public int n_interhunk_lines { get; set construct; }
 		public string new_prefix { get; set construct; }
-		public string old_prefix { get; set construct; }
+		public string old_prefix { owned get; set construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] pathspec { get; set construct; }
 	}
@@ -432,7 +432,7 @@ namespace Ggit {
 	public class DiffSimilarityMetric {
 		[CCode (has_construct_function = false)]
 		public DiffSimilarityMetric (Ggit.DiffSimilarityMetricFileSignatureCallback file_signature, Ggit.DiffSimilarityMetricBufferSignatureCallback buffer_signature, Ggit.DiffSimilarityMetricFreeSignatureCallback free_signature, Ggit.DiffSimilarityMetricSimilarityCallback similarity);
-		public Ggit.DiffSimilarityMetric copy ();
+		public Ggit.DiffSimilarityMetric? copy ();
 		public void free ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_fetch_options_get_type ()")]
@@ -440,10 +440,10 @@ namespace Ggit {
 	public class FetchOptions {
 		[CCode (has_construct_function = false)]
 		public FetchOptions ();
-		public Ggit.FetchOptions copy ();
+		public Ggit.FetchOptions? copy ();
 		public void free ();
 		public Ggit.RemoteDownloadTagsType get_download_tags ();
-		public unowned Ggit.RemoteCallbacks get_remote_callbacks ();
+		public unowned Ggit.RemoteCallbacks? get_remote_callbacks ();
 		public void set_download_tags (Ggit.RemoteDownloadTagsType download_tags);
 		public void set_remote_callbacks (Ggit.RemoteCallbacks? callbacks);
 	}
@@ -454,34 +454,34 @@ namespace Ggit {
 		public bool add (Ggit.IndexEntry entry) throws GLib.Error;
 		public bool add_file (GLib.File file) throws GLib.Error;
 		public bool add_path (string path) throws GLib.Error;
-		public Ggit.IndexEntries get_entries ();
-		public Ggit.IndexEntriesResolveUndo get_entries_resolve_undo ();
-		public Ggit.Repository get_owner ();
+		public Ggit.IndexEntries? get_entries ();
+		public Ggit.IndexEntriesResolveUndo? get_entries_resolve_undo ();
+		public Ggit.Repository? get_owner ();
 		public bool has_conflicts ();
-		public static Ggit.Index open (GLib.File file) throws GLib.Error;
+		public static Ggit.Index? open (GLib.File file) throws GLib.Error;
 		public bool read (bool force) throws GLib.Error;
 		public bool remove (GLib.File file, int stage) throws GLib.Error;
 		public bool write () throws GLib.Error;
-		public Ggit.OId write_tree () throws GLib.Error;
-		public Ggit.OId write_tree_to (Ggit.Repository repository) throws GLib.Error;
+		public Ggit.OId? write_tree () throws GLib.Error;
+		public Ggit.OId? write_tree_to (Ggit.Repository repository) throws GLib.Error;
 		[NoAccessorMethod]
 		public GLib.File file { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_index_entries_ref", type_id = "ggit_index_entries_get_type ()", unref_function = "ggit_index_entries_unref")]
 	[Compact]
 	public class IndexEntries {
-		public Ggit.IndexEntry get_by_index (size_t idx);
-		public Ggit.IndexEntry get_by_path (GLib.File file, int stage);
-		public unowned Ggit.IndexEntries @ref ();
+		public Ggit.IndexEntry? get_by_index (size_t idx);
+		public Ggit.IndexEntry? get_by_path (GLib.File file, int stage);
+		public unowned Ggit.IndexEntries? @ref ();
 		public uint size ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_index_entries_resolve_undo_ref", type_id = "ggit_index_entries_resolve_undo_get_type ()", unref_function = "ggit_index_entries_resolve_undo_unref")]
 	[Compact]
 	public class IndexEntriesResolveUndo {
-		public Ggit.IndexEntryResolveUndo @get (uint idx);
-		public Ggit.IndexEntryResolveUndo get_by_file (GLib.File file);
-		public unowned Ggit.IndexEntriesResolveUndo @ref ();
+		public Ggit.IndexEntryResolveUndo? @get (uint idx);
+		public Ggit.IndexEntryResolveUndo? get_by_file (GLib.File file);
+		public unowned Ggit.IndexEntriesResolveUndo? @ref ();
 		public uint size ();
 		public void unref ();
 	}
@@ -493,13 +493,13 @@ namespace Ggit {
 		public uint get_flags ();
 		public uint get_flags_extended ();
 		public uint get_gid ();
-		public Ggit.OId get_id ();
+		public Ggit.OId? get_id ();
 		public uint get_ino ();
 		public uint get_mode ();
 		public unowned string get_path ();
 		public uint get_uid ();
 		public bool is_conflict ();
-		public unowned Ggit.IndexEntry @ref ();
+		public unowned Ggit.IndexEntry? @ref ();
 		public void set_commit (Ggit.Commit commit);
 		public void set_dev (uint dev);
 		public void set_file_size (int64 file_size);
@@ -517,10 +517,10 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_index_entry_resolve_undo_ref", type_id = "ggit_index_entry_resolve_undo_get_type ()", unref_function = "ggit_index_entry_resolve_undo_unref")]
 	[Compact]
 	public class IndexEntryResolveUndo {
-		public GLib.File get_file ();
-		public Ggit.OId get_id (int stage);
+		public GLib.File? get_file ();
+		public Ggit.OId? get_id (int stage);
 		public uint get_mode (int stage);
-		public unowned Ggit.IndexEntryResolveUndo @ref ();
+		public unowned Ggit.IndexEntryResolveUndo? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_merge_options_get_type ()")]
@@ -528,13 +528,13 @@ namespace Ggit {
 	public class MergeOptions {
 		[CCode (has_construct_function = false)]
 		public MergeOptions ();
-		public Ggit.MergeOptions copy ();
+		public Ggit.MergeOptions? copy ();
 		public void free ();
 		public Ggit.MergeFileFavor get_file_favor ();
 		public Ggit.MergeFileFlags get_file_flags ();
 		public Ggit.MergeFlags get_flags ();
 		public uint get_rename_threshold ();
-		public unowned Ggit.DiffSimilarityMetric get_similarity_metric ();
+		public unowned Ggit.DiffSimilarityMetric? get_similarity_metric ();
 		public uint get_target_limit ();
 		public void set_file_favor (Ggit.MergeFileFavor file_favor);
 		public void set_file_flags (Ggit.MergeFileFlags file_flags);
@@ -552,16 +552,16 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_note_ref", type_id = "ggit_note_get_type ()", unref_function = "ggit_note_unref")]
 	[Compact]
 	public class Note {
-		public unowned Ggit.OId get_id ();
-		public unowned string get_message ();
-		public Ggit.Note @ref ();
+		public unowned Ggit.OId? get_id ();
+		public unowned string? get_message ();
+		public unowned Ggit.Note? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_oid_get_type ()")]
 	[Compact]
 	public class OId {
 		public int compare (Ggit.OId b);
-		public Ggit.OId copy ();
+		public Ggit.OId? copy ();
 		public bool equal (Ggit.OId b);
 		public void free ();
 		[CCode (has_construct_function = false)]
@@ -571,20 +571,20 @@ namespace Ggit {
 		public bool has_prefix (string prefix);
 		public uint hash ();
 		public bool is_zero ();
-		public string to_string ();
+		public string? to_string ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_object_get_type ()")]
 	public abstract class Object : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		protected Object ();
-		public Ggit.OId get_id ();
-		public Ggit.Repository get_owner ();
+		public Ggit.OId? get_id ();
+		public Ggit.Repository? get_owner ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_object_factory_get_type ()")]
 	public class ObjectFactory : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ObjectFactory ();
-		public GLib.Object @construct (GLib.ObjectClass parent_class, GLib.Type basetype, [CCode (array_length_cname = "n_construct_properties", array_length_pos = 2.5, array_length_type = "guint")] GLib.ObjectConstructParam[] construct_properties);
+		public GLib.Object? @construct (GLib.ObjectClass parent_class, GLib.Type basetype, [CCode (array_length_cname = "n_construct_properties", array_length_pos = 2.5, array_length_type = "guint")] GLib.ObjectConstructParam[] construct_properties);
 		public static unowned Ggit.ObjectFactory get_default ();
 		public void register (GLib.Type basetype, GLib.Type subtype);
 		public void unregister (GLib.Type basetype, GLib.Type subtype);
@@ -601,14 +601,14 @@ namespace Ggit {
 		public Patch.from_blobs (Ggit.Blob? old_blob, string? old_as_path, Ggit.Blob? new_blob, string? new_as_path, Ggit.DiffOptions? diff_options) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Patch.from_diff (Ggit.Diff diff, size_t idx) throws GLib.Error;
-		public Ggit.DiffDelta get_delta ();
-		public Ggit.DiffHunk get_hunk (size_t idx) throws GLib.Error;
+		public Ggit.DiffDelta? get_delta ();
+		public Ggit.DiffHunk? get_hunk (size_t idx) throws GLib.Error;
 		public bool get_line_stats (out size_t total_context, out size_t total_additions, out size_t total_deletions) throws GLib.Error;
 		public size_t get_num_hunks ();
 		public int get_num_lines_in_hunk (size_t hunk);
-		public unowned Ggit.Patch @ref ();
+		public unowned Ggit.Patch? @ref ();
 		public bool to_stream (GLib.OutputStream stream) throws GLib.Error;
-		public string to_string () throws GLib.Error;
+		public string? to_string () throws GLib.Error;
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_proxy_options_get_type ()")]
@@ -629,20 +629,20 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		protected Rebase ();
 		public void abort () throws GLib.Error;
-		public Ggit.OId commit (Ggit.Signature? author, Ggit.Signature committer, string? message) throws GLib.Error;
+		public Ggit.OId? commit (Ggit.Signature? author, Ggit.Signature committer, string? message) throws GLib.Error;
 		public void finish (Ggit.Signature? signature) throws GLib.Error;
-		public Ggit.RebaseOperation get_operation_by_index (size_t idx);
+		public Ggit.RebaseOperation? get_operation_by_index (size_t idx);
 		public size_t get_operation_entry_count ();
 		public size_t get_operation_index ();
-		public Ggit.RebaseOperation next () throws GLib.Error;
+		public Ggit.RebaseOperation? next () throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_rebase_operation_ref", type_id = "ggit_rebase_operation_get_type ()", unref_function = "ggit_rebase_operation_unref")]
 	[Compact]
 	public class RebaseOperation {
-		public unowned string get_exec ();
-		public Ggit.OId get_id ();
+		public unowned string? get_exec ();
+		public Ggit.OId? get_id ();
 		public Ggit.RebaseOperationType get_operation_type ();
-		public unowned Ggit.RebaseOperation @ref ();
+		public unowned Ggit.RebaseOperation? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_rebase_options_get_type ()")]
@@ -650,11 +650,11 @@ namespace Ggit {
 	public class RebaseOptions {
 		[CCode (has_construct_function = false)]
 		public RebaseOptions ();
-		public Ggit.RebaseOptions copy ();
+		public Ggit.RebaseOptions? copy ();
 		public void free ();
-		public unowned Ggit.CheckoutOptions get_checkout_options ();
+		public unowned Ggit.CheckoutOptions? get_checkout_options ();
 		public bool get_quiet ();
-		public unowned string get_rewrite_notes_ref ();
+		public unowned string? get_rewrite_notes_ref ();
 		public void set_checkout_options (Ggit.CheckoutOptions checkout_options);
 		public void set_quiet (bool quiet);
 		public void set_rewrite_notes_ref (string rewrite_notes_ref);
@@ -665,33 +665,33 @@ namespace Ggit {
 		protected Ref ();
 		public void @delete () throws GLib.Error;
 		public void delete_log () throws GLib.Error;
-		public Ggit.Reflog get_log () throws GLib.Error;
-		public unowned string get_name ();
-		public Ggit.Repository get_owner ();
+		public Ggit.Reflog? get_log () throws GLib.Error;
+		public unowned string? get_name ();
+		public Ggit.Repository? get_owner ();
 		public Ggit.RefType get_reference_type ();
-		public unowned string get_shorthand ();
-		public unowned string get_symbolic_target ();
-		public Ggit.OId get_target ();
+		public unowned string? get_shorthand ();
+		public unowned string? get_symbolic_target ();
+		public Ggit.OId? get_target ();
 		public bool has_log ();
 		public bool is_branch ();
 		public bool is_note ();
 		public bool is_remote ();
 		public bool is_tag ();
 		public static bool is_valid_name (string name);
-		public Ggit.Object lookup () throws GLib.Error;
-		public Ggit.Ref rename (string new_name, bool force, string log_message) throws GLib.Error;
-		public Ggit.Ref resolve () throws GLib.Error;
-		public Ggit.Ref set_symbolic_target (string target, string log_message) throws GLib.Error;
-		public Ggit.Ref set_target (Ggit.OId oid, string log_message) throws GLib.Error;
-		public unowned string to_string ();
+		public Ggit.Object? lookup () throws GLib.Error;
+		public Ggit.Ref? rename (string new_name, bool force, string log_message) throws GLib.Error;
+		public Ggit.Ref? resolve () throws GLib.Error;
+		public Ggit.Ref? set_symbolic_target (string target, string log_message) throws GLib.Error;
+		public Ggit.Ref? set_target (Ggit.OId oid, string log_message) throws GLib.Error;
+		public unowned string? to_string ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_ref_spec_ref", type_id = "ggit_ref_spec_get_type ()", unref_function = "ggit_ref_spec_unref")]
 	[Compact]
 	public class RefSpec {
-		public unowned string get_destination ();
-		public unowned string get_source ();
+		public unowned string? get_destination ();
+		public unowned string? get_source ();
 		public bool is_forced ();
-		public Ggit.RefSpec @ref ();
+		public unowned Ggit.RefSpec? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_reflog_ref", type_id = "ggit_reflog_get_type ()", unref_function = "ggit_reflog_unref")]
@@ -699,8 +699,8 @@ namespace Ggit {
 	public class Reflog {
 		public bool append (Ggit.OId oid, Ggit.Signature committer, string message) throws GLib.Error;
 		public uint get_entry_count ();
-		public Ggit.ReflogEntry get_entry_from_index (uint idx);
-		public unowned Ggit.Reflog @ref ();
+		public Ggit.ReflogEntry? get_entry_from_index (uint idx);
+		public unowned Ggit.Reflog? @ref ();
 		public bool rename (string new_name) throws GLib.Error;
 		public void unref ();
 		public bool write () throws GLib.Error;
@@ -708,11 +708,11 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_reflog_entry_ref", type_id = "ggit_reflog_entry_get_type ()", unref_function = "ggit_reflog_entry_unref")]
 	[Compact]
 	public class ReflogEntry {
-		public unowned Ggit.Signature get_committer ();
-		public unowned string get_message ();
-		public Ggit.OId get_new_id ();
-		public Ggit.OId get_old_id ();
-		public unowned Ggit.ReflogEntry @ref ();
+		public unowned Ggit.Signature? get_committer ();
+		public unowned string? get_message ();
+		public Ggit.OId? get_new_id ();
+		public Ggit.OId? get_old_id ();
+		public unowned Ggit.ReflogEntry? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_remote_get_type ()")]
@@ -727,13 +727,13 @@ namespace Ggit {
 		public bool get_connected ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[]? get_fetch_specs () throws GLib.Error;
-		public unowned string get_name ();
-		public Ggit.Repository get_owner ();
+		public unowned string? get_name ();
+		public Ggit.Repository? get_owner ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[]? get_push_specs () throws GLib.Error;
-		public unowned string get_url ();
+		public unowned string? get_url ();
 		[CCode (array_length = false, array_null_terminated = true)]
-		public Ggit.RemoteHead[] list () throws GLib.Error;
+		public Ggit.RemoteHead[]? list () throws GLib.Error;
 		public bool update_tips (Ggit.RemoteCallbacks callbacks, bool update_fetch_head, Ggit.RemoteDownloadTagsType tags_type, string? message) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_remote_callbacks_get_type ()")]
@@ -750,9 +750,9 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_remote_head_ref", type_id = "ggit_remote_head_get_type ()", unref_function = "ggit_remote_head_unref")]
 	[Compact]
 	public class RemoteHead {
-		public unowned Ggit.OId get_local_oid ();
-		public unowned string get_name ();
-		public unowned Ggit.OId get_oid ();
+		public unowned Ggit.OId? get_local_oid ();
+		public unowned string? get_name ();
+		public unowned Ggit.OId? get_oid ();
 		public bool is_local ();
 		public Ggit.RemoteHead @ref ();
 		public void unref ();
@@ -763,50 +763,50 @@ namespace Ggit {
 		protected Repository ();
 		public void add_remote_fetch (Ggit.Remote remote, string refspec) throws GLib.Error;
 		public void add_remote_push (Ggit.Remote remote, string refspec) throws GLib.Error;
-		public Ggit.Blame blame_file (GLib.File file, Ggit.BlameOptions? blame_options) throws GLib.Error;
+		public Ggit.Blame? blame_file (GLib.File file, Ggit.BlameOptions? blame_options) throws GLib.Error;
 		public bool checkout_head (Ggit.CheckoutOptions? options) throws GLib.Error;
 		public bool checkout_index (Ggit.Index? index, Ggit.CheckoutOptions? options) throws GLib.Error;
 		public bool checkout_tree (Ggit.Object? tree, Ggit.CheckoutOptions? options) throws GLib.Error;
 		public bool cherry_pick (Ggit.Commit commit, Ggit.CherryPickOptions options) throws GLib.Error;
-		public Ggit.Index cherry_pick_commit (Ggit.Commit commit, Ggit.Commit our_commit, uint mainline, Ggit.MergeOptions? merge_options) throws GLib.Error;
-		public static Ggit.Repository clone (string url, GLib.File location, Ggit.CloneOptions? options) throws GLib.Error;
-		public Ggit.BlobOutputStream create_blob ();
-		public Ggit.OId create_blob_from_buffer ([CCode (array_length_cname = "size", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer) throws GLib.Error;
+		public Ggit.Index? cherry_pick_commit (Ggit.Commit commit, Ggit.Commit our_commit, uint mainline, Ggit.MergeOptions? merge_options) throws GLib.Error;
+		public static Ggit.Repository? clone (string url, GLib.File location, Ggit.CloneOptions? options) throws GLib.Error;
+		public Ggit.BlobOutputStream? create_blob ();
+		public Ggit.OId? create_blob_from_buffer ([CCode (array_length_cname = "size", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer) throws GLib.Error;
 		public Ggit.OId create_blob_from_file (GLib.File file) throws GLib.Error;
-		public Ggit.OId create_blob_from_path (string path) throws GLib.Error;
+		public Ggit.OId? create_blob_from_path (string path) throws GLib.Error;
 		public Ggit.Branch? create_branch (string branch_name, Ggit.Object target, Ggit.CreateFlags flags) throws GLib.Error;
-		public Ggit.OId create_commit (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.Tree tree, [CCode (array_length_cname = "parent_count", array_length_pos = 7.1)] Ggit.Commit[] parents) throws GLib.Error;
-		public Ggit.OId create_commit_from_ids (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.OId tree, [CCode (array_length_cname = "parent_count", array_length_pos = 7.1)] Ggit.OId[] parents) throws GLib.Error;
-		public Ggit.IndexEntry create_index_entry_for_file (GLib.File? file, Ggit.OId? id) throws GLib.Error;
-		public Ggit.IndexEntry create_index_entry_for_path (string? path, Ggit.OId? id) throws GLib.Error;
-		public Ggit.OId create_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id, string note, bool force) throws GLib.Error;
-		public Ggit.Ref create_reference (string name, Ggit.OId oid, string log_message) throws GLib.Error;
+		public Ggit.OId? create_commit (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.Tree tree, [CCode (array_length_cname = "parent_count", array_length_pos = 7.1)] Ggit.Commit[] parents) throws GLib.Error;
+		public Ggit.OId? create_commit_from_ids (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.OId tree, [CCode (array_length_cname = "parent_count", array_length_pos = 7.1)] Ggit.OId[] parents) throws GLib.Error;
+		public Ggit.IndexEntry? create_index_entry_for_file (GLib.File? file, Ggit.OId? id) throws GLib.Error;
+		public Ggit.IndexEntry? create_index_entry_for_path (string? path, Ggit.OId? id) throws GLib.Error;
+		public Ggit.OId? create_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id, string note, bool force) throws GLib.Error;
+		public Ggit.Ref? create_reference (string name, Ggit.OId oid, string log_message) throws GLib.Error;
 		public Ggit.Remote? create_remote (string name, string url) throws GLib.Error;
-		public Ggit.Ref create_symbolic_reference (string name, string target, string log_message) throws GLib.Error;
+		public Ggit.Ref? create_symbolic_reference (string name, string target, string log_message) throws GLib.Error;
 		public Ggit.OId? create_tag (string tag_name, Ggit.Object target, Ggit.Signature tagger, string message, Ggit.CreateFlags flags) throws GLib.Error;
 		public Ggit.OId? create_tag_annotation (string tag_name, Ggit.Object target, Ggit.Signature signature, string message) throws GLib.Error;
 		public Ggit.OId? create_tag_from_buffer (string tag, Ggit.CreateFlags flags) throws GLib.Error;
 		public Ggit.OId? create_tag_lightweight (string tag_name, Ggit.Object target, Ggit.CreateFlags flags) throws GLib.Error;
-		public Ggit.TreeBuilder create_tree_builder () throws GLib.Error;
-		public Ggit.TreeBuilder create_tree_builder_from_tree (Ggit.Tree tree) throws GLib.Error;
+		public Ggit.TreeBuilder? create_tree_builder () throws GLib.Error;
+		public Ggit.TreeBuilder? create_tree_builder_from_tree (Ggit.Tree tree) throws GLib.Error;
 		public bool delete_tag (string name) throws GLib.Error;
-		public static GLib.File discover (GLib.File location) throws GLib.Error;
-		public static GLib.File discover_full (GLib.File location, bool across_fs, [CCode (array_length = false, array_null_terminated = true)] string[]? ceiling_dirs) throws GLib.Error;
+		public static GLib.File? discover (GLib.File location) throws GLib.Error;
+		public static GLib.File? discover_full (GLib.File location, bool across_fs, [CCode (array_length = false, array_null_terminated = true)] string[]? ceiling_dirs) throws GLib.Error;
 		public void drop_stash (size_t index) throws GLib.Error;
-		public Ggit.BranchEnumerator enumerate_branches (Ggit.BranchType list_type) throws GLib.Error;
+		public Ggit.BranchEnumerator? enumerate_branches (Ggit.BranchType list_type) throws GLib.Error;
 		public Ggit.StatusFlags file_status (GLib.File location) throws GLib.Error;
 		public bool file_status_foreach (Ggit.StatusOptions? options, Ggit.StatusCallback callback) throws GLib.Error;
 		public void get_ahead_behind (Ggit.OId local, Ggit.OId upstream, out size_t ahead, out size_t behind) throws GLib.Error;
-		public unowned string get_attribute (string path, string name, Ggit.AttributeCheckFlags flags) throws GLib.Error;
-		public Ggit.Config get_config () throws GLib.Error;
-		public string get_default_notes_ref () throws GLib.Error;
+		public unowned string? get_attribute (string path, string name, Ggit.AttributeCheckFlags flags) throws GLib.Error;
+		public Ggit.Config? get_config () throws GLib.Error;
+		public string? get_default_notes_ref () throws GLib.Error;
 		public bool get_descendant_of (Ggit.OId commit, Ggit.OId ancestor) throws GLib.Error;
-		public Ggit.Ref get_head () throws GLib.Error;
-		public Ggit.Index get_index () throws GLib.Error;
-		public GLib.File get_location ();
+		public Ggit.Ref? get_head () throws GLib.Error;
+		public Ggit.Index? get_index () throws GLib.Error;
+		public GLib.File? get_location ();
 		public Ggit.SubmoduleStatus get_submodule_status (string name, Ggit.SubmoduleIgnore ignore) throws GLib.Error;
-		public GLib.File get_workdir ();
-		public static Ggit.Repository init_repository (GLib.File location, bool is_bare) throws GLib.Error;
+		public GLib.File? get_workdir ();
+		public static Ggit.Repository? init_repository (GLib.File location, bool is_bare) throws GLib.Error;
 		public bool is_empty () throws GLib.Error;
 		public bool is_head_detached () throws GLib.Error;
 		public bool is_head_unborn () throws GLib.Error;
@@ -816,32 +816,32 @@ namespace Ggit {
 		public string[]? list_tags () throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[]? list_tags_match (string? pattern) throws GLib.Error;
-		public Ggit.Object lookup (Ggit.OId oid, GLib.Type gtype) throws GLib.Error;
+		public Ggit.Object? lookup (Ggit.OId oid, GLib.Type gtype) throws GLib.Error;
 		public Ggit.Blob? lookup_blob (Ggit.OId oid) throws GLib.Error;
 		public Ggit.Branch? lookup_branch (string branch_name, Ggit.BranchType branch_type) throws GLib.Error;
 		public Ggit.Commit? lookup_commit (Ggit.OId oid) throws GLib.Error;
-		public Ggit.Ref lookup_reference (string name) throws GLib.Error;
-		public Ggit.Ref lookup_reference_dwim (string short_name) throws GLib.Error;
+		public Ggit.Ref? lookup_reference (string name) throws GLib.Error;
+		public Ggit.Ref? lookup_reference_dwim (string short_name) throws GLib.Error;
 		public Ggit.Remote? lookup_remote (string name) throws GLib.Error;
 		public Ggit.Submodule? lookup_submodule (string name) throws GLib.Error;
 		public Ggit.Tag? lookup_tag (Ggit.OId oid) throws GLib.Error;
 		public Ggit.Tree? lookup_tree (Ggit.OId oid) throws GLib.Error;
-		public Ggit.Index merge_commits (Ggit.Commit our_commit, Ggit.Commit their_commit, Ggit.MergeOptions merge_options) throws GLib.Error;
-		public Ggit.Index merge_trees (Ggit.Tree ancestor_tree, Ggit.Tree our_tree, Ggit.Tree their_tree, Ggit.MergeOptions merge_options) throws GLib.Error;
+		public Ggit.Index? merge_commits (Ggit.Commit our_commit, Ggit.Commit their_commit, Ggit.MergeOptions merge_options) throws GLib.Error;
+		public Ggit.Index? merge_trees (Ggit.Tree ancestor_tree, Ggit.Tree our_tree, Ggit.Tree their_tree, Ggit.MergeOptions merge_options) throws GLib.Error;
 		public bool note_foreach (string? notes_ref, Ggit.NoteCallback callback) throws GLib.Error;
-		public static Ggit.Repository open (GLib.File location) throws GLib.Error;
+		public static Ggit.Repository? open (GLib.File location) throws GLib.Error;
 		public bool path_is_ignored (string path) throws GLib.Error;
-		public Ggit.Note read_note (string? notes_ref, Ggit.OId id) throws GLib.Error;
-		public Ggit.Rebase rebase_init (Ggit.AnnotatedCommit? branch, Ggit.AnnotatedCommit? upstream, Ggit.AnnotatedCommit? onto, Ggit.RebaseOptions options) throws GLib.Error;
-		public Ggit.Rebase rebase_open (Ggit.RebaseOptions options) throws GLib.Error;
+		public Ggit.Note? read_note (string? notes_ref, Ggit.OId id) throws GLib.Error;
+		public Ggit.Rebase? rebase_init (Ggit.AnnotatedCommit? branch, Ggit.AnnotatedCommit? upstream, Ggit.AnnotatedCommit? onto, Ggit.RebaseOptions options) throws GLib.Error;
+		public Ggit.Rebase? rebase_open (Ggit.RebaseOptions options) throws GLib.Error;
 		public bool references_foreach (Ggit.ReferencesCallback callback) throws GLib.Error;
 		public bool references_foreach_name (Ggit.ReferencesNameCallback callback) throws GLib.Error;
 		public bool remove_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id) throws GLib.Error;
 		public void reset (Ggit.Object target, Ggit.ResetType reset_type, Ggit.CheckoutOptions checkout_options) throws GLib.Error;
 		public void reset_default (Ggit.Object? target, [CCode (array_length = false, array_null_terminated = true)] string[] pathspecs) throws GLib.Error;
 		public bool revert (Ggit.Commit commit, Ggit.RevertOptions options) throws GLib.Error;
-		public Ggit.Object revparse (string spec) throws GLib.Error;
-		public Ggit.OId save_stash (Ggit.Signature stasher, string message, Ggit.StashFlags flags) throws GLib.Error;
+		public Ggit.Object? revparse (string spec) throws GLib.Error;
+		public Ggit.OId? save_stash (Ggit.Signature stasher, string message, Ggit.StashFlags flags) throws GLib.Error;
 		public bool set_head (string ref_name) throws GLib.Error;
 		public void set_submodule_fetch_recurse (string name, Ggit.SubmoduleRecurse fetch_recurse_submodules) throws GLib.Error;
 		public void set_submodule_ignore (string name, Ggit.SubmoduleIgnore ignore) throws GLib.Error;
@@ -869,19 +869,19 @@ namespace Ggit {
 	public class RevertOptions {
 		[CCode (has_construct_function = false)]
 		public RevertOptions (uint mainline, Ggit.MergeOptions? merge_options, Ggit.CheckoutOptions? checkout_options);
-		public Ggit.RevertOptions copy ();
+		public Ggit.RevertOptions? copy ();
 		public void free ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_revision_walker_get_type ()")]
 	public class RevisionWalker : Ggit.Native, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public RevisionWalker (Ggit.Repository repository) throws GLib.Error;
-		public unowned Ggit.Repository get_repository ();
+		public unowned Ggit.Repository? get_repository ();
 		public void hide (Ggit.OId oid) throws GLib.Error;
 		public void hide_glob (string item) throws GLib.Error;
 		public void hide_head () throws GLib.Error;
 		public void hide_ref (string item) throws GLib.Error;
-		public Ggit.OId next () throws GLib.Error;
+		public Ggit.OId? next () throws GLib.Error;
 		public void push (Ggit.OId oid) throws GLib.Error;
 		public void push_glob (string item) throws GLib.Error;
 		public void push_head () throws GLib.Error;
@@ -896,11 +896,11 @@ namespace Ggit {
 	public class Signature : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		public Signature (string name, string email, GLib.DateTime signature_time) throws GLib.Error;
-		public Ggit.Signature copy ();
-		public unowned string get_email ();
-		public unowned string get_name ();
-		public GLib.DateTime get_time ();
-		public GLib.TimeZone get_time_zone ();
+		public Ggit.Signature? copy ();
+		public unowned string? get_email ();
+		public unowned string? get_name ();
+		public GLib.DateTime? get_time ();
+		public GLib.TimeZone? get_time_zone ();
 		[CCode (has_construct_function = false)]
 		public Signature.now (string name, string email) throws GLib.Error;
 		[NoAccessorMethod]
@@ -911,7 +911,7 @@ namespace Ggit {
 	public class StatusOptions {
 		[CCode (has_construct_function = false)]
 		public StatusOptions (Ggit.StatusOption options, Ggit.StatusShow show, [CCode (array_length = false, array_null_terminated = true)] string[]? pathspec);
-		public Ggit.StatusOptions copy ();
+		public Ggit.StatusOptions? copy ();
 		public void free ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_submodule_ref", type_id = "ggit_submodule_get_type ()", unref_function = "ggit_submodule_unref")]
@@ -921,15 +921,15 @@ namespace Ggit {
 		public Ggit.OId get_head_id ();
 		public Ggit.SubmoduleIgnore get_ignore ();
 		public Ggit.OId? get_index_id ();
-		public unowned string get_name ();
-		public Ggit.Repository get_owner ();
-		public unowned string get_path ();
+		public unowned string? get_name ();
+		public Ggit.Repository? get_owner ();
+		public unowned string? get_path ();
 		public Ggit.SubmoduleUpdate get_update ();
-		public unowned string get_url ();
+		public unowned string? get_url ();
 		public Ggit.OId? get_workdir_id ();
 		public void init (bool overwrite) throws GLib.Error;
-		public Ggit.Repository open () throws GLib.Error;
-		public unowned Ggit.Submodule @ref ();
+		public Ggit.Repository? open () throws GLib.Error;
+		public unowned Ggit.Submodule? @ref ();
 		public void reload (bool force) throws GLib.Error;
 		public void sync () throws GLib.Error;
 		public void unref ();
@@ -938,7 +938,7 @@ namespace Ggit {
 	public class SubmoduleUpdateOptions : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SubmoduleUpdateOptions ();
-		public unowned Ggit.CheckoutOptions get_checkout_options ();
+		public unowned Ggit.CheckoutOptions? get_checkout_options ();
 		public Ggit.FetchOptions get_fetch_options ();
 		public void set_checkout_options (Ggit.CheckoutOptions? checkout_options);
 		public void set_fetch_options (Ggit.FetchOptions? fetch_options);
@@ -949,18 +949,18 @@ namespace Ggit {
 	public class Tag : Ggit.Object {
 		[CCode (has_construct_function = false)]
 		protected Tag ();
-		public unowned string get_message ();
-		public unowned string get_name ();
-		public Ggit.Signature get_tagger ();
-		public Ggit.Object get_target () throws GLib.Error;
-		public Ggit.OId get_target_id ();
+		public unowned string? get_message ();
+		public unowned string? get_name ();
+		public Ggit.Signature? get_tagger ();
+		public Ggit.Object? get_target () throws GLib.Error;
+		public Ggit.OId? get_target_id ();
 		public GLib.Type get_target_type ();
-		public Ggit.Object peel () throws GLib.Error;
+		public Ggit.Object? peel () throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_transfer_progress_get_type ()")]
 	[Compact]
 	public class TransferProgress {
-		public Ggit.TransferProgress copy ();
+		public Ggit.TransferProgress? copy ();
 		public void free ();
 		public uint get_indexed_objects ();
 		public size_t get_received_bytes ();
@@ -971,10 +971,10 @@ namespace Ggit {
 	public class Tree : Ggit.Object {
 		[CCode (has_construct_function = false)]
 		protected Tree ();
-		public Ggit.TreeEntry @get (uint i);
-		public Ggit.TreeEntry get_by_name (string name);
-		public Ggit.TreeEntry get_by_path (string path) throws GLib.Error;
-		public Ggit.OId get_id ();
+		public Ggit.TreeEntry? @get (uint i);
+		public Ggit.TreeEntry? get_by_name (string name);
+		public Ggit.TreeEntry? get_by_path (string path) throws GLib.Error;
+		public Ggit.OId? get_id ();
 		public uint size ();
 		public void walk (Ggit.TreeWalkMode mode, Ggit.TreeWalkCallback callback) throws GLib.Error;
 	}
@@ -983,19 +983,19 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		protected TreeBuilder ();
 		public void clear ();
-		public Ggit.TreeEntry get_entry (string path);
-		public Ggit.TreeEntry insert (string filename, Ggit.OId oid, Ggit.FileMode file_mode) throws GLib.Error;
+		public Ggit.TreeEntry? get_entry (string path);
+		public Ggit.TreeEntry? insert (string filename, Ggit.OId oid, Ggit.FileMode file_mode) throws GLib.Error;
 		public void remove (string path) throws GLib.Error;
-		public Ggit.OId write () throws GLib.Error;
+		public Ggit.OId? write () throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_tree_entry_ref", type_id = "ggit_tree_entry_get_type ()", unref_function = "ggit_tree_entry_unref")]
 	[Compact]
 	public class TreeEntry {
 		public Ggit.FileMode get_file_mode ();
-		public Ggit.OId get_id ();
-		public unowned string get_name ();
+		public Ggit.OId? get_id ();
+		public unowned string? get_name ();
 		public GLib.Type get_object_type ();
-		public unowned Ggit.TreeEntry @ref ();
+		public unowned Ggit.TreeEntry? @ref ();
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_ATTRIBUTE_CHECK_", type_id = "ggit_attribute_check_flags_get_type ()")]
