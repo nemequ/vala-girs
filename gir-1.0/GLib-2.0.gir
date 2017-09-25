@@ -4852,6 +4852,63 @@ when you are done with it.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_from_iso8601"
+                   c:identifier="g_date_time_new_from_iso8601"
+                   version="2.56">
+        <doc xml:space="preserve">Creates a #GDateTime corresponding to the given
+[ISO 8601 formatted string](https://en.wikipedia.org/wiki/ISO_8601)
+@text. ISO 8601 strings of the form &lt;date&gt;&lt;sep&gt;&lt;time&gt;&lt;tz&gt; are supported.
+
+&lt;sep&gt; is the separator and can be either 'T', 't' or ' '.
+
+&lt;date&gt; is in the form:
+
+- `YYYY-MM-DD` - Year/month/day, e.g. 2016-08-24.
+- `YYYYMMDD` - Same as above without dividers.
+- `YYYY-DDD` - Ordinal day where DDD is from 001 to 366, e.g. 2016-237.
+- `YYYYDDD` - Same as above without dividers.
+- `YYYY-Www-D` - Week day where ww is from 01 to 52 and D from 1-7,
+  e.g. 2016-W34-3.
+- `YYYYWwwD` - Same as above without dividers.
+
+&lt;time&gt; is in the form:
+
+- `hh:mm:ss(.sss)` - Hours, minutes, seconds (subseconds), e.g. 22:10:42.123.
+- `hhmmss(.sss)` - Same as above without dividers.
+
+&lt;tz&gt; is an optional timezone suffix of the form:
+
+- `Z` - UTC.
+- `+hh:mm` or `-hh:mm` - Offset from UTC in hours and minutes, e.g. +12:00.
+- `+hh` or `-hh` - Offset from UTC in hours, e.g. +12.
+
+If the timezone is not provided in @text it must be provided in @default_tz
+(this field is otherwise ignored).
+
+This call can fail (returning %NULL) if @text is not a valid ISO 8601
+formatted string.
+
+You should release the return value by calling g_date_time_unref()
+when you are done with it.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GDateTime, or %NULL</doc>
+          <type name="DateTime" c:type="GDateTime*"/>
+        </return-value>
+        <parameters>
+          <parameter name="text" transfer-ownership="none">
+            <doc xml:space="preserve">an ISO 8601 formatted time string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="default_tz"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GTimeZone to use if the text doesn't contain a
+                         timezone, or %NULL.</doc>
+            <type name="TimeZone" c:type="GTimeZone*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_from_timeval_local"
                    c:identifier="g_date_time_new_from_timeval_local"
                    version="2.26">
@@ -6150,7 +6207,8 @@ object.</doc>
                    nullable="1"
                    allow-none="1"
                    closure="1">
-          <doc xml:space="preserve">user data that was specified in g_datalist_id_dup_data()</doc>
+          <doc xml:space="preserve">user data that was specified in
+            g_datalist_id_dup_data()</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -8729,10 +8787,13 @@ function returns %FALSE.</doc>
         </parameter>
       </parameters>
     </callback>
-    <record name="IConv" c:type="GIConv" disguised="1">
+    <record name="IConv" c:type="GIConv" disguised="1" introspectable="0">
       <doc xml:space="preserve">The GIConv struct wraps an iconv() conversion descriptor. It contains
 private data and should only be accessed using the following functions.</doc>
-      <method name="" c:identifier="g_iconv" moved-to="iconv">
+      <method name=""
+              c:identifier="g_iconv"
+              moved-to="iconv"
+              introspectable="0">
         <doc xml:space="preserve">Same as the standard UNIX routine iconv(), but
 may be implemented via libiconv on UNIX flavors that lack
 a native implementation.
@@ -8766,7 +8827,7 @@ more convenient than the raw iconv wrappers.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="close" c:identifier="g_iconv_close">
+      <method name="close" c:identifier="g_iconv_close" introspectable="0">
         <doc xml:space="preserve">Same as the standard UNIX routine iconv_close(), but
 may be implemented via libiconv on UNIX flavors that lack
 a native implementation. Should be called to clean up
@@ -8839,10 +8900,10 @@ functions.</doc>
       <field name="encoding" readable="0" private="1">
         <type name="utf8" c:type="gchar*"/>
       </field>
-      <field name="read_cd" readable="0" private="1">
+      <field name="read_cd" introspectable="0" readable="0" private="1">
         <type name="IConv" c:type="GIConv"/>
       </field>
-      <field name="write_cd" readable="0" private="1">
+      <field name="write_cd" introspectable="0" readable="0" private="1">
         <type name="IConv" c:type="GIConv"/>
       </field>
       <field name="line_term" readable="0" private="1">
@@ -8926,6 +8987,8 @@ The default encoding for #GIOChannel is UTF-8. If your application
 is reading output from a command using via pipe, you may need to set
 the encoding to the encoding of the current locale (see
 g_get_charset()) with the g_io_channel_set_encoding() function.
+By default, the fd passed will not be closed when the final reference
+to the #GIOChannel data structure is dropped.
 
 If you want to read raw binary data without interpretation, then
 call the g_io_channel_set_encoding() function with %NULL for the
@@ -9031,8 +9094,7 @@ will be closed when @channel receives its final unref and is
 destroyed. The default value of this is %TRUE for channels created
 by g_io_channel_new_file (), and %FALSE for all other channels.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">Whether the channel will be closed on the final unref of
-              the GIOChannel data structure.</doc>
+          <doc xml:space="preserve">%TRUE if the channel will be closed, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -9442,8 +9504,12 @@ The default state of the channel is buffered.</doc>
       </method>
       <method name="set_close_on_unref"
               c:identifier="g_io_channel_set_close_on_unref">
-        <doc xml:space="preserve">Setting this flag to %TRUE for a channel you have already closed
-can cause problems.</doc>
+        <doc xml:space="preserve">Whether to close the channel on the final unref of the #GIOChannel
+data structure. The default value of this is %TRUE for channels
+created by g_io_channel_new_file (), and %FALSE for all other channels.
+
+Setting this flag to %TRUE for a channel you have already closed
+can cause problems when the final reference to the #GIOChannel is dropped.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9454,9 +9520,7 @@ can cause problems.</doc>
           </instance-parameter>
           <parameter name="do_close" transfer-ownership="none">
             <doc xml:space="preserve">Whether to close the channel on the final unref of
-           the GIOChannel data structure. The default value of
-           this is %TRUE for channels created by g_io_channel_new_file (),
-           and %FALSE for all other channels.</doc>
+           the GIOChannel data structure.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -12930,7 +12994,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="7" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="0" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -12957,7 +13021,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The minimum value which can be held in a #gint8.</doc>
       <type name="gint8" c:type="gint8"/>
     </constant>
-    <constant name="MINOR_VERSION" value="53" c:type="GLIB_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="55" c:type="GLIB_MINOR_VERSION">
       <doc xml:space="preserve">The minor version number of the GLib library.
 
 Like #gtk_minor_version, but from the headers used at
@@ -13235,7 +13299,7 @@ loop (and may prevent this call from returning).</doc>
 invocation of @function.
 
 This function is the same as g_main_context_invoke() except that it
-lets you specify the priority incase @function ends up being
+lets you specify the priority in case @function ends up being
 scheduled as an idle and also lets you give a #GDestroyNotify for @data.
 
 @notify should not assume that it is called from any particular
@@ -35083,7 +35147,8 @@ by overwriting the input data.</doc>
     </function>
     <function name="base64_decode_step"
               c:identifier="g_base64_decode_step"
-              version="2.12">
+              version="2.12"
+              introspectable="0">
       <doc xml:space="preserve">Incrementally decode a sequence of binary data from its Base-64 stringified
 representation. By calling this function multiple times you can convert
 data in chunks to avoid having to have the full encoded data in memory.
@@ -35109,8 +35174,8 @@ state).</doc>
         </parameter>
         <parameter name="out"
                    direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
+                   caller-allocates="1"
+                   transfer-ownership="none">
           <doc xml:space="preserve">output buffer</doc>
           <array zero-terminated="0" c:type="guchar*">
             <type name="guint8"/>
@@ -36267,6 +36332,7 @@ could combine with the base character.)</doc>
     </function>
     <function name="convert_with_iconv"
               c:identifier="g_convert_with_iconv"
+              introspectable="0"
               throws="1">
       <doc xml:space="preserve">Converts a string from one character set to another.
 
@@ -36319,7 +36385,9 @@ could combine with the base character.)</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="datalist_clear" c:identifier="g_datalist_clear">
+    <function name="datalist_clear"
+              c:identifier="g_datalist_clear"
+              introspectable="0">
       <doc xml:space="preserve">Frees all the data elements of the datalist.
 The data elements' destroy functions are called
 if they have been set.</doc>
@@ -36333,9 +36401,7 @@ if they have been set.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="datalist_foreach"
-              c:identifier="g_datalist_foreach"
-              introspectable="0">
+    <function name="datalist_foreach" c:identifier="g_datalist_foreach">
       <doc xml:space="preserve">Calls the given function for each data element of the datalist. The
 function is called with each data element's #GQuark id and data,
 together with the given @user_data parameter. Note that this
@@ -36350,7 +36416,10 @@ not be called.</doc>
           <doc xml:space="preserve">a datalist.</doc>
           <type name="Data" c:type="GData**"/>
         </parameter>
-        <parameter name="func" transfer-ownership="none" closure="2">
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="2">
           <doc xml:space="preserve">the function to call for each data element.</doc>
           <type name="DataForeachFunc" c:type="GDataForeachFunc"/>
         </parameter>
@@ -36367,7 +36436,8 @@ not be called.</doc>
       <doc xml:space="preserve">Gets a data element, using its string identifier. This is slower than
 g_datalist_id_get_data() because it compares strings.</doc>
       <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">the data element, or %NULL if it is not found.</doc>
+        <doc xml:space="preserve">the data element, or %NULL if it
+         is not found.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
@@ -36433,6 +36503,7 @@ threads are using the same datalist and the same key.</doc>
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1"
+                   scope="call"
                    closure="3">
           <doc xml:space="preserve">function to duplicate the old value</doc>
           <type name="DuplicateFunc" c:type="GDuplicateFunc"/>
@@ -36450,7 +36521,8 @@ threads are using the same datalist and the same key.</doc>
               c:identifier="g_datalist_id_get_data">
       <doc xml:space="preserve">Retrieves the data element corresponding to @key_id.</doc>
       <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">the data element, or %NULL if it is not found.</doc>
+        <doc xml:space="preserve">the data element, or %NULL if
+         it is not found.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
@@ -36465,11 +36537,13 @@ threads are using the same datalist and the same key.</doc>
       </parameters>
     </function>
     <function name="datalist_id_remove_no_notify"
-              c:identifier="g_datalist_id_remove_no_notify">
+              c:identifier="g_datalist_id_remove_no_notify"
+              introspectable="0">
       <doc xml:space="preserve">Removes an element, without calling its destroy notification
 function.</doc>
       <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">the data previously stored at @key_id, or %NULL if none.</doc>
+        <doc xml:space="preserve">the data previously stored at @key_id,
+         or %NULL if none.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
@@ -36485,7 +36559,8 @@ function.</doc>
     </function>
     <function name="datalist_id_replace_data"
               c:identifier="g_datalist_id_replace_data"
-              version="2.34">
+              version="2.34"
+              introspectable="0">
       <doc xml:space="preserve">Compares the member that is associated with @key_id in
 @datalist to @oldval, and if they are the same, replace
 @oldval with @newval.
@@ -36536,8 +36611,10 @@ should not destroy the object in the normal way.</doc>
           <type name="DestroyNotify" c:type="GDestroyNotify"/>
         </parameter>
         <parameter name="old_destroy"
+                   direction="out"
+                   caller-allocates="0"
                    transfer-ownership="none"
-                   nullable="1"
+                   optional="1"
                    allow-none="1"
                    scope="async">
           <doc xml:space="preserve">destroy notify for the existing value</doc>
@@ -36546,7 +36623,8 @@ should not destroy the object in the normal way.</doc>
       </parameters>
     </function>
     <function name="datalist_id_set_data_full"
-              c:identifier="g_datalist_id_set_data_full">
+              c:identifier="g_datalist_id_set_data_full"
+              introspectable="0">
       <doc xml:space="preserve">Sets the data corresponding to the given #GQuark id, and the
 function to be called when the element is removed from the datalist.
 Any previous data with the same key is removed, and its destroy
@@ -36571,7 +36649,11 @@ function is called.</doc>
        corresponding to @key_id.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
-        <parameter name="destroy_func" transfer-ownership="none" scope="async">
+        <parameter name="destroy_func"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="async">
           <doc xml:space="preserve">the function to call when the data element is
                removed. This function will be called with the data
                element and can be used to free any memory allocated
@@ -36581,7 +36663,9 @@ function is called.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="datalist_init" c:identifier="g_datalist_init">
+    <function name="datalist_init"
+              c:identifier="g_datalist_init"
+              introspectable="0">
       <doc xml:space="preserve">Resets the datalist to %NULL. It does not free any memory or call
 any destroy functions.</doc>
       <return-value transfer-ownership="none">
@@ -36656,9 +36740,7 @@ destroy functions set for data elements.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="dataset_foreach"
-              c:identifier="g_dataset_foreach"
-              introspectable="0">
+    <function name="dataset_foreach" c:identifier="g_dataset_foreach">
       <doc xml:space="preserve">Calls the given function for each data element which is associated
 with the given location. Note that this function is NOT thread-safe.
 So unless @datalist can be protected from any modifications during
@@ -36671,7 +36753,10 @@ invocation of this function, it should not be called.</doc>
           <doc xml:space="preserve">the location identifying the dataset.</doc>
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
-        <parameter name="func" transfer-ownership="none" closure="2">
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="2">
           <doc xml:space="preserve">the function to call for each data element.</doc>
           <type name="DataForeachFunc" c:type="GDataForeachFunc"/>
         </parameter>
@@ -36687,8 +36772,8 @@ invocation of this function, it should not be called.</doc>
     <function name="dataset_id_get_data" c:identifier="g_dataset_id_get_data">
       <doc xml:space="preserve">Gets the data element corresponding to a #GQuark.</doc>
       <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">the data element corresponding to the #GQuark, or %NULL if
-         it is not found.</doc>
+        <doc xml:space="preserve">the data element corresponding to
+         the #GQuark, or %NULL if it is not found.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
@@ -36703,11 +36788,13 @@ invocation of this function, it should not be called.</doc>
       </parameters>
     </function>
     <function name="dataset_id_remove_no_notify"
-              c:identifier="g_dataset_id_remove_no_notify">
+              c:identifier="g_dataset_id_remove_no_notify"
+              introspectable="0">
       <doc xml:space="preserve">Removes an element, without calling its destroy notification
 function.</doc>
       <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">the data previously stored at @key_id, or %NULL if none.</doc>
+        <doc xml:space="preserve">the data previously stored at @key_id,
+         or %NULL if none.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </return-value>
       <parameters>
@@ -36722,7 +36809,8 @@ function.</doc>
       </parameters>
     </function>
     <function name="dataset_id_set_data_full"
-              c:identifier="g_dataset_id_set_data_full">
+              c:identifier="g_dataset_id_set_data_full"
+              introspectable="0">
       <doc xml:space="preserve">Sets the data element associated with the given #GQuark id, and also
 the function to call when the data element is destroyed. Any
 previous data with the same key is removed, and its destroy function
@@ -39200,7 +39288,7 @@ the canonical presentation form will be entirely ASCII.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="iconv" c:identifier="g_iconv">
+    <function name="iconv" c:identifier="g_iconv" introspectable="0">
       <doc xml:space="preserve">Same as the standard UNIX routine iconv(), but
 may be implemented via libiconv on UNIX flavors that lack
 a native implementation.
@@ -39231,6 +39319,32 @@ more convenient than the raw iconv wrappers.</doc>
         <parameter name="outbytes_left" transfer-ownership="none">
           <doc xml:space="preserve">inout parameter, bytes available to fill in @outbuf</doc>
           <type name="gsize" c:type="gsize*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="iconv_open"
+              c:identifier="g_iconv_open"
+              moved-to="IConv.open"
+              introspectable="0">
+      <doc xml:space="preserve">Same as the standard UNIX routine iconv_open(), but
+may be implemented via libiconv on UNIX flavors that lack
+a native implementation.
+
+GLib provides g_convert() and g_locale_to_utf8() which are likely
+more convenient than the raw iconv wrappers.</doc>
+      <return-value>
+        <doc xml:space="preserve">a "conversion descriptor", or (GIConv)-1 if
+ opening the converter failed.</doc>
+        <type name="IConv" c:type="GIConv"/>
+      </return-value>
+      <parameters>
+        <parameter name="to_codeset" transfer-ownership="none">
+          <doc xml:space="preserve">destination codeset</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="from_codeset" transfer-ownership="none">
+          <doc xml:space="preserve">source codeset</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
@@ -39998,7 +40112,7 @@ g_log_set_handler ("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
               c:identifier="g_log_set_handler_full"
               shadows="log_set_handler"
               version="2.46">
-      <doc xml:space="preserve">Like g_log_sets_handler(), but takes a destroy notify for the @user_data.
+      <doc xml:space="preserve">Like g_log_set_handler(), but takes a destroy notify for the @user_data.
 
 This has no effect if structured logging is enabled; see
 [Using Structured Logging][using-structured-logging].</doc>

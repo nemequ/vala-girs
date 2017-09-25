@@ -3576,13 +3576,9 @@ namespace Camel {
 	[Version (since = "3.16")]
 	public static string host_idna_to_ascii (string host);
 	[CCode (cheader_filename = "camel/camel.h")]
-	public static size_t iconv (GLib.IConv cd, string inbuf, size_t inleft, string outbuf, size_t outleft);
-	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string iconv_charset_language (string charset);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string iconv_charset_name (string charset);
-	[CCode (cheader_filename = "camel/camel.h")]
-	public static void iconv_close (GLib.IConv cd);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string iconv_locale_charset ();
 	[CCode (cheader_filename = "camel/camel.h")]

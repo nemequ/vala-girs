@@ -105,8 +105,7 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_device_driver_get_type ()")]
 	public class DeviceDriver : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
-		public DeviceDriver (string id);
-		public void add_device (Osinfo.Device device);
+		protected DeviceDriver ();
 		public unowned string get_architecture ();
 		public unowned Osinfo.DeviceList get_devices ();
 		public GLib.List<weak string> get_files ();
@@ -268,7 +267,6 @@ namespace Osinfo {
 	public class InstallScript : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		public InstallScript (string id);
-		public void add_config_param (Osinfo.InstallConfigParam param);
 		[CCode (has_construct_function = false)]
 		public InstallScript.data (string id, string profile, string templateData);
 		public string generate (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -305,7 +303,6 @@ namespace Osinfo {
 		public unowned string get_template_uri ();
 		public bool has_config_param (Osinfo.InstallConfigParam config_param);
 		public bool has_config_param_name (string name);
-		public void set_avatar_format (Osinfo.AvatarFormat avatar);
 		public void set_output_prefix (string prefix);
 		[CCode (has_construct_function = false)]
 		public InstallScript.uri (string id, string profile, string templateUri);
@@ -369,6 +366,7 @@ namespace Osinfo {
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned string get_application_id ();
 		public unowned string get_architecture ();
+		public bool get_eject_after_install ();
 		public unowned string get_initrd_path ();
 		public bool get_installer ();
 		public int get_installer_reboots ();
@@ -382,12 +380,12 @@ namespace Osinfo {
 		public unowned string get_url ();
 		public unowned string get_volume_id ();
 		public int64 get_volume_size ();
-		public void set_languages (GLib.List<string> languages);
-		public void set_os (Osinfo.Os os);
 		[NoAccessorMethod]
 		public string application_id { owned get; set; }
 		[NoAccessorMethod]
 		public string architecture { owned get; set; }
+		[NoAccessorMethod]
+		public bool eject_after_install { get; set; }
 		[NoAccessorMethod]
 		public string initrd_path { owned get; set; }
 		[NoAccessorMethod]
@@ -399,6 +397,7 @@ namespace Osinfo {
 		public GLib.List<weak string> languages { owned get; }
 		[NoAccessorMethod]
 		public bool live { get; set; }
+		[NoAccessorMethod]
 		public Osinfo.Os os { owned get; set; }
 		[NoAccessorMethod]
 		public string publisher_id { owned get; set; }
@@ -654,13 +653,6 @@ namespace Osinfo {
 		UNIX,
 		DOS
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_FOREACH_FLAG_", has_type_id = false)]
-	[Flags]
-	public enum ProductForeachFlag {
-		DERIVES_FROM,
-		UPGRADES,
-		CLONES
-	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PRODUCT_RELATIONSHIP_", type_id = "osinfo_product_relationship_get_type ()")]
 	public enum ProductRelationship {
 		DERIVES_FROM,
@@ -682,8 +674,6 @@ namespace Osinfo {
 		NOT_BOOTABLE;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", instance_pos = 1.9)]
-	public delegate void ProductForeach (Osinfo.Product product);
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_ARCHITECTURE_ALL")]
 	public const string ARCHITECTURE_ALL;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_AVATAR_FORMAT_PROP_ALPHA")]
@@ -818,6 +808,8 @@ namespace Osinfo {
 	public const string MEDIA_PROP_APPLICATION_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_ARCHITECTURE")]
 	public const string MEDIA_PROP_ARCHITECTURE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_EJECT_AFTER_INSTALL")]
+	public const string MEDIA_PROP_EJECT_AFTER_INSTALL;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_INITRD")]
 	public const string MEDIA_PROP_INITRD;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_INSTALLER")]

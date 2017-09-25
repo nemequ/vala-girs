@@ -1265,29 +1265,6 @@ deployments that are present in either @sourceOne and @sourceTwo.</doc>
            glib:type-name="OsinfoDeviceDriver"
            glib:get-type="osinfo_device_driver_get_type"
            glib:type-struct="DeviceDriverClass">
-      <constructor name="new" c:identifier="osinfo_device_driver_new">
-        <return-value transfer-ownership="full">
-          <type name="DeviceDriver" c:type="OsinfoDeviceDriver*"/>
-        </return-value>
-        <parameters>
-          <parameter name="id" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <method name="add_device" c:identifier="osinfo_device_driver_add_device">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="driver" transfer-ownership="none">
-            <type name="DeviceDriver" c:type="OsinfoDeviceDriver*"/>
-          </instance-parameter>
-          <parameter name="device" transfer-ownership="none">
-            <type name="Device" c:type="OsinfoDevice*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_architecture"
               c:identifier="osinfo_device_driver_get_architecture">
         <doc xml:space="preserve">Retrieves the target hardware architecture of @driver.</doc>
@@ -3547,21 +3524,6 @@ configuration parameter</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="add_config_param"
-              c:identifier="osinfo_install_script_add_config_param">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="script" transfer-ownership="none">
-            <type name="InstallScript" c:type="OsinfoInstallScript*"/>
-          </instance-parameter>
-          <parameter name="param" transfer-ownership="none">
-            <type name="InstallConfigParam"
-                  c:type="OsinfoInstallConfigParam*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="generate"
               c:identifier="osinfo_install_script_generate"
               throws="1">
@@ -4114,6 +4076,7 @@ g_list_free() when done. The elements are owned by libosinfo.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="script" transfer-ownership="none">
+            <doc xml:space="preserve">the install script</doc>
             <type name="InstallScript" c:type="const OsinfoInstallScript*"/>
           </instance-parameter>
         </parameters>
@@ -4129,6 +4092,7 @@ parameters.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="script" transfer-ownership="none">
+            <doc xml:space="preserve">the install script</doc>
             <type name="InstallScript" c:type="const OsinfoInstallScript*"/>
           </instance-parameter>
         </parameters>
@@ -4334,20 +4298,6 @@ and 23.</doc>
           </instance-parameter>
           <parameter name="name" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_avatar_format"
-              c:identifier="osinfo_install_script_set_avatar_format">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="script" transfer-ownership="none">
-            <type name="InstallScript" c:type="OsinfoInstallScript*"/>
-          </instance-parameter>
-          <parameter name="avatar" transfer-ownership="none">
-            <type name="AvatarFormat" c:type="OsinfoAvatarFormat*"/>
           </parameter>
         </parameters>
       </method>
@@ -5009,6 +4959,11 @@ be recursively traversed, loading all files as XML.</doc>
               c:type="OSINFO_MEDIA_PROP_ARCHITECTURE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="MEDIA_PROP_EJECT_AFTER_INSTALL"
+              value="eject-after-install"
+              c:type="OSINFO_MEDIA_PROP_EJECT_AFTER_INSTALL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="MEDIA_PROP_INITRD"
               value="initrd"
               c:type="OSINFO_MEDIA_PROP_INITRD">
@@ -5084,7 +5039,7 @@ be recursively traversed, loading all files as XML.</doc>
       <doc xml:space="preserve">libosinfo micro version number.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="1" c:type="OSINFO_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="2" c:type="OSINFO_MINOR_VERSION">
       <doc xml:space="preserve">libosinfo minor version number.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -5214,6 +5169,20 @@ matches it.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the hardware architecture, or NULL</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="media" transfer-ownership="none">
+            <doc xml:space="preserve">an #OsinfoMedia instance</doc>
+            <type name="Media" c:type="OsinfoMedia*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_eject_after_install"
+              c:identifier="osinfo_media_get_eject_after_install">
+        <doc xml:space="preserve">Whether @media should ejected after the installation procces.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#TRUE if media should be ejected, #FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="media" transfer-ownership="none">
@@ -5435,38 +5404,6 @@ unknown or media is not an ISO9660 device/image.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_languages" c:identifier="osinfo_media_set_languages">
-        <doc xml:space="preserve">Sets the #OSINFO_MEDIA_PROP_LANG parameter</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="media" transfer-ownership="none">
-            <doc xml:space="preserve">an #OsinfoMedia instance</doc>
-            <type name="Media" c:type="OsinfoMedia*"/>
-          </instance-parameter>
-          <parameter name="languages" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList containing the list of the UI
-languages this media supports.</doc>
-            <type name="GLib.List" c:type="GList*">
-              <type name="utf8"/>
-            </type>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_os" c:identifier="osinfo_media_set_os">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="media" transfer-ownership="none">
-            <type name="Media" c:type="OsinfoMedia*"/>
-          </instance-parameter>
-          <parameter name="os" transfer-ownership="none">
-            <type name="Os" c:type="OsinfoOs*"/>
-          </parameter>
-        </parameters>
-      </method>
       <property name="application-id" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Expected application ID (regular expression) for ISO9660 image/device.</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -5474,6 +5411,17 @@ languages this media supports.</doc>
       <property name="architecture" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The target hardware architecture of this media.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="eject-after-install"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether the media should be ejected after the installation process.
+
+Some distros need their media to not be ejected after the final reboot
+during its installation process as some packages are installed after the
+reboot (which may cause the media to be ejected, depending on the
+application).</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="initrd-path" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The path to the initrd image in the install tree.</doc>
@@ -6684,38 +6632,6 @@ platforms that are present in either @sourceOne and @sourceTwo.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="foreach_related"
-              c:identifier="osinfo_product_foreach_related"
-              introspectable="0">
-        <doc xml:space="preserve">Call @foreach_func for @product and for each #OsinfoProduct related
-to @product. The meaning of 'related' is defined by the @flag parameter,
-and can be products @product derives from or products which @product
-upgrades or clones, or a combination of these, or none.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="product" transfer-ownership="none">
-            <doc xml:space="preserve">a product</doc>
-            <type name="Product" c:type="OsinfoProduct*"/>
-          </instance-parameter>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">bitwise-or of #OsinfoProductForeachFlag</doc>
-            <type name="guint" c:type="unsigned int"/>
-          </parameter>
-          <parameter name="foreach_func" transfer-ownership="none" closure="2">
-            <doc xml:space="preserve">the function to call for each related product</doc>
-            <type name="ProductForeach" c:type="OsinfoProductForeach"/>
-          </parameter>
-          <parameter name="user_data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">user data to pass to foreach_func()</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_codename" c:identifier="osinfo_product_get_codename">
         <return-value transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
@@ -7003,37 +6919,6 @@ the target of constraint for the  relationship
             c:type="OsinfoProductFilterPrivate"
             disguised="1">
     </record>
-    <callback name="ProductForeach" c:type="OsinfoProductForeach">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="product" transfer-ownership="none">
-          <type name="Product" c:type="OsinfoProduct*"/>
-        </parameter>
-        <parameter name="user_data"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1"
-                   closure="1">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <bitfield name="ProductForeachFlag" c:type="OsinfoProductForeachFlag">
-      <member name="derives_from"
-              value="1"
-              c:identifier="OSINFO_PRODUCT_FOREACH_FLAG_DERIVES_FROM">
-      </member>
-      <member name="upgrades"
-              value="2"
-              c:identifier="OSINFO_PRODUCT_FOREACH_FLAG_UPGRADES">
-      </member>
-      <member name="clones"
-              value="4"
-              c:identifier="OSINFO_PRODUCT_FOREACH_FLAG_CLONES">
-      </member>
-    </bitfield>
     <class name="ProductList"
            c:symbol-prefix="productlist"
            c:type="OsinfoProductList"
