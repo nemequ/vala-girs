@@ -3229,6 +3229,22 @@ Free-function: gst_buffer_list_unref</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="calculate_size"
+              c:identifier="gst_buffer_list_calculate_size"
+              version="1.14">
+        <doc xml:space="preserve">Calculates the size of the data contained in buffer list by adding the
+size of all buffers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the size of the data contained in buffer list in bytes.</doc>
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstBufferList</doc>
+            <type name="BufferList" c:type="GstBufferList*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="copy_deep"
               c:identifier="gst_buffer_list_copy_deep"
               version="1.6">
@@ -3278,7 +3294,10 @@ the list should be skipped.</doc>
         </parameters>
       </method>
       <method name="get" c:identifier="gst_buffer_list_get">
-        <doc xml:space="preserve">Get the buffer at @idx.</doc>
+        <doc xml:space="preserve">Get the buffer at @idx.
+
+You must make sure that @idx does not exceed the number of
+buffers available.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the buffer at @idx in @group
     or %NULL when there is no buffer. The buffer remains valid as
@@ -3288,6 +3307,30 @@ the list should be skipped.</doc>
         <parameters>
           <instance-parameter name="list" transfer-ownership="none">
             <doc xml:space="preserve">a #GstBufferList</doc>
+            <type name="BufferList" c:type="GstBufferList*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">the index</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_writable"
+              c:identifier="gst_buffer_list_get_writable"
+              version="1.14">
+        <doc xml:space="preserve">Gets the buffer at @idx, ensuring it is a writable buffer.
+
+You must make sure that @idx does not exceed the number of
+buffers available.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the buffer at @idx in @group.
+    The returned  buffer remains valid as long as @list is valid and
+    the buffer is not removed from the list.</doc>
+          <type name="Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="list" transfer-ownership="none">
+            <doc xml:space="preserve">a (writable) #GstBufferList</doc>
             <type name="BufferList" c:type="GstBufferList*"/>
           </instance-parameter>
           <parameter name="idx" transfer-ownership="none">
@@ -10304,10 +10347,10 @@ debugging message.
         </parameters>
       </method>
     </record>
-    <enumeration name="DebugColorFlags"
-                 glib:type-name="GstDebugColorFlags"
-                 glib:get-type="gst_debug_color_flags_get_type"
-                 c:type="GstDebugColorFlags">
+    <bitfield name="DebugColorFlags"
+              glib:type-name="GstDebugColorFlags"
+              glib:get-type="gst_debug_color_flags_get_type"
+              c:type="GstDebugColorFlags">
       <doc xml:space="preserve">These are some terminal style flags you can use when creating your
 debugging categories to make them stand out in debugging output.</doc>
       <member name="fg_black"
@@ -10418,7 +10461,7 @@ debugging categories to make them stand out in debugging output.</doc>
               glib:nick="underline">
         <doc xml:space="preserve">Underline the output.</doc>
       </member>
-    </enumeration>
+    </bitfield>
     <enumeration name="DebugColorMode"
                  glib:type-name="GstDebugColorMode"
                  glib:get-type="gst_debug_color_mode_get_type"
@@ -29630,6 +29673,14 @@ The cache is flushed every time the registry is rebuilt.</doc>
         filename argument as filter prefix and check all matching files in
         the directory. Since 1.8.</doc>
       </member>
+      <member name="paths_are_relative_to_exe"
+              value="16"
+              c:identifier="GST_PLUGIN_DEPENDENCY_FLAG_PATHS_ARE_RELATIVE_TO_EXE"
+              glib:nick="paths-are-relative-to-exe">
+        <doc xml:space="preserve">interpret
+  non-absolute paths as relative to the main executable directory. Since
+  1.14.</doc>
+      </member>
     </bitfield>
     <record name="PluginDesc" c:type="GstPluginDesc">
       <doc xml:space="preserve">A plugin should export a variable of this type called plugin_desc. The plugin
@@ -33147,7 +33198,7 @@ at @index of the allocator array.</doc>
             <type name="BufferPool" c:type="GstBufferPool*"/>
           </parameter>
           <parameter name="size" transfer-ownership="none">
-            <doc xml:space="preserve">the size</doc>
+            <doc xml:space="preserve">the buffer size</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="min_buffers" transfer-ownership="none">
@@ -35369,6 +35420,7 @@ values of the seek flags.</doc>
       </member>
     </bitfield>
     <bitfield name="StackTraceFlags"
+              version="1.12"
               glib:type-name="GstStackTraceFlags"
               glib:get-type="gst_stack_trace_flags_get_type"
               c:type="GstStackTraceFlags">
@@ -45285,6 +45337,22 @@ is unknown.</doc>
           <type name="Format" c:type="GstFormat"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="get_main_executable_path"
+              c:identifier="gst_get_main_executable_path"
+              version="1.14">
+      <doc xml:space="preserve">This helper is mostly helpful for plugins that need to
+inspect the folder of the main executable to determine
+their set of features.
+
+When a plugin is initialized from the gst-plugin-scanner
+external process, the returned path will be the same as from the
+parent process.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">The path of the executable that
+  initialized GStreamer, or %NULL if it could not be determined.</doc>
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
     </function>
     <function name="info_strdup_printf"
               c:identifier="gst_info_strdup_printf"

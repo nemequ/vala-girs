@@ -1001,7 +1001,8 @@ namespace MM {
 	public class Sms : MM.GdbusSmsProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusSms {
 		[CCode (has_construct_function = false)]
 		protected Sms ();
-		public uint8 dup_data (out size_t data_len);
+		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		public uint8[] dup_data ();
 		public string dup_discharge_timestamp ();
 		public string dup_number ();
 		public string dup_path ();
@@ -1009,7 +1010,8 @@ namespace MM {
 		public string dup_text ();
 		public string dup_timestamp ();
 		public int get_class ();
-		public uint8 get_data (out size_t data_len);
+		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		public unowned uint8[] get_data ();
 		public bool get_delivery_report_request ();
 		public uint get_delivery_state ();
 		public unowned string get_discharge_timestamp ();

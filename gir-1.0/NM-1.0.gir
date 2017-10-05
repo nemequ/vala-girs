@@ -11638,6 +11638,32 @@ next hop, and metric. (Attributes are not compared.)</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="equal_full"
+              c:identifier="nm_ip_route_equal_full"
+              version="1.10">
+        <doc xml:space="preserve">Determines if two #NMIPRoute objects contain the same destination, prefix,
+next hop, and metric.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the objects contain the same values, %FALSE if they do not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="route" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMIPRoute</doc>
+            <type name="IPRoute" c:type="NMIPRoute*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMIPRoute to compare @route to.</doc>
+            <type name="IPRoute" c:type="NMIPRoute*"/>
+          </parameter>
+          <parameter name="cmp_flags" transfer-ownership="none">
+            <doc xml:space="preserve">tune how to compare attributes. Currently only
+  NM_IP_ROUTE_EQUAL_CMP_FLAGS_NONE (0) and NM_IP_ROUTE_EQUAL_CMP_FLAGS_WITH_ATTRS (1)
+  is supported.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_attribute" c:identifier="nm_ip_route_get_attribute">
         <doc xml:space="preserve">Gets the value of the attribute with name @name on @route</doc>
         <return-value transfer-ownership="none">
@@ -12000,6 +12026,41 @@ and the value is of the correct type and well-formed.</doc>
         </return-value>
       </function>
     </record>
+    <enumeration name="IPRouteTableSyncMode"
+                 version="1.10"
+                 glib:type-name="NMIPRouteTableSyncMode"
+                 glib:get-type="nm_ip_route_table_sync_mode_get_type"
+                 c:type="NMIPRouteTableSyncMode">
+      <member name="default"
+              value="0"
+              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">the default value, meaning the value
+  is subject to global configuration default.</doc>
+      </member>
+      <member name="none"
+              value="1"
+              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">no route table is synced. This means,
+  NetworkManager will only add routes for a particular interface to the
+  routing tables, but not delete any routes.</doc>
+      </member>
+      <member name="main"
+              value="2"
+              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_MAIN"
+              glib:nick="main">
+        <doc xml:space="preserve">only the main table is synced. For all
+  other tables, NM won't delete any extra routes.</doc>
+      </member>
+      <member name="full"
+              value="3"
+              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_FULL"
+              glib:nick="full">
+        <doc xml:space="preserve">NM will sync all tables, except the
+  local table (255).</doc>
+      </member>
+    </enumeration>
     <enumeration name="IPTunnelMode"
                  version="1.2"
                  glib:type-name="NMIPTunnelMode"
@@ -12160,6 +12221,11 @@ and the value is of the correct type and well-formed.</doc>
     <constant name="IP_ROUTE_ATTRIBUTE_SRC"
               value="src"
               c:type="NM_IP_ROUTE_ATTRIBUTE_SRC">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="IP_ROUTE_ATTRIBUTE_TABLE"
+              value="table"
+              c:type="NM_IP_ROUTE_ATTRIBUTE_TABLE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="IP_ROUTE_ATTRIBUTE_TOS"
@@ -14320,6 +14386,11 @@ supported for IPv6)</doc>
     <constant name="SETTING_IP_CONFIG_ROUTE_METRIC"
               value="route-metric"
               c:type="NM_SETTING_IP_CONFIG_ROUTE_METRIC">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_CONFIG_ROUTE_TABLE_SYNC"
+              value="route-table-sync"
+              c:type="NM_SETTING_IP_CONFIG_ROUTE_TABLE_SYNC">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT"
@@ -20449,7 +20520,7 @@ The higher number means higher priority.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The number of times a connection should be tried when autoactivating before
 giving up. Zero means forever, -1 means the global default (4 times if not
-overridden).</doc>
+overridden). Setting this to 1 means to try activation once and never retry.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="autoconnect-slaves"
@@ -22033,8 +22104,14 @@ domain was already known</doc>
         </parameters>
       </method>
       <method name="add_route" c:identifier="nm_setting_ip_config_add_route">
-        <doc xml:space="preserve">Adds a new route and associated information to the setting.  The
-given route is duplicated internally and is not changed by this function.</doc>
+        <doc xml:space="preserve">Appends a new route and associated information to the setting.  The
+given route is duplicated internally and is not changed by this function.
+If an identical route (considering attributes as well) already exists, the
+route is not added and the function returns %FALSE.
+
+Note that before 1.10, this function would not consider route attributes
+and not add a route that has an existing route with same dest/prefix,next_hop,metric
+parameters.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the route was added; %FALSE if the route was already known.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -22455,6 +22532,22 @@ specify a metric. See #NMSettingIPConfig:route-metric for more details.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_route_table_sync"
+              c:identifier="nm_setting_ip_config_get_route_table_sync"
+              version="1.10">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingIPConfig:route-table-sync
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the configured route-table-sync mode.</doc>
+          <type name="IPRouteTableSyncMode" c:type="NMIPRouteTableSyncMode"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIPConfig</doc>
+            <type name="SettingIPConfig" c:type="NMSettingIPConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="has_dns_options"
               c:identifier="nm_setting_ip_config_has_dns_options">
         <doc xml:space="preserve">NMSettingIPConfig can have a list of dns-options. If the list
@@ -22654,7 +22747,9 @@ Since 0.9.10</doc>
       </method>
       <method name="remove_route_by_value"
               c:identifier="nm_setting_ip_config_remove_route_by_value">
-        <doc xml:space="preserve">Removes the route @route.</doc>
+        <doc xml:space="preserve">Removes the first matching route that matches @route.
+Note that before 1.10, this function would only compare dest/prefix,next_hop,metric
+and ignore route attributes. Now, @route must match exactly.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the route was found and removed; %FALSE if it was not.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -22845,6 +22940,21 @@ Note that for IPv6, the kernel accepts zero (0) but coerces it to
 mean setting it to 1024.
 For IPv4, zero is a regular value for the metric.</doc>
         <type name="gint64" c:type="gint64"/>
+      </property>
+      <property name="route-table-sync"
+                version="1.10"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The mode how to sync the routes per table. In general, when NetworkManager manages
+a device it will remove extraneous routes from the routing tables. The
+sync parameter specifies which tables are synced this way. That means, from
+which routing table NetworkManager will remove those unexpected, extraneous routes.
+A value of 1 (none) means that no route tables will not be synced and no routes
+are removed by NetworkManager. 2 (main) means that only the main table will be synced.
+3 (full) will sync all the route tables, except the local table. A value of zero is
+the default value and allows to be overwritten via global configuration. In absence of
+global configuration, the default value is 2 (main).</doc>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="routes" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Array of IP routes.

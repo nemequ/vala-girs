@@ -1477,6 +1477,8 @@ namespace NM {
 		public IPRoute.binary (int family, void* dest, uint prefix, void* next_hop, int64 metric) throws GLib.Error;
 		public NM.IPRoute dup ();
 		public bool equal (NM.IPRoute other);
+		[Version (since = "1.10")]
+		public bool equal_full (NM.IPRoute other, uint cmp_flags);
 		public unowned GLib.Variant get_attribute (string name);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_attribute_names ();
@@ -2597,6 +2599,8 @@ namespace NM {
 		public const string ROUTES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_METRIC")]
 		public const string ROUTE_METRIC;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_TABLE_SYNC")]
+		public const string ROUTE_TABLE_SYNC;
 		[CCode (has_construct_function = false)]
 		protected SettingIPConfig ();
 		public bool add_address (NM.IPAddress address);
@@ -2638,6 +2642,8 @@ namespace NM {
 		public uint get_num_routes ();
 		public unowned NM.IPRoute get_route (int idx);
 		public int64 get_route_metric ();
+		[Version (since = "1.10")]
+		public NM.IPRouteTableSyncMode get_route_table_sync ();
 		public bool has_dns_options ();
 		[Version (since = "1.2")]
 		public int next_valid_dns_option (uint idx);
@@ -2691,6 +2697,9 @@ namespace NM {
 		public bool never_default { get; set construct; }
 		[NoAccessorMethod]
 		public int64 route_metric { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public int route_table_sync { get; set; }
 		[NoAccessorMethod]
 		public GLib.GenericArray<void*> routes { owned get; set; }
 	}
@@ -4351,6 +4360,14 @@ namespace NM {
 		FREQ_2GHZ,
 		FREQ_5GHZ
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ROUTE_TABLE_SYNC_MODE_", type_id = "nm_ip_route_table_sync_mode_get_type ()")]
+	[Version (since = "1.10")]
+	public enum IPRouteTableSyncMode {
+		DEFAULT,
+		NONE,
+		MAIN,
+		FULL
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_TUNNEL_MODE_", type_id = "nm_ip_tunnel_mode_get_type ()")]
 	[Version (since = "1.2")]
 	public enum IPTunnelMode {
@@ -4939,6 +4956,8 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_MTU;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
 	public const string IP_ROUTE_ATTRIBUTE_SRC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TABLE")]
+	public const string IP_ROUTE_ATTRIBUTE_TABLE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TOS")]
 	public const string IP_ROUTE_ATTRIBUTE_TOS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WINDOW")]

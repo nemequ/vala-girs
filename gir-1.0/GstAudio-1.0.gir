@@ -6,14 +6,16 @@ and/or use gtk-doc annotations.  -->
             xmlns="http://www.gtk.org/introspection/core/1.0"
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="GLib" version="2.0"/>
+  <include name="GModule" version="2.0"/>
+  <include name="GObject" version="2.0"/>
   <include name="Gst" version="1.0"/>
   <include name="GstBase" version="1.0"/>
-  <include name="GstTag" version="1.0"/>
   <package name="gstreamer-audio-1.0"/>
   <c:include name="gst/audio/audio.h"/>
   <namespace name="GstAudio"
              version="1.0"
-             shared-library="libgstaudio-1.0.so.0"
+             shared-library="libgsttag-1.0.so.0,libgstaudio-1.0.so.0"
              c:identifier-prefixes="Gst"
              c:symbol-prefixes="gst">
     <constant name="AUDIO_CHANNELS_RANGE"
@@ -28,6 +30,38 @@ and/or use gtk-doc annotations.  -->
       <doc xml:space="preserve">#GST_TYPE_AUDIO_DITHER_METHOD, The dither method to use when
 changing bit depth.
 Default is #GST_AUDIO_DITHER_NONE.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="AUDIO_CONVERTER_OPT_MIX_MATRIX"
+              value="GstAudioConverter.mix-matrix"
+              c:type="GST_AUDIO_CONVERTER_OPT_MIX_MATRIX">
+      <doc xml:space="preserve">#GST_TYPE_VALUE_LIST, The channel mapping matrix.
+
+The matrix coefficients must be between -1 and 1: the number of rows is equal
+to the number of output channels and the number of columns is equal to the
+number of input channels.
+
+## Example matrix generation code
+To generate the matrix using code:
+
+|[
+GValue v = G_VALUE_INIT;
+GValue v2 = G_VALUE_INIT;
+GValue v3 = G_VALUE_INIT;
+
+g_value_init (&amp;v2, GST_TYPE_ARRAY);
+g_value_init (&amp;v3, G_TYPE_DOUBLE);
+g_value_set_double (&amp;v3, 1);
+gst_value_array_append_value (&amp;v2, &amp;v3);
+g_value_unset (&amp;v3);
+[ Repeat for as many double as your input channels - unset and reinit v3 ]
+g_value_init (&amp;v, GST_TYPE_ARRAY);
+gst_value_array_append_value (&amp;v, &amp;v2);
+g_value_unset (&amp;v2);
+[ Repeat for as many v2's as your output channels - unset and reinit v2]
+g_object_set_property (G_OBJECT (audiomixmatrix), "matrix", &amp;v);
+g_value_unset (&amp;v);
+]|</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="AUDIO_CONVERTER_OPT_NOISE_SHAPING_METHOD"
@@ -1228,7 +1262,17 @@ on the pipeline's #GstBus instead.</doc>
       </method>
       <method name="is_passthrough"
               c:identifier="gst_audio_channel_mixer_is_passthrough">
-        <doc xml:space="preserve">Check if @mix is in passthrough.</doc>
+        <doc xml:space="preserve">Check if @mix is in passthrough.
+
+Only N x N mix identity matrices are considered passthrough,
+this is determined by comparing the contents of the matrix
+with 0.0 and 1.0.
+
+As this is floating point comparisons, if the values have been
+generated, they should be rounded up or down by explicit
+assignment of 0.0 or 1.0 to values within a user-defined
+epsilon, this code doesn't make assumptions as to what may
+constitute an appropriate epsilon.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE is @mix is passthrough.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -1282,8 +1326,8 @@ Perform channel mixing on @in_data and write the result to @out_data.
                 introspectable="0">
         <doc xml:space="preserve">Create a new channel mixer object for the given parameters.</doc>
         <return-value>
-          <doc xml:space="preserve">a new #GstAudioChannelMixer object. Free with gst_audio_channel_mixer_free()
-after usage.</doc>
+          <doc xml:space="preserve">a new #GstAudioChannelMixer object, or %NULL if @format isn't supported.
+  Free with gst_audio_channel_mixer_free() after usage.</doc>
           <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
         </return-value>
         <parameters>
@@ -1312,6 +1356,45 @@ after usage.</doc>
             <doc xml:space="preserve">positions of output channels</doc>
             <type name="AudioChannelPosition"
                   c:type="GstAudioChannelPosition*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_with_matrix"
+                c:identifier="gst_audio_channel_mixer_new_with_matrix"
+                version="1.14"
+                introspectable="0">
+        <doc xml:space="preserve">Create a new channel mixer object for the given parameters.</doc>
+        <return-value>
+          <doc xml:space="preserve">a new #GstAudioChannelMixer object, or %NULL if @format isn't supported,
+  @matrix is invalid, or @matrix is %NULL and @in_channels != @out_channels.
+  Free with gst_audio_channel_mixer_free() after usage.</doc>
+          <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#GstAudioChannelMixerFlags</doc>
+            <type name="AudioChannelMixerFlags"
+                  c:type="GstAudioChannelMixerFlags"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="AudioFormat" c:type="GstAudioFormat"/>
+          </parameter>
+          <parameter name="in_channels" transfer-ownership="none">
+            <doc xml:space="preserve">number of input channels</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="out_channels" transfer-ownership="none">
+            <doc xml:space="preserve">number of output channels</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="matrix"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">channel conversion matrix, m[@in_channels][@out_channels].
+  If identity matrix, passthrough applies. If %NULL, @in_channels must be
+  equal to @out_channels, in which case an identity matrix is generated.</doc>
+            <type name="gfloat" c:type="gfloat**"/>
           </parameter>
         </parameters>
       </function>
@@ -2214,7 +2297,7 @@ Things that subclass need to take care of:
 Unmark GST_PAD_FLAG_NEED_RECONFIGURE in any case. But mark it again if
 negotiate fails.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">#TRUE if the negotiation succeeded, else #FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the negotiation succeeded, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -2697,7 +2780,7 @@ not required to use this and can still do tag handling on its own.</doc>
 Unmark GST_PAD_FLAG_NEED_RECONFIGURE in any case. But mark it again if
 negotiate fails.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">#TRUE if the negotiation succeeded, else #FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the negotiation succeeded, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -3188,7 +3271,7 @@ overridden.</doc>
       <field name="negotiate">
         <callback name="negotiate">
           <return-value transfer-ownership="none">
-            <doc xml:space="preserve">#TRUE if the negotiation succeeded, else #FALSE.</doc>
+            <doc xml:space="preserve">%TRUE if the negotiation succeeded, else %FALSE.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
@@ -3539,7 +3622,7 @@ Things that subclass need to take care of:
 Unmark GST_PAD_FLAG_NEED_RECONFIGURE in any case. But mark it again if
 negotiate fails.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">#TRUE if the negotiation succeeded, else #FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the negotiation succeeded, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -3998,7 +4081,7 @@ MT safe.</doc>
 Unmark GST_PAD_FLAG_NEED_RECONFIGURE in any case. But mark it again if
 negotiate fails.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">#TRUE if the negotiation succeeded, else #FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the negotiation succeeded, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -4526,7 +4609,7 @@ needed. At minimum @set_format and @handle_frame needs to be overridden.</doc>
       <field name="negotiate">
         <callback name="negotiate">
           <return-value transfer-ownership="none">
-            <doc xml:space="preserve">#TRUE if the negotiation succeeded, else #FALSE.</doc>
+            <doc xml:space="preserve">%TRUE if the negotiation succeeded, else %FALSE.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
@@ -7938,6 +8021,263 @@ functionality.</doc>
         </array>
       </field>
     </record>
+    <record name="AudioStreamAlign"
+            c:type="GstAudioStreamAlign"
+            glib:type-name="GstAudioStreamAlign"
+            glib:get-type="gst_audio_stream_align_get_type"
+            c:symbol-prefix="audio_stream_align">
+      <doc xml:space="preserve">#GstAudioStreamAlign provides a helper object that helps tracking audio
+stream alignment and discontinuities, and detects discontinuities if
+possible.
+
+See gst_audio_stream_align_new() for a description of its parameters and
+gst_audio_stream_align_process() for the details of the processing.</doc>
+      <constructor name="new"
+                   c:identifier="gst_audio_stream_align_new"
+                   version="1.14">
+        <doc xml:space="preserve">Allocate a new #GstAudioStreamAlign with the given configuration. All
+processing happens according to sample rate @rate, until
+gst_audio_discont_wait_set_rate() is called with a new @rate.
+A negative rate can be used for reverse playback.
+
+@alignment_threshold gives the tolerance in nanoseconds after which a
+timestamp difference is considered a discontinuity. Once detected,
+@discont_wait nanoseconds have to pass without going below the threshold
+again until the output buffer is marked as a discontinuity. These can later
+be re-configured with gst_audio_stream_align_set_alignment_threshold() and
+gst_audio_stream_align_set_discont_wait().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstAudioStreamAlign. free with gst_audio_stream_align_free().</doc>
+          <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+        </return-value>
+        <parameters>
+          <parameter name="rate" transfer-ownership="none">
+            <doc xml:space="preserve">a sample rate</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="alignment_threshold" transfer-ownership="none">
+            <doc xml:space="preserve">a alignment threshold in nanoseconds</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="discont_wait" transfer-ownership="none">
+            <doc xml:space="preserve">discont wait in nanoseconds</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="copy"
+              c:identifier="gst_audio_stream_align_copy"
+              version="1.14">
+        <doc xml:space="preserve">Copy a GstAudioStreamAlign structure.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstAudioStreamAlign. free with gst_audio_stream_align_free.</doc>
+          <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioStreamAlign</doc>
+            <type name="AudioStreamAlign" c:type="const GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="free"
+              c:identifier="gst_audio_stream_align_free"
+              version="1.14">
+        <doc xml:space="preserve">Free a GstAudioStreamAlign structure previously allocated with gst_audio_stream_align_new()
+or gst_audio_stream_align_copy().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioStreamAlign</doc>
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_alignment_threshold"
+              c:identifier="gst_audio_stream_align_get_alignment_threshold">
+        <return-value transfer-ownership="none">
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_discont_wait"
+              c:identifier="gst_audio_stream_align_get_discont_wait">
+        <return-value transfer-ownership="none">
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rate" c:identifier="gst_audio_stream_align_get_rate">
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_samples_since_discont"
+              c:identifier="gst_audio_stream_align_get_samples_since_discont"
+              version="1.14">
+        <doc xml:space="preserve">Returns the number of samples that were processed since the last
+discontinuity was detected.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of samples processed since the last discontinuity.</doc>
+          <type name="guint64" c:type="guint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioStreamAlign</doc>
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_timestamp_at_discont"
+              c:identifier="gst_audio_stream_align_get_timestamp_at_discont"
+              version="1.14">
+        <doc xml:space="preserve">Timestamp that was passed when a discontinuity was detected, i.e. the first
+timestamp after the discontinuity.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The last timestamp at when a discontinuity was detected</doc>
+          <type name="Gst.ClockTime" c:type="GstClockTime"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioStreamAlign</doc>
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="mark_discont"
+              c:identifier="gst_audio_stream_align_mark_discont"
+              version="1.14">
+        <doc xml:space="preserve">Marks the next buffer as discontinuous and resets timestamp tracking.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioStreamAlign</doc>
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="process"
+              c:identifier="gst_audio_stream_align_process"
+              version="1.14">
+        <doc xml:space="preserve">Processes data with @timestamp and @n_samples, and returns the output
+timestamp, duration and sample position together with a boolean to signal
+whether a discontinuity was detected or not. All non-discontinuous data
+will have perfect timestamps and durations.
+
+A discontinuity is detected once the difference between the actual
+timestamp and the timestamp calculated from the sample count since the last
+discontinuity differs by more than the alignment threshold for a duration
+longer than discont wait.
+
+Note: In reverse playback, every buffer is considered discontinuous in the
+context of buffer flags because the last sample of the previous buffer is
+discontinuous with the first sample of the current one. However for this
+function they are only considered discontinuous in reverse playback if the
+first sample of the previous buffer is discontinuous with the last sample
+of the current one.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if a discontinuity was detected, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstAudioStreamAlign</doc>
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+          <parameter name="discont" transfer-ownership="none">
+            <doc xml:space="preserve">if this data is considered to be discontinuous</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="timestamp" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstClockTime of the start of the data</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="n_samples" transfer-ownership="none">
+            <doc xml:space="preserve">number of samples to process</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="out_timestamp"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">output timestamp of the data</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime*"/>
+          </parameter>
+          <parameter name="out_duration"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">output duration of the data</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime*"/>
+          </parameter>
+          <parameter name="out_sample_position"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">output sample position of the start of the data</doc>
+            <type name="guint64" c:type="guint64*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_alignment_threshold"
+              c:identifier="gst_audio_stream_align_set_alignment_threshold">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+          <parameter name="alignment_threshold" transfer-ownership="none">
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_discont_wait"
+              c:identifier="gst_audio_stream_align_set_discont_wait">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+          <parameter name="discont_wait" transfer-ownership="none">
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rate" c:identifier="gst_audio_stream_align_set_rate">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="align" transfer-ownership="none">
+            <type name="AudioStreamAlign" c:type="GstAudioStreamAlign*"/>
+          </instance-parameter>
+          <parameter name="rate" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+    </record>
     <constant name="META_TAG_AUDIO_CHANNELS_STR"
               value="channels"
               c:type="GST_META_TAG_AUDIO_CHANNELS_STR"
@@ -8196,8 +8536,8 @@ mask and mono.</doc>
               introspectable="0">
       <doc xml:space="preserve">Create a new channel mixer object for the given parameters.</doc>
       <return-value>
-        <doc xml:space="preserve">a new #GstAudioChannelMixer object. Free with gst_audio_channel_mixer_free()
-after usage.</doc>
+        <doc xml:space="preserve">a new #GstAudioChannelMixer object, or %NULL if @format isn't supported.
+  Free with gst_audio_channel_mixer_free() after usage.</doc>
         <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
       </return-value>
       <parameters>
@@ -8224,6 +8564,46 @@ after usage.</doc>
         <parameter name="out_position" transfer-ownership="none">
           <doc xml:space="preserve">positions of output channels</doc>
           <type name="AudioChannelPosition" c:type="GstAudioChannelPosition*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="audio_channel_mixer_new_with_matrix"
+              c:identifier="gst_audio_channel_mixer_new_with_matrix"
+              moved-to="AudioChannelMixer.new_with_matrix"
+              version="1.14"
+              introspectable="0">
+      <doc xml:space="preserve">Create a new channel mixer object for the given parameters.</doc>
+      <return-value>
+        <doc xml:space="preserve">a new #GstAudioChannelMixer object, or %NULL if @format isn't supported,
+  @matrix is invalid, or @matrix is %NULL and @in_channels != @out_channels.
+  Free with gst_audio_channel_mixer_free() after usage.</doc>
+        <type name="AudioChannelMixer" c:type="GstAudioChannelMixer*"/>
+      </return-value>
+      <parameters>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">#GstAudioChannelMixerFlags</doc>
+          <type name="AudioChannelMixerFlags"
+                c:type="GstAudioChannelMixerFlags"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <type name="AudioFormat" c:type="GstAudioFormat"/>
+        </parameter>
+        <parameter name="in_channels" transfer-ownership="none">
+          <doc xml:space="preserve">number of input channels</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="out_channels" transfer-ownership="none">
+          <doc xml:space="preserve">number of output channels</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="matrix"
+                   transfer-ownership="full"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">channel conversion matrix, m[@in_channels][@out_channels].
+  If identity matrix, passthrough applies. If %NULL, @in_channels must be
+  equal to @out_channels, in which case an identity matrix is generated.</doc>
+          <type name="gfloat" c:type="gfloat**"/>
         </parameter>
       </parameters>
     </function>
