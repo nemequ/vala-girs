@@ -84,7 +84,7 @@ namespace AppStream {
 		public void add_translation (AppStream.Translation tr);
 		[Version (since = "0.6.2")]
 		public void add_url (AppStream.UrlKind url_kind, string url);
-		public string get_active_locale ();
+		public unowned string get_active_locale ();
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Component> get_addons ();
 		[Version (since = "0.8.0")]
@@ -203,7 +203,7 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h", type_id = "as_content_rating_get_type ()")]
 	public class ContentRating : GLib.Object {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.5.12")]
+		[Version (since = "0.11.0")]
 		public ContentRating ();
 		[Version (since = "0.11.0")]
 		public unowned string get_kind ();
@@ -338,6 +338,8 @@ namespace AppStream {
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_categories (string categories);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_id (string cid);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_kind (AppStream.ComponentKind kind);
+		[Version (since = "0.11.4")]
+		public GLib.GenericArray<weak AppStream.Component> get_components_by_launchable (AppStream.LaunchableKind kind, string id);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_provided_item (AppStream.ProvidedKind kind, string item);
 		public AppStream.PoolFlags get_flags ();
 		public unowned string get_locale ();
@@ -372,7 +374,7 @@ namespace AppStream {
 		public void add_checksum (AppStream.Checksum cs);
 		[Version (since = "0.8.1")]
 		public void add_location (string location);
-		public string get_active_locale ();
+		public unowned string get_active_locale ();
 		[Version (since = "0.8.2")]
 		public unowned AppStream.Checksum get_checksum (AppStream.ChecksumKind kind);
 		[Version (since = "0.10")]
@@ -401,7 +403,7 @@ namespace AppStream {
 		[CCode (has_construct_function = false)]
 		public Screenshot ();
 		public void add_image (AppStream.Image image);
-		public string get_active_locale ();
+		public unowned string get_active_locale ();
 		public unowned string get_caption ();
 		public unowned GLib.GenericArray<AppStream.Image> get_images ();
 		[Version (since = "0.10")]
@@ -500,7 +502,8 @@ namespace AppStream {
 		INPUTMETHOD,
 		FIRMWARE,
 		DRIVER,
-		LOCALIZATION;
+		LOCALIZATION,
+		SERVICE;
 		public static AppStream.ComponentKind from_string (string kind_str);
 		public static unowned string to_string (AppStream.ComponentKind kind);
 	}
@@ -591,7 +594,9 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_LAUNCHABLE_KIND_", has_type_id = false)]
 	public enum LaunchableKind {
 		UNKNOWN,
-		DESKTOP_ID
+		DESKTOP_ID,
+		SERVICE,
+		COCKPIT_MANIFEST
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_MERGE_KIND_", has_type_id = false)]
 	public enum MergeKind {
@@ -637,7 +642,8 @@ namespace AppStream {
 		DBUS_SYSTEM,
 		DBUS_USER,
 		FIRMWARE_RUNTIME,
-		FIRMWARE_FLASHED
+		FIRMWARE_FLASHED,
+		ID
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_SCREENSHOT_KIND_", has_type_id = false)]
 	public enum ScreenshotKind {
