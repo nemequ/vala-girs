@@ -4033,6 +4033,21 @@ Both dates must be valid.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="copy" c:identifier="g_date_copy" version="2.56">
+        <doc xml:space="preserve">Copies a GDate to a newly-allocated GDate. If the input was invalid
+(as determined by g_date_valid()), the invalid state will be copied
+as is into the new object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly-allocated #GDate initialized from @date</doc>
+          <type name="Date" c:type="GDate*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="date" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDate to copy</doc>
+            <type name="Date" c:type="const GDate*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="days_between" c:identifier="g_date_days_between">
         <doc xml:space="preserve">Computes the number of days between two dates.
 If @date2 is prior to @date1, the returned value is negative.
@@ -11850,19 +11865,27 @@ See #G_BYTE_ORDER.</doc>
       <type name="gdouble" c:type="gdouble"/>
     </constant>
     <constant name="LOG_DOMAIN" value="0" c:type="G_LOG_DOMAIN">
-      <doc xml:space="preserve">Defines the log domain.
+      <doc xml:space="preserve">Defines the log domain. See [Log Domains](#log-domains).
 
 Libraries should define this so that any messages
 which they log can be differentiated from messages from other
 libraries and application code. But be careful not to define
 it in any public header files.
 
-For example, GTK+ uses this in its Makefile.am:
+Log domains must be unique, and it is recommended that they are the
+application or library name, optionally followed by a hyphen and a sub-domain
+name. For example, `bloatpad` or `bloatpad-io`.
+
+If undefined, it defaults to the default %NULL (or `""`) log domain; this is
+not advisable, as it cannot be filtered against using the `G_MESSAGES_DEBUG`
+environment variable.
+
+For example, GTK+ uses this in its `Makefile.am`:
 |[
 AM_CPPFLAGS = -DG_LOG_DOMAIN=\"Gtk\"
 ]|
 
-Applications can choose to leave it as the default %NULL (or "")
+Applications can choose to leave it as the default %NULL (or `""`)
 domain. However, defining the domain offers the same advantages as
 above.</doc>
       <type name="gchar" c:type="gchar"/>
@@ -19988,7 +20011,7 @@ number-th captured subexpression of the match, '\g&lt;name&gt;' refers
 to the captured subexpression with the given name. '\0' refers
 to the complete match, but '\0' followed by a number is the octal
 representation of a character. To include a literal '\' in the
-replacement, write '\\'.
+replacement, write '\\\\'.
 
 There are also escapes that changes the case of the following text:
 
@@ -20495,7 +20518,7 @@ it using g_strfreev()</doc>
     setting.</doc>
       </member>
       <member name="dotall" value="4" c:identifier="G_REGEX_DOTALL">
-        <doc xml:space="preserve">A dot metacharater (".") in the pattern matches all
+        <doc xml:space="preserve">A dot metacharacter (".") in the pattern matches all
     characters, including newlines. Without it, newlines are excluded.
     This option can be changed within a pattern by a ("?s") option setting.</doc>
       </member>
@@ -20512,7 +20535,7 @@ it using g_strfreev()</doc>
     it is constrained to match only at the first matching point in the
     string that is being searched. This effect can also be achieved by
     appropriate constructs in the pattern itself such as the "^"
-    metacharater.</doc>
+    metacharacter.</doc>
       </member>
       <member name="dollar_endonly"
               value="32"
@@ -20961,7 +20984,7 @@ to g_regex_replace_eval(), and it should append the replacement to
     it is constrained to match only at the first matching point in the
     string that is being searched. This effect can also be achieved by
     appropriate constructs in the pattern itself such as the "^"
-    metacharater.</doc>
+    metacharacter.</doc>
       </member>
       <member name="notbol" value="128" c:identifier="G_REGEX_MATCH_NOTBOL">
         <doc xml:space="preserve">Specifies that first character of the string is
@@ -38106,7 +38129,9 @@ that modify the output. See #GFormatSizeFlags.</doc>
               version="2.2"
               introspectable="0">
       <doc xml:space="preserve">An implementation of the standard fprintf() function which supports
-positional parameters, as specified in the Single Unix Specification.</doc>
+positional parameters, as specified in the Single Unix Specification.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes printed.</doc>
         <type name="gint" c:type="gint"/>
@@ -41499,7 +41524,7 @@ current directory introduce vagueness. This function interprets as
 an absolute file name one that either begins with a directory
 separator such as "\Users\tml" or begins with the root on a drive,
 for example "C:\Windows". The first case also includes UNC paths
-such as "\\myserver\docs\foo". In all cases, either slashes or
+such as "\\\\myserver\docs\foo". In all cases, either slashes or
 backslashes are accepted.
 
 Note that a file name relative to the current drive root does not
@@ -41822,7 +41847,9 @@ positional parameters, as specified in the Single Unix Specification.
 
 As with the standard printf(), this does not automatically append a trailing
 new-line character to the message, so typically @format should end with its
-own new-line character.</doc>
+own new-line character.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes printed.</doc>
         <type name="gint" c:type="gint"/>
@@ -42987,7 +43014,7 @@ literally.</doc>
     </function>
     <function name="slice_alloc" c:identifier="g_slice_alloc" version="2.10">
       <doc xml:space="preserve">Allocates a block of memory from the slice allocator.
-The block adress handed out can be expected to be aligned
+The block address handed out can be expected to be aligned
 to at least 1 * sizeof (void*),
 though in general slices are 2 * sizeof (void*) bytes aligned,
 if a malloc() fallback implementation is used instead,
@@ -43914,6 +43941,8 @@ positional parameters, as specified in the Single Unix Specification.
 
 Note that it is usually better to use g_snprintf(), to avoid the
 risk of buffer overflow.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.
 
 See also g_strdup_printf().</doc>
       <return-value transfer-ownership="none">
@@ -49295,7 +49324,9 @@ see g_variant_type_string_is_valid().</doc>
 positional parameters, as specified in the Single Unix Specification.
 This function is similar to g_vsprintf(), except that it allocates a
 string to hold the output, instead of putting the output in a buffer
-you allocate in advance.</doc>
+you allocate in advance.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes printed.</doc>
         <type name="gint" c:type="gint"/>
@@ -49321,7 +49352,9 @@ you allocate in advance.</doc>
               version="2.2"
               introspectable="0">
       <doc xml:space="preserve">An implementation of the standard fprintf() function which supports
-positional parameters, as specified in the Single Unix Specification.</doc>
+positional parameters, as specified in the Single Unix Specification.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes printed.</doc>
         <type name="gint" c:type="gint"/>
@@ -49347,7 +49380,9 @@ positional parameters, as specified in the Single Unix Specification.</doc>
               version="2.2"
               introspectable="0">
       <doc xml:space="preserve">An implementation of the standard vprintf() function which supports
-positional parameters, as specified in the Single Unix Specification.</doc>
+positional parameters, as specified in the Single Unix Specification.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes printed.</doc>
         <type name="gint" c:type="gint"/>
@@ -49413,7 +49448,9 @@ the Single Unix Specification.</doc>
               version="2.2"
               introspectable="0">
       <doc xml:space="preserve">An implementation of the standard vsprintf() function which supports
-positional parameters, as specified in the Single Unix Specification.</doc>
+positional parameters, as specified in the Single Unix Specification.
+
+`glib/gprintf.h` must be explicitly included in order to use this function.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the number of bytes printed.</doc>
         <type name="gint" c:type="gint"/>
