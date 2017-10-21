@@ -957,6 +957,23 @@ verify a user's local account.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_user_verifier_choice_list"
+              c:identifier="gdm_client_get_user_verifier_choice_list">
+        <doc xml:space="preserve">Gets a #GdmUserVerifierChoiceList object that can be used to
+verify a user's local account.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">#GdmUserVerifierChoiceList or %NULL if user
+verifier isn't yet fetched, or daemon doesn't support choice lists</doc>
+          <type name="UserVerifierChoiceList"
+                c:type="GdmUserVerifierChoiceList*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdmClient</doc>
+            <type name="Client" c:type="GdmClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_user_verifier_finish"
               c:identifier="gdm_client_get_user_verifier_finish"
               throws="1">
@@ -1087,6 +1104,26 @@ already logged in.</doc>
                      allow-none="1">
             <doc xml:space="preserve">a #GCancellable</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_enabled_extensions"
+              c:identifier="gdm_client_set_enabled_extensions">
+        <doc xml:space="preserve">Enables GDM's pam extensions.  Currently, only
+org.gnome.DisplayManager.UserVerifier.ChoiceList is supported.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdmClient</doc>
+            <type name="Client" c:type="GdmClient*"/>
+          </instance-parameter>
+          <parameter name="extensions" transfer-ownership="none">
+            <doc xml:space="preserve">a list of extensions</doc>
+            <array c:type="char**">
+              <type name="utf8"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -4255,6 +4292,23 @@ The properties are overridden in the order they are defined.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="handle_enable_extensions">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <type name="UserVerifier" c:type="GdmUserVerifier*"/>
+          </instance-parameter>
+          <parameter name="invocation" transfer-ownership="none">
+            <type name="Gio.DBusMethodInvocation"
+                  c:type="GDBusMethodInvocation*"/>
+          </parameter>
+          <parameter name="arg_extensions" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="info">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -4755,6 +4809,97 @@ See gdm_user_verifier_call_cancel() for the asynchronous version of this method.
           </parameter>
         </parameters>
       </method>
+      <method name="call_enable_extensions"
+              c:identifier="gdm_user_verifier_call_enable_extensions">
+        <doc xml:space="preserve">Asynchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier.EnableExtensions"&gt;EnableExtensions()&lt;/link&gt; D-Bus method on @proxy.
+When the operation is finished, @callback will be invoked in the &lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt; of the thread you are calling this method from.
+You can then call gdm_user_verifier_call_enable_extensions_finish() to get the result of the operation.
+
+See gdm_user_verifier_call_enable_extensions_sync() for the synchronous, blocking version of this method.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierProxy.</doc>
+            <type name="UserVerifier" c:type="GdmUserVerifier*"/>
+          </instance-parameter>
+          <parameter name="arg_extensions" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the request is satisfied or %NULL.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">User data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_enable_extensions_finish"
+              c:identifier="gdm_user_verifier_call_enable_extensions_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an operation started with gdm_user_verifier_call_enable_extensions().</doc>
+        <return-value transfer-ownership="none" skip="1">
+          <doc xml:space="preserve">%TRUE if the call succeded, %FALSE if @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierProxy.</doc>
+            <type name="UserVerifier" c:type="GdmUserVerifier*"/>
+          </instance-parameter>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:space="preserve">The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gdm_user_verifier_call_enable_extensions().</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_enable_extensions_sync"
+              c:identifier="gdm_user_verifier_call_enable_extensions_sync"
+              throws="1">
+        <doc xml:space="preserve">Synchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier.EnableExtensions"&gt;EnableExtensions()&lt;/link&gt; D-Bus method on @proxy. The calling thread is blocked until a reply is received.
+
+See gdm_user_verifier_call_enable_extensions() for the asynchronous version of this method.</doc>
+        <return-value transfer-ownership="none" skip="1">
+          <doc xml:space="preserve">%TRUE if the call succeded, %FALSE if @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierProxy.</doc>
+            <type name="UserVerifier" c:type="GdmUserVerifier*"/>
+          </instance-parameter>
+          <parameter name="arg_extensions" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar* const*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="complete_answer_query"
               c:identifier="gdm_user_verifier_complete_answer_query">
         <doc xml:space="preserve">Helper function used in service implementations to finish handling invocations of the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier.AnswerQuery"&gt;AnswerQuery()&lt;/link&gt; D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
@@ -4818,6 +4963,26 @@ This method will free @invocation, you cannot use it afterwards.</doc>
       <method name="complete_cancel"
               c:identifier="gdm_user_verifier_complete_cancel">
         <doc xml:space="preserve">Helper function used in service implementations to finish handling invocations of the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier.Cancel"&gt;Cancel()&lt;/link&gt; D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
+
+This method will free @invocation, you cannot use it afterwards.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifier.</doc>
+            <type name="UserVerifier" c:type="GdmUserVerifier*"/>
+          </instance-parameter>
+          <parameter name="invocation" transfer-ownership="full">
+            <doc xml:space="preserve">A #GDBusMethodInvocation.</doc>
+            <type name="Gio.DBusMethodInvocation"
+                  c:type="GDBusMethodInvocation*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="complete_enable_extensions"
+              c:identifier="gdm_user_verifier_complete_enable_extensions">
+        <doc xml:space="preserve">Helper function used in service implementations to finish handling invocations of the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier.EnableExtensions"&gt;EnableExtensions()&lt;/link&gt; D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
 
 This method will free @invocation, you cannot use it afterwards.</doc>
         <return-value transfer-ownership="none">
@@ -5144,6 +5309,27 @@ If a signal handler returns %TRUE, it means the signal handler will handle the i
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="handle-enable-extensions" when="last">
+        <doc xml:space="preserve">Signal emitted when a remote caller is invoking the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier.EnableExtensions"&gt;EnableExtensions()&lt;/link&gt; D-Bus method.
+
+If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call gdm_user_verifier_complete_enable_extensions() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the invocation was handled, %FALSE to let other signal handlers run.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="invocation" transfer-ownership="none">
+            <doc xml:space="preserve">A #GDBusMethodInvocation.</doc>
+            <type name="Gio.DBusMethodInvocation"/>
+          </parameter>
+          <parameter name="arg_extensions" transfer-ownership="none">
+            <doc xml:space="preserve">Argument passed by remote caller.</doc>
+            <array>
+              <type name="utf8"/>
+            </array>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="info" when="last">
         <doc xml:space="preserve">On the client-side, this signal is emitted whenever the D-Bus signal &lt;link linkend="gdbus-signal-org-gnome-DisplayManager-UserVerifier.Info"&gt;"Info"&lt;/link&gt; is received.
 
@@ -5285,6 +5471,627 @@ On the service-side, this signal can be used with e.g. g_signal_emit_by_name() t
         </parameters>
       </glib:signal>
     </interface>
+    <interface name="UserVerifierChoiceList"
+               c:symbol-prefix="user_verifier_choice_list"
+               c:type="GdmUserVerifierChoiceList"
+               glib:type-name="GdmUserVerifierChoiceList"
+               glib:get-type="gdm_user_verifier_choice_list_get_type"
+               glib:type-struct="UserVerifierChoiceListIface">
+      <doc xml:space="preserve">Abstract interface type for the D-Bus interface &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt;.</doc>
+      <function name="interface_info"
+                c:identifier="gdm_user_verifier_choice_list_interface_info">
+        <doc xml:space="preserve">Gets a machine-readable description of the &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt; D-Bus interface.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GDBusInterfaceInfo. Do not free.</doc>
+          <type name="Gio.DBusInterfaceInfo" c:type="GDBusInterfaceInfo*"/>
+        </return-value>
+      </function>
+      <function name="override_properties"
+                c:identifier="gdm_user_verifier_choice_list_override_properties">
+        <doc xml:space="preserve">Overrides all #GObject properties in the #GdmUserVerifierChoiceList interface for a concrete class.
+The properties are overridden in the order they are defined.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The last property id.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <parameter name="klass" transfer-ownership="none">
+            <doc xml:space="preserve">The class structure for a #GObject&lt;!-- --&gt;-derived class.</doc>
+            <type name="GObject.ObjectClass" c:type="GObjectClass*"/>
+          </parameter>
+          <parameter name="property_id_begin" transfer-ownership="none">
+            <doc xml:space="preserve">The property id to assign to the first overridden property.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </function>
+      <virtual-method name="choice_query">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_list" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="handle_select_choice">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="invocation" transfer-ownership="none">
+            <type name="Gio.DBusMethodInvocation"
+                  c:type="GDBusMethodInvocation*"/>
+          </parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_choice" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="call_select_choice"
+              c:identifier="gdm_user_verifier_choice_list_call_select_choice">
+        <doc xml:space="preserve">Asynchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier-ChoiceList.SelectChoice"&gt;SelectChoice()&lt;/link&gt; D-Bus method on @proxy.
+When the operation is finished, @callback will be invoked in the &lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt; of the thread you are calling this method from.
+You can then call gdm_user_verifier_choice_list_call_select_choice_finish() to get the result of the operation.
+
+See gdm_user_verifier_choice_list_call_select_choice_sync() for the synchronous, blocking version of this method.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierChoiceListProxy.</doc>
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_choice" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the request is satisfied or %NULL.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">User data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_select_choice_finish"
+              c:identifier="gdm_user_verifier_choice_list_call_select_choice_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an operation started with gdm_user_verifier_choice_list_call_select_choice().</doc>
+        <return-value transfer-ownership="none" skip="1">
+          <doc xml:space="preserve">%TRUE if the call succeded, %FALSE if @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierChoiceListProxy.</doc>
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:space="preserve">The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gdm_user_verifier_choice_list_call_select_choice().</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_select_choice_sync"
+              c:identifier="gdm_user_verifier_choice_list_call_select_choice_sync"
+              throws="1">
+        <doc xml:space="preserve">Synchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier-ChoiceList.SelectChoice"&gt;SelectChoice()&lt;/link&gt; D-Bus method on @proxy. The calling thread is blocked until a reply is received.
+
+See gdm_user_verifier_choice_list_call_select_choice() for the asynchronous version of this method.</doc>
+        <return-value transfer-ownership="none" skip="1">
+          <doc xml:space="preserve">%TRUE if the call succeded, %FALSE if @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierChoiceListProxy.</doc>
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_choice" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="complete_select_choice"
+              c:identifier="gdm_user_verifier_choice_list_complete_select_choice">
+        <doc xml:space="preserve">Helper function used in service implementations to finish handling invocations of the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier-ChoiceList.SelectChoice"&gt;SelectChoice()&lt;/link&gt; D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
+
+This method will free @invocation, you cannot use it afterwards.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierChoiceList.</doc>
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="invocation" transfer-ownership="full">
+            <doc xml:space="preserve">A #GDBusMethodInvocation.</doc>
+            <type name="Gio.DBusMethodInvocation"
+                  c:type="GDBusMethodInvocation*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="emit_choice_query"
+              c:identifier="gdm_user_verifier_choice_list_emit_choice_query">
+        <doc xml:space="preserve">Emits the &lt;link linkend="gdbus-signal-org-gnome-DisplayManager-UserVerifier-ChoiceList.ChoiceQuery"&gt;"ChoiceQuery"&lt;/link&gt; D-Bus signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmUserVerifierChoiceList.</doc>
+            <type name="UserVerifierChoiceList"
+                  c:type="GdmUserVerifierChoiceList*"/>
+          </instance-parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the signal.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the signal.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_list" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the signal.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <glib:signal name="choice-query" when="last">
+        <doc xml:space="preserve">On the client-side, this signal is emitted whenever the D-Bus signal &lt;link linkend="gdbus-signal-org-gnome-DisplayManager-UserVerifier-ChoiceList.ChoiceQuery"&gt;"ChoiceQuery"&lt;/link&gt; is received.
+
+On the service-side, this signal can be used with e.g. g_signal_emit_by_name() to make the object emit the D-Bus signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <doc xml:space="preserve">Argument.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="arg_list" transfer-ownership="none">
+            <doc xml:space="preserve">Argument.</doc>
+            <type name="GLib.Variant"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="handle-select-choice" when="last">
+        <doc xml:space="preserve">Signal emitted when a remote caller is invoking the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-UserVerifier-ChoiceList.SelectChoice"&gt;SelectChoice()&lt;/link&gt; D-Bus method.
+
+If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call gdm_user_verifier_choice_list_complete_select_choice() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the invocation was handled, %FALSE to let other signal handlers run.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="invocation" transfer-ownership="none">
+            <doc xml:space="preserve">A #GDBusMethodInvocation.</doc>
+            <type name="Gio.DBusMethodInvocation"/>
+          </parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument passed by remote caller.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="arg_choice" transfer-ownership="none">
+            <doc xml:space="preserve">Argument passed by remote caller.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </interface>
+    <record name="UserVerifierChoiceListIface"
+            c:type="GdmUserVerifierChoiceListIface"
+            glib:is-gtype-struct-for="UserVerifierChoiceList">
+      <doc xml:space="preserve">Virtual table for the D-Bus interface &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt;.</doc>
+      <field name="parent_iface">
+        <doc xml:space="preserve">The parent interface.</doc>
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="handle_select_choice">
+        <callback name="handle_select_choice">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="object" transfer-ownership="none">
+              <type name="UserVerifierChoiceList"
+                    c:type="GdmUserVerifierChoiceList*"/>
+            </parameter>
+            <parameter name="invocation" transfer-ownership="none">
+              <type name="Gio.DBusMethodInvocation"
+                    c:type="GDBusMethodInvocation*"/>
+            </parameter>
+            <parameter name="arg_service_name" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="arg_choice" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="choice_query">
+        <callback name="choice_query">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="object" transfer-ownership="none">
+              <type name="UserVerifierChoiceList"
+                    c:type="GdmUserVerifierChoiceList*"/>
+            </parameter>
+            <parameter name="arg_service_name" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="arg_prompt_message" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="arg_list" transfer-ownership="none">
+              <type name="GLib.Variant" c:type="GVariant*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
+    <class name="UserVerifierChoiceListProxy"
+           c:symbol-prefix="user_verifier_choice_list_proxy"
+           c:type="GdmUserVerifierChoiceListProxy"
+           parent="Gio.DBusProxy"
+           glib:type-name="GdmUserVerifierChoiceListProxy"
+           glib:get-type="gdm_user_verifier_choice_list_proxy_get_type"
+           glib:type-struct="UserVerifierChoiceListProxyClass">
+      <doc xml:space="preserve">The #GdmUserVerifierChoiceListProxy structure contains only private data and should only be accessed using the provided API.</doc>
+      <implements name="UserVerifierChoiceList"/>
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.DBusInterface"/>
+      <implements name="Gio.Initable"/>
+      <constructor name="new_finish"
+                   c:identifier="gdm_user_verifier_choice_list_proxy_new_finish"
+                   throws="1">
+        <doc xml:space="preserve">Finishes an operation started with gdm_user_verifier_choice_list_proxy_new().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The constructed proxy object or %NULL if @error is set.</doc>
+          <type name="UserVerifierChoiceListProxy"
+                c:type="GdmUserVerifierChoiceList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:space="preserve">The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gdm_user_verifier_choice_list_proxy_new().</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_for_bus_finish"
+                   c:identifier="gdm_user_verifier_choice_list_proxy_new_for_bus_finish"
+                   throws="1">
+        <doc xml:space="preserve">Finishes an operation started with gdm_user_verifier_choice_list_proxy_new_for_bus().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The constructed proxy object or %NULL if @error is set.</doc>
+          <type name="UserVerifierChoiceListProxy"
+                c:type="GdmUserVerifierChoiceList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:space="preserve">The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gdm_user_verifier_choice_list_proxy_new_for_bus().</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_for_bus_sync"
+                   c:identifier="gdm_user_verifier_choice_list_proxy_new_for_bus_sync"
+                   throws="1">
+        <doc xml:space="preserve">Like gdm_user_verifier_choice_list_proxy_new_sync() but takes a #GBusType instead of a #GDBusConnection.
+
+The calling thread is blocked until a reply is received.
+
+See gdm_user_verifier_choice_list_proxy_new_for_bus() for the asynchronous version of this constructor.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The constructed proxy object or %NULL if @error is set.</doc>
+          <type name="UserVerifierChoiceListProxy"
+                c:type="GdmUserVerifierChoiceList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="bus_type" transfer-ownership="none">
+            <doc xml:space="preserve">A #GBusType.</doc>
+            <type name="Gio.BusType" c:type="GBusType"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Flags from the #GDBusProxyFlags enumeration.</doc>
+            <type name="Gio.DBusProxyFlags" c:type="GDBusProxyFlags"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">A bus name (well-known or unique).</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="object_path" transfer-ownership="none">
+            <doc xml:space="preserve">An object path.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_sync"
+                   c:identifier="gdm_user_verifier_choice_list_proxy_new_sync"
+                   throws="1">
+        <doc xml:space="preserve">Synchronously creates a proxy for the D-Bus interface &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt;. See g_dbus_proxy_new_sync() for more details.
+
+The calling thread is blocked until a reply is received.
+
+See gdm_user_verifier_choice_list_proxy_new() for the asynchronous version of this constructor.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The constructed proxy object or %NULL if @error is set.</doc>
+          <type name="UserVerifierChoiceListProxy"
+                c:type="GdmUserVerifierChoiceList*"/>
+        </return-value>
+        <parameters>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">A #GDBusConnection.</doc>
+            <type name="Gio.DBusConnection" c:type="GDBusConnection*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Flags from the #GDBusProxyFlags enumeration.</doc>
+            <type name="Gio.DBusProxyFlags" c:type="GDBusProxyFlags"/>
+          </parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A bus name (well-known or unique) or %NULL if @connection is not a message bus connection.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="object_path" transfer-ownership="none">
+            <doc xml:space="preserve">An object path.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <function name="new"
+                c:identifier="gdm_user_verifier_choice_list_proxy_new">
+        <doc xml:space="preserve">Asynchronously creates a proxy for the D-Bus interface &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt;. See g_dbus_proxy_new() for more details.
+
+When the operation is finished, @callback will be invoked in the &lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt; of the thread you are calling this method from.
+You can then call gdm_user_verifier_choice_list_proxy_new_finish() to get the result of the operation.
+
+See gdm_user_verifier_choice_list_proxy_new_sync() for the synchronous, blocking version of this constructor.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">A #GDBusConnection.</doc>
+            <type name="Gio.DBusConnection" c:type="GDBusConnection*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Flags from the #GDBusProxyFlags enumeration.</doc>
+            <type name="Gio.DBusProxyFlags" c:type="GDBusProxyFlags"/>
+          </parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A bus name (well-known or unique) or %NULL if @connection is not a message bus connection.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="object_path" transfer-ownership="none">
+            <doc xml:space="preserve">An object path.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">User data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_for_bus"
+                c:identifier="gdm_user_verifier_choice_list_proxy_new_for_bus">
+        <doc xml:space="preserve">Like gdm_user_verifier_choice_list_proxy_new() but takes a #GBusType instead of a #GDBusConnection.
+
+When the operation is finished, @callback will be invoked in the &lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt; of the thread you are calling this method from.
+You can then call gdm_user_verifier_choice_list_proxy_new_for_bus_finish() to get the result of the operation.
+
+See gdm_user_verifier_choice_list_proxy_new_for_bus_sync() for the synchronous, blocking version of this constructor.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="bus_type" transfer-ownership="none">
+            <doc xml:space="preserve">A #GBusType.</doc>
+            <type name="Gio.BusType" c:type="GBusType"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">Flags from the #GDBusProxyFlags enumeration.</doc>
+            <type name="Gio.DBusProxyFlags" c:type="GDBusProxyFlags"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">A bus name (well-known or unique).</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="object_path" transfer-ownership="none">
+            <doc xml:space="preserve">An object path.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the request is satisfied.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">User data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <field name="parent_instance" readable="0" private="1">
+        <type name="Gio.DBusProxy" c:type="GDBusProxy"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="UserVerifierChoiceListProxyPrivate"
+              c:type="GdmUserVerifierChoiceListProxyPrivate*"/>
+      </field>
+    </class>
+    <record name="UserVerifierChoiceListProxyClass"
+            c:type="GdmUserVerifierChoiceListProxyClass"
+            glib:is-gtype-struct-for="UserVerifierChoiceListProxy">
+      <doc xml:space="preserve">Class structure for #GdmUserVerifierChoiceListProxy.</doc>
+      <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
+        <type name="Gio.DBusProxyClass" c:type="GDBusProxyClass"/>
+      </field>
+    </record>
+    <record name="UserVerifierChoiceListProxyPrivate"
+            c:type="GdmUserVerifierChoiceListProxyPrivate"
+            disguised="1">
+    </record>
+    <class name="UserVerifierChoiceListSkeleton"
+           c:symbol-prefix="user_verifier_choice_list_skeleton"
+           c:type="GdmUserVerifierChoiceListSkeleton"
+           parent="Gio.DBusInterfaceSkeleton"
+           glib:type-name="GdmUserVerifierChoiceListSkeleton"
+           glib:get-type="gdm_user_verifier_choice_list_skeleton_get_type"
+           glib:type-struct="UserVerifierChoiceListSkeletonClass">
+      <doc xml:space="preserve">The #GdmUserVerifierChoiceListSkeleton structure contains only private data and should only be accessed using the provided API.</doc>
+      <implements name="UserVerifierChoiceList"/>
+      <implements name="Gio.DBusInterface"/>
+      <constructor name="new"
+                   c:identifier="gdm_user_verifier_choice_list_skeleton_new">
+        <doc xml:space="preserve">Creates a skeleton object for the D-Bus interface &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt;.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The skeleton object.</doc>
+          <type name="UserVerifierChoiceListSkeleton"
+                c:type="GdmUserVerifierChoiceList*"/>
+        </return-value>
+      </constructor>
+      <field name="parent_instance" readable="0" private="1">
+        <type name="Gio.DBusInterfaceSkeleton"
+              c:type="GDBusInterfaceSkeleton"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="UserVerifierChoiceListSkeletonPrivate"
+              c:type="GdmUserVerifierChoiceListSkeletonPrivate*"/>
+      </field>
+    </class>
+    <record name="UserVerifierChoiceListSkeletonClass"
+            c:type="GdmUserVerifierChoiceListSkeletonClass"
+            glib:is-gtype-struct-for="UserVerifierChoiceListSkeleton">
+      <doc xml:space="preserve">Class structure for #GdmUserVerifierChoiceListSkeleton.</doc>
+      <field name="parent_class">
+        <doc xml:space="preserve">The parent class.</doc>
+        <type name="Gio.DBusInterfaceSkeletonClass"
+              c:type="GDBusInterfaceSkeletonClass"/>
+      </field>
+    </record>
+    <record name="UserVerifierChoiceListSkeletonPrivate"
+            c:type="GdmUserVerifierChoiceListSkeletonPrivate"
+            disguised="1">
+    </record>
     <record name="UserVerifierIface"
             c:type="GdmUserVerifierIface"
             glib:is-gtype-struct-for="UserVerifier">
@@ -5368,6 +6175,25 @@ On the service-side, this signal can be used with e.g. g_signal_emit_by_name() t
             <parameter name="invocation" transfer-ownership="none">
               <type name="Gio.DBusMethodInvocation"
                     c:type="GDBusMethodInvocation*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="handle_enable_extensions">
+        <callback name="handle_enable_extensions">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="object" transfer-ownership="none">
+              <type name="UserVerifier" c:type="GdmUserVerifier*"/>
+            </parameter>
+            <parameter name="invocation" transfer-ownership="none">
+              <type name="Gio.DBusMethodInvocation"
+                    c:type="GDBusMethodInvocation*"/>
+            </parameter>
+            <parameter name="arg_extensions" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar* const*"/>
             </parameter>
           </parameters>
         </callback>
@@ -5874,6 +6700,29 @@ The properties are overridden in the order they are defined.</doc>
           </parameter>
         </parameters>
       </function>
+      <virtual-method name="handle_choice_list_query">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <type name="WorkerManager" c:type="GdmWorkerManager*"/>
+          </instance-parameter>
+          <parameter name="invocation" transfer-ownership="none">
+            <type name="Gio.DBusMethodInvocation"
+                  c:type="GDBusMethodInvocation*"/>
+          </parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_query" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="handle_hello">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -5968,6 +6817,127 @@ The properties are overridden in the order they are defined.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="call_choice_list_query"
+              c:identifier="gdm_worker_manager_call_choice_list_query">
+        <doc xml:space="preserve">Asynchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.ChoiceListQuery"&gt;ChoiceListQuery()&lt;/link&gt; D-Bus method on @proxy.
+When the operation is finished, @callback will be invoked in the &lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt; of the thread you are calling this method from.
+You can then call gdm_worker_manager_call_choice_list_query_finish() to get the result of the operation.
+
+See gdm_worker_manager_call_choice_list_query_sync() for the synchronous, blocking version of this method.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmWorkerManagerProxy.</doc>
+            <type name="WorkerManager" c:type="GdmWorkerManager*"/>
+          </instance-parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_query" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">A #GAsyncReadyCallback to call when the request is satisfied or %NULL.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">User data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_choice_list_query_finish"
+              c:identifier="gdm_worker_manager_call_choice_list_query_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an operation started with gdm_worker_manager_call_choice_list_query().</doc>
+        <return-value transfer-ownership="none" skip="1">
+          <doc xml:space="preserve">%TRUE if the call succeded, %FALSE if @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmWorkerManagerProxy.</doc>
+            <type name="WorkerManager" c:type="GdmWorkerManager*"/>
+          </instance-parameter>
+          <parameter name="out_answer"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">Return location for return parameter or %NULL to ignore.</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="res" transfer-ownership="none">
+            <doc xml:space="preserve">The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gdm_worker_manager_call_choice_list_query().</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="call_choice_list_query_sync"
+              c:identifier="gdm_worker_manager_call_choice_list_query_sync"
+              throws="1">
+        <doc xml:space="preserve">Synchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.ChoiceListQuery"&gt;ChoiceListQuery()&lt;/link&gt; D-Bus method on @proxy. The calling thread is blocked until a reply is received.
+
+See gdm_worker_manager_call_choice_list_query() for the asynchronous version of this method.</doc>
+        <return-value transfer-ownership="none" skip="1">
+          <doc xml:space="preserve">%TRUE if the call succeded, %FALSE if @error is set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmWorkerManagerProxy.</doc>
+            <type name="WorkerManager" c:type="GdmWorkerManager*"/>
+          </instance-parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arg_query" transfer-ownership="none">
+            <doc xml:space="preserve">Argument to pass with the method invocation.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="out_answer"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">Return location for return parameter or %NULL to ignore.</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="call_hello" c:identifier="gdm_worker_manager_call_hello">
         <doc xml:space="preserve">Asynchronously invokes the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.Hello"&gt;Hello()&lt;/link&gt; D-Bus method on @proxy.
 When the operation is finished, @callback will be invoked in the &lt;link linkend="g-main-context-push-thread-default"&gt;thread-default main loop&lt;/link&gt; of the thread you are calling this method from.
@@ -6473,6 +7443,30 @@ See gdm_worker_manager_call_secret_info_query() for the asynchronous version of 
           </parameter>
         </parameters>
       </method>
+      <method name="complete_choice_list_query"
+              c:identifier="gdm_worker_manager_complete_choice_list_query">
+        <doc xml:space="preserve">Helper function used in service implementations to finish handling invocations of the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.ChoiceListQuery"&gt;ChoiceListQuery()&lt;/link&gt; D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
+
+This method will free @invocation, you cannot use it afterwards.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdmWorkerManager.</doc>
+            <type name="WorkerManager" c:type="GdmWorkerManager*"/>
+          </instance-parameter>
+          <parameter name="invocation" transfer-ownership="full">
+            <doc xml:space="preserve">A #GDBusMethodInvocation.</doc>
+            <type name="Gio.DBusMethodInvocation"
+                  c:type="GDBusMethodInvocation*"/>
+          </parameter>
+          <parameter name="answer" transfer-ownership="none">
+            <doc xml:space="preserve">Parameter to return.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="complete_hello"
               c:identifier="gdm_worker_manager_complete_hello">
         <doc xml:space="preserve">Helper function used in service implementations to finish handling invocations of the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.Hello"&gt;Hello()&lt;/link&gt; D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
@@ -6581,6 +7575,33 @@ This method will free @invocation, you cannot use it afterwards.</doc>
           </parameter>
         </parameters>
       </method>
+      <glib:signal name="handle-choice-list-query" when="last">
+        <doc xml:space="preserve">Signal emitted when a remote caller is invoking the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.ChoiceListQuery"&gt;ChoiceListQuery()&lt;/link&gt; D-Bus method.
+
+If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call gdm_worker_manager_complete_choice_list_query() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the invocation was handled, %FALSE to let other signal handlers run.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="invocation" transfer-ownership="none">
+            <doc xml:space="preserve">A #GDBusMethodInvocation.</doc>
+            <type name="Gio.DBusMethodInvocation"/>
+          </parameter>
+          <parameter name="arg_service_name" transfer-ownership="none">
+            <doc xml:space="preserve">Argument passed by remote caller.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="arg_prompt_message" transfer-ownership="none">
+            <doc xml:space="preserve">Argument passed by remote caller.</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+          <parameter name="arg_query" transfer-ownership="none">
+            <doc xml:space="preserve">Argument passed by remote caller.</doc>
+            <type name="GLib.Variant"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="handle-hello" when="last">
         <doc xml:space="preserve">Signal emitted when a remote caller is invoking the &lt;link linkend="gdbus-method-org-gnome-DisplayManager-WorkerManager.Hello"&gt;Hello()&lt;/link&gt; D-Bus method.
 
@@ -6696,6 +7717,31 @@ If a signal handler returns %TRUE, it means the signal handler will handle the i
       <field name="parent_iface">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="handle_choice_list_query">
+        <callback name="handle_choice_list_query">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="object" transfer-ownership="none">
+              <type name="WorkerManager" c:type="GdmWorkerManager*"/>
+            </parameter>
+            <parameter name="invocation" transfer-ownership="none">
+              <type name="Gio.DBusMethodInvocation"
+                    c:type="GDBusMethodInvocation*"/>
+            </parameter>
+            <parameter name="arg_service_name" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="arg_prompt_message" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="arg_query" transfer-ownership="none">
+              <type name="GLib.Variant" c:type="GVariant*"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
       <field name="handle_hello">
         <callback name="handle_hello">
@@ -7238,6 +8284,35 @@ The properties are overridden in the order they are defined.</doc>
               c:identifier="gdm_remote_greeter_override_properties"
               moved-to="RemoteGreeter.override_properties">
       <doc xml:space="preserve">Overrides all #GObject properties in the #GdmRemoteGreeter interface for a concrete class.
+The properties are overridden in the order they are defined.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">The last property id.</doc>
+        <type name="guint" c:type="guint"/>
+      </return-value>
+      <parameters>
+        <parameter name="klass" transfer-ownership="none">
+          <doc xml:space="preserve">The class structure for a #GObject&lt;!-- --&gt;-derived class.</doc>
+          <type name="GObject.ObjectClass" c:type="GObjectClass*"/>
+        </parameter>
+        <parameter name="property_id_begin" transfer-ownership="none">
+          <doc xml:space="preserve">The property id to assign to the first overridden property.</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="user_verifier_choice_list_interface_info"
+              c:identifier="gdm_user_verifier_choice_list_interface_info"
+              moved-to="UserVerifierChoiceList.interface_info">
+      <doc xml:space="preserve">Gets a machine-readable description of the &lt;link linkend="gdbus-interface-org-gnome-DisplayManager-UserVerifier-ChoiceList.top_of_page"&gt;org.gnome.DisplayManager.UserVerifier.ChoiceList&lt;/link&gt; D-Bus interface.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">A #GDBusInterfaceInfo. Do not free.</doc>
+        <type name="Gio.DBusInterfaceInfo" c:type="GDBusInterfaceInfo*"/>
+      </return-value>
+    </function>
+    <function name="user_verifier_choice_list_override_properties"
+              c:identifier="gdm_user_verifier_choice_list_override_properties"
+              moved-to="UserVerifierChoiceList.override_properties">
+      <doc xml:space="preserve">Overrides all #GObject properties in the #GdmUserVerifierChoiceList interface for a concrete class.
 The properties are overridden in the order they are defined.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">The last property id.</doc>

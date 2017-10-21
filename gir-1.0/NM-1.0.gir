@@ -282,6 +282,11 @@ is supported</doc>
               c:type="NM_ACTIVE_CONNECTION_STATE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="ACTIVE_CONNECTION_STATE_FLAGS"
+              value="state-flags"
+              c:type="NM_ACTIVE_CONNECTION_STATE_FLAGS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="ACTIVE_CONNECTION_TYPE"
               value="type"
               c:type="NM_ACTIVE_CONNECTION_TYPE">
@@ -570,6 +575,56 @@ coordinator of the wireless network allowing clients to connect) or
         </array>
       </field>
     </record>
+    <bitfield name="ActivationStateFlags"
+              version="1.10"
+              glib:type-name="NMActivationStateFlags"
+              glib:get-type="nm_activation_state_flags_get_type"
+              c:type="NMActivationStateFlags">
+      <doc xml:space="preserve">Flags describing the current activation state.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">an alias for numeric zero, no flags set.</doc>
+      </member>
+      <member name="is_master"
+              value="1"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_IS_MASTER"
+              glib:nick="is-master">
+        <doc xml:space="preserve">the device is a master.</doc>
+      </member>
+      <member name="is_slave"
+              value="2"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_IS_SLAVE"
+              glib:nick="is-slave">
+        <doc xml:space="preserve">the device is a slave.</doc>
+      </member>
+      <member name="layer2_ready"
+              value="4"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_LAYER2_READY"
+              glib:nick="layer2-ready">
+        <doc xml:space="preserve">layer2 is activated and ready.</doc>
+      </member>
+      <member name="ip4_ready"
+              value="8"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_IP4_READY"
+              glib:nick="ip4-ready">
+        <doc xml:space="preserve">IPv4 setting is completed.</doc>
+      </member>
+      <member name="ip6_ready"
+              value="16"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_IP6_READY"
+              glib:nick="ip6-ready">
+        <doc xml:space="preserve">IPv6 setting is completed.</doc>
+      </member>
+      <member name="master_has_slaves"
+              value="32"
+              c:identifier="NM_ACTIVATION_STATE_FLAG_MASTER_HAS_SLAVES"
+              glib:nick="master-has-slaves">
+        <doc xml:space="preserve">The master has any slave devices attached.
+  This only makes sense if the device is a master.</doc>
+      </member>
+    </bitfield>
     <class name="ActiveConnection"
            c:symbol-prefix="active_connection"
            c:type="NMActiveConnection"
@@ -781,6 +836,21 @@ by the connection, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_state_flags"
+              c:identifier="nm_active_connection_get_state_flags"
+              version="1.10">
+        <doc xml:space="preserve">Gets the active connection's state flags.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the state flags</doc>
+          <type name="ActivationStateFlags" c:type="NMActivationStateFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMActiveConnection</doc>
+            <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_state_reason"
               c:identifier="nm_active_connection_get_state_reason"
               version="1.8">
@@ -876,6 +946,10 @@ nm_active_connection_get_specific_object_path() for more details.</doc>
       <property name="state" transfer-ownership="none">
         <doc xml:space="preserve">The state of the active connection.</doc>
         <type name="ActiveConnectionState"/>
+      </property>
+      <property name="state-flags" version="1.10" transfer-ownership="none">
+        <doc xml:space="preserve">The state flags of the active connection.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="type" transfer-ownership="none">
         <doc xml:space="preserve">The active connection's type</doc>
@@ -12026,41 +12100,6 @@ and the value is of the correct type and well-formed.</doc>
         </return-value>
       </function>
     </record>
-    <enumeration name="IPRouteTableSyncMode"
-                 version="1.10"
-                 glib:type-name="NMIPRouteTableSyncMode"
-                 glib:get-type="nm_ip_route_table_sync_mode_get_type"
-                 c:type="NMIPRouteTableSyncMode">
-      <member name="default"
-              value="0"
-              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_DEFAULT"
-              glib:nick="default">
-        <doc xml:space="preserve">the default value, meaning the value
-  is subject to global configuration default.</doc>
-      </member>
-      <member name="none"
-              value="1"
-              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_NONE"
-              glib:nick="none">
-        <doc xml:space="preserve">no route table is synced. This means,
-  NetworkManager will only add routes for a particular interface to the
-  routing tables, but not delete any routes.</doc>
-      </member>
-      <member name="main"
-              value="2"
-              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_MAIN"
-              glib:nick="main">
-        <doc xml:space="preserve">only the main table is synced. For all
-  other tables, NM won't delete any extra routes.</doc>
-      </member>
-      <member name="full"
-              value="3"
-              c:identifier="NM_IP_ROUTE_TABLE_SYNC_MODE_FULL"
-              glib:nick="full">
-        <doc xml:space="preserve">NM will sync all tables, except the
-  local table (255).</doc>
-      </member>
-    </enumeration>
     <enumeration name="IPTunnelMode"
                  version="1.2"
                  glib:type-name="NMIPTunnelMode"
@@ -14388,9 +14427,9 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_IP_CONFIG_ROUTE_METRIC">
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SETTING_IP_CONFIG_ROUTE_TABLE_SYNC"
-              value="route-table-sync"
-              c:type="NM_SETTING_IP_CONFIG_ROUTE_TABLE_SYNC">
+    <constant name="SETTING_IP_CONFIG_ROUTE_TABLE"
+              value="route-table"
+              c:type="NM_SETTING_IP_CONFIG_ROUTE_TABLE">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT"
@@ -21889,16 +21928,17 @@ property.</doc>
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Configure method for creating the address for use with RFC4862 IPv6
-Stateless Address Autoconfiguration. The permitted values are: "eui64",
-or "stable-privacy".
+Stateless Address Autoconfiguration. The permitted values are:
+%NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE_EUI64 or
+%NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE_STABLE_PRIVACY.
 
-If the property is set to "eui64", the addresses will be generated
+If the property is set to EUI64, the addresses will be generated
 using the interface tokens derived from hardware address. This makes
 the host part of the address to stay constant, making it possible
 to track host's presence when it changes networks. The address changes
 when the interface hardware is replaced.
 
-The value of "stable-privacy" enables use of cryptographically
+The value of stable-privacy enables use of cryptographically
 secure hash of a secret host-specific key along with the connection's
 stable-id and the network address as specified by RFC7217.
 This makes it impossible to use the address track host's presence,
@@ -21906,8 +21946,8 @@ and makes the address stable when the network interface hardware is
 replaced.
 
 On D-Bus, the absence of an addr-gen-mode setting equals enabling
-"stable-privacy". For keyfile plugin, the absence of the setting
-on disk means "eui64" so that the property doesn't change on upgrade
+stable-privacy. For keyfile plugin, the absence of the setting
+on disk means EUI64 so that the property doesn't change on upgrade
 from older versions.
 
 Note that this setting is distinct from the Privacy Extensions as
@@ -22532,14 +22572,14 @@ specify a metric. See #NMSettingIPConfig:route-metric for more details.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_route_table_sync"
-              c:identifier="nm_setting_ip_config_get_route_table_sync"
+      <method name="get_route_table"
+              c:identifier="nm_setting_ip_config_get_route_table"
               version="1.10">
-        <doc xml:space="preserve">Returns the value contained in the #NMSettingIPConfig:route-table-sync
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingIPConfig:route-table
 property.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the configured route-table-sync mode.</doc>
-          <type name="IPRouteTableSyncMode" c:type="NMIPRouteTableSyncMode"/>
+          <doc xml:space="preserve">the configured route-table.</doc>
+          <type name="guint32" c:type="guint32"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -22941,20 +22981,26 @@ mean setting it to 1024.
 For IPv4, zero is a regular value for the metric.</doc>
         <type name="gint64" c:type="gint64"/>
       </property>
-      <property name="route-table-sync"
+      <property name="route-table"
                 version="1.10"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The mode how to sync the routes per table. In general, when NetworkManager manages
-a device it will remove extraneous routes from the routing tables. The
-sync parameter specifies which tables are synced this way. That means, from
-which routing table NetworkManager will remove those unexpected, extraneous routes.
-A value of 1 (none) means that no route tables will not be synced and no routes
-are removed by NetworkManager. 2 (main) means that only the main table will be synced.
-3 (full) will sync all the route tables, except the local table. A value of zero is
-the default value and allows to be overwritten via global configuration. In absence of
-global configuration, the default value is 2 (main).</doc>
-        <type name="gint" c:type="gint"/>
+        <doc xml:space="preserve">Enable policy routing (source routing) and set the routing table used when adding routes.
+
+This affects all routes, including device-routes, IPv4LL, DHCP, SLAAC, default-routes
+and static routes. But note that static routes can individually overwrite the setting
+by explicitly specifying a non-zero routing table.
+
+If the table setting is left at zero, it is eligible to be overwritten via global
+configuration. If the property is zero even after applying the global configuration
+value, policy routing is disabled for the address family of this connection.
+
+Policy routing disabled means that NetworkManager will add all routes to the main
+table (except static routes that explicitly configure a different table). Additionally,
+NetworkManager will not delete any extraneous routes from tables except the main table.
+This is to preserve backward compatibility for users who manage routing tables outside
+of NetworkManager.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="routes" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Array of IP routes.

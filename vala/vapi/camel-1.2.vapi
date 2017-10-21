@@ -3642,11 +3642,17 @@ namespace Camel {
 	[Version (since = "3.22")]
 	public static string search_get_all_headers_decoded (Camel.MimeMessage message);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.28")]
+	public static unowned string search_get_default_charset_from_headers (Camel.NameValueArray headers);
+	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.22")]
 	public static unowned string search_get_default_charset_from_message (Camel.MimeMessage message);
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.22")]
 	public static string search_get_header_decoded (string header_name, string header_value, string? default_charset);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.28")]
+	public static string search_get_headers_decoded (Camel.NameValueArray headers, string? default_charset);
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.22")]
 	public static bool search_header_is_address (string header_name);

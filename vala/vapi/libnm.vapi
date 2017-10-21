@@ -330,6 +330,8 @@ namespace NM {
 		public const string SPECIFIC_OBJECT_PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_STATE")]
 		public const string STATE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_STATE_FLAGS")]
+		public const string STATE_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_TYPE")]
 		public const string TYPE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_UUID")]
@@ -351,6 +353,8 @@ namespace NM {
 		public unowned NM.Device get_master ();
 		public unowned string get_specific_object_path ();
 		public NM.ActiveConnectionState get_state ();
+		[Version (since = "1.10")]
+		public NM.ActivationStateFlags get_state_flags ();
 		[Version (since = "1.8")]
 		public NM.ActiveConnectionStateReason get_state_reason ();
 		public unowned string get_uuid ();
@@ -367,6 +371,8 @@ namespace NM {
 		public NM.Device master { get; }
 		public string specific_object_path { get; }
 		public NM.ActiveConnectionState state { get; }
+		[Version (since = "1.10")]
+		public uint state_flags { get; }
 		[NoAccessorMethod]
 		public string type { owned get; }
 		public string uuid { get; }
@@ -2599,8 +2605,8 @@ namespace NM {
 		public const string ROUTES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_METRIC")]
 		public const string ROUTE_METRIC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_TABLE_SYNC")]
-		public const string ROUTE_TABLE_SYNC;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_TABLE")]
+		public const string ROUTE_TABLE;
 		[CCode (has_construct_function = false)]
 		protected SettingIPConfig ();
 		public bool add_address (NM.IPAddress address);
@@ -2643,7 +2649,7 @@ namespace NM {
 		public unowned NM.IPRoute get_route (int idx);
 		public int64 get_route_metric ();
 		[Version (since = "1.10")]
-		public NM.IPRouteTableSyncMode get_route_table_sync ();
+		public uint32 get_route_table ();
 		public bool has_dns_options ();
 		[Version (since = "1.2")]
 		public int next_valid_dns_option (uint idx);
@@ -2699,7 +2705,7 @@ namespace NM {
 		public int64 route_metric { get; set construct; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public int route_table_sync { get; set; }
+		public uint route_table { get; set; }
 		[NoAccessorMethod]
 		public GLib.GenericArray<void*> routes { owned get; set; }
 	}
@@ -4128,6 +4134,18 @@ namespace NM {
 		INFRA,
 		AP
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ACTIVATION_STATE_FLAG_", type_id = "nm_activation_state_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.10")]
+	public enum ActivationStateFlags {
+		NONE,
+		IS_MASTER,
+		IS_SLAVE,
+		LAYER2_READY,
+		IP4_READY,
+		IP6_READY,
+		MASTER_HAS_SLAVES
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ACTIVE_CONNECTION_STATE_", type_id = "nm_active_connection_state_get_type ()")]
 	public enum ActiveConnectionState {
 		UNKNOWN,
@@ -4359,14 +4377,6 @@ namespace NM {
 		FREQ_VALID,
 		FREQ_2GHZ,
 		FREQ_5GHZ
-	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ROUTE_TABLE_SYNC_MODE_", type_id = "nm_ip_route_table_sync_mode_get_type ()")]
-	[Version (since = "1.10")]
-	public enum IPRouteTableSyncMode {
-		DEFAULT,
-		NONE,
-		MAIN,
-		FULL
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_TUNNEL_MODE_", type_id = "nm_ip_tunnel_mode_get_type ()")]
 	[Version (since = "1.2")]

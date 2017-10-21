@@ -18403,7 +18403,13 @@ This is good for thread safety, though the UID should not change once set.</doc>
               version="3.24">
         <doc xml:space="preserve">Acquires a property lock, which is used to ensure thread safety
 when properties are changing. Release the lock with
-camel_message_info_property_unlock().</doc>
+camel_message_info_property_unlock().
+
+Note: Make sure the CamelFolderSummary lock is held before this lock,
+if there will be called any 'set' function on the @mi, to avoid deadlock
+when the summary would be set as dirty while another thread might try
+to read values from the @mi, waiting for the property lock and holding
+the summary lock at the same time.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -43042,6 +43048,21 @@ be set appropriately.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="search_get_default_charset_from_headers"
+              c:identifier="camel_search_get_default_charset_from_headers"
+              version="3.28">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Default charset from the Content-Type header of the @headers; if none cannot be determined,
+   UTF-8 is returned.</doc>
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="headers" transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelNameValueArray</doc>
+          <type name="NameValueArray" c:type="const CamelNameValueArray*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="search_get_default_charset_from_message"
               c:identifier="camel_search_get_default_charset_from_message"
               version="3.22">
@@ -43082,6 +43103,28 @@ as is.</doc>
                    nullable="1"
                    allow-none="1">
           <doc xml:space="preserve">the default charset to use for the decode, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="search_get_headers_decoded"
+              c:identifier="camel_search_get_headers_decoded"
+              version="3.28">
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">The @headers, decoded where needed.
+   Free the returned pointer with g_free() when done with it.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="headers" transfer-ownership="none">
+          <doc xml:space="preserve">a #CamelNameValueArray</doc>
+          <type name="NameValueArray" c:type="const CamelNameValueArray*"/>
+        </parameter>
+        <parameter name="default_charset"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">default charset to use; or %NULL, to detect from Content-Type of @headers</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
