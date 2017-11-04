@@ -4648,7 +4648,15 @@ Things that subclass need to take care of:
   * Provide pad templates
   * Provide source pad caps before pushing the first buffer
   * Accept data in @handle_frame and provide encoded results to
-     @gst_video_encoder_finish_frame.</doc>
+     @gst_video_encoder_finish_frame.
+
+
+The #GstVideoEncoder:qos property will enable the Quality-of-Service
+features of the encoder which gather statistics about the real-time
+performance of the downstream elements. If enabled, subclasses can
+use gst_video_encoder_get_max_encode_time() to check if input frames
+are already late and drop them right away to give a chance to the
+pipeline to catch up.</doc>
       <implements name="Gst.Preset"/>
       <virtual-method name="close">
         <return-value transfer-ownership="none">
@@ -5063,7 +5071,10 @@ used</doc>
         <doc xml:space="preserve">Determines maximum possible encoding time for @frame that will
 allow it to encode and arrive in time (as determined by QoS events).
 In particular, a negative result means encoding in time is no longer possible
-and should therefore occur as soon/skippy as possible.</doc>
+and should therefore occur as soon/skippy as possible.
+
+If no QoS events have been received from downstream, or if
+#GstVideoEncoder:qos is disabled this function returns #G_MAXINT64.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">max decoding time.</doc>
           <type name="Gst.ClockTimeDiff" c:type="GstClockTimeDiff"/>
@@ -5103,6 +5114,22 @@ and should therefore occur as soon/skippy as possible.</doc>
         <parameters>
           <instance-parameter name="encoder" transfer-ownership="none">
             <doc xml:space="preserve">a #GstVideoEncoder</doc>
+            <type name="VideoEncoder" c:type="GstVideoEncoder*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_qos_enabled"
+              c:identifier="gst_video_encoder_is_qos_enabled"
+              version="1.14">
+        <doc xml:space="preserve">Checks if @encoder is currently configured to handle Quality-of-Service
+events from downstream.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the encoder is configured to perform Quality-of-Service.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="encoder" transfer-ownership="none">
+            <doc xml:space="preserve">the encoder</doc>
             <type name="VideoEncoder" c:type="GstVideoEncoder*"/>
           </instance-parameter>
         </parameters>
@@ -5284,6 +5311,27 @@ from the next call to #gst_video_encoder_finish_frame().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_qos_enabled"
+              c:identifier="gst_video_encoder_set_qos_enabled"
+              version="1.14">
+        <doc xml:space="preserve">Configures @encoder to handle Quality-of-Service events from downstream.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="encoder" transfer-ownership="none">
+            <doc xml:space="preserve">the encoder</doc>
+            <type name="VideoEncoder" c:type="GstVideoEncoder*"/>
+          </instance-parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">the new qos value.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="qos" writable="1" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <field name="element" readable="0" private="1">
         <type name="Gst.Element" c:type="GstElement"/>
       </field>

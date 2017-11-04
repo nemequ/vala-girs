@@ -104,7 +104,8 @@ namespace Template {
 		LOG,
 		PRINT,
 		REPR,
-		SQRT
+		SQRT,
+		TYPEOF
 	}
 	[CCode (cheader_filename = "tmpl-glib.h", cprefix = "TMPL_EXPR_", type_id = "tmpl_expr_type_get_type ()")]
 	public enum ExprType {

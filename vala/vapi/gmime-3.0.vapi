@@ -18,6 +18,67 @@ namespace GMime {
 		[CCode (cname = "g_mime_application_pkcs7_mime_verify")]
 		public GMime.SignatureList? verify (GMime.VerifyFlags flags, out GMime.Object entity) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_autocrypt_header_get_type ()")]
+	public class AutocryptHeader : GLib.Object {
+		public int actype;
+		public weak GMime.InternetAddressMailbox address;
+		public weak GLib.DateTime effective_date;
+		public weak GLib.ByteArray keydata;
+		public GMime.AutocryptPreferEncrypt prefer_encrypt;
+		[CCode (cname = "g_mime_autocrypt_header_new", has_construct_function = false)]
+		public AutocryptHeader ();
+		[CCode (cname = "g_mime_autocrypt_header_clone")]
+		public void clone (GMime.AutocryptHeader src);
+		[CCode (cname = "g_mime_autocrypt_header_compare")]
+		public int compare (GMime.AutocryptHeader ah2);
+		[CCode (cname = "g_mime_autocrypt_header_new_from_string", has_construct_function = false)]
+		public AutocryptHeader.from_string (string header);
+		[CCode (cname = "g_mime_autocrypt_header_get_actype")]
+		public int get_actype ();
+		[CCode (cname = "g_mime_autocrypt_header_get_address")]
+		public unowned GMime.InternetAddressMailbox get_address ();
+		[CCode (cname = "g_mime_autocrypt_header_get_address_as_string")]
+		public unowned string get_address_as_string ();
+		[CCode (cname = "g_mime_autocrypt_header_get_effective_date")]
+		public unowned GLib.DateTime get_effective_date ();
+		[CCode (cname = "g_mime_autocrypt_header_get_keydata")]
+		public unowned GLib.ByteArray get_keydata ();
+		[CCode (cname = "g_mime_autocrypt_header_get_prefer_encrypt")]
+		public GMime.AutocryptPreferEncrypt get_prefer_encrypt ();
+		[CCode (cname = "g_mime_autocrypt_header_get_string")]
+		public string get_string ();
+		[CCode (cname = "g_mime_autocrypt_header_is_complete")]
+		public bool is_complete ();
+		[CCode (cname = "g_mime_autocrypt_header_set_actype")]
+		public void set_actype (int actype);
+		[CCode (cname = "g_mime_autocrypt_header_set_address")]
+		public void set_address (GMime.InternetAddressMailbox address);
+		[CCode (cname = "g_mime_autocrypt_header_set_address_from_string")]
+		public void set_address_from_string (string address);
+		[CCode (cname = "g_mime_autocrypt_header_set_effective_date")]
+		public void set_effective_date (GLib.DateTime effective_date);
+		[CCode (cname = "g_mime_autocrypt_header_set_keydata")]
+		public void set_keydata (GLib.ByteArray data);
+		[CCode (cname = "g_mime_autocrypt_header_set_prefer_encrypt")]
+		public void set_prefer_encrypt (GMime.AutocryptPreferEncrypt pref);
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_autocrypt_header_list_get_type ()")]
+	public class AutocryptHeaderList : GLib.Object {
+		[CCode (cname = "g_mime_autocrypt_header_list_new", has_construct_function = false)]
+		public AutocryptHeaderList ();
+		[CCode (cname = "g_mime_autocrypt_header_list_add")]
+		public void add (GMime.AutocryptHeader ah);
+		[CCode (cname = "g_mime_autocrypt_header_list_add_missing_addresses")]
+		public uint add_missing_addresses (GMime.InternetAddressList list);
+		[CCode (cname = "g_mime_autocrypt_header_list_get_count")]
+		public uint get_count ();
+		[CCode (cname = "g_mime_autocrypt_header_list_get_header_at")]
+		public unowned GMime.AutocryptHeader get_header_at (uint n);
+		[CCode (cname = "g_mime_autocrypt_header_list_get_header_for_address")]
+		public unowned GMime.AutocryptHeader get_header_for_address (GMime.InternetAddressMailbox addr);
+		[CCode (cname = "g_mime_autocrypt_header_list_remove_incomplete")]
+		public void remove_incomplete ();
+	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_certificate_get_type ()")]
 	public class Certificate : GLib.Object {
 		public long created;
@@ -25,12 +86,14 @@ namespace GMime {
 		public weak string email;
 		public long expires;
 		public weak string fingerprint;
+		public GMime.Validity id_validity;
 		public weak string issuer_name;
 		public weak string issuer_serial;
 		public weak string keyid;
 		public weak string name;
 		public GMime.PubKeyAlgo pubkey_algo;
 		public GMime.Trust trust;
+		public weak string user_id;
 		[CCode (cname = "g_mime_certificate_new", has_construct_function = false)]
 		public Certificate ();
 		[CCode (cname = "g_mime_certificate_get_created")]
@@ -43,6 +106,8 @@ namespace GMime {
 		public long get_expires ();
 		[CCode (cname = "g_mime_certificate_get_fingerprint")]
 		public unowned string get_fingerprint ();
+		[CCode (cname = "g_mime_certificate_get_id_validity")]
+		public GMime.Validity get_id_validity ();
 		[CCode (cname = "g_mime_certificate_get_issuer_name")]
 		public unowned string get_issuer_name ();
 		[CCode (cname = "g_mime_certificate_get_issuer_serial")]
@@ -55,6 +120,8 @@ namespace GMime {
 		public GMime.PubKeyAlgo get_pubkey_algo ();
 		[CCode (cname = "g_mime_certificate_get_trust")]
 		public GMime.Trust get_trust ();
+		[CCode (cname = "g_mime_certificate_get_user_id")]
+		public unowned string get_user_id ();
 		[CCode (cname = "g_mime_certificate_set_created")]
 		public void set_created (long created);
 		[CCode (cname = "g_mime_certificate_set_digest_algo")]
@@ -65,6 +132,8 @@ namespace GMime {
 		public void set_expires (long expires);
 		[CCode (cname = "g_mime_certificate_set_fingerprint")]
 		public void set_fingerprint (string fingerprint);
+		[CCode (cname = "g_mime_certificate_set_id_validity")]
+		public void set_id_validity (GMime.Validity validity);
 		[CCode (cname = "g_mime_certificate_set_issuer_name")]
 		public void set_issuer_name (string issuer_name);
 		[CCode (cname = "g_mime_certificate_set_issuer_serial")]
@@ -77,6 +146,8 @@ namespace GMime {
 		public void set_pubkey_algo (GMime.PubKeyAlgo algo);
 		[CCode (cname = "g_mime_certificate_set_trust")]
 		public void set_trust (GMime.Trust trust);
+		[CCode (cname = "g_mime_certificate_set_user_id")]
+		public void set_user_id (string user_id);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_certificate_list_get_type ()")]
 	public class CertificateList : GLib.Object {
@@ -572,6 +643,10 @@ namespace GMime {
 		public unowned GMime.InternetAddressList get_addresses (GMime.AddressType type);
 		[CCode (cname = "g_mime_message_get_all_recipients")]
 		public GMime.InternetAddressList get_all_recipients ();
+		[CCode (cname = "g_mime_message_get_autocrypt_gossip_headers")]
+		public GMime.AutocryptHeaderList get_autocrypt_gossip_headers (int actype, GLib.DateTime now);
+		[CCode (cname = "g_mime_message_get_autocrypt_headers")]
+		public GMime.AutocryptHeaderList get_autocrypt_headers (int actype, GLib.DateTime now);
 		[CCode (cname = "g_mime_message_get_bcc")]
 		public unowned GMime.InternetAddressList get_bcc ();
 		[CCode (cname = "g_mime_message_get_body")]
@@ -1266,6 +1341,11 @@ namespace GMime {
 		CC,
 		BCC
 	}
+	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_AUTOCRYPT_PREFER_ENCRYPT_", has_type_id = false)]
+	public enum AutocryptPreferEncrypt {
+		NONE,
+		MUTUAL
+	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_CIPHER_ALGO_", has_type_id = false)]
 	public enum CipherAlgo {
 		DEFAULT,
@@ -1424,6 +1504,15 @@ namespace GMime {
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_TRUST_", has_type_id = false)]
 	public enum Trust {
+		UNKNOWN,
+		UNDEFINED,
+		NEVER,
+		MARGINAL,
+		FULL,
+		ULTIMATE
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_VALIDITY_", has_type_id = false)]
+	public enum Validity {
 		UNKNOWN,
 		UNDEFINED,
 		NEVER,

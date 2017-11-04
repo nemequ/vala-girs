@@ -1467,6 +1467,8 @@ namespace Camel {
 	public class OfflineStore : Camel.Store, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected OfflineStore ();
+		[Version (since = "3.28")]
+		public virtual GLib.GenericArray<Camel.Folder> dup_downsync_folders ();
 		[Version (since = "2.24")]
 		public bool get_online ();
 		[Version (since = "2.22")]

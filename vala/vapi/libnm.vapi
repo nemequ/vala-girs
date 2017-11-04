@@ -1115,6 +1115,21 @@ namespace NM {
 		public NM.DeviceWifi companion { get; }
 		public string hw_address { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_bridge_get_type ()")]
+	public class DeviceOvsBridge : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceOvsBridge ();
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_interface_get_type ()")]
+	public class DeviceOvsInterface : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceOvsInterface ();
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_port_get_type ()")]
+	public class DeviceOvsPort : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceOvsPort ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
 	public class DevicePpp : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
@@ -2188,6 +2203,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_connection_get_type ()")]
 	public class SettingConnection : NM.Setting {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTH_RETRIES")]
+		public const string AUTH_RETRIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT")]
 		public const string AUTOCONNECT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY")]
@@ -2238,6 +2255,8 @@ namespace NM {
 		public SettingConnection ();
 		public bool add_permission (string ptype, string pitem, string? detail);
 		public bool add_secondary (string sec_uuid);
+		[Version (since = "1.10")]
+		public int get_auth_retries ();
 		public bool get_autoconnect ();
 		public int get_autoconnect_priority ();
 		[Version (since = "1.6")]
@@ -2270,6 +2289,9 @@ namespace NM {
 		public bool remove_permission_by_value (string ptype, string pitem, string? detail);
 		public void remove_secondary (uint32 idx);
 		public bool remove_secondary_by_value (string sec_uuid);
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public int auth_retries { get; set construct; }
 		[NoAccessorMethod]
 		public bool autoconnect { get; set construct; }
 		[NoAccessorMethod]
@@ -2780,6 +2802,7 @@ namespace NM {
 		[Version (since = "1.2")]
 		public uint mode { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "1.2")]
 		public uint mtu { get; set construct; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
@@ -2936,6 +2959,90 @@ namespace NM {
 		public string dhcp_anycast_address { owned get; set; }
 		[NoAccessorMethod]
 		public GLib.Bytes ssid { owned get; set; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_bridge_get_type ()")]
+	public class SettingOvsBridge : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.10")]
+		public SettingOvsBridge ();
+		[Version (since = "1.10")]
+		public unowned string get_fail_mode ();
+		[Version (since = "1.10")]
+		public bool get_mcast_snooping_enable ();
+		[Version (since = "1.10")]
+		public bool get_rstp_enable ();
+		[Version (since = "1.10")]
+		public bool get_stp_enable ();
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string fail_mode { owned get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public bool mcast_snooping_enable { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public bool rstp_enable { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public bool stp_enable { get; set construct; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_interface_get_type ()")]
+	public class SettingOvsInterface : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.10")]
+		public SettingOvsInterface ();
+		[Version (since = "1.10")]
+		public unowned string get_interface_type ();
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string type { owned get; set construct; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_patch_get_type ()")]
+	public class SettingOvsPatch : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.10")]
+		public SettingOvsPatch ();
+		[Version (since = "1.10")]
+		public unowned string get_peer ();
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string peer { owned get; set construct; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_port_get_type ()")]
+	public class SettingOvsPort : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.10")]
+		public SettingOvsPort ();
+		[Version (since = "1.10")]
+		public uint get_bond_downdelay ();
+		[Version (since = "1.10")]
+		public unowned string get_bond_mode ();
+		[Version (since = "1.10")]
+		public uint get_bond_updelay ();
+		[Version (since = "1.10")]
+		public unowned string get_lacp ();
+		[Version (since = "1.10")]
+		public uint get_tag ();
+		[Version (since = "1.10")]
+		public unowned string get_vlan_mode ();
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public uint bond_downdelay { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string bond_mode { owned get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public uint bond_updelay { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string lacp { owned get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public uint tag { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.10")]
+		public string vlan_mode { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ppp_get_type ()")]
 	public class SettingPpp : NM.Setting {
@@ -4033,6 +4140,14 @@ namespace NM {
 		[Version (since = "1.2")]
 		public unowned NM.SettingMacvlan get_setting_macvlan ();
 		public unowned NM.SettingOlpcMesh get_setting_olpc_mesh ();
+		[Version (since = "1.10")]
+		public unowned NM.SettingOvsBridge get_setting_ovs_bridge ();
+		[Version (since = "1.10")]
+		public unowned NM.SettingOvsInterface get_setting_ovs_interface ();
+		[Version (since = "1.10")]
+		public unowned NM.SettingOvsPatch get_setting_ovs_patch ();
+		[Version (since = "1.10")]
+		public unowned NM.SettingOvsPort get_setting_ovs_port ();
 		public unowned NM.SettingPpp get_setting_ppp ();
 		public unowned NM.SettingPppoe get_setting_pppoe ();
 		[Version (since = "1.6")]
@@ -4050,6 +4165,9 @@ namespace NM {
 		public unowned NM.SettingWired get_setting_wired ();
 		public unowned NM.SettingWireless get_setting_wireless ();
 		public unowned NM.SettingWirelessSecurity get_setting_wireless_security ();
+		[CCode (array_length_pos = 0.1)]
+		[Version (since = "1.10")]
+		public (unowned NM.Setting)[] get_settings ();
 		public unowned string get_uuid ();
 		public string get_virtual_device_description ();
 		public bool is_type (string type);
@@ -4333,7 +4451,8 @@ namespace NM {
 		SIM_PIN_INCORRECT,
 		NEW_ACTIVATION,
 		PARENT_CHANGED,
-		PARENT_MANAGED_CHANGED
+		PARENT_MANAGED_CHANGED,
+		OVSDB_FAILED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_TYPE_", type_id = "nm_device_type_get_type ()")]
 	public enum DeviceType {
@@ -4360,7 +4479,10 @@ namespace NM {
 		VETH,
 		MACSEC,
 		DUMMY,
-		PPP
+		PPP,
+		OVS_INTERFACE,
+		OVS_PORT,
+		OVS_BRIDGE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
@@ -5076,6 +5198,38 @@ namespace NM {
 	public const string SETTING_MACSEC_VALIDATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_FAIL_MODE")]
+	public const string SETTING_OVS_BRIDGE_FAIL_MODE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_MCAST_SNOOPING_ENABLE")]
+	public const string SETTING_OVS_BRIDGE_MCAST_SNOOPING_ENABLE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_RSTP_ENABLE")]
+	public const string SETTING_OVS_BRIDGE_RSTP_ENABLE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_SETTING_NAME")]
+	public const string SETTING_OVS_BRIDGE_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_STP_ENABLE")]
+	public const string SETTING_OVS_BRIDGE_STP_ENABLE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_SETTING_NAME")]
+	public const string SETTING_OVS_INTERFACE_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_TYPE")]
+	public const string SETTING_OVS_INTERFACE_TYPE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PATCH_PEER")]
+	public const string SETTING_OVS_PATCH_PEER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PATCH_SETTING_NAME")]
+	public const string SETTING_OVS_PATCH_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_BOND_DOWNDELAY")]
+	public const string SETTING_OVS_PORT_BOND_DOWNDELAY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_BOND_MODE")]
+	public const string SETTING_OVS_PORT_BOND_MODE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_BOND_UPDELAY")]
+	public const string SETTING_OVS_PORT_BOND_UPDELAY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_LACP")]
+	public const string SETTING_OVS_PORT_LACP;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_SETTING_NAME")]
+	public const string SETTING_OVS_PORT_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_TAG")]
+	public const string SETTING_OVS_PORT_TAG;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_VLAN_MODE")]
+	public const string SETTING_OVS_PORT_VLAN_MODE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_DATA")]
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]

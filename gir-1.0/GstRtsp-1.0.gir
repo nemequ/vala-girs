@@ -545,6 +545,47 @@ This function can be cancelled with gst_rtsp_connection_flush().</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_accept_certificate_func"
+              c:identifier="gst_rtsp_connection_set_accept_certificate_func"
+              version="1.14">
+        <doc xml:space="preserve">Sets a custom accept-certificate function for checking certificates for
+validity. This will directly map to #GTlsConnection 's "accept-certificate"
+signal and be performed after the default checks of #GstRTSPConnection
+(checking against the #GTlsDatabase with the given #GTlsCertificateFlags)
+have failed. If no #GTlsDatabase is set on this connection, only @func will
+be called.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPConnection</doc>
+            <type name="RTSPConnection" c:type="GstRTSPConnection*"/>
+          </instance-parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">a #GstRTSPConnectionAcceptCertificateFunc to check certificates</doc>
+            <type name="RTSPConnectionAcceptCertificateFunc"
+                  c:type="GstRTSPConnectionAcceptCertificateFunc"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">User data passed to @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     scope="async">
+            <doc xml:space="preserve">#GDestroyNotify for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_auth" c:identifier="gst_rtsp_connection_set_auth">
         <doc xml:space="preserve">Configure @conn for authentication mode @method with @user and @pass as the
 user and password respectively.</doc>
@@ -887,6 +928,30 @@ read from @socket which should be used before starting to read new data.</doc>
         </parameters>
       </function>
     </record>
+    <callback name="RTSPConnectionAcceptCertificateFunc"
+              c:type="GstRTSPConnectionAcceptCertificateFunc">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="conn" transfer-ownership="none">
+          <type name="Gio.TlsConnection" c:type="GTlsConnection*"/>
+        </parameter>
+        <parameter name="peer_cert" transfer-ownership="none">
+          <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
+        </parameter>
+        <parameter name="errors" transfer-ownership="none">
+          <type name="Gio.TlsCertificateFlags" c:type="GTlsCertificateFlags"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <bitfield name="RTSPEvent"
               glib:type-name="GstRTSPEvent"
               glib:get-type="gst_rtsp_event_get_type"

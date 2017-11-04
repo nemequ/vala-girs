@@ -596,6 +596,7 @@ namespace Dazzle {
 		public bool transitions_enabled { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_menu_manager_get_type ()")]
+	[Version (since = "3.26")]
 	public class MenuManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public MenuManager ();
@@ -603,7 +604,6 @@ namespace Dazzle {
 		public uint add_resource (string resource) throws GLib.Error;
 		public unowned GLib.Menu get_menu_by_id (string menu_id);
 		public uint merge (string menu_id, GLib.MenuModel model);
-		[Version (since = "3.26")]
 		public void remove (uint merge_id);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_multi_paned_get_type ()")]

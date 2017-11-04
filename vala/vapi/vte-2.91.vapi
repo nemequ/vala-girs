@@ -64,6 +64,7 @@ namespace Vte {
 		public unowned string get_encoding ();
 		public unowned Pango.FontDescription get_font ();
 		public double get_font_scale ();
+		[Version (deprecated = true, deprecated_since = "0.52")]
 		public void get_geometry_hints (out Gdk.Geometry hints, int min_rows, int min_columns);
 		public bool get_has_selection ();
 		public unowned string get_icon_title ();
@@ -119,6 +120,8 @@ namespace Vte {
 		[Version (since = "0.50")]
 		public void set_allow_hyperlink (bool allow_hyperlink);
 		public void set_audible_bell (bool is_audible);
+		[Version (since = "0.52")]
+		public void set_background_operator (Cairo.Operator op);
 		public void set_backspace_binding (Vte.EraseBinding binding);
 		public void set_cjk_ambiguous_width (int width);
 		public void set_color_background (Gdk.RGBA background);
@@ -137,6 +140,7 @@ namespace Vte {
 		public bool set_encoding (string? codeset) throws GLib.Error;
 		public void set_font (Pango.FontDescription? font_desc);
 		public void set_font_scale (double scale);
+		[Version (deprecated = true, deprecated_since = "0.52")]
 		public void set_geometry_hints_for_window (Gtk.Window window);
 		public void set_input_enabled (bool enabled);
 		public void set_mouse_autohide (bool setting);
@@ -148,6 +152,8 @@ namespace Vte {
 		public void set_size (long columns, long rows);
 		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
+		[Version (since = "0.48")]
+		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags_, int timeout, GLib.Cancellable? cancellable, Vte.TerminalSpawnAsyncCallback callback);
 		[Version (deprecated = true, deprecated_since = "0.48")]
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void unselect_all ();

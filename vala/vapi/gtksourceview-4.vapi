@@ -98,7 +98,6 @@ namespace Gtk {
 		[NoWrapper]
 		public virtual bool proposal_activated (Gtk.SourceCompletionProvider provider, Gtk.SourceCompletionProposal proposal);
 		public bool remove_provider (Gtk.SourceCompletionProvider provider) throws GLib.Error;
-		[CCode (cname = "gtk_source_completion_show")]
 		public bool start (GLib.List<Gtk.SourceCompletionProvider>? providers, Gtk.SourceCompletionContext context);
 		public void unblock_interactive ();
 		[NoAccessorMethod]
@@ -1231,4 +1230,10 @@ namespace Gtk {
 		[CCode (cname = "gtk_source_file_saver_error_quark")]
 		public static GLib.Quark uark ();
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_finalize")]
+	[Version (since = "4.0")]
+	public static void Sourcefinalize ();
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_init")]
+	[Version (since = "4.0")]
+	public static void Sourceinit ();
 }
