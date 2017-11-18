@@ -17,6 +17,11 @@ and/or use gtk-doc annotations.  -->
              shared-library="libgtk-4.so.0.9300.0"
              c:identifier-prefixes="Gdk"
              c:symbol-prefixes="gdk">
+    <alias name="Atom" c:type="GdkAtom">
+      <doc xml:space="preserve">An opaque type representing a string as an index into a table
+of strings on the X server.</doc>
+      <type name="utf8" c:type="const char*"/>
+    </alias>
     <alias name="XEvent" c:type="GdkXEvent">
       <doc xml:space="preserve">Used to represent native events (XEvents for the X11
 backend, MSGs for Win32).</doc>
@@ -235,69 +240,6 @@ prevention'.</doc>
         <type name="Display"/>
       </property>
     </class>
-    <record name="Atom" c:type="GdkAtom" disguised="1">
-      <doc xml:space="preserve">An opaque type representing a string as an index into a table
-of strings on the X server.</doc>
-      <method name="name" c:identifier="gdk_atom_name">
-        <doc xml:space="preserve">Determines the string corresponding to an atom.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly-allocated string containing the string
-  corresponding to @atom. When you are done with the
-  return value, you should free it using g_free().</doc>
-          <type name="utf8" c:type="gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="atom" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkAtom.</doc>
-            <type name="Atom" c:type="GdkAtom"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <function name="intern" c:identifier="gdk_atom_intern">
-        <doc xml:space="preserve">Finds or creates an atom corresponding to a given string.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the atom corresponding to @atom_name.</doc>
-          <type name="Atom" c:type="GdkAtom"/>
-        </return-value>
-        <parameters>
-          <parameter name="atom_name" transfer-ownership="none">
-            <doc xml:space="preserve">a string.</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="only_if_exists" transfer-ownership="none">
-            <doc xml:space="preserve">if %TRUE, GDK is allowed to not create a new atom, but
-  just return %GDK_NONE if the requested atom doesn’t already
-  exists. Currently, the flag is ignored, since checking the
-  existance of an atom is as expensive as creating it.</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="intern_static_string"
-                c:identifier="gdk_atom_intern_static_string"
-                version="2.10">
-        <doc xml:space="preserve">Finds or creates an atom corresponding to a given string.
-
-Note that this function is identical to gdk_atom_intern() except
-that if a new #GdkAtom is created the string itself is used rather
-than a copy. This saves memory, but can only be used if the string
-will always exist. It can be used with statically
-allocated strings in the main program, but not with statically
-allocated memory in dynamically loaded modules, if you expect to
-ever unload the module again (e.g. do not use this function in
-GTK+ theme engines).</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the atom corresponding to @atom_name</doc>
-          <type name="Atom" c:type="GdkAtom"/>
-        </return-value>
-        <parameters>
-          <parameter name="atom_name" transfer-ownership="none">
-            <doc xml:space="preserve">a static string</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </function>
-    </record>
     <bitfield name="AxisFlags"
               version="3.22"
               glib:type-name="GdkAxisFlags"
@@ -2942,47 +2884,6 @@ of the selection named by the given atom.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_double_click_distance"
-              c:identifier="gdk_display_set_double_click_distance"
-              version="2.4">
-        <doc xml:space="preserve">Sets the double click distance (two clicks within this distance
-count as a double click). See also gdk_display_set_double_click_time().
-Applications should not set this, it is a global
-user-configured setting.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="display" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDisplay</doc>
-            <type name="Display" c:type="GdkDisplay*"/>
-          </instance-parameter>
-          <parameter name="distance" transfer-ownership="none">
-            <doc xml:space="preserve">distance in pixels</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_double_click_time"
-              c:identifier="gdk_display_set_double_click_time"
-              version="2.2">
-        <doc xml:space="preserve">Sets the double click time (two clicks within this time interval
-count as a double click). Applications should not set this, it is a global
-user-configured setting.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="display" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDisplay</doc>
-            <type name="Display" c:type="GdkDisplay*"/>
-          </instance-parameter>
-          <parameter name="msec" transfer-ownership="none">
-            <doc xml:space="preserve">double click time in milliseconds (thousandths of a second)</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="store_clipboard"
               c:identifier="gdk_display_store_clipboard"
               version="2.6">
@@ -4649,8 +4550,8 @@ from a touch event), as opposed to a real one.</doc>
           </instance-parameter>
           <parameter name="property"
                      direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none">
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="Atom" c:type="GdkAtom*"/>
           </parameter>
           <parameter name="state"
@@ -4787,8 +4688,8 @@ some extended flags.</doc>
           </instance-parameter>
           <parameter name="selection"
                      direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none">
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="Atom" c:type="GdkAtom*"/>
           </parameter>
         </parameters>
@@ -4806,16 +4707,16 @@ some extended flags.</doc>
           </instance-parameter>
           <parameter name="property"
                      direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none"
+                     caller-allocates="0"
+                     transfer-ownership="full"
                      optional="1"
                      allow-none="1">
             <type name="Atom" c:type="GdkAtom*"/>
           </parameter>
           <parameter name="target"
                      direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none"
+                     caller-allocates="0"
+                     transfer-ownership="full"
                      optional="1"
                      allow-none="1">
             <type name="Atom" c:type="GdkAtom*"/>
@@ -5544,7 +5445,7 @@ events, so different sequences may be distinguished.</doc>
         <doc xml:space="preserve">receive tablet pad events. Since 3.22</doc>
       </member>
       <member name="all_events_mask"
-              value="16777214"
+              value="67108862"
               c:identifier="GDK_ALL_EVENTS_MASK"
               glib:nick="all-events-mask">
         <doc xml:space="preserve">the combination of all the above event masks.</doc>
@@ -17771,14 +17672,6 @@ zero width or height).</doc>
       </method>
     </record>
     <record name="Screen" c:type="GdkScreen" disguised="1">
-      <doc xml:space="preserve">#GdkScreen objects are the GDK representation of the screen on
-which windows can be displayed and on which the pointer moves.
-X originally identified screens with physical screens, but
-nowadays it is more common to have a single #GdkScreen which
-combines several physical monitors (see gdk_screen_get_n_monitors()).
-
-GdkScreen is used throughout GDK and GTK+ to specify which screen
-the top level windows are to be displayed on.</doc>
     </record>
     <enumeration name="ScrollDirection"
                  glib:type-name="GdkScrollDirection"
@@ -18235,7 +18128,9 @@ of physical pixels on an output device are laid out.</doc>
            glib:get-type="gdk_texture_get_type"
            glib:type-struct="TextureClass">
       <doc xml:space="preserve">The `GdkTexture` structure contains only private data.</doc>
-      <constructor name="new_for_data" c:identifier="gdk_texture_new_for_data">
+      <constructor name="new_for_data"
+                   c:identifier="gdk_texture_new_for_data"
+                   version="3.94">
         <doc xml:space="preserve">Creates a new texture object holding the given data.
 The data is assumed to be in CAIRO_FORMAT_ARGB32 format.</doc>
         <return-value transfer-ownership="full">
@@ -18264,7 +18159,8 @@ The data is assumed to be in CAIRO_FORMAT_ARGB32 format.</doc>
         </parameters>
       </constructor>
       <constructor name="new_for_pixbuf"
-                   c:identifier="gdk_texture_new_for_pixbuf">
+                   c:identifier="gdk_texture_new_for_pixbuf"
+                   version="3.94">
         <doc xml:space="preserve">Creates a new texture object representing the GdkPixbuf.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a new #GdkTexture</doc>
@@ -18279,12 +18175,17 @@ The data is assumed to be in CAIRO_FORMAT_ARGB32 format.</doc>
       </constructor>
       <constructor name="new_from_file"
                    c:identifier="gdk_texture_new_from_file"
+                   version="3.94"
                    throws="1">
+        <doc xml:space="preserve">Creates a new texture by loading an image from a file.  The file format is
+detected automatically. If %NULL is returned, then @error will be set.</doc>
         <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly-created #GdkTexture or %NULL if an error occured.</doc>
           <type name="Texture" c:type="GdkTexture*"/>
         </return-value>
         <parameters>
           <parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">#GFile to load</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
         </parameters>
@@ -18310,7 +18211,9 @@ gdk_texture_new_from_file() to load it.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="download" c:identifier="gdk_texture_download">
+      <method name="download"
+              c:identifier="gdk_texture_download"
+              version="3.94">
         <doc xml:space="preserve">Downloads the @texture into local memory. This may be
 an expensive operation, as the actual texture data may
 reside on a GPU or on a remote display server.
@@ -18379,15 +18282,19 @@ cairo_surface_mark_dirty (surface);
         </parameters>
       </method>
       <property name="height"
+                version="3.94"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The height of the texture.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="width"
+                version="3.94"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
+        <doc xml:space="preserve">The width of the texture.</doc>
         <type name="gint" c:type="gint"/>
       </property>
     </class>
@@ -18613,10 +18520,6 @@ hint must be set before mapping the window.</doc>
             <doc xml:space="preserve">the parent window</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </parameter>
-          <parameter name="event_mask" transfer-ownership="none">
-            <doc xml:space="preserve">event mask (see gdk_window_set_events())</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
           <parameter name="position" transfer-ownership="none">
             <doc xml:space="preserve">placement of the window inside @parent</doc>
             <type name="Rectangle" c:type="const GdkRectangle*"/>
@@ -18636,10 +18539,6 @@ management.</doc>
           <parameter name="display" transfer-ownership="none">
             <doc xml:space="preserve">the display to create the window on</doc>
             <type name="Display" c:type="GdkDisplay*"/>
-          </parameter>
-          <parameter name="event_mask" transfer-ownership="none">
-            <doc xml:space="preserve">event mask (see gdk_window_set_events())</doc>
-            <type name="gint" c:type="gint"/>
           </parameter>
           <parameter name="position" transfer-ownership="none">
             <doc xml:space="preserve">position of the window on screen</doc>
@@ -18678,10 +18577,6 @@ manager.</doc>
           <parameter name="display" transfer-ownership="none">
             <doc xml:space="preserve">the display to create the window on</doc>
             <type name="Display" c:type="GdkDisplay*"/>
-          </parameter>
-          <parameter name="event_mask" transfer-ownership="none">
-            <doc xml:space="preserve">event mask (see gdk_window_set_events())</doc>
-            <type name="gint" c:type="gint"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve">width of new window</doc>
@@ -19259,16 +19154,6 @@ reaches zero. You must call this function yourself before that happens.</doc>
         <parameters>
           <instance-parameter name="window" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkWindow</doc>
-            <type name="Window" c:type="GdkWindow*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="destroy_notify" c:identifier="gdk_window_destroy_notify">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
         </parameters>
@@ -21280,7 +21165,7 @@ Note that some platforms don't support window icons.</doc>
             <doc xml:space="preserve">
     A list of image surfaces, of different sizes.</doc>
             <type name="GLib.List" c:type="GList*">
-              <type name="cairo.Surface"/>
+              <type name="Texture"/>
             </type>
           </parameter>
         </parameters>
@@ -22506,9 +22391,7 @@ specification for more details about window types.</doc>
         <doc xml:space="preserve">A window that is used to implement a DND cursor.</doc>
       </member>
     </enumeration>
-    <function name="atom_intern"
-              c:identifier="gdk_atom_intern"
-              moved-to="Atom.intern">
+    <function name="atom_intern" c:identifier="gdk_atom_intern">
       <doc xml:space="preserve">Finds or creates an atom corresponding to a given string.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the atom corresponding to @atom_name.</doc>
@@ -22521,7 +22404,7 @@ specification for more details about window types.</doc>
         </parameter>
         <parameter name="only_if_exists" transfer-ownership="none">
           <doc xml:space="preserve">if %TRUE, GDK is allowed to not create a new atom, but
-  just return %GDK_NONE if the requested atom doesn’t already
+  just return %NULL if the requested atom doesn’t already
   exists. Currently, the flag is ignored, since checking the
   existance of an atom is as expensive as creating it.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -22530,7 +22413,6 @@ specification for more details about window types.</doc>
     </function>
     <function name="atom_intern_static_string"
               c:identifier="gdk_atom_intern_static_string"
-              moved-to="Atom.intern_static_string"
               version="2.10">
       <doc xml:space="preserve">Finds or creates an atom corresponding to a given string.
 
@@ -22553,11 +22435,20 @@ GTK+ theme engines).</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="beep" c:identifier="gdk_beep">
-      <doc xml:space="preserve">Emits a short beep on the default display.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
+    <function name="atom_name" c:identifier="gdk_atom_name">
+      <doc xml:space="preserve">Determines the string corresponding to an atom.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly-allocated string containing the string
+  corresponding to @atom. When you are done with the
+  return value, you should free it using g_free().</doc>
+        <type name="utf8" c:type="gchar*"/>
       </return-value>
+      <parameters>
+        <parameter name="atom" transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkAtom.</doc>
+          <type name="Atom" c:type="GdkAtom"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="cairo_draw_from_gl"
               c:identifier="gdk_cairo_draw_from_gl"
@@ -22828,8 +22719,8 @@ the pixbuf.</doc>
               c:identifier="gdk_disable_multidevice"
               version="3.0">
       <doc xml:space="preserve">Disables multidevice support in GDK. This call must happen prior
-to gdk_display_open(), gtk_init() or
-gtk_init_check() in order to take effect.
+to gdk_display_open(), gtk_init() or gtk_init_check() in order to
+take effect.
 
 Most common GTK+ applications won’t ever need to call this. Only
 applications that do mixed GDK/Xlib calls could want to disable
@@ -23062,7 +22953,7 @@ This function is called by the drag source to obtain the
     <function name="drag_get_selection" c:identifier="gdk_drag_get_selection">
       <doc xml:space="preserve">Returns the selection atom for the current source window.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the selection atom, or %GDK_NONE</doc>
+        <doc xml:space="preserve">the selection atom, or %NULL</doc>
         <type name="Atom" c:type="GdkAtom"/>
       </return-value>
       <parameters>
@@ -23187,66 +23078,6 @@ to a drop initiated by the drag source.</doc>
           <type name="guint32" c:type="guint32"/>
         </parameter>
       </parameters>
-    </function>
-    <function name="error_trap_pop" c:identifier="gdk_error_trap_pop">
-      <doc xml:space="preserve">Removes an error trap pushed with gdk_error_trap_push().
-May block until an error has been definitively received
-or not received from the X server. gdk_error_trap_pop_ignored()
-is preferred if you don’t need to know whether an error
-occurred, because it never has to block. If you don't
-need the return value of gdk_error_trap_pop(), use
-gdk_error_trap_pop_ignored().
-
-Prior to GDK 3.0, this function would not automatically
-sync for you, so you had to gdk_flush() if your last
-call to Xlib was not a blocking round trip.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">X error code or 0 on success</doc>
-        <type name="gint" c:type="gint"/>
-      </return-value>
-    </function>
-    <function name="error_trap_pop_ignored"
-              c:identifier="gdk_error_trap_pop_ignored"
-              version="3.0">
-      <doc xml:space="preserve">Removes an error trap pushed with gdk_error_trap_push(), but
-without bothering to wait and see whether an error occurred.  If an
-error arrives later asynchronously that was triggered while the
-trap was pushed, that error will be ignored.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-    </function>
-    <function name="error_trap_push" c:identifier="gdk_error_trap_push">
-      <doc xml:space="preserve">This function allows X errors to be trapped instead of the normal
-behavior of exiting the application. It should only be used if it
-is not possible to avoid the X error in any other way. Errors are
-ignored on all #GdkDisplay currently known to the
-#GdkDisplayManager. If you don’t care which error happens and just
-want to ignore everything, pop with gdk_error_trap_pop_ignored().
-If you need the error code, use gdk_error_trap_pop() which may have
-to block and wait for the error to arrive from the X server.
-
-This API exists on all platforms but only does anything on X.
-
-You can use gdk_x11_display_error_trap_push() to ignore errors
-on only a single display.
-
-## Trapping an X error
-
-|[&lt;!-- language="C" --&gt;
-gdk_error_trap_push ();
-
- // ... Call the X function which may cause an error here ...
-
-
-if (gdk_error_trap_pop ())
- {
-   // ... Handle the error here ...
- }
-]|</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
     </function>
     <function name="event_get"
               c:identifier="gdk_event_get"
@@ -23417,24 +23248,6 @@ will be returned in @x and @y.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
     </function>
-    <function name="flush" c:identifier="gdk_flush">
-      <doc xml:space="preserve">Flushes the output buffers of all display connections and waits
-until all requests have been processed.
-This is rarely needed by applications.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-    </function>
-    <function name="get_program_class" c:identifier="gdk_get_program_class">
-      <doc xml:space="preserve">Gets the program class. Unless the program class has explicitly
-been set with gdk_set_program_class() or with the `--class`
-commandline option, the default value is the program name (determined
-with g_get_prgname()) with the first character converted to uppercase.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the program class.</doc>
-        <type name="utf8" c:type="const gchar*"/>
-      </return-value>
-    </function>
     <function name="get_show_events" c:identifier="gdk_get_show_events">
       <doc xml:space="preserve">Gets whether event debugging output is enabled.</doc>
       <return-value transfer-ownership="none">
@@ -23582,42 +23395,6 @@ character.</doc>
         <parameter name="keyval" transfer-ownership="none">
           <doc xml:space="preserve">a key value.</doc>
           <type name="guint" c:type="guint"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="notify_startup_complete"
-              c:identifier="gdk_notify_startup_complete"
-              version="2.2">
-      <doc xml:space="preserve">Indicates to the GUI environment that the application has finished
-loading. If the applications opens windows, this function is
-normally called after opening the application’s initial set of
-windows.
-
-GTK+ will call this function automatically after opening the first
-#GtkWindow unless gtk_window_set_auto_startup_notification() is called
-to disable that feature.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-    </function>
-    <function name="notify_startup_complete_with_id"
-              c:identifier="gdk_notify_startup_complete_with_id"
-              version="2.12">
-      <doc xml:space="preserve">Indicates to the GUI environment that the application has
-finished loading, using a given identifier.
-
-GTK+ will call this function automatically for #GtkWindow
-with custom startup-notification identifier unless
-gtk_window_set_auto_startup_notification() is called to
-disable that feature.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="startup_id" transfer-ownership="none">
-          <doc xml:space="preserve">a startup-notification identifier, for which
-    notification process should be completed</doc>
-          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
@@ -23809,7 +23586,7 @@ The pixbuf will contain an alpha channel if the @surface contains one.</doc>
     <function name="property_get" c:identifier="gdk_property_get">
       <doc xml:space="preserve">Retrieves a portion of the contents of a property. If the
 property does not exist, then the function returns %FALSE,
-and %GDK_NONE will be stored in @actual_property_type.
+and %NULL will be stored in @actual_property_type.
 
 The XGetWindowProperty() function that gdk_property_get()
 uses has a very confusing and complicated set of semantics.
@@ -23834,7 +23611,7 @@ gdk_property_get() is provided.</doc>
           <type name="Atom" c:type="GdkAtom"/>
         </parameter>
         <parameter name="type" transfer-ownership="none">
-          <doc xml:space="preserve">the desired property type, or %GDK_NONE, if any type of data
+          <doc xml:space="preserve">the desired property type, or %NULL, if any type of data
   is acceptable. If this does not match the actual
   type, then @actual_format and @actual_length will
   be filled in, a warning will be printed to stderr
@@ -23861,7 +23638,7 @@ gdk_property_get() is provided.</doc>
         </parameter>
         <parameter name="actual_property_type"
                    direction="out"
-                   caller-allocates="1"
+                   caller-allocates="0"
                    transfer-ownership="none">
           <doc xml:space="preserve">location to store the
   actual type of the property.</doc>
@@ -23897,6 +23674,40 @@ gdk_property_get() is provided.</doc>
           <array length="8" zero-terminated="0" c:type="guchar**">
             <type name="guint8" c:type="guchar*"/>
           </array>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="selection_add_targets"
+              c:identifier="gdk_selection_add_targets">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="window" transfer-ownership="none">
+          <type name="Window" c:type="GdkWindow*"/>
+        </parameter>
+        <parameter name="selection" transfer-ownership="none">
+          <type name="Atom" c:type="GdkAtom"/>
+        </parameter>
+        <parameter name="targets" transfer-ownership="none">
+          <type name="Atom" c:type="GdkAtom*"/>
+        </parameter>
+        <parameter name="n_targets" transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="selection_clear_targets"
+              c:identifier="gdk_selection_clear_targets">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="display" transfer-ownership="none">
+          <type name="Display" c:type="GdkDisplay*"/>
+        </parameter>
+        <parameter name="selection" transfer-ownership="none">
+          <type name="Atom" c:type="GdkAtom"/>
         </parameter>
       </parameters>
     </function>
@@ -24106,7 +23917,7 @@ API instead.</doc>
         </parameter>
         <parameter name="property" transfer-ownership="none">
           <doc xml:space="preserve">property in which the selection owner stored the
-  data, or %GDK_NONE to indicate that the request
+  data, or %NULL to indicate that the request
   was rejected.</doc>
           <type name="Atom" c:type="GdkAtom"/>
         </parameter>
@@ -24142,7 +23953,7 @@ API instead.</doc>
         </parameter>
         <parameter name="property" transfer-ownership="none">
           <doc xml:space="preserve">property in which the selection owner stored the data,
-           or %GDK_NONE to indicate that the request was rejected</doc>
+           or %NULL to indicate that the request was rejected</doc>
           <type name="Atom" c:type="GdkAtom"/>
         </parameter>
         <parameter name="time_" transfer-ownership="none">
@@ -24191,40 +24002,6 @@ in order to take effect.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="set_double_click_time"
-              c:identifier="gdk_set_double_click_time">
-      <doc xml:space="preserve">Set the double click time for the default display. See
-gdk_display_set_double_click_time().
-See also gdk_display_set_double_click_distance().
-Applications should not set this, it is a
-global user-configured setting.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="msec" transfer-ownership="none">
-          <doc xml:space="preserve">double click time in milliseconds (thousandths of a second)</doc>
-          <type name="guint" c:type="guint"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="set_program_class" c:identifier="gdk_set_program_class">
-      <doc xml:space="preserve">Sets the program class. The X11 backend uses the program class to set
-the class name part of the `WM_CLASS` property on
-toplevel windows; see the ICCCM.
-
-The program class can still be overridden with the --class command
-line option.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="program_class" transfer-ownership="none">
-          <doc xml:space="preserve">a string.</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="set_show_events" c:identifier="gdk_set_show_events">
       <doc xml:space="preserve">Sets whether a trace of received events is output.
 Note that GTK+ must be compiled with debugging (that is,
@@ -24237,23 +24014,6 @@ to use this option.</doc>
         <parameter name="show_events" transfer-ownership="none">
           <doc xml:space="preserve">%TRUE to output event debugging information.</doc>
           <type name="gboolean" c:type="gboolean"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="synthesize_window_state"
-              c:identifier="gdk_synthesize_window_state">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="window" transfer-ownership="none">
-          <type name="Window" c:type="GdkWindow*"/>
-        </parameter>
-        <parameter name="unset_flags" transfer-ownership="none">
-          <type name="WindowState" c:type="GdkWindowState"/>
-        </parameter>
-        <parameter name="set_flags" transfer-ownership="none">
-          <type name="WindowState" c:type="GdkWindowState"/>
         </parameter>
       </parameters>
     </function>

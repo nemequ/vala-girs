@@ -1302,6 +1302,8 @@ namespace Dazzle {
 		public void add_style (string state, Gtk.Widget widget, string style);
 		public GLib.Action create_action (string name);
 		public unowned string get_state ();
+		[Version (since = "3.28")]
+		public bool is_state (string? state);
 		public void set_state (string state);
 		public string state { get; set; }
 	}
@@ -1804,7 +1806,7 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void gtk_widget_add_style_class (Gtk.Widget widget, string class_name);
 	[CCode (cheader_filename = "dazzle.h")]
-	public static void* gtk_widget_find_child_typed (Gtk.Widget widget, GLib.Type type);
+	public static unowned Gtk.Widget? gtk_widget_find_child_typed (Gtk.Widget widget, GLib.Type type);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static unowned Gtk.Widget? gtk_widget_get_relative (Gtk.Widget widget, GLib.Type relative_type);
 	[CCode (cheader_filename = "dazzle.h")]

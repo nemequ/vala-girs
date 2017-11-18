@@ -1226,6 +1226,21 @@ Bluetooth device.</doc>
         <doc xml:space="preserve">device provides Network Access Point capability</doc>
       </member>
     </bitfield>
+    <constant name="CHECKPOINT_CREATED"
+              value="created"
+              c:type="NM_CHECKPOINT_CREATED">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CHECKPOINT_DEVICES"
+              value="devices"
+              c:type="NM_CHECKPOINT_DEVICES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CHECKPOINT_ROLLBACK_TIMEOUT"
+              value="rollback-timeout"
+              c:type="NM_CHECKPOINT_ROLLBACK_TIMEOUT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CLIENT_ACTIVATING_CONNECTION"
               value="activating-connection"
               c:type="NM_CLIENT_ACTIVATING_CONNECTION">
@@ -1429,6 +1444,85 @@ extensions.</doc>
         <doc xml:space="preserve">Teams can be managed</doc>
       </member>
     </enumeration>
+    <class name="Checkpoint"
+           c:symbol-prefix="checkpoint"
+           c:type="NMCheckpoint"
+           parent="Object"
+           glib:type-name="NMCheckpoint"
+           glib:get-type="nm_checkpoint_get_type"
+           glib:type-struct="CheckpointClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.Initable"/>
+      <method name="get_created"
+              c:identifier="nm_checkpoint_get_created"
+              version="1.12">
+        <doc xml:space="preserve">Gets the timestamp (in CLOCK_BOOTTIME milliseconds)
+of checkpoint creation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the timestamp of checkpoint creation.</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="checkpoint" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMCheckpoint</doc>
+            <type name="Checkpoint" c:type="NMCheckpoint*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_devices"
+              c:identifier="nm_checkpoint_get_devices"
+              version="1.12">
+        <doc xml:space="preserve">The devices that are part of this checkpoint.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the devices list.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="checkpoint" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMCheckpoint</doc>
+            <type name="Checkpoint" c:type="NMCheckpoint*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rollback_timeout"
+              c:identifier="nm_checkpoint_get_rollback_timeout"
+              version="1.12">
+        <doc xml:space="preserve">Gets the the timeout in seconds for automatic rollback.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the rollback timeout.</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="checkpoint" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMCheckpoint</doc>
+            <type name="Checkpoint" c:type="NMCheckpoint*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="created" version="1.12" transfer-ownership="none">
+        <doc xml:space="preserve">The timestamp (in CLOCK_BOOTTIME milliseconds) of checkpoint creation.</doc>
+        <type name="gint64" c:type="gint64"/>
+      </property>
+      <property name="devices" version="1.12" transfer-ownership="none">
+        <doc xml:space="preserve">The devices that are part of this checkpoint.</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </property>
+      <property name="rollback-timeout"
+                version="1.12"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Timeout in seconds for automatic rollback, or zero.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+    </class>
+    <record name="CheckpointClass"
+            c:type="NMCheckpointClass"
+            disguised="1"
+            glib:is-gtype-struct-for="Checkpoint">
+    </record>
     <enumeration name="CheckpointCreateFlags"
                  version="1.4"
                  c:type="NMCheckpointCreateFlags">
@@ -1986,6 +2080,211 @@ call.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="checkpoint_create_async"
+              c:identifier="nm_client_checkpoint_create_async"
+              version="1.12">
+        <doc xml:space="preserve">Creates a checkpoint of the current networking configuration
+for given interfaces. An empty @devices argument means all
+devices. If @rollback_timeout is not zero, a rollback is
+automatically performed after the given timeout.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="devices" transfer-ownership="none">
+            <doc xml:space="preserve">a list of devices for which a
+  checkpoint should be created.</doc>
+            <array name="GLib.PtrArray" c:type="const GPtrArray*">
+              <type name="Device"/>
+            </array>
+          </parameter>
+          <parameter name="rollback_timeout" transfer-ownership="none">
+            <doc xml:space="preserve">the rollback timeout in seconds</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">creation flags</doc>
+            <type name="CheckpointCreateFlags"
+                  c:type="NMCheckpointCreateFlags"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">callback to be called when the add operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="checkpoint_create_finish"
+              c:identifier="nm_client_checkpoint_create_finish"
+              version="1.12"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_checkpoint_create_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMCheckpoint on success, %NULL on
+  failure, in which case @error will be set.</doc>
+          <type name="Checkpoint" c:type="NMCheckpoint*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="checkpoint_destroy_async"
+              c:identifier="nm_client_checkpoint_destroy_async"
+              version="1.12">
+        <doc xml:space="preserve">Destroys an existing checkpoint without performing a rollback.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="checkpoint" transfer-ownership="none">
+            <doc xml:space="preserve">a checkpoint</doc>
+            <type name="Checkpoint" c:type="NMCheckpoint*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the add operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="checkpoint_destroy_finish"
+              c:identifier="nm_client_checkpoint_destroy_finish"
+              version="1.12"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_checkpoint_destroy_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success or %FALSE on failure, in which case
+  @error will be set.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="checkpoint_rollback_async"
+              c:identifier="nm_client_checkpoint_rollback_async"
+              version="1.12">
+        <doc xml:space="preserve">Performs the rollback of a checkpoint before the timeout is reached.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">the %NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="checkpoint" transfer-ownership="none">
+            <doc xml:space="preserve">a checkpoint</doc>
+            <type name="Checkpoint" c:type="NMCheckpoint*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to be called when the add operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="checkpoint_rollback_finish"
+              c:identifier="nm_client_checkpoint_rollback_finish"
+              version="1.12"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_checkpoint_rollback_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an hash table of
+  devices and results. Devices are represented by their original
+  D-Bus path; each result is a #NMRollbackResult.</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="utf8"/>
+            <type name="guint32"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="connectivity_check_get_available"
               c:identifier="nm_client_connectivity_check_get_available"
               version="1.10">
@@ -2176,6 +2475,25 @@ containing all the #NMDevices.  The returned array is owned by the
 #NMClient object and should not be modified.</doc>
           <array name="GLib.PtrArray" c:type="const GPtrArray*">
             <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_checkpoints"
+              c:identifier="nm_client_get_checkpoints"
+              version="1.12">
+        <doc xml:space="preserve">Gets all the active checkpoints.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GPtrArray
+containing all the #NMCheckpoint.  The returned array is owned by the
+#NMClient object and should not be modified.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="Checkpoint"/>
           </array>
         </return-value>
         <parameters>
@@ -3047,6 +3365,11 @@ Element-type: NMDevice</doc>
       <property name="can-modify" transfer-ownership="none">
         <doc xml:space="preserve">If %TRUE, adding and modifying connections is supported.</doc>
         <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="checkpoints" transfer-ownership="none">
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="connections" transfer-ownership="none">
         <doc xml:space="preserve">The list of configured connections that are available to the user. (Note
@@ -4616,7 +4939,7 @@ cannot be normalized, the connection will not be modified.</doc>
             <doc xml:space="preserve">a #GHashTable with
 normalization parameters to allow customization of the normalization by providing
 specific arguments. Unknown arguments will be ignored and the default will be
-used. The keys must be strings, hashed by g_str_hash() and g_str_equal() functions.
+used. The keys must be strings compared with g_str_equal() function.
 The values are opaque and depend on the parameter name.</doc>
             <type name="GLib.HashTable" c:type="GHashTable*">
               <type name="utf8"/>
@@ -9341,6 +9664,12 @@ device, and must not be modified.</doc>
               glib:nick="ovsdb-failed">
         <doc xml:space="preserve">problem communicating with OpenVSwitch database</doc>
       </member>
+      <member name="ip_address_duplicate"
+              value="64"
+              c:identifier="NM_DEVICE_STATE_REASON_IP_ADDRESS_DUPLICATE"
+              glib:nick="ip-address-duplicate">
+        <doc xml:space="preserve">a duplicate IP address was detected</doc>
+      </member>
     </enumeration>
     <class name="DeviceTeam"
            c:symbol-prefix="device_team"
@@ -12416,6 +12745,11 @@ and the value is of the correct type and well-formed.</doc>
               c:type="NM_IP_ROUTE_ATTRIBUTE_MTU">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="IP_ROUTE_ATTRIBUTE_ONLINK"
+              value="onlink"
+              c:type="NM_IP_ROUTE_ATTRIBUTE_ONLINK">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="IP_ROUTE_ATTRIBUTE_SRC"
               value="src"
               c:type="NM_IP_ROUTE_ATTRIBUTE_SRC">
@@ -12658,7 +12992,7 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="0" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="1" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -15040,14 +15374,204 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_TEAM_CONFIG">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_TEAM_MCAST_REJOIN_COUNT"
+              value="mcast-rejoin-count"
+              c:type="NM_SETTING_TEAM_MCAST_REJOIN_COUNT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_MCAST_REJOIN_INTERVAL"
+              value="mcast-rejoin-interval"
+              c:type="NM_SETTING_TEAM_MCAST_REJOIN_INTERVAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT"
+              value="1"
+              c:type="NM_SETTING_TEAM_NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_TEAM_NOTIFY_PEERS_COUNT"
+              value="notify-peers-count"
+              c:type="NM_SETTING_TEAM_NOTIFY_PEERS_COUNT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT"
+              value="1"
+              c:type="NM_SETTING_TEAM_NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_TEAM_NOTIFY_PEERS_INTERVAL"
+              value="notify-peers-interval"
+              c:type="NM_SETTING_TEAM_NOTIFY_PEERS_INTERVAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_TEAM_PORT_CONFIG"
               value="config"
               c:type="NM_SETTING_TEAM_PORT_CONFIG">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_TEAM_PORT_LACP_KEY"
+              value="lacp-key"
+              c:type="NM_SETTING_TEAM_PORT_LACP_KEY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_LACP_PRIO"
+              value="lacp-prio"
+              c:type="NM_SETTING_TEAM_PORT_LACP_PRIO">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_LACP_PRIO_DEFAULT"
+              value="255"
+              c:type="NM_SETTING_TEAM_PORT_LACP_PRIO_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_PRIO"
+              value="prio"
+              c:type="NM_SETTING_TEAM_PORT_PRIO">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_QUEUE_ID"
+              value="queue-id"
+              c:type="NM_SETTING_TEAM_PORT_QUEUE_ID">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_QUEUE_ID_DEFAULT"
+              value="-1"
+              c:type="NM_SETTING_TEAM_PORT_QUEUE_ID_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="SETTING_TEAM_PORT_SETTING_NAME"
               value="team-port"
               c:type="NM_SETTING_TEAM_PORT_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_STICKY"
+              value="sticky"
+              c:type="NM_SETTING_TEAM_PORT_STICKY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER"
+              value="runner"
+              c:type="NM_SETTING_TEAM_RUNNER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_ACTIVE"
+              value="runner-active"
+              c:type="NM_SETTING_TEAM_RUNNER_ACTIVE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_ACTIVEBACKUP"
+              value="activebackup"
+              c:type="NM_SETTING_TEAM_RUNNER_ACTIVEBACKUP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_AGG_SELECT_POLICY"
+              value="runner-agg-select-policy"
+              c:type="NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_BANDWIDTH"
+              value="bandwidth"
+              c:type="NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_BANDWIDTH">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_COUNT"
+              value="count"
+              c:type="NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_COUNT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO"
+              value="lacp_prio"
+              c:type="NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE"
+              value="lacp_prio_stable"
+              c:type="NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_PORT_CONFIG"
+              value="port_config"
+              c:type="NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_PORT_CONFIG">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_BROADCAST"
+              value="broadcast"
+              c:type="NM_SETTING_TEAM_RUNNER_BROADCAST">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_FAST_RATE"
+              value="runner-fast-rate"
+              c:type="NM_SETTING_TEAM_RUNNER_FAST_RATE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_HWADDR_POLICY"
+              value="runner-hwaddr-policy"
+              c:type="NM_SETTING_TEAM_RUNNER_HWADDR_POLICY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_HWADDR_POLICY_BY_ACTIVE"
+              value="by_active"
+              c:type="NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_BY_ACTIVE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_HWADDR_POLICY_ONLY_ACTIVE"
+              value="only_active"
+              c:type="NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_ONLY_ACTIVE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_HWADDR_POLICY_SAME_ALL"
+              value="same_all"
+              c:type="NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_SAME_ALL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_LACP"
+              value="lacp"
+              c:type="NM_SETTING_TEAM_RUNNER_LACP">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_LOADBALANCE"
+              value="loadbalance"
+              c:type="NM_SETTING_TEAM_RUNNER_LOADBALANCE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_MIN_PORTS"
+              value="runner-min-ports"
+              c:type="NM_SETTING_TEAM_RUNNER_MIN_PORTS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_ROUNDROBIN"
+              value="roundrobin"
+              c:type="NM_SETTING_TEAM_RUNNER_ROUNDROBIN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_SYS_PRIO"
+              value="runner-sys-prio"
+              c:type="NM_SETTING_TEAM_RUNNER_SYS_PRIO">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_SYS_PRIO_DEFAULT"
+              value="255"
+              c:type="NM_SETTING_TEAM_RUNNER_SYS_PRIO_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_TX_BALANCER"
+              value="runner-tx-balancer"
+              c:type="NM_SETTING_TEAM_RUNNER_TX_BALANCER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL"
+              value="runner-tx-balancer-interval"
+              c:type="NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL_DEFAULT"
+              value="50"
+              c:type="NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_TEAM_RUNNER_TX_HASH"
+              value="runner-tx-hash"
+              c:type="NM_SETTING_TEAM_RUNNER_TX_HASH">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_TEAM_SETTING_NAME"
@@ -24635,7 +25159,7 @@ bridge port to connect to.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">The time port must be active befor it starts forwarding traffic.</doc>
+        <doc xml:space="preserve">The time port must be active before it starts forwarding traffic.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="lacp"
@@ -25548,6 +26072,26 @@ The 1 in "8n1" for example.</doc>
           <type name="Setting" c:type="NMSetting*"/>
         </return-value>
       </constructor>
+      <method name="add_runner_tx_hash"
+              c:identifier="nm_setting_team_add_runner_tx_hash"
+              version="1.12">
+        <doc xml:space="preserve">Adds a new txhash element to the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the txhash element was added; %FALSE if the element
+was already knnown.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="txhash" transfer-ownership="none">
+            <doc xml:space="preserve">the element to add to txhash</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_config" c:identifier="nm_setting_team_get_config">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeam:config property of the setting</doc>
@@ -25560,12 +26104,365 @@ The 1 in "8n1" for example.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_mcast_rejoin_count"
+              c:identifier="nm_setting_team_get_mcast_rejoin_count"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:mcast-rejoin-count property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mcast_rejoin_interval"
+              c:identifier="nm_setting_team_get_mcast_rejoin_interval"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:mcast-rejoin-interval property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_notify_peers_count"
+              c:identifier="nm_setting_team_get_notify_peers_count"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:notify-peers-count property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_notify_peers_interval"
+              c:identifier="nm_setting_team_get_notify_peers_interval"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:notify-peers-interval property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_num_runner_tx_hash"
+              c:identifier="nm_setting_team_get_num_runner_tx_hash"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of elements in txhash</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner"
+              c:identifier="nm_setting_team_get_runner"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_active"
+              c:identifier="nm_setting_team_get_runner_active"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner_active property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_agg_select_policy"
+              c:identifier="nm_setting_team_get_runner_agg_select_policy"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-agg-select-policy property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_fast_rate"
+              c:identifier="nm_setting_team_get_runner_fast_rate"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-fast-rate property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_hwaddr_policy"
+              c:identifier="nm_setting_team_get_runner_hwaddr_policy"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-hwaddr-policy property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_min_ports"
+              c:identifier="nm_setting_team_get_runner_min_ports"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-min-ports property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_sys_prio"
+              c:identifier="nm_setting_team_get_runner_sys_prio"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-sys-prio property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_tx_balancer"
+              c:identifier="nm_setting_team_get_runner_tx_balancer"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-tx-balancer property of the setting</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_tx_balancer_interval"
+              c:identifier="nm_setting_team_get_runner_tx_balancer_interval"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the ##NMSettingTeam:runner-tx-balancer_interval property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_runner_tx_hash"
+              c:identifier="nm_setting_team_get_runner_tx_hash"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the txhash element at index @idx</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the txhash element to return</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_runner_tx_hash"
+              c:identifier="nm_setting_team_remove_runner_tx_hash"
+              version="1.12">
+        <doc xml:space="preserve">Removes the txhash element at index @idx.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the element to remove from txhash</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_runner_tx_hash_by_value"
+              c:identifier="nm_setting_team_remove_runner_tx_hash_by_value"
+              version="1.12">
+        <doc xml:space="preserve">Removes the txhash element #txhash</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the txhash element was found and removed; %FALSE if it was not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSetetingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="txhash" transfer-ownership="none">
+            <doc xml:space="preserve">the txhash element to remove</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="config" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The JSON configuration for the team network interface.  The property
 should contain raw JSON configuration data suitable for teamd, because
 the value is passed directly to teamd. If not specified, the default
 configuration is used.  See man teamd.conf for the format details.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="mcast-rejoin-count"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd mcast_rejoin.count.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="mcast-rejoin-interval"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd mcast_rejoin.interval.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="notify-peers-count"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd notify_peers.count.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="notify-peers-interval"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd notify_peers.interval.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="runner"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.name.
+Permitted values are: "roundrobin", "broadcast", "activebackup",
+"loadbalance", "lacp".</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="runner-active"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.active.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="runner-agg-select-policy"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.agg_select_policy.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="runner-fast-rate"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.fast_rate.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="runner-hwaddr-policy"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.hwaddr_policy.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="runner-min-ports"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.min_ports.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="runner-sys-prio"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.sys_prio.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="runner-tx-balancer"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.tx_balancer.name.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="runner-tx-balancer-interval"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.tx_balancer.interval.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="runner-tx-hash"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd runner.tx_hash.</doc>
+        <array>
+          <type name="utf8"/>
+        </array>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>
@@ -25610,12 +26507,118 @@ configuration is used.  See man teamd.conf for the format details.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_lacp_key"
+              c:identifier="nm_setting_team_port_get_lacp_key"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTeamPort:lacp-key property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_lacp_prio"
+              c:identifier="nm_setting_team_port_get_lacp_prio"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTeamPort:lacp-prio property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_prio"
+              c:identifier="nm_setting_team_port_get_prio"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTeamPort:prio property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_queue_id"
+              c:identifier="nm_setting_team_port_get_queue_id"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTeamPort:queue_id property of the setting</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_sticky"
+              c:identifier="nm_setting_team_port_get_sticky"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingTeamPort:sticky property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="config" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The JSON configuration for the team port. The property should contain raw
 JSON configuration data suitable for teamd, because the value is passed
 directly to teamd. If not specified, the default configuration is
 used. See man teamd.conf for the format details.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="lacp-key"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd ports.PORTIFNAME.lacp_key.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="lacp-prio"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd ports.PORTIFNAME.lacp_prio.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="prio"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd ports.PORTIFNAME.prio.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="queue-id"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd ports.PORTIFNAME.queue_id.
+When set to -1 means the parameter is skipped from the json config.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="sticky"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Corresponds to the teamd ports.PORTIFNAME.sticky.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent">
         <type name="Setting" c:type="NMSetting"/>

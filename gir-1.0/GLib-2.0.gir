@@ -2853,7 +2853,7 @@ is 0.</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">
-          the data to be used for the bytes</doc>
+       the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gconstpointer">
               <type name="guint8"/>
             </array>
@@ -2889,7 +2889,7 @@ g_bytes_new_with_free_func().
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">
-          the data to be used for the bytes</doc>
+       the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gpointer">
               <type name="guint8"/>
             </array>
@@ -2923,7 +2923,7 @@ been called to indicate that the bytes is no longer in use.
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">
-          the data to be used for the bytes</doc>
+       the data to be used for the bytes</doc>
             <array length="1" zero-terminated="0" c:type="gconstpointer">
               <type name="guint8"/>
             </array>
@@ -3393,6 +3393,21 @@ for g_spawn_check_exit_status().</doc>
                    closure="2">
           <doc xml:space="preserve">user data passed to g_child_watch_add()</doc>
           <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <callback name="ClearHandleFunc" c:type="GClearHandleFunc" version="2.56">
+      <doc xml:space="preserve">Specifies the type of function passed to g_clear_handle_id().
+The implementation is expected to free the resource identified
+by @handle_id; for instance, if @handle_id is a #GSource ID,
+g_source_remove() can be used.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="handle_id" transfer-ownership="none">
+          <doc xml:space="preserve">the handle ID to clear</doc>
+          <type name="guint" c:type="guint"/>
         </parameter>
       </parameters>
     </callback>
@@ -12197,7 +12212,10 @@ given user data.</doc>
       <function name="foreach"
                 c:identifier="g_list_foreach"
                 introspectable="0">
-        <doc xml:space="preserve">Calls a function for each element of a #GList.</doc>
+        <doc xml:space="preserve">Calls a function for each element of a #GList.
+
+It is safe for @func to remove the element from @list, but it must
+not modify any part of the list after that element.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -12262,7 +12280,10 @@ It is usually used after g_list_remove_link().</doc>
                 version="2.28"
                 introspectable="0">
         <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GList,
-and calls @free_func on every element's data.</doc>
+and calls @free_func on every element's data.
+
+@free_func must not modify the list (eg, by removing the freed
+element from it).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -15455,8 +15476,9 @@ the second 1, and so on.</doc>
       <method name="children_foreach"
               c:identifier="g_node_children_foreach"
               introspectable="0">
-        <doc xml:space="preserve">Calls a function for each of the children of a #GNode.
-Note that it doesn't descend beneath the child nodes.</doc>
+        <doc xml:space="preserve">Calls a function for each of the children of a #GNode. Note that it
+doesn't descend beneath the child nodes. @func must not do anything
+that would modify the structure of the tree.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -15866,7 +15888,8 @@ too big, %NULL is returned.</doc>
               introspectable="0">
         <doc xml:space="preserve">Traverses a tree starting at the given root #GNode.
 It calls the given function for each node visited.
-The traversal can be halted at any point by returning %TRUE from @func.</doc>
+The traversal can be halted at any point by returning %TRUE from @func.
+@func must not do anything that would modify the structure of the tree.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -16412,7 +16435,7 @@ See g_option_context_set_strict_posix() for more information.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GoptionContext</doc>
+            <doc xml:space="preserve">a #GOptionContext</doc>
             <type name="OptionContext" c:type="GOptionContext*"/>
           </instance-parameter>
         </parameters>
@@ -16652,7 +16675,7 @@ parsing).</doc>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GoptionContext</doc>
+            <doc xml:space="preserve">a #GOptionContext</doc>
             <type name="OptionContext" c:type="GOptionContext*"/>
           </instance-parameter>
           <parameter name="strict_posix" transfer-ownership="none">
@@ -17616,7 +17639,8 @@ equality is used.</doc>
                 c:identifier="g_ptr_array_foreach"
                 version="2.4"
                 introspectable="0">
-        <doc xml:space="preserve">Calls a function for each element of a #GPtrArray.</doc>
+        <doc xml:space="preserve">Calls a function for each element of a #GPtrArray. @func must not
+add elements to or remove elements from the array.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -18223,7 +18247,10 @@ first argument and the given user data as the second argument.</doc>
               version="2.4"
               introspectable="0">
         <doc xml:space="preserve">Calls @func for each element in the queue passing @user_data to the
-function.</doc>
+function.
+
+It is safe for @func to remove the element from @queue, but it must
+not modify any part of the queue after that element.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -18264,7 +18291,10 @@ either use g_queue_free_full() or free them manually first.</doc>
       </method>
       <method name="free_full" c:identifier="g_queue_free_full" version="2.32">
         <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GQueue,
-and calls the specified destroy function on every element's data.</doc>
+and calls the specified destroy function on every element's data.
+
+@free_func should not modify the queue (eg, by removing the freed
+element from it).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21388,7 +21418,10 @@ given user data.</doc>
       <function name="foreach"
                 c:identifier="g_slist_foreach"
                 introspectable="0">
-        <doc xml:space="preserve">Calls a function for each element of a #GSList.</doc>
+        <doc xml:space="preserve">Calls a function for each element of a #GSList.
+
+It is safe for @func to remove the element from @list, but it must
+not modify any part of the list after that element.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -21451,7 +21484,10 @@ It is usually used after g_slist_remove_link().</doc>
                 version="2.28"
                 introspectable="0">
         <doc xml:space="preserve">Convenience method, which frees all the memory used by a #GSList, and
-calls the specified destroy function on every element's data.</doc>
+calls the specified destroy function on every element's data.
+
+@free_func must not modify the list (eg, by removing the freed
+element from it).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -22713,7 +22749,7 @@ g_io_channel_seek_position() operation.</doc>
               version="2.14"
               introspectable="0">
         <doc xml:space="preserve">Calls @func for each item in the sequence passing @user_data
-to the function.</doc>
+to the function. @func must not modify the sequence itself.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -23214,7 +23250,8 @@ iterator comes before the first.</doc>
                 version="2.14"
                 introspectable="0">
         <doc xml:space="preserve">Calls @func for each item in the range (@begin, @end) passing
-@user_data to the function.</doc>
+@user_data to the function. @func must not modify the sequence
+itself.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -26156,7 +26193,7 @@ not show stdout and stderr.</doc>
 These flags determine what traps to set.</doc>
       <doc-deprecated xml:space="preserve">#GTestTrapFlags is used only with g_test_trap_fork(),
 which is deprecated. g_test_trap_subprocess() uses
-#GTestTrapSubprocessFlags.</doc-deprecated>
+#GTestSubprocessFlags.</doc-deprecated>
       <member name="silence_stdout"
               value="128"
               c:identifier="G_TEST_TRAP_SILENCE_STDOUT">
@@ -28931,25 +28968,25 @@ See [Unicode Standard Annex #24: Script names](http://www.unicode.org/reports/tr
         <doc xml:space="preserve">Osage. Since: 2.50</doc>
       </member>
       <member name="tangut" value="137" c:identifier="G_UNICODE_SCRIPT_TANGUT">
-        <doc xml:space="preserve">Tangut. Since: 2.50
-@G_UNICODE_SCRIPT_MASARAM_GONDI,        Masaram Gondi. Since: 2.54
-@G_UNICODE_SCRIPT_NUSHU,                Nushu. Since: 2.54
-@G_UNICODE_SCRIPT_SOYOMBO,              Soyombo. Since: 2.54
-@G_UNICODE_SCRIPT_ZANABAZAR_SQUARE      Zanabazar Square. Since: 2.54</doc>
+        <doc xml:space="preserve">Tangut. Since: 2.50</doc>
       </member>
       <member name="masaram_gondi"
               value="138"
               c:identifier="G_UNICODE_SCRIPT_MASARAM_GONDI">
+        <doc xml:space="preserve">Masaram Gondi. Since: 2.54</doc>
       </member>
       <member name="nushu" value="139" c:identifier="G_UNICODE_SCRIPT_NUSHU">
+        <doc xml:space="preserve">Nushu. Since: 2.54</doc>
       </member>
       <member name="soyombo"
               value="140"
               c:identifier="G_UNICODE_SCRIPT_SOYOMBO">
+        <doc xml:space="preserve">Soyombo. Since: 2.54</doc>
       </member>
       <member name="zanabazar_square"
               value="141"
               c:identifier="G_UNICODE_SCRIPT_ZANABAZAR_SQUARE">
+        <doc xml:space="preserve">Zanabazar Square. Since: 2.54</doc>
       </member>
     </enumeration>
     <enumeration name="UnicodeType" c:type="GUnicodeType">
@@ -35558,6 +35595,28 @@ be a relative path.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="build_filename_valist"
+              c:identifier="g_build_filename_valist"
+              version="2.56"
+              introspectable="0">
+      <doc xml:space="preserve">Behaves exactly like g_build_filename(), but takes the path elements
+as a va_list. This function is mainly meant for language bindings.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly-allocated string that must be freed
+    with g_free().</doc>
+        <type name="filename" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="first_element" transfer-ownership="none">
+          <doc xml:space="preserve">the first element in the path</doc>
+          <type name="filename" c:type="gchar*"/>
+        </parameter>
+        <parameter name="args" transfer-ownership="none">
+          <doc xml:space="preserve">va_list of remaining elements in path</doc>
+          <type name="va_list" c:type="va_list*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="build_filenamev"
               c:identifier="g_build_filenamev"
               version="2.8">
@@ -36000,6 +36059,34 @@ calls g_error_free() on *@err and sets *@err to %NULL.</doc>
         <type name="none" c:type="void"/>
       </return-value>
     </function>
+    <function name="clear_handle_id"
+              c:identifier="g_clear_handle_id"
+              version="2.56"
+              introspectable="0">
+      <doc xml:space="preserve">Clears a numeric handler, such as a #GSource ID.
+
+@tag_ptr must be a valid pointer to the variable holding the handler.
+
+If the ID is zero then this function does nothing.
+Otherwise, clear_func() is called with the ID as a parameter, and the tag is
+set to zero.
+
+A macro is also included that allows this function to be used without
+pointer casts.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="tag_ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to the handler ID</doc>
+          <type name="guint" c:type="guint*"/>
+        </parameter>
+        <parameter name="clear_func" transfer-ownership="none">
+          <doc xml:space="preserve">the function to call to clear the handler</doc>
+          <type name="ClearHandleFunc" c:type="GClearHandleFunc"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="clear_pointer"
               c:identifier="g_clear_pointer"
               version="2.34"
@@ -36353,8 +36440,8 @@ could combine with the base character.)</doc>
           <doc xml:space="preserve">UTF-8 string to use in place of character not
                present in the target encoding. (The string must be
                representable in the target encoding).
-                  If %NULL, characters not in the target encoding will
-                  be represented as Unicode escapes \uxxxx or \Uxxxxyyyy.</doc>
+               If %NULL, characters not in the target encoding will
+               be represented as Unicode escapes \uxxxx or \Uxxxxyyyy.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="bytes_read" transfer-ownership="none">
@@ -36449,7 +36536,11 @@ function is called with each data element's #GQuark id and data,
 together with the given @user_data parameter. Note that this
 function is NOT thread-safe. So unless @datalist can be protected
 from any modifications during invocation of this function, it should
-not be called.</doc>
+not be called.
+
+@func can make changes to @datalist, but the iteration will not
+reflect changes made during the g_datalist_foreach() call, other
+than skipping over elements that are removed.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -36785,8 +36876,12 @@ destroy functions set for data elements.</doc>
     <function name="dataset_foreach" c:identifier="g_dataset_foreach">
       <doc xml:space="preserve">Calls the given function for each data element which is associated
 with the given location. Note that this function is NOT thread-safe.
-So unless @datalist can be protected from any modifications during
-invocation of this function, it should not be called.</doc>
+So unless @dataset_location can be protected from any modifications
+during invocation of this function, it should not be called.
+
+@func can make changes to the dataset, but the iteration will not
+reflect changes made during the g_dataset_foreach() call, other
+than skipping over elements that are removed.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -41749,9 +41844,9 @@ directly if you need to block until a file descriptor is ready, but
 don't want to run the full main loop.
 
 Each element of @fds is a #GPollFD describing a single file
-descriptor to poll. The %fd field indicates the file descriptor,
-and the %events field indicates the events to poll for. On return,
-the %revents fields will be filled with the events that actually
+descriptor to poll. The @fd field indicates the file descriptor,
+and the @events field indicates the events to poll for. On return,
+the @revents fields will be filled with the events that actually
 occurred.
 
 On POSIX systems, the file descriptors in @fds can be any sort of
@@ -41760,7 +41855,7 @@ Windows. If you need to use g_poll() in code that has to run on
 Windows, the easiest solution is to construct all of your
 #GPollFDs with g_io_channel_win32_make_pollfd().</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the number of entries in @fds whose %revents fields
+        <doc xml:space="preserve">the number of entries in @fds whose @revents fields
 were filled in, or 0 if the operation timed out, or -1 on error or
 if the call was interrupted.</doc>
         <type name="gint" c:type="gint"/>
@@ -43389,7 +43484,7 @@ reference when you don't need it any more.
 If you are writing a GTK+ application, and the program you are spawning is a
 graphical application too, then to ensure that the spawned program opens its
 windows on the right screen, you may want to use #GdkAppLaunchContext,
-#GAppLaunchcontext, or set the %DISPLAY environment variable.
+#GAppLaunchContext, or set the %DISPLAY environment variable.
 
 Note that the returned @child_pid on Windows is a handle to the child
 process and not its identifier. Process handles and process identifiers
@@ -43607,7 +43702,7 @@ process reference must be closed using g_spawn_close_pid().
 If you are writing a GTK+ application, and the program you are spawning is a
 graphical application too, then to ensure that the spawned program opens its
 windows on the right screen, you may want to use #GdkAppLaunchContext,
-#GAppLaunchcontext, or set the %DISPLAY environment variable.</doc>
+#GAppLaunchContext, or set the %DISPLAY environment variable.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE on success, %FALSE if an error was set</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -44145,11 +44240,11 @@ your corpus and build an index on the returned folded tokens, then
 call g_str_tokenize_and_fold() on the search term and
 perform lookups into that index.
 
-As some examples, searching for "fred" would match the potential hit
-"Smith, Fred" and also "Frédéric".  Searching for "Fréd" would match
-"Frédéric" but not "Frederic" (due to the one-directional nature of
-accent matching).  Searching "fo" would match "Foo" and "Bar Foo
-Baz", but not "SFO" (because no word as "fo" as a prefix).</doc>
+As some examples, searching for ‘fred’ would match the potential hit
+‘Smith, Fred’ and also ‘Frédéric’.  Searching for ‘Fréd’ would match
+‘Frédéric’ but not ‘Frederic’ (due to the one-directional nature of
+accent matching).  Searching ‘fo’ would match ‘Foo’ and ‘Bar Foo
+Baz’, but not ‘SFO’ (because no word has ‘fo’ as a prefix).</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if @potential_hit is a hit</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -46017,7 +46112,6 @@ test path arguments (`-p testpath` and `-s testpath`) as parsed by
 g_test_init(). See the g_test_run() documentation for more
 information on the order that tests are run in.
 
-
 g_test_run_suite() or g_test_run() may only be called once
 in a program.</doc>
       <return-value transfer-ownership="none">
@@ -47797,7 +47891,7 @@ The source will never close the fd -- you must do it yourself.</doc>
           <type name="IOCondition" c:type="GIOCondition"/>
         </parameter>
         <parameter name="function" transfer-ownership="none" closure="3">
-          <doc xml:space="preserve">a #GPollFDFunc</doc>
+          <doc xml:space="preserve">a #GUnixFDSourceFunc</doc>
           <type name="UnixFDSourceFunc" c:type="GUnixFDSourceFunc"/>
         </parameter>
         <parameter name="user_data"

@@ -379,6 +379,23 @@ namespace NM {
 		public bool vpn { get; }
 		public signal void state_changed (uint object, uint p0);
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_checkpoint_get_type ()")]
+	public class Checkpoint : NM.Object, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected Checkpoint ();
+		[Version (since = "1.12")]
+		public int64 get_created ();
+		[Version (since = "1.12")]
+		public unowned GLib.GenericArray<NM.Device> get_devices ();
+		[Version (since = "1.12")]
+		public uint32 get_rollback_timeout ();
+		[Version (since = "1.12")]
+		public int64 created { get; }
+		[Version (since = "1.12")]
+		public GLib.GenericArray<void*> devices { get; }
+		[Version (since = "1.12")]
+		public uint rollback_timeout { get; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_client_get_type ()")]
 	public class Client : GLib.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ACTIVATING_CONNECTION")]
@@ -458,6 +475,12 @@ namespace NM {
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async NM.Checkpoint checkpoint_create_async (GLib.GenericArray<NM.Device> devices, uint32 rollback_timeout, NM.CheckpointCreateFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async bool checkpoint_destroy_async (NM.Checkpoint checkpoint, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async GLib.HashTable<string,uint32> checkpoint_rollback_async (NM.Checkpoint checkpoint, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.10")]
 		public bool connectivity_check_get_available ();
 		[Version (since = "1.10")]
@@ -470,6 +493,8 @@ namespace NM {
 		public unowned GLib.GenericArray<NM.ActiveConnection> get_active_connections ();
 		[Version (since = "1.2")]
 		public unowned GLib.GenericArray<NM.Device> get_all_devices ();
+		[Version (since = "1.12")]
+		public unowned GLib.GenericArray<NM.Checkpoint> get_checkpoints ();
 		public unowned NM.RemoteConnection get_connection_by_id (string id);
 		public unowned NM.RemoteConnection get_connection_by_path (string path);
 		public unowned NM.RemoteConnection get_connection_by_uuid (string uuid);
@@ -516,6 +541,7 @@ namespace NM {
 		public GLib.GenericArray<void*> all_devices { get; }
 		[NoAccessorMethod]
 		public bool can_modify { get; }
+		public GLib.GenericArray<void*> checkpoints { get; }
 		public GLib.GenericArray<void*> connections { get; }
 		public NM.ConnectivityState connectivity { get; }
 		[NoAccessorMethod]
@@ -3247,25 +3273,205 @@ namespace NM {
 	public class SettingTeam : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_CONFIG")]
 		public const string CONFIG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_MCAST_REJOIN_COUNT")]
+		public const string MCAST_REJOIN_COUNT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_MCAST_REJOIN_INTERVAL")]
+		public const string MCAST_REJOIN_INTERVAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT")]
+		public const int NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_PEERS_COUNT")]
+		public const string NOTIFY_PEERS_COUNT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT")]
+		public const int NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_PEERS_INTERVAL")]
+		public const string NOTIFY_PEERS_INTERVAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_CONFIG")]
 		public const string PORT_CONFIG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_KEY")]
+		public const string PORT_LACP_KEY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_PRIO")]
+		public const string PORT_LACP_PRIO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_PRIO_DEFAULT")]
+		public const int PORT_LACP_PRIO_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_PRIO")]
+		public const string PORT_PRIO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_QUEUE_ID")]
+		public const string PORT_QUEUE_ID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_QUEUE_ID_DEFAULT")]
+		public const int PORT_QUEUE_ID_DEFAULT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_SETTING_NAME")]
 		public const string PORT_SETTING_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_STICKY")]
+		public const string PORT_STICKY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER")]
+		public const string RUNNER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ACTIVE")]
+		public const string RUNNER_ACTIVE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ACTIVEBACKUP")]
+		public const string RUNNER_ACTIVEBACKUP;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY")]
+		public const string RUNNER_AGG_SELECT_POLICY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_BANDWIDTH")]
+		public const string RUNNER_AGG_SELECT_POLICY_BANDWIDTH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_COUNT")]
+		public const string RUNNER_AGG_SELECT_POLICY_COUNT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO")]
+		public const string RUNNER_AGG_SELECT_POLICY_LACP_PRIO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE")]
+		public const string RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_PORT_CONFIG")]
+		public const string RUNNER_AGG_SELECT_POLICY_PORT_CONFIG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_BROADCAST")]
+		public const string RUNNER_BROADCAST;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_FAST_RATE")]
+		public const string RUNNER_FAST_RATE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY")]
+		public const string RUNNER_HWADDR_POLICY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_BY_ACTIVE")]
+		public const string RUNNER_HWADDR_POLICY_BY_ACTIVE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_ONLY_ACTIVE")]
+		public const string RUNNER_HWADDR_POLICY_ONLY_ACTIVE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_SAME_ALL")]
+		public const string RUNNER_HWADDR_POLICY_SAME_ALL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_LACP")]
+		public const string RUNNER_LACP;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_LOADBALANCE")]
+		public const string RUNNER_LOADBALANCE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_MIN_PORTS")]
+		public const string RUNNER_MIN_PORTS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ROUNDROBIN")]
+		public const string RUNNER_ROUNDROBIN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO")]
+		public const string RUNNER_SYS_PRIO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO_DEFAULT")]
+		public const int RUNNER_SYS_PRIO_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER")]
+		public const string RUNNER_TX_BALANCER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL")]
+		public const string RUNNER_TX_BALANCER_INTERVAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL_DEFAULT")]
+		public const int RUNNER_TX_BALANCER_INTERVAL_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_HASH")]
+		public const string RUNNER_TX_HASH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeam ();
+		[Version (since = "1.12")]
+		public bool add_runner_tx_hash (string txhash);
 		public unowned string get_config ();
+		[Version (since = "1.12")]
+		public int get_mcast_rejoin_count ();
+		[Version (since = "1.12")]
+		public int get_mcast_rejoin_interval ();
+		[Version (since = "1.12")]
+		public int get_notify_peers_count ();
+		[Version (since = "1.12")]
+		public int get_notify_peers_interval ();
+		[Version (since = "1.12")]
+		public uint get_num_runner_tx_hash ();
+		[Version (since = "1.12")]
+		public unowned string get_runner ();
+		[Version (since = "1.12")]
+		public bool get_runner_active ();
+		[Version (since = "1.12")]
+		public unowned string get_runner_agg_select_policy ();
+		[Version (since = "1.12")]
+		public bool get_runner_fast_rate ();
+		[Version (since = "1.12")]
+		public unowned string get_runner_hwaddr_policy ();
+		[Version (since = "1.12")]
+		public int get_runner_min_ports ();
+		[Version (since = "1.12")]
+		public int get_runner_sys_prio ();
+		[Version (since = "1.12")]
+		public unowned string get_runner_tx_balancer ();
+		[Version (since = "1.12")]
+		public int get_runner_tx_balancer_interval ();
+		[Version (since = "1.12")]
+		public unowned string get_runner_tx_hash (int idx);
+		[Version (since = "1.12")]
+		public void remove_runner_tx_hash (int idx);
+		[Version (since = "1.12")]
+		public bool remove_runner_tx_hash_by_value (string txhash);
 		[NoAccessorMethod]
 		public string config { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int mcast_rejoin_count { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int mcast_rejoin_interval { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int notify_peers_count { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int notify_peers_interval { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public string runner { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public bool runner_active { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public string runner_agg_select_policy { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public bool runner_fast_rate { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public string runner_hwaddr_policy { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int runner_min_ports { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int runner_sys_prio { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public string runner_tx_balancer { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int runner_tx_balancer_interval { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public string[] runner_tx_hash { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_team_port_get_type ()")]
 	public class SettingTeamPort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeamPort ();
 		public unowned string get_config ();
+		[Version (since = "1.12")]
+		public int get_lacp_key ();
+		[Version (since = "1.12")]
+		public int get_lacp_prio ();
+		[Version (since = "1.12")]
+		public int get_prio ();
+		[Version (since = "1.12")]
+		public int get_queue_id ();
+		[Version (since = "1.12")]
+		public bool get_sticky ();
 		[NoAccessorMethod]
 		public string config { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int lacp_key { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int lacp_prio { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int prio { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int queue_id { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public bool sticky { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_tun_get_type ()")]
 	public class SettingTun : NM.Setting {
@@ -4452,7 +4658,8 @@ namespace NM {
 		NEW_ACTIVATION,
 		PARENT_CHANGED,
 		PARENT_MANAGED_CHANGED,
-		OVSDB_FAILED
+		OVSDB_FAILED,
+		IP_ADDRESS_DUPLICATE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_TYPE_", type_id = "nm_device_type_get_type ()")]
 	public enum DeviceType {
@@ -4986,6 +5193,12 @@ namespace NM {
 	public delegate bool UtilsFileSearchInPathsPredicate (string filename);
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 2.9)]
 	public delegate void VpnIterFunc (string key, string value);
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_CREATED")]
+	public const string CHECKPOINT_CREATED;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_DEVICES")]
+	public const string CHECKPOINT_DEVICES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_ROLLBACK_TIMEOUT")]
+	public const string CHECKPOINT_ROLLBACK_TIMEOUT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_CHANGED")]
 	public const string CONNECTION_CHANGED;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD")]
@@ -5086,6 +5299,8 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_LOCK_WINDOW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_MTU")]
 	public const string IP_ROUTE_ATTRIBUTE_MTU;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ONLINK")]
+	public const string IP_ROUTE_ATTRIBUTE_ONLINK;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
 	public const string IP_ROUTE_ATTRIBUTE_SRC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TABLE")]
