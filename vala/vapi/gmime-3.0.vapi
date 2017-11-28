@@ -20,10 +20,9 @@ namespace GMime {
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_autocrypt_header_get_type ()")]
 	public class AutocryptHeader : GLib.Object {
-		public int actype;
 		public weak GMime.InternetAddressMailbox address;
 		public weak GLib.DateTime effective_date;
-		public weak GLib.ByteArray keydata;
+		public weak GLib.Bytes keydata;
 		public GMime.AutocryptPreferEncrypt prefer_encrypt;
 		[CCode (cname = "g_mime_autocrypt_header_new", has_construct_function = false)]
 		public AutocryptHeader ();
@@ -33,8 +32,6 @@ namespace GMime {
 		public int compare (GMime.AutocryptHeader ah2);
 		[CCode (cname = "g_mime_autocrypt_header_new_from_string", has_construct_function = false)]
 		public AutocryptHeader.from_string (string header);
-		[CCode (cname = "g_mime_autocrypt_header_get_actype")]
-		public int get_actype ();
 		[CCode (cname = "g_mime_autocrypt_header_get_address")]
 		public unowned GMime.InternetAddressMailbox get_address ();
 		[CCode (cname = "g_mime_autocrypt_header_get_address_as_string")]
@@ -42,15 +39,11 @@ namespace GMime {
 		[CCode (cname = "g_mime_autocrypt_header_get_effective_date")]
 		public unowned GLib.DateTime get_effective_date ();
 		[CCode (cname = "g_mime_autocrypt_header_get_keydata")]
-		public unowned GLib.ByteArray get_keydata ();
+		public unowned GLib.Bytes get_keydata ();
 		[CCode (cname = "g_mime_autocrypt_header_get_prefer_encrypt")]
 		public GMime.AutocryptPreferEncrypt get_prefer_encrypt ();
-		[CCode (cname = "g_mime_autocrypt_header_get_string")]
-		public string get_string ();
 		[CCode (cname = "g_mime_autocrypt_header_is_complete")]
 		public bool is_complete ();
-		[CCode (cname = "g_mime_autocrypt_header_set_actype")]
-		public void set_actype (int actype);
 		[CCode (cname = "g_mime_autocrypt_header_set_address")]
 		public void set_address (GMime.InternetAddressMailbox address);
 		[CCode (cname = "g_mime_autocrypt_header_set_address_from_string")]
@@ -58,9 +51,11 @@ namespace GMime {
 		[CCode (cname = "g_mime_autocrypt_header_set_effective_date")]
 		public void set_effective_date (GLib.DateTime effective_date);
 		[CCode (cname = "g_mime_autocrypt_header_set_keydata")]
-		public void set_keydata (GLib.ByteArray data);
+		public void set_keydata (GLib.Bytes data);
 		[CCode (cname = "g_mime_autocrypt_header_set_prefer_encrypt")]
 		public void set_prefer_encrypt (GMime.AutocryptPreferEncrypt pref);
+		[CCode (cname = "g_mime_autocrypt_header_to_string")]
+		public string to_string (bool gossip);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_autocrypt_header_list_get_type ()")]
 	public class AutocryptHeaderList : GLib.Object {
@@ -357,6 +352,8 @@ namespace GMime {
 		public FilterChecksum (GLib.ChecksumType type);
 		[CCode (cname = "g_mime_filter_checksum_get_digest")]
 		public size_t get_digest (uint8 digest, size_t len);
+		[CCode (cname = "g_mime_filter_checksum_get_string")]
+		public string get_string ();
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", lower_case_csuffix = "filter_dos2unix", type_id = "g_mime_filter_dos2unix_get_type ()")]
 	public class FilterDos2Unix : GMime.Filter {
@@ -644,9 +641,11 @@ namespace GMime {
 		[CCode (cname = "g_mime_message_get_all_recipients")]
 		public GMime.InternetAddressList get_all_recipients ();
 		[CCode (cname = "g_mime_message_get_autocrypt_gossip_headers")]
-		public GMime.AutocryptHeaderList get_autocrypt_gossip_headers (int actype, GLib.DateTime now);
-		[CCode (cname = "g_mime_message_get_autocrypt_headers")]
-		public GMime.AutocryptHeaderList get_autocrypt_headers (int actype, GLib.DateTime now);
+		public GMime.AutocryptHeaderList get_autocrypt_gossip_headers (GLib.DateTime now, GMime.DecryptFlags flags, string session_key) throws GLib.Error;
+		[CCode (cname = "g_mime_message_get_autocrypt_gossip_headers_from_inner_part")]
+		public GMime.AutocryptHeaderList get_autocrypt_gossip_headers_from_inner_part (GLib.DateTime now, GMime.Object inner_part);
+		[CCode (cname = "g_mime_message_get_autocrypt_header")]
+		public GMime.AutocryptHeader get_autocrypt_header (GLib.DateTime now);
 		[CCode (cname = "g_mime_message_get_bcc")]
 		public unowned GMime.InternetAddressList get_bcc ();
 		[CCode (cname = "g_mime_message_get_body")]
@@ -1449,6 +1448,20 @@ namespace GMime {
 		RFC2231,
 		RFC2047
 	}
+	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_", has_type_id = false)]
+	public enum ParserWarning {
+		WARN_DUPLICATED_CONTENT_HDR,
+		WARN_DUPLICATED_PARAMETER,
+		WARN_UNENCODED_8BIT_HEADER,
+		WARN_INVALID_CONTENT_TYPE,
+		WARN_INVALID_HEADER,
+		WARN_MALFORMED_MULTIPART,
+		WARN_TRUNCATED_MESSAGE,
+		WARN_MALFORMED_MESSAGE,
+		CRIT_CONFLICTING_CONTENT_HDR,
+		CRIT_CONFLICTING_PARAMETER,
+		CRIT_MULTIPART_WITHOUT_BOUNDARY
+	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_PUBKEY_ALGO_", has_type_id = false)]
 	public enum PubKeyAlgo {
 		DEFAULT,
@@ -1531,6 +1544,8 @@ namespace GMime {
 	public delegate void ObjectForeachFunc (GMime.Object parent, GMime.Object part);
 	[CCode (cheader_filename = "gmime/gmime.h", instance_pos = 4.9)]
 	public delegate void ParserHeaderRegexFunc (GMime.Parser parser, string header, string value, int64 offset);
+	[CCode (cheader_filename = "gmime/gmime.h", instance_pos = 3.9)]
+	public delegate void ParserWarningFunc (int64 offset, GMime.ParserWarning errcode, string item);
 	[CCode (cheader_filename = "gmime/gmime.h", has_target = false)]
 	public delegate bool PasswordRequestFunc (GMime.CryptoContext ctx, string user_id, string prompt, bool reprompt, GMime.Stream response) throws GLib.Error;
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "GMIME_BINARY_AGE")]

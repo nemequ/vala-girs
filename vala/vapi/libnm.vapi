@@ -2168,6 +2168,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint hello_time { get; set construct; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.12")]
 		public string mac_address { owned get; set; }
 		[NoAccessorMethod]
 		public uint max_age { get; set construct; }
@@ -3604,10 +3605,16 @@ namespace NM {
 		public void foreach_data_item (NM.VpnIterFunc func);
 		public void foreach_secret (NM.VpnIterFunc func);
 		public unowned string get_data_item (string key);
+		[CCode (array_length_pos = 0.1)]
+		[Version (since = "1.12")]
+		public (unowned string)[] get_data_keys ();
 		public uint32 get_num_data_items ();
 		public uint32 get_num_secrets ();
 		public bool get_persistent ();
 		public unowned string get_secret (string key);
+		[CCode (array_length_pos = 0.1)]
+		[Version (since = "1.12")]
+		public (unowned string)[] get_secret_keys ();
 		public unowned string get_service_type ();
 		[Version (since = "1.2")]
 		public uint32 get_timeout ();

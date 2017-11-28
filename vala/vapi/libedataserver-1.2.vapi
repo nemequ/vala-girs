@@ -123,6 +123,27 @@ namespace E {
 	[Version (since = "1.12")]
 	public class Flag {
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_gdata_oauth2_authorizer_get_type ()")]
+	public class GDataOAuth2Authorizer : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.28")]
+		public GDataOAuth2Authorizer (E.Source source, GLib.Type service_type);
+		[Version (since = "3.28")]
+		public E.NamedParameters? clone_credentials ();
+		[Version (since = "3.28")]
+		public GLib.Type get_service_type ();
+		[Version (since = "3.28")]
+		public bool is_expired ();
+		[Version (since = "3.28")]
+		public E.Source ref_source ();
+		[Version (since = "3.28")]
+		public void set_credentials (E.NamedParameters? credentials);
+		[Version (since = "3.28")]
+		public static bool supported ();
+		public GLib.Type service_type { get; construct; }
+		[NoAccessorMethod]
+		public E.Source source { owned get; construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	public class MemChunk {

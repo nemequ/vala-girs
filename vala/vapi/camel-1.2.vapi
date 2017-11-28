@@ -1430,6 +1430,8 @@ namespace Camel {
 		public virtual bool downsync_sync (string expression, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.32")]
 		public Camel.ThreeState get_offline_sync ();
+		[Version (since = "3.28")]
+		public void schedule_downsync (Camel.FolderChangeInfo? changes);
 		[Version (since = "2.32")]
 		public void set_offline_sync (Camel.ThreeState offline_sync);
 		public Camel.ThreeState offline_sync { get; set; }
@@ -2112,6 +2114,8 @@ namespace Camel {
 		[Version (since = "3.2")]
 		public void ignore_next_changed_event (Camel.Folder subfolder);
 		public virtual void rebuild_folder (Camel.Folder subfolder, GLib.Cancellable? cancellable = null);
+		[Version (since = "3.28")]
+		public GLib.List<Camel.Folder> ref_folders ();
 		public virtual void remove_folder (Camel.Folder subfolder, GLib.Cancellable? cancellable = null);
 		[Version (since = "3.12")]
 		public void remove_from_ignore_changed_event (Camel.Folder subfolder);

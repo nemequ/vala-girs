@@ -15292,6 +15292,31 @@ the old one is replaced by the new one.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="add_static_pad_template_with_gtype"
+              c:identifier="gst_element_class_add_static_pad_template_with_gtype"
+              version="1.14">
+        <doc xml:space="preserve">Adds a pad template to an element class based on the static pad template
+@templ. This is mainly used in the _class_init functions of element
+implementations. If a pad template with the same name already exists,
+the old one is replaced by the new one.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="klass" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElementClass to add the pad template to.</doc>
+            <type name="ElementClass" c:type="GstElementClass*"/>
+          </instance-parameter>
+          <parameter name="static_templ" transfer-ownership="none">
+            <doc xml:space="preserve">#GstStaticPadTemplate to add as pad template to the element class.</doc>
+            <type name="StaticPadTemplate" c:type="GstStaticPadTemplate*"/>
+          </parameter>
+          <parameter name="pad_type" transfer-ownership="none">
+            <doc xml:space="preserve">The #GType of the pad to create</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_metadata"
               c:identifier="gst_element_class_get_metadata">
         <doc xml:space="preserve">Get metadata with @key in @klass.</doc>
@@ -28443,6 +28468,24 @@ and with the given arguments.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_from_static_pad_template_with_gtype"
+                   c:identifier="gst_pad_template_new_from_static_pad_template_with_gtype">
+        <doc xml:space="preserve">Converts a #GstStaticPadTemplate into a #GstPadTemplate with a type.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GstPadTemplate.</doc>
+          <type name="PadTemplate" c:type="GstPadTemplate*"/>
+        </return-value>
+        <parameters>
+          <parameter name="pad_template" transfer-ownership="none">
+            <doc xml:space="preserve">the static pad template</doc>
+            <type name="StaticPadTemplate" c:type="GstStaticPadTemplate*"/>
+          </parameter>
+          <parameter name="pad_type" transfer-ownership="none">
+            <doc xml:space="preserve">The #GType of the pad to create</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <virtual-method name="pad_created" invoker="pad_created">
         <doc xml:space="preserve">Emit the pad-created signal for this template when created by this pad.</doc>
         <return-value transfer-ownership="none">
@@ -28503,6 +28546,14 @@ Unref after usage.</doc>
         <doc xml:space="preserve">The direction of the pad described by the pad template.</doc>
         <type name="PadDirection"/>
       </property>
+      <property name="gtype"
+                version="1.14"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The type of the pad described by the pad template.</doc>
+        <type name="GType" c:type="GType"/>
+      </property>
       <property name="name-template"
                 writable="1"
                 construct-only="1"
@@ -28532,11 +28583,18 @@ Unref after usage.</doc>
       <field name="caps">
         <type name="Caps" c:type="GstCaps*"/>
       </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
+      <union name="ABI" c:type="ABI">
+        <field name="_gst_reserved" writable="1">
+          <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </field>
+        <record name="abi" c:type="abi">
+          <field name="gtype" writable="1">
+            <type name="GType" c:type="GType"/>
+          </field>
+        </record>
+      </union>
       <glib:signal name="pad-created" when="last">
         <doc xml:space="preserve">This signal is fired when an element creates a pad from this template.</doc>
         <return-value transfer-ownership="none">
@@ -31262,6 +31320,215 @@ application of the status of asynchronous tasks.</doc>
               glib:nick="error">
         <doc xml:space="preserve">A task caused an error. An error message is also
          posted on the bus.</doc>
+      </member>
+    </enumeration>
+    <record name="Promise"
+            c:type="GstPromise"
+            glib:type-name="GstPromise"
+            glib:get-type="gst_promise_get_type"
+            c:symbol-prefix="promise">
+      <doc xml:space="preserve">The #GstPromise object implements the container for values that may
+be available later. i.e. a Future or a Promise in
+&lt;ulink url="https://en.wikipedia.org/wiki/Futures_and_promises"&gt;https://en.wikipedia.org/wiki/Futures_and_promises&lt;/ulink&gt;
+
+A #GstPromise can be created with gst_promise_new(), replied to
+with gst_promise_reply(), interrupted with gst_promise_interrupt() and
+expired with gst_promise_expire(). A callback can also be installed at
+#GstPromise creation for result changes with gst_promise_new_with_change_func().
+The change callback can be used to chain #GstPromises's together as in the
+following example.
+|[&lt;!-- language="C" --&gt;
+const GstStructure *reply;
+GstPromise *p;
+if (gst_promise_wait (promise) != GST_PROMISE_RESULT_REPLIED)
+  return; // interrupted or expired value
+reply = gst_promise_get_reply (promise);
+if (error in reply)
+  return; // propagate error
+p = gst_promise_new_with_change_func (another_promise_change_func, user_data, notify);
+pass p to promise-using API
+]|
+
+Each #GstPromise starts out with a #GstPromiseResult of
+%GST_PROMISE_RESULT_PENDING and only ever transitions out of that result
+into one of the other #GstPromiseResult.
+
+In order to support multi-threaded code, gst_promise_reply(),
+gst_promise_interrupt() and gst_promise_expire() may all be from
+different threads with some restrictions, the final result of the promise
+is whichever call is made first.  There are two restrictions on ordering:
+
+1. That gst_promise_reply() and gst_promise_interrupt() cannot be called
+after gst_promise_expire()
+2. That gst_promise_reply() and gst_promise_interrupt()
+cannot be called twice.</doc>
+      <field name="parent" writable="1">
+        <doc xml:space="preserve">parent #GstMiniObject</doc>
+        <type name="MiniObject" c:type="GstMiniObject"/>
+      </field>
+      <constructor name="new" c:identifier="gst_promise_new">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstPromise</doc>
+          <type name="Promise" c:type="GstPromise*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_with_change_func"
+                   c:identifier="gst_promise_new_with_change_func">
+        <doc xml:space="preserve">@func will be called exactly once when transitioning out of
+%GST_PROMISE_RESULT_PENDING into any of the other #GstPromiseResult
+states.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstPromise</doc>
+          <type name="Promise" c:type="GstPromise*"/>
+        </return-value>
+        <parameters>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">a #GstPromiseChangeFunc to call</doc>
+            <type name="PromiseChangeFunc" c:type="GstPromiseChangeFunc"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">argument to call @func with</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">notification function that @user_data is no longer needed</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="expire" c:identifier="gst_promise_expire">
+        <doc xml:space="preserve">Expire a @promise.  This will wake up any waiters with
+%GST_PROMISE_RESULT_EXPIRED</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="promise" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPromise</doc>
+            <type name="Promise" c:type="GstPromise*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_reply" c:identifier="gst_promise_get_reply">
+        <doc xml:space="preserve">Retrieve the reply set on @promise.  @promise must be in
+%GST_PROMISE_RESULT_REPLIED and is owned by @promise</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The reply set on @promise</doc>
+          <type name="Structure" c:type="const GstStructure*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="promise" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPromise</doc>
+            <type name="Promise" c:type="GstPromise*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="interrupt" c:identifier="gst_promise_interrupt">
+        <doc xml:space="preserve">Interrupt waiting for a @promise.  This will wake up any waiters with
+%GST_PROMISE_RESULT_INTERRUPTED</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="promise" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPromise</doc>
+            <type name="Promise" c:type="GstPromise*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="reply" c:identifier="gst_promise_reply">
+        <doc xml:space="preserve">Set a reply on @promise.  This will wake up any waiters with
+%GST_PROMISE_RESULT_REPLIED.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="promise"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #GstPromise</doc>
+            <type name="Promise" c:type="GstPromise*"/>
+          </instance-parameter>
+          <parameter name="s" transfer-ownership="full">
+            <doc xml:space="preserve">a #GstStructure with the the reply contents</doc>
+            <type name="Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="wait" c:identifier="gst_promise_wait">
+        <doc xml:space="preserve">Wait for @promise to move out of the %GST_PROMISE_RESULT_PENDING state.
+If @promise is not in %GST_PROMISE_RESULT_PENDING then it will return
+immediately with the current result.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the result of the promise</doc>
+          <type name="PromiseResult" c:type="GstPromiseResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="promise" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstPromise</doc>
+            <type name="Promise" c:type="GstPromise*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
+    <callback name="PromiseChangeFunc" c:type="GstPromiseChangeFunc">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="promise" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstPromise</doc>
+          <type name="Promise" c:type="GstPromise*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="1">
+          <doc xml:space="preserve">user data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <enumeration name="PromiseResult"
+                 glib:type-name="GstPromiseResult"
+                 glib:get-type="gst_promise_result_get_type"
+                 c:type="GstPromiseResult">
+      <doc xml:space="preserve">The result of a #GstPromise</doc>
+      <member name="pending"
+              value="0"
+              c:identifier="GST_PROMISE_RESULT_PENDING"
+              glib:nick="pending">
+        <doc xml:space="preserve">Initial state. Waiting for transition to any
+	other state.</doc>
+      </member>
+      <member name="interrupted"
+              value="1"
+              c:identifier="GST_PROMISE_RESULT_INTERRUPTED"
+              glib:nick="interrupted">
+        <doc xml:space="preserve">Interrupted by the consumer as it doesn't
+	want the value anymore.</doc>
+      </member>
+      <member name="replied"
+              value="2"
+              c:identifier="GST_PROMISE_RESULT_REPLIED"
+              glib:nick="replied">
+        <doc xml:space="preserve">A producer marked a reply</doc>
+      </member>
+      <member name="expired"
+              value="3"
+              c:identifier="GST_PROMISE_RESULT_EXPIRED"
+              glib:nick="expired">
+        <doc xml:space="preserve">The promise expired (the carrying object
+	lost all refs) and the promise will never be fulfilled.</doc>
       </member>
     </enumeration>
     <record name="ProtectionMeta" c:type="GstProtectionMeta" version="1.6">
@@ -47305,6 +47572,20 @@ the result.</doc>
                    transfer-ownership="full">
           <doc xml:space="preserve">pointer to a #gint to hold the result denominator</doc>
           <type name="gint" c:type="gint*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="util_dump_buffer"
+              c:identifier="gst_util_dump_buffer"
+              version="1.14">
+      <doc xml:space="preserve">Dumps the buffer memory into a hex representation. Useful for debugging.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="buf" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer whose memory to dump</doc>
+          <type name="Buffer" c:type="GstBuffer*"/>
         </parameter>
       </parameters>
     </function>
