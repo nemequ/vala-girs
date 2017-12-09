@@ -13675,6 +13675,81 @@ been written to disk, or if the connection has never been saved.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="update2"
+              c:identifier="nm_remote_connection_update2"
+              version="1.12">
+        <doc xml:space="preserve">Asynchronously calls the Update2() D-Bus method.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="settings"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional connection to update the settings.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">update-flags</doc>
+            <type name="SettingsUpdate2Flags" c:type="NMSettingsUpdate2Flags"/>
+          </parameter>
+          <parameter name="args"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional arguments.</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">callback to be called when the commit operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update2_finish"
+              c:identifier="nm_remote_connection_update2_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_remote_connection_commit_changes_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">on success, a #GVariant of type "a{sv}" with the result. On failure,
+  %NULL.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="unsaved" transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the remote connection contains changes that have not been saved
 to disk, %FALSE if the connection is the same as its on-disk representation.</doc>
@@ -15374,6 +15449,11 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_TEAM_CONFIG">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_TEAM_LINK_WATCHERS"
+              value="link-watchers"
+              c:type="NM_SETTING_TEAM_LINK_WATCHERS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_TEAM_MCAST_REJOIN_COUNT"
               value="mcast-rejoin-count"
               c:type="NM_SETTING_TEAM_MCAST_REJOIN_COUNT">
@@ -15423,6 +15503,11 @@ supported for IPv6)</doc>
               value="255"
               c:type="NM_SETTING_TEAM_PORT_LACP_PRIO_DEFAULT">
       <type name="gint" c:type="gint"/>
+    </constant>
+    <constant name="SETTING_TEAM_PORT_LINK_WATCHERS"
+              value="link-watchers"
+              c:type="NM_SETTING_TEAM_PORT_LINK_WATCHERS">
+      <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_TEAM_PORT_PRIO"
               value="prio"
@@ -23399,7 +23484,7 @@ Either the options are explicitly set to have no values,
 or the options are left undefined. The latter means to use
 a default configuration, while the former explicitly means "no-options".</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">whether DNS options are initalized or left unset (the default).</doc>
+          <doc xml:space="preserve">whether DNS options are initialized or left unset (the default).</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -26077,6 +26162,26 @@ The 1 in "8n1" for example.</doc>
           <type name="Setting" c:type="NMSetting*"/>
         </return-value>
       </constructor>
+      <method name="add_link_watcher"
+              c:identifier="nm_setting_team_add_link_watcher"
+              version="1.12">
+        <doc xml:space="preserve">Appends a new link watcher to the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the link watcher is added; %FALSE if an identical link
+watcher was already there.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="link_watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the link watcher to add</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_runner_tx_hash"
               c:identifier="nm_setting_team_add_runner_tx_hash"
               version="1.12">
@@ -26097,6 +26202,20 @@ was already knnown.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="clear_link_watchers"
+              c:identifier="nm_setting_team_clear_link_watchers"
+              version="1.12">
+        <doc xml:space="preserve">Removes all configured link watchers.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_config" c:identifier="nm_setting_team_get_config">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeam:config property of the setting</doc>
@@ -26107,6 +26226,24 @@ was already knnown.</doc>
             <doc xml:space="preserve">the #NMSettingTeam</doc>
             <type name="SettingTeam" c:type="NMSettingTeam*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_link_watcher"
+              c:identifier="nm_setting_team_get_link_watcher"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the link watcher at index @idx.</doc>
+          <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the link watcher to return</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_mcast_rejoin_count"
@@ -26157,6 +26294,20 @@ was already knnown.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:notify-peers-interval property of the setting</doc>
           <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_num_link_watchers"
+              c:identifier="nm_setting_team_get_num_link_watchers"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of configured link watchers</doc>
+          <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -26319,7 +26470,44 @@ was already knnown.</doc>
           </instance-parameter>
           <parameter name="idx" transfer-ownership="none">
             <doc xml:space="preserve">index number of the txhash element to return</doc>
-            <type name="gint" c:type="int"/>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_link_watcher"
+              c:identifier="nm_setting_team_remove_link_watcher"
+              version="1.12">
+        <doc xml:space="preserve">Removes the link watcher at index #idx.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the link watcher to remove</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_link_watcher_by_value"
+              c:identifier="nm_setting_team_remove_link_watcher_by_value"
+              version="1.12">
+        <doc xml:space="preserve">Removes the link watcher entry matching link_watcher.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the link watcher was found and removed, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeam</doc>
+            <type name="SettingTeam" c:type="NMSettingTeam*"/>
+          </instance-parameter>
+          <parameter name="link_watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the link watcher to remove</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
           </parameter>
         </parameters>
       </method>
@@ -26337,7 +26525,7 @@ was already knnown.</doc>
           </instance-parameter>
           <parameter name="idx" transfer-ownership="none">
             <doc xml:space="preserve">index number of the element to remove from txhash</doc>
-            <type name="gint" c:type="int"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </method>
@@ -26366,6 +26554,24 @@ should contain raw JSON configuration data suitable for teamd, because
 the value is passed directly to teamd. If not specified, the default
 configuration is used.  See man teamd.conf for the format details.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="link-watchers"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Link watchers configuration for the connection: each link watcher is
+defined by a dictionary, whose keys depend upon the selected link
+watcher. Available link watchers are 'ethtool', 'nsna_ping' and
+'arp_ping' and it is specified in the dictionary with the key 'name'.
+Available keys are:   ethtool: 'delay-up', 'delay-down', 'init-wait';
+nsna_ping: 'init-wait', 'interval', 'missed-max', 'target-host';
+arp_ping: all the ones in nsna_ping and 'source-host', 'validate-active',
+'validate-incative', 'send-always'. See teamd.conf man for more details.
+
+Element-Type: NMTeamLinkWatcher</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="mcast-rejoin-count"
                 version="1.12"
@@ -26500,6 +26706,40 @@ Permitted values are: "roundrobin", "broadcast", "activebackup",
           <type name="Setting" c:type="NMSetting*"/>
         </return-value>
       </constructor>
+      <method name="add_link_watcher"
+              c:identifier="nm_setting_team_port_add_link_watcher"
+              version="1.12">
+        <doc xml:space="preserve">Appends a new link watcher to the setting.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the link watcher is added; %FALSE if an identical link
+watcher was already there.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+          <parameter name="link_watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the link watcher to add</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear_link_watchers"
+              c:identifier="nm_setting_team_port_clear_link_watchers"
+              version="1.12">
+        <doc xml:space="preserve">Removes all configured link watchers.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_config" c:identifier="nm_setting_team_port_get_config">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeamPort:config property of the setting</doc>
@@ -26532,6 +26772,38 @@ Permitted values are: "roundrobin", "broadcast", "activebackup",
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeamPort:lacp-prio property of the setting</doc>
           <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_link_watcher"
+              c:identifier="nm_setting_team_port_get_link_watcher"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the link watcher at index @idx.</doc>
+          <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the link watcher to return</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_num_link_watchers"
+              c:identifier="nm_setting_team_port_get_num_link_watchers"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of configured link watchers</doc>
+          <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -26582,6 +26854,43 @@ Permitted values are: "roundrobin", "broadcast", "activebackup",
           </instance-parameter>
         </parameters>
       </method>
+      <method name="remove_link_watcher"
+              c:identifier="nm_setting_team_port_remove_link_watcher"
+              version="1.12">
+        <doc xml:space="preserve">Removes the link watcher at index #idx.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the link watcher to remove</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_link_watcher_by_value"
+              c:identifier="nm_setting_team_port_remove_link_watcher_by_value"
+              version="1.12">
+        <doc xml:space="preserve">Removes the link watcher entry matching link_watcher.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the link watcher was found and removed, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTeamPort</doc>
+            <type name="SettingTeamPort" c:type="NMSettingTeamPort*"/>
+          </instance-parameter>
+          <parameter name="link_watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the link watcher to remove</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="config" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The JSON configuration for the team port. The property should contain raw
 JSON configuration data suitable for teamd, because the value is passed
@@ -26602,6 +26911,24 @@ used. See man teamd.conf for the format details.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Corresponds to the teamd ports.PORTIFNAME.lacp_prio.</doc>
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="link-watchers"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Link watchers configuration for the connection: each link watcher is
+defined by a dictionary, whose keys depend upon the selected link
+watcher. Available link watchers are 'ethtool', 'nsna_ping' and
+'arp_ping' and it is specified in the dictionary with the key 'name'.
+Available keys are:   ethtool: 'delay-up', 'delay-down', 'init-wait';
+nsna_ping: 'init-wait', 'interval', 'missed-max', 'target-host';
+arp_ping: all the ones in nsna_ping and 'source-host', 'validate-active',
+'validate-incative', 'send-always'. See teamd.conf man for more details.
+
+Element-Type: NMTeamLinkWatcher</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </property>
       <property name="prio"
                 version="1.12"
@@ -30356,12 +30683,88 @@ D-Bus errors in that namespace.</doc>
               glib:nick="InvalidHostname">
         <doc xml:space="preserve">attempted to set an invalid hostname</doc>
       </member>
+      <member name="InvalidArguments"
+              value="7"
+              c:identifier="NM_SETTINGS_ERROR_INVALID_ARGUMENTS"
+              glib:nick="InvalidArguments">
+        <doc xml:space="preserve">invalid arguments</doc>
+      </member>
       <function name="quark" c:identifier="nm_settings_error_quark">
         <return-value transfer-ownership="none">
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
     </enumeration>
+    <bitfield name="SettingsUpdate2Flags"
+              version="1.12"
+              glib:type-name="NMSettingsUpdate2Flags"
+              glib:get-type="nm_settings_update2_flags_get_type"
+              c:type="NMSettingsUpdate2Flags">
+      <member name="none"
+              value="0"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">an alias for numeric zero, no flags set.</doc>
+      </member>
+      <member name="to_disk"
+              value="1"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_TO_DISK"
+              glib:nick="to-disk">
+        <doc xml:space="preserve">to persist the connection to disk.</doc>
+      </member>
+      <member name="in_memory"
+              value="2"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY"
+              glib:nick="in-memory">
+        <doc xml:space="preserve">to make the connection in-memory only.
+  If the connection was previously persistent, the corresponding file on disk
+  is not deleted but merely the connection is decoupled from the file
+  on disk. If you later delete an in-memory connection, the connection
+  on disk will be deleted as well.</doc>
+      </member>
+      <member name="in_memory_detached"
+              value="4"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY_DETACHED"
+              glib:nick="in-memory-detached">
+        <doc xml:space="preserve">this is like @NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY,
+  but if the connection has a corresponding file on disk, the association between
+  the connection and the file is forgotten but the file is not modified.
+  The difference to %NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY is if you later
+  save the connection again to disk, a new file name will be chosen without
+  overwriting the remaining file on disk. Also, if you delete the connection
+  later, the file on disk will not be deleted.</doc>
+      </member>
+      <member name="in_memory_only"
+              value="8"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY_ONLY"
+              glib:nick="in-memory-only">
+        <doc xml:space="preserve">this is like @NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY,
+  but if the connection has a corresponding file on disk, the file on
+  disk will be deleted.</doc>
+      </member>
+      <member name="volatile"
+              value="16"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_VOLATILE"
+              glib:nick="volatile">
+        <doc xml:space="preserve">This can be specified with either
+  %NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY_DETACHED or %NM_SETTINGS_UPDATE2_FLAG_IN_MEMORY_ONLY.
+  After making the connection in-memory only, the connection is marked
+  as volatile. That means, if the connection is currently not active
+  it will be deleted right away. Otherwise, it is marked to for deletion
+  once the connection deactivates. A volatile connection cannot autoactivate
+  again (because it's about to be deleted), but a manual activation will
+  clear the volatile flag.</doc>
+      </member>
+      <member name="block_autoconnect"
+              value="32"
+              c:identifier="NM_SETTINGS_UPDATE2_FLAG_BLOCK_AUTOCONNECT"
+              glib:nick="block-autoconnect">
+        <doc xml:space="preserve">usually, when the connection
+  has autoconnect enabled and is modified, it becomes elegible to autoconnect
+  right away. Setting this flag, disables autoconnect until the connection
+  is manually activated.</doc>
+      </member>
+    </bitfield>
     <class name="SimpleConnection"
            c:symbol-prefix="simple_connection"
            c:type="NMSimpleConnection"
@@ -30500,6 +30903,337 @@ connection failed to normalize.</doc>
    indicate full network connectivity.</doc>
       </member>
     </enumeration>
+    <constant name="TEAM_LINK_WATCHER_ARP_PING"
+              value="arp_ping"
+              c:type="NM_TEAM_LINK_WATCHER_ARP_PING">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TEAM_LINK_WATCHER_ETHTOOL"
+              value="ethtool"
+              c:type="NM_TEAM_LINK_WATCHER_ETHTOOL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="TEAM_LINK_WATCHER_NSNA_PING"
+              value="nsna_ping"
+              c:type="NM_TEAM_LINK_WATCHER_NSNA_PING">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <record name="TeamLinkWatcher"
+            c:type="NMTeamLinkWatcher"
+            glib:type-name="NMTeamLinkWatcher"
+            glib:get-type="nm_team_link_watcher_get_type"
+            c:symbol-prefix="team_link_watcher">
+      <constructor name="new_arp_ping"
+                   c:identifier="nm_team_link_watcher_new_arp_ping"
+                   version="1.12"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new arp_ping #NMTeamLinkWatcher object</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMTeamLinkWatcher object, or %NULL on error</doc>
+          <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+        </return-value>
+        <parameters>
+          <parameter name="init_wait" transfer-ownership="none">
+            <doc xml:space="preserve">init_wait value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="interval" transfer-ownership="none">
+            <doc xml:space="preserve">interval value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="missed_max" transfer-ownership="none">
+            <doc xml:space="preserve">missed_max value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="target_host" transfer-ownership="none">
+            <doc xml:space="preserve">the host name or the ip address that will be used as destination
+  address in the arp request</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="source_host" transfer-ownership="none">
+            <doc xml:space="preserve">the host name or the ip address that will be used as source
+  address in the arp request</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">the watcher #NMTeamLinkWatcherArpPingFlags</doc>
+            <type name="TeamLinkWatcherArpPingFlags"
+                  c:type="NMTeamLinkWatcherArpPingFlags"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_ethtool"
+                   c:identifier="nm_team_link_watcher_new_ethtool"
+                   version="1.12"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new ethtool #NMTeamLinkWatcher object</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMTeamLinkWatcher object</doc>
+          <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+        </return-value>
+        <parameters>
+          <parameter name="delay_up" transfer-ownership="none">
+            <doc xml:space="preserve">delay_up value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="delay_down" transfer-ownership="none">
+            <doc xml:space="preserve">delay_down value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_nsna_ping"
+                   c:identifier="nm_team_link_watcher_new_nsna_ping"
+                   version="1.12"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new nsna_ping #NMTeamLinkWatcher object</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMTeamLinkWatcher object, or %NULL on error</doc>
+          <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+        </return-value>
+        <parameters>
+          <parameter name="init_wait" transfer-ownership="none">
+            <doc xml:space="preserve">init_wait value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="interval" transfer-ownership="none">
+            <doc xml:space="preserve">interval value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="missed_max" transfer-ownership="none">
+            <doc xml:space="preserve">missed_max value</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="target_host" transfer-ownership="none">
+            <doc xml:space="preserve">the host name or the ipv6 address that will be used as
+  target address in the NS packet</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="dup"
+              c:identifier="nm_team_link_watcher_dup"
+              version="1.12">
+        <doc xml:space="preserve">Creates a copy of @watcher</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a copy of @watcher</doc>
+          <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="equal"
+              c:identifier="nm_team_link_watcher_equal"
+              version="1.12">
+        <doc xml:space="preserve">Determines if two #NMTeamLinkWatcher objects contain the same values
+in all the properties.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the objects contain the same values, %FALSE if they do not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher to compare @watcher to.</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_delay_down"
+              c:identifier="nm_team_link_watcher_get_delay_down"
+              version="1.12">
+        <doc xml:space="preserve">Gets the delay_down interval (in milliseconds) that elapses between the link
+going down and the runner beeing notified about it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_delay_up"
+              c:identifier="nm_team_link_watcher_get_delay_up"
+              version="1.12">
+        <doc xml:space="preserve">Gets the delay_up interval (in milliseconds) that elapses between the link
+coming up and the runner beeing notified about it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flags"
+              c:identifier="nm_team_link_watcher_get_flags"
+              version="1.12">
+        <doc xml:space="preserve">Gets the arp ping watcher flags.</doc>
+        <return-value transfer-ownership="none">
+          <type name="TeamLinkWatcherArpPingFlags"
+                c:type="NMTeamLinkWatcherArpPingFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_init_wait"
+              c:identifier="nm_team_link_watcher_get_init_wait"
+              version="1.12">
+        <doc xml:space="preserve">Gets the init_wait interval (in milliseconds) that the team slave should
+wait before sending the first packet to the target host.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_interval"
+              c:identifier="nm_team_link_watcher_get_interval"
+              version="1.12">
+        <doc xml:space="preserve">Gets the interval (in milliseconds) that the team slave should wait between
+sending two check packets to the target host.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_missed_max"
+              c:identifier="nm_team_link_watcher_get_missed_max"
+              version="1.12">
+        <doc xml:space="preserve">Gets the number of missed replies after which the link is considered down.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_name"
+              c:identifier="nm_team_link_watcher_get_name"
+              version="1.12">
+        <doc xml:space="preserve">Gets the name of the link watcher to be used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_source_host"
+              c:identifier="nm_team_link_watcher_get_source_host"
+              version="1.12">
+        <doc xml:space="preserve">Gets the ip address to be used as source for the link probing packets.</doc>
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_target_host"
+              c:identifier="nm_team_link_watcher_get_target_host"
+              version="1.12">
+        <doc xml:space="preserve">Gets the host name/ip address to be used as destination for the link probing
+packets.</doc>
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref"
+              c:identifier="nm_team_link_watcher_ref"
+              version="1.12">
+        <doc xml:space="preserve">Increases the reference count of the object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="unref"
+              c:identifier="nm_team_link_watcher_unref"
+              version="1.12">
+        <doc xml:space="preserve">Decreases the reference count of the object.  If the reference count
+reaches zero, the object will be destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="watcher" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTeamLinkWatcher</doc>
+            <type name="TeamLinkWatcher" c:type="NMTeamLinkWatcher*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
+    <bitfield name="TeamLinkWatcherArpPingFlags"
+              glib:type-name="NMTeamLinkWatcherArpPingFlags"
+              glib:get-type="nm_team_link_watcher_arp_ping_flags_get_type"
+              c:type="NMTeamLinkWatcherArpPingFlags">
+      <member name="validate_active"
+              value="2"
+              c:identifier="NM_TEAM_LINK_WATCHER_ARP_PING_FLAG_VALIDATE_ACTIVE"
+              glib:nick="validate-active">
+        <doc xml:space="preserve">the arp_ping link watcher
+   option 'validate_active' is enabled (set to true).</doc>
+      </member>
+      <member name="validate_inactive"
+              value="4"
+              c:identifier="NM_TEAM_LINK_WATCHER_ARP_PING_FLAG_VALIDATE_INACTIVE"
+              glib:nick="validate-inactive">
+        <doc xml:space="preserve">the arp_ping link watcher
+   option 'validate_inactive' is enabled (set to true).</doc>
+      </member>
+      <member name="send_always"
+              value="8"
+              c:identifier="NM_TEAM_LINK_WATCHER_ARP_PING_FLAG_SEND_ALWAYS"
+              glib:nick="send-always">
+        <doc xml:space="preserve">the arp_ping link watcher option
+   'send_always' is enabled (set to true).</doc>
+      </member>
+    </bitfield>
     <constant name="UTILS_HWADDR_LEN_MAX"
               value="20"
               c:type="NM_UTILS_HWADDR_LEN_MAX">

@@ -5,15 +5,13 @@ namespace GWeather {
 	[CCode (cheader_filename = "libgweather/gweather.h", type_id = "gweather_info_get_type ()")]
 	public class Info : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Info (GWeather.Location? location, GWeather.ForecastType type);
+		public Info (GWeather.Location? location);
 		public void abort ();
 		public string get_apparent ();
 		public unowned string get_attribution ();
 		public string get_conditions ();
 		public string get_dew ();
 		public GWeather.Provider get_enabled_providers ();
-		[Version (deprecated = true, deprecated_since = "3.10")]
-		public string get_forecast ();
 		public unowned GLib.SList<GWeather.Info> get_forecast_list ();
 		public string get_humidity ();
 		public unowned string get_icon_name ();
@@ -89,6 +87,7 @@ namespace GWeather {
 		public unowned GWeather.Location? get_parent ();
 		public unowned string get_sort_name ();
 		public unowned GWeather.Timezone? get_timezone ();
+		public unowned string? get_timezone_str ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public GWeather.Timezone[] get_timezones ();
 		public static unowned GWeather.Location? get_world ();
@@ -96,9 +95,6 @@ namespace GWeather {
 		public GWeather.Location @ref ();
 		public unowned GLib.Variant serialize ();
 		public void unref ();
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "3.10")]
-		public Location.world (bool use_regions);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", type_id = "gweather_location_entry_get_type ()")]
 	public class LocationEntry : Gtk.SearchEntry, Atk.Implementor, Gtk.Buildable, Gtk.CellEditable, Gtk.Editable {
@@ -109,6 +105,8 @@ namespace GWeather {
 		public bool set_city (string? city_name, string code);
 		public void set_location (GWeather.Location? loc);
 		public GWeather.Location location { owned get; set; }
+		[NoAccessorMethod]
+		public bool show_named_timezones { get; construct; }
 		public GWeather.Location top { construct; }
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", ref_function = "gweather_timezone_ref", type_id = "gweather_timezone_get_type ()", unref_function = "gweather_timezone_unref")]
@@ -205,12 +203,6 @@ namespace GWeather {
 		KM,
 		MILES
 	}
-	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_FORECAST_", type_id = "gweather_forecast_type_get_type ()")]
-	public enum ForecastType {
-		STATE,
-		ZONE,
-		LIST
-	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_FORMAT_OPTION_", type_id = "gweather_format_options_get_type ()")]
 	[Flags]
 	public enum FormatOptions {
@@ -227,7 +219,8 @@ namespace GWeather {
 		ADM2,
 		CITY,
 		WEATHER_STATION,
-		DETACHED
+		DETACHED,
+		NAMED_TIMEZONE
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_PRESSURE_UNIT_", type_id = "gweather_pressure_unit_get_type ()")]
 	public enum PressureUnit {

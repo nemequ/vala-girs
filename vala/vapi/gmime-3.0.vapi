@@ -1694,6 +1694,8 @@ namespace GMime {
 	public static string utils_header_encode_text (GMime.FormatOptions? options, string text, string? charset);
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_utils_header_format_date")]
 	public static string utils_header_format_date (GLib.DateTime date);
+	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_utils_header_unfold")]
+	public static string utils_header_unfold (string value);
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_utils_quote_string")]
 	public static string utils_quote_string (string str);
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "g_mime_utils_structured_header_fold")]

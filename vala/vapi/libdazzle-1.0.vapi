@@ -386,6 +386,21 @@ namespace Dazzle {
 		[NoAccessorMethod]
 		public string title { owned get; set; }
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_file_transfer_get_type ()")]
+	public class FileTransfer : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public FileTransfer ();
+		public void add (GLib.File src, GLib.File dest);
+		public bool execute (int io_priority = GLib.Priority.LOW, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool execute_async (int io_priority = GLib.Priority.LOW, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public Dazzle.FileTransferFlags get_flags ();
+		public double get_progress ();
+		public void set_flags (Dazzle.FileTransferFlags flags);
+		[Version (since = "3.28")]
+		public Dazzle.FileTransferStat stat ();
+		public Dazzle.FileTransferFlags flags { get; set; }
+		public double progress { get; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_fuzzy_index_get_type ()")]
 	public class FuzzyIndex : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -873,6 +888,21 @@ namespace Dazzle {
 		[NoAccessorMethod]
 		public bool show_more { get; set; }
 		public signal void changed ();
+	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_recursive_file_monitor_get_type ()")]
+	public class RecursiveFileMonitor : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public RecursiveFileMonitor (GLib.File root);
+		[Version (since = "3.28")]
+		public void cancel ();
+		[Version (since = "3.28")]
+		public unowned GLib.File get_root ();
+		[Version (since = "3.28")]
+		public void set_ignore_func (owned Dazzle.RecursiveIgnoreFunc ignore_func);
+		public async bool start_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public GLib.File root { get; construct; }
+		[Version (since = "3.28")]
+		public signal void changed (GLib.File file, GLib.File? other_file, GLib.FileMonitorEvent event);
 	}
 	[CCode (cheader_filename = "dazzle.h", ref_function = "dzl_ring_ref", type_id = "dzl_ring_get_type ()", unref_function = "dzl_ring_unref")]
 	[Compact]
@@ -1498,12 +1528,21 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_tree_builder_get_type ()")]
 	public class TreeBuilder : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
-		protected TreeBuilder ();
+		public TreeBuilder ();
 		public unowned Dazzle.Tree? get_tree ();
 		public Dazzle.Tree tree { get; }
 		public virtual signal void added (Dazzle.Tree tree);
+		public virtual signal void build_children (Dazzle.TreeNode parent);
 		public virtual signal void build_node (Dazzle.TreeNode node);
+		public virtual signal bool drag_data_get (Dazzle.TreeNode node, Gtk.SelectionData data);
+		public virtual signal bool drag_data_received (Dazzle.TreeNode drop_node, Dazzle.TreeDropPosition position, Gdk.DragAction action, Gtk.SelectionData data);
+		public virtual signal bool drag_node_delete (Dazzle.TreeNode node);
+		public virtual signal bool drag_node_received (Dazzle.TreeNode drag_node, Dazzle.TreeNode drop_node, Dazzle.TreeDropPosition position, Gdk.DragAction action, Gtk.SelectionData data);
 		public virtual signal bool node_activated (Dazzle.TreeNode node);
+		public virtual signal void node_collapsed (Dazzle.TreeNode node);
+		public virtual signal bool node_draggable (Dazzle.TreeNode node);
+		public virtual signal bool node_droppable (Dazzle.TreeNode node, Gtk.SelectionData data);
+		public virtual signal void node_expanded (Dazzle.TreeNode node);
 		public virtual signal void node_popup (Dazzle.TreeNode node, GLib.Menu menu);
 		public virtual signal void node_selected (Dazzle.TreeNode node);
 		public virtual signal void node_unselected (Dazzle.TreeNode node);
@@ -1527,6 +1566,7 @@ namespace Dazzle {
 		public bool get_iter (Gtk.TreeIter iter);
 		public unowned Dazzle.TreeNode get_parent ();
 		public Gtk.TreePath? get_path ();
+		public bool get_reset_on_collapse ();
 		public unowned string get_text ();
 		public unowned Dazzle.Tree get_tree ();
 		public bool get_use_dim_label ();
@@ -1535,14 +1575,18 @@ namespace Dazzle {
 		public void insert_sorted (Dazzle.TreeNode child, Dazzle.TreeNodeCompareFunc compare_func);
 		public void invalidate ();
 		public bool is_root ();
+		public uint n_children ();
+		public Dazzle.TreeNode? nth_child (uint nth);
 		public void prepend (Dazzle.TreeNode child);
 		public void remove (Dazzle.TreeNode child);
 		public void remove_emblem (string emblem_name);
 		public void select ();
 		public void set_children_possible (bool children_possible);
 		public void set_emblems (string emblems);
+		public void set_gicon (GLib.Icon icon);
 		public void set_icon_name (string? icon_name);
 		public void set_item (GLib.Object item);
+		public void set_reset_on_collapse (bool reset_on_collapse);
 		public void set_text (string? text);
 		public void set_use_dim_label (bool use_dim_label);
 		public void set_use_markup (bool use_markup);
@@ -1550,10 +1594,12 @@ namespace Dazzle {
 		public bool children_possible { get; set; }
 		[NoAccessorMethod]
 		public string expanded_icon_name { owned get; set; }
-		public GLib.Icon gicon { get; }
+		public GLib.Icon gicon { get; set; }
 		public string icon_name { get; set; }
 		public GLib.Object item { get; set; }
 		public Dazzle.TreeNode parent { get; }
+		[Version (since = "3.28")]
+		public bool reset_on_collapse { get; set; }
 		public string text { get; set; }
 		[NoAccessorMethod]
 		public Dazzle.Tree tree { owned get; set; }
@@ -1645,6 +1691,15 @@ namespace Dazzle {
 		public weak int64 padding[7];
 	}
 	[CCode (cheader_filename = "dazzle.h", has_type_id = false)]
+	public struct FileTransferStat {
+		public int64 n_files_total;
+		public int64 n_files;
+		public int64 n_dirs_total;
+		public int64 n_dirs;
+		public int64 n_bytes_total;
+		public int64 n_bytes;
+	}
+	[CCode (cheader_filename = "dazzle.h", has_type_id = false)]
 	public struct FuzzyMutableIndexMatch {
 		public weak string key;
 		public void* value;
@@ -1687,6 +1742,12 @@ namespace Dazzle {
 		SLIDE_LEFT,
 		SLIDE_UP,
 		SLIDE_DOWN
+	}
+	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_FILE_TRANSFER_FLAGS_", type_id = "dzl_file_transfer_flags_get_type ()")]
+	[Flags]
+	public enum FileTransferFlags {
+		NONE,
+		MOVE
 	}
 	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_PROPERTIES_FLAGS_", has_type_id = false)]
 	[Flags]
@@ -1741,10 +1802,18 @@ namespace Dazzle {
 		CENTER,
 		RIGHT
 	}
+	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_TREE_DROP_", type_id = "dzl_tree_drop_position_get_type ()")]
+	public enum TreeDropPosition {
+		INTO,
+		BEFORE,
+		AFTER
+	}
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 1.9)]
 	public delegate void CounterForeachFunc (Dazzle.Counter counter);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
 	public delegate bool DirectoryModelVisibleFunc (Dazzle.DirectoryModel self, GLib.File directory, GLib.FileInfo file_info);
+	[CCode (cheader_filename = "dazzle.h", instance_pos = 1.9)]
+	public delegate bool RecursiveIgnoreFunc (GLib.File file);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]
 	public delegate void ShortcutChordTableForeach (Dazzle.ShortcutChord chord, void* chord_data);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]

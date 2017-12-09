@@ -70,7 +70,6 @@ namespace Vnc {
 		public bool lossy_encoding { get; set construct; }
 		public string name { get; }
 		public bool read_only { get; set construct; }
-		[NoAccessorMethod]
 		public bool scaling { get; set construct; }
 		public bool shared_flag { get; set construct; }
 		public bool smoothing { get; set construct; }

@@ -1009,13 +1009,10 @@ namespace Camel {
 		public void thaw_notifications ();
 		[Version (since = "3.24")]
 		public bool abort_notifications { get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
-		public string cc { owned get; set; }
-		[NoAccessorMethod]
+		public string cc { get; set; }
 		[Version (since = "3.24")]
 		public int64 date_received { get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public int64 date_sent { get; set; }
 		[Version (since = "3.24")]
@@ -1023,41 +1020,33 @@ namespace Camel {
 		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public uint flags { get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public bool folder_flagged { get; set; }
 		[Version (since = "3.24")]
 		public uint folder_flagged_stamp { get; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
-		public string from { owned get; set; }
+		public string from { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public Camel.NameValueArray headers { owned get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public uint64 message_id { get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
-		public string mlist { owned get; set; }
+		public string mlist { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public GLib.Array<void*> references { owned get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public uint size { get; set; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
-		public string subject { owned get; set; }
+		public string subject { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public Camel.FolderSummary summary { owned get; construct; }
-		[NoAccessorMethod]
 		[Version (since = "3.24")]
-		public string to { owned get; set; }
-		[NoAccessorMethod]
+		public string to { get; set; }
 		[Version (since = "3.24")]
-		public string uid { owned get; set; }
+		public string uid { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "3.24")]
 		public Camel.NamedFlags user_flags { owned get; set; }
@@ -1430,8 +1419,6 @@ namespace Camel {
 		public virtual bool downsync_sync (string expression, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.32")]
 		public Camel.ThreeState get_offline_sync ();
-		[Version (since = "3.28")]
-		public void schedule_downsync (Camel.FolderChangeInfo? changes);
 		[Version (since = "2.32")]
 		public void set_offline_sync (Camel.ThreeState offline_sync);
 		public Camel.ThreeState offline_sync { get; set; }

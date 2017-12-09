@@ -2903,8 +2903,8 @@ In the case of C programs, a closure usually just holds a pointer
 to a function and maybe a data argument, and the marshaller
 converts between #GValue and native C types. The GObject
 library provides the #GCClosure type for this purpose. Bindings for
-other languages need marshallers which convert between #GValue&lt;!--
---&gt;s and suitable representations in the runtime of the language in
+other languages need marshallers which convert between #GValues
+and suitable representations in the runtime of the language in
 order to use functions written in that languages as callbacks.
 
 Within GObject, closures play an important role in the
@@ -4998,7 +4998,12 @@ and then notify a change on the "foo" property with:
         </parameters>
       </method>
       <method name="ref" c:identifier="g_object_ref">
-        <doc xml:space="preserve">Increases the reference count of @object.</doc>
+        <doc xml:space="preserve">Increases the reference count of @object.
+
+Since GLib 2.56, if `GLIB_VERSION_MAX_ALLOWED` is 2.56 or greater, the type
+of @object will be propagated to the return type (using the GCC typeof()
+extension), so any casting the caller needs to do on the return type must be
+explicit.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the same @object</doc>
           <type name="Object" c:type="gpointer"/>
@@ -5018,7 +5023,10 @@ In other words, if the object is floating, then this call "assumes
 ownership" of the floating reference, converting it to a normal
 reference by clearing the floating flag while leaving the reference
 count unchanged.  If the object is not floating, then this call
-adds a new normal reference increasing the reference count by one.</doc>
+adds a new normal reference increasing the reference count by one.
+
+Since GLib 2.56, the type of @object will be propagated to the return type
+under the same conditions as for g_object_ref().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">@object</doc>
           <type name="Object" c:type="gpointer"/>
@@ -9259,10 +9267,11 @@ reference count.</doc>
       <method name="dup_variant"
               c:identifier="g_value_dup_variant"
               version="2.26">
-        <doc xml:space="preserve">Get the contents of a variant #GValue, increasing its refcount.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">variant contents of @value, should be unrefed using
-  g_variant_unref() when no longer needed</doc>
+        <doc xml:space="preserve">Get the contents of a variant #GValue, increasing its refcount. The returned
+#GVariant is never floating.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">variant contents of @value (may be %NULL);
+   should be unreffed using g_variant_unref() when no longer needed</doc>
           <type name="GLib.Variant" c:type="GVariant*"/>
         </return-value>
         <parameters>
@@ -9557,8 +9566,8 @@ Get the contents of a %G_TYPE_CHAR #GValue.</doc>
               c:identifier="g_value_get_variant"
               version="2.26">
         <doc xml:space="preserve">Get the contents of a variant #GValue.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">variant contents of @value</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">variant contents of @value (may be %NULL)</doc>
           <type name="GLib.Variant" c:type="GVariant*"/>
         </return-value>
         <parameters>

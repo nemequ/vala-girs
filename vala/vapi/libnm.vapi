@@ -1605,6 +1605,8 @@ namespace NM {
 		public bool get_visible ();
 		public bool save (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async GLib.Variant update2 (GLib.Variant? settings, NM.SettingsUpdate2Flags flags, GLib.Variant? args, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool unsaved { get; }
 		public bool visible { get; }
 	}
@@ -3274,6 +3276,8 @@ namespace NM {
 	public class SettingTeam : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_CONFIG")]
 		public const string CONFIG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_LINK_WATCHERS")]
+		public const string LINK_WATCHERS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_MCAST_REJOIN_COUNT")]
 		public const string MCAST_REJOIN_COUNT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_MCAST_REJOIN_INTERVAL")]
@@ -3294,6 +3298,8 @@ namespace NM {
 		public const string PORT_LACP_PRIO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_PRIO_DEFAULT")]
 		public const int PORT_LACP_PRIO_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LINK_WATCHERS")]
+		public const string PORT_LINK_WATCHERS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_PRIO")]
 		public const string PORT_PRIO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_QUEUE_ID")]
@@ -3359,8 +3365,14 @@ namespace NM {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeam ();
 		[Version (since = "1.12")]
+		public bool add_link_watcher (NM.TeamLinkWatcher link_watcher);
+		[Version (since = "1.12")]
 		public bool add_runner_tx_hash (string txhash);
+		[Version (since = "1.12")]
+		public void clear_link_watchers ();
 		public unowned string get_config ();
+		[Version (since = "1.12")]
+		public unowned NM.TeamLinkWatcher get_link_watcher (uint idx);
 		[Version (since = "1.12")]
 		public int get_mcast_rejoin_count ();
 		[Version (since = "1.12")]
@@ -3369,6 +3381,8 @@ namespace NM {
 		public int get_notify_peers_count ();
 		[Version (since = "1.12")]
 		public int get_notify_peers_interval ();
+		[Version (since = "1.12")]
+		public uint get_num_link_watchers ();
 		[Version (since = "1.12")]
 		public uint get_num_runner_tx_hash ();
 		[Version (since = "1.12")]
@@ -3390,13 +3404,20 @@ namespace NM {
 		[Version (since = "1.12")]
 		public int get_runner_tx_balancer_interval ();
 		[Version (since = "1.12")]
-		public unowned string get_runner_tx_hash (int idx);
+		public unowned string get_runner_tx_hash (uint idx);
 		[Version (since = "1.12")]
-		public void remove_runner_tx_hash (int idx);
+		public void remove_link_watcher (uint idx);
+		[Version (since = "1.12")]
+		public bool remove_link_watcher_by_value (NM.TeamLinkWatcher link_watcher);
+		[Version (since = "1.12")]
+		public void remove_runner_tx_hash (uint idx);
 		[Version (since = "1.12")]
 		public bool remove_runner_tx_hash_by_value (string txhash);
 		[NoAccessorMethod]
 		public string config { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public GLib.GenericArray<void*> link_watchers { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public int mcast_rejoin_count { get; set; }
@@ -3445,17 +3466,29 @@ namespace NM {
 	public class SettingTeamPort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeamPort ();
+		[Version (since = "1.12")]
+		public bool add_link_watcher (NM.TeamLinkWatcher link_watcher);
+		[Version (since = "1.12")]
+		public void clear_link_watchers ();
 		public unowned string get_config ();
 		[Version (since = "1.12")]
 		public int get_lacp_key ();
 		[Version (since = "1.12")]
 		public int get_lacp_prio ();
 		[Version (since = "1.12")]
+		public unowned NM.TeamLinkWatcher get_link_watcher (uint idx);
+		[Version (since = "1.12")]
+		public uint get_num_link_watchers ();
+		[Version (since = "1.12")]
 		public int get_prio ();
 		[Version (since = "1.12")]
 		public int get_queue_id ();
 		[Version (since = "1.12")]
 		public bool get_sticky ();
+		[Version (since = "1.12")]
+		public void remove_link_watcher (uint idx);
+		[Version (since = "1.12")]
+		public bool remove_link_watcher_by_value (NM.TeamLinkWatcher link_watcher);
 		[NoAccessorMethod]
 		public string config { owned get; set; }
 		[NoAccessorMethod]
@@ -3464,6 +3497,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public int lacp_prio { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public GLib.GenericArray<void*> link_watchers { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public int prio { get; set; }
@@ -4113,6 +4149,45 @@ namespace NM {
 		public static NM.Connection @new ();
 		public static NM.Connection new_clone (NM.Connection connection);
 		public static NM.Connection new_from_dbus (GLib.Variant dict) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_team_link_watcher_ref", type_id = "nm_team_link_watcher_get_type ()", unref_function = "nm_team_link_watcher_unref")]
+	[Compact]
+	public class TeamLinkWatcher {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.12")]
+		public TeamLinkWatcher.arp_ping (int init_wait, int interval, int missed_max, string target_host, string source_host, NM.TeamLinkWatcherArpPingFlags flags) throws GLib.Error;
+		[Version (since = "1.12")]
+		public NM.TeamLinkWatcher dup ();
+		[Version (since = "1.12")]
+		public bool equal (NM.TeamLinkWatcher other);
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.12")]
+		public TeamLinkWatcher.ethtool (int delay_up, int delay_down) throws GLib.Error;
+		[Version (since = "1.12")]
+		public int get_delay_down ();
+		[Version (since = "1.12")]
+		public int get_delay_up ();
+		[Version (since = "1.12")]
+		public NM.TeamLinkWatcherArpPingFlags get_flags ();
+		[Version (since = "1.12")]
+		public int get_init_wait ();
+		[Version (since = "1.12")]
+		public int get_interval ();
+		[Version (since = "1.12")]
+		public int get_missed_max ();
+		[Version (since = "1.12")]
+		public unowned string get_name ();
+		[Version (since = "1.12")]
+		public unowned string get_source_host ();
+		[Version (since = "1.12")]
+		public unowned string get_target_host ();
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.12")]
+		public TeamLinkWatcher.nsna_ping (int init_wait, int interval, int missed_max, string target_host) throws GLib.Error;
+		[Version (since = "1.12")]
+		public void @ref ();
+		[Version (since = "1.12")]
+		public void unref ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", has_type_id = false)]
 	[Compact]
@@ -4930,6 +5005,18 @@ namespace NM {
 		PBC,
 		PIN
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_UPDATE2_FLAG_", type_id = "nm_settings_update2_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.12")]
+	public enum SettingsUpdate2Flags {
+		NONE,
+		TO_DISK,
+		IN_MEMORY,
+		IN_MEMORY_DETACHED,
+		IN_MEMORY_ONLY,
+		VOLATILE,
+		BLOCK_AUTOCONNECT
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_STATE_", type_id = "nm_state_get_type ()")]
 	public enum State {
 		UNKNOWN,
@@ -4940,6 +5027,13 @@ namespace NM {
 		CONNECTED_LOCAL,
 		CONNECTED_SITE,
 		CONNECTED_GLOBAL
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_TEAM_LINK_WATCHER_ARP_PING_FLAG_", type_id = "nm_team_link_watcher_arp_ping_flags_get_type ()")]
+	[Flags]
+	public enum TeamLinkWatcherArpPingFlags {
+		VALIDATE_ACTIVE,
+		VALIDATE_INACTIVE,
+		SEND_ALWAYS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VLAN_FLAG_", type_id = "nm_vlan_flags_get_type ()")]
 	[Flags]
@@ -5156,7 +5250,9 @@ namespace NM {
 		[CCode (cname = "NM_SETTINGS_ERROR_UUID_EXISTS")]
 		UUIDEXISTS,
 		[CCode (cname = "NM_SETTINGS_ERROR_INVALID_HOSTNAME")]
-		INVALIDHOSTNAME;
+		INVALIDHOSTNAME,
+		[CCode (cname = "NM_SETTINGS_ERROR_INVALID_ARGUMENTS")]
+		INVALIDARGUMENTS;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
@@ -5456,6 +5552,12 @@ namespace NM {
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
 	public const string SETTING_USER_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ARP_PING")]
+	public const string TEAM_LINK_WATCHER_ARP_PING;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ETHTOOL")]
+	public const string TEAM_LINK_WATCHER_ETHTOOL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_NSNA_PING")]
+	public const string TEAM_LINK_WATCHER_NSNA_PING;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VLAN_FLAGS_ALL")]
 	public const int VLAN_FLAGS_ALL;
 	[CCode (cheader_filename = "NetworkManager.h")]

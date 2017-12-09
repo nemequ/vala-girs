@@ -52,6 +52,12 @@ namespace Vte {
 		[Version (since = "0.50")]
 		public bool get_allow_hyperlink ();
 		public bool get_audible_bell ();
+		[Version (since = "0.52")]
+		public bool get_bold_is_bright ();
+		[Version (since = "0.52")]
+		public double get_cell_height_scale ();
+		[Version (since = "0.52")]
+		public double get_cell_width_scale ();
 		public long get_char_height ();
 		public long get_char_width ();
 		public int get_cjk_ambiguous_width ();
@@ -123,6 +129,12 @@ namespace Vte {
 		[Version (since = "0.52")]
 		public void set_background_operator (Cairo.Operator op);
 		public void set_backspace_binding (Vte.EraseBinding binding);
+		[Version (since = "0.52")]
+		public void set_bold_is_bright (bool bold_is_bright);
+		[Version (since = "0.52")]
+		public void set_cell_height_scale (double scale);
+		[Version (since = "0.52")]
+		public void set_cell_width_scale (double scale);
 		public void set_cjk_ambiguous_width (int width);
 		public void set_color_background (Gdk.RGBA background);
 		public void set_color_bold (Gdk.RGBA? bold);
@@ -165,6 +177,12 @@ namespace Vte {
 		public bool audible_bell { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding backspace_binding { get; set; }
+		[Version (since = "0.52")]
+		public bool bold_is_bright { get; set; }
+		[Version (since = "0.52")]
+		public double cell_height_scale { get; set; }
+		[Version (since = "0.52")]
+		public double cell_width_scale { get; set; }
 		public int cjk_ambiguous_width { get; set; }
 		public string current_directory_uri { get; }
 		public string current_file_uri { get; }
@@ -172,8 +190,7 @@ namespace Vte {
 		public Vte.CursorShape cursor_shape { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding delete_binding { get; set; }
-		[NoAccessorMethod]
-		public string encoding { owned get; set; }
+		public string encoding { get; set; }
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }
 		public double font_scale { get; set; }

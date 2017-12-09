@@ -12,7 +12,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libgweather/gweather.h"/>
   <namespace name="GWeather"
              version="3.0"
-             shared-library="libgweather-3.so.6"
+             shared-library="libgweather-3.so.15"
              c:identifier-prefixes="GWeather"
              c:symbol-prefixes="gweather">
     <alias name="MoonLatitude" c:type="GWeatherMoonLatitude">
@@ -373,26 +373,6 @@ by gweather_info_get_value_visibility().</doc>
         </parameter>
       </parameters>
     </callback>
-    <enumeration name="ForecastType"
-                 glib:type-name="GWeatherForecastType"
-                 glib:get-type="gweather_forecast_type_get_type"
-                 c:type="GWeatherForecastType">
-      <member name="state"
-              value="0"
-              c:identifier="GWEATHER_FORECAST_STATE"
-              glib:nick="state">
-      </member>
-      <member name="zone"
-              value="1"
-              c:identifier="GWEATHER_FORECAST_ZONE"
-              glib:nick="zone">
-      </member>
-      <member name="list"
-              value="2"
-              c:identifier="GWEATHER_FORECAST_LIST"
-              glib:nick="list">
-      </member>
-    </enumeration>
     <bitfield name="FormatOptions"
               glib:type-name="GWeatherFormatOptions"
               glib:get-type="gweather_format_options_get_type"
@@ -447,10 +427,6 @@ moon phases.</doc>
                      allow-none="1">
             <doc xml:space="preserve">the desidered #GWeatherLocation (%NULL for default)</doc>
             <type name="Location" c:type="GWeatherLocation*"/>
-          </parameter>
-          <parameter name="type" transfer-ownership="none">
-            <doc xml:space="preserve">deprecated and ignored</doc>
-            <type name="ForecastType" c:type="GWeatherForecastType"/>
           </parameter>
         </parameters>
       </constructor>
@@ -541,21 +517,6 @@ This must be shown prominently toghether with the data.</doc>
         </return-value>
         <parameters>
           <instance-parameter name="info" transfer-ownership="none">
-            <type name="Info" c:type="GWeatherInfo*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_forecast"
-              c:identifier="gweather_info_get_forecast"
-              deprecated="1"
-              deprecated-version="3.10">
-        <doc-deprecated xml:space="preserve">Use gweather_info_get_forecast_list() instead.</doc-deprecated>
-        <return-value transfer-ownership="full">
-          <type name="utf8" c:type="gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="info" transfer-ownership="none">
-            <doc xml:space="preserve">a #GWeatherInfo</doc>
             <type name="Info" c:type="GWeatherInfo*"/>
           </instance-parameter>
         </parameters>
@@ -1321,26 +1282,6 @@ any missing information from the static database.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="new_world"
-                   c:identifier="gweather_location_new_world"
-                   deprecated="1"
-                   deprecated-version="3.10">
-        <doc xml:space="preserve">Creates a new #GWeatherLocation of type %GWEATHER_LOCATION_WORLD,
-representing a hierarchy containing all of the locations from
-Locations.xml.</doc>
-        <doc-deprecated xml:space="preserve">Use gweather_location_get_world() instead.</doc-deprecated>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a %GWEATHER_LOCATION_WORLD location, or
-  %NULL if Locations.xml could not be found or could not be parsed.</doc>
-          <type name="Location" c:type="GWeatherLocation*"/>
-        </return-value>
-        <parameters>
-          <parameter name="use_regions" transfer-ownership="none">
-            <doc xml:space="preserve">whether or not to divide the world into regions</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </constructor>
       <method name="deserialize" c:identifier="gweather_location_deserialize">
         <doc xml:space="preserve">This call undoes the effect of gweather_location_serialize(), that
 is, it turns a #GVariant into a #GWeatherLocation. The conversion
@@ -1797,6 +1738,24 @@ FIXME.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_timezone_str"
+              c:identifier="gweather_location_get_timezone_str">
+        <doc xml:space="preserve">Gets the timezone associated with @loc, if known, as a string.
+
+The timezone string is owned either by @loc or by one of its
+parents, do not free it.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">@loc's timezone as
+a string, or %NULL</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="loc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GWeatherLocation</doc>
+            <type name="Location" c:type="GWeatherLocation*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_timezones"
               c:identifier="gweather_location_get_timezones">
         <doc xml:space="preserve">Gets an array of all timezones associated with any location under
@@ -2018,6 +1977,12 @@ clear @entry</doc>
       <property name="location" writable="1" transfer-ownership="none">
         <type name="Location"/>
       </property>
+      <property name="show-named-timezones"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="top"
                 readable="0"
                 writable="1"
@@ -2117,6 +2082,13 @@ database, for example because it was loaded from external storage
 and could not be fully recovered. The parent of this location is
 the nearest weather station.</doc>
       </member>
+      <member name="named_timezone"
+              value="8"
+              c:identifier="GWEATHER_LOCATION_NAMED_TIMEZONE"
+              glib:nick="named-timezone">
+        <doc xml:space="preserve">A location representing a named
+or special timezone in the world, such as UTC</doc>
+      </member>
     </enumeration>
     <enumeration name="PressureUnit"
                  glib:type-name="GWeatherPressureUnit"
@@ -2200,7 +2172,7 @@ retrieved by gweather_info_get_value_pressure().</doc>
               value="8"
               c:identifier="GWEATHER_PROVIDER_YAHOO"
               glib:nick="yahoo">
-        <doc xml:space="preserve">Yahoo Weather Service, worldwide but non commercial only</doc>
+        <doc xml:space="preserve">Yahoo Weather Service, removed in 3.27.1</doc>
       </member>
       <member name="yr_no"
               value="16"

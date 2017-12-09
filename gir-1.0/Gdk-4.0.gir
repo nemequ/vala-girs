@@ -417,6 +417,739 @@ for storing pixel values in memory.</doc>
       <doc xml:space="preserve">Represents the current time, and can be used anywhere a time is expected.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <class name="Clipboard"
+           c:symbol-prefix="clipboard"
+           c:type="GdkClipboard"
+           parent="GObject.Object"
+           glib:type-name="GdkClipboard"
+           glib:get-type="gdk_clipboard_get_type">
+      <doc xml:space="preserve">The #GdkClipboard object represents a clipboard of data shared
+between different applications or between different parts of
+the same application.
+
+To get a GdkClipboard object, use gdk_display_get_clipboard() or
+gdk_display_get_primary_clipboard(). You can find out about the data that
+is currently available in a clipboard using gdk_clipboard_get_formats().
+
+To make text or image data available in a clipboard, use gdk_clipboard_set_text() or
+gdk_clipboard_set_texture(). For other data, you can use gdk_clipboard_set_content(),
+which takes a #GdkContentProvider object.
+
+To read textual or image data from a clipboard, use gdk_clipboard_read_text_async() or
+gdk_clipboard_read_texture_async(). For other data, use gdk_clipboard_read_async(),
+which provides a #GInputStream object.</doc>
+      <method name="get_content" c:identifier="gdk_clipboard_get_content">
+        <doc xml:space="preserve">Returns the #GdkContentProvider currently set on @clipboard. If the
+@clipboard is empty or its contents are not owned by the current process,
+%NULL will be returned.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The content of a clipboard or %NULL
+    if the clipboard does not maintain any content.</doc>
+          <type name="ContentProvider" c:type="GdkContentProvider*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_display" c:identifier="gdk_clipboard_get_display">
+        <doc xml:space="preserve">Gets the #GdkDisplay that the clipboard was created for.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDisplay</doc>
+          <type name="Display" c:type="GdkDisplay*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_formats" c:identifier="gdk_clipboard_get_formats">
+        <doc xml:space="preserve">Gets the formats that the clipboard can provide its current contents in.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The formats of the clipboard</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_local" c:identifier="gdk_clipboard_is_local">
+        <doc xml:space="preserve">Returns if the clipboard is local. A clipboard is considered local if it was
+last claimed by the running application.
+
+Note that gdk_clipboard_get_content() may return %NULL even on a local
+clipboard. In this case the clipboard is empty.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the clipboard is local</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="read_async" c:identifier="gdk_clipboard_read_async">
+        <doc xml:space="preserve">Asynchronously requests an input stream to read the @clipboard's
+contents from. When the operation is finished @callback will be called.
+You can then call gdk_clipboard_read_finish() to get the result of the
+operation.
+
+The clipboard will choose the most suitable mime type from the given list
+to fulfill the request, preferring the ones listed first.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="mime_types" transfer-ownership="none">
+            <doc xml:space="preserve">a %NULL-terminated array of mime types to choose from</doc>
+            <type name="utf8" c:type="const char**"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority]
+of the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_finish"
+              c:identifier="gdk_clipboard_read_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous clipboard read started with gdk_clipboard_read_async().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GInputStream or %NULL on error.</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="out_mime_type"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to store
+    the chosen mime type in or %NULL</doc>
+            <type name="utf8" c:type="const char**"/>
+          </parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_text_async"
+              c:identifier="gdk_clipboard_read_text_async">
+        <doc xml:space="preserve">Asynchronously request the @clipboard contents converted to a string.
+When the operation is finished @callback will be called. You can then
+call gdk_clipboard_read_text_finish() to get the result.
+
+This is a simple wrapper around gdk_clipboard_read_value_async(). Use
+that function or gdk_clipboard_read_async() directly if you need more
+control over the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_text_finish"
+              c:identifier="gdk_clipboard_read_text_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous clipboard read started with
+gdk_clipboard_read_text_async().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new string or %NULL on error.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_texture_async"
+              c:identifier="gdk_clipboard_read_texture_async">
+        <doc xml:space="preserve">Asynchronously request the @clipboard contents converted to a #GdkPixbuf.
+When the operation is finished @callback will be called. You can then
+call gdk_clipboard_read_texture_finish() to get the result.
+
+This is a simple wrapper around gdk_clipboard_read_value_async(). Use
+that function or gdk_clipboard_read_async() directly if you need more
+control over the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_texture_finish"
+              c:identifier="gdk_clipboard_read_texture_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous clipboard read started with
+gdk_clipboard_read_texture_async().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GdkTexture or %NULL on error.</doc>
+          <type name="Texture" c:type="GdkTexture*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_value_async"
+              c:identifier="gdk_clipboard_read_value_async">
+        <doc xml:space="preserve">Asynchronously request the @clipboard contents converted to the given
+@type. When the operation is finished @callback will be called.
+You can then call gdk_clipboard_read_value_finish() to get the resulting
+#GValue.
+
+For local clipboard contents that are available in the given #GType, the
+value will be copied directly. Otherwise, GDK will try to use
+gdk_content_deserialize_async() to convert the clipboard's data.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">a #GType to read</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority]
+    of the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_value_finish"
+              c:identifier="gdk_clipboard_read_value_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous clipboard read started with
+gdk_clipboard_read_value_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GValue containing the result.</doc>
+          <type name="GObject.Value" c:type="const GValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set"
+              c:identifier="gdk_clipboard_set"
+              shadowed-by="set_value"
+              introspectable="0">
+        <doc xml:space="preserve">Sets the clipboard to contain the value collected from the given
+varargs.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">type of value to set</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">value contents conforming to @type</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_content" c:identifier="gdk_clipboard_set_content">
+        <doc xml:space="preserve">Sets a new content provider on @clipboard. The clipboard will claim the
+#GdkDisplay's resources and advertise these new contents to other
+applications.
+
+In the rare case of a failure, this function will return %FALSE. The
+clipboard will then continue reporting its old contents and ignore
+@provider.
+
+If the contents are read by either an external application or the
+@clipboard's read functions, @clipboard will select the best format to
+transfer the contents and then request that format from @provider.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if setting the clipboard succeeded</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="provider"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the new contents of @clipboard or
+    %NULL to clear the clipboard</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_text"
+              c:identifier="gdk_clipboard_set_text"
+              introspectable="0">
+        <doc xml:space="preserve">Puts the given @text into the clipboard.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="text" transfer-ownership="none">
+            <doc xml:space="preserve">Text to put into the clipboard</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_texture"
+              c:identifier="gdk_clipboard_set_texture"
+              introspectable="0">
+        <doc xml:space="preserve">Puts the given @texture into the clipboard.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="texture" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkTexture to put into the clipboard</doc>
+            <type name="Texture" c:type="GdkTexture*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_valist"
+              c:identifier="gdk_clipboard_set_valist"
+              introspectable="0">
+        <doc xml:space="preserve">Sets the clipboard to contain the value collected from the given
+@args.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">type of value to set</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="args" transfer-ownership="none">
+            <doc xml:space="preserve">varargs containing the value of @type</doc>
+            <type name="va_list" c:type="va_list"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_value"
+              c:identifier="gdk_clipboard_set_value"
+              shadows="set">
+        <doc xml:space="preserve">Sets the @clipboard to contain the given @value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a #GValue to set</doc>
+            <type name="GObject.Value" c:type="const GValue*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="store_async" c:identifier="gdk_clipboard_store_async">
+        <doc xml:space="preserve">Asynchronously instructs the @clipboard to store its contents remotely to
+preserve them for later usage. If the clipboard is not local, this function
+does nothing but report success.
+
+This function is called automatically when gtk_main() or #GtkApplication
+exit, so you likely don't need to call it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority]
+    of the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="store_finish"
+              c:identifier="gdk_clipboard_store_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous clipboard store started with gdk_clipboard_store_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if storing was successful.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="clipboard" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkClipboard</doc>
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="content" version="3.94" transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkContentProvider or %NULL if the clipboard is empty or contents are
+provided otherwise.</doc>
+        <type name="ContentProvider"/>
+      </property>
+      <property name="display"
+                version="3.94"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDisplay that the clipboard belongs to.</doc>
+        <type name="Display"/>
+      </property>
+      <property name="formats" version="3.94" transfer-ownership="none">
+        <doc xml:space="preserve">The possible formats that the clipboard can provide its data in.</doc>
+        <type name="ContentFormats"/>
+      </property>
+      <property name="local" version="3.94" transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the contents of the clipboard are owned by this process.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <glib:signal name="changed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <callback name="ContentDeserializeFunc" c:type="GdkContentDeserializeFunc">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="deserializer" transfer-ownership="none">
+          <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <class name="ContentDeserializer"
+           c:symbol-prefix="content_deserializer"
+           c:type="GdkContentDeserializer"
+           parent="GObject.Object"
+           glib:type-name="GdkContentDeserializer"
+           glib:get-type="gdk_content_deserializer_get_type">
+      <doc xml:space="preserve">A GdkContentDeserializer is used to deserialize content for inter-application
+data transfers.</doc>
+      <implements name="Gio.AsyncResult"/>
+      <method name="get_cancellable"
+              c:identifier="gdk_content_deserializer_get_cancellable"
+              introspectable="0">
+        <return-value>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gtype"
+              c:identifier="gdk_content_deserializer_get_gtype">
+        <return-value transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_input_stream"
+              c:identifier="gdk_content_deserializer_get_input_stream"
+              introspectable="0">
+        <return-value>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mime_type"
+              c:identifier="gdk_content_deserializer_get_mime_type">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_priority"
+              c:identifier="gdk_content_deserializer_get_priority">
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_task_data"
+              c:identifier="gdk_content_deserializer_get_task_data">
+        <return-value transfer-ownership="none" nullable="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_user_data"
+              c:identifier="gdk_content_deserializer_get_user_data">
+        <return-value transfer-ownership="none" nullable="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_value"
+              c:identifier="gdk_content_deserializer_get_value">
+        <return-value transfer-ownership="full">
+          <type name="GObject.Value" c:type="GValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="return_error"
+              c:identifier="gdk_content_deserializer_return_error">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+          <parameter name="error" transfer-ownership="none">
+            <type name="GLib.Error" c:type="GError*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="return_success"
+              c:identifier="gdk_content_deserializer_return_success">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_task_data"
+              c:identifier="gdk_content_deserializer_set_task_data">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="deserializer" transfer-ownership="none">
+            <type name="ContentDeserializer" c:type="GdkContentDeserializer*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify" transfer-ownership="none" scope="async">
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
     <record name="ContentFormats"
             c:type="GdkContentFormats"
             glib:type-name="GdkContentFormats"
@@ -452,9 +1185,9 @@ The #GdkContentFormatsBuilder structure is meant to help in this endeavor.</doc>
       <constructor name="new" c:identifier="gdk_content_formats_new">
         <doc xml:space="preserve">Creates a new #GdkContentFormats from an array of mime types.
 
-The mime types must be different or the behavior of the return value
-is undefined. If you cannot guarantee this, use #GdkContentFormatsBuilder
-instead.</doc>
+The mime types must be valid and different from each other or the
+behavior of the return value is undefined. If you cannot guarantee
+this, use #GdkContentFormatsBuilder instead.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the new #GdkContentFormats.</doc>
           <type name="ContentFormats" c:type="GdkContentFormats*"/>
@@ -473,6 +1206,20 @@ instead.</doc>
           <parameter name="n_mime_types" transfer-ownership="none">
             <doc xml:space="preserve">number of entries in @mime_types.</doc>
             <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_for_gtype"
+                   c:identifier="gdk_content_formats_new_for_gtype">
+        <doc xml:space="preserve">Creates a new #GdkContentFormats for a given #GType.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GdkContentFormats</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">a $GType</doc>
+            <type name="GType" c:type="GType"/>
           </parameter>
         </parameters>
       </constructor>
@@ -569,10 +1316,7 @@ case %NULL will be returned.</doc>
         </parameters>
       </method>
       <method name="match" c:identifier="gdk_content_formats_match">
-        <doc xml:space="preserve">Finds the first element from @first that is also contained
-in @second. If no matching format is found, %FALSE is returned
-and @out_gtype and @out_mime_type are set to %G_TYPE_INVALID and
-%NULL respectively.</doc>
+        <doc xml:space="preserve">Checks if @first and @second have any matching formats.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if a matching format was found.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -586,25 +1330,45 @@ and @out_gtype and @out_mime_type are set to %G_TYPE_INVALID and
             <doc xml:space="preserve">the #GdkContentFormats to intersect with</doc>
             <type name="ContentFormats" c:type="const GdkContentFormats*"/>
           </parameter>
-          <parameter name="out_gtype"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
-            <doc xml:space="preserve">pointer to take the
-    matching #GType or %G_TYPE_INVALID if @out_mime_type was set.</doc>
-            <type name="GType" c:type="GType*"/>
+        </parameters>
+      </method>
+      <method name="match_gtype"
+              c:identifier="gdk_content_formats_match_gtype">
+        <doc xml:space="preserve">Finds the first #GType from @first that is also contained
+in @second. If no matching #GType is found, %G_TYPE_INVALID
+is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The first common #GType or %G_TYPE_INVALID if none.</doc>
+          <type name="GType" c:type="GType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="first" transfer-ownership="none">
+            <doc xml:space="preserve">the primary #GdkContentFormats to intersect</doc>
+            <type name="ContentFormats" c:type="const GdkContentFormats*"/>
+          </instance-parameter>
+          <parameter name="second" transfer-ownership="none">
+            <doc xml:space="preserve">the #GdkContentFormats to intersect with</doc>
+            <type name="ContentFormats" c:type="const GdkContentFormats*"/>
           </parameter>
-          <parameter name="out_mime_type"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none"
-                     optional="1"
-                     allow-none="1">
-            <doc xml:space="preserve">The matching
-   mime type or %NULL if @out_gtype is set</doc>
-            <type name="utf8" c:type="const char**"/>
+        </parameters>
+      </method>
+      <method name="match_mime_type"
+              c:identifier="gdk_content_formats_match_mime_type">
+        <doc xml:space="preserve">Finds the first mime type from @first that is also contained
+in @second. If no matching mime type is found, %NULL is
+returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The first common mime type or %NULL if none.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="first" transfer-ownership="none">
+            <doc xml:space="preserve">the primary #GdkContentFormats to intersect</doc>
+            <type name="ContentFormats" c:type="const GdkContentFormats*"/>
+          </instance-parameter>
+          <parameter name="second" transfer-ownership="none">
+            <doc xml:space="preserve">the #GdkContentFormats to intersect with</doc>
+            <type name="ContentFormats" c:type="const GdkContentFormats*"/>
           </parameter>
         </parameters>
       </method>
@@ -672,6 +1436,50 @@ they had in @second.</doc>
             <doc xml:space="preserve">the #GdkContentFormats to merge from</doc>
             <type name="ContentFormats" c:type="const GdkContentFormats*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="union_deserialize_gtypes"
+              c:identifier="gdk_content_formats_union_deserialize_gtypes">
+        <return-value transfer-ownership="full">
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="formats" transfer-ownership="none">
+            <type name="ContentFormats" c:type="GdkContentFormats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="union_deserialize_mime_types"
+              c:identifier="gdk_content_formats_union_deserialize_mime_types">
+        <return-value transfer-ownership="full">
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="formats" transfer-ownership="none">
+            <type name="ContentFormats" c:type="GdkContentFormats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="union_serialize_gtypes"
+              c:identifier="gdk_content_formats_union_serialize_gtypes">
+        <return-value transfer-ownership="full">
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="formats" transfer-ownership="none">
+            <type name="ContentFormats" c:type="GdkContentFormats*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="union_serialize_mime_types"
+              c:identifier="gdk_content_formats_union_serialize_mime_types">
+        <return-value transfer-ownership="full">
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="formats" transfer-ownership="none">
+            <type name="ContentFormats" c:type="GdkContentFormats*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="unref" c:identifier="gdk_content_formats_unref">
@@ -776,6 +1584,773 @@ types to it.</doc>
         </return-value>
       </function>
     </record>
+    <class name="ContentProvider"
+           c:symbol-prefix="content_provider"
+           c:type="GdkContentProvider"
+           parent="GObject.Object"
+           glib:type-name="GdkContentProvider"
+           glib:get-type="gdk_content_provider_get_type"
+           glib:type-struct="ContentProviderClass">
+      <doc xml:space="preserve">A GdkContentProvider is used to provide content for the clipboard in
+a number of formats.
+
+To create a GdkContentProvider, use gdk_content_provider_new_for_value() or
+gdk_content_provider_new_for_bytes().
+
+GDK knows how to handle common text and image formats out-of-the-box. See
+#GdkContentSerializer and #GdkContentDeserializer if you want to add support
+for application-specific data formats.</doc>
+      <constructor name="new_for_bytes"
+                   c:identifier="gdk_content_provider_new_for_bytes">
+        <doc xml:space="preserve">Create a content provider that provides the given @bytes as data for
+the given @mime_type.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GdkContentProvider</doc>
+          <type name="ContentProvider" c:type="GdkContentProvider*"/>
+        </return-value>
+        <parameters>
+          <parameter name="mime_type" transfer-ownership="none">
+            <doc xml:space="preserve">the mime type</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="bytes" transfer-ownership="none">
+            <doc xml:space="preserve">a #GBytes with the data for @mime_type</doc>
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_for_value"
+                   c:identifier="gdk_content_provider_new_for_value">
+        <doc xml:space="preserve">Create a content provider that provides the given @value.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GdkContentProvider</doc>
+          <type name="ContentProvider" c:type="GdkContentProvider*"/>
+        </return-value>
+        <parameters>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a #GValue</doc>
+            <type name="GObject.Value" c:type="const GValue*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="attach_clipboard">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="clipboard" transfer-ownership="none">
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="content_changed" invoker="content_changed">
+        <doc xml:space="preserve">Emits the #GdkContentProvider::contents-changed signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="detach_clipboard">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="clipboard" transfer-ownership="none">
+            <type name="Clipboard" c:type="GdkClipboard*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_value" invoker="get_value" throws="1">
+        <doc xml:space="preserve">Gets the convtents of @provider stored in @value.
+
+The @value will have been initialized to the #GType the value should be
+provided in. This given #GType does not need to be listed in the formats
+returned by gdk_content_provider_ref_formats(). However, if the given
+#GType is not supported, this operation can fail and
+#G_IO_ERROR_NOT_SUPPORTED will be reported.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the value was set successfully. Otherwise
+    @error will be set to describe the failure.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the #GValue to fill</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="ref_formats" invoker="ref_formats">
+        <doc xml:space="preserve">Gets the formats that the provider can provide its current contents in.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The formats of the provider</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="ref_storable_formats"
+                      invoker="ref_storable_formats">
+        <doc xml:space="preserve">Gets the formats that the provider suggests other applications to store
+the data in.
+An example of such an application would be a clipboard manager.
+
+This can be assumed to be a subset of gdk_content_provider_ref_formats().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The storable formats of the provider</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="write_mime_type_async"
+                      invoker="write_mime_type_async">
+        <doc xml:space="preserve">Asynchronously writes the contents of @provider to @stream in the given
+@mime_type. When the operation is finished @callback will be called. You
+can then call gdk_content_provider_write_mime_type_finish() to get the
+result of the operation.
+
+The given mime type does not need to be listed in the formats returned by
+gdk_content_provider_ref_formats(). However, if the given #GType is not
+supported, #G_IO_ERROR_NOT_SUPPORTED will be reported.
+
+The given @stream will not be closed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="mime_type" transfer-ownership="none">
+            <doc xml:space="preserve">the mime type to provide the data in</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">the #GOutputStream to write to</doc>
+            <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority]
+of the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="5">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="write_mime_type_finish"
+                      invoker="write_mime_type_finish"
+                      throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous write operation started with
+gdk_content_provider_write_mime_type_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the operation was completed successfully. Otherwise
+    @error will be set to describe the failure.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="content_changed"
+              c:identifier="gdk_content_provider_content_changed">
+        <doc xml:space="preserve">Emits the #GdkContentProvider::contents-changed signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_value"
+              c:identifier="gdk_content_provider_get_value"
+              throws="1">
+        <doc xml:space="preserve">Gets the convtents of @provider stored in @value.
+
+The @value will have been initialized to the #GType the value should be
+provided in. This given #GType does not need to be listed in the formats
+returned by gdk_content_provider_ref_formats(). However, if the given
+#GType is not supported, this operation can fail and
+#G_IO_ERROR_NOT_SUPPORTED will be reported.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the value was set successfully. Otherwise
+    @error will be set to describe the failure.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the #GValue to fill</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="ref_formats"
+              c:identifier="gdk_content_provider_ref_formats">
+        <doc xml:space="preserve">Gets the formats that the provider can provide its current contents in.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The formats of the provider</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref_storable_formats"
+              c:identifier="gdk_content_provider_ref_storable_formats">
+        <doc xml:space="preserve">Gets the formats that the provider suggests other applications to store
+the data in.
+An example of such an application would be a clipboard manager.
+
+This can be assumed to be a subset of gdk_content_provider_ref_formats().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The storable formats of the provider</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="write_mime_type_async"
+              c:identifier="gdk_content_provider_write_mime_type_async">
+        <doc xml:space="preserve">Asynchronously writes the contents of @provider to @stream in the given
+@mime_type. When the operation is finished @callback will be called. You
+can then call gdk_content_provider_write_mime_type_finish() to get the
+result of the operation.
+
+The given mime type does not need to be listed in the formats returned by
+gdk_content_provider_ref_formats(). However, if the given #GType is not
+supported, #G_IO_ERROR_NOT_SUPPORTED will be reported.
+
+The given @stream will not be closed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="mime_type" transfer-ownership="none">
+            <doc xml:space="preserve">the mime type to provide the data in</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">the #GOutputStream to write to</doc>
+            <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority]
+of the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_mime_type_finish"
+              c:identifier="gdk_content_provider_write_mime_type_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous write operation started with
+gdk_content_provider_write_mime_type_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the operation was completed successfully. Otherwise
+    @error will be set to describe the failure.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkContentProvider</doc>
+            <type name="ContentProvider" c:type="GdkContentProvider*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="formats" version="3.94" transfer-ownership="none">
+        <doc xml:space="preserve">The possible formats that the provider can provide its data in.</doc>
+        <type name="ContentFormats"/>
+      </property>
+      <property name="storable-formats"
+                version="3.94"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The subset of formats that clipboard managers should store this provider's data in.</doc>
+        <type name="ContentFormats"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <glib:signal name="content-changed" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="ContentProviderClass"
+            c:type="GdkContentProviderClass"
+            glib:is-gtype-struct-for="ContentProvider">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="content_changed">
+        <callback name="content_changed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkContentProvider</doc>
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="attach_clipboard">
+        <callback name="attach_clipboard">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+            <parameter name="clipboard" transfer-ownership="none">
+              <type name="Clipboard" c:type="GdkClipboard*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="detach_clipboard">
+        <callback name="detach_clipboard">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+            <parameter name="clipboard" transfer-ownership="none">
+              <type name="Clipboard" c:type="GdkClipboard*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="ref_formats">
+        <callback name="ref_formats">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">The formats of the provider</doc>
+            <type name="ContentFormats" c:type="GdkContentFormats*"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkContentProvider</doc>
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="ref_storable_formats">
+        <callback name="ref_storable_formats">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">The storable formats of the provider</doc>
+            <type name="ContentFormats" c:type="GdkContentFormats*"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkContentProvider</doc>
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="write_mime_type_async">
+        <callback name="write_mime_type_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkContentProvider</doc>
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+            <parameter name="mime_type" transfer-ownership="none">
+              <doc xml:space="preserve">the mime type to provide the data in</doc>
+              <type name="utf8" c:type="const char*"/>
+            </parameter>
+            <parameter name="stream" transfer-ownership="none">
+              <doc xml:space="preserve">the #GOutputStream to write to</doc>
+              <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+            </parameter>
+            <parameter name="io_priority" transfer-ownership="none">
+              <doc xml:space="preserve">the [I/O priority][io-priority]
+of the request.</doc>
+              <type name="gint" c:type="int"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       scope="async"
+                       closure="6">
+              <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+              <type name="Gio.AsyncReadyCallback"
+                    c:type="GAsyncReadyCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="6">
+              <doc xml:space="preserve">the data to pass to callback function</doc>
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="write_mime_type_finish">
+        <callback name="write_mime_type_finish" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the operation was completed successfully. Otherwise
+    @error will be set to describe the failure.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkContentProvider</doc>
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+            <parameter name="result" transfer-ownership="none">
+              <doc xml:space="preserve">a #GAsyncResult</doc>
+              <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_value">
+        <callback name="get_value" throws="1">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE if the value was set successfully. Otherwise
+    @error will be set to describe the failure.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkContentProvider</doc>
+              <type name="ContentProvider" c:type="GdkContentProvider*"/>
+            </parameter>
+            <parameter name="value" transfer-ownership="none">
+              <doc xml:space="preserve">the #GValue to fill</doc>
+              <type name="GObject.Value" c:type="GValue*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_gdk_reserved1" introspectable="0">
+        <callback name="_gdk_reserved1">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved2" introspectable="0">
+        <callback name="_gdk_reserved2">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved3" introspectable="0">
+        <callback name="_gdk_reserved3">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved4" introspectable="0">
+        <callback name="_gdk_reserved4">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved5" introspectable="0">
+        <callback name="_gdk_reserved5">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved6" introspectable="0">
+        <callback name="_gdk_reserved6">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved7" introspectable="0">
+        <callback name="_gdk_reserved7">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_gdk_reserved8" introspectable="0">
+        <callback name="_gdk_reserved8">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <callback name="ContentSerializeFunc" c:type="GdkContentSerializeFunc">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="serializer" transfer-ownership="none">
+          <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <class name="ContentSerializer"
+           c:symbol-prefix="content_serializer"
+           c:type="GdkContentSerializer"
+           parent="GObject.Object"
+           glib:type-name="GdkContentSerializer"
+           glib:get-type="gdk_content_serializer_get_type">
+      <doc xml:space="preserve">A GdkContentSerializer is used to serialize content for inter-application
+data transfers.</doc>
+      <implements name="Gio.AsyncResult"/>
+      <method name="get_cancellable"
+              c:identifier="gdk_content_serializer_get_cancellable"
+              introspectable="0">
+        <return-value>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_gtype" c:identifier="gdk_content_serializer_get_gtype">
+        <return-value transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_mime_type"
+              c:identifier="gdk_content_serializer_get_mime_type">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_output_stream"
+              c:identifier="gdk_content_serializer_get_output_stream"
+              introspectable="0">
+        <return-value>
+          <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_priority"
+              c:identifier="gdk_content_serializer_get_priority">
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_task_data"
+              c:identifier="gdk_content_serializer_get_task_data">
+        <return-value transfer-ownership="none" nullable="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_user_data"
+              c:identifier="gdk_content_serializer_get_user_data">
+        <return-value transfer-ownership="none" nullable="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_value" c:identifier="gdk_content_serializer_get_value">
+        <return-value transfer-ownership="none">
+          <type name="GObject.Value" c:type="const GValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="return_error"
+              c:identifier="gdk_content_serializer_return_error">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+          <parameter name="error" transfer-ownership="none">
+            <type name="GLib.Error" c:type="GError*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="return_success"
+              c:identifier="gdk_content_serializer_return_success">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_task_data"
+              c:identifier="gdk_content_serializer_set_task_data">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="serializer" transfer-ownership="none">
+            <type name="ContentSerializer" c:type="GdkContentSerializer*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="notify" transfer-ownership="none" scope="async">
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
     <enumeration name="CrossingMode"
                  glib:type-name="GdkCrossingMode"
                  glib:get-type="gdk_crossing_mode_get_type"
@@ -903,54 +2478,6 @@ platforms can be found in the CSS specification:
           <parameter name="name" transfer-ownership="none">
             <doc xml:space="preserve">the name of the cursor</doc>
             <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="fallback"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">%NULL or the #GdkCursor to fall back to when
-    this one cannot be supported</doc>
-            <type name="Cursor" c:type="GdkCursor*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <constructor name="new_from_pixbuf"
-                   c:identifier="gdk_cursor_new_from_pixbuf"
-                   version="2.4">
-        <doc xml:space="preserve">Creates a new cursor from a pixbuf.
-
-Not all GDK backends support RGBA cursors. If they are not
-supported, a monochrome approximation will be displayed.
-The functions gdk_display_supports_cursor_alpha() and
-gdk_display_supports_cursor_color() can be used to determine
-whether RGBA cursors are supported;
-gdk_display_get_default_cursor_size() and
-gdk_display_get_maximal_cursor_size() give information about
-cursor sizes.
-
-If @x or @y are `-1`, the pixbuf must have
-options named “x_hot” and “y_hot”, resp., containing
-integer values between `0` and the width resp. height of
-the pixbuf. (Since: 3.0)
-
-On the X backend, support for RGBA cursors requires a
-sufficently new version of the X Render extension.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GdkCursor.</doc>
-          <type name="Cursor" c:type="GdkCursor*"/>
-        </return-value>
-        <parameters>
-          <parameter name="pixbuf" transfer-ownership="none">
-            <doc xml:space="preserve">the #GdkPixbuf containing the cursor image</doc>
-            <type name="GdkPixbuf.Pixbuf" c:type="GdkPixbuf*"/>
-          </parameter>
-          <parameter name="x" transfer-ownership="none">
-            <doc xml:space="preserve">the horizontal offset of the “hotspot” of the cursor.</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-          <parameter name="y" transfer-ownership="none">
-            <doc xml:space="preserve">the vertical offset of the “hotspot” of the cursor.</doc>
-            <type name="gint" c:type="gint"/>
           </parameter>
           <parameter name="fallback"
                      transfer-ownership="none"
@@ -2569,6 +4096,21 @@ applications on the given display.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_clipboard"
+              c:identifier="gdk_display_get_clipboard"
+              introspectable="0">
+        <doc xml:space="preserve">Gets the clipboard used for copy/paste operations.</doc>
+        <return-value>
+          <doc xml:space="preserve">the display's clipboard</doc>
+          <type name="Clipboard" c:type="GdkClipboard*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_default_cursor_size"
               c:identifier="gdk_display_get_default_cursor_size"
               version="2.4">
@@ -2754,6 +4296,23 @@ The returned number is valid until the next emission of the
           <doc xml:space="preserve">a string representing the display name. This string is owned
 by GDK and should not be modified or freed.</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDisplay</doc>
+            <type name="Display" c:type="GdkDisplay*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_primary_clipboard"
+              c:identifier="gdk_display_get_primary_clipboard"
+              introspectable="0">
+        <doc xml:space="preserve">Gets the clipboard used for the primary selection. On backends where the
+primary clipboard is not supported natively, GDK emulates this clipboard
+locally.</doc>
+        <return-value>
+          <doc xml:space="preserve">the primary clipboard</doc>
+          <type name="Clipboard" c:type="GdkClipboard*"/>
         </return-value>
         <parameters>
           <instance-parameter name="display" transfer-ownership="none">
@@ -3550,21 +5109,6 @@ the drag operation is over.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_protocol"
-              c:identifier="gdk_drag_context_get_protocol"
-              version="3.0">
-        <doc xml:space="preserve">Returns the drag protocol thats used by this context.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the drag protocol</doc>
-          <type name="DragProtocol" c:type="GdkDragProtocol"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDragContext</doc>
-            <type name="DragContext" c:type="GdkDragContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_selected_action"
               c:identifier="gdk_drag_context_get_selected_action"
               version="2.22">
@@ -3750,62 +5294,6 @@ for more information.</doc>
         </parameters>
       </glib:signal>
     </class>
-    <enumeration name="DragProtocol"
-                 glib:type-name="GdkDragProtocol"
-                 glib:get-type="gdk_drag_protocol_get_type"
-                 c:type="GdkDragProtocol">
-      <doc xml:space="preserve">Used in #GdkDragContext to indicate the protocol according to
-which DND is done.</doc>
-      <member name="none"
-              value="0"
-              c:identifier="GDK_DRAG_PROTO_NONE"
-              glib:nick="none">
-        <doc xml:space="preserve">no protocol.</doc>
-      </member>
-      <member name="motif"
-              value="1"
-              c:identifier="GDK_DRAG_PROTO_MOTIF"
-              glib:nick="motif">
-        <doc xml:space="preserve">The Motif DND protocol. No longer supported</doc>
-      </member>
-      <member name="xdnd"
-              value="2"
-              c:identifier="GDK_DRAG_PROTO_XDND"
-              glib:nick="xdnd">
-        <doc xml:space="preserve">The Xdnd protocol.</doc>
-      </member>
-      <member name="rootwin"
-              value="3"
-              c:identifier="GDK_DRAG_PROTO_ROOTWIN"
-              glib:nick="rootwin">
-        <doc xml:space="preserve">An extension to the Xdnd protocol for
- unclaimed root window drops.</doc>
-      </member>
-      <member name="win32_dropfiles"
-              value="4"
-              c:identifier="GDK_DRAG_PROTO_WIN32_DROPFILES"
-              glib:nick="win32-dropfiles">
-        <doc xml:space="preserve">The simple WM_DROPFILES protocol.</doc>
-      </member>
-      <member name="ole2"
-              value="5"
-              c:identifier="GDK_DRAG_PROTO_OLE2"
-              glib:nick="ole2">
-        <doc xml:space="preserve">The complex OLE2 DND protocol (not implemented).</doc>
-      </member>
-      <member name="local"
-              value="6"
-              c:identifier="GDK_DRAG_PROTO_LOCAL"
-              glib:nick="local">
-        <doc xml:space="preserve">Intra-application DND.</doc>
-      </member>
-      <member name="wayland"
-              value="7"
-              c:identifier="GDK_DRAG_PROTO_WAYLAND"
-              glib:nick="wayland">
-        <doc xml:space="preserve">Wayland DND protocol.</doc>
-      </member>
-    </enumeration>
     <class name="DrawContext"
            c:symbol-prefix="draw_context"
            c:type="GdkDrawContext"
@@ -4535,25 +6023,6 @@ Also see gdk_event_get_scancode().</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve">location to store the keyval</doc>
             <type name="guint" c:type="guint*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="get_owner_change_reason"
-              c:identifier="gdk_event_get_owner_change_reason">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkEvent</doc>
-            <type name="Event" c:type="const GdkEvent*"/>
-          </instance-parameter>
-          <parameter name="reason"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <type name="OwnerChange" c:type="GdkOwnerChange*"/>
           </parameter>
         </parameters>
       </method>
@@ -5787,13 +7256,6 @@ the events are often transformed or filtered along the way.</doc>
         <doc xml:space="preserve">the state of a window has changed. See #GdkWindowState
   for the possible window states</doc>
       </member>
-      <member name="owner_change"
-              value="34"
-              c:identifier="GDK_OWNER_CHANGE"
-              glib:nick="owner-change">
-        <doc xml:space="preserve">the owner of a selection has changed. This event type
-  was added in 2.6</doc>
-      </member>
       <member name="grab_broken"
               value="35"
               c:identifier="GDK_GRAB_BROKEN"
@@ -5894,6 +7356,11 @@ the events are often transformed or filtered along the way.</doc>
     </enumeration>
     <record name="EventWindowState" c:type="GdkEventWindowState" disguised="1">
     </record>
+    <glib:boxed glib:name="FileList"
+                c:symbol-prefix="file_list"
+                glib:type-name="GdkFileList"
+                glib:get-type="gdk_file_list_get_type">
+    </glib:boxed>
     <callback name="FilterFunc" c:type="GdkFilterFunc">
       <doc xml:space="preserve">Specifies the type of function used to filter native events before they are
 converted to GDK events.
@@ -17393,30 +18860,6 @@ full details of crossing event generation.</doc>
         <doc xml:space="preserve">an unknown type of enter/leave event occurred.</doc>
       </member>
     </enumeration>
-    <enumeration name="OwnerChange"
-                 glib:type-name="GdkOwnerChange"
-                 glib:get-type="gdk_owner_change_get_type"
-                 c:type="GdkOwnerChange">
-      <doc xml:space="preserve">Specifies why a selection ownership was changed.</doc>
-      <member name="new_owner"
-              value="0"
-              c:identifier="GDK_OWNER_CHANGE_NEW_OWNER"
-              glib:nick="new-owner">
-        <doc xml:space="preserve">some other app claimed the ownership</doc>
-      </member>
-      <member name="destroy"
-              value="1"
-              c:identifier="GDK_OWNER_CHANGE_DESTROY"
-              glib:nick="destroy">
-        <doc xml:space="preserve">the window was destroyed</doc>
-      </member>
-      <member name="close"
-              value="2"
-              c:identifier="GDK_OWNER_CHANGE_CLOSE"
-              glib:nick="close">
-        <doc xml:space="preserve">the client was closed</doc>
-      </member>
-    </enumeration>
     <constant name="PARENT_RELATIVE" value="1" c:type="GDK_PARENT_RELATIVE">
       <doc xml:space="preserve">A special value, indicating that the background
 for a window should be inherited from the parent window.</doc>
@@ -17862,6 +19305,33 @@ that belong to a user.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_master_pointers"
+              c:identifier="gdk_seat_get_master_pointers"
+              version="3.93.">
+        <doc xml:space="preserve">Returns all master pointers with the given capabilities driven by this @seat.
+On most backends this function will return a list with a single element (meaning
+that all input devices drive the same onscreen cursor).
+
+In other backends where there can possibly be multiple foci (eg. wayland),
+this function will return all master #GdkDevices that represent these.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">A list
+of master pointing devices</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Device"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="seat" transfer-ownership="none">
+            <doc xml:space="preserve">The #GdkSeat</doc>
+            <type name="Seat" c:type="GdkSeat*"/>
+          </instance-parameter>
+          <parameter name="capabilities" transfer-ownership="none">
+            <doc xml:space="preserve">Queried capabilities</doc>
+            <type name="SeatCapabilities" c:type="GdkSeatCapabilities"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_pointer"
               c:identifier="gdk_seat_get_pointer"
               version="3.20">
@@ -18106,6 +19576,12 @@ to this @seat.</doc>
               glib:nick="keyboard">
         <doc xml:space="preserve">The seat has keyboard(s) attached</doc>
       </member>
+      <member name="tablet_pad"
+              value="16"
+              c:identifier="GDK_SEAT_CAPABILITY_TABLET_PAD"
+              glib:nick="tablet-pad">
+        <doc xml:space="preserve">The seat has drawing tablet pad(s) attached</doc>
+      </member>
       <member name="all_pointing"
               value="7"
               c:identifier="GDK_SEAT_CAPABILITY_ALL_POINTING"
@@ -18228,7 +19704,15 @@ of physical pixels on an output device are laid out.</doc>
            glib:type-name="GdkTexture"
            glib:get-type="gdk_texture_get_type"
            glib:type-struct="TextureClass">
-      <doc xml:space="preserve">The `GdkTexture` structure contains only private data.</doc>
+      <doc xml:space="preserve">A GdkTexture represents image data that can be displayed on screen.
+
+There are various ways to create GdkTexture objects from a #GdkPixbuf
+or a cairo surface, or other pixel data.
+
+An important aspect of GdkTextures is that they are immutable - once
+the image data has been wrapped in a GdkTexture, it may be uploaded
+to the GPU or used in other ways that make it impractical to allow
+modification.</doc>
       <constructor name="new_for_data"
                    c:identifier="gdk_texture_new_for_data"
                    version="3.94">
@@ -18473,6 +19957,15 @@ See also #GdkEventTouchpadSwipe and #GdkEventTouchpadPinch.</doc>
            abstract="1"
            glib:type-name="GdkVulkanContext"
            glib:get-type="gdk_vulkan_context_get_type">
+      <doc xml:space="preserve">#GdkVulkanContext is an object representing the platform-specific
+Vulkan drawing context.
+
+#GdkVulkanContexts are created for a #GdkWindow using
+gdk_window_create_vulkan_context(), and the context will match the
+the characteristics of the window.
+
+Support for #GdkGLContext is platform-specific, context creation
+can fail, returning %NULL context.</doc>
       <implements name="Gio.Initable"/>
       <glib:signal name="images-updated" when="last">
         <doc xml:space="preserve">This signal is emitted when the images managed by this context have
@@ -19652,32 +21145,6 @@ window is not known to GDK.</doc>
             <doc xml:space="preserve">a #GdkWindow</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_drag_protocol"
-              c:identifier="gdk_window_get_drag_protocol"
-              version="3.0">
-        <doc xml:space="preserve">Finds out the DND protocol supported by a window.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the supported DND protocol.</doc>
-          <type name="DragProtocol" c:type="GdkDragProtocol"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">the destination window</doc>
-            <type name="Window" c:type="GdkWindow*"/>
-          </instance-parameter>
-          <parameter name="target"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
-            <doc xml:space="preserve">location of the window
-   where the drop should happen. This may be @window or a proxy window,
-   or %NULL if @window does not support Drag and Drop.</doc>
-            <type name="Window" c:type="GdkWindow**"/>
-          </parameter>
         </parameters>
       </method>
       <method name="get_event_compression"
@@ -20917,7 +22384,7 @@ the shape mask of @window in the masks to be merged.</doc>
 
 Note that @cursor must be for the same display as @window.
 
-Use gdk_cursor_new_for_display() or gdk_cursor_new_from_pixbuf() to
+Use gdk_cursor_new_for_display() or gdk_cursor_new_from_texture() to
 create the cursor. To make the cursor invisible, use %GDK_BLANK_CURSOR.
 Passing %NULL for the @cursor argument to gdk_window_set_cursor() means
 that @window will use the cursor of its parent window. Most windows
@@ -20972,7 +22439,7 @@ but very few honor all possible combinations of bits.</doc>
               c:identifier="gdk_window_set_device_cursor"
               version="3.0">
         <doc xml:space="preserve">Sets a specific #GdkCursor for a given device when it gets inside @window.
-Use gdk_cursor_new_for_display() or gdk_cursor_new_from_pixbuf() to create
+Use gdk_cursor_new_for_display() or gdk_cursor_new_from_texture() to create
 the cursor. To make the cursor invisible, use %GDK_BLANK_CURSOR. Passing
 %NULL for the @cursor argument to gdk_window_set_cursor() means that
 @window will use the cursor of its parent window. Most windows should
@@ -22772,24 +24239,171 @@ the pixbuf.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="drag_abort" c:identifier="gdk_drag_abort">
-      <doc xml:space="preserve">Aborts a drag without dropping.
-
-This function is called by the drag source.
-
-This function does not need to be called in managed drag and drop
-operations. See gdk_drag_context_manage_dnd() for more information.</doc>
+    <function name="content_deserialize_async"
+              c:identifier="gdk_content_deserialize_async">
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
+        <parameter name="stream" transfer-ownership="none">
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
         </parameter>
-        <parameter name="time_" transfer-ownership="none">
-          <doc xml:space="preserve">the timestamp for this operation</doc>
-          <type name="guint32" c:type="guint32"/>
+        <parameter name="mime_type" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="type" transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="io_priority" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="async"
+                   closure="6">
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="content_deserialize_finish"
+              c:identifier="gdk_content_deserialize_finish"
+              throws="1">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <type name="GObject.Value" c:type="GValue*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="content_register_deserializer"
+              c:identifier="gdk_content_register_deserializer">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="mime_type" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="type" transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="deserialize"
+                   transfer-ownership="none"
+                   scope="notified"
+                   closure="3"
+                   destroy="4">
+          <type name="ContentDeserializeFunc"
+                c:type="GdkContentDeserializeFunc"/>
+        </parameter>
+        <parameter name="data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="notify" transfer-ownership="none" scope="async">
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="content_register_serializer"
+              c:identifier="gdk_content_register_serializer">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="type" transfer-ownership="none">
+          <type name="GType" c:type="GType"/>
+        </parameter>
+        <parameter name="mime_type" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="serialize"
+                   transfer-ownership="none"
+                   scope="notified"
+                   closure="3"
+                   destroy="4">
+          <type name="ContentSerializeFunc" c:type="GdkContentSerializeFunc"/>
+        </parameter>
+        <parameter name="data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="notify" transfer-ownership="none" scope="async">
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="content_serialize_async"
+              c:identifier="gdk_content_serialize_async">
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="stream" transfer-ownership="none">
+          <type name="Gio.OutputStream" c:type="GOutputStream*"/>
+        </parameter>
+        <parameter name="mime_type" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <type name="GObject.Value" c:type="const GValue*"/>
+        </parameter>
+        <parameter name="io_priority" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="cancellable"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   scope="async"
+                   closure="6">
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="content_serialize_finish"
+              c:identifier="gdk_content_serialize_finish"
+              throws="1">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
         </parameter>
       </parameters>
     </function>
@@ -22872,27 +24486,6 @@ This function is called by the drag source.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="drag_drop" c:identifier="gdk_drag_drop">
-      <doc xml:space="preserve">Drops on the current destination.
-
-This function is called by the drag source.
-
-This function does not need to be called in managed drag and drop
-operations. See gdk_drag_context_manage_dnd() for more information.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="time_" transfer-ownership="none">
-          <doc xml:space="preserve">the timestamp for this operation</doc>
-          <type name="guint32" c:type="guint32"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="drag_drop_done"
               c:identifier="gdk_drag_drop_done"
               version="3.20">
@@ -22938,51 +24531,6 @@ meaningless at other times.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="drag_find_window"
-              c:identifier="gdk_drag_find_window"
-              version="2.2">
-      <doc xml:space="preserve">Finds the destination window and DND protocol to use at the
-given pointer position.
-
-This function is called by the drag source to obtain the
-@dest_window and @protocol parameters for gdk_drag_motion().</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="drag_window" transfer-ownership="none">
-          <doc xml:space="preserve">a window which may be at the pointer position, but
-    should be ignored, since it is put up by the drag source as an icon</doc>
-          <type name="Window" c:type="GdkWindow*"/>
-        </parameter>
-        <parameter name="x_root" transfer-ownership="none">
-          <doc xml:space="preserve">the x position of the pointer in root coordinates</doc>
-          <type name="gint" c:type="gint"/>
-        </parameter>
-        <parameter name="y_root" transfer-ownership="none">
-          <doc xml:space="preserve">the y position of the pointer in root coordinates</doc>
-          <type name="gint" c:type="gint"/>
-        </parameter>
-        <parameter name="dest_window"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">location to store the destination window in</doc>
-          <type name="Window" c:type="GdkWindow**"/>
-        </parameter>
-        <parameter name="protocol"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">location to store the DND protocol in</doc>
-          <type name="DragProtocol" c:type="GdkDragProtocol*"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="drag_get_selection" c:identifier="gdk_drag_get_selection">
       <doc xml:space="preserve">Returns the selection atom for the current source window.</doc>
       <return-value transfer-ownership="none">
@@ -22993,53 +24541,6 @@ This function is called by the drag source to obtain the
         <parameter name="context" transfer-ownership="none">
           <doc xml:space="preserve">a #GdkDragContext.</doc>
           <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="drag_motion" c:identifier="gdk_drag_motion">
-      <doc xml:space="preserve">Updates the drag context when the pointer moves or the
-set of actions changes.
-
-This function is called by the drag source.
-
-This function does not need to be called in managed drag and drop
-operations. See gdk_drag_context_manage_dnd() for more information.</doc>
-      <return-value transfer-ownership="none">
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="dest_window" transfer-ownership="none">
-          <doc xml:space="preserve">the new destination window, obtained by
-    gdk_drag_find_window()</doc>
-          <type name="Window" c:type="GdkWindow*"/>
-        </parameter>
-        <parameter name="protocol" transfer-ownership="none">
-          <doc xml:space="preserve">the DND protocol in use, obtained by gdk_drag_find_window()</doc>
-          <type name="DragProtocol" c:type="GdkDragProtocol"/>
-        </parameter>
-        <parameter name="x_root" transfer-ownership="none">
-          <doc xml:space="preserve">the x position of the pointer in root coordinates</doc>
-          <type name="gint" c:type="gint"/>
-        </parameter>
-        <parameter name="y_root" transfer-ownership="none">
-          <doc xml:space="preserve">the y position of the pointer in root coordinates</doc>
-          <type name="gint" c:type="gint"/>
-        </parameter>
-        <parameter name="suggested_action" transfer-ownership="none">
-          <doc xml:space="preserve">the suggested action</doc>
-          <type name="DragAction" c:type="GdkDragAction"/>
-        </parameter>
-        <parameter name="possible_actions" transfer-ownership="none">
-          <doc xml:space="preserve">the possible actions</doc>
-          <type name="DragAction" c:type="GdkDragAction"/>
-        </parameter>
-        <parameter name="time_" transfer-ownership="none">
-          <doc xml:space="preserve">the timestamp for this operation</doc>
-          <type name="guint32" c:type="guint32"/>
         </parameter>
       </parameters>
     </function>
@@ -23294,6 +24795,23 @@ will be returned in @x and @y.</doc>
       <return-value transfer-ownership="none">
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
+    </function>
+    <function name="intern_mime_type" c:identifier="gdk_intern_mime_type">
+      <doc xml:space="preserve">Canonicalizes the given mime type and interns the result.
+
+If @string is not a valid mime type, %NULL is returned instead.
+See RFC 2048 for the syntax if mime types.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">An interned string for the canonicalized mime type
+    or %NULL if the string wasn't a valid mime type</doc>
+        <type name="utf8" c:type="const char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="string" transfer-ownership="none">
+          <doc xml:space="preserve">string of a potential mime type</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="keyval_convert_case"
               c:identifier="gdk_keyval_convert_case">
