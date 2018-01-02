@@ -9,7 +9,7 @@ namespace GCab {
 		public bool add_folder (GCab.Folder folder) throws GLib.Error;
 		public bool extract (GLib.File path, [CCode (delegate_target_pos = 3.5)] GCab.FileCallback? file_callback, [CCode (delegate_target_pos = 3.5)] GLib.FileProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool extract_simple (GLib.File path, [CCode (delegate_target_pos = 2.5)] GCab.FileCallback? file_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public GLib.GenericArray<GCab.Folder> get_folders ();
+		public unowned GLib.GenericArray<GCab.Folder> get_folders ();
 		[Version (since = "0.5")]
 		public unowned GLib.ByteArray get_signature (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool load (GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -26,29 +26,44 @@ namespace GCab {
 		protected File ();
 		[Version (since = "0.6")]
 		public uint32 get_attributes ();
+		[Version (since = "1.0")]
+		public unowned GLib.Bytes get_bytes ();
 		[Version (since = "0.6")]
-		public void get_date (GLib.TimeVal result);
+		public bool get_date (GLib.TimeVal result);
 		public unowned string? get_extract_name ();
-		public GLib.File get_file ();
+		public unowned GLib.File get_file ();
 		public unowned string get_name ();
 		[Version (since = "0.6")]
 		public uint32 get_size ();
+		[Version (since = "1.0")]
+		public void set_attributes (uint32 attr);
+		[Version (since = "1.0")]
+		public void set_date (GLib.TimeVal tv);
 		public void set_extract_name (string? name);
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
+		public File.with_bytes (string name, GLib.Bytes bytes);
+		[CCode (has_construct_function = false)]
 		public File.with_file (string name, GLib.File file);
-		public GLib.File file { owned get; construct; }
-		public string name { get; construct; }
+		[NoAccessorMethod]
+		public GLib.Bytes bytes { owned get; set; }
+		[NoAccessorMethod]
+		public GLib.File file { owned get; set; }
+		[NoAccessorMethod]
+		public string name { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgcab.h", type_id = "gcab_folder_get_type ()")]
 	public class Folder : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Folder (int comptype);
 		public bool add_file (GCab.File cabfile, bool recurse, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public GLib.SList<GCab.File> get_files ();
+		[Version (since = "1.0")]
+		public int get_comptype ();
+		public unowned GCab.File get_file_by_name (string name);
+		public GLib.SList<weak GCab.File> get_files ();
 		public uint get_nfiles ();
 		[NoAccessorMethod]
 		public GCab.Compression compression { get; }
-		[NoAccessorMethod]
 		public int comptype { get; construct; }
 		[NoAccessorMethod]
 		public GLib.ByteArray reserved { owned get; set; }
@@ -73,7 +88,9 @@ namespace GCab {
 	[CCode (cheader_filename = "libgcab.h", cprefix = "GCAB_ERROR_")]
 	public errordomain Error {
 		FORMAT,
-		FAILED;
+		FAILED,
+		NOT_SUPPORTED,
+		INVALID_DATA;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgcab.h", instance_pos = 1.9)]

@@ -4641,6 +4641,21 @@ connection contains one, otherwise %NULL</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_setting_tc_config"
+              c:identifier="nm_connection_get_setting_tc_config"
+              version="1.12">
+        <doc xml:space="preserve">A shortcut to return any #NMSettingTCConfig the connection might contain.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #NMSettingTCConfig if the connection contains one, otherwise %NULL</doc>
+          <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_setting_team"
               c:identifier="nm_connection_get_setting_team">
         <doc xml:space="preserve">A shortcut to return any #NMSettingTeam the connection might contain.</doc>
@@ -9670,6 +9685,12 @@ device, and must not be modified.</doc>
               glib:nick="ip-address-duplicate">
         <doc xml:space="preserve">a duplicate IP address was detected</doc>
       </member>
+      <member name="ip_method_unsupported"
+              value="65"
+              c:identifier="NM_DEVICE_STATE_REASON_IP_METHOD_UNSUPPORTED"
+              glib:nick="ip-method-unsupported">
+        <doc xml:space="preserve">The selected IP method is not supported</doc>
+      </member>
     </enumeration>
     <class name="DeviceTeam"
            c:symbol-prefix="device_team"
@@ -12655,6 +12676,11 @@ and the value is of the correct type and well-formed.</doc>
         <doc xml:space="preserve">IPv6 VTI tunnel</doc>
       </member>
     </enumeration>
+    <constant name="IP_ADDRESS_ATTRIBUTE_LABEL"
+              value="label"
+              c:type="NM_IP_ADDRESS_ATTRIBUTE_LABEL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="IP_CONFIG_ADDRESSES"
               value="addresses"
               c:type="NM_IP_CONFIG_ADDRESSES">
@@ -15442,6 +15468,21 @@ supported for IPv6)</doc>
     <constant name="SETTING_SERIAL_STOPBITS"
               value="stopbits"
               c:type="NM_SETTING_SERIAL_STOPBITS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TC_CONFIG_QDISCS"
+              value="qdiscs"
+              c:type="NM_SETTING_TC_CONFIG_QDISCS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TC_CONFIG_SETTING_NAME"
+              value="tc"
+              c:type="NM_SETTING_TC_CONFIG_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_TC_CONFIG_TFILTERS"
+              value="tfilters"
+              c:type="NM_SETTING_TC_CONFIG_TFILTERS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_TEAM_CONFIG"
@@ -26147,6 +26188,256 @@ The 1 in "8n1" for example.</doc>
         <doc xml:space="preserve">Odd parity</doc>
       </member>
     </enumeration>
+    <class name="SettingTCConfig"
+           c:symbol-prefix="setting_tc_config"
+           c:type="NMSettingTCConfig"
+           version="1.12"
+           parent="Setting"
+           glib:type-name="NMSettingTCConfig"
+           glib:get-type="nm_setting_tc_config_get_type"
+           glib:type-struct="SettingTCConfigClass">
+      <doc xml:space="preserve">Linux Traffic Contril Settings.</doc>
+      <constructor name="new"
+                   c:identifier="nm_setting_tc_config_new"
+                   version="1.12">
+        <doc xml:space="preserve">Creates a new #NMSettingTCConfig object with default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMSettingTCConfig object</doc>
+          <type name="Setting" c:type="NMSetting*"/>
+        </return-value>
+      </constructor>
+      <method name="add_qdisc"
+              c:identifier="nm_setting_tc_config_add_qdisc"
+              version="1.12">
+        <doc xml:space="preserve">Appends a new qdisc and associated information to the setting.  The
+given qdisc is duplicated internally and is not changed by this function.
+If an identical qdisc (considering attributes as well) already exists, the
+qdisc is not added and the function returns %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the qdisc was added; %FALSE if the qdisc was already known.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the qdisc to add</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_tfilter"
+              c:identifier="nm_setting_tc_config_add_tfilter"
+              version="1.12">
+        <doc xml:space="preserve">Appends a new tfilter and associated information to the setting.  The
+given tfilter is duplicated internally and is not changed by this function.
+If an identical tfilter (considering attributes as well) already exists, the
+tfilter is not added and the function returns %FALSE.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the tfilter was added; %FALSE if the tfilter was already known.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the tfilter to add</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear_qdiscs"
+              c:identifier="nm_setting_tc_config_clear_qdiscs"
+              version="1.12">
+        <doc xml:space="preserve">Removes all configured queueing disciplines.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="clear_tfilters"
+              c:identifier="nm_setting_tc_config_clear_tfilters"
+              version="1.12">
+        <doc xml:space="preserve">Removes all configured queueing disciplines.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_num_qdiscs"
+              c:identifier="nm_setting_tc_config_get_num_qdiscs"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of configured queueing disciplines</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_num_tfilters"
+              c:identifier="nm_setting_tc_config_get_num_tfilters"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of configured queueing disciplines</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_qdisc"
+              c:identifier="nm_setting_tc_config_get_qdisc"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the qdisc at index @idx</doc>
+          <type name="TCQdisc" c:type="NMTCQdisc*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the qdisc to return</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_tfilter"
+              c:identifier="nm_setting_tc_config_get_tfilter"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the tfilter at index @idx</doc>
+          <type name="TCTfilter" c:type="NMTCTfilter*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the tfilter to return</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_qdisc"
+              c:identifier="nm_setting_tc_config_remove_qdisc"
+              version="1.12">
+        <doc xml:space="preserve">Removes the qdisc at index @idx.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the qdisc</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_qdisc_by_value"
+              c:identifier="nm_setting_tc_config_remove_qdisc_by_value"
+              version="1.12">
+        <doc xml:space="preserve">Removes the first matching qdisc that matches @qdisc.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the qdisc was found and removed; %FALSE if it was not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the qdisc to remove</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_tfilter"
+              c:identifier="nm_setting_tc_config_remove_tfilter"
+              version="1.12">
+        <doc xml:space="preserve">Removes the tfilter at index @idx.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the tfilter</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_tfilter_by_value"
+              c:identifier="nm_setting_tc_config_remove_tfilter_by_value"
+              version="1.12">
+        <doc xml:space="preserve">Removes the first matching tfilter that matches @tfilter.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the tfilter was found and removed; %FALSE if it was not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingTCConfig</doc>
+            <type name="SettingTCConfig" c:type="NMSettingTCConfig*"/>
+          </instance-parameter>
+          <parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the tfilter to remove</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="qdiscs" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of TC queuening disciplines.
+
+Element-Type: NMTCQdisc</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </property>
+      <property name="tfilters" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Array of TC traffic filters.
+
+Element-Type: NMTCTfilter</doc>
+        <array name="GLib.PtrArray">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </property>
+    </class>
+    <record name="SettingTCConfigClass"
+            c:type="NMSettingTCConfigClass"
+            disguised="1"
+            glib:is-gtype-struct-for="SettingTCConfig">
+    </record>
     <class name="SettingTeam"
            c:symbol-prefix="setting_team"
            c:type="NMSettingTeam"
@@ -30903,6 +31194,468 @@ connection failed to normalize.</doc>
    indicate full network connectivity.</doc>
       </member>
     </enumeration>
+    <record name="TCAction"
+            c:type="NMTCAction"
+            glib:type-name="NMTCAction"
+            glib:get-type="nm_tc_action_get_type"
+            c:symbol-prefix="tc_action">
+      <constructor name="new"
+                   c:identifier="nm_tc_action_new"
+                   version="1.12"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new #NMTCAction object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMTCAction object, or %NULL on error</doc>
+          <type name="TCAction" c:type="NMTCAction*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">name of the queueing discipline</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="dup" c:identifier="nm_tc_action_dup" version="1.12">
+        <doc xml:space="preserve">Creates a copy of @action</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a copy of @action</doc>
+          <type name="TCAction" c:type="NMTCAction*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="equal" c:identifier="nm_tc_action_equal" version="1.12">
+        <doc xml:space="preserve">Determines if two #NMTCAction objects contain the same kind, family,
+handle, parent and info.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the objects contain the same values, %FALSE if they do not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction to compare @action to.</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_attribute" c:identifier="nm_tc_action_get_attribute">
+        <doc xml:space="preserve">Gets the value of the attribute with name @name on @action</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the value of the attribute with name @name on
+  @action, or %NULL if @action has no such attribute.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of an action attribute</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_attribute_names"
+              c:identifier="nm_tc_action_get_attribute_names">
+        <doc xml:space="preserve">Gets an array of attribute names defined on @action.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a %NULL-terminated array of attribute names,</doc>
+          <array c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="nm_tc_action_get_kind"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="nm_tc_action_ref" version="1.12">
+        <doc xml:space="preserve">Increases the reference count of the object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_attribute" c:identifier="nm_tc_action_set_attribute">
+        <doc xml:space="preserve">Sets or clears the named attribute on @action to the given value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of an action attribute</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the value</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="nm_tc_action_unref" version="1.12">
+        <doc xml:space="preserve">Decreases the reference count of the object.  If the reference count
+reaches zero, the object will be destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCAction</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
+    <record name="TCQdisc"
+            c:type="NMTCQdisc"
+            glib:type-name="NMTCQdisc"
+            glib:get-type="nm_tc_qdisc_get_type"
+            c:symbol-prefix="tc_qdisc">
+      <constructor name="new"
+                   c:identifier="nm_tc_qdisc_new"
+                   version="1.12"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new #NMTCQdisc object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMTCQdisc object, or %NULL on error</doc>
+          <type name="TCQdisc" c:type="NMTCQdisc*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">name of the queueing discipline</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="parent" transfer-ownership="none">
+            <doc xml:space="preserve">the parent queueing discipline</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="dup" c:identifier="nm_tc_qdisc_dup" version="1.12">
+        <doc xml:space="preserve">Creates a copy of @qdisc</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a copy of @qdisc</doc>
+          <type name="TCQdisc" c:type="NMTCQdisc*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="equal" c:identifier="nm_tc_qdisc_equal" version="1.12">
+        <doc xml:space="preserve">Determines if two #NMTCQdisc objects contain the same kind, * handle
+and parent.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the objects contain the same values, %FALSE if they do not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc to compare @qdisc to.</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_handle"
+              c:identifier="nm_tc_qdisc_get_handle"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the queueing discipline handle</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="nm_tc_qdisc_get_kind"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_parent"
+              c:identifier="nm_tc_qdisc_get_parent"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the parent class</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="nm_tc_qdisc_ref" version="1.12">
+        <doc xml:space="preserve">Increases the reference count of the object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_handle"
+              c:identifier="nm_tc_qdisc_set_handle"
+              version="1.12">
+        <doc xml:space="preserve">Sets the queueing discipline handle.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+          <parameter name="handle" transfer-ownership="none">
+            <doc xml:space="preserve">the queueing discipline handle</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="nm_tc_qdisc_unref" version="1.12">
+        <doc xml:space="preserve">Decreases the reference count of the object.  If the reference count
+reaches zero, the object will be destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="qdisc" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCQdisc</doc>
+            <type name="TCQdisc" c:type="NMTCQdisc*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
+    <record name="TCTfilter"
+            c:type="NMTCTfilter"
+            glib:type-name="NMTCTfilter"
+            glib:get-type="nm_tc_tfilter_get_type"
+            c:symbol-prefix="tc_tfilter">
+      <constructor name="new"
+                   c:identifier="nm_tc_tfilter_new"
+                   version="1.12"
+                   throws="1">
+        <doc xml:space="preserve">Creates a new #NMTCTfilter object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMTCTfilter object, or %NULL on error</doc>
+          <type name="TCTfilter" c:type="NMTCTfilter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">name of the queueing discipline</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="parent" transfer-ownership="none">
+            <doc xml:space="preserve">the parent queueing discipline</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="dup" c:identifier="nm_tc_tfilter_dup" version="1.12">
+        <doc xml:space="preserve">Creates a copy of @tfilter</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a copy of @tfilter</doc>
+          <type name="TCTfilter" c:type="NMTCTfilter*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="equal" c:identifier="nm_tc_tfilter_equal" version="1.12">
+        <doc xml:space="preserve">Determines if two #NMTCTfilter objects contain the same kind, family,
+handle, parent and info.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the objects contain the same values, %FALSE if they do not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter to compare @tfilter to.</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_action"
+              c:identifier="nm_tc_tfilter_get_action"
+              version="1.12">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the action associated with a traffic filter.</doc>
+          <type name="TCAction" c:type="NMTCAction*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_handle"
+              c:identifier="nm_tc_tfilter_get_handle"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the queueing discipline handle</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="nm_tc_tfilter_get_kind"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_parent"
+              c:identifier="nm_tc_tfilter_get_parent"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the parent class</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="nm_tc_tfilter_ref" version="1.12">
+        <doc xml:space="preserve">Increases the reference count of the object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_action"
+              c:identifier="nm_tc_tfilter_set_action"
+              version="1.12">
+        <doc xml:space="preserve">Sets the action associated with a traffic filter.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+          <parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the action object</doc>
+            <type name="TCAction" c:type="NMTCAction*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_handle"
+              c:identifier="nm_tc_tfilter_set_handle"
+              version="1.12">
+        <doc xml:space="preserve">Sets the queueing discipline handle.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+          <parameter name="handle" transfer-ownership="none">
+            <doc xml:space="preserve">the queueing discipline handle</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="nm_tc_tfilter_unref" version="1.12">
+        <doc xml:space="preserve">Decreases the reference count of the object.  If the reference count
+reaches zero, the object will be destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tfilter" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMTCTfilter</doc>
+            <type name="TCTfilter" c:type="NMTCTfilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </record>
     <constant name="TEAM_LINK_WATCHER_ARP_PING"
               value="arp_ping"
               c:type="NM_TEAM_LINK_WATCHER_ARP_PING">
@@ -36192,6 +36945,108 @@ Returns %NULL on errors.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="utils_tc_action_from_str"
+              c:identifier="nm_utils_tc_action_from_str"
+              version="1.12"
+              throws="1">
+      <doc xml:space="preserve">Parces the tc style string action representation of the queueing
+discipline to a %NMTCAction instance. Supports a subset of the tc language.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the %NMTCAction or %NULL</doc>
+        <type name="TCAction" c:type="NMTCAction*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">the string representation of a action</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_tc_action_to_str"
+              c:identifier="nm_utils_tc_action_to_str"
+              version="1.12"
+              throws="1">
+      <doc xml:space="preserve">Turns the %NMTCAction into a tc style string representation of the queueing
+discipline.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">formatted string or %NULL</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="action" transfer-ownership="none">
+          <doc xml:space="preserve">the %NMTCAction</doc>
+          <type name="TCAction" c:type="NMTCAction*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_tc_qdisc_from_str"
+              c:identifier="nm_utils_tc_qdisc_from_str"
+              version="1.12"
+              throws="1">
+      <doc xml:space="preserve">Parces the tc style string qdisc representation of the queueing
+discipline to a %NMTCQdisc instance. Supports a subset of the tc language.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the %NMTCQdisc or %NULL</doc>
+        <type name="TCQdisc" c:type="NMTCQdisc*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">the string representation of a qdisc</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_tc_qdisc_to_str"
+              c:identifier="nm_utils_tc_qdisc_to_str"
+              version="1.12"
+              throws="1">
+      <doc xml:space="preserve">Turns the %NMTCQdisc into a tc style string representation of the queueing
+discipline.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">formatted string or %NULL</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="qdisc" transfer-ownership="none">
+          <doc xml:space="preserve">the %NMTCQdisc</doc>
+          <type name="TCQdisc" c:type="NMTCQdisc*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_tc_tfilter_from_str"
+              c:identifier="nm_utils_tc_tfilter_from_str"
+              version="1.12"
+              throws="1">
+      <doc xml:space="preserve">Parces the tc style string tfilter representation of the queueing
+discipline to a %NMTCTfilter instance. Supports a subset of the tc language.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the %NMTCTfilter or %NULL</doc>
+        <type name="TCTfilter" c:type="NMTCTfilter*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">the string representation of a tfilter</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_tc_tfilter_to_str"
+              c:identifier="nm_utils_tc_tfilter_to_str"
+              version="1.12"
+              throws="1">
+      <doc xml:space="preserve">Turns the %NMTCTfilter into a tc style string representation of the queueing
+discipline.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">formatted string or %NULL</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="tfilter" transfer-ownership="none">
+          <doc xml:space="preserve">the %NMTCTfilter</doc>
+          <type name="TCTfilter" c:type="NMTCTfilter*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="utils_uuid_generate" c:identifier="nm_utils_uuid_generate">
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a newly allocated UUID suitable for use as the #NMSettingConnection
@@ -36320,9 +37175,12 @@ object's #NMSettingConnection:id: property.  Should be freed with g_free()</doc>
     <function name="utils_wifi_strength_bars"
               c:identifier="nm_utils_wifi_strength_bars">
       <doc xml:space="preserve">Converts @strength into a 4-character-wide graphical representation of
-strength suitable for printing to stdout. If the current locale and terminal
-support it, this will use unicode graphics characters to represent
-"bars". Otherwise it will use 0 to 4 asterisks.</doc>
+strength suitable for printing to stdout.
+
+Previous versions used to take a guess at the terminal type and possibly
+return a wide UTF-8 encoded string. Now it always returns a 7-bit
+clean strings of one to 0 to 4 asterisks. Users that actually need
+the functionality are encouraged to make their implementations instead.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the graphical representation of the access point strength</doc>
         <type name="utf8" c:type="const char*"/>

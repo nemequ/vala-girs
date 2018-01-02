@@ -31,7 +31,7 @@ namespace GMime {
 		[CCode (cname = "g_mime_autocrypt_header_compare")]
 		public int compare (GMime.AutocryptHeader ah2);
 		[CCode (cname = "g_mime_autocrypt_header_new_from_string", has_construct_function = false)]
-		public AutocryptHeader.from_string (string header);
+		public AutocryptHeader.from_string (string string);
 		[CCode (cname = "g_mime_autocrypt_header_get_address")]
 		public unowned GMime.InternetAddressMailbox get_address ();
 		[CCode (cname = "g_mime_autocrypt_header_get_address_as_string")]
@@ -62,15 +62,15 @@ namespace GMime {
 		[CCode (cname = "g_mime_autocrypt_header_list_new", has_construct_function = false)]
 		public AutocryptHeaderList ();
 		[CCode (cname = "g_mime_autocrypt_header_list_add")]
-		public void add (GMime.AutocryptHeader ah);
+		public void add (GMime.AutocryptHeader header);
 		[CCode (cname = "g_mime_autocrypt_header_list_add_missing_addresses")]
-		public uint add_missing_addresses (GMime.InternetAddressList list);
+		public uint add_missing_addresses (GMime.InternetAddressList addresses);
 		[CCode (cname = "g_mime_autocrypt_header_list_get_count")]
 		public uint get_count ();
 		[CCode (cname = "g_mime_autocrypt_header_list_get_header_at")]
-		public unowned GMime.AutocryptHeader get_header_at (uint n);
+		public unowned GMime.AutocryptHeader get_header_at (uint index);
 		[CCode (cname = "g_mime_autocrypt_header_list_get_header_for_address")]
-		public unowned GMime.AutocryptHeader get_header_for_address (GMime.InternetAddressMailbox addr);
+		public unowned GMime.AutocryptHeader get_header_for_address (GMime.InternetAddressMailbox mailbox);
 		[CCode (cname = "g_mime_autocrypt_header_list_remove_incomplete")]
 		public void remove_incomplete ();
 	}
@@ -382,6 +382,18 @@ namespace GMime {
 		public GMime.FilterGZipMode mode;
 		[CCode (cname = "g_mime_filter_gzip_new", has_construct_function = false, type = "GMimeFilter*")]
 		public FilterGZip (GMime.FilterGZipMode mode, int level);
+		[CCode (cname = "g_mime_filter_gzip_get_comment")]
+		[Version (since = "3.2")]
+		public unowned string get_comment ();
+		[CCode (cname = "g_mime_filter_gzip_get_filename")]
+		[Version (since = "3.2")]
+		public unowned string get_filename ();
+		[CCode (cname = "g_mime_filter_gzip_set_comment")]
+		[Version (since = "3.2")]
+		public void set_comment (string comment);
+		[CCode (cname = "g_mime_filter_gzip_set_filename")]
+		[Version (since = "3.2")]
+		public void set_filename (string filename);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_html_get_type ()")]
 	public class FilterHTML : GMime.Filter {
@@ -393,6 +405,18 @@ namespace GMime {
 		public void* scanner;
 		[CCode (cname = "g_mime_filter_html_new", has_construct_function = false, type = "GMimeFilter*")]
 		public FilterHTML (uint32 flags, uint32 colour);
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", lower_case_csuffix = "filter_openpgp", type_id = "g_mime_filter_openpgp_get_type ()")]
+	[Version (since = "3.2")]
+	public class FilterOpenPGP : GMime.Filter {
+		[CCode (cname = "g_mime_filter_openpgp_new", has_construct_function = false, type = "GMimeFilter*")]
+		public FilterOpenPGP ();
+		[CCode (cname = "g_mime_filter_openpgp_get_begin_offset")]
+		public int64 get_begin_offset ();
+		[CCode (cname = "g_mime_filter_openpgp_get_data_type")]
+		public GMime.OpenPGPData get_data_type ();
+		[CCode (cname = "g_mime_filter_openpgp_get_end_offset")]
+		public int64 get_end_offset ();
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_filter_smtp_data_get_type ()")]
 	public class FilterSmtpData : GMime.Filter {
@@ -478,8 +502,6 @@ namespace GMime {
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_header_get_type ()")]
 	public class Header : GLib.Object {
-		public weak string name;
-		public weak string value;
 		[CCode (has_construct_function = false)]
 		protected Header ();
 		[CCode (cname = "g_mime_header_format_addrlist")]
@@ -1250,6 +1272,12 @@ namespace GMime {
 		public bool owner;
 		[CCode (cname = "g_mime_stream_mmap_new", has_construct_function = false, type = "GMimeStream*")]
 		public StreamMmap (int fd, int prot, int flags);
+		[CCode (cname = "g_mime_stream_mmap_get_owner")]
+		[Version (since = "3.2")]
+		public bool get_owner ();
+		[CCode (cname = "g_mime_stream_mmap_set_owner")]
+		[Version (since = "3.2")]
+		public void set_owner (bool owner);
 		[CCode (cname = "g_mime_stream_mmap_new_with_bounds", has_construct_function = false, type = "GMimeStream*")]
 		public StreamMmap.with_bounds (int fd, int prot, int flags, int64 start, int64 end);
 	}
@@ -1325,6 +1353,15 @@ namespace GMime {
 		public void reset ();
 		[CCode (cname = "g_mime_encoding_step")]
 		public size_t step (string inbuf, size_t inlen, string outbuf);
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", has_type_id = false)]
+	[Version (since = "3.2")]
+	public struct OpenPGPMarker {
+		public weak string marker;
+		public size_t len;
+		public GMime.OpenPGPState before;
+		public GMime.OpenPGPState after;
+		public bool is_end_marker;
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", has_type_id = false)]
 	public struct StreamIOVector {
@@ -1440,7 +1477,24 @@ namespace GMime {
 	public enum OpenPGPData {
 		NONE,
 		ENCRYPTED,
-		SIGNED
+		SIGNED,
+		PUBLIC_KEY,
+		PRIVATE_KEY
+	}
+	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_OPENPGP_", has_type_id = false)]
+	[Flags]
+	[Version (since = "3.2")]
+	public enum OpenPGPState {
+		NONE,
+		BEGIN_PGP_MESSAGE,
+		END_PGP_MESSAGE,
+		BEGIN_PGP_SIGNED_MESSAGE,
+		BEGIN_PGP_SIGNATURE,
+		END_PGP_SIGNATURE,
+		BEGIN_PGP_PUBLIC_KEY_BLOCK,
+		END_PGP_PUBLIC_KEY_BLOCK,
+		BEGIN_PGP_PRIVATE_KEY_BLOCK,
+		END_PGP_PRIVATE_KEY_BLOCK
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_PARAM_ENCODING_METHOD_", has_type_id = false)]
 	public enum ParamEncodingMethod {

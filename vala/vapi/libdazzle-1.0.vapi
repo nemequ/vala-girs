@@ -562,6 +562,8 @@ namespace Dazzle {
 		public unowned string get_property_name ();
 		public GLib.Type get_row_type ();
 		public void set_model (GLib.ListModel model);
+		[Version (since = "3.28")]
+		public void set_recycle_max (uint recycle_max);
 		public string property_name { get; construct; }
 		public GLib.Type row_type { get; construct; }
 		public string row_type_name { construct; }
@@ -625,6 +627,8 @@ namespace Dazzle {
 	public class MultiPaned : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public MultiPaned ();
+		[Version (since = "3.28")]
+		public unowned Gtk.Widget? get_at_point (int x, int y);
 		public uint get_n_children ();
 		public unowned Gtk.Widget get_nth_child (uint nth);
 		[NoAccessorMethod]
@@ -1529,6 +1533,8 @@ namespace Dazzle {
 	public class TreeBuilder : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		public TreeBuilder ();
+		[NoWrapper]
+		public virtual void cell_data_func (Dazzle.TreeNode node, Gtk.CellRenderer cell);
 		public unowned Dazzle.Tree? get_tree ();
 		public Dazzle.Tree tree { get; }
 		public virtual signal void added (Dazzle.Tree tree);
@@ -1560,6 +1566,8 @@ namespace Dazzle {
 		public void get_area (Gdk.Rectangle area);
 		public bool get_children_possible ();
 		public bool get_expanded ();
+		[Version (since = "3.28")]
+		public unowned Gdk.RGBA? get_foreground_rgba ();
 		public unowned GLib.Icon get_gicon ();
 		public unowned string get_icon_name ();
 		public unowned GLib.Object get_item ();
@@ -1572,17 +1580,23 @@ namespace Dazzle {
 		public bool get_use_dim_label ();
 		public bool get_use_markup ();
 		public bool has_emblem (string emblem_name);
+		[Version (since = "3.28")]
+		public void insert (Dazzle.TreeNode child, uint position);
 		public void insert_sorted (Dazzle.TreeNode child, Dazzle.TreeNodeCompareFunc compare_func);
 		public void invalidate ();
 		public bool is_root ();
 		public uint n_children ();
 		public Dazzle.TreeNode? nth_child (uint nth);
 		public void prepend (Dazzle.TreeNode child);
+		[Version (since = "3.28")]
+		public void rebuild ();
 		public void remove (Dazzle.TreeNode child);
 		public void remove_emblem (string emblem_name);
 		public void select ();
 		public void set_children_possible (bool children_possible);
 		public void set_emblems (string emblems);
+		[Version (since = "3.28")]
+		public void set_foreground_rgba (Gdk.RGBA? foreground_rgba);
 		public void set_gicon (GLib.Icon icon);
 		public void set_icon_name (string? icon_name);
 		public void set_item (GLib.Object item);
@@ -1847,6 +1861,9 @@ namespace Dazzle {
 	public static Cairo.Region cairo_region_create_from_clip_extents (Cairo.Context cr);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void cairo_rounded_rectangle (Cairo.Context cr, Gdk.Rectangle rect, int x_radius, int y_radius);
+	[CCode (cheader_filename = "dazzle.h")]
+	[Version (since = "3.28")]
+	public static void cancellable_chain (GLib.Cancellable? self = null, GLib.Cancellable? other = null);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "dazzle.h")]
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "dazzle.h")]

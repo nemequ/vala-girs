@@ -86,6 +86,8 @@ namespace Vte {
 		[Version (since = "0.52")]
 		public long get_scrollback_lines ();
 		public string get_text ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
+		[Version (since = "0.52")]
+		public Vte.TextBlinkMode get_text_blink_mode ();
 		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public string get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes> attributes);
 		public unowned string get_window_title ();
@@ -162,6 +164,8 @@ namespace Vte {
 		public void set_scroll_on_output (bool scroll);
 		public void set_scrollback_lines (long lines);
 		public void set_size (long columns, long rows);
+		[Version (since = "0.52")]
+		public void set_text_blink_mode (Vte.TextBlinkMode text_blink_mode);
 		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
 		[Version (since = "0.48")]
@@ -206,6 +210,8 @@ namespace Vte {
 		public bool scroll_on_keystroke { get; set; }
 		public bool scroll_on_output { get; set; }
 		public uint scrollback_lines { get; set; }
+		[Version (since = "0.52")]
+		public Vte.TextBlinkMode text_blink_mode { get; set; }
 		public string window_title { get; }
 		[Version (since = "0.40")]
 		public string word_char_exceptions { get; }
@@ -282,6 +288,14 @@ namespace Vte {
 		NO_HELPER,
 		NO_FALLBACK,
 		DEFAULT
+	}
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_TEXT_BLINK_", type_id = "vte_text_blink_mode_get_type ()")]
+	[Version (since = "0.52")]
+	public enum TextBlinkMode {
+		NEVER,
+		FOCUSED,
+		UNFOCUSED,
+		ALWAYS
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_WRITE_", type_id = "vte_write_flags_get_type ()")]
 	public enum WriteFlags {

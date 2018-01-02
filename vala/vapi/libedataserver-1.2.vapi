@@ -1240,7 +1240,7 @@ namespace E {
 		public bool get_acl_restrictions_sync (string? uri, out uint32 out_restrictions, out E.WebDAVACEPrincipalKind out_principal_kind, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_acl_sync (string? uri, out GLib.SList<E.WebDAVAccessControlEntry> out_entries, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_current_user_privilege_set_sync (string? uri, out GLib.SList<E.WebDAVPrivilege> out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out string out_bytes, out size_t? out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out string out_bytes, out size_t out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_principal_collection_set_sync (string? uri, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_supported_privilege_set_sync (string? uri, out GLib.Node out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_sync (string uri, out string? out_href, out string? out_etag, out unowned GLib.OutputStream out_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1278,7 +1278,7 @@ namespace E {
 		public void add_attribute_time (string? ns_href, string name, long value);
 		public void add_empty_element (string? ns_href, string name);
 		public void end_element ();
-		public string get_content (out size_t? out_length);
+		public string get_content (out size_t out_length);
 		public unowned Xml.Doc get_xmldoc ();
 		public void start_element (string? ns_href, string name);
 		public void start_text_element (string? ns_href, string name);

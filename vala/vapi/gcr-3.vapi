@@ -104,7 +104,7 @@ namespace Gcr {
 		[NoWrapper]
 		public virtual bool generate_exchange_key (string scheme, uint8 public_key, size_t n_public_key);
 		public unowned string get_protocol ();
-		[CCode (array_length_pos = 0.1)]
+		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public unowned string[] get_secret ();
 		public bool receive (string exchange);
 		public string send (string? secret, ssize_t secret_len);

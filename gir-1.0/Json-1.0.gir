@@ -1276,10 +1276,10 @@ stream.</doc>
     <constant name="MAJOR_VERSION" value="1" c:type="JSON_MAJOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="JSON_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="1" c:type="JSON_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="4" c:type="JSON_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="5" c:type="JSON_MINOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <record name="Node"
@@ -1339,8 +1339,9 @@ there should be no need to copy an immutable node.</doc>
       </method>
       <method name="dup_array" c:identifier="json_node_dup_array">
         <doc xml:space="preserve">Retrieves the #JsonArray stored inside a #JsonNode and returns it
-with its reference count increased by one. If the node does not hold an
-array value, %NULL is returned.</doc>
+with its reference count increased by one. It is a programmer error
+to call this on a node which doesn’t hold an array value. Use
+%JSON_NODE_HOLDS_ARRAY first.</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the #JsonArray with its reference
   count increased.</doc>
@@ -1355,8 +1356,9 @@ array value, %NULL is returned.</doc>
       </method>
       <method name="dup_object" c:identifier="json_node_dup_object">
         <doc xml:space="preserve">Retrieves the #JsonObject inside @node. The reference count of
-the returned object is increased. If the node does not hold an object value,
-%NULL is returned.</doc>
+the returned object is increased. It is a programmer error
+to call this on a node which doesn’t hold an object value. Use
+%JSON_NODE_HOLDS_OBJECT first.</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the #JsonObject</doc>
           <type name="Object" c:type="JsonObject*"/>
@@ -1417,8 +1419,9 @@ integer value 4.</doc>
         </parameters>
       </method>
       <method name="get_array" c:identifier="json_node_get_array">
-        <doc xml:space="preserve">Retrieves the #JsonArray stored inside a #JsonNode. If the node does not
-hold an array value, %NULL is returned.</doc>
+        <doc xml:space="preserve">Retrieves the #JsonArray stored inside a #JsonNode. It is a programmer error
+to call this on a node which doesn’t hold an array value. Use
+%JSON_NODE_HOLDS_ARRAY first.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #JsonArray</doc>
           <type name="Array" c:type="JsonArray*"/>
@@ -1496,8 +1499,9 @@ node holds a %JSON_NODE_NULL value or a value of another non-integer type,
         </parameters>
       </method>
       <method name="get_object" c:identifier="json_node_get_object">
-        <doc xml:space="preserve">Retrieves the #JsonObject stored inside a #JsonNode. If the node does not
-hold an object value, %NULL is returned.</doc>
+        <doc xml:space="preserve">Retrieves the #JsonObject stored inside a #JsonNode. It is a programmer error
+to call this on a node which doesn’t hold an object value. Use
+%JSON_NODE_HOLDS_OBJECT first.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #JsonObject</doc>
           <type name="Object" c:type="JsonObject*"/>
@@ -1539,8 +1543,9 @@ string value, %NULL is returned.</doc>
       </method>
       <method name="get_value" c:identifier="json_node_get_value">
         <doc xml:space="preserve">Retrieves a value from a #JsonNode and copies into @value. When done
-using it, call g_value_unset() on the #GValue. If the node does not hold a
-scalar value, @value is not modified.</doc>
+using it, call g_value_unset() on the #GValue. It is a programmer error
+to call this on a node which doesn’t hold a scalar value. Use
+%JSON_NODE_HOLDS_VALUE first.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1837,7 +1842,8 @@ If the @node is already immutable, this is a no-op.</doc>
       <method name="set_array" c:identifier="json_node_set_array">
         <doc xml:space="preserve">Sets @array inside @node and increases the #JsonArray reference count.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+an array node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1856,7 +1862,8 @@ It is an error to call this on an immutable node.</doc>
         <doc xml:space="preserve">Sets @value as the boolean content of the @node, replacing any existing
 content.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+a value node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1875,7 +1882,8 @@ It is an error to call this on an immutable node.</doc>
         <doc xml:space="preserve">Sets @value as the double content of the @node, replacing any existing
 content.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+a value node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1894,7 +1902,8 @@ It is an error to call this on an immutable node.</doc>
         <doc xml:space="preserve">Sets @value as the integer content of the @node, replacing any existing
 content.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+a value node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1914,7 +1923,8 @@ It is an error to call this on an immutable node.</doc>
 
 If @object is %NULL, the node’s existing object is cleared.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+an object node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1957,7 +1967,8 @@ immutable.</doc>
         <doc xml:space="preserve">Sets @value as the string content of the @node, replacing any existing
 content.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+a value node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1975,7 +1986,8 @@ It is an error to call this on an immutable node.</doc>
       <method name="set_value" c:identifier="json_node_set_value">
         <doc xml:space="preserve">Sets @value inside @node. The passed #GValue is copied into the #JsonNode.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+a value node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1993,7 +2005,8 @@ It is an error to call this on an immutable node.</doc>
       <method name="take_array" c:identifier="json_node_take_array">
         <doc xml:space="preserve">Sets @array into @node without increasing the #JsonArray reference count.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or a node which is not
+an array node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2011,7 +2024,8 @@ It is an error to call this on an immutable node.</doc>
       <method name="take_object" c:identifier="json_node_take_object">
         <doc xml:space="preserve">Sets @object inside @node. The reference count of @object is not increased.
 
-It is an error to call this on an immutable node.</doc>
+It is an error to call this on an immutable node, or on a node which is not
+an object node.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2242,6 +2256,34 @@ See also: json_object_get_member()</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_boolean_member_with_default"
+              c:identifier="json_object_get_boolean_member_with_default"
+              version="1.6">
+        <doc xml:space="preserve">Convenience function that retrieves the boolean value
+stored in @member_name of @object.
+
+If @member_name does not exist, does not contain a scalar value,
+or contains `null`, then @default_value is returned instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the boolean value of the object's member, or the
+  given default</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonObject</doc>
+            <type name="Object" c:type="JsonObject*"/>
+          </instance-parameter>
+          <parameter name="member_name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of the @object member</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="default_value" transfer-ownership="none">
+            <doc xml:space="preserve">the value to return if @member_name is not valid</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_double_member"
               c:identifier="json_object_get_double_member"
               version="0.8">
@@ -2264,6 +2306,34 @@ See also: json_object_get_member()</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_double_member_with_default"
+              c:identifier="json_object_get_double_member_with_default"
+              version="1.6">
+        <doc xml:space="preserve">Convenience function that retrieves the floating point value
+stored in @member_name of @object.
+
+If @member_name does not exist, does not contain a scalar value,
+or contains `null`, then @default_value is returned instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the floating point value of the object's member, or the
+  given default</doc>
+          <type name="gdouble" c:type="double"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonObject</doc>
+            <type name="Object" c:type="JsonObject*"/>
+          </instance-parameter>
+          <parameter name="member_name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of the @object member</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="default_value" transfer-ownership="none">
+            <doc xml:space="preserve">the value to return if @member_name is not valid</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_int_member"
               c:identifier="json_object_get_int_member"
               version="0.8">
@@ -2281,8 +2351,36 @@ See also: json_object_get_member()</doc>
             <type name="Object" c:type="JsonObject*"/>
           </instance-parameter>
           <parameter name="member_name" transfer-ownership="none">
-            <doc xml:space="preserve">the name of the member</doc>
+            <doc xml:space="preserve">the name of the @object member</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_int_member_with_default"
+              c:identifier="json_object_get_int_member_with_default"
+              version="1.6">
+        <doc xml:space="preserve">Convenience function that retrieves the integer value
+stored in @member_name of @object.
+
+If @member_name does not exist, does not contain a scalar value,
+or contains `null`, then @default_value is returned instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the integer value of the object's member, or the
+  given default</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonObject</doc>
+            <type name="Object" c:type="JsonObject*"/>
+          </instance-parameter>
+          <parameter name="member_name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of the @object member</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="default_value" transfer-ownership="none">
+            <doc xml:space="preserve">the value to return if @member_name is not valid</doc>
+            <type name="gint64" c:type="gint64"/>
           </parameter>
         </parameters>
       </method>
@@ -2403,6 +2501,34 @@ See also: json_object_get_member()</doc>
           <parameter name="member_name" transfer-ownership="none">
             <doc xml:space="preserve">the name of the member</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_string_member_with_default"
+              c:identifier="json_object_get_string_member_with_default"
+              version="1.6">
+        <doc xml:space="preserve">Convenience function that retrieves the string value
+stored in @member_name of @object.
+
+If @member_name does not exist, does not contain a scalar value,
+or contains `null`, then @default_value is returned instead.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the string value of the object's member, or the
+  given default</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonObject</doc>
+            <type name="Object" c:type="JsonObject*"/>
+          </instance-parameter>
+          <parameter name="member_name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of the @object member</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="default_value" transfer-ownership="none">
+            <doc xml:space="preserve">the value to return if @member_name is not valid</doc>
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </method>
@@ -3035,8 +3161,10 @@ yield 0.</doc>
         </parameters>
       </method>
       <method name="get_root" c:identifier="json_parser_get_root">
-        <doc xml:space="preserve">Retrieves the top level node from the parsed JSON stream.</doc>
-        <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Retrieves the top level node from the parsed JSON stream. If the parser input
+was an empty string, or if parsing failed, this will be %NULL. It will also
+be %NULL if it has been stolen using json_parser_steal_root().</doc>
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the root #JsonNode . The returned
   node is owned by the #JsonParser and should never be modified
   or freed.</doc>
@@ -3242,8 +3370,9 @@ json_parser_load_from_stream_async().</doc>
       <method name="steal_root"
               c:identifier="json_parser_steal_root"
               version="1.4">
-        <doc xml:space="preserve">Steals the top level node from the parsed JSON stream.</doc>
-        <return-value transfer-ownership="full">
+        <doc xml:space="preserve">Steals the top level node from the parsed JSON stream. This will be %NULL
+in the same situations as json_parser_get_root() returns %NULL.</doc>
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">the top level #JsonNode</doc>
           <type name="Node" c:type="JsonNode*"/>
         </return-value>
@@ -4851,7 +4980,7 @@ sequence.</doc>
         </callback>
       </field>
     </record>
-    <constant name="VERSION_S" value="1.4.3" c:type="JSON_VERSION_S">
+    <constant name="VERSION_S" value="1.5.1" c:type="JSON_VERSION_S">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <function name="boxed_can_deserialize"

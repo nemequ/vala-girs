@@ -129,6 +129,24 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string ssid_to_utf8 ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] ssid);
 		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.12")]
+		public static NM.TCAction tc_action_from_str (string str) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.12")]
+		public static string tc_action_to_str (NM.TCAction action) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.12")]
+		public static NM.TCQdisc tc_qdisc_from_str (string str) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.12")]
+		public static string tc_qdisc_to_str (NM.TCQdisc qdisc) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.12")]
+		public static NM.TCTfilter tc_tfilter_from_str (string str) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.12")]
+		public static string tc_tfilter_to_str (NM.TCTfilter tfilter) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string uuid_generate ();
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.6.0")]
@@ -3272,6 +3290,28 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint stopbits { get; set construct; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_tc_config_get_type ()")]
+	[Version (since = "1.12")]
+	public class SettingTCConfig : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingTCConfig ();
+		public bool add_qdisc (NM.TCQdisc qdisc);
+		public bool add_tfilter (NM.TCTfilter tfilter);
+		public void clear_qdiscs ();
+		public void clear_tfilters ();
+		public uint get_num_qdiscs ();
+		public uint get_num_tfilters ();
+		public unowned NM.TCQdisc get_qdisc (uint idx);
+		public unowned NM.TCTfilter get_tfilter (uint idx);
+		public void remove_qdisc (uint idx);
+		public bool remove_qdisc_by_value (NM.TCQdisc qdisc);
+		public void remove_tfilter (uint idx);
+		public bool remove_tfilter_by_value (NM.TCTfilter tfilter);
+		[NoAccessorMethod]
+		public GLib.GenericArray<void*> qdiscs { owned get; set; }
+		[NoAccessorMethod]
+		public GLib.GenericArray<void*> tfilters { owned get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_team_get_type ()")]
 	public class SettingTeam : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_CONFIG")]
@@ -3641,14 +3681,14 @@ namespace NM {
 		public void foreach_data_item (NM.VpnIterFunc func);
 		public void foreach_secret (NM.VpnIterFunc func);
 		public unowned string get_data_item (string key);
-		[CCode (array_length_pos = 0.1)]
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.12")]
 		public (unowned string)[] get_data_keys ();
 		public uint32 get_num_data_items ();
 		public uint32 get_num_secrets ();
 		public bool get_persistent ();
 		public unowned string get_secret (string key);
-		[CCode (array_length_pos = 0.1)]
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.12")]
 		public (unowned string)[] get_secret_keys ();
 		public unowned string get_service_type ();
@@ -4150,6 +4190,77 @@ namespace NM {
 		public static NM.Connection new_clone (NM.Connection connection);
 		public static NM.Connection new_from_dbus (GLib.Variant dict) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_tc_action_ref", type_id = "nm_tc_action_get_type ()", unref_function = "nm_tc_action_unref")]
+	[Compact]
+	public class TCAction {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.12")]
+		public TCAction (string kind) throws GLib.Error;
+		[Version (since = "1.12")]
+		public NM.TCAction dup ();
+		[Version (since = "1.12")]
+		public bool equal (NM.TCAction other);
+		public unowned GLib.Variant get_attribute (string name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_attribute_names ();
+		[Version (since = "1.12")]
+		public unowned string get_kind ();
+		[Version (since = "1.12")]
+		public void @ref ();
+		public void set_attribute (string name, GLib.Variant? value);
+		[Version (since = "1.12")]
+		public void unref ();
+	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_tc_qdisc_ref", type_id = "nm_tc_qdisc_get_type ()", unref_function = "nm_tc_qdisc_unref")]
+	[Compact]
+	public class TCQdisc {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.12")]
+		public TCQdisc (string kind, uint32 parent) throws GLib.Error;
+		[Version (since = "1.12")]
+		public NM.TCQdisc dup ();
+		[Version (since = "1.12")]
+		public bool equal (NM.TCQdisc other);
+		[Version (since = "1.12")]
+		public uint32 get_handle ();
+		[Version (since = "1.12")]
+		public unowned string get_kind ();
+		[Version (since = "1.12")]
+		public uint32 get_parent ();
+		[Version (since = "1.12")]
+		public void @ref ();
+		[Version (since = "1.12")]
+		public void set_handle (uint32 handle);
+		[Version (since = "1.12")]
+		public void unref ();
+	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_tc_tfilter_ref", type_id = "nm_tc_tfilter_get_type ()", unref_function = "nm_tc_tfilter_unref")]
+	[Compact]
+	public class TCTfilter {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.12")]
+		public TCTfilter (string kind, uint32 parent) throws GLib.Error;
+		[Version (since = "1.12")]
+		public NM.TCTfilter dup ();
+		[Version (since = "1.12")]
+		public bool equal (NM.TCTfilter other);
+		[Version (since = "1.12")]
+		public NM.TCAction get_action ();
+		[Version (since = "1.12")]
+		public uint32 get_handle ();
+		[Version (since = "1.12")]
+		public unowned string get_kind ();
+		[Version (since = "1.12")]
+		public uint32 get_parent ();
+		[Version (since = "1.12")]
+		public void @ref ();
+		[Version (since = "1.12")]
+		public void set_action (NM.TCAction action);
+		[Version (since = "1.12")]
+		public void set_handle (uint32 handle);
+		[Version (since = "1.12")]
+		public void unref ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_team_link_watcher_ref", type_id = "nm_team_link_watcher_get_type ()", unref_function = "nm_team_link_watcher_unref")]
 	[Compact]
 	public class TeamLinkWatcher {
@@ -4441,6 +4552,8 @@ namespace NM {
 		[Version (since = "1.6")]
 		public unowned NM.SettingProxy get_setting_proxy ();
 		public unowned NM.SettingSerial get_setting_serial ();
+		[Version (since = "1.12")]
+		public unowned NM.SettingTCConfig get_setting_tc_config ();
 		public unowned NM.SettingTeam get_setting_team ();
 		public unowned NM.SettingTeamPort get_setting_team_port ();
 		[Version (since = "1.2")]
@@ -4453,7 +4566,7 @@ namespace NM {
 		public unowned NM.SettingWired get_setting_wired ();
 		public unowned NM.SettingWireless get_setting_wireless ();
 		public unowned NM.SettingWirelessSecurity get_setting_wireless_security ();
-		[CCode (array_length_pos = 0.1)]
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.10")]
 		public (unowned NM.Setting)[] get_settings ();
 		public unowned string get_uuid ();
@@ -4741,7 +4854,8 @@ namespace NM {
 		PARENT_CHANGED,
 		PARENT_MANAGED_CHANGED,
 		OVSDB_FAILED,
-		IP_ADDRESS_DUPLICATE
+		IP_ADDRESS_DUPLICATE,
+		IP_METHOD_UNSUPPORTED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_TYPE_", type_id = "nm_device_type_get_type ()")]
 	public enum DeviceType {
@@ -5382,6 +5496,8 @@ namespace NM {
 	public const string DBUS_VPN_WRONG_STATE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_FAMILY")]
 	public const string DHCP_CONFIG_FAMILY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ADDRESS_ATTRIBUTE_LABEL")]
+	public const string IP_ADDRESS_ATTRIBUTE_LABEL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
 	public const string IP_ROUTE_ATTRIBUTE_CWND;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_FROM")]
@@ -5548,6 +5664,12 @@ namespace NM {
 	public const string SETTING_OVS_PORT_TAG;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_VLAN_MODE")]
 	public const string SETTING_OVS_PORT_VLAN_MODE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_QDISCS")]
+	public const string SETTING_TC_CONFIG_QDISCS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_SETTING_NAME")]
+	public const string SETTING_TC_CONFIG_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_TFILTERS")]
+	public const string SETTING_TC_CONFIG_TFILTERS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_DATA")]
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]

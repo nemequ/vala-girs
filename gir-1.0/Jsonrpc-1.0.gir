@@ -43,6 +43,16 @@ g_subprocess_get_stdin_pipe() and g_subprocess_get_stdout_pipe().</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
+      <virtual-method name="failed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Client" c:type="JsonrpcClient*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="handle_call">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -372,6 +382,61 @@ result: (transfer none) (nullable): the return value or %NULL</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="reply_error_async"
+              c:identifier="jsonrpc_client_reply_error_async">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Client" c:type="JsonrpcClient*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="code" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="message" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="5">
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="reply_error_finish"
+              c:identifier="jsonrpc_client_reply_error_finish"
+              throws="1">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Client" c:type="JsonrpcClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="reply_finish"
               c:identifier="jsonrpc_client_reply_finish"
               version="3.26"
@@ -571,7 +636,14 @@ expensive memory allocations and parsing costs associated with JSON.
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <glib:signal name="handle-call" when="last" version="3.26">
+      <glib:signal name="failed" when="last" version="3.28">
+        <doc xml:space="preserve">The "failed" signal is called when the client has failed communication
+or the connection has been knowingly closed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="handle-call" when="last" detailed="1" version="3.26">
         <doc xml:space="preserve">This signal is emitted when an RPC has been received from the peer we
 are connected to. Return %TRUE if you have handled this message, even
 asynchronously. If no handler has returned %TRUE an error will be
@@ -579,7 +651,11 @@ synthesized.
 
 If you handle the message, you are responsible for replying to the peer
 in a timely manner using jsonrpc_client_reply() or
-jsonrpc_client_reply_async().</doc>
+jsonrpc_client_reply_async().
+
+Additionally, since 3.28 you may connect to the "detail" of this signal
+to handle a specific method call. Use the method name as the detail of
+the signal.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -601,7 +677,7 @@ jsonrpc_client_reply_async().</doc>
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="notification" when="last" version="3.26">
+      <glib:signal name="notification" when="last" detailed="1" version="3.26">
         <doc xml:space="preserve">This signal is emitted when a notification has been received from a
 peer.  Unlike #JsonrpcClient::handle-call, this does not have an "id"
 parameter because notifications do not have ids. They do not round
@@ -669,8 +745,17 @@ trip.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_reserved1">
-        <type name="gpointer" c:type="gpointer"/>
+      <field name="failed">
+        <callback name="failed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Client" c:type="JsonrpcClient*"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
       <field name="_reserved2">
         <type name="gpointer" c:type="gpointer"/>
@@ -694,6 +779,28 @@ trip.</doc>
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
+    <enumeration name="ClientError" c:type="JsonrpcClientError">
+      <member name="parse_error"
+              value="-32700"
+              c:identifier="JSONRPC_CLIENT_ERROR_PARSE_ERROR">
+      </member>
+      <member name="invalid_request"
+              value="-32600"
+              c:identifier="JSONRPC_CLIENT_ERROR_INVALID_REQUEST">
+      </member>
+      <member name="method_not_found"
+              value="-32601"
+              c:identifier="JSONRPC_CLIENT_ERROR_METHOD_NOT_FOUND">
+      </member>
+      <member name="invalid_params"
+              value="-32602"
+              c:identifier="JSONRPC_CLIENT_ERROR_INVALID_PARAMS">
+      </member>
+      <member name="internal_error"
+              value="-32603"
+              c:identifier="JSONRPC_CLIENT_ERROR_INTERNAL_ERROR">
+      </member>
+    </enumeration>
     <class name="InputStream"
            c:symbol-prefix="input_stream"
            c:type="JsonrpcInputStream"
@@ -1226,6 +1333,34 @@ loop.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="foreach"
+              c:identifier="jsonrpc_server_foreach"
+              version="3.28">
+        <doc xml:space="preserve">Calls @foreach_func for every client connected.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonrpcServer</doc>
+            <type name="Server" c:type="JsonrpcServer*"/>
+          </instance-parameter>
+          <parameter name="foreach_func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="1">
+            <doc xml:space="preserve">a callback for each client</doc>
+            <type name="GLib.Func" c:type="GFunc"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">closure data for @foreach_func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="remove_handler"
               c:identifier="jsonrpc_server_remove_handler"
               version="3.26">
@@ -1408,6 +1543,24 @@ concatenation.</doc>
     </constant>
     <function name="message_new"
               c:identifier="jsonrpc_message_new"
+              introspectable="0">
+      <return-value transfer-ownership="full">
+        <type name="GLib.Variant" c:type="GVariant*"/>
+      </return-value>
+      <parameters>
+        <parameter name="first_param"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="..." transfer-ownership="none">
+          <varargs/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="message_new_array"
+              c:identifier="jsonrpc_message_new_array"
               introspectable="0">
       <return-value transfer-ownership="full">
         <type name="GLib.Variant" c:type="GVariant*"/>

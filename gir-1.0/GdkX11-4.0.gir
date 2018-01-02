@@ -149,14 +149,15 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </function>
-      <function name="get_screen"
-                c:identifier="gdk_x11_display_get_screen"
-                introspectable="0">
-        <return-value>
+      <function name="get_screen" c:identifier="gdk_x11_display_get_screen">
+        <doc xml:space="preserve">Retrieves the #GdkX11Screen of the @display.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GdkX11Screen</doc>
           <type name="X11Screen" c:type="GdkX11Screen*"/>
         </return-value>
         <parameters>
           <parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkX11Display</doc>
             <type name="Gdk.Display" c:type="GdkDisplay*"/>
           </parameter>
         </parameters>
@@ -664,6 +665,37 @@ gdk_x11_display_grab().</doc>
           </parameter>
         </parameters>
       </method>
+      <glib:signal name="xevent" when="last">
+        <doc xml:space="preserve">The ::xevent signal is a low level signal that is emitted
+whenever an XEvent has been received.
+
+When handlers to this signal return %TRUE, no other handlers will be
+invoked. In particular, the default handler for this function is
+GDK's own event handling mechanism, so by returning %TRUE for an event
+that GDK expects to translate, you may break GDK and/or GTK+ in
+interesting ways. You have been warned.
+
+If you want this signal handler to queue a #GdkEvent, you can use
+gdk_display_put_event().
+
+If you are interested in X GenericEvents, bear in mind that
+XGetEventData() has been already called on the event, and
+XFreeEventData() will be called afterwards.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE to stop other handlers from being invoked for the event.
+  %FALSE to propagate the event further.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="xevent"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a pointer to the XEvent to process</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="X11DisplayClass"
             c:type="GdkX11DisplayClass"
@@ -1210,20 +1242,6 @@ any way and doesn’t observe the presence of XInput 2.</doc>
         <type name="none" c:type="void"/>
       </return-value>
     </function>
-    <function name="x11_atom_to_xatom" c:identifier="gdk_x11_atom_to_xatom">
-      <doc xml:space="preserve">Converts from a #GdkAtom to the X atom for the default GDK display
-with the same string value.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the X atom corresponding to @atom.</doc>
-        <type name="xlib.Atom" c:type="Atom"/>
-      </return-value>
-      <parameters>
-        <parameter name="atom" transfer-ownership="none">
-          <doc xml:space="preserve">A #GdkAtom</doc>
-          <type name="Gdk.Atom" c:type="GdkAtom"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="x11_atom_to_xatom_for_display"
               c:identifier="gdk_x11_atom_to_xatom_for_display"
               version="2.2">
@@ -1334,22 +1352,6 @@ gdk_x11_display_text_property_to_text_list().</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="x11_get_xatom_by_name"
-              c:identifier="gdk_x11_get_xatom_by_name">
-      <doc xml:space="preserve">Returns the X atom for GDK’s default display corresponding to @atom_name.
-This function caches the result, so if called repeatedly it is much
-faster than XInternAtom(), which is a round trip to the server each time.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a X atom for GDK’s default display.</doc>
-        <type name="xlib.Atom" c:type="Atom"/>
-      </return-value>
-      <parameters>
-        <parameter name="atom_name" transfer-ownership="none">
-          <doc xml:space="preserve">a string</doc>
-          <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="x11_get_xatom_by_name_for_display"
               c:identifier="gdk_x11_get_xatom_by_name_for_display"
               version="2.2">
@@ -1371,30 +1373,12 @@ faster than XInternAtom(), which is a round trip to the server each time.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="x11_get_xatom_name" c:identifier="gdk_x11_get_xatom_name">
-      <doc xml:space="preserve">Returns the name of an X atom for GDK’s default display. This
-function is meant mainly for debugging, so for convenience, unlike
-XAtomName() and gdk_atom_name(), the result
-doesn’t need to be freed. Also, this function will never return %NULL,
-even if @xatom is invalid.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">name of the X atom; this string is owned by GTK+,
-  so it shouldn’t be modifed or freed.</doc>
-        <type name="utf8" c:type="const gchar*"/>
-      </return-value>
-      <parameters>
-        <parameter name="xatom" transfer-ownership="none">
-          <doc xml:space="preserve">an X atom for GDK’s default display</doc>
-          <type name="xlib.Atom" c:type="Atom"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="x11_get_xatom_name_for_display"
               c:identifier="gdk_x11_get_xatom_name_for_display"
               version="2.2">
       <doc xml:space="preserve">Returns the name of an X atom for its display. This
 function is meant mainly for debugging, so for convenience, unlike
-XAtomName() and gdk_atom_name(), the result doesn’t need to
+XAtomName() and the result doesn’t need to
 be freed.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">name of the X atom; this string is owned by GDK,
@@ -1477,20 +1461,6 @@ session management and the Inter-Client Communication Conventions Manual</doc>
           <doc xml:space="preserve">the client id assigned by the session manager when the
    connection was opened, or %NULL to remove the property.</doc>
           <type name="utf8" c:type="const gchar*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="x11_xatom_to_atom" c:identifier="gdk_x11_xatom_to_atom">
-      <doc xml:space="preserve">Convert from an X atom for the default display to the corresponding
-#GdkAtom.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the corresponding G#dkAtom.</doc>
-        <type name="Gdk.Atom" c:type="GdkAtom"/>
-      </return-value>
-      <parameters>
-        <parameter name="xatom" transfer-ownership="none">
-          <doc xml:space="preserve">an X atom for the default GDK display</doc>
-          <type name="xlib.Atom" c:type="Atom"/>
         </parameter>
       </parameters>
     </function>

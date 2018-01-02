@@ -564,6 +564,8 @@ namespace Cd {
 		public void set_copyright (string locale, string? value);
 		[Version (since = "0.1.32")]
 		public void set_copyright_items (GLib.HashTable<void*,void*> values);
+		[Version (since = "1.4.2")]
+		public void set_created (GLib.DateTime creation_time);
 		[Version (since = "0.1.32")]
 		public void set_description (string locale, string? value);
 		[Version (since = "0.1.32")]

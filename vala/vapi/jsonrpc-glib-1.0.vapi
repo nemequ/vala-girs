@@ -21,6 +21,7 @@ namespace Jsonrpc {
 		[Version (since = "3.26")]
 		public bool reply (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool reply_async (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool reply_error_async (GLib.Variant id, int code, string message, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.26")]
 		public bool send_notification (string method, owned GLib.Variant? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.26")]
@@ -33,6 +34,8 @@ namespace Jsonrpc {
 		public GLib.IOStream io_stream { construct; }
 		[Version (since = "3.26")]
 		public bool use_gvariant { get; set; }
+		[Version (since = "3.28")]
+		public virtual signal void failed ();
 		[Version (since = "3.26")]
 		public virtual signal bool handle_call (string method, GLib.Variant id, GLib.Variant? @params);
 		[Version (since = "3.26")]
@@ -64,6 +67,8 @@ namespace Jsonrpc {
 		public void accept_io_stream (GLib.IOStream io_stream);
 		[Version (since = "3.26")]
 		public uint add_handler (string method, owned Jsonrpc.ServerHandler handler);
+		[Version (since = "3.28")]
+		public void @foreach (GLib.Func foreach_func);
 		[Version (since = "3.26")]
 		public void remove_handler (uint handler_id);
 		[Version (since = "3.26")]
@@ -143,6 +148,14 @@ namespace Jsonrpc {
 	public struct MessagePutString {
 		public Jsonrpc.MessageMagic magic;
 		public weak string val;
+	}
+	[CCode (cheader_filename = "jsonrpc-glib.h", cprefix = "JSONRPC_CLIENT_ERROR_", has_type_id = false)]
+	public enum ClientError {
+		PARSE_ERROR,
+		INVALID_REQUEST,
+		METHOD_NOT_FOUND,
+		INVALID_PARAMS,
+		INTERNAL_ERROR
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", instance_pos = 5.9)]
 	public delegate void ServerHandler (Jsonrpc.Server self, Jsonrpc.Client client, string method, GLib.Variant id, GLib.Variant @params);

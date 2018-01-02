@@ -52,7 +52,10 @@ archive.</doc>
         </parameters>
       </method>
       <method name="extract" c:identifier="gcab_cabinet_extract" throws="1">
-        <doc xml:space="preserve">Extract files to given path.</doc>
+        <doc xml:space="preserve">Extract files to given path.
+
+If @path is NULL then the files are decompressed to memory blobs stored on
+each #GCabFile.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -63,7 +66,7 @@ archive.</doc>
             <type name="Cabinet" c:type="GCabCabinet*"/>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
-            <doc xml:space="preserve">the path to extract files</doc>
+            <doc xml:space="preserve">the path to extract files, or %NULL</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="file_callback"
@@ -72,7 +75,7 @@ archive.</doc>
                      allow-none="1"
                      scope="call"
                      closure="3">
-            <doc xml:space="preserve">an optionnal #GCabFile callback,
+            <doc xml:space="preserve">an optional #GCabFile callback,
     return %FALSE to filter out or skip files.</doc>
             <type name="FileCallback" c:type="GCabFileCallback"/>
           </parameter>
@@ -126,7 +129,7 @@ archive.</doc>
                      allow-none="1"
                      scope="call"
                      closure="2">
-            <doc xml:space="preserve">an optionnal #GCabFile callback,
+            <doc xml:space="preserve">an optional #GCabFile callback,
     return %FALSE to filter out or skip files.</doc>
             <type name="FileCallback" c:type="GCabFileCallback"/>
           </parameter>
@@ -151,7 +154,7 @@ archive.</doc>
         <doc xml:space="preserve">Get the Cabinet folders within the @cabinet.
 Note that Cabinet folders are not like filesystem path, they are
 group of files sharing some layout parameters.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">an array of #GCabFolder</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
             <type name="Folder"/>
@@ -170,8 +173,7 @@ group of files sharing some layout parameters.</doc>
               throws="1">
         <doc xml:space="preserve">Lookup the cabinet authenticode signature if any.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the array containing the PKCS#7 signed data or %NULL if
-none found or error.</doc>
+          <doc xml:space="preserve">the array containing the PKCS#7 signed data or %NULL on error.</doc>
           <array name="GLib.ByteArray" c:type="const GByteArray*">
             <type name="guint8" c:type="guint8"/>
           </array>
@@ -323,8 +325,10 @@ none found or error.</doc>
     </class>
     <record name="CabinetClass"
             c:type="GCabCabinetClass"
-            disguised="1"
             glib:is-gtype-struct-for="Cabinet">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
     </record>
     <enumeration name="Compression"
                  glib:type-name="GCabCompression"
@@ -347,13 +351,13 @@ none found or error.</doc>
               value="2"
               c:identifier="GCAB_COMPRESSION_QUANTUM"
               glib:nick="quantum">
-        <doc xml:space="preserve">QUANTUM compression.</doc>
+        <doc xml:space="preserve">QUANTUM compression (unsupported).</doc>
       </member>
       <member name="lzx"
               value="3"
               c:identifier="GCAB_COMPRESSION_LZX"
               glib:nick="lzx">
-        <doc xml:space="preserve">LZX compression.</doc>
+        <doc xml:space="preserve">LZX compression (only decompression supported).</doc>
       </member>
       <member name="mask"
               value="15"
@@ -372,6 +376,16 @@ none found or error.</doc>
       <member name="failed" value="1" c:identifier="GCAB_ERROR_FAILED">
         <doc xml:space="preserve">General function failure.</doc>
       </member>
+      <member name="not_supported"
+              value="2"
+              c:identifier="GCAB_ERROR_NOT_SUPPORTED">
+        <doc xml:space="preserve">Action or format is not supported</doc>
+      </member>
+      <member name="invalid_data"
+              value="3"
+              c:identifier="GCAB_ERROR_INVALID_DATA">
+        <doc xml:space="preserve">Data stream was invalid</doc>
+      </member>
     </enumeration>
     <class name="File"
            c:symbol-prefix="file"
@@ -381,6 +395,28 @@ none found or error.</doc>
            glib:get-type="gcab_file_get_type"
            glib:type-struct="FileClass">
       <doc xml:space="preserve">An opaque object, referencing a file in a Cabinet.</doc>
+      <constructor name="new_with_bytes"
+                   c:identifier="gcab_file_new_with_bytes"
+                   version="1.0">
+        <doc xml:space="preserve">Create a #GCabFile from a given #GBytes.
+
+If this file is to be added to an archive you should also probably use
+gcab_file_set_date() and gcab_file_set_attributes() to set sensible values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GCabFile</doc>
+          <type name="File" c:type="GCabFile*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the file within the cabinet</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="bytes" transfer-ownership="none">
+            <doc xml:space="preserve">a #GBytes to be added to the cabinet</doc>
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_with_file" c:identifier="gcab_file_new_with_file">
         <doc xml:space="preserve">Create a #GCabFile from a given #GFile, to be added to a
 #GCabCabinet for archive creation.</doc>
@@ -414,10 +450,27 @@ none found or error.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_bytes"
+              c:identifier="gcab_file_get_bytes"
+              version="1.0">
+        <doc xml:space="preserve">Get the #GFile associated with @file. This will only be non-%NULL if the
+#GCabFile has been created using gcab_file_new_with_bytes().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the associated #GBytes or %NULL</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">a #GCabFile</doc>
+            <type name="File" c:type="GCabFile*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_date" c:identifier="gcab_file_get_date" version="0.6">
         <doc xml:space="preserve">Get the file date, in @result.</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE if @tv was set</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="file" transfer-ownership="none">
@@ -451,7 +504,7 @@ be added to the archive during cabinet creation.
 
 If @file is from an existing cabinet, the fuction will return
 %NULL.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">the associated #GFile or %NULL</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
@@ -488,6 +541,40 @@ If @file is from an existing cabinet, the fuction will return
           </instance-parameter>
         </parameters>
       </method>
+      <method name="set_attributes"
+              c:identifier="gcab_file_set_attributes"
+              version="1.0">
+        <doc xml:space="preserve">Set the file attributes.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">a #GCabFile</doc>
+            <type name="File" c:type="GCabFile*"/>
+          </instance-parameter>
+          <parameter name="attr" transfer-ownership="none">
+            <doc xml:space="preserve">the attributes, e.g. %GCAB_FILE_ATTRIBUTE_RDONLY</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_date" c:identifier="gcab_file_set_date" version="1.0">
+        <doc xml:space="preserve">Sets the file modification date, instead of the value provided by the GFile.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="file" transfer-ownership="none">
+            <doc xml:space="preserve">a #GCabFile</doc>
+            <type name="File" c:type="GCabFile*"/>
+          </instance-parameter>
+          <parameter name="tv" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTimeVal</doc>
+            <type name="GLib.TimeVal" c:type="const GTimeVal*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_extract_name"
               c:identifier="gcab_file_set_extract_name">
         <doc xml:space="preserve">Sets the file name to use for extraction, instead of the name
@@ -509,16 +596,13 @@ provided by the Cabinet.</doc>
           </parameter>
         </parameters>
       </method>
-      <property name="file"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
+      <property name="bytes" writable="1" transfer-ownership="none">
+        <type name="GLib.Bytes"/>
+      </property>
+      <property name="file" writable="1" transfer-ownership="none">
         <type name="Gio.File"/>
       </property>
-      <property name="name"
-                writable="1"
-                construct-only="1"
-                transfer-ownership="none">
+      <property name="name" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
     </class>
@@ -587,8 +671,10 @@ files.</doc>
     </callback>
     <record name="FileClass"
             c:type="GCabFileClass"
-            disguised="1"
             glib:is-gtype-struct-for="File">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
     </record>
     <class name="Folder"
            c:symbol-prefix="folder"
@@ -643,9 +729,42 @@ A Cabinet folder is not a file path, it is a container for files.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_comptype"
+              c:identifier="gcab_folder_get_comptype"
+              version="1.0">
+        <doc xml:space="preserve">Returns the compression used in this folder.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GCabCompression, e.g. %GCAB_COMPRESSION_MSZIP</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cabfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #GCabFolder</doc>
+            <type name="Folder" c:type="GCabFolder*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_file_by_name"
+              c:identifier="gcab_folder_get_file_by_name">
+        <doc xml:space="preserve">Gets a specific #GCabFile files contained in the @cabfolder.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #GCabFile, or %NULL if not found</doc>
+          <type name="File" c:type="GCabFile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cabfolder" transfer-ownership="none">
+            <doc xml:space="preserve">a #GCabFolder</doc>
+            <type name="Folder" c:type="GCabFolder*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a file name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_files" c:identifier="gcab_folder_get_files">
         <doc xml:space="preserve">Get the list of #GCabFile files contained in the @cabfolder.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="container">
           <doc xml:space="preserve">list of files</doc>
           <type name="GLib.SList" c:type="GSList*">
             <type name="File"/>
@@ -688,8 +807,10 @@ A Cabinet folder is not a file path, it is a container for files.</doc>
     </class>
     <record name="FolderClass"
             c:type="GCabFolderClass"
-            disguised="1"
             glib:is-gtype-struct-for="Folder">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
     </record>
     <function name="error_quark" c:identifier="gcab_error_quark">
       <return-value transfer-ownership="none">
