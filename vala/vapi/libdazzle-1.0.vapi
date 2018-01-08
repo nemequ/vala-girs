@@ -569,7 +569,7 @@ namespace Dazzle {
 		public string row_type_name { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_box_row_get_type ()")]
-	public abstract class ListBoxRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Buildable {
+	public abstract class ListBoxRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ListBoxRow ();
 	}
@@ -1414,7 +1414,7 @@ namespace Dazzle {
 		public signal void suggestion_activated (Dazzle.Suggestion object);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_row_get_type ()")]
-	public class SuggestionRow : Dazzle.ListBoxRow, Atk.Implementor, Gtk.Buildable {
+	public class SuggestionRow : Dazzle.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SuggestionRow ();
 		public unowned Dazzle.Suggestion get_suggestion ();
@@ -1863,7 +1863,7 @@ namespace Dazzle {
 	public static void cairo_rounded_rectangle (Cairo.Context cr, Gdk.Rectangle rect, int x_radius, int y_radius);
 	[CCode (cheader_filename = "dazzle.h")]
 	[Version (since = "3.28")]
-	public static void cancellable_chain (GLib.Cancellable? self = null, GLib.Cancellable? other = null);
+	public static unowned GLib.Cancellable? cancellable_chain (GLib.Cancellable? self = null, GLib.Cancellable? other = null);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "dazzle.h")]
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "dazzle.h")]

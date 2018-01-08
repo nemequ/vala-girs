@@ -12,6 +12,8 @@ namespace GCab {
 		public unowned GLib.GenericArray<GCab.Folder> get_folders ();
 		[Version (since = "0.5")]
 		public unowned GLib.ByteArray get_signature (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
+		public uint32 get_size ();
 		public bool load (GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool write (GLib.OutputStream stream, [CCode (delegate_target_pos = 3.5)] GCab.FileCallback? file_callback, [CCode (delegate_target_pos = 3.5)] GLib.FileProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool write_simple (GLib.OutputStream stream, [CCode (delegate_target_pos = 2.5)] GCab.FileCallback? file_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;

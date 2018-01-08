@@ -5772,6 +5772,11 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_IP_TUNNEL_FLAGS"
+              value="flags"
+              c:type="NM_DEVICE_IP_TUNNEL_FLAGS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_IP_TUNNEL_FLOW_LABEL"
               value="flow-label"
               c:type="NM_DEVICE_IP_TUNNEL_FLOW_LABEL">
@@ -8237,6 +8242,20 @@ if not known.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_flags"
+              c:identifier="nm_device_ip_tunnel_get_flags"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the tunnel flags</doc>
+          <type name="IPTunnelFlags" c:type="NMIPTunnelFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceIPTunnel</doc>
+            <type name="DeviceIPTunnel" c:type="NMDeviceIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_flow_label"
               c:identifier="nm_device_ip_tunnel_get_flow_label"
               version="1.2">
@@ -8385,6 +8404,10 @@ to tunneled packets.</doc>
 be prepended to packets. This property applies only to IPv6
 tunnels.</doc>
         <type name="guint8" c:type="guint8"/>
+      </property>
+      <property name="flags" version="1.12" transfer-ownership="none">
+        <doc xml:space="preserve">Tunnel flags.</doc>
+        <type name="guint" c:type="guint"/>
       </property>
       <property name="flow-label" version="1.2" transfer-ownership="none">
         <doc xml:space="preserve">The flow label to assign to tunnel packets. This property
@@ -12609,6 +12632,46 @@ and the value is of the correct type and well-formed.</doc>
         </return-value>
       </function>
     </record>
+    <bitfield name="IPTunnelFlags"
+              glib:type-name="NMIPTunnelFlags"
+              glib:get-type="nm_ip_tunnel_flags_get_type"
+              c:type="NMIPTunnelFlags">
+      <member name="none"
+              value="0"
+              c:identifier="NM_IP_TUNNEL_FLAG_NONE"
+              glib:nick="none">
+      </member>
+      <member name="ip6_ign_encap_limit"
+              value="1"
+              c:identifier="NM_IP_TUNNEL_FLAG_IP6_IGN_ENCAP_LIMIT"
+              glib:nick="ip6-ign-encap-limit">
+      </member>
+      <member name="ip6_use_orig_tclass"
+              value="2"
+              c:identifier="NM_IP_TUNNEL_FLAG_IP6_USE_ORIG_TCLASS"
+              glib:nick="ip6-use-orig-tclass">
+      </member>
+      <member name="ip6_use_orig_flowlabel"
+              value="4"
+              c:identifier="NM_IP_TUNNEL_FLAG_IP6_USE_ORIG_FLOWLABEL"
+              glib:nick="ip6-use-orig-flowlabel">
+      </member>
+      <member name="ip6_mip6_dev"
+              value="8"
+              c:identifier="NM_IP_TUNNEL_FLAG_IP6_MIP6_DEV"
+              glib:nick="ip6-mip6-dev">
+      </member>
+      <member name="ip6_rcv_dscp_copy"
+              value="16"
+              c:identifier="NM_IP_TUNNEL_FLAG_IP6_RCV_DSCP_COPY"
+              glib:nick="ip6-rcv-dscp-copy">
+      </member>
+      <member name="ip6_use_orig_fwmark"
+              value="32"
+              c:identifier="NM_IP_TUNNEL_FLAG_IP6_USE_ORIG_FWMARK"
+              glib:nick="ip6-use-orig-fwmark">
+      </member>
+    </bitfield>
     <enumeration name="IPTunnelMode"
                  version="1.2"
                  glib:type-name="NMIPTunnelMode"
@@ -15034,6 +15097,11 @@ supported for IPv6)</doc>
     <constant name="SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT"
               value="encapsulation-limit"
               c:type="NM_SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP_TUNNEL_FLAGS"
+              value="flags"
+              c:type="NM_SETTING_IP_TUNNEL_FLAGS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_IP_TUNNEL_FLOW_LABEL"
@@ -23987,6 +24055,16 @@ Element-Type: NMIPRoute</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_flags" c:identifier="nm_setting_ip_tunnel_get_flags">
+        <return-value transfer-ownership="none">
+          <type name="IPTunnelFlags" c:type="NMIPTunnelFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <type name="SettingIPTunnel" c:type="NMSettingIPTunnel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_flow_label"
               c:identifier="nm_setting_ip_tunnel_get_flow_label"
               version="1.2">
@@ -24159,6 +24237,17 @@ Element-Type: NMIPRoute</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">How many additional levels of encapsulation are permitted to be prepended
 to packets. This property applies only to IPv6 tunnels.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="flags"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Tunnel flags. Currently the following values are supported:
+%NM_IP_TUNNEL_FLAG_IP6_IGN_ENCAP_LIMIT, %NM_IP_TUNNEL_FLAG_IP6_USE_ORIG_TCLASS,
+%NM_IP_TUNNEL_FLAG_IP6_USE_ORIG_FLOWLABEL, %NM_IP_TUNNEL_FLAG_IP6_MIP6_DEV,
+%NM_IP_TUNNEL_FLAG_IP6_RCV_DSCP_COPY, %NM_IP_TUNNEL_FLAG_IP6_USE_ORIG_FWMARK.
+They are valid only for IPv6 tunnels.</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="flow-label"

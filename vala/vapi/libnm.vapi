@@ -643,6 +643,8 @@ namespace NM {
 		public const string IP_INTERFACE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT")]
 		public const string IP_TUNNEL_ENCAPSULATION_LIMIT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_FLAGS")]
+		public const string IP_TUNNEL_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_FLOW_LABEL")]
 		public const string IP_TUNNEL_FLOW_LABEL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_INPUT_KEY")]
@@ -987,6 +989,8 @@ namespace NM {
 		protected DeviceIPTunnel ();
 		[Version (since = "1.2")]
 		public uint8 get_encapsulation_limit ();
+		[Version (since = "1.12")]
+		public NM.IPTunnelFlags get_flags ();
 		[Version (since = "1.2")]
 		public uint get_flow_label ();
 		[Version (since = "1.2")]
@@ -1009,6 +1013,8 @@ namespace NM {
 		public uint8 get_ttl ();
 		[Version (since = "1.2")]
 		public uint8 encapsulation_limit { get; }
+		[Version (since = "1.12")]
+		public uint flags { get; }
 		[Version (since = "1.2")]
 		public uint flow_label { get; }
 		[Version (since = "1.2")]
@@ -2782,6 +2788,8 @@ namespace NM {
 	public class SettingIPTunnel : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT")]
 		public const string ENCAPSULATION_LIMIT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FLAGS")]
+		public const string FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FLOW_LABEL")]
 		public const string FLOW_LABEL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_INPUT_KEY")]
@@ -2811,6 +2819,7 @@ namespace NM {
 		public SettingIPTunnel ();
 		[Version (since = "1.2")]
 		public uint get_encapsulation_limit ();
+		public NM.IPTunnelFlags get_flags ();
 		[Version (since = "1.2")]
 		public uint get_flow_label ();
 		[Version (since = "1.2")]
@@ -2836,6 +2845,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public uint encapsulation_limit { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public uint flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public uint flow_label { get; set construct; }
@@ -4902,6 +4914,17 @@ namespace NM {
 		FREQ_VALID,
 		FREQ_2GHZ,
 		FREQ_5GHZ
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_TUNNEL_FLAG_", type_id = "nm_ip_tunnel_flags_get_type ()")]
+	[Flags]
+	public enum IPTunnelFlags {
+		NONE,
+		IP6_IGN_ENCAP_LIMIT,
+		IP6_USE_ORIG_TCLASS,
+		IP6_USE_ORIG_FLOWLABEL,
+		IP6_MIP6_DEV,
+		IP6_RCV_DSCP_COPY,
+		IP6_USE_ORIG_FWMARK
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_TUNNEL_MODE_", type_id = "nm_ip_tunnel_mode_get_type ()")]
 	[Version (since = "1.2")]

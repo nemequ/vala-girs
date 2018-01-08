@@ -150,13 +150,12 @@ or &gt; than @b.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_completions" c:identifier="dh_book_get_completions">
-        <return-value transfer-ownership="none" nullable="1">
-          <doc xml:space="preserve">the completions
-associated with the book.</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="utf8"/>
-          </type>
+      <method name="get_completion"
+              c:identifier="dh_book_get_completion"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #DhCompletion of @book.</doc>
+          <type name="Completion" c:type="DhCompletion*"/>
         </return-value>
         <parameters>
           <instance-parameter name="book" transfer-ownership="none">
@@ -546,6 +545,125 @@ needed.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+    </record>
+    <class name="Completion"
+           c:symbol-prefix="completion"
+           c:type="DhCompletion"
+           parent="GObject.Object"
+           glib:type-name="DhCompletion"
+           glib:get-type="dh_completion_get_type"
+           glib:type-struct="CompletionClass">
+      <constructor name="new" c:identifier="dh_completion_new" version="3.28">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #DhCompletion object.</doc>
+          <type name="Completion" c:type="DhCompletion*"/>
+        </return-value>
+      </constructor>
+      <function name="aggregate_complete"
+                c:identifier="dh_completion_aggregate_complete"
+                version="3.28">
+        <doc xml:space="preserve">The same as dh_completion_complete(), but aggregated for several
+#DhCompletion objects.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the completed prefix, or %NULL if a
+longer prefix has not been found. Free with g_free() when no longer needed.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="completion_objects"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GList of
+  #DhCompletion objects.</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="Completion"/>
+            </type>
+          </parameter>
+          <parameter name="prefix" transfer-ownership="none">
+            <doc xml:space="preserve">the string to complete.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="add_string"
+              c:identifier="dh_completion_add_string"
+              version="3.28">
+        <doc xml:space="preserve">Adds a string to the @completion object.
+
+After adding all the strings you need to call dh_completion_sort().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="completion" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhCompletion.</doc>
+            <type name="Completion" c:type="DhCompletion*"/>
+          </instance-parameter>
+          <parameter name="str" transfer-ownership="none">
+            <doc xml:space="preserve">a string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="complete"
+              c:identifier="dh_completion_complete"
+              version="3.28">
+        <doc xml:space="preserve">This function does the equivalent of:
+1. Searches the data structure of @completion to find all strings that have
+   @prefix as prefix.
+2. From the list found at step 1, find the longest prefix that still matches
+   all the strings in the list.
+
+This function assumes that @prefix and the strings contained in @completion
+are in UTF-8. If all the strings are valid UTF-8, then the return value will
+also be valid UTF-8 (it won't return a partial multi-byte character).</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the completed prefix, or %NULL if a
+longer prefix has not been found. Free with g_free() when no longer needed.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="completion" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhCompletion.</doc>
+            <type name="Completion" c:type="DhCompletion*"/>
+          </instance-parameter>
+          <parameter name="prefix" transfer-ownership="none">
+            <doc xml:space="preserve">the string to complete.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="sort" c:identifier="dh_completion_sort" version="3.28">
+        <doc xml:space="preserve">Sorts all the strings. It is required to call this function after adding
+strings with dh_completion_add_string().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="completion" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhCompletion.</doc>
+            <type name="Completion" c:type="DhCompletion*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="CompletionPrivate" c:type="DhCompletionPrivate*"/>
+      </field>
+    </class>
+    <record name="CompletionClass"
+            c:type="DhCompletionClass"
+            glib:is-gtype-struct-for="Completion">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="CompletionPrivate"
+            c:type="DhCompletionPrivate"
+            disguised="1">
     </record>
     <class name="KeywordModel"
            c:symbol-prefix="keyword_model"
@@ -993,21 +1111,6 @@ you should just pass %NULL.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <method name="get_selected_book"
-              c:identifier="dh_sidebar_get_selected_book">
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">the #DhLink of the selected book, or
-%NULL if there is no selection. Unref with dh_link_unref() when no longer
-needed.</doc>
-          <type name="Link" c:type="DhLink*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="sidebar" transfer-ownership="none">
-            <doc xml:space="preserve">a #DhSidebar.</doc>
-            <type name="Sidebar" c:type="DhSidebar*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="select_uri" c:identifier="dh_sidebar_select_uri">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
