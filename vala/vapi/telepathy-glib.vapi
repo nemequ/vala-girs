@@ -2605,8 +2605,8 @@ namespace TelepathyGLib {
 		ROOM,
 		LIST,
 		GROUP;
-		public static bool is_valid (TelepathyGLib.HandleType type) throws GLib.Error;
-		public static unowned string to_string (TelepathyGLib.HandleType type);
+		public bool is_valid () throws GLib.Error;
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_LOCAL_HOLD_STATE_", has_type_id = false)]
 	public enum LocalHoldState {
@@ -2906,7 +2906,7 @@ namespace TelepathyGLib {
 		MEDIA_STREAMING_ERROR,
 		CAPTCHA_NOT_SUPPORTED;
 		[Version (since = "0.7.31")]
-		public static unowned string get_dbus_name (TelepathyGLib.Error error);
+		public unowned string get_dbus_name ();
 		[Version (since = "0.11.13")]
 		public static GLib.Quark quark ();
 	}

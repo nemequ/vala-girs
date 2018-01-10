@@ -2282,6 +2282,8 @@ namespace NM {
 		public const string LLDP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MASTER")]
 		public const string MASTER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MDNS")]
+		public const string MDNS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_METERED")]
 		public const string METERED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_PERMISSIONS")]
@@ -2323,6 +2325,8 @@ namespace NM {
 		[Version (since = "1.2")]
 		public NM.SettingConnectionLldp get_lldp ();
 		public unowned string get_master ();
+		[Version (since = "1.12")]
+		public NM.SettingConnectionMdns get_mdns ();
 		[Version (since = "1.2")]
 		public NM.Metered get_metered ();
 		public uint32 get_num_permissions ();
@@ -2365,6 +2369,9 @@ namespace NM {
 		public int lldp { get; set construct; }
 		[NoAccessorMethod]
 		public string master { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int mdns { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public NM.Metered metered { get; set; }
@@ -5022,6 +5029,14 @@ namespace NM {
 		DEFAULT,
 		DISABLE,
 		ENABLE_RX
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_CONNECTION_MDNS_", type_id = "nm_setting_connection_mdns_get_type ()")]
+	[Version (since = "1.12")]
+	public enum SettingConnectionMdns {
+		DEFAULT,
+		NO,
+		RESOLVE,
+		YES
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_DCB_FLAG_", type_id = "nm_setting_dcb_flags_get_type ()")]
 	[Flags]

@@ -47,7 +47,7 @@ namespace Rsvg {
 		[Version (since = "2.14")]
 		public Gdk.Pixbuf? get_pixbuf_sub (string? id);
 		[Version (since = "2.22")]
-		public bool get_position_sub (out Rsvg.PositionData position_data, string id);
+		public bool get_position_sub (out Rsvg.PositionData position_data, string? id);
 		[Deprecated (since = "2.36")]
 		public unowned string get_title ();
 		[Version (since = "2.22")]

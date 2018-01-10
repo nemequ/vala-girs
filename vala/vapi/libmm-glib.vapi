@@ -1636,7 +1636,7 @@ namespace MM {
 		MSCHAP,
 		MSCHAPV2,
 		EAP;
-		public static string build_string_from_mask (MM.BearerAllowedAuth mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_IP_FAMILY_", type_id = "mm_bearer_ip_family_get_type ()")]
 	[Flags]
@@ -1646,7 +1646,7 @@ namespace MM {
 		IPV6,
 		IPV4V6,
 		ANY;
-		public static string build_string_from_mask (MM.BearerIpFamily mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_IP_METHOD_", type_id = "mm_bearer_ip_method_get_type ()")]
 	public enum BearerIpMethod {
@@ -1654,14 +1654,14 @@ namespace MM {
 		PPP,
 		STATIC,
 		DHCP;
-		public static unowned string get_string (MM.BearerIpMethod val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CALL_DIRECTION_", type_id = "mm_call_direction_get_type ()")]
 	public enum CallDirection {
 		UNKNOWN,
 		INCOMING,
 		OUTGOING;
-		public static unowned string get_string (MM.CallDirection val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CALL_STATE_", type_id = "mm_call_state_get_type ()")]
 	public enum CallState {
@@ -1673,7 +1673,7 @@ namespace MM {
 		HELD,
 		WAITING,
 		TERMINATED;
-		public static unowned string get_string (MM.CallState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CALL_STATE_REASON_", type_id = "mm_call_state_reason_get_type ()")]
 	public enum CallStateReason {
@@ -1684,14 +1684,14 @@ namespace MM {
 		TERMINATED,
 		REFUSED_OR_BUSY,
 		ERROR;
-		public static unowned string get_string (MM.CallStateReason val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_FIRMWARE_IMAGE_TYPE_", type_id = "mm_firmware_image_type_get_type ()")]
 	public enum FirmwareImageType {
 		UNKNOWN,
 		GENERIC,
 		GOBI;
-		public static unowned string get_string (MM.FirmwareImageType val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_FACILITY_", type_id = "mm_modem_3gpp_facility_get_type ()")]
 	[Flags]
@@ -1761,7 +1761,7 @@ namespace MM {
 		EVDOB,
 		LTE,
 		ANY;
-		public static string build_string_from_mask (MM.ModemAccessTechnology mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_BAND_", type_id = "mm_modem_band_get_type ()")]
 	public enum ModemBand {
@@ -1872,7 +1872,7 @@ namespace MM {
 		UTRAN_26,
 		UTRAN_32,
 		ANY;
-		public static unowned string get_string (MM.ModemBand val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_CAPABILITY_", type_id = "mm_modem_capability_get_type ()")]
 	[Flags]
@@ -1885,7 +1885,7 @@ namespace MM {
 		LTE_ADVANCED,
 		IRIDIUM,
 		ANY;
-		public static string build_string_from_mask (MM.ModemCapability mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_CDMA_ACTIVATION_STATE_", type_id = "mm_modem_cdma_activation_state_get_type ()")]
 	public enum ModemCdmaActivationState {
@@ -1894,7 +1894,7 @@ namespace MM {
 		ACTIVATING,
 		PARTIALLY_ACTIVATED,
 		ACTIVATED;
-		public static unowned string get_string (MM.ModemCdmaActivationState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_CDMA_REGISTRATION_STATE_", type_id = "mm_modem_cdma_registration_state_get_type ()")]
 	public enum ModemCdmaRegistrationState {
@@ -1902,7 +1902,7 @@ namespace MM {
 		REGISTERED,
 		HOME,
 		ROAMING;
-		public static unowned string get_string (MM.ModemCdmaRegistrationState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_CDMA_RM_PROTOCOL_", type_id = "mm_modem_cdma_rm_protocol_get_type ()")]
 	public enum ModemCdmaRmProtocol {
@@ -1912,7 +1912,7 @@ namespace MM {
 		PACKET_NETWORK_PPP,
 		PACKET_NETWORK_SLIP,
 		STU_III;
-		public static unowned string get_string (MM.ModemCdmaRmProtocol val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_CONTACTS_STORAGE_", type_id = "mm_modem_contacts_storage_get_type ()")]
 	public enum ModemContactsStorage {
@@ -1920,7 +1920,7 @@ namespace MM {
 		ME,
 		SM,
 		MT;
-		public static unowned string get_string (MM.ModemContactsStorage val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCATION_SOURCE_", type_id = "mm_modem_location_source_get_type ()")]
 	[Flags]
@@ -1932,7 +1932,7 @@ namespace MM {
 		CDMA_BS,
 		GPS_UNMANAGED,
 		AGPS;
-		public static string build_string_from_mask (MM.ModemLocationSource mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCK_", type_id = "mm_modem_lock_get_type ()")]
 	public enum ModemLock {
@@ -1953,7 +1953,7 @@ namespace MM {
 		PH_FSIM_PUK,
 		PH_NETSUB_PIN,
 		PH_NETSUB_PUK;
-		public static unowned string get_string (MM.ModemLock val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_MODE_", type_id = "mm_modem_mode_get_type ()")]
 	[Flags]
@@ -1964,7 +1964,7 @@ namespace MM {
 		@3G,
 		@4G,
 		ANY;
-		public static string build_string_from_mask (MM.ModemMode mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_PORT_TYPE_", type_id = "mm_modem_port_type_get_type ()")]
 	public enum ModemPortType {
@@ -1975,7 +1975,7 @@ namespace MM {
 		GPS,
 		QMI,
 		MBIM;
-		public static unowned string get_string (MM.ModemPortType val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_POWER_STATE_", type_id = "mm_modem_power_state_get_type ()")]
 	public enum ModemPowerState {
@@ -1983,7 +1983,7 @@ namespace MM {
 		OFF,
 		LOW,
 		ON;
-		public static unowned string get_string (MM.ModemPowerState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_STATE_", type_id = "mm_modem_state_get_type ()")]
 	public enum ModemState {
@@ -2000,7 +2000,7 @@ namespace MM {
 		DISCONNECTING,
 		CONNECTING,
 		CONNECTED;
-		public static unowned string get_string (MM.ModemState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_STATE_CHANGE_REASON_", type_id = "mm_modem_state_change_reason_get_type ()")]
 	public enum ModemStateChangeReason {
@@ -2008,7 +2008,7 @@ namespace MM {
 		USER_REQUESTED,
 		SUSPEND,
 		FAILURE;
-		public static unowned string get_string (MM.ModemStateChangeReason val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_STATE_FAILED_REASON_", type_id = "mm_modem_state_failed_reason_get_type ()")]
 	public enum ModemStateFailedReason {
@@ -2016,7 +2016,7 @@ namespace MM {
 		UNKNOWN,
 		SIM_MISSING,
 		SIM_ERROR;
-		public static unowned string get_string (MM.ModemStateFailedReason val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_OMA_FEATURE_", type_id = "mm_oma_feature_get_type ()")]
 	[Flags]
@@ -2025,7 +2025,7 @@ namespace MM {
 		DEVICE_PROVISIONING,
 		PRL_UPDATE,
 		HANDS_FREE_ACTIVATION;
-		public static string build_string_from_mask (MM.OmaFeature mask);
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_OMA_SESSION_STATE_", type_id = "mm_oma_session_state_get_type ()")]
 	public enum OmaSessionState {
@@ -2041,7 +2041,7 @@ namespace MM {
 		PRL_DOWNLOADED,
 		MIP_PROFILE_DOWNLOADED,
 		COMPLETED;
-		public static unowned string get_string (MM.OmaSessionState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_OMA_SESSION_STATE_FAILED_REASON_", type_id = "mm_oma_session_state_failed_reason_get_type ()")]
 	public enum OmaSessionStateFailedReason {
@@ -2051,7 +2051,7 @@ namespace MM {
 		AUTHENTICATION_FAILED,
 		MAX_RETRY_EXCEEDED,
 		SESSION_CANCELLED;
-		public static unowned string get_string (MM.OmaSessionStateFailedReason val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_OMA_SESSION_TYPE_", type_id = "mm_oma_session_type_get_type ()")]
 	public enum OmaSessionType {
@@ -2063,7 +2063,7 @@ namespace MM {
 		NETWORK_INITIATED_PRL_UPDATE,
 		DEVICE_INITIATED_PRL_UPDATE,
 		DEVICE_INITIATED_HANDS_FREE_ACTIVATION;
-		public static unowned string get_string (MM.OmaSessionType val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_CDMA_SERVICE_CATEGORY_", type_id = "mm_sms_cdma_service_category_get_type ()")]
 	public enum SmsCdmaServiceCategory {
@@ -2104,7 +2104,7 @@ namespace MM {
 		CMAS_SEVERE_THREAT,
 		CMAS_CHILD_ABDUCTION_EMERGENCY,
 		CMAS_TEST;
-		public static unowned string get_string (MM.SmsCdmaServiceCategory val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_CDMA_TELESERVICE_ID_", type_id = "mm_sms_cdma_teleservice_id_get_type ()")]
 	public enum SmsCdmaTeleserviceId {
@@ -2117,7 +2117,7 @@ namespace MM {
 		WEMT,
 		SCPT,
 		CATPT;
-		public static unowned string get_string (MM.SmsCdmaTeleserviceId val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_DELIVERY_STATE_", type_id = "mm_sms_delivery_state_get_type ()")]
 	public enum SmsDeliveryState {
@@ -2203,7 +2203,7 @@ namespace MM {
 		TEMPORARY_GENERAL_PROBLEM_UNEXPECTED_PARAMETER_VALUE,
 		TEMPORARY_GENERAL_PROBLEM_USER_DATA_SIZE_ERROR,
 		TEMPORARY_GENERAL_PROBLEM_OTHER;
-		public static unowned string get_string (MM.SmsDeliveryState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_PDU_TYPE_", type_id = "mm_sms_pdu_type_get_type ()")]
 	public enum SmsPduType {
@@ -2217,7 +2217,7 @@ namespace MM {
 		CDMA_DELIVERY_ACKNOWLEDGEMENT,
 		CDMA_USER_ACKNOWLEDGEMENT,
 		CDMA_READ_ACKNOWLEDGEMENT;
-		public static unowned string get_string (MM.SmsPduType val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_STATE_", type_id = "mm_sms_state_get_type ()")]
 	public enum SmsState {
@@ -2227,7 +2227,7 @@ namespace MM {
 		RECEIVED,
 		SENDING,
 		SENT;
-		public static unowned string get_string (MM.SmsState val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_STORAGE_", type_id = "mm_sms_storage_get_type ()")]
 	public enum SmsStorage {
@@ -2238,7 +2238,7 @@ namespace MM {
 		SR,
 		BM,
 		TA;
-		public static unowned string get_string (MM.SmsStorage val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_VALIDITY_TYPE_", type_id = "mm_sms_validity_type_get_type ()")]
 	public enum SmsValidityType {
@@ -2246,7 +2246,7 @@ namespace MM {
 		RELATIVE,
 		ABSOLUTE,
 		ENHANCED;
-		public static unowned string get_string (MM.SmsValidityType val);
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CDMA_ACTIVATION_ERROR_")]
 	public errordomain CdmaActivationError {

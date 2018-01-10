@@ -1029,7 +1029,7 @@ namespace Cd {
 	[SimpleType]
 	public struct PixelFormat : uint32 {
 		public static Cd.PixelFormat from_string (string pixel_format);
-		public static unowned string to_string (Cd.PixelFormat pixel_format);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "colord.h", has_type_id = false)]
 	public struct Vec3 {
@@ -1076,7 +1076,7 @@ namespace Cd {
 		CMYK,
 		CMY;
 		public static Cd.Colorspace from_string (string colorspace);
-		public static unowned string to_string (Cd.Colorspace colorspace);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_DEVICE_ERROR_", has_type_id = false)]
 	public enum DeviceError {
@@ -1165,7 +1165,7 @@ namespace Cd {
 		TEMP,
 		DISK;
 		public static Cd.ObjectScope from_string (string object_scope);
-		public static unowned string to_string (Cd.ObjectScope object_scope);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_PROFILE_ERROR_", has_type_id = false)]
 	public enum ProfileError {
@@ -1218,7 +1218,7 @@ namespace Cd {
 		SATURATION,
 		ABSOLUTE_COLORIMETRIC;
 		public static Cd.RenderingIntent from_string (string rendering_intent);
-		public static unowned string to_string (Cd.RenderingIntent rendering_intent);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "colord.h", cprefix = "CD_SENSOR_CAP_", has_type_id = false)]
 	public enum SensorCap {
@@ -1301,7 +1301,7 @@ namespace Cd {
 		ADOBE_RGB,
 		PROPHOTO_RGB;
 		public static Cd.StandardSpace from_string (string standard_space);
-		public static unowned string to_string (Cd.StandardSpace standard_space);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "colord.h", cname = "CD_CLIENT_PROPERTY_DAEMON_VERSION")]
 	public const string CLIENT_PROPERTY_DAEMON_VERSION;

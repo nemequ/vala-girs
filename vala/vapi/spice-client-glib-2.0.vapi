@@ -72,10 +72,23 @@ namespace Spice {
 	public class CursorChannel : Spice.Channel {
 		[CCode (has_construct_function = false)]
 		protected CursorChannel ();
+		[NoAccessorMethod]
+		[Version (since = "0.34")]
+		public Spice.CursorShape cursor { owned get; }
 		public virtual signal void cursor_hide ();
 		public virtual signal void cursor_move (int x, int y);
 		public virtual signal void cursor_reset ();
+		[Version (deprecated = true, deprecated_since = "0.34")]
 		public virtual signal void cursor_set (int width, int height, int hot_x, int hot_y, void* rgba);
+	}
+	[CCode (cheader_filename = "spice-client.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "spice_cursor_shape_get_type ()")]
+	[Compact]
+	public class CursorShape {
+		public void* data;
+		public uint16 height;
+		public uint16 hot_spot_x;
+		public uint16 hot_spot_y;
+		public uint16 width;
 	}
 	[CCode (cheader_filename = "spice-client.h", type_id = "spice_display_channel_get_type ()")]
 	public class DisplayChannel : Spice.Channel {
@@ -132,6 +145,7 @@ namespace Spice {
 		public uint32 stride;
 		public uint32 width;
 		public bool y0top;
+		[Version (since = "0.31")]
 		public void free ();
 	}
 	[CCode (cheader_filename = "spice-client.h", type_id = "spice_inputs_channel_get_type ()")]
@@ -412,6 +426,7 @@ namespace Spice {
 		public bool can_redirect_device (Spice.UsbDevice device) throws GLib.Error;
 		public async bool connect_device_async (Spice.UsbDevice device, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void disconnect_device (Spice.UsbDevice device);
+		[Version (since = "0.32")]
 		public async bool disconnect_device_async (Spice.UsbDevice device, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static unowned Spice.UsbDeviceManager @get (Spice.Session session) throws GLib.Error;
 		public GLib.GenericArray<Spice.UsbDevice> get_devices ();
@@ -425,6 +440,7 @@ namespace Spice {
 		[NoAccessorMethod]
 		public string auto_connect_filter { owned get; set construct; }
 		[NoAccessorMethod]
+		[Version (since = "0.31")]
 		public int free_channels { get; }
 		[NoAccessorMethod]
 		public string redirect_on_connect { owned get; set; }
@@ -526,6 +542,9 @@ namespace Spice {
 	[CCode (cheader_filename = "spice-client.h")]
 	[Version (since = "0.31")]
 	public static void display_change_preferred_compression (Spice.Channel channel, int compression);
+	[CCode (cheader_filename = "spice-client.h")]
+	[Version (since = "0.34")]
+	public static void display_change_preferred_video_codec_type (Spice.Channel channel, int codec_type);
 	[CCode (cheader_filename = "spice-client.h")]
 	[Version (since = "0.31")]
 	public static unowned Spice.GlScanout display_get_gl_scanout (Spice.DisplayChannel channel);

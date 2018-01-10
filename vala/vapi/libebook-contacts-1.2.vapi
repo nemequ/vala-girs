@@ -854,9 +854,9 @@ namespace E {
 		NO_SUCH_SOURCE,
 		NO_SPACE;
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
-		public static GLib.Error create (E.BookClientError code, string custom_msg);
+		public GLib.Error create (string custom_msg);
 		public static GLib.Quark quark ();
-		public static unowned string to_string (E.BookClientError code);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_ERROR_")]
 	[Version (since = "3.8")]

@@ -1128,6 +1128,10 @@ connection is made with spice_session_open_fd().</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <property name="cursor" version="0.34" transfer-ownership="none">
+        <doc xml:space="preserve">The last #SpiceCursorShape received.</doc>
+        <type name="CursorShape"/>
+      </property>
       <field name="parent">
         <type name="Channel" c:type="SpiceChannel"/>
       </field>
@@ -1165,9 +1169,13 @@ reset the cursor to its default context.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="cursor-set" when="first">
+      <glib:signal name="cursor-set"
+                   when="first"
+                   deprecated="1"
+                   deprecated-version="0.34">
         <doc xml:space="preserve">The #SpiceCursorChannel::cursor-set signal is emitted to modify
 cursor aspect and position on the display area.</doc>
+        <doc-deprecated xml:space="preserve">Use #SpiceCursorChannel:cursor notify instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1284,6 +1292,37 @@ if you need it later!</doc>
     <record name="CursorChannelPrivate"
             c:type="SpiceCursorChannelPrivate"
             disguised="1">
+    </record>
+    <record name="CursorShape"
+            c:type="SpiceCursorShape"
+            glib:type-name="SpiceCursorShape"
+            glib:get-type="spice_cursor_shape_get_type"
+            c:symbol-prefix="cursor_shape">
+      <doc xml:space="preserve">The #SpiceCursorShape structure defines the remote cursor's shape.</doc>
+      <field name="type" introspectable="0" writable="1">
+        <doc xml:space="preserve">a #SpiceCursorType of @data</doc>
+        <type c:type="SpiceCursorType"/>
+      </field>
+      <field name="width" writable="1">
+        <doc xml:space="preserve">a width of the remote cursor</doc>
+        <type name="guint16" c:type="guint16"/>
+      </field>
+      <field name="height" writable="1">
+        <doc xml:space="preserve">a height of the remote cursor</doc>
+        <type name="guint16" c:type="guint16"/>
+      </field>
+      <field name="hot_spot_x" writable="1">
+        <doc xml:space="preserve">a 'x' coordinate of the remote cursor</doc>
+        <type name="guint16" c:type="guint16"/>
+      </field>
+      <field name="hot_spot_y" writable="1">
+        <doc xml:space="preserve">a 'y' coordinate of the remote cursor</doc>
+        <type name="guint16" c:type="guint16"/>
+      </field>
+      <field name="data" writable="1">
+        <doc xml:space="preserve">image data of the remote cursor</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
     </record>
     <class name="DisplayChannel"
            c:symbol-prefix="display_channel"
@@ -1714,7 +1753,7 @@ the @data, or -1 if not shm</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="GTK_MINOR_VERSION"
-              value="33"
+              value="34"
               c:type="SPICE_GTK_MINOR_VERSION"
               version="0.24">
       <doc xml:space="preserve">Spice-Gtk minor version component (e.g. 2 if version is 1.2.3)</doc>
@@ -1750,12 +1789,14 @@ the @data, or -1 if not shm</doc>
         <doc xml:space="preserve">orientation of the scanout</doc>
         <type name="gboolean" c:type="gboolean"/>
       </field>
-      <method name="free" c:identifier="spice_gl_scanout_free">
+      <method name="free" c:identifier="spice_gl_scanout_free" version="0.31">
+        <doc xml:space="preserve">Frees the @scanout.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="scanout" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceGlScanout</doc>
             <type name="GlScanout" c:type="SpiceGlScanout*"/>
           </instance-parameter>
         </parameters>
@@ -3907,21 +3948,28 @@ to get the result of the operation.</doc>
         </parameters>
       </method>
       <method name="disconnect_device_async"
-              c:identifier="spice_usb_device_manager_disconnect_device_async">
+              c:identifier="spice_usb_device_manager_disconnect_device_async"
+              version="0.32">
+        <doc xml:space="preserve">Asynchronously disconnects the @device. When completed, @callback will be called.
+Then it is possible to call spice_usb_device_manager_disconnect_device_finish()
+to get the result of the operation.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="manager" transfer-ownership="none">
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">the #SpiceUsbDeviceManager manager.</doc>
             <type name="UsbDeviceManager" c:type="SpiceUsbDeviceManager*"/>
           </instance-parameter>
           <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a connected #SpiceUsbDevice to disconnect.</doc>
             <type name="UsbDevice" c:type="SpiceUsbDevice*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -3930,12 +3978,14 @@ to get the result of the operation.</doc>
                      allow-none="1"
                      scope="async"
                      closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">the data to pass to @callback.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -4067,7 +4117,8 @@ Filter strings in this format can be easily created with the RHEV-M
 USB filter editor tool.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="free-channels" transfer-ownership="none">
+      <property name="free-channels" version="0.31" transfer-ownership="none">
+        <doc xml:space="preserve">Get the number of available channels for redirecting USB devices.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="redirect-on-connect"
@@ -4326,6 +4377,26 @@ for the @channel.</doc>
         </parameter>
         <parameter name="compression" transfer-ownership="none">
           <doc xml:space="preserve">a #SpiceImageCompression</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="display_change_preferred_video_codec_type"
+              c:identifier="spice_display_change_preferred_video_codec_type"
+              version="0.34">
+      <doc xml:space="preserve">Tells the spice server to change the preferred video codec type for
+streaming in @channel. Application can set only one preferred video codec per
+display channel.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="channel" transfer-ownership="none">
+          <doc xml:space="preserve">a #SpiceDisplayChannel</doc>
+          <type name="Channel" c:type="SpiceChannel*"/>
+        </parameter>
+        <parameter name="codec_type" transfer-ownership="none">
+          <doc xml:space="preserve">a #SpiceVideoCodecType</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>

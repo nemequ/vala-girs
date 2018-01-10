@@ -253,8 +253,8 @@ namespace GWeather {
 		FEW,
 		OVERCAST,
 		LAST;
-		public static unowned string to_string (GWeather.Sky sky);
-		public static unowned string to_string_full (GWeather.Sky sky, GWeather.FormatOptions options);
+		public unowned string to_string ();
+		public unowned string to_string_full (GWeather.FormatOptions options);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_SPEED_UNIT_", type_id = "gweather_speed_unit_get_type ()")]
 	public enum SpeedUnit {
@@ -273,7 +273,7 @@ namespace GWeather {
 		KELVIN,
 		CENTIGRADE,
 		FAHRENHEIT;
-		public static GWeather.TemperatureUnit to_real (GWeather.TemperatureUnit unit);
+		public GWeather.TemperatureUnit to_real ();
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_WIND_", type_id = "gweather_wind_direction_get_type ()")]
 	public enum WindDirection {
@@ -296,8 +296,8 @@ namespace GWeather {
 		NW,
 		NNW,
 		LAST;
-		public static unowned string to_string (GWeather.WindDirection wind);
-		public static unowned string to_string_full (GWeather.WindDirection wind, GWeather.FormatOptions options);
+		public unowned string to_string ();
+		public unowned string to_string_full (GWeather.FormatOptions options);
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", instance_pos = 1.9)]
 	public delegate bool FilterFunc (GWeather.Location location);

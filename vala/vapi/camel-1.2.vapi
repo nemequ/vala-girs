@@ -3166,7 +3166,7 @@ namespace Camel {
 		ENCODING_UUENCODE,
 		NUM_ENCODINGS;
 		public static Camel.TransferEncoding from_string (string string);
-		public static unowned string to_string (Camel.TransferEncoding encoding);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_URL_HIDE_", has_type_id = false)]
 	[Flags]

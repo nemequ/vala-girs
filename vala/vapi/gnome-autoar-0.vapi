@@ -92,12 +92,12 @@ namespace Autoar {
 		LZOP,
 		GRZIP,
 		LRZIP;
-		public static unowned string get_description (Autoar.Filter filter);
-		public static string get_description_libarchive (Autoar.Filter filter);
-		public static unowned string get_extension (Autoar.Filter filter);
-		public static int get_filter_libarchive (Autoar.Filter filter);
-		public static unowned string get_mime_type (Autoar.Filter filter);
-		public static bool is_valid (Autoar.Filter filter);
+		public unowned string get_description ();
+		public string get_description_libarchive ();
+		public unowned string get_extension ();
+		public int get_filter_libarchive ();
+		public unowned string get_mime_type ();
+		public bool is_valid ();
 		public static int last ();
 	}
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", cprefix = "AUTOAR_FORMAT_", has_type_id = false)]
@@ -114,15 +114,15 @@ namespace Autoar {
 		PAX,
 		USTAR,
 		XAR;
-		public static string filter_get_description (Autoar.Format format, Autoar.Filter filter);
-		public static string filter_get_extension (Autoar.Format format, Autoar.Filter filter);
-		public static string filter_get_mime_type (Autoar.Format format, Autoar.Filter filter);
-		public static unowned string get_description (Autoar.Format format);
-		public static string get_description_libarchive (Autoar.Format format);
-		public static unowned string get_extension (Autoar.Format format);
-		public static int get_format_libarchive (Autoar.Format format);
-		public static unowned string get_mime_type (Autoar.Format format);
-		public static bool is_valid (Autoar.Format format);
+		public string filter_get_description (Autoar.Filter filter);
+		public string filter_get_extension (Autoar.Filter filter);
+		public string filter_get_mime_type (Autoar.Filter filter);
+		public unowned string get_description ();
+		public string get_description_libarchive ();
+		public unowned string get_extension ();
+		public int get_format_libarchive ();
+		public unowned string get_mime_type ();
+		public bool is_valid ();
 		public static int last ();
 	}
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", has_target = false)]

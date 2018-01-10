@@ -130,61 +130,75 @@ and/or use gtk-doc annotations.  -->
     </record>
     <enumeration name="ConsoleMessageLevel"
                  version="2.12"
+                 glib:type-name="WebKitConsoleMessageLevel"
+                 glib:get-type="webkit_console_message_level_get_type"
                  c:type="WebKitConsoleMessageLevel">
       <doc xml:space="preserve">Enum values used to denote the various levels of console messages.</doc>
       <member name="info"
               value="0"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_INFO">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_INFO"
+              glib:nick="info">
         <doc xml:space="preserve">Information message.</doc>
       </member>
       <member name="log"
               value="1"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_LOG">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_LOG"
+              glib:nick="log">
         <doc xml:space="preserve">Log message.</doc>
       </member>
       <member name="warning"
               value="2"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_WARNING">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_WARNING"
+              glib:nick="warning">
         <doc xml:space="preserve">Warning message.</doc>
       </member>
       <member name="error"
               value="3"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_ERROR">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_ERROR"
+              glib:nick="error">
         <doc xml:space="preserve">Error message.</doc>
       </member>
       <member name="debug"
               value="4"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_DEBUG">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_LEVEL_DEBUG"
+              glib:nick="debug">
         <doc xml:space="preserve">Debug message.</doc>
       </member>
     </enumeration>
     <enumeration name="ConsoleMessageSource"
                  version="2.12"
+                 glib:type-name="WebKitConsoleMessageSource"
+                 glib:get-type="webkit_console_message_source_get_type"
                  c:type="WebKitConsoleMessageSource">
       <doc xml:space="preserve">Enum values used to denote the various sources of console messages.</doc>
       <member name="javascript"
               value="0"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_JAVASCRIPT">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_JAVASCRIPT"
+              glib:nick="javascript">
         <doc xml:space="preserve">Message produced by JavaScript.</doc>
       </member>
       <member name="network"
               value="1"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_NETWORK">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_NETWORK"
+              glib:nick="network">
         <doc xml:space="preserve">Network messages.</doc>
       </member>
       <member name="console_api"
               value="2"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_CONSOLE_API">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_CONSOLE_API"
+              glib:nick="console-api">
         <doc xml:space="preserve">Messages produced by console API.</doc>
       </member>
       <member name="security"
               value="3"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_SECURITY">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_SECURITY"
+              glib:nick="security">
         <doc xml:space="preserve">Security messages.</doc>
       </member>
       <member name="other"
               value="4"
-              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_OTHER">
+              c:identifier="WEBKIT_CONSOLE_MESSAGE_SOURCE_OTHER"
+              glib:nick="other">
         <doc xml:space="preserve">Other messages.</doc>
       </member>
     </enumeration>
@@ -24405,6 +24419,28 @@ not be skipped.</doc>
               c:type="WEBKIT_DOM_XPATH_RESULT_UNORDERED_NODE_SNAPSHOT_TYPE">
       <type name="gint" c:type="gint"/>
     </constant>
+    <enumeration name="FormSubmissionStep"
+                 version="2.20"
+                 glib:type-name="WebKitFormSubmissionStep"
+                 glib:get-type="webkit_form_submission_step_get_type"
+                 c:type="WebKitFormSubmissionStep">
+      <doc xml:space="preserve">Used to indicate a particular stage in form submission. See
+#WebKitWebPage::will-submit-form.</doc>
+      <member name="send_dom_event"
+              value="0"
+              c:identifier="WEBKIT_FORM_SUBMISSION_WILL_SEND_DOM_EVENT"
+              glib:nick="send-dom-event">
+        <doc xml:space="preserve">indicates the form's
+DOM submit event is about to be emitted.</doc>
+      </member>
+      <member name="complete"
+              value="1"
+              c:identifier="WEBKIT_FORM_SUBMISSION_WILL_COMPLETE"
+              glib:nick="complete">
+        <doc xml:space="preserve">indicates the form is about
+to be submitted.</doc>
+      </member>
+    </enumeration>
     <class name="Frame"
            c:symbol-prefix="frame"
            c:type="WebKitFrame"
@@ -25623,6 +25659,73 @@ received by the server for the initial request.</doc>
           <parameter name="redirected_response" transfer-ownership="none">
             <doc xml:space="preserve">a #WebKitURIResponse, or %NULL</doc>
             <type name="URIResponse"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="will-submit-form" when="last" version="2.20">
+        <doc xml:space="preserve">This signal is emitted to indicate various points during form
+submission. @step indicates the current stage of form submission.
+
+If this signal is emitted with %WEBKIT_FORM_SUBMISSION_WILL_SEND_DOM_EVENT,
+then the DOM submit event is about to be emitted. JavaScript code
+may rely on the submit event to detect that the user has clicked
+on a submit button, and to possibly cancel the form submission
+before %WEBKIT_FORM_SUBMISSION_WILL_COMPLETE. However, beware
+that, for historical reasons, the submit event is not emitted at
+all if the form submission is triggered by JavaScript. For these
+reasons, %WEBKIT_FORM_SUBMISSION_WILL_SEND_DOM_EVENT may not
+be used to reliably detect whether a form will be submitted.
+Instead, use it to detect if a user has clicked on a form's
+submit button even if JavaScript later cancels the form
+submission, or to read the values of the form's fields even if
+JavaScript later clears certain fields before submitting. This
+may be needed, for example, to implement a robust browser
+password manager, as some misguided websites may use such
+techniques to attempt to thwart password managers.
+
+If this signal is emitted with %WEBKIT_FORM_SUBMISSION_WILL_COMPLETE,
+the form will imminently be submitted. It can no longer be
+cancelled. This event always occurs immediately before a form is
+submitted to its target, so use this event to reliably detect
+when a form is submitted. This event occurs after
+%WEBKIT_FORM_SUBMISSION_WILL_SEND_DOM_EVENT if that event is
+emitted.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitDOMHTMLFormElement to be submitted</doc>
+            <type name="DOMHTMLFormElement"/>
+          </parameter>
+          <parameter name="step" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitFormSubmissionEventType indicating the current
+stage of form submission</doc>
+            <type name="FormSubmissionStep"/>
+          </parameter>
+          <parameter name="source_frame" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitFrame containing the form to be
+submitted</doc>
+            <type name="Frame"/>
+          </parameter>
+          <parameter name="target_frame" transfer-ownership="none">
+            <doc xml:space="preserve">the #WebKitFrame containing the form's target,
+which may be the same as @source_frame if no target was specified</doc>
+            <type name="Frame"/>
+          </parameter>
+          <parameter name="text_field_names" transfer-ownership="none">
+            <doc xml:space="preserve">names of
+the form's text fields</doc>
+            <array name="GLib.PtrArray">
+              <type name="utf8"/>
+            </array>
+          </parameter>
+          <parameter name="text_field_values" transfer-ownership="none">
+            <doc xml:space="preserve">values
+of the form's text fields</doc>
+            <array name="GLib.PtrArray">
+              <type name="utf8"/>
+            </array>
           </parameter>
         </parameters>
       </glib:signal>

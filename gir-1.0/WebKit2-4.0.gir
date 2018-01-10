@@ -4062,12 +4062,17 @@ webkit_find_controller_search_previous().</doc>
            glib:get-type="webkit_form_submission_request_get_type"
            glib:type-struct="FormSubmissionRequestClass">
       <method name="get_text_fields"
-              c:identifier="webkit_form_submission_request_get_text_fields">
+              c:identifier="webkit_form_submission_request_get_text_fields"
+              deprecated="1"
+              deprecated-version="2.20.">
         <doc xml:space="preserve">Get a #GHashTable with the values of the text fields contained in the form
-associated to @request.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GHashTable with the form text fields, or %NULL if the
-   form doesn't contain text fields.</doc>
+associated to @request. Note that fields will be missing if the form
+contains multiple text input elements with the same name, so this
+function does not reliably return all text fields.</doc>
+        <doc-deprecated xml:space="preserve">Use webkit_form_submission_request_list_text_fields() instead.</doc-deprecated>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a #GHashTable with the form
+   text fields, or %NULL if the form doesn't contain text fields.</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
             <type name="gpointer" c:type="gpointer"/>
             <type name="gpointer" c:type="gpointer"/>
@@ -4079,6 +4084,51 @@ associated to @request.</doc>
             <type name="FormSubmissionRequest"
                   c:type="WebKitFormSubmissionRequest*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="list_text_fields"
+              c:identifier="webkit_form_submission_request_list_text_fields"
+              version="2.20">
+        <doc xml:space="preserve">Get lists with the names and values of the text fields contained in
+the form associated to @request. Note that names and values may be
+%NULL.
+
+If this function returns %FALSE, then both @field_names and
+@field_values will be empty.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the form contains text fields, or %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="request" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitFormSubmissionRequest</doc>
+            <type name="FormSubmissionRequest"
+                  c:type="WebKitFormSubmissionRequest*"/>
+          </instance-parameter>
+          <parameter name="field_names"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">
+   names of the text fields in the form</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray**">
+              <type name="utf8"/>
+            </array>
+          </parameter>
+          <parameter name="field_values"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">
+   values of the text fields in the form</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray**">
+              <type name="utf8"/>
+            </array>
+          </parameter>
         </parameters>
       </method>
       <method name="submit"
@@ -4783,7 +4833,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="5" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve">Like webkit_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -12332,6 +12382,25 @@ signal and simply return %TRUE</doc>
             c:type="WebKitWebInspectorPrivate"
             disguised="1">
     </record>
+    <enumeration name="WebProcessTerminationReason"
+                 version="2.20"
+                 glib:type-name="WebKitWebProcessTerminationReason"
+                 glib:get-type="webkit_web_process_termination_reason_get_type"
+                 c:type="WebKitWebProcessTerminationReason">
+      <doc xml:space="preserve">Enum values used to specify the reason why the web process terminated abnormally.</doc>
+      <member name="crashed"
+              value="0"
+              c:identifier="WEBKIT_WEB_PROCESS_CRASHED"
+              glib:nick="crashed">
+        <doc xml:space="preserve">the web process crashed.</doc>
+      </member>
+      <member name="exceeded_memory_limit"
+              value="1"
+              c:identifier="WEBKIT_WEB_PROCESS_EXCEEDED_MEMORY_LIMIT"
+              glib:nick="exceeded-memory-limit">
+        <doc xml:space="preserve">the web process exceeded the memory limit.</doc>
+      </member>
+    </enumeration>
     <class name="WebResource"
            c:symbol-prefix="web_resource"
            c:type="WebKitWebResource"
@@ -13025,6 +13094,20 @@ in the view by the user content manager.</doc>
           <instance-parameter name="web_view" transfer-ownership="none">
             <type name="WebView" c:type="WebKitWebView*"/>
           </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="web_process_terminated">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="web_view" transfer-ownership="none">
+            <type name="WebView" c:type="WebKitWebView*"/>
+          </instance-parameter>
+          <parameter name="reason" transfer-ownership="none">
+            <type name="WebProcessTerminationReason"
+                  c:type="WebKitWebProcessTerminationReason"/>
+          </parameter>
         </parameters>
       </virtual-method>
       <method name="can_execute_editing_command"
@@ -15273,13 +15356,30 @@ form has not been submitted, webkit_form_submission_request_submit() will be cal
           </parameter>
         </parameters>
       </glib:signal>
-      <glib:signal name="web-process-crashed" when="last">
+      <glib:signal name="web-process-crashed"
+                   when="last"
+                   deprecated="1"
+                   deprecated-version="2.20">
         <doc xml:space="preserve">This signal is emitted when the web process crashes.</doc>
+        <doc-deprecated xml:space="preserve">Use WebKitWebView::web-process-terminated instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE to stop other handlers from being invoked for the event.
    %FALSE to propagate the event further.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
+      </glib:signal>
+      <glib:signal name="web-process-terminated" when="last" version="2.20">
+        <doc xml:space="preserve">This signal is emitted when the web process terminates abnormally due
+to @reason.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="reason" transfer-ownership="none">
+            <doc xml:space="preserve">the a #WebKitWebProcessTerminationReason</doc>
+            <type name="WebProcessTerminationReason"/>
+          </parameter>
+        </parameters>
       </glib:signal>
     </class>
     <class name="WebViewBase"
@@ -15735,6 +15835,22 @@ form has not been submitted, webkit_form_submission_request_submit() will be cal
           </parameters>
         </callback>
       </field>
+      <field name="web_process_terminated">
+        <callback name="web_process_terminated">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="web_view" transfer-ownership="none">
+              <type name="WebView" c:type="WebKitWebView*"/>
+            </parameter>
+            <parameter name="reason" transfer-ownership="none">
+              <type name="WebProcessTerminationReason"
+                    c:type="WebKitWebProcessTerminationReason"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_webkit_reserved0" introspectable="0">
         <callback name="_webkit_reserved0">
           <return-value transfer-ownership="none">
@@ -15744,13 +15860,6 @@ form has not been submitted, webkit_form_submission_request_submit() will be cal
       </field>
       <field name="_webkit_reserved1" introspectable="0">
         <callback name="_webkit_reserved1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_webkit_reserved2" introspectable="0">
-        <callback name="_webkit_reserved2">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
