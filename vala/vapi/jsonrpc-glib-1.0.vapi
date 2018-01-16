@@ -21,9 +21,10 @@ namespace Jsonrpc {
 		[Version (since = "3.26")]
 		public bool reply (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool reply_async (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool reply_error_async (GLib.Variant id, int code, string message, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.28")]
+		public async bool reply_error_async (GLib.Variant id, int code, string? message, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.26")]
-		public bool send_notification (string method, owned GLib.Variant? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool send_notification (string method, GLib.Variant? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.26")]
 		public async bool send_notification_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.26")]
@@ -54,7 +55,9 @@ namespace Jsonrpc {
 		public OutputStream (GLib.OutputStream base_stream);
 		public bool get_use_gvariant ();
 		public void set_use_gvariant (bool use_gvariant);
+		[Version (since = "3.26")]
 		public bool write_message (GLib.Variant message, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool write_message_async (GLib.Variant message, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool use_gvariant { get; set; }
 	}

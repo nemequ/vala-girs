@@ -11,7 +11,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="jsonrpc-glib.h"/>
   <namespace name="Jsonrpc"
              version="1.0"
-             shared-library="libjsonrpc_glib-1.0.so.0"
+             shared-library="libjsonrpc_glib-1.0.so.1"
              c:identifier-prefixes="Jsonrpc"
              c:symbol-prefixes="jsonrpc">
     <class name="Client"
@@ -141,11 +141,11 @@ If @params is floating then this function consumes the reference.</doc>
               version="3.26">
         <doc xml:space="preserve">Asynchronously calls @method with @params on the remote peer.
 
-This function takes ownership of @params.
-
 Upon completion or failure, @callback is executed and it should
 call jsonrpc_client_call_finish() to complete the request and release
-any memory held.</doc>
+any memory held.
+
+If @params is floating, the floating reference is consumed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -322,12 +322,15 @@ Indicates if #GVariant is being used to communicate with the peer.</doc>
               c:identifier="jsonrpc_client_reply"
               version="3.26"
               throws="1">
-        <doc xml:space="preserve">Synchronous variant of jsonrpc_client_reply_async().</doc>
+        <doc xml:space="preserve">Synchronous variant of jsonrpc_client_reply_async().
+
+If @id or @result are floating, there floating references are consumed.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonrpcClient</doc>
             <type name="Client" c:type="JsonrpcClient*"/>
           </instance-parameter>
           <parameter name="id" transfer-ownership="none">
@@ -342,6 +345,7 @@ result: (transfer none) (nullable): the return value or %NULL</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -383,27 +387,41 @@ result: (transfer none) (nullable): the return value or %NULL</doc>
         </parameters>
       </method>
       <method name="reply_error_async"
-              c:identifier="jsonrpc_client_reply_error_async">
+              c:identifier="jsonrpc_client_reply_error_async"
+              version="3.28">
+        <doc xml:space="preserve">Asynchronously replies to the peer, sending a JSON-RPC error message.
+
+Call jsonrpc_client_reply_error_finish() to get the result of this operation.
+
+If @id is floating, it's floating reference is consumed.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonrpcClient</doc>
             <type name="Client" c:type="JsonrpcClient*"/>
           </instance-parameter>
           <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">a #GVariant containing the call id</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="code" transfer-ownership="none">
+            <doc xml:space="preserve">the error code</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
-          <parameter name="message" transfer-ownership="none">
+          <parameter name="message"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an optional error message</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -412,12 +430,14 @@ result: (transfer none) (nullable): the return value or %NULL</doc>
                      allow-none="1"
                      scope="async"
                      closure="5">
+            <doc xml:space="preserve">a #GAsyncReadyCallback or %NULL</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">closure data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -464,7 +484,7 @@ result: (transfer none) (nullable): the return value or %NULL</doc>
         <doc xml:space="preserve">Synchronously calls @method with @params on the remote peer.
 This function will not wait or expect a reply from the peer.
 
-This function takes ownership of @params.</doc>
+If @params is floating then the reference is consumed.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success; otherwise %FALSE and @error is set.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -479,10 +499,10 @@ This function takes ownership of @params.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params"
-                     transfer-ownership="full"
+                     transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">A #JsonNode of parameters or %NULL</doc>
+            <doc xml:space="preserve">A #GVariant of parameters or %NULL</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
@@ -1097,41 +1117,57 @@ trip.</doc>
       </method>
       <method name="write_message"
               c:identifier="jsonrpc_output_stream_write_message"
+              version="3.26"
               throws="1">
+        <doc xml:space="preserve">Synchronously sends a message to the peer.
+
+This operation will complete once the message has been buffered. There
+is no guarantee the peer received it.</doc>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonrpcOutputStream</doc>
             <type name="OutputStream" c:type="JsonrpcOutputStream*"/>
           </instance-parameter>
           <parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GVariant</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
       <method name="write_message_async"
-              c:identifier="jsonrpc_output_stream_write_message_async">
+              c:identifier="jsonrpc_output_stream_write_message_async"
+              version="3.26">
+        <doc xml:space="preserve">Asynchronously sends a message to the peer.
+
+This asynchronous operation will complete once the message has
+been buffered, and there is no guarantee the peer received it.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #JsonrpcOutputStream</doc>
             <type name="OutputStream" c:type="JsonrpcOutputStream*"/>
           </instance-parameter>
           <parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #GVariant</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
           <parameter name="cancellable"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">a #GCancellable or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1140,12 +1176,14 @@ trip.</doc>
                      allow-none="1"
                      scope="async"
                      closure="3">
+            <doc xml:space="preserve">a #GAsyncReadyCallback or %NULL</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">closure data for @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
