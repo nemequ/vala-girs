@@ -144,6 +144,7 @@ namespace Gedit {
 		public void set_icon_name (string icon_name);
 		public void set_markup (string markup);
 		public void set_text (string text);
+		[NoAccessorMethod]
 		public bool has_cancel_button { construct; }
 	}
 	[CCode (cheader_filename = "gedit/gedit-statusbar.h", type_id = "gedit_statusbar_get_type ()")]

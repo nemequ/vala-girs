@@ -47,11 +47,11 @@ namespace E {
 		public void prompt_finish (void* prompt_id, E.NamedParameters? credentials);
 		public virtual signal void prompt_finished (void* prompt_id, E.NamedParameters? credentials);
 	}
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_impl_google_get_type ()")]
-	[Version (since = "3.20")]
-	public class CredentialsPrompterImplGoogle : E.CredentialsPrompterImpl {
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_impl_oauth2_get_type ()")]
+	[Version (since = "3.28")]
+	public class CredentialsPrompterImplOAuth2 : E.CredentialsPrompterImpl {
 		[CCode (has_construct_function = false, type = "ECredentialsPrompterImpl*")]
-		public CredentialsPrompterImplGoogle ();
+		public CredentialsPrompterImplOAuth2 ();
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_impl_password_get_type ()")]
 	[Version (since = "3.16")]

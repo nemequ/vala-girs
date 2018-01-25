@@ -1562,6 +1562,8 @@ namespace Camel {
 		public unowned Camel.Service get_service ();
 		[Version (since = "2.32")]
 		public unowned string get_service_name ();
+		[Version (since = "3.28")]
+		public static bool is_xoauth2_alias (string? mechanism);
 		[Version (since = "2.32")]
 		public void set_authenticated (bool authenticated);
 		[Version (since = "3.2")]
@@ -1616,6 +1618,21 @@ namespace Camel {
 	public class SaslPlain : Camel.Sasl {
 		[CCode (has_construct_function = false)]
 		protected SaslPlain ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", lower_case_csuffix = "sasl_xoauth2", type_id = "camel_sasl_xoauth2_get_type ()")]
+	public class SaslXOAuth2 : Camel.Sasl {
+		[CCode (has_construct_function = false)]
+		protected SaslXOAuth2 ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", lower_case_csuffix = "sasl_xoauth2_google", type_id = "camel_sasl_xoauth2_google_get_type ()")]
+	public class SaslXOAuth2Google : Camel.SaslXOAuth2 {
+		[CCode (has_construct_function = false)]
+		protected SaslXOAuth2Google ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", lower_case_csuffix = "sasl_xoauth2_outlook", type_id = "camel_sasl_xoauth2_outlook_get_type ()")]
+	public class SaslXOAuth2Outlook : Camel.SaslXOAuth2 {
+		[CCode (has_construct_function = false)]
+		protected SaslXOAuth2Outlook ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_service_get_type ()")]
 	public abstract class Service : Camel.Object, GLib.Initable {
@@ -1719,6 +1736,8 @@ namespace Camel {
 		public unowned Camel.JunkFilter get_junk_filter ();
 		[Version (since = "2.22")]
 		public unowned GLib.HashTable<string,string> get_junk_headers ();
+		[Version (since = "3.28")]
+		public virtual bool get_oauth2_access_token_sync (Camel.Service service, out string? out_access_token, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_online ();
 		public virtual string get_password (Camel.Service service, string prompt, string item, uint32 flags) throws GLib.Error;
 		[Version (since = "3.4")]
@@ -3279,6 +3298,9 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME")]
 	[Version (since = "3.22")]
 	public const string CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME;
+	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_CIPHER_CERT_INFO_PROPERTY_SIGNERS_ALT_EMAILS")]
+	[Version (since = "3.28")]
+	public const string CIPHER_CERT_INFO_PROPERTY_SIGNERS_ALT_EMAILS;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_DB_FILE")]
 	[Version (since = "2.24")]
 	public const string DB_FILE;

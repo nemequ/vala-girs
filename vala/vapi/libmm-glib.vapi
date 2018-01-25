@@ -647,8 +647,10 @@ namespace MM {
 		public string dup_operator_code ();
 		public string dup_operator_name ();
 		public string dup_path ();
+		public static unowned string eps_ue_mode_operation_get_string (MM.Modem3gppEpsUeModeOperation val);
 		public static string facility_build_string_from_mask (MM.Modem3gppFacility mask);
 		public MM.Modem3gppFacility get_enabled_facility_locks ();
+		public MM.Modem3gppEpsUeModeOperation get_eps_ue_mode_operation ();
 		public unowned string get_imei ();
 		public unowned string get_operator_code ();
 		public unowned string get_operator_name ();
@@ -667,6 +669,8 @@ namespace MM {
 		public static unowned string registration_state_get_string (MM.Modem3gppRegistrationState val);
 		public async GLib.List<MM.Modem3gppNetwork> scan (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<MM.Modem3gppNetwork> scan_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool set_eps_ue_mode_operation (MM.Modem3gppEpsUeModeOperation mode, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool set_eps_ue_mode_operation_sync (MM.Modem3gppEpsUeModeOperation mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static unowned string subscription_state_get_string (MM.Modem3gppSubscriptionState val);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", has_type_id = false)]
@@ -1121,8 +1125,8 @@ namespace MM {
 		public bool call_enable_sync (bool arg_enable, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_factory_reset (string arg_code, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_factory_reset_sync (string arg_code, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool call_list_bearers (GLib.Cancellable? cancellable, out string out_bearers) throws GLib.Error;
-		public bool call_list_bearers_sync (out string out_bearers, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_list_bearers (GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] out_bearers) throws GLib.Error;
+		public bool call_list_bearers_sync ([CCode (array_length = false, array_null_terminated = true)] out string[] out_bearers, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_reset (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_reset_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_current_bands (GLib.Variant arg_bands, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1229,12 +1233,17 @@ namespace MM {
 		public bool call_register_sync (string arg_operator_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_scan (GLib.Cancellable? cancellable, out GLib.Variant out_results) throws GLib.Error;
 		public bool call_scan_sync (out GLib.Variant out_results, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_eps_ue_mode_operation (uint arg_mode, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_eps_ue_mode_operation_sync (uint arg_mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_register (owned GLib.DBusMethodInvocation invocation);
 		public void complete_scan (owned GLib.DBusMethodInvocation invocation, GLib.Variant results);
+		public void complete_set_eps_ue_mode_operation (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 		[NoAccessorMethod]
 		public abstract uint enabled_facility_locks { get; set; }
+		[NoAccessorMethod]
+		public abstract uint eps_ue_mode_operation { get; set; }
 		[NoAccessorMethod]
 		public abstract string imei { owned get; set; }
 		[NoAccessorMethod]
@@ -1247,6 +1256,7 @@ namespace MM {
 		public abstract uint subscription_state { get; set; }
 		public virtual signal bool handle_register (GLib.DBusMethodInvocation invocation, string arg_operator_id);
 		public virtual signal bool handle_scan (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_set_eps_ue_mode_operation (GLib.DBusMethodInvocation invocation, uint arg_mode);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModem3gppUssd", type_id = "mm_gdbus_modem3gpp_ussd_get_type ()")]
 	public interface GdbusModem3gppUssd : GLib.Object {
@@ -1352,8 +1362,8 @@ namespace MM {
 		public bool call_create_sync (GLib.Variant arg_properties, out string out_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_delete (string arg_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_delete_sync (string arg_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool call_list (GLib.Cancellable? cancellable, out string out_result) throws GLib.Error;
-		public bool call_list_sync (out string out_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_list (GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] out_result) throws GLib.Error;
+		public bool call_list_sync ([CCode (array_length = false, array_null_terminated = true)] out string[] out_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_create (owned GLib.DBusMethodInvocation invocation, string path);
 		public void complete_delete (owned GLib.DBusMethodInvocation invocation);
 		public void complete_list (owned GLib.DBusMethodInvocation invocation, string result);
@@ -1462,8 +1472,8 @@ namespace MM {
 		public bool call_create_call_sync (GLib.Variant arg_properties, out string out_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_delete_call (string arg_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_delete_call_sync (string arg_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool call_list_calls (GLib.Cancellable? cancellable, out string out_result) throws GLib.Error;
-		public bool call_list_calls_sync (out string out_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_list_calls (GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] out_result) throws GLib.Error;
+		public bool call_list_calls_sync ([CCode (array_length = false, array_null_terminated = true)] out string[] out_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_create_call (owned GLib.DBusMethodInvocation invocation, string path);
 		public void complete_delete_call (owned GLib.DBusMethodInvocation invocation);
 		public void complete_list_calls (owned GLib.DBusMethodInvocation invocation, string result);
@@ -1692,6 +1702,14 @@ namespace MM {
 		GENERIC,
 		GOBI;
 		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_EPS_UE_MODE_OPERATION_", type_id = "mm_modem_3gpp_eps_ue_mode_operation_get_type ()")]
+	public enum Modem3gppEpsUeModeOperation {
+		UNKNOWN,
+		PS_1,
+		PS_2,
+		CSPS_1,
+		CSPS_2
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_FACILITY_", type_id = "mm_modem_3gpp_facility_get_type ()")]
 	[Flags]
@@ -2654,8 +2672,12 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_METHOD_REGISTER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SCAN")]
 	public const string MODEM_MODEM3GPP_METHOD_SCAN;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETEPSUEMODEOPERATION")]
+	public const string MODEM_MODEM3GPP_METHOD_SETEPSUEMODEOPERATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_ENABLEDFACILITYLOCKS")]
 	public const string MODEM_MODEM3GPP_PROPERTY_ENABLEDFACILITYLOCKS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_EPSUEMODEOPERATION")]
+	public const string MODEM_MODEM3GPP_PROPERTY_EPSUEMODEOPERATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_IMEI")]
 	public const string MODEM_MODEM3GPP_PROPERTY_IMEI;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_OPERATORCODE")]

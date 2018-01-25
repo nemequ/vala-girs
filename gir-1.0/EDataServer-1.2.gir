@@ -15,7 +15,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="libedataserver/libedataserver.h"/>
   <namespace name="EDataServer"
              version="1.2"
-             shared-library="libcamel-1.2.so.60,libedataserver-1.2.so.22"
+             shared-library="libcamel-1.2.so.61,libedataserver-1.2.so.23"
              c:identifier-prefixes="E"
              c:symbol-prefixes="e">
     <record name="AsyncClosure"
@@ -3827,21 +3827,6 @@ See: e_gdata_oauth2_authorizer_supported()</doc>
             c:type="EGDataOAuth2AuthorizerPrivate"
             disguised="1">
     </record>
-    <constant name="GOOGLE_SECRET_ACCESS_TOKEN"
-              value="access_token"
-              c:type="E_GOOGLE_SECRET_ACCESS_TOKEN">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="GOOGLE_SECRET_EXPIRES_AFTER"
-              value="expires_after"
-              c:type="E_GOOGLE_SECRET_EXPIRES_AFTER">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="GOOGLE_SECRET_REFRESH_TOKEN"
-              value="refresh_token"
-              c:type="E_GOOGLE_SECRET_REFRESH_TOKEN">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <enumeration name="MdnResponsePolicy"
                  version="3.6"
                  glib:type-name="EMdnResponsePolicy"
@@ -4384,6 +4369,1763 @@ by the g_network_monitor_get_default(), will be used.</doc>
             c:type="ENetworkMonitorPrivate"
             disguised="1">
     </record>
+    <constant name="OAUTH2_SECRET_ACCESS_TOKEN"
+              value="access_token"
+              c:type="E_OAUTH2_SECRET_ACCESS_TOKEN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="OAUTH2_SECRET_EXPIRES_AFTER"
+              value="expires_after"
+              c:type="E_OAUTH2_SECRET_EXPIRES_AFTER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="OAUTH2_SECRET_REFRESH_TOKEN"
+              value="refresh_token"
+              c:type="E_OAUTH2_SECRET_REFRESH_TOKEN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <interface name="OAuth2Service"
+               c:symbol-prefix="oauth2_service"
+               c:type="EOAuth2Service"
+               version="3.28"
+               glib:type-name="EOAuth2Service"
+               glib:get-type="e_oauth2_service_get_type"
+               glib:type-struct="OAuth2ServiceInterface">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <function name="util_set_to_form"
+                c:identifier="e_oauth2_service_util_set_to_form"
+                version="3.28">
+        <doc xml:space="preserve">Sets @value for @name to @form. The @form should be
+the one used in e_oauth2_service_prepare_authentication_uri_query(),
+e_oauth2_service_prepare_get_token_form() or
+e_oauth2_service_prepare_refresh_token_form().
+
+If the @value is %NULL, then the property named @name is removed
+from the @form instead.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a property name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a property value</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="util_take_to_form"
+                c:identifier="e_oauth2_service_util_take_to_form"
+                version="3.28">
+        <doc xml:space="preserve">Takes ownership of @value and sets it for @name to @form. The @value
+will be freed with g_free(), when no longer needed. The @form should be
+the one used in e_oauth2_service_prepare_authentication_uri_query(),
+e_oauth2_service_prepare_get_token_form() or
+e_oauth2_service_prepare_refresh_token_form().
+
+If the @value is %NULL, then the property named @name is removed
+from the @form instead.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">a property name</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a property value</doc>
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <virtual-method name="can_process" invoker="can_process" version="3.28">
+        <doc xml:space="preserve">Checks whether the @service can be used with the given @source.
+
+The default implementation checks whether the @source has an #ESourceAuthentication
+extension and when its method matches e_oauth2_service_get_name(), then it automatically
+returns %TRUE. Contrary, when the @source contains GNOME Online Accounts or Ubuntu
+Online Accounts extension, then it returns %FALSE.
+
+The default implementation is tried always as the first and when it fails, then
+the descendant's implementation is called.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether the @service can be used for the given @source</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #ESource, or %NULL</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="extract_authorization_code"
+                      invoker="extract_authorization_code"
+                      version="3.28">
+        <doc xml:space="preserve">Tries to extract an authorization code from a web page provided by the server.
+The function can be called multiple times, whenever the page load is finished.
+
+There can happen three states: 1) either the @service cannot determine
+the authentication code from the page information, then the %FALSE is
+returned and the @out_authorization_code is left untouched; or 2) the server
+reported a failure, in which case the function returns %TRUE and lefts
+the @out_authorization_code untouched; or 3) the @service could extract
+the authentication code from the given arguments, then the function
+returns %TRUE and sets the received authorization code to @out_authorization_code.
+
+The @page_content is %NULL, unless flags returned by e_oauth2_service_get_flags()
+contain also %E_OAUTH2_SERVICE_FLAG_EXTRACT_REQUIRES_PAGE_CONTENT.
+
+This method is always called after e_oauth2_service_get_authentication_policy().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether could recognized successful or failed server response.
+   The @out_authorization_code is populated on success too.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="page_title" transfer-ownership="none">
+            <doc xml:space="preserve">a web page title</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="page_uri" transfer-ownership="none">
+            <doc xml:space="preserve">a web page URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="page_content"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a web page content</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_authorization_code"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">the extracted authorization code</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_authentication_policy"
+                      invoker="get_authentication_policy"
+                      version="3.28">
+        <doc xml:space="preserve">Used to decide what to do when the server redirects to the next page.
+The default implementation always returns %E_OAUTH2_SERVICE_NAVIGATION_POLICY_ALLOW.
+
+This method is called before e_oauth2_service_extract_authorization_code() and
+can be used to block certain resources or to abort the authentication when
+the server redirects to an unexpected page (like when user denies authorization
+in the page).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">one of #EOAuth2ServiceNavigationPolicy</doc>
+          <type name="OAuth2ServiceNavigationPolicy"
+                c:type="EOAuth2ServiceNavigationPolicy"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">a URI of the navigation resource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_authentication_uri"
+                      invoker="get_authentication_uri"
+                      version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an authentication URI, to be used to obtain
+   the authentication code</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_client_id"
+                      invoker="get_client_id"
+                      version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">application client ID, as provided by the server</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_client_secret"
+                      invoker="get_client_secret"
+                      version="3.28">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">application client secret, as provided by the server, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_display_name"
+                      invoker="get_display_name"
+                      version="3.28">
+        <doc xml:space="preserve">Returns a human readable name of the service. This is similar to
+e_oauth2_service_get_name(), except this string should be localized,
+because it will be used in user-visible strings.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the display name of the @service</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_flags" invoker="get_flags" version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">bit-or of #EOAuth2ServiceFlags for the @service. The default
+   implementation returns %E_OAUTH2_SERVICE_FLAG_NONE.</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_name" invoker="get_name" version="3.28">
+        <doc xml:space="preserve">Returns a unique name of the service. It can be named for example
+by the server or the company from which it receives the OAuth2
+token and where it refreshes it, like "Company" for login.company.com.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the name of the @service</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_redirect_uri"
+                      invoker="get_redirect_uri"
+                      version="3.28">
+        <doc xml:space="preserve">Returns a value for the "redirect_uri" keys in the authenticate and get_token
+operations. The default implementation returns "urn:ietf:wg:oauth:2.0:oob".</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The redirect_uri to use, or %NULL for none</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_refresh_uri"
+                      invoker="get_refresh_uri"
+                      version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a URI to be used to refresh the authentication token</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="guess_can_process"
+                      invoker="guess_can_process"
+                      version="3.28">
+        <doc xml:space="preserve">Checks whether the @service can be used with the given @protocol and/or @hostname.
+Any of @protocol and @hostname can be %NULL, but not both. It's up to each implementer
+to decide, which of the arguments are important and whether all or only any of them
+can be required.
+
+The function is meant to check whether the @service can be offered
+for example when configuring a new account. The real usage is
+determined by e_oauth2_service_can_process().
+
+The default implementation consults org.gnome.evolution-data-server.oauth2-services-hint
+GSettings key against given hostname. See its description for more information.
+
+The default implementation is tried always as the first and when it fails, then
+the descendant's implementation is called.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether the @service can be used for the given arguments</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="protocol"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a protocol to search the service for, like "imap", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="hostname"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a host name to search the service for, like "server.example.com", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prepare_authentication_uri_query"
+                      invoker="prepare_authentication_uri_query"
+                      version="3.28">
+        <doc xml:space="preserve">The @service can change what arguments are passed in the authentication URI
+in this method. The default implementation sets some values too, namely
+"response_type", "client_id", "redirect_uri" and "login_hint", if available
+in the @source. These parameters are always provided, even when the interface
+implementer overrides this method.
+
+The @uri_query hash table expects both key and value to be newly allocated
+strings, which will be freed together with the hash table or when the key
+is replaced.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource containing information about the user and such</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="uri_query" transfer-ownership="none">
+            <doc xml:space="preserve">query for the URI to use</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prepare_get_token_form"
+                      invoker="prepare_get_token_form"
+                      version="3.28">
+        <doc xml:space="preserve">Sets additional form parameters to be used in the POST request when requesting
+access token after successfully obtained authorization code.
+The default implementation sets some values too, namely
+"code", "client_id", "client_secret", "redirect_uri" and "grant_type".
+These parameters are always provided, even when the interface implementer overrides this method.
+
+The @form hash table expects both key and value to be newly allocated
+strings, which will be freed together with the hash table or when the key
+is replaced.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="authorization_code" transfer-ownership="none">
+            <doc xml:space="preserve">authorization code, as returned from e_oauth2_service_extract_authorization_code()</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">form parameters to be used in the POST request</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prepare_get_token_message"
+                      invoker="prepare_get_token_message"
+                      version="3.28">
+        <doc xml:space="preserve">The @service can change the @message before it's sent to
+the e_oauth2_service_get_authentication_uri(), with POST data
+being provided by e_oauth2_service_prepare_get_token_form().
+The default implementation does nothing with the @message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupMessage</doc>
+            <type name="Soup.Message" c:type="SoupMessage*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prepare_refresh_token_form"
+                      invoker="prepare_refresh_token_form"
+                      version="3.28">
+        <doc xml:space="preserve">Sets additional form parameters to be used in the POST request when requesting
+to refresh an access token.
+The default implementation sets some values too, namely
+"refresh_token", "client_id", "client_secret" and "grant_type".
+These parameters are always provided, even when the interface implementer overrides this method.
+
+The @form hash table expects both key and value to be newly allocated
+strings, which will be freed together with the hash table or when the key
+is replaced.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="refresh_token" transfer-ownership="none">
+            <doc xml:space="preserve">a refresh token to be used</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">form parameters to be used in the POST request</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="prepare_refresh_token_message"
+                      invoker="prepare_refresh_token_message"
+                      version="3.28">
+        <doc xml:space="preserve">The @service can change the @message before it's sent to
+the e_oauth2_service_get_refresh_uri(), with POST data
+being provided by e_oauth2_service_prepare_refresh_token_form().
+The default implementation does nothing with the @message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="message" transfer-ownership="none">
+            <type name="Soup.Message" c:type="SoupMessage*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="can_process"
+              c:identifier="e_oauth2_service_can_process"
+              version="3.28">
+        <doc xml:space="preserve">Checks whether the @service can be used with the given @source.
+
+The default implementation checks whether the @source has an #ESourceAuthentication
+extension and when its method matches e_oauth2_service_get_name(), then it automatically
+returns %TRUE. Contrary, when the @source contains GNOME Online Accounts or Ubuntu
+Online Accounts extension, then it returns %FALSE.
+
+The default implementation is tried always as the first and when it fails, then
+the descendant's implementation is called.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether the @service can be used for the given @source</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #ESource, or %NULL</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="delete_token_sync"
+              c:identifier="e_oauth2_service_delete_token_sync"
+              version="3.28"
+              throws="1">
+        <doc xml:space="preserve">Deletes token information for the @service and @source from the secret store.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether succeeded</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="extract_authorization_code"
+              c:identifier="e_oauth2_service_extract_authorization_code"
+              version="3.28">
+        <doc xml:space="preserve">Tries to extract an authorization code from a web page provided by the server.
+The function can be called multiple times, whenever the page load is finished.
+
+There can happen three states: 1) either the @service cannot determine
+the authentication code from the page information, then the %FALSE is
+returned and the @out_authorization_code is left untouched; or 2) the server
+reported a failure, in which case the function returns %TRUE and lefts
+the @out_authorization_code untouched; or 3) the @service could extract
+the authentication code from the given arguments, then the function
+returns %TRUE and sets the received authorization code to @out_authorization_code.
+
+The @page_content is %NULL, unless flags returned by e_oauth2_service_get_flags()
+contain also %E_OAUTH2_SERVICE_FLAG_EXTRACT_REQUIRES_PAGE_CONTENT.
+
+This method is always called after e_oauth2_service_get_authentication_policy().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether could recognized successful or failed server response.
+   The @out_authorization_code is populated on success too.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="page_title" transfer-ownership="none">
+            <doc xml:space="preserve">a web page title</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="page_uri" transfer-ownership="none">
+            <doc xml:space="preserve">a web page URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="page_content"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a web page content</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_authorization_code"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">the extracted authorization code</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_access_token_sync"
+              c:identifier="e_oauth2_service_get_access_token_sync"
+              version="3.28"
+              throws="1">
+        <doc xml:space="preserve">Reads access token information from the secret store for the @source and
+in case it's expired it refreshes the token, if possible.
+
+Free the returned @out_access_token with g_free(), when no longer needed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE, when the returned access token has been set and it's not expired,
+   %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="ref_source"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="2">
+            <doc xml:space="preserve">an #EOAuth2ServiceRefSourceFunc function to obtain an #ESource</doc>
+            <type name="OAuth2ServiceRefSourceFunc"
+                  c:type="EOAuth2ServiceRefSourceFunc"/>
+          </parameter>
+          <parameter name="ref_source_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data for @ref_source</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="out_access_token"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for the access token</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="out_expires_in"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">how many seconds the access token expires in</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_authentication_policy"
+              c:identifier="e_oauth2_service_get_authentication_policy"
+              version="3.28">
+        <doc xml:space="preserve">Used to decide what to do when the server redirects to the next page.
+The default implementation always returns %E_OAUTH2_SERVICE_NAVIGATION_POLICY_ALLOW.
+
+This method is called before e_oauth2_service_extract_authorization_code() and
+can be used to block certain resources or to abort the authentication when
+the server redirects to an unexpected page (like when user denies authorization
+in the page).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">one of #EOAuth2ServiceNavigationPolicy</doc>
+          <type name="OAuth2ServiceNavigationPolicy"
+                c:type="EOAuth2ServiceNavigationPolicy"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">a URI of the navigation resource</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_authentication_uri"
+              c:identifier="e_oauth2_service_get_authentication_uri"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an authentication URI, to be used to obtain
+   the authentication code</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_client_id"
+              c:identifier="e_oauth2_service_get_client_id"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">application client ID, as provided by the server</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_client_secret"
+              c:identifier="e_oauth2_service_get_client_secret"
+              version="3.28">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">application client secret, as provided by the server, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_display_name"
+              c:identifier="e_oauth2_service_get_display_name"
+              version="3.28">
+        <doc xml:space="preserve">Returns a human readable name of the service. This is similar to
+e_oauth2_service_get_name(), except this string should be localized,
+because it will be used in user-visible strings.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the display name of the @service</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flags"
+              c:identifier="e_oauth2_service_get_flags"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">bit-or of #EOAuth2ServiceFlags for the @service. The default
+   implementation returns %E_OAUTH2_SERVICE_FLAG_NONE.</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_name"
+              c:identifier="e_oauth2_service_get_name"
+              version="3.28">
+        <doc xml:space="preserve">Returns a unique name of the service. It can be named for example
+by the server or the company from which it receives the OAuth2
+token and where it refreshes it, like "Company" for login.company.com.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the name of the @service</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_redirect_uri"
+              c:identifier="e_oauth2_service_get_redirect_uri"
+              version="3.28">
+        <doc xml:space="preserve">Returns a value for the "redirect_uri" keys in the authenticate and get_token
+operations. The default implementation returns "urn:ietf:wg:oauth:2.0:oob".</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The redirect_uri to use, or %NULL for none</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_refresh_uri"
+              c:identifier="e_oauth2_service_get_refresh_uri"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a URI to be used to refresh the authentication token</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="guess_can_process"
+              c:identifier="e_oauth2_service_guess_can_process"
+              version="3.28">
+        <doc xml:space="preserve">Checks whether the @service can be used with the given @protocol and/or @hostname.
+Any of @protocol and @hostname can be %NULL, but not both. It's up to each implementer
+to decide, which of the arguments are important and whether all or only any of them
+can be required.
+
+The function is meant to check whether the @service can be offered
+for example when configuring a new account. The real usage is
+determined by e_oauth2_service_can_process().
+
+The default implementation consults org.gnome.evolution-data-server.oauth2-services-hint
+GSettings key against given hostname. See its description for more information.
+
+The default implementation is tried always as the first and when it fails, then
+the descendant's implementation is called.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether the @service can be used for the given arguments</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="protocol"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a protocol to search the service for, like "imap", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="hostname"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a host name to search the service for, like "server.example.com", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_authentication_uri_query"
+              c:identifier="e_oauth2_service_prepare_authentication_uri_query"
+              version="3.28">
+        <doc xml:space="preserve">The @service can change what arguments are passed in the authentication URI
+in this method. The default implementation sets some values too, namely
+"response_type", "client_id", "redirect_uri" and "login_hint", if available
+in the @source. These parameters are always provided, even when the interface
+implementer overrides this method.
+
+The @uri_query hash table expects both key and value to be newly allocated
+strings, which will be freed together with the hash table or when the key
+is replaced.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource containing information about the user and such</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="uri_query" transfer-ownership="none">
+            <doc xml:space="preserve">query for the URI to use</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_get_token_form"
+              c:identifier="e_oauth2_service_prepare_get_token_form"
+              version="3.28">
+        <doc xml:space="preserve">Sets additional form parameters to be used in the POST request when requesting
+access token after successfully obtained authorization code.
+The default implementation sets some values too, namely
+"code", "client_id", "client_secret", "redirect_uri" and "grant_type".
+These parameters are always provided, even when the interface implementer overrides this method.
+
+The @form hash table expects both key and value to be newly allocated
+strings, which will be freed together with the hash table or when the key
+is replaced.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="authorization_code" transfer-ownership="none">
+            <doc xml:space="preserve">authorization code, as returned from e_oauth2_service_extract_authorization_code()</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">form parameters to be used in the POST request</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_get_token_message"
+              c:identifier="e_oauth2_service_prepare_get_token_message"
+              version="3.28">
+        <doc xml:space="preserve">The @service can change the @message before it's sent to
+the e_oauth2_service_get_authentication_uri(), with POST data
+being provided by e_oauth2_service_prepare_get_token_form().
+The default implementation does nothing with the @message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="message" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupMessage</doc>
+            <type name="Soup.Message" c:type="SoupMessage*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_refresh_token_form"
+              c:identifier="e_oauth2_service_prepare_refresh_token_form"
+              version="3.28">
+        <doc xml:space="preserve">Sets additional form parameters to be used in the POST request when requesting
+to refresh an access token.
+The default implementation sets some values too, namely
+"refresh_token", "client_id", "client_secret" and "grant_type".
+These parameters are always provided, even when the interface implementer overrides this method.
+
+The @form hash table expects both key and value to be newly allocated
+strings, which will be freed together with the hash table or when the key
+is replaced.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="refresh_token" transfer-ownership="none">
+            <doc xml:space="preserve">a refresh token to be used</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="form" transfer-ownership="none">
+            <doc xml:space="preserve">form parameters to be used in the POST request</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="utf8"/>
+              <type name="utf8"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_refresh_token_message"
+              c:identifier="e_oauth2_service_prepare_refresh_token_message"
+              version="3.28">
+        <doc xml:space="preserve">The @service can change the @message before it's sent to
+the e_oauth2_service_get_refresh_uri(), with POST data
+being provided by e_oauth2_service_prepare_refresh_token_form().
+The default implementation does nothing with the @message.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="message" transfer-ownership="none">
+            <type name="Soup.Message" c:type="SoupMessage*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="receive_and_store_token_sync"
+              c:identifier="e_oauth2_service_receive_and_store_token_sync"
+              version="3.28"
+              throws="1">
+        <doc xml:space="preserve">Queries @service at e_oauth2_service_get_refresh_uri() with a request to obtain
+a new access token, associated with the given @authorization_code and stores
+it into the secret store on success.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether succeeded</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="authorization_code" transfer-ownership="none">
+            <doc xml:space="preserve">authorization code provided by the server</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="ref_source"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="3">
+            <doc xml:space="preserve">an #EOAuth2ServiceRefSourceFunc function to obtain an #ESource
+@ref_source_user_data user data for @ref_source</doc>
+            <type name="OAuth2ServiceRefSourceFunc"
+                  c:type="EOAuth2ServiceRefSourceFunc"/>
+          </parameter>
+          <parameter name="ref_source_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="refresh_and_store_token_sync"
+              c:identifier="e_oauth2_service_refresh_and_store_token_sync"
+              version="3.28"
+              throws="1">
+        <doc xml:space="preserve">Queries @service at e_oauth2_service_get_refresh_uri() with a request to refresh
+existing access token with provided @refresh_token and stores it into the secret
+store on success.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether succeeded</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+          <parameter name="refresh_token" transfer-ownership="none">
+            <doc xml:space="preserve">refresh token as provided by the server</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="ref_source"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="3">
+            <doc xml:space="preserve">an #EOAuth2ServiceRefSourceFunc function to obtain an #ESource</doc>
+            <type name="OAuth2ServiceRefSourceFunc"
+                  c:type="EOAuth2ServiceRefSourceFunc"/>
+          </parameter>
+          <parameter name="ref_source_user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data for @ref_source</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <class name="OAuth2ServiceBase"
+           c:symbol-prefix="oauth2_service_base"
+           c:type="EOAuth2ServiceBase"
+           parent="Extension"
+           abstract="1"
+           glib:type-name="EOAuth2ServiceBase"
+           glib:get-type="e_oauth2_service_base_get_type"
+           glib:type-struct="OAuth2ServiceBaseClass">
+      <field name="parent">
+        <type name="Extension" c:type="EExtension"/>
+      </field>
+    </class>
+    <record name="OAuth2ServiceBaseClass"
+            c:type="EOAuth2ServiceBaseClass"
+            glib:is-gtype-struct-for="OAuth2ServiceBase">
+      <field name="parent_class">
+        <type name="ExtensionClass" c:type="EExtensionClass"/>
+      </field>
+    </record>
+    <bitfield name="OAuth2ServiceFlags"
+              version="3.28"
+              c:type="EOAuth2ServiceFlags">
+      <doc xml:space="preserve">Flags of the OAuth2 service.</doc>
+      <member name="none" value="0" c:identifier="E_OAUTH2_SERVICE_FLAG_NONE">
+        <doc xml:space="preserve">No flag set</doc>
+      </member>
+      <member name="extract_requires_page_content"
+              value="2"
+              c:identifier="E_OAUTH2_SERVICE_FLAG_EXTRACT_REQUIRES_PAGE_CONTENT">
+        <doc xml:space="preserve">the service requires also page
+   content to be passed to e_oauth2_service_extract_authorization_code()</doc>
+      </member>
+    </bitfield>
+    <class name="OAuth2ServiceGoogle"
+           c:symbol-prefix="oauth2_service_google"
+           c:type="EOAuth2ServiceGoogle"
+           parent="OAuth2ServiceBase"
+           glib:type-name="EOAuth2ServiceGoogle"
+           glib:get-type="e_oauth2_service_google_get_type"
+           glib:type-struct="OAuth2ServiceGoogleClass">
+      <implements name="OAuth2Service"/>
+      <field name="parent">
+        <type name="OAuth2ServiceBase" c:type="EOAuth2ServiceBase"/>
+      </field>
+    </class>
+    <record name="OAuth2ServiceGoogleClass"
+            c:type="EOAuth2ServiceGoogleClass"
+            glib:is-gtype-struct-for="OAuth2ServiceGoogle">
+      <field name="parent_class">
+        <type name="OAuth2ServiceBaseClass" c:type="EOAuth2ServiceBaseClass"/>
+      </field>
+    </record>
+    <record name="OAuth2ServiceInterface"
+            c:type="EOAuth2ServiceInterface"
+            glib:is-gtype-struct-for="OAuth2Service">
+      <field name="parent_interface">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="can_process">
+        <callback name="can_process">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">Whether the @service can be used for the given @source</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="source"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">an #ESource, or %NULL</doc>
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="guess_can_process">
+        <callback name="guess_can_process">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">Whether the @service can be used for the given arguments</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="protocol"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">a protocol to search the service for, like "imap", or %NULL</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="hostname"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">a host name to search the service for, like "server.example.com", or %NULL</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_flags">
+        <callback name="get_flags">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">bit-or of #EOAuth2ServiceFlags for the @service. The default
+   implementation returns %E_OAUTH2_SERVICE_FLAG_NONE.</doc>
+            <type name="guint32" c:type="guint32"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_name">
+        <callback name="get_name">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the name of the @service</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_display_name">
+        <callback name="get_display_name">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the display name of the @service</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_client_id">
+        <callback name="get_client_id">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">application client ID, as provided by the server</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_client_secret">
+        <callback name="get_client_secret">
+          <return-value transfer-ownership="none" nullable="1">
+            <doc xml:space="preserve">application client secret, as provided by the server, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_authentication_uri">
+        <callback name="get_authentication_uri">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">an authentication URI, to be used to obtain
+   the authentication code</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_refresh_uri">
+        <callback name="get_refresh_uri">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">a URI to be used to refresh the authentication token</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_redirect_uri">
+        <callback name="get_redirect_uri">
+          <return-value transfer-ownership="none" nullable="1">
+            <doc xml:space="preserve">The redirect_uri to use, or %NULL for none</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_authentication_uri_query">
+        <callback name="prepare_authentication_uri_query">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="source" transfer-ownership="none">
+              <doc xml:space="preserve">an #ESource containing information about the user and such</doc>
+              <type name="Source" c:type="ESource*"/>
+            </parameter>
+            <parameter name="uri_query" transfer-ownership="none">
+              <doc xml:space="preserve">query for the URI to use</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="utf8"/>
+              </type>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_authentication_policy">
+        <callback name="get_authentication_policy">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">one of #EOAuth2ServiceNavigationPolicy</doc>
+            <type name="OAuth2ServiceNavigationPolicy"
+                  c:type="EOAuth2ServiceNavigationPolicy"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="uri" transfer-ownership="none">
+              <doc xml:space="preserve">a URI of the navigation resource</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="extract_authorization_code">
+        <callback name="extract_authorization_code">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">whether could recognized successful or failed server response.
+   The @out_authorization_code is populated on success too.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="page_title" transfer-ownership="none">
+              <doc xml:space="preserve">a web page title</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="page_uri" transfer-ownership="none">
+              <doc xml:space="preserve">a web page URI</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="page_content"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">a web page content</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="out_authorization_code"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
+              <doc xml:space="preserve">the extracted authorization code</doc>
+              <type name="utf8" c:type="gchar**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_get_token_form">
+        <callback name="prepare_get_token_form">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="authorization_code" transfer-ownership="none">
+              <doc xml:space="preserve">authorization code, as returned from e_oauth2_service_extract_authorization_code()</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="form" transfer-ownership="none">
+              <doc xml:space="preserve">form parameters to be used in the POST request</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="utf8"/>
+              </type>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_get_token_message">
+        <callback name="prepare_get_token_message">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="message" transfer-ownership="none">
+              <doc xml:space="preserve">a #SoupMessage</doc>
+              <type name="Soup.Message" c:type="SoupMessage*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_refresh_token_form">
+        <callback name="prepare_refresh_token_form">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="refresh_token" transfer-ownership="none">
+              <doc xml:space="preserve">a refresh token to be used</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="form" transfer-ownership="none">
+              <doc xml:space="preserve">form parameters to be used in the POST request</doc>
+              <type name="GLib.HashTable" c:type="GHashTable*">
+                <type name="utf8"/>
+                <type name="utf8"/>
+              </type>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="prepare_refresh_token_message">
+        <callback name="prepare_refresh_token_message">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="service" transfer-ownership="none">
+              <doc xml:space="preserve">an #EOAuth2Service</doc>
+              <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+            </parameter>
+            <parameter name="message" transfer-ownership="none">
+              <type name="Soup.Message" c:type="SoupMessage*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="reserved">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <enumeration name="OAuth2ServiceNavigationPolicy"
+                 version="3.28"
+                 c:type="EOAuth2ServiceNavigationPolicy">
+      <doc xml:space="preserve">A value used during querying authentication URI, to decide whether certain
+resource can be used or not. The @E_OAUTH2_SERVICE_NAVIGATION_POLICY_ABORT
+can be used to abort the authentication query, like when user cancelled it.</doc>
+      <member name="deny"
+              value="0"
+              c:identifier="E_OAUTH2_SERVICE_NAVIGATION_POLICY_DENY">
+        <doc xml:space="preserve">Deny navigation to the given web resource</doc>
+      </member>
+      <member name="allow"
+              value="1"
+              c:identifier="E_OAUTH2_SERVICE_NAVIGATION_POLICY_ALLOW">
+        <doc xml:space="preserve">Allow navigation to the given web resource</doc>
+      </member>
+      <member name="abort"
+              value="2"
+              c:identifier="E_OAUTH2_SERVICE_NAVIGATION_POLICY_ABORT">
+        <doc xml:space="preserve">Abort authentication processing</doc>
+      </member>
+    </enumeration>
+    <class name="OAuth2ServiceOutlook"
+           c:symbol-prefix="oauth2_service_outlook"
+           c:type="EOAuth2ServiceOutlook"
+           parent="OAuth2ServiceBase"
+           glib:type-name="EOAuth2ServiceOutlook"
+           glib:get-type="e_oauth2_service_outlook_get_type"
+           glib:type-struct="OAuth2ServiceOutlookClass">
+      <implements name="OAuth2Service"/>
+      <field name="parent">
+        <type name="OAuth2ServiceBase" c:type="EOAuth2ServiceBase"/>
+      </field>
+    </class>
+    <record name="OAuth2ServiceOutlookClass"
+            c:type="EOAuth2ServiceOutlookClass"
+            glib:is-gtype-struct-for="OAuth2ServiceOutlook">
+      <field name="parent_class">
+        <type name="OAuth2ServiceBaseClass" c:type="EOAuth2ServiceBaseClass"/>
+      </field>
+    </record>
+    <callback name="OAuth2ServiceRefSourceFunc"
+              c:type="EOAuth2ServiceRefSourceFunc"
+              version="3.28">
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">an #ESource with UID @uid, or %NULL, if not found.
+   Dereference the returned non-NULL #ESource with g_object_unref(), when no longer needed.</doc>
+        <type name="Source" c:type="ESource*"/>
+      </return-value>
+      <parameters>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="0">
+          <doc xml:space="preserve">user data, as passed to e_oauth2_service_get_token_sync()
+   or e_oauth2_service_refresh_token_sync()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="uid" transfer-ownership="none">
+          <doc xml:space="preserve">an #ESource UID to return</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <class name="OAuth2Services"
+           c:symbol-prefix="oauth2_services"
+           c:type="EOAuth2Services"
+           version="3.28"
+           parent="GObject.Object"
+           glib:type-name="EOAuth2Services"
+           glib:get-type="e_oauth2_services_get_type"
+           glib:type-struct="OAuth2ServicesClass">
+      <doc xml:space="preserve">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <implements name="Extensible"/>
+      <constructor name="new"
+                   c:identifier="e_oauth2_services_new"
+                   version="3.28">
+        <doc xml:space="preserve">Creates a new #EOAuth2Services instance.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an #EOAuth2Services</doc>
+          <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+        </return-value>
+      </constructor>
+      <function name="is_oauth2_alias_static"
+                c:identifier="e_oauth2_services_is_oauth2_alias_static"
+                version="3.28">
+        <doc xml:space="preserve">This is the same as e_oauth2_services_is_oauth2_alias(), except
+it creates its own #EOAuth2Services instance and frees it at the end.
+The #EOAuth2Services is implemented as a singleton, thus it won't be
+much trouble, as long as there is something else having created one
+instance.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether exists any #EOAuth2Service, with the same name as @auth_method.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="auth_method"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an authentication method, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="is_supported"
+                c:identifier="e_oauth2_services_is_supported"
+                version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE, when evolution-data-server had been compiled
+   with OAuth2 authentication enabled, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+      </function>
+      <method name="add" c:identifier="e_oauth2_services_add" version="3.28">
+        <doc xml:space="preserve">Adds the @service to the list of known OAuth2 services into @services.
+It also adds a reference to @service.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="services" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Services</doc>
+            <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+          </instance-parameter>
+          <parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service to add</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="find" c:identifier="e_oauth2_services_find" version="3.28">
+        <doc xml:space="preserve">Searches the list of currently known OAuth2 services for the one which
+can be used with the given @source.
+
+The returned #EOAuth2Service is referenced for thread safety, if found.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a referenced #EOAuth2Service, which can be used
+   with given @source, or %NULL, when none was found.</doc>
+          <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="services" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Services</doc>
+            <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+          </instance-parameter>
+          <parameter name="source" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESource</doc>
+            <type name="Source" c:type="ESource*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="guess"
+              c:identifier="e_oauth2_services_guess"
+              version="3.28">
+        <doc xml:space="preserve">Searches the list of currently known OAuth2 services for the one which
+can be used with the given @protocol and/or @hostname.
+Any of @protocol and @hostname can be %NULL, but not both.
+It's up to each #EOAuth2Service to decide, which of the arguments
+are important and whether all or only any of them can be required.
+
+The returned #EOAuth2Service is referenced for thread safety, if found.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a referenced #EOAuth2Service, which can be used
+   with given constraints, or %NULL, when none was found.</doc>
+          <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="services" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Services</doc>
+            <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+          </instance-parameter>
+          <parameter name="protocol"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a protocol to search the service for, like "imap", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="hostname"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a host name to search the service for, like "server.example.com", or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="is_oauth2_alias"
+              c:identifier="e_oauth2_services_is_oauth2_alias"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether exists any #EOAuth2Service, with the same name as @auth_method.
+
+See: e_oauth2_services_is_oauth2_alias_static()</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="services" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Services</doc>
+            <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+          </instance-parameter>
+          <parameter name="auth_method"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an authentication method, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="list" c:identifier="e_oauth2_services_list" version="3.28">
+        <doc xml:space="preserve">Lists all currently known services, which had been added
+with e_oauth2_services_add(). Free the returned #GSList with
+g_slist_remove_full (known_services, g_object_unref);
+when no longer needed.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly allocated #GSList
+   with all currently known #EOAuth2Service referenced instances</doc>
+          <type name="GLib.SList" c:type="GSList*">
+            <type name="OAuth2Service"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="services" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Services</doc>
+            <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove"
+              c:identifier="e_oauth2_services_remove"
+              version="3.28">
+        <doc xml:space="preserve">Removes the @service from the list of known services in @services.
+The function does nothing, if the @service had not been added.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="services" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Services</doc>
+            <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+          </instance-parameter>
+          <parameter name="service" transfer-ownership="none">
+            <doc xml:space="preserve">an #EOAuth2Service to remove</doc>
+            <type name="OAuth2Service" c:type="EOAuth2Service*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="OAuth2ServicesPrivate" c:type="EOAuth2ServicesPrivate*"/>
+      </field>
+    </class>
+    <record name="OAuth2ServicesClass"
+            c:type="EOAuth2ServicesClass"
+            glib:is-gtype-struct-for="OAuth2Services">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="reserved">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="OAuth2ServicesPrivate"
+            c:type="EOAuth2ServicesPrivate"
+            disguised="1">
+    </record>
     <record name="OperationPool"
             c:type="EOperationPool"
             disguised="1"
@@ -4516,11 +6258,6 @@ is finished.</doc>
         <doc xml:space="preserve">Direct connection; do not use a network proxy.</doc>
       </member>
     </enumeration>
-    <constant name="SOURCE_CREDENTIAL_GOOGLE_SECRET"
-              value="Google-secret"
-              c:type="E_SOURCE_CREDENTIAL_GOOGLE_SECRET">
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
     <constant name="SOURCE_CREDENTIAL_PASSWORD"
               value="password"
               c:type="E_SOURCE_CREDENTIAL_PASSWORD"
@@ -4989,6 +6726,21 @@ later.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_authentication_requires_credentials"
+              c:identifier="e_soup_session_get_authentication_requires_credentials"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether the last connection attempt required any credentials.
+   Authentications like OAuth2 do not want extra credentials to work.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESoupSession</doc>
+            <type name="SoupSession" c:type="ESoupSession*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_log_level"
               c:identifier="e_soup_session_get_log_level"
               version="3.26">
@@ -5353,71 +7105,6 @@ called.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <function name="credentials_google_is_supported"
-                c:identifier="e_source_credentials_google_is_supported">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-      </function>
-      <function name="credentials_google_util_decode_from_secret"
-                c:identifier="e_source_credentials_google_util_decode_from_secret"
-                introspectable="0">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="secret" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="key1_name" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="out_value1" transfer-ownership="none">
-            <type name="utf8" c:type="gchar**"/>
-          </parameter>
-          <parameter name="..." transfer-ownership="none">
-            <varargs/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="credentials_google_util_encode_to_secret"
-                c:identifier="e_source_credentials_google_util_encode_to_secret"
-                introspectable="0">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="out_secret" transfer-ownership="none">
-            <type name="utf8" c:type="gchar**"/>
-          </parameter>
-          <parameter name="key1_name" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="value1" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="..." transfer-ownership="none">
-            <varargs/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="credentials_google_util_extract_from_credentials"
-                c:identifier="e_source_credentials_google_util_extract_from_credentials">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="credentials" transfer-ownership="none">
-            <type name="NamedParameters" c:type="const ENamedParameters*"/>
-          </parameter>
-          <parameter name="out_access_token" transfer-ownership="none">
-            <type name="utf8" c:type="gchar**"/>
-          </parameter>
-          <parameter name="out_expires_in_seconds" transfer-ownership="none">
-            <type name="gint" c:type="gint*"/>
-          </parameter>
-        </parameters>
-      </function>
       <function name="parameter_to_key"
                 c:identifier="e_source_parameter_to_key"
                 version="3.6">
@@ -6144,47 +7831,6 @@ ordering sources in a user interface.</doc>
           <parameter name="source2" transfer-ownership="none">
             <doc xml:space="preserve">the second #ESource</doc>
             <type name="Source" c:type="ESource*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="credentials_google_get_access_token_sync"
-              c:identifier="e_source_credentials_google_get_access_token_sync"
-              throws="1">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="source" transfer-ownership="none">
-            <type name="Source" c:type="ESource*"/>
-          </instance-parameter>
-          <parameter name="credentials" transfer-ownership="none">
-            <type name="NamedParameters" c:type="const ENamedParameters*"/>
-          </parameter>
-          <parameter name="out_access_token" transfer-ownership="none">
-            <type name="utf8" c:type="gchar**"/>
-          </parameter>
-          <parameter name="out_expires_in_seconds" transfer-ownership="none">
-            <type name="gint" c:type="gint*"/>
-          </parameter>
-          <parameter name="cancellable"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <type name="Gio.Cancellable" c:type="GCancellable*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="credentials_google_util_generate_secret_uid"
-              c:identifier="e_source_credentials_google_util_generate_secret_uid">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="source" transfer-ownership="none">
-            <type name="Source" c:type="ESource*"/>
-          </instance-parameter>
-          <parameter name="out_uid" transfer-ownership="none">
-            <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
       </method>
@@ -11987,34 +13633,34 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
         </callback>
       </field>
     </record>
-    <class name="SourceCredentialsProviderImplGoogle"
-           c:symbol-prefix="source_credentials_provider_impl_google"
-           c:type="ESourceCredentialsProviderImplGoogle"
-           version="3.20"
+    <class name="SourceCredentialsProviderImplOAuth2"
+           c:symbol-prefix="source_credentials_provider_impl_oauth2"
+           c:type="ESourceCredentialsProviderImplOAuth2"
+           version="3.28"
            parent="SourceCredentialsProviderImpl"
-           glib:type-name="ESourceCredentialsProviderImplGoogle"
-           glib:get-type="e_source_credentials_provider_impl_google_get_type"
-           glib:type-struct="SourceCredentialsProviderImplGoogleClass">
-      <doc xml:space="preserve">Google based credentials provider implementation.</doc>
+           glib:type-name="ESourceCredentialsProviderImplOAuth2"
+           glib:get-type="e_source_credentials_provider_impl_oauth2_get_type"
+           glib:type-struct="SourceCredentialsProviderImplOAuth2Class">
+      <doc xml:space="preserve">OAuth2 based credentials provider implementation.</doc>
       <field name="parent" readable="0" private="1">
         <type name="SourceCredentialsProviderImpl"
               c:type="ESourceCredentialsProviderImpl"/>
       </field>
       <field name="priv" readable="0" private="1">
-        <type name="SourceCredentialsProviderImplGooglePrivate"
-              c:type="ESourceCredentialsProviderImplGooglePrivate*"/>
+        <type name="SourceCredentialsProviderImplOAuth2Private"
+              c:type="ESourceCredentialsProviderImplOAuth2Private*"/>
       </field>
     </class>
-    <record name="SourceCredentialsProviderImplGoogleClass"
-            c:type="ESourceCredentialsProviderImplGoogleClass"
-            glib:is-gtype-struct-for="SourceCredentialsProviderImplGoogle">
+    <record name="SourceCredentialsProviderImplOAuth2Class"
+            c:type="ESourceCredentialsProviderImplOAuth2Class"
+            glib:is-gtype-struct-for="SourceCredentialsProviderImplOAuth2">
       <field name="parent_class">
         <type name="SourceCredentialsProviderImplClass"
               c:type="ESourceCredentialsProviderImplClass"/>
       </field>
     </record>
-    <record name="SourceCredentialsProviderImplGooglePrivate"
-            c:type="ESourceCredentialsProviderImplGooglePrivate"
+    <record name="SourceCredentialsProviderImplOAuth2Private"
+            c:type="ESourceCredentialsProviderImplOAuth2Private"
             disguised="1">
     </record>
     <class name="SourceCredentialsProviderImplPassword"
@@ -16573,6 +18219,20 @@ not to be referenced directly (see e_source_get_extension()).</doc>
             <doc xml:space="preserve">the extension name to find</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_oauth2_services"
+              c:identifier="e_source_registry_get_oauth2_services"
+              version="3.28">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an instance of #EOAuth2Services, owned by @registry</doc>
+          <type name="OAuth2Services" c:type="EOAuth2Services*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="registry" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceRegistry</doc>
+            <type name="SourceRegistry" c:type="ESourceRegistry*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="list_enabled"
@@ -24033,6 +25693,77 @@ and they use less memory overhead for housekeeping.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="oauth2_service_util_set_to_form"
+              c:identifier="e_oauth2_service_util_set_to_form"
+              moved-to="OAuth2Service.util_set_to_form"
+              version="3.28">
+      <doc xml:space="preserve">Sets @value for @name to @form. The @form should be
+the one used in e_oauth2_service_prepare_authentication_uri_query(),
+e_oauth2_service_prepare_get_token_form() or
+e_oauth2_service_prepare_refresh_token_form().
+
+If the @value is %NULL, then the property named @name is removed
+from the @form instead.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="form" transfer-ownership="none">
+          <doc xml:space="preserve">a #GHashTable</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <doc xml:space="preserve">a property name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="value"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a property value</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="oauth2_service_util_take_to_form"
+              c:identifier="e_oauth2_service_util_take_to_form"
+              moved-to="OAuth2Service.util_take_to_form"
+              version="3.28">
+      <doc xml:space="preserve">Takes ownership of @value and sets it for @name to @form. The @value
+will be freed with g_free(), when no longer needed. The @form should be
+the one used in e_oauth2_service_prepare_authentication_uri_query(),
+e_oauth2_service_prepare_get_token_form() or
+e_oauth2_service_prepare_refresh_token_form().
+
+If the @value is %NULL, then the property named @name is removed
+from the @form instead.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="form" transfer-ownership="none">
+          <doc xml:space="preserve">a #GHashTable</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+        <parameter name="name" transfer-ownership="none">
+          <doc xml:space="preserve">a property name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="value"
+                   transfer-ownership="full"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a property value</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="operation_pool_new"
               c:identifier="e_operation_pool_new"
               moved-to="OperationPool.new"
@@ -24653,6 +26384,34 @@ when it's done with it.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="util_can_use_collection_as_credential_source"
+              c:identifier="e_util_can_use_collection_as_credential_source"
+              version="3.28">
+      <doc xml:space="preserve">Checks whether the @collection_source can be used as a credential source
+for the @child_source. The relationship is not tested in the function.
+When the @collection_source is %NULL, then it simply returns %FALSE.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">whether @collection_source can be used as a credential source
+   for @child_source, that is, whether they share credentials.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="collection_source"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a collection #ESource, or %NULL</doc>
+          <type name="gpointer" c:type="_ESource*"/>
+        </parameter>
+        <parameter name="child_source"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">a children of @collection_source</doc>
+          <type name="gpointer" c:type="_ESource*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="util_copy_object_slist"
               c:identifier="e_util_copy_object_slist"
               version="3.4"
@@ -24864,59 +26623,6 @@ Since 3.18</doc>
                    allow-none="1">
           <doc xml:space="preserve">an #ESource</doc>
           <type name="gpointer" c:type="_ESource*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="util_get_source_oauth2_access_token_sync"
-              c:identifier="e_util_get_source_oauth2_access_token_sync"
-              throws="1">
-      <doc xml:space="preserve">Obtains the OAuth 2.0 access token for @source along with its expiry
-in seconds from the current time (or 0 if unknown).
-
-Free the returned access token with g_free() when finished with it.
-If an error occurs, the function will set @error and return %FALSE.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE on success, %FALSE on error</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
-      <parameters>
-        <parameter name="source"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">an #ESource</doc>
-          <type name="gpointer" c:type="_ESource*"/>
-        </parameter>
-        <parameter name="credentials" transfer-ownership="none">
-          <doc xml:space="preserve">an ENamedParameters</doc>
-          <type name="NamedParameters" c:type="const ENamedParameters*"/>
-        </parameter>
-        <parameter name="out_access_token"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full"
-                   optional="1"
-                   allow-none="1">
-          <doc xml:space="preserve">return location for the access token,
-                   or %NULL</doc>
-          <type name="utf8" c:type="gchar**"/>
-        </parameter>
-        <parameter name="out_expires_in_seconds"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full"
-                   optional="1"
-                   allow-none="1">
-          <doc xml:space="preserve">return location for the token expiry,
-                 or %NULL</doc>
-          <type name="gint" c:type="gint*"/>
-        </parameter>
-        <parameter name="cancellable"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">optional #GCancellable object, or %NULL</doc>
-          <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
       </parameters>
     </function>

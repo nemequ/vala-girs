@@ -10,9 +10,13 @@ namespace Dazzle {
 		public static uint calculate_duration (Gdk.Monitor monitor, double from_value, double to_value);
 		public void start ();
 		public void stop ();
+		[NoAccessorMethod]
 		public uint duration { construct; }
+		[NoAccessorMethod]
 		public Gdk.FrameClock frame_clock { construct; }
+		[NoAccessorMethod]
 		public Dazzle.AnimationMode mode { construct; }
+		[NoAccessorMethod]
 		public GLib.Object target { construct; }
 		public signal void tick ();
 	}
@@ -89,6 +93,7 @@ namespace Dazzle {
 		public int height { get; set; }
 		[NoAccessorMethod]
 		public GLib.Icon icon { owned get; set; }
+		[NoAccessorMethod]
 		public void* surface { construct; }
 		[NoAccessorMethod]
 		public Gtk.Widget target { owned get; construct; }
@@ -436,11 +441,13 @@ namespace Dazzle {
 		public unowned Dazzle.FuzzyIndex get_index ();
 		[NoAccessorMethod]
 		public bool case_sensitive { get; construct; }
+		[NoAccessorMethod]
 		public Dazzle.FuzzyIndex index { construct; }
 		[NoAccessorMethod]
 		public uint max_matches { get; construct; }
 		[NoAccessorMethod]
 		public string query { owned get; construct; }
+		[NoAccessorMethod]
 		public GLib.VariantDict tables { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_fuzzy_index_match_get_type ()")]
@@ -566,6 +573,7 @@ namespace Dazzle {
 		public void set_recycle_max (uint recycle_max);
 		public string property_name { get; construct; }
 		public GLib.Type row_type { get; construct; }
+		[NoAccessorMethod]
 		public string row_type_name { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_box_row_get_type ()")]
@@ -1471,15 +1479,25 @@ namespace Dazzle {
 		public async void* get_async (void* key, bool force_update, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned GLib.Object? peek (void* key);
 		public void set_name (string name);
+		[NoAccessorMethod]
 		public void* key_copy_func { construct; }
+		[NoAccessorMethod]
 		public void* key_destroy_func { construct; }
+		[NoAccessorMethod]
 		public void* key_equal_func { construct; }
+		[NoAccessorMethod]
 		public void* key_hash_func { construct; }
+		[NoAccessorMethod]
 		public void* populate_callback { construct; }
+		[NoAccessorMethod]
 		public void* populate_callback_data { construct; }
+		[NoAccessorMethod]
 		public void* populate_callback_data_destroy { construct; }
+		[NoAccessorMethod]
 		public int64 time_to_live { construct; }
+		[NoAccessorMethod]
 		public void* value_copy_func { construct; }
+		[NoAccessorMethod]
 		public void* value_destroy_func { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_theme_manager_get_type ()")]

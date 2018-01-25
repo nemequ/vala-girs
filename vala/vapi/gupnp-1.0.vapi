@@ -172,6 +172,7 @@ namespace GUPnP {
 		public void set_available (bool available);
 		public bool available { get; set; }
 		public string description_dir { get; construct; }
+		[NoAccessorMethod]
 		[Version (since = "0.13.0")]
 		public GUPnP.XMLDoc description_doc { construct; }
 		[Version (since = "0.13.0")]

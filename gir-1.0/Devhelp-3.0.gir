@@ -681,10 +681,24 @@ strings with dh_completion_add_string().</doc>
       </constructor>
       <method name="filter" c:identifier="dh_keyword_model_filter">
         <doc xml:space="preserve">Searches in the #DhBookManager the list of #DhLink's that correspond to
-@search_string, and fills the @model with that list.</doc>
+@search_string, and fills the @model with that list (erasing the previous
+content).
+
+Attention, when calling this function the @model needs to be disconnected
+from the #GtkTreeView, because the #GtkTreeModel signals are not emitted, to
+improve the performances (sending a lot of signals is slow) and have a
+simpler implementation. The previous row selection is anyway no longer
+relevant.
+
+Note that there is a maximum number of matches (configured internally). When
+the maximum is reached the search is stopped, to avoid blocking the GUI
+(since this function runs synchronously) if the @search_string contains for
+example only one character. (And it is anyway not very useful to show to the
+user tens of thousands search results).</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #DhLink that matches exactly
-@search_string, or %NULL if there is no such #DhLink.</doc>
+@search_string, or %NULL if no such #DhLink was found within the maximum
+number of matches.</doc>
           <type name="Link" c:type="DhLink*"/>
         </return-value>
         <parameters>
@@ -696,17 +710,18 @@ strings with dh_completion_add_string().</doc>
             <doc xml:space="preserve">a search query.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="book_id"
+          <parameter name="current_book_id"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">the ID of the book currently selected, or %NULL.</doc>
+            <doc xml:space="preserve">the ID of the book currently shown, or %NULL.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="language"
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
+            <doc xml:space="preserve">deprecated, must be %NULL.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -807,10 +822,6 @@ this function will return %TRUE if the @page_id is `"DhLink"`.</doc>
           <parameter name="page_id" transfer-ownership="none">
             <doc xml:space="preserve">a page ID, i.e. the filename without its extension.</doc>
             <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="case_sensitive" transfer-ownership="none">
-            <doc xml:space="preserve">whether @page_id is case sensitive.</doc>
-            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>

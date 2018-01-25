@@ -31,6 +31,7 @@ namespace Jsonrpc {
 		public void set_use_gvariant (bool use_gvariant);
 		[Version (since = "3.26")]
 		public void start_listening ();
+		[NoAccessorMethod]
 		[Version (since = "3.26")]
 		public GLib.IOStream io_stream { construct; }
 		[Version (since = "3.26")]

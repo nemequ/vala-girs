@@ -107,6 +107,7 @@ namespace GWeather {
 		public GWeather.Location location { owned get; set; }
 		[NoAccessorMethod]
 		public bool show_named_timezones { get; construct; }
+		[NoAccessorMethod]
 		public GWeather.Location top { construct; }
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", ref_function = "gweather_timezone_ref", type_id = "gweather_timezone_get_type ()", unref_function = "gweather_timezone_unref")]
@@ -129,6 +130,7 @@ namespace GWeather {
 		public TimezoneMenu (GWeather.Location top);
 		public unowned string? get_tzid ();
 		public void set_tzid (string? tzid);
+		[NoAccessorMethod]
 		public GWeather.Location top { construct; }
 		public string tzid { get; set; }
 	}

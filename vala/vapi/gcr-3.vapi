@@ -138,6 +138,7 @@ namespace Gcr {
 		public string bus_name { owned get; construct; }
 		[NoAccessorMethod]
 		public Gcr.SecretExchange secret_exchange { owned get; set; }
+		[NoAccessorMethod]
 		public int timeout_seconds { construct; }
 	}
 	[CCode (cheader_filename = "gcr/gcr-base.h", type_id = "gcr_system_prompter_get_type ()")]

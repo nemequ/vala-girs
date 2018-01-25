@@ -255,10 +255,12 @@ namespace Gck {
 		public async uint8[] wrap_key_async (Gck.Object wrapper, Gck.Mechanism mechanism, Gck.Object wrapped, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (array_length_pos = 3.5, array_length_type = "gsize")]
 		public uint8[] wrap_key_full (Gck.Object wrapper, Gck.Mechanism mechanism, Gck.Object wrapped, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[NoAccessorMethod]
 		public void* app_data { construct; }
 		public ulong handle { get; construct; }
 		public GLib.TlsInteraction interaction { owned get; set; }
 		public Gck.Module module { owned get; }
+		[NoAccessorMethod]
 		public ulong opening_flags { construct; }
 		public Gck.SessionOptions options { get; construct; }
 		public Gck.Slot slot { owned get; construct; }

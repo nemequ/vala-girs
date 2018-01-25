@@ -1868,8 +1868,11 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false, type = "TpBaseClient*")]
 		[Version (since = "0.15.5")]
 		public SimpleApprover.with_factory (TelepathyGLib.SimpleClientFactory factory, string name, bool uniquify, owned TelepathyGLib.SimpleApproverAddDispatchOperationImpl callback);
+		[NoAccessorMethod]
 		public void* callback { construct; }
+		[NoAccessorMethod]
 		public void* destroy { construct; }
+		[NoAccessorMethod]
 		public void* user_data { construct; }
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_simple_client_factory_get_type ()")]
@@ -1908,10 +1911,15 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false, type = "TpBaseClient*")]
 		[Version (since = "0.15.5")]
 		public SimpleHandler.with_factory (TelepathyGLib.SimpleClientFactory factory, bool bypass_approval, bool requests, string name, bool uniquify, owned TelepathyGLib.SimpleHandlerHandleChannelsImpl callback);
+		[NoAccessorMethod]
 		public bool bypass_approval { construct; }
+		[NoAccessorMethod]
 		public void* callback { construct; }
+		[NoAccessorMethod]
 		public void* destroy { construct; }
+		[NoAccessorMethod]
 		public bool requests { construct; }
+		[NoAccessorMethod]
 		public void* user_data { construct; }
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_simple_observer_get_type ()")]
@@ -1926,9 +1934,13 @@ namespace TelepathyGLib {
 		[CCode (has_construct_function = false, type = "TpBaseClient*")]
 		[Version (since = "0.15.5")]
 		public SimpleObserver.with_factory (TelepathyGLib.SimpleClientFactory factory, bool recover, string name, bool uniquify, owned TelepathyGLib.SimpleObserverObserveChannelsImpl callback);
+		[NoAccessorMethod]
 		public void* callback { construct; }
+		[NoAccessorMethod]
 		public void* destroy { construct; }
+		[NoAccessorMethod]
 		public bool recover { construct; }
+		[NoAccessorMethod]
 		public void* user_data { construct; }
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_stream_tube_channel_get_type ()")]

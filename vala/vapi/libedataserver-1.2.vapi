@@ -201,6 +201,35 @@ namespace E {
 		[NoAccessorMethod]
 		public string gio_name { owned get; set; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_oauth2_service_base_get_type ()")]
+	public abstract class OAuth2ServiceBase : E.Extension {
+		[CCode (has_construct_function = false)]
+		protected OAuth2ServiceBase ();
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_oauth2_service_google_get_type ()")]
+	public class OAuth2ServiceGoogle : E.OAuth2ServiceBase, E.OAuth2Service {
+		[CCode (has_construct_function = false)]
+		protected OAuth2ServiceGoogle ();
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_oauth2_service_outlook_get_type ()")]
+	public class OAuth2ServiceOutlook : E.OAuth2ServiceBase, E.OAuth2Service {
+		[CCode (has_construct_function = false)]
+		protected OAuth2ServiceOutlook ();
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_oauth2_services_get_type ()")]
+	[Version (since = "3.28")]
+	public class OAuth2Services : GLib.Object, E.Extensible {
+		[CCode (has_construct_function = false)]
+		public OAuth2Services ();
+		public void add (E.OAuth2Service service);
+		public E.OAuth2Service? find (E.Source source);
+		public E.OAuth2Service? guess (string? protocol, string? hostname);
+		public bool is_oauth2_alias (string? auth_method);
+		public static bool is_oauth2_alias_static (string? auth_method);
+		public static bool is_supported ();
+		public GLib.SList<E.OAuth2Service> list ();
+		public void remove (E.OAuth2Service service);
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "3.2")]
@@ -226,6 +255,8 @@ namespace E {
 		public SoupSession (E.Source source);
 		public bool check_result (Soup.RequestHTTP request, void* read_bytes, size_t bytes_length) throws GLib.Error;
 		public E.NamedParameters? dup_credentials ();
+		[Version (since = "3.28")]
+		public bool get_authentication_requires_credentials ();
 		public Soup.LoggerLogLevel get_log_level ();
 		public unowned E.Source get_source ();
 		public bool get_ssl_error_details (out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors);
@@ -247,10 +278,6 @@ namespace E {
 		public Source (GLib.DBusObject? dbus_object, GLib.MainContext? main_context) throws GLib.Error;
 		public void camel_configure_service (Camel.Service service);
 		public int compare_by_display_name (E.Source source2);
-		public bool credentials_google_get_access_token_sync (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static bool credentials_google_is_supported ();
-		public static bool credentials_google_util_extract_from_credentials (E.NamedParameters credentials, string out_access_token, int out_expires_in_seconds);
-		public bool credentials_google_util_generate_secret_uid (string out_uid);
 		[Version (since = "3.12")]
 		public async bool delete_password (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.12")]
@@ -547,11 +574,11 @@ namespace E {
 		public virtual bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
 		public virtual bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_google_get_type ()")]
-	[Version (since = "3.20")]
-	public class SourceCredentialsProviderImplGoogle : E.SourceCredentialsProviderImpl {
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_oauth2_get_type ()")]
+	[Version (since = "3.28")]
+	public class SourceCredentialsProviderImplOAuth2 : E.SourceCredentialsProviderImpl {
 		[CCode (has_construct_function = false)]
-		protected SourceCredentialsProviderImplGoogle ();
+		protected SourceCredentialsProviderImplOAuth2 ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_credentials_provider_impl_password_get_type ()")]
 	[Version (since = "3.16")]
@@ -940,6 +967,8 @@ namespace E {
 		public string dup_unique_display_name (E.Source source, string? extension_name);
 		public E.Source find_extension (E.Source source, string extension_name);
 		public static void free_display_tree (GLib.Node display_tree);
+		[Version (since = "3.28")]
+		public unowned E.OAuth2Services get_oauth2_services ();
 		[Version (since = "3.10")]
 		public GLib.List<E.Source> list_enabled (string? extension_name);
 		public GLib.List<E.Source> list_sources (string? extension_name);
@@ -1316,6 +1345,33 @@ namespace E {
 		[Version (since = "3.4")]
 		public void load_extensions ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EOAuth2ServiceInterface", type_id = "e_oauth2_service_get_type ()")]
+	[Version (since = "3.28")]
+	public interface OAuth2Service : GLib.Object {
+		public abstract bool can_process (E.Source? source);
+		public bool delete_token_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public abstract bool extract_authorization_code (string page_title, string page_uri, string? page_content, out string out_authorization_code);
+		public bool get_access_token_sync (E.Source source, [CCode (delegate_target_pos = 2.5)] E.OAuth2ServiceRefSourceFunc ref_source, out string out_access_token, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public abstract E.OAuth2ServiceNavigationPolicy get_authentication_policy (string uri);
+		public abstract unowned string get_authentication_uri ();
+		public abstract unowned string get_client_id ();
+		public abstract unowned string? get_client_secret ();
+		public abstract unowned string get_display_name ();
+		public abstract uint32 get_flags ();
+		public abstract unowned string get_name ();
+		public abstract unowned string? get_redirect_uri ();
+		public abstract unowned string get_refresh_uri ();
+		public abstract bool guess_can_process (string? protocol, string? hostname);
+		public abstract void prepare_authentication_uri_query (E.Source source, GLib.HashTable<string,string> uri_query);
+		public abstract void prepare_get_token_form (string authorization_code, GLib.HashTable<string,string> form);
+		public abstract void prepare_get_token_message (Soup.Message message);
+		public abstract void prepare_refresh_token_form (string refresh_token, GLib.HashTable<string,string> form);
+		public abstract void prepare_refresh_token_message (Soup.Message message);
+		public bool receive_and_store_token_sync (E.Source source, string authorization_code, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool refresh_and_store_token_sync (E.Source source, string refresh_token, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static void util_set_to_form (GLib.HashTable<void*,void*> form, string name, string? value);
+		public static void util_take_to_form (GLib.HashTable<void*,void*> form, string name, owned string? value);
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 	public struct ClientErrorsList {
@@ -1366,6 +1422,20 @@ namespace E {
 		NEVER,
 		ALWAYS,
 		ASK
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_OAUTH2_SERVICE_FLAG_", has_type_id = false)]
+	[Flags]
+	[Version (since = "3.28")]
+	public enum OAuth2ServiceFlags {
+		NONE,
+		EXTRACT_REQUIRES_PAGE_CONTENT
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_OAUTH2_SERVICE_NAVIGATION_POLICY_", has_type_id = false)]
+	[Version (since = "3.28")]
+	public enum OAuth2ServiceNavigationPolicy {
+		DENY,
+		ALLOW,
+		ABORT
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_PROXY_METHOD_", type_id = "e_proxy_method_get_type ()")]
 	[Version (since = "3.12")]
@@ -1588,6 +1658,9 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
 	public delegate string FreeFormExpBuildSexpFunc (string word, string options, string hint);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 0.9)]
+	[Version (since = "3.28")]
+	public delegate E.Source? OAuth2ServiceRefSourceFunc (string uid);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
 	[Version (since = "3.6")]
 	public delegate void SourceRefreshFunc (E.Source source);
@@ -1634,17 +1707,15 @@ namespace E {
 	public const int EDS_MICRO_VERSION;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "EDS_MINOR_VERSION")]
 	public const int EDS_MINOR_VERSION;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_ACCESS_TOKEN")]
-	public const string GOOGLE_SECRET_ACCESS_TOKEN;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_EXPIRES_AFTER")]
-	public const string GOOGLE_SECRET_EXPIRES_AFTER;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_GOOGLE_SECRET_REFRESH_TOKEN")]
-	public const string GOOGLE_SECRET_REFRESH_TOKEN;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_NETWORK_MONITOR_ALWAYS_ONLINE_NAME")]
 	[Version (since = "3.22")]
 	public const string NETWORK_MONITOR_ALWAYS_ONLINE_NAME;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_GOOGLE_SECRET")]
-	public const string SOURCE_CREDENTIAL_GOOGLE_SECRET;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_OAUTH2_SECRET_ACCESS_TOKEN")]
+	public const string OAUTH2_SECRET_ACCESS_TOKEN;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_OAUTH2_SECRET_EXPIRES_AFTER")]
+	public const string OAUTH2_SECRET_EXPIRES_AFTER;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_OAUTH2_SECRET_REFRESH_TOKEN")]
+	public const string OAUTH2_SECRET_REFRESH_TOKEN;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_CREDENTIAL_PASSWORD")]
 	[Version (since = "3.16")]
 	public const string SOURCE_CREDENTIAL_PASSWORD;
@@ -1923,6 +1994,12 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.28")]
+	public static void oauth2_service_util_set_to_form (GLib.HashTable<void*,void*> form, string name, string? value);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.28")]
+	public static void oauth2_service_util_take_to_form (GLib.HashTable<void*,void*> form, string name, owned string? value);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.8")]
 	public static void queue_transfer (GLib.Queue src_queue, GLib.Queue dst_queue);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1973,6 +2050,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static size_t utf8_strftime (string string, size_t max, string fmt, [CCode (type = "const tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.28")]
+	public static bool util_can_use_collection_as_credential_source (void* collection_source, void* child_source);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
 	public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
@@ -1995,8 +2075,6 @@ namespace E {
 	public static string util_generate_uid ();
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_get_source_full_name (void* registry, void* source);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static bool util_get_source_oauth2_access_token_sync (void* source, E.NamedParameters credentials, out string out_access_token, out int out_expires_in_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.32")]
 	public static uint64 util_gthread_id (GLib.Thread thread);

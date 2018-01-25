@@ -76,11 +76,15 @@ namespace E {
 		public string[] alphabet { owned get; }
 		[NoAccessorMethod]
 		public E.BookClient client { owned get; construct; }
+		[NoAccessorMethod]
 		public GLib.DBusConnection connection { construct; }
+		[NoAccessorMethod]
 		public GLib.MainContext context { construct; }
+		[NoAccessorMethod]
 		public string object_path { construct; }
 		public int position { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
 		public string[] sort_fields { construct; }
 		public int total { get; }
 		public virtual signal void refresh ();

@@ -4006,6 +4006,8 @@ namespace NM {
 		public const string RATE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_AUTH_ALG")]
 		public const string SECURITY_AUTH_ALG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_FILS")]
+		public const string SECURITY_FILS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_GROUP")]
 		public const string SECURITY_GROUP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_KEY_MGMT")]
@@ -4131,6 +4133,7 @@ namespace NM {
 		public void clear_pairwise ();
 		public void clear_protos ();
 		public unowned string get_auth_alg ();
+		public NM.SettingWirelessSecurityFils get_fils ();
 		public unowned string get_group (uint32 i);
 		public unowned string get_key_mgmt ();
 		public unowned string get_leap_password ();
@@ -4159,6 +4162,9 @@ namespace NM {
 		public void set_wep_key (uint32 idx, string key);
 		[NoAccessorMethod]
 		public string auth_alg { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public int fils { get; set construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] group { owned get; set; }
@@ -4402,6 +4408,7 @@ namespace NM {
 		public VpnPluginInfo.with_data (string filename, GLib.KeyFile keyfile) throws GLib.Error;
 		[Version (since = "1.2")]
 		public string filename { get; construct; }
+		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public GLib.KeyFile keyfile { construct; }
 		[Version (since = "1.2")]
@@ -4478,6 +4485,8 @@ namespace NM {
 		public void set_ip4_config (GLib.Variant ip4_config);
 		public void set_ip6_config (GLib.Variant ip6_config);
 		public void set_login_banner (string banner);
+		[Version (since = "1.12")]
+		public void shutdown ();
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string service_name { owned get; construct; }
@@ -5140,6 +5149,14 @@ namespace NM {
 		IGNORE,
 		DISABLE,
 		ENABLE
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_SECURITY_FILS_", type_id = "nm_setting_wireless_security_fils_get_type ()")]
+	[Version (since = "1.12")]
+	public enum SettingWirelessSecurityFils {
+		DEFAULT,
+		DISABLE,
+		OPTIONAL,
+		REQUIRED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_SECURITY_PMF_", type_id = "nm_setting_wireless_security_pmf_get_type ()")]
 	public enum SettingWirelessSecurityPmf {

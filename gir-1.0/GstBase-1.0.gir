@@ -954,9 +954,9 @@ Control is given to the subclass when all pads have data.
  * When data is queued on all pads, the aggregate vmethod is called.
 
  * One can peek at the data on any given GstAggregatorPad with the
-   gst_aggregator_pad_get_buffer () method, and take ownership of it
-   with the gst_aggregator_pad_steal_buffer () method. When a buffer
-   has been taken with steal_buffer (), a new buffer can be queued
+   gst_aggregator_pad_peek_buffer () method, and remove it from the pad
+   with the gst_aggregator_pad_pop_buffer () method. When a buffer
+   has been taken with pop_buffer (), a new buffer can be queued
    on that pad.
 
  * If the subclass wishes to push a buffer downstream in its aggregate
@@ -1714,6 +1714,22 @@ This class used to live in gst-plugins-bad and was moved to core.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="skip_buffer">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="aggpad" transfer-ownership="none">
+            <type name="AggregatorPad" c:type="GstAggregatorPad*"/>
+          </instance-parameter>
+          <parameter name="aggregator" transfer-ownership="none">
+            <type name="Aggregator" c:type="GstAggregator*"/>
+          </parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="drop_buffer" c:identifier="gst_aggregator_pad_drop_buffer">
         <doc xml:space="preserve">Drop the buffer currently queued in @pad.</doc>
         <return-value transfer-ownership="none">
@@ -1723,20 +1739,6 @@ This class used to live in gst-plugins-bad and was moved to core.</doc>
         <parameters>
           <instance-parameter name="pad" transfer-ownership="none">
             <doc xml:space="preserve">the pad where to drop any pending buffer</doc>
-            <type name="AggregatorPad" c:type="GstAggregatorPad*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_buffer" c:identifier="gst_aggregator_pad_get_buffer">
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A reference to the buffer in @pad or
-NULL if no buffer was queued. You should unref the buffer after
-usage.</doc>
-          <type name="Gst.Buffer" c:type="GstBuffer*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="pad" transfer-ownership="none">
-            <doc xml:space="preserve">the pad to get buffer from</doc>
             <type name="AggregatorPad" c:type="GstAggregatorPad*"/>
           </instance-parameter>
         </parameters>
@@ -1753,8 +1755,21 @@ usage.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="steal_buffer"
-              c:identifier="gst_aggregator_pad_steal_buffer">
+      <method name="peek_buffer" c:identifier="gst_aggregator_pad_peek_buffer">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A reference to the buffer in @pad or
+NULL if no buffer was queued. You should unref the buffer after
+usage.</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pad" transfer-ownership="none">
+            <doc xml:space="preserve">the pad to get buffer from</doc>
+            <type name="AggregatorPad" c:type="GstAggregatorPad*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="pop_buffer" c:identifier="gst_aggregator_pad_pop_buffer">
         <doc xml:space="preserve">Steal the ref to the buffer currently queued in @pad.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">The buffer in @pad or NULL if no buffer was
@@ -1801,6 +1816,24 @@ usage.</doc>
             </parameter>
             <parameter name="aggregator" transfer-ownership="none">
               <type name="Aggregator" c:type="GstAggregator*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="skip_buffer">
+        <callback name="skip_buffer">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="aggpad" transfer-ownership="none">
+              <type name="AggregatorPad" c:type="GstAggregatorPad*"/>
+            </parameter>
+            <parameter name="aggregator" transfer-ownership="none">
+              <type name="Aggregator" c:type="GstAggregator*"/>
+            </parameter>
+            <parameter name="buffer" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
             </parameter>
           </parameters>
         </callback>
@@ -4445,6 +4478,8 @@ received, it may safely shut down the entire pipeline.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="create">
+        <doc xml:space="preserve">Ask the subclass to create a buffer with @offset and @size, the default
+implementation will call alloc and fill.</doc>
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
@@ -4458,7 +4493,10 @@ received, it may safely shut down the entire pipeline.</doc>
           <parameter name="size" transfer-ownership="none">
             <type name="guint" c:type="guint"/>
           </parameter>
-          <parameter name="buf" transfer-ownership="none">
+          <parameter name="buf"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="Gst.Buffer" c:type="GstBuffer**"/>
           </parameter>
         </parameters>
@@ -4561,6 +4599,8 @@ received, it may safely shut down the entire pipeline.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="get_times">
+        <doc xml:space="preserve">Given @buffer, return @start and @end time when it should be pushed
+out. The base class will sync on the clock using these times.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -4571,10 +4611,16 @@ received, it may safely shut down the entire pipeline.</doc>
           <parameter name="buffer" transfer-ownership="none">
             <type name="Gst.Buffer" c:type="GstBuffer*"/>
           </parameter>
-          <parameter name="start" transfer-ownership="none">
+          <parameter name="start"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="Gst.ClockTime" c:type="GstClockTime*"/>
           </parameter>
-          <parameter name="end" transfer-ownership="none">
+          <parameter name="end"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="Gst.ClockTime" c:type="GstClockTime*"/>
           </parameter>
         </parameters>
@@ -5299,10 +5345,16 @@ buffers.</doc>
             <parameter name="buffer" transfer-ownership="none">
               <type name="Gst.Buffer" c:type="GstBuffer*"/>
             </parameter>
-            <parameter name="start" transfer-ownership="none">
+            <parameter name="start"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
               <type name="Gst.ClockTime" c:type="GstClockTime*"/>
             </parameter>
-            <parameter name="end" transfer-ownership="none">
+            <parameter name="end"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
               <type name="Gst.ClockTime" c:type="GstClockTime*"/>
             </parameter>
           </parameters>
@@ -5437,7 +5489,10 @@ buffers.</doc>
             <parameter name="size" transfer-ownership="none">
               <type name="guint" c:type="guint"/>
             </parameter>
-            <parameter name="buf" transfer-ownership="none">
+            <parameter name="buf"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
               <type name="Gst.Buffer" c:type="GstBuffer**"/>
             </parameter>
           </parameters>

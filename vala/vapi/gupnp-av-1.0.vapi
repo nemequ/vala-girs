@@ -349,6 +349,7 @@ namespace GUPnP {
 		public void set_author (string author);
 		public void set_title (string title);
 		public string author { get; set construct; }
+		[NoAccessorMethod]
 		public string data { construct; }
 		public bool mutable { get; }
 		public string title { get; set construct; }

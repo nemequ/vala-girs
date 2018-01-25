@@ -825,6 +825,7 @@ namespace NM {
 		public bool get_unsaved ();
 		[Version (since = "0.9.10")]
 		public void save ([CCode (scope = "async")] NM.RemoteConnectionResultFunc? callback);
+		[NoAccessorMethod]
 		public string dbus_path { construct; }
 		[Version (since = "0.9.10")]
 		public bool unsaved { get; }

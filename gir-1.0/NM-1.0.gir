@@ -16147,6 +16147,11 @@ for this connection.</doc>
               c:type="NM_SETTING_WIRELESS_SECURITY_AUTH_ALG">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_WIRELESS_SECURITY_FILS"
+              value="fils"
+              c:type="NM_SETTING_WIRELESS_SECURITY_FILS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_WIRELESS_SECURITY_GROUP"
               value="group"
               c:type="NM_SETTING_WIRELESS_SECURITY_GROUP">
@@ -30434,6 +30439,19 @@ specified then all protocols are allowed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_fils"
+              c:identifier="nm_setting_wireless_security_get_fils">
+        <return-value transfer-ownership="none">
+          <type name="SettingWirelessSecurityFils"
+                c:type="NMSettingWirelessSecurityFils"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <type name="SettingWirelessSecurity"
+                  c:type="NMSettingWirelessSecurity*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_group"
               c:identifier="nm_setting_wireless_security_get_group">
         <doc xml:space="preserve">Returns the allowed groupwise encryption algorithm from allowed algorithm
@@ -30858,6 +30876,21 @@ using Cisco LEAP (ie, key-mgmt = "ieee8021x" and auth-alg = "leap") the
 "leap-username" and "leap-password" properties must be specified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
+      <property name="fils"
+                version="1.12"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Indicates whether Fast Initial Link Setup (802.11ai) must be enabled for
+the connection.  One of %NM_SETTING_WIRELESS_SECURITY_FILS_DEFAULT (use
+global default value), %NM_SETTING_WIRELESS_SECURITY_FILS_DISABLE
+(disable FILS), %NM_SETTING_WIRELESS_SECURITY_FILS_OPTIONAL (enable FILS
+if the supplicant and the access point support it) or
+%NM_SETTING_WIRELESS_SECURITY_FILS_REQUIRED (enable FILS and fail if not
+supported).  When set to %NM_SETTING_WIRELESS_SECURITY_FILS_DEFAULT and
+no global default is set, FILS will be optionally enabled.</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
       <property name="group" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">A list of group/broadcast encryption algorithms which prevents
 connections to Wi-Fi networks that do not utilize one of the algorithms
@@ -31015,6 +31048,37 @@ WPS can be disabled by setting this property to a value of 1.</doc>
         </array>
       </field>
     </record>
+    <enumeration name="SettingWirelessSecurityFils"
+                 version="1.12"
+                 glib:type-name="NMSettingWirelessSecurityFils"
+                 glib:get-type="nm_setting_wireless_security_fils_get_type"
+                 c:type="NMSettingWirelessSecurityFils">
+      <doc xml:space="preserve">These flags indicate whether FILS must be enabled.</doc>
+      <member name="default"
+              value="0"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_FILS_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">use the default value</doc>
+      </member>
+      <member name="disable"
+              value="1"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_FILS_DISABLE"
+              glib:nick="disable">
+        <doc xml:space="preserve">disable FILS</doc>
+      </member>
+      <member name="optional"
+              value="2"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_FILS_OPTIONAL"
+              glib:nick="optional">
+        <doc xml:space="preserve">enable FILS if the supplicant and the AP support it</doc>
+      </member>
+      <member name="required"
+              value="3"
+              c:identifier="NM_SETTING_WIRELESS_SECURITY_FILS_REQUIRED"
+              glib:nick="required">
+        <doc xml:space="preserve">require FILS and fail if not available</doc>
+      </member>
+    </enumeration>
     <enumeration name="SettingWirelessSecurityPmf"
                  glib:type-name="NMSettingWirelessSecurityPmf"
                  glib:get-type="nm_setting_wireless_security_pmf_get_type"
@@ -35185,6 +35249,25 @@ information to complete the request.</doc>
           <parameter name="banner" transfer-ownership="none">
             <type name="utf8" c:type="const char*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="shutdown"
+              c:identifier="nm_vpn_service_plugin_shutdown"
+              version="1.12">
+        <doc xml:space="preserve">Shutdown the @plugin and disconnect from D-Bus. After this,
+the plugin instance is dead and should no longer be used.
+It ensures to get no more requests from D-Bus. In principle,
+you don't need to shutdown the plugin, disposing the instance
+has the same effect. However, this gives a way to deactivate
+the plugin before giving up the last reference.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="plugin" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMVpnServicePlugin instance</doc>
+            <type name="VpnServicePlugin" c:type="NMVpnServicePlugin*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <property name="service-name"
