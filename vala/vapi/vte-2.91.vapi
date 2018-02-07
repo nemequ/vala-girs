@@ -128,8 +128,6 @@ namespace Vte {
 		[Version (since = "0.50")]
 		public void set_allow_hyperlink (bool allow_hyperlink);
 		public void set_audible_bell (bool is_audible);
-		[Version (since = "0.52")]
-		public void set_background_operator (Cairo.Operator op);
 		public void set_backspace_binding (Vte.EraseBinding binding);
 		[Version (since = "0.52")]
 		public void set_bold_is_bright (bool bold_is_bright);
@@ -138,6 +136,8 @@ namespace Vte {
 		[Version (since = "0.52")]
 		public void set_cell_width_scale (double scale);
 		public void set_cjk_ambiguous_width (int width);
+		[Version (since = "0.52")]
+		public void set_clear_background (bool setting);
 		public void set_color_background (Gdk.RGBA background);
 		public void set_color_bold (Gdk.RGBA? bold);
 		public void set_color_cursor (Gdk.RGBA? cursor_background);
@@ -194,7 +194,8 @@ namespace Vte {
 		public Vte.CursorShape cursor_shape { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding delete_binding { get; set; }
-		public string encoding { get; set; }
+		[NoAccessorMethod]
+		public string encoding { owned get; set; }
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }
 		public double font_scale { get; set; }

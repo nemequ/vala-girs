@@ -148,10 +148,10 @@ namespace Rsvg {
 	[Deprecated]
 	public static Gdk.Pixbuf pixbuf_from_file_at_zoom_with_max (string file_name, double x_zoom, double y_zoom, int max_width, int max_height) throws GLib.Error;
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Version (since = "2.8")]
+	[Version (deprecated = true, deprecated_since = "2.42.3", since = "2.8")]
 	public static void set_default_dpi (double dpi);
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Version (since = "2.8")]
+	[Version (deprecated = true, deprecated_since = "2.42.3", since = "2.8")]
 	public static void set_default_dpi_x_y (double dpi_x, double dpi_y);
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
 	[Deprecated (since = "2.36")]

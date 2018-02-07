@@ -3405,6 +3405,8 @@ namespace NM {
 		public const string RUNNER_LOADBALANCE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_MIN_PORTS")]
 		public const string RUNNER_MIN_PORTS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_RANDOM")]
+		public const string RUNNER_RANDOM;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ROUNDROBIN")]
 		public const string RUNNER_ROUNDROBIN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO")]

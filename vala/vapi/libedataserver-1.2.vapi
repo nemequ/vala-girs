@@ -1348,25 +1348,25 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EOAuth2ServiceInterface", type_id = "e_oauth2_service_get_type ()")]
 	[Version (since = "3.28")]
 	public interface OAuth2Service : GLib.Object {
-		public abstract bool can_process (E.Source? source);
+		public abstract bool can_process (E.Source source);
 		public bool delete_token_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public abstract bool extract_authorization_code (string page_title, string page_uri, string? page_content, out string out_authorization_code);
+		public abstract bool extract_authorization_code (E.Source source, string page_title, string page_uri, string? page_content, out string out_authorization_code);
 		public bool get_access_token_sync (E.Source source, [CCode (delegate_target_pos = 2.5)] E.OAuth2ServiceRefSourceFunc ref_source, out string out_access_token, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public abstract E.OAuth2ServiceNavigationPolicy get_authentication_policy (string uri);
-		public abstract unowned string get_authentication_uri ();
-		public abstract unowned string get_client_id ();
-		public abstract unowned string? get_client_secret ();
+		public abstract E.OAuth2ServiceNavigationPolicy get_authentication_policy (E.Source source, string uri);
+		public abstract unowned string get_authentication_uri (E.Source source);
+		public abstract unowned string get_client_id (E.Source source);
+		public abstract unowned string? get_client_secret (E.Source source);
 		public abstract unowned string get_display_name ();
 		public abstract uint32 get_flags ();
 		public abstract unowned string get_name ();
-		public abstract unowned string? get_redirect_uri ();
-		public abstract unowned string get_refresh_uri ();
+		public abstract unowned string? get_redirect_uri (E.Source source);
+		public abstract unowned string get_refresh_uri (E.Source source);
 		public abstract bool guess_can_process (string? protocol, string? hostname);
 		public abstract void prepare_authentication_uri_query (E.Source source, GLib.HashTable<string,string> uri_query);
-		public abstract void prepare_get_token_form (string authorization_code, GLib.HashTable<string,string> form);
-		public abstract void prepare_get_token_message (Soup.Message message);
-		public abstract void prepare_refresh_token_form (string refresh_token, GLib.HashTable<string,string> form);
-		public abstract void prepare_refresh_token_message (Soup.Message message);
+		public abstract void prepare_get_token_form (E.Source source, string authorization_code, GLib.HashTable<string,string> form);
+		public abstract void prepare_get_token_message (E.Source source, Soup.Message message);
+		public abstract void prepare_refresh_token_form (E.Source source, string refresh_token, GLib.HashTable<string,string> form);
+		public abstract void prepare_refresh_token_message (E.Source source, Soup.Message message);
 		public bool receive_and_store_token_sync (E.Source source, string authorization_code, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool refresh_and_store_token_sync (E.Source source, string refresh_token, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static void util_set_to_form (GLib.HashTable<void*,void*> form, string name, string? value);

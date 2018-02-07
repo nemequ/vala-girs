@@ -1708,7 +1708,7 @@ of cores.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="VIDEO_FORMATS_ALL"
-              value="{ I420, YV12, YUY2, UYVY, AYUV, RGBx, BGRx, xRGB, xBGR, RGBA, BGRA, ARGB, ABGR, RGB, BGR, Y41B, Y42B, YVYU, Y444, v210, v216, NV12, NV21, GRAY8, GRAY16_BE, GRAY16_LE, v308, RGB16, BGR16, RGB15, BGR15, UYVP, A420, RGB8P, YUV9, YVU9, IYU1, ARGB64, AYUV64, r210, I420_10BE, I420_10LE, I422_10BE, I422_10LE, Y444_10BE, Y444_10LE, GBR, GBR_10BE, GBR_10LE, NV16, NV24, NV12_64Z32, A420_10BE, A420_10LE, A422_10BE, A422_10LE, A444_10BE, A444_10LE, NV61, P010_10BE, P010_10LE, IYU2, VYUY, GBRA, GBRA_10BE, GBRA_10LE, GBR_12BE, GBR_12LE, GBRA_12BE, GBRA_12LE, I420_12BE, I420_12LE, I422_12BE, I422_12LE, Y444_12BE, Y444_12LE }"
+              value="{ I420, YV12, YUY2, UYVY, AYUV, RGBx, BGRx, xRGB, xBGR, RGBA, BGRA, ARGB, ABGR, RGB, BGR, Y41B, Y42B, YVYU, Y444, v210, v216, NV12, NV21, GRAY8, GRAY16_BE, GRAY16_LE, v308, RGB16, BGR16, RGB15, BGR15, UYVP, A420, RGB8P, YUV9, YVU9, IYU1, ARGB64, AYUV64, r210, I420_10BE, I420_10LE, I422_10BE, I422_10LE, Y444_10BE, Y444_10LE, GBR, GBR_10BE, GBR_10LE, NV16, NV24, NV12_64Z32, A420_10BE, A420_10LE, A422_10BE, A422_10LE, A444_10BE, A444_10LE, NV61, P010_10BE, P010_10LE, IYU2, VYUY, GBRA, GBRA_10BE, GBRA_10LE, GBR_12BE, GBR_12LE, GBRA_12BE, GBRA_12LE, I420_12BE, I420_12LE, I422_12BE, I422_12LE, Y444_12BE, Y444_12LE, GRAY10_LE32, NV12_10LE32, NV16_10LE32 }"
               c:type="GST_VIDEO_FORMATS_ALL">
       <type name="utf8" c:type="gchar*"/>
     </constant>
@@ -6363,6 +6363,24 @@ to implement frame dropping.</doc>
               glib:nick="y444-12le">
         <doc xml:space="preserve">planar 4:4:4 YUV, 12 bits per channel (Since: 1.12)</doc>
       </member>
+      <member name="gray10_le32"
+              value="78"
+              c:identifier="GST_VIDEO_FORMAT_GRAY10_LE32"
+              glib:nick="gray10-le32">
+        <doc xml:space="preserve">10-bit grayscale, packet in 32bit words (2 bits padding)</doc>
+      </member>
+      <member name="nv12_10le32"
+              value="79"
+              c:identifier="GST_VIDEO_FORMAT_NV12_10LE32"
+              glib:nick="nv12-10le32">
+        <doc xml:space="preserve">10-bit variant of @GST_VIDEO_FORMAT_NV12, packet in 32bit words (MSB 2 bits padding) (Since: 1.X)</doc>
+      </member>
+      <member name="nv16_10le32"
+              value="80"
+              c:identifier="GST_VIDEO_FORMAT_NV16_10LE32"
+              glib:nick="nv16-10le32">
+        <doc xml:space="preserve">10-bit variant of @GST_VIDEO_FORMAT_NV16, packet in 32bit words (MSB 2 bits padding) (Since: 1.X)</doc>
+      </member>
       <function name="from_fourcc" c:identifier="gst_video_format_from_fourcc">
         <doc xml:space="preserve">Converts a FOURCC value into the corresponding #GstVideoFormat.
 If the FOURCC cannot be represented by #GstVideoFormat,
@@ -8876,6 +8894,59 @@ int main(int argc, char *argv[])
   return ret;
 }
 ]|</doc>
+      <function name="install_properties"
+                c:identifier="gst_video_overlay_install_properties">
+        <doc xml:space="preserve">This helper shall be used by classes implementing the #GstVideoOverlay
+interface that want the render rectangle to be controllable using
+properties. This helper will install "render-rectangle" property into the
+class.
+
+Since 1.14</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="oclass" transfer-ownership="none">
+            <doc xml:space="preserve">The class on which the properties will be installed</doc>
+            <type name="GObject.ObjectClass" c:type="GObjectClass*"/>
+          </parameter>
+          <parameter name="last_prop_id" transfer-ownership="none">
+            <doc xml:space="preserve">The first free property ID to use</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="set_property"
+                c:identifier="gst_video_overlay_set_property">
+        <doc xml:space="preserve">This helper shall be used by classes implementing the #GstVideoOverlay
+interface that want the render rectangle to be controllable using
+properties. This helper will parse and set the render rectangle calling
+gst_video_overlay_set_render_rectangle().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the @property_id matches the GstVideoOverlay property
+
+Since 1.14</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">The instance on which the property is set</doc>
+            <type name="GObject.Object" c:type="GObject*"/>
+          </parameter>
+          <parameter name="last_prop_id" transfer-ownership="none">
+            <doc xml:space="preserve">The highest property ID.</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="property_id" transfer-ownership="none">
+            <doc xml:space="preserve">The property ID</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">The #GValue to be set</doc>
+            <type name="GObject.Value" c:type="const GValue*"/>
+          </parameter>
+        </parameters>
+      </function>
       <virtual-method name="expose" invoker="expose">
         <doc xml:space="preserve">Tell an overlay that it has been exposed. This will redraw the current frame
 in the drawable even if the pipeline is PAUSED.</doc>
@@ -9385,6 +9456,10 @@ contained in the rectangles are not copied.</doc>
           </parameters>
         </callback>
       </field>
+    </record>
+    <record name="VideoOverlayProperties"
+            c:type="GstVideoOverlayProperties"
+            disguised="1">
     </record>
     <record name="VideoOverlayRectangle"
             c:type="GstVideoOverlayRectangle"
@@ -13445,6 +13520,61 @@ the requested mode.</doc>
       <return-value transfer-ownership="none">
         <type name="Gst.MetaInfo" c:type="const GstMetaInfo*"/>
       </return-value>
+    </function>
+    <function name="video_overlay_install_properties"
+              c:identifier="gst_video_overlay_install_properties"
+              moved-to="VideoOverlay.install_properties">
+      <doc xml:space="preserve">This helper shall be used by classes implementing the #GstVideoOverlay
+interface that want the render rectangle to be controllable using
+properties. This helper will install "render-rectangle" property into the
+class.
+
+Since 1.14</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="oclass" transfer-ownership="none">
+          <doc xml:space="preserve">The class on which the properties will be installed</doc>
+          <type name="GObject.ObjectClass" c:type="GObjectClass*"/>
+        </parameter>
+        <parameter name="last_prop_id" transfer-ownership="none">
+          <doc xml:space="preserve">The first free property ID to use</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="video_overlay_set_property"
+              c:identifier="gst_video_overlay_set_property"
+              moved-to="VideoOverlay.set_property">
+      <doc xml:space="preserve">This helper shall be used by classes implementing the #GstVideoOverlay
+interface that want the render rectangle to be controllable using
+properties. This helper will parse and set the render rectangle calling
+gst_video_overlay_set_render_rectangle().</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the @property_id matches the GstVideoOverlay property
+
+Since 1.14</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="object" transfer-ownership="none">
+          <doc xml:space="preserve">The instance on which the property is set</doc>
+          <type name="GObject.Object" c:type="GObject*"/>
+        </parameter>
+        <parameter name="last_prop_id" transfer-ownership="none">
+          <doc xml:space="preserve">The highest property ID.</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="property_id" transfer-ownership="none">
+          <doc xml:space="preserve">The property ID</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">The #GValue to be set</doc>
+          <type name="GObject.Value" c:type="const GValue*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="video_region_of_interest_meta_api_get_type"
               c:identifier="gst_video_region_of_interest_meta_api_get_type">

@@ -150,7 +150,7 @@ should be copied to the clipboard in.</doc>
 (e.g. in version 3.1.4 this is 3).</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="VTE_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="91" c:type="VTE_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the VTE library
 (e.g. in version 3.1.4 this is 4).</doc>
       <type name="gint" c:type="gint"/>
@@ -2488,28 +2488,6 @@ offset.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_background_operator"
-              c:identifier="vte_terminal_set_background_operator"
-              version="0.52">
-        <doc xml:space="preserve">Sets the operator to use to paint the background with the background colour.
-The default is %CAIRO_OPERATOR_SOURCE.
-
-This function is rarely useful. One use for it is to add a background
-image to the terminal, in which case %CAIRO_OPERATOR_OVER is most likely
-the correct operator to use.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="op" transfer-ownership="none">
-            <type name="cairo.Operator" c:type="cairo_operator_t"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="set_backspace_binding"
               c:identifier="vte_terminal_set_backspace_binding">
         <doc xml:space="preserve">Modifies the terminal's backspace key binding, which controls what
@@ -2607,6 +2585,27 @@ the width of ambiguous-width characters is fixed.</doc>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve">either 1 (narrow) or 2 (wide)</doc>
             <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_clear_background"
+              c:identifier="vte_terminal_set_clear_background"
+              version="0.52">
+        <doc xml:space="preserve">Sets whether to paint the background with the background colour.
+The default is %TRUE.
+
+This function is rarely useful. One use for it is to add a background
+image to the terminal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="setting" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -3183,7 +3182,11 @@ Note that if @terminal has been destroyed before the operation is called,
 in the callback besides freeing any resources associated with @user_data,
 but taking care not to access the now-destroyed #VteTerminal. Note that
 in this case, if spawning was successful, the child process will be aborted
-automatically.</doc>
+automatically.
+
+Beginning with 0.52, sets PWD to @working_directory in order to preserve symlink components.
+The caller should also make sure that symlinks were preserved while constructing the value of @working_directory,
+e.g. by using vte_terminal_get_current_directory_uri(), g_get_current_dir() or get_current_dir_name().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3294,7 +3297,11 @@ to keep some file descriptor open for use in the child process, you need to
 use a child setup function that unsets the FD_CLOEXEC flag on that file
 descriptor.
 
-See vte_pty_new(), g_spawn_async() and vte_terminal_watch_child() for more information.</doc>
+See vte_pty_new(), g_spawn_async() and vte_terminal_watch_child() for more information.
+
+Beginning with 0.52, sets PWD to @working_directory in order to preserve symlink components.
+The caller should also make sure that symlinks were preserved while constructing the value of @working_directory,
+e.g. by using vte_terminal_get_current_directory_uri(), g_get_current_dir() or get_current_dir_name().</doc>
         <doc-deprecated xml:space="preserve">Use vte_terminal_spawn_async() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE on success, or %FALSE on error with @error filled in</doc>

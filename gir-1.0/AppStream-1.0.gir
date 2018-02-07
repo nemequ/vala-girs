@@ -3507,6 +3507,11 @@ This property is only set for icons of type %AS_ICON_KIND_REMOTE</doc>
               c:identifier="AS_ISSUE_KIND_READ_ERROR">
         <doc xml:space="preserve">Reading of data failed</doc>
       </member>
+      <member name="remote_error"
+              value="15"
+              c:identifier="AS_ISSUE_KIND_REMOTE_ERROR">
+        <doc xml:space="preserve">Getting additional content from a remote location failed</doc>
+      </member>
     </enumeration>
     <class name="Launchable"
            c:symbol-prefix="launchable"
@@ -3697,6 +3702,8 @@ object stores.</doc>
               value="3"
               c:identifier="AS_LAUNCHABLE_KIND_COCKPIT_MANIFEST">
         <doc xml:space="preserve">A Cockpit manifest / package name</doc>
+      </member>
+      <member name="url" value="4" c:identifier="AS_LAUNCHABLE_KIND_URL">
       </member>
     </enumeration>
     <enumeration name="MergeKind" c:type="AsMergeKind">
@@ -4988,6 +4995,36 @@ of the given name.</doc>
           <type name="Release" c:type="AsRelease*"/>
         </return-value>
       </constructor>
+      <function name="kind_from_string"
+                c:identifier="as_release_kind_from_string"
+                version="0.12.0">
+        <doc xml:space="preserve">Converts the text representation to an enumerated value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #AsReleaseKind or %AS_RELEASE_KIND_UNKNOWN for unknown</doc>
+          <type name="ReleaseKind" c:type="AsReleaseKind"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind_str" transfer-ownership="none">
+            <doc xml:space="preserve">the string.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="kind_to_string"
+                c:identifier="as_release_kind_to_string"
+                version="0.12.0">
+        <doc xml:space="preserve">Converts the enumerated value to an text representation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">string version of @kind</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsReleaseKind.</doc>
+            <type name="ReleaseKind" c:type="AsReleaseKind"/>
+          </parameter>
+        </parameters>
+      </function>
       <method name="add_checksum"
               c:identifier="as_release_add_checksum"
               version="0.8.2">
@@ -5074,6 +5111,21 @@ is used to get localized messages.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">markup, or %NULL for not set or invalid</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_kind"
+              c:identifier="as_release_get_kind"
+              version="0.12.0">
+        <doc xml:space="preserve">Gets the type of the release.
+(development or stable release)</doc>
+        <return-value transfer-ownership="none">
+          <type name="ReleaseKind" c:type="AsReleaseKind"/>
         </return-value>
         <parameters>
           <instance-parameter name="release" transfer-ownership="none">
@@ -5194,6 +5246,25 @@ one locale is available.</doc>
           </parameter>
           <parameter name="locale" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_kind"
+              c:identifier="as_release_set_kind"
+              version="0.12.0">
+        <doc xml:space="preserve">Sets the release kind to distinguish between end-user ready
+stable releases and development prereleases..</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="release" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsRelease instance.</doc>
+            <type name="Release" c:type="AsRelease*"/>
+          </instance-parameter>
+          <parameter name="kind" transfer-ownership="none">
+            <doc xml:space="preserve">the #AsReleaseKind</doc>
+            <type name="ReleaseKind" c:type="AsReleaseKind"/>
           </parameter>
         </parameters>
       </method>
@@ -5339,6 +5410,20 @@ one locale is available.</doc>
         </callback>
       </field>
     </record>
+    <enumeration name="ReleaseKind" version="0.12.0" c:type="AsReleaseKind">
+      <doc xml:space="preserve">The release size kind.</doc>
+      <member name="unknown" value="0" c:identifier="AS_RELEASE_KIND_UNKNOWN">
+        <doc xml:space="preserve">Unknown release type</doc>
+      </member>
+      <member name="stable" value="1" c:identifier="AS_RELEASE_KIND_STABLE">
+        <doc xml:space="preserve">A stable release for end-users</doc>
+      </member>
+      <member name="development"
+              value="2"
+              c:identifier="AS_RELEASE_KIND_DEVELOPMENT">
+        <doc xml:space="preserve">A development release or pre-release for testing</doc>
+      </member>
+    </enumeration>
     <class name="Screenshot"
            c:symbol-prefix="screenshot"
            c:type="AsScreenshot"
@@ -6045,6 +6130,18 @@ populated with useful data.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_check_urls" c:identifier="as_validator_get_check_urls">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE in case we check if remote URLs exist.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="validator" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsValidator instance.</doc>
+            <type name="Validator" c:type="AsValidator*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_issues" c:identifier="as_validator_get_issues">
         <doc xml:space="preserve">Get a list of found metadata format issues.</doc>
         <return-value transfer-ownership="container">
@@ -6058,6 +6155,22 @@ populated with useful data.</doc>
             <doc xml:space="preserve">An instance of #AsValidator.</doc>
             <type name="Validator" c:type="AsValidator*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_check_urls" c:identifier="as_validator_set_check_urls">
+        <doc xml:space="preserve">Set this value to make the #AsValidator check whether remote URLs
+actually exist.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="validator" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsValidator instance.</doc>
+            <type name="Validator" c:type="AsValidator*"/>
+          </instance-parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
       <method name="validate_data" c:identifier="as_validator_validate_data">
@@ -6528,6 +6641,15 @@ number is assumed.</doc>
           <type name="FormatVersion" c:type="AsFormatVersion"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="get_appstream_version"
+              c:identifier="as_get_appstream_version">
+      <doc xml:space="preserve">Get the version of the AppStream library that is currently used
+as a string.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">The AppStream version.</doc>
+        <type name="utf8" c:type="const gchar*"/>
+      </return-value>
     </function>
     <function name="get_default_categories"
               c:identifier="as_get_default_categories">

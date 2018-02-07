@@ -380,6 +380,8 @@ namespace AppStream {
 		[Version (since = "0.10")]
 		public unowned GLib.GenericArray<AppStream.Checksum> get_checksums ();
 		public unowned string get_description ();
+		[Version (since = "0.12.0")]
+		public AppStream.ReleaseKind get_kind ();
 		[Version (since = "0.8.1")]
 		public unowned GLib.GenericArray<string> get_locations ();
 		[Version (since = "0.8.6")]
@@ -388,8 +390,14 @@ namespace AppStream {
 		[Version (since = "0.6.5")]
 		public AppStream.UrgencyKind get_urgency ();
 		public unowned string get_version ();
+		[Version (since = "0.12.0")]
+		public static AppStream.ReleaseKind kind_from_string (string kind_str);
+		[Version (since = "0.12.0")]
+		public static unowned string kind_to_string (AppStream.ReleaseKind kind);
 		public void set_active_locale (string locale);
 		public void set_description (string description, string locale);
+		[Version (since = "0.12.0")]
+		public void set_kind (AppStream.ReleaseKind kind);
 		[Version (since = "0.8.6")]
 		public void set_size (uint64 size, AppStream.SizeKind kind);
 		public void set_timestamp (uint64 timestamp);
@@ -444,7 +452,9 @@ namespace AppStream {
 		[CCode (has_construct_function = false)]
 		public Validator ();
 		public void clear_issues ();
+		public bool get_check_urls ();
 		public GLib.List<weak AppStream.ValidatorIssue> get_issues ();
+		public void set_check_urls (bool value);
 		public bool validate_data (string metadata);
 		public bool validate_file (GLib.File metadata_file);
 		public bool validate_tree (string root_dir);
@@ -505,7 +515,7 @@ namespace AppStream {
 		LOCALIZATION,
 		SERVICE;
 		public static AppStream.ComponentKind from_string (string kind_str);
-		public static unowned string to_string (AppStream.ComponentKind kind);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COMPONENT_SCOPE_", has_type_id = false)]
 	public enum ComponentScope {
@@ -530,7 +540,7 @@ namespace AppStream {
 		[Version (since = "0.10")]
 		public static AppStream.FormatKind from_string (string kind_str);
 		[Version (since = "0.10")]
-		public static unowned string to_string (AppStream.FormatKind kind);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_FORMAT_STYLE_", has_type_id = false)]
 	public enum FormatStyle {
@@ -549,7 +559,7 @@ namespace AppStream {
 		[Version (since = "0.10")]
 		public static AppStream.FormatVersion from_string (string version_str);
 		[Version (since = "0.10")]
-		public static unowned string to_string (AppStream.FormatVersion version);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_ICON_KIND_", has_type_id = false)]
 	public enum IconKind {
@@ -589,14 +599,16 @@ namespace AppStream {
 		VALUE_ISSUE,
 		FILE_MISSING,
 		WRONG_NAME,
-		READ_ERROR
+		READ_ERROR,
+		REMOTE_ERROR
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_LAUNCHABLE_KIND_", has_type_id = false)]
 	public enum LaunchableKind {
 		UNKNOWN,
 		DESKTOP_ID,
 		SERVICE,
-		COCKPIT_MANIFEST
+		COCKPIT_MANIFEST,
+		URL
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_MERGE_KIND_", has_type_id = false)]
 	public enum MergeKind {
@@ -604,7 +616,7 @@ namespace AppStream {
 		REPLACE,
 		APPEND;
 		public static AppStream.MergeKind from_string (string kind_str);
-		public static unowned string to_string (AppStream.MergeKind kind);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_METADATA_ERROR_", has_type_id = false)]
 	public enum MetadataError {
@@ -645,6 +657,13 @@ namespace AppStream {
 		FIRMWARE_FLASHED,
 		ID
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_RELEASE_KIND_", has_type_id = false)]
+	[Version (since = "0.12.0")]
+	public enum ReleaseKind {
+		UNKNOWN,
+		STABLE,
+		DEVELOPMENT
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_SCREENSHOT_KIND_", has_type_id = false)]
 	public enum ScreenshotKind {
 		UNKNOWN,
@@ -658,7 +677,7 @@ namespace AppStream {
 		DOWNLOAD,
 		INSTALLED;
 		public static AppStream.SizeKind from_string (string size_kind);
-		public static unowned string to_string (AppStream.SizeKind size_kind);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_SUGGESTED_KIND_", has_type_id = false)]
 	public enum SuggestedKind {
@@ -682,7 +701,7 @@ namespace AppStream {
 		[Version (since = "0.6.5")]
 		public static AppStream.UrgencyKind from_string (string urgency_kind);
 		[Version (since = "0.6.5")]
-		public static unowned string to_string (AppStream.UrgencyKind urgency_kind);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_URL_KIND_", has_type_id = false)]
 	public enum UrlKind {
@@ -694,7 +713,7 @@ namespace AppStream {
 		DONATION,
 		TRANSLATE;
 		public static AppStream.UrlKind from_string (string url_kind);
-		public static unowned string to_string (AppStream.UrlKind url_kind);
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_VALUE_FLAG_", has_type_id = false)]
 	[Flags]
@@ -703,6 +722,8 @@ namespace AppStream {
 		DUPLICATE_CHECK,
 		NO_TRANSLATION_FALLBACK
 	}
+	[CCode (cheader_filename = "appstream.h")]
+	public static unowned string get_appstream_version ();
 	[CCode (cheader_filename = "appstream.h")]
 	public static GLib.GenericArray<weak AppStream.Category> get_default_categories (bool with_special);
 	[CCode (cheader_filename = "appstream.h")]

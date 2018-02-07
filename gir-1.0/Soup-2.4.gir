@@ -6065,7 +6065,7 @@ verification errors on #SoupMessage:tls-certificate.)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MICRO_VERSION"
-              value="2"
+              value="90"
               c:type="SOUP_MICRO_VERSION"
               version="2.42">
       <doc xml:space="preserve">Like soup_get_micro_version(), but from the headers used at
@@ -12778,6 +12778,80 @@ returning to the main loop.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="connect_async"
+              c:identifier="soup_session_connect_async"
+              version="2.62">
+        <doc xml:space="preserve">Start a connection to @uri. The operation can be monitored by providing a @progress_callback
+and finishes when the connection is done or an error ocurred.
+
+Call soup_session_connect_finish() to get the #GIOStream to communicate with the server.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupSession</doc>
+            <type name="Session" c:type="SoupSession*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupURI to connect to</doc>
+            <type name="URI" c:type="SoupURI*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="progress_callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">a #SoupSessionConnectProgressCallback which
+will be called for every network event that occurs during the connection.</doc>
+            <type name="SessionConnectProgressCallback"
+                  c:type="SoupSessionConnectProgressCallback"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">the callback to invoke when the operation finishes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">data for @progress_callback and @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="connect_finish"
+              c:identifier="soup_session_connect_finish"
+              version="2.62"
+              throws="1">
+        <doc xml:space="preserve">Gets the #GIOStream created for the connection to communicate with the server.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GIOStream, or %NULL on error.</doc>
+          <type name="Gio.IOStream" c:type="GIOStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="session" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupSession</doc>
+            <type name="Session" c:type="SoupSession*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the #GAsyncResult passed to your callback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_async_context"
               c:identifier="soup_session_get_async_context">
         <doc xml:space="preserve">Gets @session's #SoupSession:async-context. This does not add a ref
@@ -14352,6 +14426,36 @@ be called after the message completes or when an unrecoverable error occurs.</do
         </callback>
       </field>
     </record>
+    <callback name="SessionConnectProgressCallback"
+              c:type="SoupSessionConnectProgressCallback"
+              version="2.62">
+      <doc xml:space="preserve">Prototype for the progress callback passed to soup_session_connect_async().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="session" transfer-ownership="none">
+          <doc xml:space="preserve">the #SoupSession</doc>
+          <type name="Session" c:type="SoupSession*"/>
+        </parameter>
+        <parameter name="event" transfer-ownership="none">
+          <doc xml:space="preserve">a #GSocketClientEvent</doc>
+          <type name="Gio.SocketClientEvent" c:type="GSocketClientEvent"/>
+        </parameter>
+        <parameter name="connection" transfer-ownership="none">
+          <doc xml:space="preserve">the current state of the network connection</doc>
+          <type name="Gio.IOStream" c:type="GIOStream*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
+          <doc xml:space="preserve">the data passed to soup_session_connect_async().</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <interface name="SessionFeature"
                c:symbol-prefix="session_feature"
                c:type="SoupSessionFeature"

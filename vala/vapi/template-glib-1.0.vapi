@@ -50,7 +50,9 @@ namespace Template {
 		public void set_object (string name, GLib.Object? value);
 		public void set_resolver (owned global::Template.ScopeResolver resolver);
 		public void set_string (string name, string? value);
+		public void set_strv (string name, [CCode (array_length = false, array_null_terminated = true)] string[]? value);
 		public void set_value (string name, GLib.Value? value);
+		public void set_variant (string name, GLib.Variant? value);
 		public void take (string name, owned global::Template.Symbol? symbol);
 		public void unref ();
 	}
@@ -61,9 +63,11 @@ namespace Template {
 		public Symbol ();
 		public void assign_boolean (bool v_bool);
 		public void assign_double (double v_double);
-		public void assign_object (void* v_object);
+		public void assign_object (GLib.Object? v_object);
 		public void assign_string (string v_string);
+		public void assign_strv ([CCode (array_length = false, array_null_terminated = true)] string[]? strv);
 		public void assign_value (GLib.Value value);
+		public void assign_variant (GLib.Variant? v_variant);
 		public unowned global::Template.Expr get_expr (out unowned GLib.GenericArray<string>? @params);
 		public global::Template.SymbolType get_symbol_type ();
 		public void get_value (GLib.Value value);
