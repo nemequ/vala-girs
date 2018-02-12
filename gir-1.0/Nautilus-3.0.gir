@@ -9,11 +9,34 @@ and/or use gtk-doc annotations.  -->
   <include name="GLib" version="2.0"/>
   <include name="Gio" version="2.0"/>
   <include name="Gtk" version="3.0"/>
+  <c:include name="nautilus-extension.h"/>
   <namespace name="Nautilus"
              version="3.0"
              shared-library="libnautilus-extension.so.1"
              c:identifier-prefixes="Nautilus"
              c:symbol-prefixes="nautilus">
+    <alias name="ColumnProviderIface" c:type="NautilusColumnProviderIface">
+      <type name="ColumnProviderInterface"
+            c:type="NautilusColumnProviderInterface"/>
+    </alias>
+    <alias name="InfoProviderIface" c:type="NautilusInfoProviderIface">
+      <type name="InfoProviderInterface"
+            c:type="NautilusInfoProviderInterface"/>
+    </alias>
+    <alias name="LocationWidgetProviderIface"
+           c:type="NautilusLocationWidgetProviderIface">
+      <type name="LocationWidgetProviderInterface"
+            c:type="NautilusLocationWidgetProviderInterface"/>
+    </alias>
+    <alias name="MenuProviderIface" c:type="NautilusMenuProviderIface">
+      <type name="MenuProviderInterface"
+            c:type="NautilusMenuProviderInterface"/>
+    </alias>
+    <alias name="PropertyPageProviderIface"
+           c:type="NautilusPropertyPageProviderIface">
+      <type name="PropertyPageProviderInterface"
+            c:type="NautilusPropertyPageProviderInterface"/>
+    </alias>
     <class name="Column"
            c:symbol-prefix="column"
            c:type="NautilusColumn"
@@ -72,42 +95,19 @@ and/or use gtk-doc annotations.  -->
       <property name="xalign" writable="1" transfer-ownership="none">
         <type name="gfloat" c:type="gfloat"/>
       </property>
-      <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="details">
-        <type name="ColumnDetails" c:type="NautilusColumnDetails*"/>
-      </field>
     </class>
     <record name="ColumnClass"
             c:type="NautilusColumnClass"
             glib:is-gtype-struct-for="Column">
-      <field name="parent">
+      <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-    </record>
-    <record name="ColumnDetails" c:type="NautilusColumnDetails" disguised="1">
     </record>
     <interface name="ColumnProvider"
                c:symbol-prefix="column_provider"
                c:type="NautilusColumnProvider"
                glib:type-name="NautilusColumnProvider"
-               glib:get-type="nautilus_column_provider_get_type"
-               glib:type-struct="ColumnProviderIface">
-      <virtual-method name="get_columns" invoker="get_columns">
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the provided #NautilusColumn objects</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="Column"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <doc xml:space="preserve">a #NautilusColumnProvider</doc>
-            <type name="ColumnProvider" c:type="NautilusColumnProvider*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
+               glib:get-type="nautilus_column_provider_get_type">
       <method name="get_columns"
               c:identifier="nautilus_column_provider_get_columns">
         <return-value transfer-ownership="full">
@@ -124,25 +124,22 @@ and/or use gtk-doc annotations.  -->
         </parameters>
       </method>
     </interface>
-    <record name="ColumnProviderIface"
-            c:type="NautilusColumnProviderIface"
-            glib:is-gtype-struct-for="ColumnProvider">
+    <record name="ColumnProviderInterface"
+            c:type="NautilusColumnProviderInterface">
       <doc xml:space="preserve">Interface for extensions to provide additional list view columns.</doc>
-      <field name="g_iface">
+      <field name="g_iface" writable="1">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="get_columns">
-        <callback name="get_columns">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the provided #NautilusColumn objects</doc>
+      <field name="get_columns" introspectable="0">
+        <callback name="get_columns" introspectable="0">
+          <return-value>
             <type name="GLib.List" c:type="GList*">
-              <type name="Column"/>
+              <type name="gpointer" c:type="gpointer"/>
             </type>
           </return-value>
           <parameters>
             <parameter name="provider" transfer-ownership="none">
-              <doc xml:space="preserve">a #NautilusColumnProvider</doc>
               <type name="ColumnProvider" c:type="NautilusColumnProvider*"/>
             </parameter>
           </parameters>
@@ -153,9 +150,10 @@ and/or use gtk-doc annotations.  -->
     </record>
     <interface name="FileInfo"
                c:symbol-prefix="file_info"
+               c:type="NautilusFileInfo"
                glib:type-name="NautilusFileInfo"
                glib:get-type="nautilus_file_info_get_type"
-               glib:type-struct="FileInfoIface">
+               glib:type-struct="FileInfoInterface">
       <function name="create" c:identifier="nautilus_file_info_create">
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #NautilusFileInfo</doc>
@@ -242,7 +240,7 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="emblem_name" transfer-ownership="none">
@@ -256,7 +254,7 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="attribute_name" transfer-ownership="none">
@@ -272,7 +270,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -282,7 +280,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -292,18 +290,18 @@ and/or use gtk-doc annotations.  -->
           <type name="Gio.FileType" c:type="GFileType"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="get_location" invoker="get_location">
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a #GFile for the location of @file</doc>
+          <doc xml:space="preserve">a #GFile for the location of @file_info</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -314,19 +312,19 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="get_mount" invoker="get_mount">
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #GMount for the mount of @file,
-  or %NULL if @file has no mount</doc>
+          <doc xml:space="preserve">a #GMount for the mount of @file_info,
+  or %NULL if @file_info has no mount</doc>
           <type name="Gio.Mount" c:type="GMount*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -337,19 +335,19 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="get_parent_info" invoker="get_parent_info">
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #NautilusFileInfo for the parent of @file,
-  or %NULL if @file has no parent</doc>
+          <doc xml:space="preserve">a #NautilusFileInfo for the parent of @file_info,
+  or %NULL if @file_info has no parent</doc>
           <type name="FileInfo" c:type="NautilusFileInfo*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -357,12 +355,12 @@ and/or use gtk-doc annotations.  -->
       </virtual-method>
       <virtual-method name="get_parent_location" invoker="get_parent_location">
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #GFile for the parent location of @file,
-  or %NULL if @file has no parent</doc>
+          <doc xml:space="preserve">a #GFile for the parent location of @file_info,
+  or %NULL if @file_info has no parent</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -373,7 +371,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -384,7 +382,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="attribute_name" transfer-ownership="none">
@@ -397,7 +395,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -407,7 +405,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -418,7 +416,7 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -428,7 +426,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -438,7 +436,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -448,10 +446,10 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
-          <parameter name="mime_Type" transfer-ownership="none">
+          <parameter name="mime_type" transfer-ownership="none">
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -461,7 +459,7 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="emblem_name" transfer-ownership="none">
@@ -475,7 +473,7 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="attribute_name" transfer-ownership="none">
@@ -491,7 +489,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -502,7 +500,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -513,7 +511,7 @@ and/or use gtk-doc annotations.  -->
           <type name="Gio.FileType" c:type="GFileType"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -521,11 +519,11 @@ and/or use gtk-doc annotations.  -->
       <method name="get_location"
               c:identifier="nautilus_file_info_get_location">
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a #GFile for the location of @file</doc>
+          <doc xml:space="preserve">a #GFile for the location of @file_info</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -537,19 +535,19 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
       </method>
       <method name="get_mount" c:identifier="nautilus_file_info_get_mount">
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #GMount for the mount of @file,
-  or %NULL if @file has no mount</doc>
+          <doc xml:space="preserve">a #GMount for the mount of @file_info,
+  or %NULL if @file_info has no mount</doc>
           <type name="Gio.Mount" c:type="GMount*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -560,7 +558,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -568,12 +566,12 @@ and/or use gtk-doc annotations.  -->
       <method name="get_parent_info"
               c:identifier="nautilus_file_info_get_parent_info">
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #NautilusFileInfo for the parent of @file,
-  or %NULL if @file has no parent</doc>
+          <doc xml:space="preserve">a #NautilusFileInfo for the parent of @file_info,
+  or %NULL if @file_info has no parent</doc>
           <type name="FileInfo" c:type="NautilusFileInfo*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -582,12 +580,12 @@ and/or use gtk-doc annotations.  -->
       <method name="get_parent_location"
               c:identifier="nautilus_file_info_get_parent_location">
         <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #GFile for the parent location of @file,
-  or %NULL if @file has no parent</doc>
+          <doc xml:space="preserve">a #GFile for the parent location of @file_info,
+  or %NULL if @file_info has no parent</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <doc xml:space="preserve">a #NautilusFileInfo</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
@@ -599,7 +597,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -610,7 +608,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="attribute_name" transfer-ownership="none">
@@ -623,7 +621,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -634,7 +632,7 @@ and/or use gtk-doc annotations.  -->
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -645,7 +643,7 @@ and/or use gtk-doc annotations.  -->
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -656,7 +654,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -666,7 +664,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
         </parameters>
@@ -677,7 +675,7 @@ and/or use gtk-doc annotations.  -->
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="file" transfer-ownership="none">
+          <instance-parameter name="file_info" transfer-ownership="none">
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </instance-parameter>
           <parameter name="mime_type" transfer-ownership="none">
@@ -686,8 +684,8 @@ and/or use gtk-doc annotations.  -->
         </parameters>
       </method>
     </interface>
-    <record name="FileInfoIface"
-            c:type="NautilusFileInfoIface"
+    <record name="FileInfoInterface"
+            c:type="NautilusFileInfoInterface"
             glib:is-gtype-struct-for="FileInfo">
       <doc xml:space="preserve">Interface for extensions to provide additional menu items.</doc>
       <field name="g_iface">
@@ -700,7 +698,7 @@ and/or use gtk-doc annotations.  -->
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -712,7 +710,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -724,7 +722,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -736,7 +734,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -748,7 +746,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -760,7 +758,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -772,10 +770,10 @@ and/or use gtk-doc annotations.  -->
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
-            <parameter name="mime_Type" transfer-ownership="none">
+            <parameter name="mime_type" transfer-ownership="none">
               <type name="utf8" c:type="const char*"/>
             </parameter>
           </parameters>
@@ -787,7 +785,7 @@ and/or use gtk-doc annotations.  -->
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -799,7 +797,7 @@ and/or use gtk-doc annotations.  -->
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
             <parameter name="emblem_name" transfer-ownership="none">
@@ -814,7 +812,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
             <parameter name="attribute_name" transfer-ownership="none">
@@ -829,7 +827,7 @@ and/or use gtk-doc annotations.  -->
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
             <parameter name="attribute_name" transfer-ownership="none">
@@ -847,7 +845,7 @@ and/or use gtk-doc annotations.  -->
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -859,7 +857,7 @@ and/or use gtk-doc annotations.  -->
             <type name="utf8" c:type="char*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -871,7 +869,7 @@ and/or use gtk-doc annotations.  -->
             <type name="Gio.FileType" c:type="GFileType"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -880,11 +878,11 @@ and/or use gtk-doc annotations.  -->
       <field name="get_location">
         <callback name="get_location">
           <return-value transfer-ownership="full">
-            <doc xml:space="preserve">a #GFile for the location of @file</doc>
+            <doc xml:space="preserve">a #GFile for the location of @file_info</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <doc xml:space="preserve">a #NautilusFileInfo</doc>
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
@@ -894,12 +892,12 @@ and/or use gtk-doc annotations.  -->
       <field name="get_parent_location">
         <callback name="get_parent_location">
           <return-value transfer-ownership="full" nullable="1">
-            <doc xml:space="preserve">a #GFile for the parent location of @file,
-  or %NULL if @file has no parent</doc>
+            <doc xml:space="preserve">a #GFile for the parent location of @file_info,
+  or %NULL if @file_info has no parent</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <doc xml:space="preserve">a #NautilusFileInfo</doc>
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
@@ -909,12 +907,12 @@ and/or use gtk-doc annotations.  -->
       <field name="get_parent_info">
         <callback name="get_parent_info">
           <return-value transfer-ownership="full" nullable="1">
-            <doc xml:space="preserve">a #NautilusFileInfo for the parent of @file,
-  or %NULL if @file has no parent</doc>
+            <doc xml:space="preserve">a #NautilusFileInfo for the parent of @file_info,
+  or %NULL if @file_info has no parent</doc>
             <type name="FileInfo" c:type="NautilusFileInfo*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <doc xml:space="preserve">a #NautilusFileInfo</doc>
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
@@ -924,12 +922,12 @@ and/or use gtk-doc annotations.  -->
       <field name="get_mount">
         <callback name="get_mount">
           <return-value transfer-ownership="full" nullable="1">
-            <doc xml:space="preserve">a #GMount for the mount of @file,
-  or %NULL if @file has no mount</doc>
+            <doc xml:space="preserve">a #GMount for the mount of @file_info,
+  or %NULL if @file_info has no mount</doc>
             <type name="Gio.Mount" c:type="GMount*"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <doc xml:space="preserve">a #NautilusFileInfo</doc>
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
@@ -942,7 +940,7 @@ and/or use gtk-doc annotations.  -->
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
-            <parameter name="file" transfer-ownership="none">
+            <parameter name="file_info" transfer-ownership="none">
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -953,8 +951,7 @@ and/or use gtk-doc annotations.  -->
                c:symbol-prefix="info_provider"
                c:type="NautilusInfoProvider"
                glib:type-name="NautilusInfoProvider"
-               glib:get-type="nautilus_info_provider_get_type"
-               glib:type-struct="InfoProviderIface">
+               glib:get-type="nautilus_info_provider_get_type">
       <function name="update_complete_invoke"
                 c:identifier="nautilus_info_provider_update_complete_invoke">
         <return-value transfer-ownership="none">
@@ -975,38 +972,6 @@ and/or use gtk-doc annotations.  -->
           </parameter>
         </parameters>
       </function>
-      <virtual-method name="cancel_update" invoker="cancel_update">
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <type name="InfoProvider" c:type="NautilusInfoProvider*"/>
-          </instance-parameter>
-          <parameter name="handle" transfer-ownership="none">
-            <type name="OperationHandle" c:type="NautilusOperationHandle*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="update_file_info" invoker="update_file_info">
-        <return-value transfer-ownership="none">
-          <type name="OperationResult" c:type="NautilusOperationResult"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <type name="InfoProvider" c:type="NautilusInfoProvider*"/>
-          </instance-parameter>
-          <parameter name="file" transfer-ownership="none">
-            <type name="FileInfo" c:type="NautilusFileInfo*"/>
-          </parameter>
-          <parameter name="update_complete" transfer-ownership="none">
-            <type name="GObject.Closure" c:type="GClosure*"/>
-          </parameter>
-          <parameter name="handle" transfer-ownership="none">
-            <type name="OperationHandle" c:type="NautilusOperationHandle**"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <method name="cancel_update"
               c:identifier="nautilus_info_provider_cancel_update">
         <return-value transfer-ownership="none">
@@ -1042,11 +1007,10 @@ and/or use gtk-doc annotations.  -->
         </parameters>
       </method>
     </interface>
-    <record name="InfoProviderIface"
-            c:type="NautilusInfoProviderIface"
-            glib:is-gtype-struct-for="InfoProvider">
+    <record name="InfoProviderInterface"
+            c:type="NautilusInfoProviderInterface">
       <doc xml:space="preserve">Interface for extensions to provide additional information about files.</doc>
-      <field name="g_iface">
+      <field name="g_iface" writable="1">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
@@ -1087,57 +1051,11 @@ and/or use gtk-doc annotations.  -->
         </callback>
       </field>
     </record>
-    <callback name="InfoProviderUpdateComplete"
-              c:type="NautilusInfoProviderUpdateComplete">
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="provider" transfer-ownership="none">
-          <type name="InfoProvider" c:type="NautilusInfoProvider*"/>
-        </parameter>
-        <parameter name="handle" transfer-ownership="none">
-          <type name="OperationHandle" c:type="NautilusOperationHandle*"/>
-        </parameter>
-        <parameter name="result" transfer-ownership="none">
-          <type name="OperationResult" c:type="NautilusOperationResult"/>
-        </parameter>
-        <parameter name="user_data"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1"
-                   closure="3">
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
     <interface name="LocationWidgetProvider"
                c:symbol-prefix="location_widget_provider"
                c:type="NautilusLocationWidgetProvider"
                glib:type-name="NautilusLocationWidgetProvider"
-               glib:get-type="nautilus_location_widget_provider_get_type"
-               glib:type-struct="LocationWidgetProviderIface">
-      <virtual-method name="get_widget" invoker="get_widget">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the location widget for @provider at @uri</doc>
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <doc xml:space="preserve">a #NautilusLocationWidgetProvider</doc>
-            <type name="LocationWidgetProvider"
-                  c:type="NautilusLocationWidgetProvider*"/>
-          </instance-parameter>
-          <parameter name="uri" transfer-ownership="none">
-            <doc xml:space="preserve">the URI of the location</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
-          <parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">parent #GtkWindow</doc>
-            <type name="Gtk.Widget" c:type="GtkWidget*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
+               glib:get-type="nautilus_location_widget_provider_get_type">
       <method name="get_widget"
               c:identifier="nautilus_location_widget_provider_get_widget">
         <return-value transfer-ownership="none">
@@ -1161,32 +1079,27 @@ and/or use gtk-doc annotations.  -->
         </parameters>
       </method>
     </interface>
-    <record name="LocationWidgetProviderIface"
-            c:type="NautilusLocationWidgetProviderIface"
-            glib:is-gtype-struct-for="LocationWidgetProvider">
+    <record name="LocationWidgetProviderInterface"
+            c:type="NautilusLocationWidgetProviderInterface">
       <doc xml:space="preserve">Interface for extensions to provide additional location widgets.</doc>
-      <field name="g_iface">
+      <field name="g_iface" writable="1">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="get_widget">
-        <callback name="get_widget">
-          <return-value transfer-ownership="none">
-            <doc xml:space="preserve">the location widget for @provider at @uri</doc>
+      <field name="get_widget" introspectable="0">
+        <callback name="get_widget" introspectable="0">
+          <return-value>
             <type name="Gtk.Widget" c:type="GtkWidget*"/>
           </return-value>
           <parameters>
             <parameter name="provider" transfer-ownership="none">
-              <doc xml:space="preserve">a #NautilusLocationWidgetProvider</doc>
               <type name="LocationWidgetProvider"
                     c:type="NautilusLocationWidgetProvider*"/>
             </parameter>
             <parameter name="uri" transfer-ownership="none">
-              <doc xml:space="preserve">the URI of the location</doc>
               <type name="utf8" c:type="const char*"/>
             </parameter>
             <parameter name="window" transfer-ownership="none">
-              <doc xml:space="preserve">parent #GtkWindow</doc>
               <type name="Gtk.Widget" c:type="GtkWidget*"/>
             </parameter>
           </parameters>
@@ -1232,12 +1145,6 @@ and/or use gtk-doc annotations.  -->
           </instance-parameter>
         </parameters>
       </method>
-      <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="MenuPrivate" c:type="NautilusMenuPrivate*"/>
-      </field>
     </class>
     <record name="MenuClass"
             c:type="NautilusMenuClass"
@@ -1355,11 +1262,8 @@ and/or use gtk-doc annotations.  -->
       <property name="tip" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="parent">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="details">
-        <type name="MenuItemDetails" c:type="NautilusMenuItemDetails*"/>
       </field>
       <glib:signal name="activate" when="last">
         <return-value transfer-ownership="none">
@@ -1387,65 +1291,11 @@ and/or use gtk-doc annotations.  -->
         </callback>
       </field>
     </record>
-    <record name="MenuItemDetails"
-            c:type="NautilusMenuItemDetails"
-            disguised="1">
-    </record>
-    <record name="MenuPrivate" c:type="NautilusMenuPrivate" disguised="1">
-    </record>
     <interface name="MenuProvider"
                c:symbol-prefix="menu_provider"
                c:type="NautilusMenuProvider"
                glib:type-name="NautilusMenuProvider"
-               glib:get-type="nautilus_menu_provider_get_type"
-               glib:type-struct="MenuProviderIface">
-      <virtual-method name="get_background_items"
-                      invoker="get_background_items">
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the provided list of #NautilusMenuItem</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="MenuItem"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <doc xml:space="preserve">a #NautilusMenuProvider</doc>
-            <type name="MenuProvider" c:type="NautilusMenuProvider*"/>
-          </instance-parameter>
-          <parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">the parent #GtkWidget window</doc>
-            <type name="Gtk.Widget" c:type="GtkWidget*"/>
-          </parameter>
-          <parameter name="current_folder" transfer-ownership="none">
-            <doc xml:space="preserve">the folder for which background items are requested</doc>
-            <type name="FileInfo" c:type="NautilusFileInfo*"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="get_file_items" invoker="get_file_items">
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the provided list of #NautilusMenuItem</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="MenuItem"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <doc xml:space="preserve">a #NautilusMenuProvider</doc>
-            <type name="MenuProvider" c:type="NautilusMenuProvider*"/>
-          </instance-parameter>
-          <parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">the parent #GtkWidget window</doc>
-            <type name="Gtk.Widget" c:type="GtkWidget*"/>
-          </parameter>
-          <parameter name="files" transfer-ownership="none">
-            <doc xml:space="preserve">a list of #NautilusFileInfo</doc>
-            <type name="GLib.List" c:type="GList*">
-              <type name="FileInfo"/>
-            </type>
-          </parameter>
-        </parameters>
-      </virtual-method>
+               glib:get-type="nautilus_menu_provider_get_type">
       <method name="emit_items_updated_signal"
               c:identifier="nautilus_menu_provider_emit_items_updated_signal">
         <return-value transfer-ownership="none">
@@ -1511,59 +1361,50 @@ and/or use gtk-doc annotations.  -->
         </return-value>
       </glib:signal>
     </interface>
-    <record name="MenuProviderIface"
-            c:type="NautilusMenuProviderIface"
-            glib:is-gtype-struct-for="MenuProvider">
+    <record name="MenuProviderInterface"
+            c:type="NautilusMenuProviderInterface">
       <doc xml:space="preserve">Interface for extensions to provide additional menu items.</doc>
-      <field name="g_iface">
+      <field name="g_iface" writable="1">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="get_file_items">
-        <callback name="get_file_items">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the provided list of #NautilusMenuItem</doc>
+      <field name="get_file_items" introspectable="0">
+        <callback name="get_file_items" introspectable="0">
+          <return-value>
             <type name="GLib.List" c:type="GList*">
-              <type name="MenuItem"/>
+              <type name="gpointer" c:type="gpointer"/>
             </type>
           </return-value>
           <parameters>
             <parameter name="provider" transfer-ownership="none">
-              <doc xml:space="preserve">a #NautilusMenuProvider</doc>
               <type name="MenuProvider" c:type="NautilusMenuProvider*"/>
             </parameter>
             <parameter name="window" transfer-ownership="none">
-              <doc xml:space="preserve">the parent #GtkWidget window</doc>
               <type name="Gtk.Widget" c:type="GtkWidget*"/>
             </parameter>
             <parameter name="files" transfer-ownership="none">
-              <doc xml:space="preserve">a list of #NautilusFileInfo</doc>
               <type name="GLib.List" c:type="GList*">
-                <type name="FileInfo"/>
+                <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
           </parameters>
         </callback>
       </field>
-      <field name="get_background_items">
-        <callback name="get_background_items">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">the provided list of #NautilusMenuItem</doc>
+      <field name="get_background_items" introspectable="0">
+        <callback name="get_background_items" introspectable="0">
+          <return-value>
             <type name="GLib.List" c:type="GList*">
-              <type name="MenuItem"/>
+              <type name="gpointer" c:type="gpointer"/>
             </type>
           </return-value>
           <parameters>
             <parameter name="provider" transfer-ownership="none">
-              <doc xml:space="preserve">a #NautilusMenuProvider</doc>
               <type name="MenuProvider" c:type="NautilusMenuProvider*"/>
             </parameter>
             <parameter name="window" transfer-ownership="none">
-              <doc xml:space="preserve">the parent #GtkWidget window</doc>
               <type name="Gtk.Widget" c:type="GtkWidget*"/>
             </parameter>
             <parameter name="current_folder" transfer-ownership="none">
-              <doc xml:space="preserve">the folder for which background items are requested</doc>
               <type name="FileInfo" c:type="NautilusFileInfo*"/>
             </parameter>
           </parameters>
@@ -1599,7 +1440,7 @@ See nautilus_info_provider_update_file_info().</doc>
       <member name="in_progress"
               value="2"
               c:identifier="NAUTILUS_OPERATION_IN_PROGRESS"
-              glib:nick="in_progress">
+              glib:nick="in-progress">
         <doc xml:space="preserve">the extension has begin an async operation.
  When this value is returned, the extension must set the handle parameter
  and call the callback closure when the operation is complete.</doc>
@@ -1645,57 +1486,19 @@ See nautilus_info_provider_update_file_info().</doc>
       <property name="page" writable="1" transfer-ownership="none">
         <type name="Gtk.Widget"/>
       </property>
-      <field name="parent">
-        <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="details">
-        <type name="PropertyPageDetails"
-              c:type="NautilusPropertyPageDetails*"/>
-      </field>
     </class>
     <record name="PropertyPageClass"
             c:type="NautilusPropertyPageClass"
             glib:is-gtype-struct-for="PropertyPage">
-      <field name="parent">
+      <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-    </record>
-    <record name="PropertyPageDetails"
-            c:type="NautilusPropertyPageDetails"
-            disguised="1">
     </record>
     <interface name="PropertyPageProvider"
                c:symbol-prefix="property_page_provider"
                c:type="NautilusPropertyPageProvider"
                glib:type-name="NautilusPropertyPageProvider"
-               glib:get-type="nautilus_property_page_provider_get_type"
-               glib:type-struct="PropertyPageProviderIface">
-      <virtual-method name="get_pages" invoker="get_pages">
-        <doc xml:space="preserve">This function is called by Nautilus when it wants property page
-items from the extension.
-
-This function is called in the main thread before a property page
-is shown, so it should return quickly.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A #GList of allocated #NautilusPropertyPage items.</doc>
-          <type name="GLib.List" c:type="GList*">
-            <type name="PropertyPage"/>
-          </type>
-        </return-value>
-        <parameters>
-          <instance-parameter name="provider" transfer-ownership="none">
-            <doc xml:space="preserve">a #NautilusPropertyPageProvider</doc>
-            <type name="PropertyPageProvider"
-                  c:type="NautilusPropertyPageProvider*"/>
-          </instance-parameter>
-          <parameter name="files" transfer-ownership="none">
-            <doc xml:space="preserve">a #GList of #NautilusFileInfo</doc>
-            <type name="GLib.List" c:type="GList*">
-              <type name="FileInfo"/>
-            </type>
-          </parameter>
-        </parameters>
-      </virtual-method>
+               glib:get-type="nautilus_property_page_provider_get_type">
       <method name="get_pages"
               c:identifier="nautilus_property_page_provider_get_pages">
         <doc xml:space="preserve">This function is called by Nautilus when it wants property page
@@ -1724,32 +1527,28 @@ is shown, so it should return quickly.</doc>
         </parameters>
       </method>
     </interface>
-    <record name="PropertyPageProviderIface"
-            c:type="NautilusPropertyPageProviderIface"
-            glib:is-gtype-struct-for="PropertyPageProvider">
+    <record name="PropertyPageProviderInterface"
+            c:type="NautilusPropertyPageProviderInterface">
       <doc xml:space="preserve">Interface for extensions to provide additional property pages.</doc>
-      <field name="g_iface">
+      <field name="g_iface" writable="1">
         <doc xml:space="preserve">The parent interface.</doc>
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="get_pages">
-        <callback name="get_pages">
-          <return-value transfer-ownership="full">
-            <doc xml:space="preserve">A #GList of allocated #NautilusPropertyPage items.</doc>
+      <field name="get_pages" introspectable="0">
+        <callback name="get_pages" introspectable="0">
+          <return-value>
             <type name="GLib.List" c:type="GList*">
-              <type name="PropertyPage"/>
+              <type name="gpointer" c:type="gpointer"/>
             </type>
           </return-value>
           <parameters>
             <parameter name="provider" transfer-ownership="none">
-              <doc xml:space="preserve">a #NautilusPropertyPageProvider</doc>
               <type name="PropertyPageProvider"
                     c:type="NautilusPropertyPageProvider*"/>
             </parameter>
             <parameter name="files" transfer-ownership="none">
-              <doc xml:space="preserve">a #GList of #NautilusFileInfo</doc>
               <type name="GLib.List" c:type="GList*">
-                <type name="FileInfo"/>
+                <type name="gpointer" c:type="gpointer"/>
               </type>
             </parameter>
           </parameters>

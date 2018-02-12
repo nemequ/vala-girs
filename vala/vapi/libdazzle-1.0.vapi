@@ -514,6 +514,7 @@ namespace Dazzle {
 		public bool get_iter_first (Dazzle.GraphModelIter iter);
 		public bool get_iter_last (Dazzle.GraphModelIter iter);
 		public uint get_max_samples ();
+		public uint get_n_columns ();
 		public GLib.TimeSpan get_timespan ();
 		public static int64 iter_get_timestamp (Dazzle.GraphModelIter iter);
 		public static void iter_get_value (Dazzle.GraphModelIter iter, uint column, GLib.Value value);

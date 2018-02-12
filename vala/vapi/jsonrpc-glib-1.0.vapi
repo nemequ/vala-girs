@@ -75,6 +75,8 @@ namespace Jsonrpc {
 		public void @foreach (GLib.Func foreach_func);
 		[Version (since = "3.26")]
 		public void remove_handler (uint handler_id);
+		[Version (since = "3.28")]
+		public virtual signal void client_accepted (Jsonrpc.Client client);
 		[Version (since = "3.26")]
 		public virtual signal bool handle_call (Jsonrpc.Client client, string method, GLib.Variant id, GLib.Variant @params);
 		[Version (since = "3.26")]

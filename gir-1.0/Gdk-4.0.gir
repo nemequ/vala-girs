@@ -22,11 +22,6 @@ and/or use gtk-doc annotations.  -->
 of strings on the X server.</doc>
       <type name="utf8" c:type="const char*"/>
     </alias>
-    <alias name="XEvent" c:type="GdkXEvent">
-      <doc xml:space="preserve">Used to represent native events (XEvents for the X11
-backend, MSGs for Win32).</doc>
-      <type name="none" c:type="void"/>
-    </alias>
     <bitfield name="AnchorHints"
               version="3.22"
               stability="Unstable"
@@ -6977,63 +6972,6 @@ the events are often transformed or filtered along the way.</doc>
                 glib:type-name="GdkFileList"
                 glib:get-type="gdk_file_list_get_type">
     </glib:boxed>
-    <callback name="FilterFunc" c:type="GdkFilterFunc">
-      <doc xml:space="preserve">Specifies the type of function used to filter native events before they are
-converted to GDK events.
-
-When a filter is called, @event is unpopulated, except for
-`event-&gt;window`. The filter may translate the native
-event to a GDK event and store the result in @event, or handle it without
-translation. If the filter translates the event and processing should
-continue, it should return %GDK_FILTER_TRANSLATE.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">a #GdkFilterReturn value.</doc>
-        <type name="FilterReturn" c:type="GdkFilterReturn"/>
-      </return-value>
-      <parameters>
-        <parameter name="xevent" transfer-ownership="none">
-          <doc xml:space="preserve">the native event to filter.</doc>
-          <type name="XEvent" c:type="GdkXEvent*"/>
-        </parameter>
-        <parameter name="event" transfer-ownership="none">
-          <doc xml:space="preserve">the GDK event to which the X event will be translated.</doc>
-          <type name="Event" c:type="GdkEvent*"/>
-        </parameter>
-        <parameter name="data"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1"
-                   closure="2">
-          <doc xml:space="preserve">user data set when the filter was installed.</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </callback>
-    <enumeration name="FilterReturn"
-                 glib:type-name="GdkFilterReturn"
-                 glib:get-type="gdk_filter_return_get_type"
-                 c:type="GdkFilterReturn">
-      <doc xml:space="preserve">Specifies the result of applying a #GdkFilterFunc to a native event.</doc>
-      <member name="continue"
-              value="0"
-              c:identifier="GDK_FILTER_CONTINUE"
-              glib:nick="continue">
-        <doc xml:space="preserve">event not handled, continue processing.</doc>
-      </member>
-      <member name="translate"
-              value="1"
-              c:identifier="GDK_FILTER_TRANSLATE"
-              glib:nick="translate">
-        <doc xml:space="preserve">native event translated into a GDK event and stored
- in the `event` structure that was passed in.</doc>
-      </member>
-      <member name="remove"
-              value="2"
-              c:identifier="GDK_FILTER_REMOVE"
-              glib:nick="remove">
-        <doc xml:space="preserve">event handled, terminate processing.</doc>
-      </member>
-    </enumeration>
     <class name="FrameClock"
            c:symbol-prefix="frame_clock"
            c:type="GdkFrameClock"
@@ -17375,7 +17313,9 @@ accelerators.</doc>
         </parameters>
       </method>
       <method name="get_direction" c:identifier="gdk_keymap_get_direction">
-        <doc xml:space="preserve">Returns the direction of effective layout of the keymap.</doc>
+        <doc xml:space="preserve">Returns the direction of effective layout of the keymap.
+The direction of a layout is the direction of the majority of its
+symbols. See pango_unichar_direction().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%PANGO_DIRECTION_LTR or %PANGO_DIRECTION_RTL
   if it can determine the direction. %PANGO_DIRECTION_NEUTRAL
@@ -17751,8 +17691,8 @@ modifiers removed. Store `&lt;Control&gt;plus`, not `&lt;Control&gt;&lt;Shift&gt
         <type name="Display"/>
       </property>
       <glib:signal name="direction-changed" when="last">
-        <doc xml:space="preserve">The ::direction-changed signal gets emitted when the direction of
-the keymap changes.</doc>
+        <doc xml:space="preserve">The ::direction-changed signal gets emitted when the direction
+of the keymap changes. See gdk_keymap_get_direction().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -19724,42 +19664,6 @@ set of geometry hints (such as minimum and maximum size).</doc>
           </parameter>
         </parameters>
       </function>
-      <method name="add_filter"
-              c:identifier="gdk_window_add_filter"
-              introspectable="0">
-        <doc xml:space="preserve">Adds an event filter to @window, allowing you to intercept events
-before they reach GDK. This is a low-level operation and makes it
-easy to break GDK and/or GTK+, so you have to know what you're
-doing. Pass %NULL for @window to get all events for all windows,
-instead of events for a specific window.
-
-If you are interested in X GenericEvents, bear in mind that
-XGetEventData() has been already called on the event, and
-XFreeEventData() must not be called within @function.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window"
-                              transfer-ownership="none"
-                              nullable="1"
-                              allow-none="1">
-            <doc xml:space="preserve">a #GdkWindow</doc>
-            <type name="Window" c:type="GdkWindow*"/>
-          </instance-parameter>
-          <parameter name="function" transfer-ownership="none" closure="1">
-            <doc xml:space="preserve">filter callback</doc>
-            <type name="FilterFunc" c:type="GdkFilterFunc"/>
-          </parameter>
-          <parameter name="data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">data to pass to filter callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="beep" c:identifier="gdk_window_beep">
         <doc xml:space="preserve">Emits a short beep associated to @window in the appropriate
 display, if supported. Otherwise, emits a short beep on
@@ -21627,31 +21531,6 @@ requests the restack, does not guarantee it.</doc>
             <doc xml:space="preserve">a #GdkWindow.</doc>
             <type name="Window" c:type="GdkWindow*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="remove_filter"
-              c:identifier="gdk_window_remove_filter"
-              introspectable="0">
-        <doc xml:space="preserve">Remove a filter previously added with gdk_window_add_filter().</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkWindow</doc>
-            <type name="Window" c:type="GdkWindow*"/>
-          </instance-parameter>
-          <parameter name="function" transfer-ownership="none" closure="1">
-            <doc xml:space="preserve">previously-added filter function</doc>
-            <type name="FilterFunc" c:type="GdkFilterFunc"/>
-          </parameter>
-          <parameter name="data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">user data for previously-added filter function</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
         </parameters>
       </method>
       <method name="resize" c:identifier="gdk_window_resize">
@@ -23925,7 +23804,7 @@ This function is called by the drag destination.</doc>
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full">
-          <type name="utf8" c:type="char**"/>
+          <type name="utf8" c:type="const char**"/>
         </parameter>
         <parameter name="result" transfer-ownership="none">
           <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
