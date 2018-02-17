@@ -249,6 +249,333 @@ transition band for the kaiser window. 0.087 is the default.</doc>
               c:type="GST_AUDIO_RESAMPLER_QUALITY_MIN">
       <type name="gint" c:type="gint"/>
     </constant>
+    <class name="AudioAggregator"
+           c:symbol-prefix="audio_aggregator"
+           c:type="GstAudioAggregator"
+           parent="GstBase.Aggregator"
+           abstract="1"
+           glib:type-name="GstAudioAggregator"
+           glib:get-type="gst_audio_aggregator_get_type"
+           glib:type-struct="AudioAggregatorClass">
+      <doc xml:space="preserve">#GstAudioAggregator will perform conversion on the data arriving
+on its sink pads, based on the format expected downstream.
+
+Subclasses can opt out of the conversion behaviour by setting
+#GstAudioAggregatorClass.convert_buffer() to %NULL.
+
+Subclasses that wish to use the default conversion implementation
+should use a (subclass of) #GstAudioAggregatorConvertPad as their
+#GstAggregatorClass.sinkpads_type, as it will cache the created
+#GstAudioConverter and install a property allowing to configure it,
+#GstAudioAggregatorPad:converter-config.
+
+Subclasses that wish to perform custom conversion should override
+#GstAudioAggregatorClass.convert_buffer().
+
+When conversion is enabled, #GstAudioAggregator will accept
+any type of raw audio caps and perform conversion
+on the data arriving on its sink pads, with whatever downstream
+expects as the target format.
+
+In case downstream caps are not fully fixated, it will use
+the first configured sink pad to finish fixating its source pad
+caps.
+
+Additionally, handling audio conversion directly in the element
+means that this base class supports safely reconfiguring its
+source pad.
+
+A notable exception for now is the sample rate, sink pads must
+have the same sample rate as either the downstream requirement,
+or the first configured pad, or a combination of both (when
+downstream specifies a range or a set of acceptable rates).</doc>
+      <virtual-method name="aggregate_one_buffer">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="aagg" transfer-ownership="none">
+            <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+          </instance-parameter>
+          <parameter name="pad" transfer-ownership="none">
+            <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+          </parameter>
+          <parameter name="inbuf" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+          <parameter name="in_offset" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="outbuf" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+          <parameter name="out_offset" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="num_frames" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="convert_buffer">
+        <return-value transfer-ownership="full">
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="aagg" transfer-ownership="none">
+            <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+          </instance-parameter>
+          <parameter name="pad" transfer-ownership="none">
+            <type name="Gst.Pad" c:type="GstPad*"/>
+          </parameter>
+          <parameter name="in_info" transfer-ownership="none">
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="out_info" transfer-ownership="none">
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="create_output_buffer">
+        <return-value transfer-ownership="full">
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="aagg" transfer-ownership="none">
+            <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+          </instance-parameter>
+          <parameter name="num_frames" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="set_sink_caps"
+              c:identifier="gst_audio_aggregator_set_sink_caps">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="aagg" transfer-ownership="none">
+            <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+          </instance-parameter>
+          <parameter name="pad" transfer-ownership="none">
+            <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+          </parameter>
+          <parameter name="caps" transfer-ownership="none">
+            <type name="Gst.Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="alignment-threshold"
+                writable="1"
+                transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="discont-wait" writable="1" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="output-buffer-duration"
+                writable="1"
+                transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <field name="parent">
+        <doc xml:space="preserve">The parent #GstAggregator</doc>
+        <type name="GstBase.Aggregator" c:type="GstAggregator"/>
+      </field>
+      <field name="info">
+        <doc xml:space="preserve">The information parsed from the current caps</doc>
+        <type name="AudioInfo" c:type="GstAudioInfo"/>
+      </field>
+      <field name="current_caps">
+        <doc xml:space="preserve">The caps set by the subclass</doc>
+        <type name="Gst.Caps" c:type="GstCaps*"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="AudioAggregatorPrivate"
+              c:type="GstAudioAggregatorPrivate*"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </class>
+    <record name="AudioAggregatorClass"
+            c:type="GstAudioAggregatorClass"
+            glib:is-gtype-struct-for="AudioAggregator">
+      <field name="parent_class">
+        <type name="GstBase.AggregatorClass" c:type="GstAggregatorClass"/>
+      </field>
+      <field name="create_output_buffer">
+        <callback name="create_output_buffer">
+          <return-value transfer-ownership="full">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </return-value>
+          <parameters>
+            <parameter name="aagg" transfer-ownership="none">
+              <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+            </parameter>
+            <parameter name="num_frames" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="aggregate_one_buffer">
+        <callback name="aggregate_one_buffer">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="aagg" transfer-ownership="none">
+              <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+            </parameter>
+            <parameter name="pad" transfer-ownership="none">
+              <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+            </parameter>
+            <parameter name="inbuf" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+            <parameter name="in_offset" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+            <parameter name="outbuf" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+            <parameter name="out_offset" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+            <parameter name="num_frames" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="convert_buffer">
+        <callback name="convert_buffer">
+          <return-value transfer-ownership="full">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </return-value>
+          <parameters>
+            <parameter name="aagg" transfer-ownership="none">
+              <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
+            </parameter>
+            <parameter name="pad" transfer-ownership="none">
+              <type name="Gst.Pad" c:type="GstPad*"/>
+            </parameter>
+            <parameter name="in_info" transfer-ownership="none">
+              <type name="AudioInfo" c:type="GstAudioInfo*"/>
+            </parameter>
+            <parameter name="out_info" transfer-ownership="none">
+              <type name="AudioInfo" c:type="GstAudioInfo*"/>
+            </parameter>
+            <parameter name="buffer" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <class name="AudioAggregatorConvertPad"
+           c:symbol-prefix="audio_aggregator_convert_pad"
+           c:type="GstAudioAggregatorConvertPad"
+           parent="AudioAggregatorPad"
+           glib:type-name="GstAudioAggregatorConvertPad"
+           glib:get-type="gst_audio_aggregator_convert_pad_get_type"
+           glib:type-struct="AudioAggregatorConvertPadClass">
+      <doc xml:space="preserve">An implementation of GstPad that can be used with #GstAudioAggregator.
+
+See #GstAudioAggregator for more details.</doc>
+      <property name="converter-config" writable="1" transfer-ownership="none">
+        <type name="Gst.Structure"/>
+      </property>
+      <field name="parent">
+        <doc xml:space="preserve">The parent #GstAudioAggregatorPad</doc>
+        <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="AudioAggregatorConvertPadPrivate"
+              c:type="GstAudioAggregatorConvertPadPrivate*"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </class>
+    <record name="AudioAggregatorConvertPadClass"
+            c:type="GstAudioAggregatorConvertPadClass"
+            glib:is-gtype-struct-for="AudioAggregatorConvertPad">
+      <field name="parent_class">
+        <type name="AudioAggregatorPadClass"
+              c:type="GstAudioAggregatorPadClass"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="AudioAggregatorConvertPadPrivate"
+            c:type="GstAudioAggregatorConvertPadPrivate"
+            disguised="1">
+    </record>
+    <class name="AudioAggregatorPad"
+           c:symbol-prefix="audio_aggregator_pad"
+           c:type="GstAudioAggregatorPad"
+           parent="GstBase.AggregatorPad"
+           glib:type-name="GstAudioAggregatorPad"
+           glib:get-type="gst_audio_aggregator_pad_get_type"
+           glib:type-struct="AudioAggregatorPadClass">
+      <doc xml:space="preserve">The default implementation of GstPad used with #GstAudioAggregator</doc>
+      <field name="parent">
+        <doc xml:space="preserve">The parent #GstAggregatorPad</doc>
+        <type name="GstBase.AggregatorPad" c:type="GstAggregatorPad"/>
+      </field>
+      <field name="info">
+        <doc xml:space="preserve">The audio info for this pad set from the incoming caps</doc>
+        <type name="AudioInfo" c:type="GstAudioInfo"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="AudioAggregatorPadPrivate"
+              c:type="GstAudioAggregatorPadPrivate*"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </class>
+    <record name="AudioAggregatorPadClass"
+            c:type="GstAudioAggregatorPadClass"
+            glib:is-gtype-struct-for="AudioAggregatorPad">
+      <field name="parent_class">
+        <type name="GstBase.AggregatorPadClass"
+              c:type="GstAggregatorPadClass"/>
+      </field>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="AudioAggregatorPadPrivate"
+            c:type="GstAudioAggregatorPadPrivate"
+            disguised="1">
+    </record>
+    <record name="AudioAggregatorPrivate"
+            c:type="GstAudioAggregatorPrivate"
+            disguised="1">
+    </record>
     <class name="AudioBaseSink"
            c:symbol-prefix="audio_base_sink"
            c:type="GstAudioBaseSink"
@@ -1865,7 +2192,90 @@ be used.</doc>
         </parameter>
       </parameters>
     </callback>
-    <record name="AudioConverter" c:type="GstAudioConverter" disguised="1">
+    <record name="AudioConverter"
+            c:type="GstAudioConverter"
+            glib:type-name="GstAudioConverter"
+            glib:get-type="gst_audio_converter_get_type"
+            c:symbol-prefix="audio_converter">
+      <constructor name="new" c:identifier="gst_audio_converter_new">
+        <doc xml:space="preserve">Create a new #GstAudioConverter that is able to convert between @in and @out
+audio formats.
+
+@config contains extra configuration options, see #GST_VIDEO_CONVERTER_OPT_*
+parameters for details about the options and values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstAudioConverter or %NULL if conversion is not possible.</doc>
+          <type name="AudioConverter" c:type="GstAudioConverter*"/>
+        </return-value>
+        <parameters>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">extra #GstAudioConverterFlags</doc>
+            <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
+          </parameter>
+          <parameter name="in_info" transfer-ownership="none">
+            <doc xml:space="preserve">a source #GstAudioInfo</doc>
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="out_info" transfer-ownership="none">
+            <doc xml:space="preserve">a destination #GstAudioInfo</doc>
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="config"
+                     transfer-ownership="full"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GstStructure with configuration options</doc>
+            <type name="Gst.Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="convert"
+              c:identifier="gst_audio_converter_convert"
+              version="1.14">
+        <doc xml:space="preserve">Convenience wrapper around gst_audio_converter_samples(), which will
+perform allocation of the output buffer based on the result from
+gst_audio_converter_get_out_frames().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE is the conversion could be performed.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="convert" transfer-ownership="none">
+            <type name="AudioConverter" c:type="GstAudioConverter*"/>
+          </instance-parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">extra #GstAudioConverterFlags</doc>
+            <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
+          </parameter>
+          <parameter name="in" transfer-ownership="none">
+            <doc xml:space="preserve">input data</doc>
+            <array length="2" zero-terminated="0" c:type="gpointer">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="in_size" transfer-ownership="none">
+            <doc xml:space="preserve">size of @in</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="out"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">a pointer where
+ the output data will be written</doc>
+            <array length="4" zero-terminated="0" c:type="gpointer*">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="out_size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">a pointer where the size of @out will be written</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="free" c:identifier="gst_audio_converter_free">
         <doc xml:space="preserve">Free a previously allocated @convert instance.</doc>
         <return-value transfer-ownership="none">
@@ -2078,37 +2488,6 @@ option and values.</doc>
           </parameter>
         </parameters>
       </method>
-      <function name="new"
-                c:identifier="gst_audio_converter_new"
-                introspectable="0">
-        <doc xml:space="preserve">Create a new #GstAudioConverter that is able to convert between @in and @out
-audio formats.
-
-@config contains extra configuration options, see #GST_VIDEO_CONVERTER_OPT_*
-parameters for details about the options and values.</doc>
-        <return-value>
-          <doc xml:space="preserve">a #GstAudioConverter or %NULL if conversion is not possible.</doc>
-          <type name="AudioConverter" c:type="GstAudioConverter*"/>
-        </return-value>
-        <parameters>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">extra #GstAudioConverterFlags</doc>
-            <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
-          </parameter>
-          <parameter name="in_info" transfer-ownership="none">
-            <doc xml:space="preserve">a source #GstAudioInfo</doc>
-            <type name="AudioInfo" c:type="GstAudioInfo*"/>
-          </parameter>
-          <parameter name="out_info" transfer-ownership="none">
-            <doc xml:space="preserve">a destination #GstAudioInfo</doc>
-            <type name="AudioInfo" c:type="GstAudioInfo*"/>
-          </parameter>
-          <parameter name="config" transfer-ownership="full">
-            <doc xml:space="preserve">a #GstStructure with configuration options</doc>
-            <type name="Gst.Structure" c:type="GstStructure*"/>
-          </parameter>
-        </parameters>
-      </function>
     </record>
     <bitfield name="AudioConverterFlags"
               glib:type-name="GstAudioConverterFlags"
@@ -5542,10 +5921,17 @@ Note: This initializes @info first, no values are preserved.</doc>
             <doc xml:space="preserve">the number of channels</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
-          <parameter name="position" transfer-ownership="none">
+          <parameter name="position"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the channel positions</doc>
-            <type name="AudioChannelPosition"
-                  c:type="const GstAudioChannelPosition*"/>
+            <array zero-terminated="0"
+                   c:type="GstAudioChannelPosition*"
+                   fixed-size="64">
+              <type name="AudioChannelPosition"
+                    c:type="GstAudioChannelPosition"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -8773,38 +9159,6 @@ checks if the channels are in the order required by GStreamer.</doc>
       <return-value transfer-ownership="none">
         <type name="Gst.MetaInfo" c:type="const GstMetaInfo*"/>
       </return-value>
-    </function>
-    <function name="audio_converter_new"
-              c:identifier="gst_audio_converter_new"
-              moved-to="AudioConverter.new"
-              introspectable="0">
-      <doc xml:space="preserve">Create a new #GstAudioConverter that is able to convert between @in and @out
-audio formats.
-
-@config contains extra configuration options, see #GST_VIDEO_CONVERTER_OPT_*
-parameters for details about the options and values.</doc>
-      <return-value>
-        <doc xml:space="preserve">a #GstAudioConverter or %NULL if conversion is not possible.</doc>
-        <type name="AudioConverter" c:type="GstAudioConverter*"/>
-      </return-value>
-      <parameters>
-        <parameter name="flags" transfer-ownership="none">
-          <doc xml:space="preserve">extra #GstAudioConverterFlags</doc>
-          <type name="AudioConverterFlags" c:type="GstAudioConverterFlags"/>
-        </parameter>
-        <parameter name="in_info" transfer-ownership="none">
-          <doc xml:space="preserve">a source #GstAudioInfo</doc>
-          <type name="AudioInfo" c:type="GstAudioInfo*"/>
-        </parameter>
-        <parameter name="out_info" transfer-ownership="none">
-          <doc xml:space="preserve">a destination #GstAudioInfo</doc>
-          <type name="AudioInfo" c:type="GstAudioInfo*"/>
-        </parameter>
-        <parameter name="config" transfer-ownership="full">
-          <doc xml:space="preserve">a #GstStructure with configuration options</doc>
-          <type name="Gst.Structure" c:type="GstStructure*"/>
-        </parameter>
-      </parameters>
     </function>
     <function name="audio_downmix_meta_api_get_type"
               c:identifier="gst_audio_downmix_meta_api_get_type">
