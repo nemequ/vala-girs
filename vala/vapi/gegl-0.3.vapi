@@ -229,6 +229,7 @@ namespace Gegl {
 	public class Operation : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Operation ();
+		public static unowned GLib.ParamSpec find_property (string operation_type, string property_name);
 		public static unowned string get_key (string operation_type, string key_name);
 		public static unowned string get_op_version (string op_name);
 		public static unowned string get_property_key (string operation_type, string property_name, string property_key_name);
@@ -381,12 +382,34 @@ namespace Gegl {
 		public bool is_empty ();
 		public bool is_infinite_plane ();
 		public void @set (int x, int y, uint width, uint height);
+		public bool subtract_bounding_box (Gegl.Rectangle minuend, Gegl.Rectangle subtrahend);
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
 	public class Sampler {
 		public void @get (double x, double y, Gegl.Matrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
 		public unowned Gegl.Rectangle get_context_rect ();
+	}
+	[CCode (cheader_filename = "gegl.h", type_id = "gegl_stats_get_type ()")]
+	public class Stats : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Stats ();
+		[NoAccessorMethod]
+		public bool swap_busy { get; }
+		[NoAccessorMethod]
+		public uint64 swap_file_size { get; }
+		[NoAccessorMethod]
+		public uint64 swap_total { get; }
+		[NoAccessorMethod]
+		public int tile_cache_hits { get; }
+		[NoAccessorMethod]
+		public int tile_cache_misses { get; }
+		[NoAccessorMethod]
+		public uint64 tile_cache_total { get; }
+		[NoAccessorMethod]
+		public uint64 tile_cache_total_max { get; }
+		[NoAccessorMethod]
+		public uint64 tile_cache_total_uncloned { get; }
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
@@ -424,7 +447,7 @@ namespace Gegl {
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_tile_source_get_type ()")]
 	public class TileSource : GLib.Object {
-		public weak global::command command;
+		public weak Gegl.TileSourceCommand command;
 		[CCode (array_length = false)]
 		public weak void* padding[4];
 		[CCode (has_construct_function = false)]
@@ -462,6 +485,7 @@ namespace Gegl {
 	public struct ParamSpec {
 		public weak GLib.ParamSpecEnum parent_instance;
 		public weak GLib.SList<void*> excluded_values;
+		public static GLib.ParamSpec audio_fragment (global::string name, global::string nick, global::string blurb, GLib.ParamFlags flags);
 		public static GLib.ParamSpec color (global::string name, global::string nick, global::string blurb, Gegl.Color default_color, GLib.ParamFlags flags);
 		public static GLib.ParamSpec color_from_string (global::string name, global::string nick, global::string blurb, global::string default_color_string, GLib.ParamFlags flags);
 		public static unowned Gegl.Color color_get_default (GLib.ParamSpec self);
@@ -625,6 +649,12 @@ namespace Gegl {
 		VERSION,
 		INDENT
 	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_SPLIT_STRATEGY_", has_type_id = false)]
+	public enum SplitStrategy {
+		AUTO,
+		HORIZONTAL,
+		VERTICAL
+	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_TILE_", has_type_id = false)]
 	public enum TileCommand {
 		IDLE,
@@ -646,6 +676,8 @@ namespace Gegl {
 	public delegate void SamplerGetFun (Gegl.Sampler self, double x, double y, Gegl.Matrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
 	[CCode (cheader_filename = "gegl.h", instance_pos = 1.9)]
 	public delegate void TileCallback (Gegl.Tile tile);
+	[CCode (cheader_filename = "gegl.h", has_target = false)]
+	public delegate void* TileSourceCommand (Gegl.TileSource gegl_tile_source, Gegl.TileCommand command, int x, int y, int z, void* data);
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_AUTO_ROWSTRIDE")]
 	public const int AUTO_ROWSTRIDE;
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_BUFFER_MAX_ITERATORS")]
@@ -779,7 +811,7 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h")]
 	public static unowned Gegl.Config config ();
 	[CCode (cheader_filename = "gegl.h")]
-	public static void create_chain (string str, Gegl.Node op_start, Gegl.Node op_end, double time, int rel_dim, string path_root) throws GLib.Error;
+	public static void create_chain (string ops, Gegl.Node op_start, Gegl.Node op_end, double time, int rel_dim, string path_root) throws GLib.Error;
 	[CCode (cheader_filename = "gegl.h")]
 	public static void create_chain_argv (string ops, Gegl.Node op_start, Gegl.Node op_end, double time, int rel_dim, string path_root) throws GLib.Error;
 	[CCode (cheader_filename = "gegl.h")]
@@ -805,5 +837,9 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h")]
 	public static void load_module_directory (string path);
 	[CCode (cheader_filename = "gegl.h")]
+	public static void reset_stats ();
+	[CCode (cheader_filename = "gegl.h")]
 	public static string serialize (Gegl.Node start, Gegl.Node end, string basepath, Gegl.SerializeFlag serialize_flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static unowned Gegl.Stats stats ();
 }
