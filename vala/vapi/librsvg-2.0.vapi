@@ -19,7 +19,7 @@ namespace Rsvg {
 		[CCode (has_construct_function = false)]
 		public Handle ();
 		public bool close () throws GLib.Error;
-		[Deprecated (replacement = "GLib.Object.unref")]
+		[Version (deprecated = true, deprecated_since = "2.13.90", replacement = "GLib.Object.unref")]
 		public void free ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.14")]
@@ -35,20 +35,20 @@ namespace Rsvg {
 		public Handle.from_stream_sync (GLib.InputStream input_stream, GLib.File? base_file, Rsvg.HandleFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.8")]
 		public unowned string get_base_uri ();
-		[Deprecated (since = "2.36")]
+		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_desc ();
 		[Version (since = "2.14")]
 		public Rsvg.DimensionData get_dimensions ();
 		[Version (since = "2.22")]
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
-		[Deprecated (since = "2.36")]
+		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_metadata ();
 		public Gdk.Pixbuf? get_pixbuf ();
 		[Version (since = "2.14")]
 		public Gdk.Pixbuf? get_pixbuf_sub (string? id);
 		[Version (since = "2.22")]
 		public bool get_position_sub (out Rsvg.PositionData position_data, string? id);
-		[Deprecated (since = "2.36")]
+		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_title ();
 		[Version (since = "2.22")]
 		public bool has_sub (string id);
@@ -67,7 +67,7 @@ namespace Rsvg {
 		public void set_dpi (double dpi);
 		[Version (since = "2.8")]
 		public void set_dpi_x_y (double dpi_x, double dpi_y);
-		[Deprecated (replacement = "render_cairo")]
+		[Version (deprecated = true, deprecated_since = "2.13.90", replacement = "render_cairo")]
 		public void set_size_callback (owned Rsvg.SizeFunc size_func);
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.36")]
@@ -124,28 +124,28 @@ namespace Rsvg {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated]
+	[Version (deprecated = true, deprecated_since = "2.13.90", replacement = "render_cairo")]
 	public delegate void SizeFunc (ref int width, ref int height);
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
 	[Version (since = "2.36")]
 	public static void cleanup ();
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated (since = "2.36")]
+	[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 	public static void init ();
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated]
+	[Version (deprecated = true, deprecated_since = "2.35.0", replacement = "")]
 	public static Gdk.Pixbuf pixbuf_from_file (string file_name) throws GLib.Error;
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated]
+	[Version (deprecated = true, deprecated_since = "2.35.0", replacement = "")]
 	public static Gdk.Pixbuf pixbuf_from_file_at_max_size (string file_name, int max_width, int max_height) throws GLib.Error;
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated]
+	[Version (deprecated = true, deprecated_since = "2.35.0", replacement = "")]
 	public static Gdk.Pixbuf pixbuf_from_file_at_size (string file_name, int width, int height) throws GLib.Error;
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated]
+	[Version (deprecated = true, deprecated_since = "2.35.0", replacement = "")]
 	public static Gdk.Pixbuf pixbuf_from_file_at_zoom (string file_name, double x_zoom, double y_zoom) throws GLib.Error;
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated]
+	[Version (deprecated = true, deprecated_since = "2.35.0", replacement = "")]
 	public static Gdk.Pixbuf pixbuf_from_file_at_zoom_with_max (string file_name, double x_zoom, double y_zoom, int max_width, int max_height) throws GLib.Error;
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
 	[Version (deprecated = true, deprecated_since = "2.42.3", since = "2.8")]
@@ -154,6 +154,6 @@ namespace Rsvg {
 	[Version (deprecated = true, deprecated_since = "2.42.3", since = "2.8")]
 	public static void set_default_dpi_x_y (double dpi_x, double dpi_y);
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Deprecated (since = "2.36")]
+	[Version (deprecated = true, deprecated_since = "2.35.0", replacement = "")]
 	public static void term ();
 }
