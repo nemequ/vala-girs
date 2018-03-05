@@ -122,6 +122,14 @@ namespace Gcr {
 		public void add (GLib.Object object);
 		public void remove (GLib.Object object);
 	}
+	[CCode (cheader_filename = "gcr/gcr-base.h", type_id = "gcr_ssh_askpass_get_type ()")]
+	public class SshAskpass : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public SshAskpass (GLib.TlsInteraction interaction);
+		public static void child_setup (void* askpass);
+		public unowned GLib.TlsInteraction get_interaction ();
+		public GLib.TlsInteraction interaction { get; construct; }
+	}
 	[CCode (cheader_filename = "gcr/gcr-base.h", type_id = "gcr_system_prompt_get_type ()")]
 	public class SystemPrompt : GLib.Object, Gcr.Prompt, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]

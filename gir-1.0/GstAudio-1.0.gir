@@ -257,20 +257,22 @@ transition band for the kaiser window. 0.087 is the default.</doc>
            glib:type-name="GstAudioAggregator"
            glib:get-type="gst_audio_aggregator_get_type"
            glib:type-struct="AudioAggregatorClass">
-      <doc xml:space="preserve">#GstAudioAggregator will perform conversion on the data arriving
-on its sink pads, based on the format expected downstream.
+      <doc xml:space="preserve">Subclasses must use (a subclass of) #GstAudioAggregatorPad for both
+their source and sink pads,
+gst_element_class_add_static_pad_template_with_gtype() is a convenient
+helper.
 
-Subclasses can opt out of the conversion behaviour by setting
-#GstAudioAggregatorClass.convert_buffer() to %NULL.
+#GstAudioAggregator can perform conversion on the data arriving
+on its sink pads, based on the format expected downstream: in order
+to enable that behaviour, the GType of the sink pads must either be
+a (subclass of) #GstAudioAggregatorConvertPad to use the default
+#GstAudioConverter implementation, or a subclass of #GstAudioAggregatorPad
+implementing #GstAudioAggregatorPad.convert_buffer.
 
-Subclasses that wish to use the default conversion implementation
-should use a (subclass of) #GstAudioAggregatorConvertPad as their
-#GstAggregatorClass.sinkpads_type, as it will cache the created
-#GstAudioConverter and install a property allowing to configure it,
-#GstAudioAggregatorPad:converter-config.
+To allow for the output caps to change, the mechanism is the same as
+above, with the GType of the source pad.
 
-Subclasses that wish to perform custom conversion should override
-#GstAudioAggregatorClass.convert_buffer().
+See #GstAudioMixer for an example.
 
 When conversion is enabled, #GstAudioAggregator will accept
 any type of raw audio caps and perform conversion
@@ -280,10 +282,6 @@ expects as the target format.
 In case downstream caps are not fully fixated, it will use
 the first configured sink pad to finish fixating its source pad
 caps.
-
-Additionally, handling audio conversion directly in the element
-means that this base class supports safely reconfiguring its
-source pad.
 
 A notable exception for now is the sample rate, sink pads must
 have the same sample rate as either the downstream requirement,
@@ -314,28 +312,6 @@ downstream specifies a range or a set of acceptable rates).</doc>
           </parameter>
           <parameter name="num_frames" transfer-ownership="none">
             <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="convert_buffer">
-        <return-value transfer-ownership="full">
-          <type name="Gst.Buffer" c:type="GstBuffer*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="aagg" transfer-ownership="none">
-            <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
-          </instance-parameter>
-          <parameter name="pad" transfer-ownership="none">
-            <type name="Gst.Pad" c:type="GstPad*"/>
-          </parameter>
-          <parameter name="in_info" transfer-ownership="none">
-            <type name="AudioInfo" c:type="GstAudioInfo*"/>
-          </parameter>
-          <parameter name="out_info" transfer-ownership="none">
-            <type name="AudioInfo" c:type="GstAudioInfo*"/>
-          </parameter>
-          <parameter name="buffer" transfer-ownership="none">
-            <type name="Gst.Buffer" c:type="GstBuffer*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -385,10 +361,6 @@ downstream specifies a range or a set of acceptable rates).</doc>
       <field name="parent">
         <doc xml:space="preserve">The parent #GstAggregator</doc>
         <type name="GstBase.Aggregator" c:type="GstAggregator"/>
-      </field>
-      <field name="info">
-        <doc xml:space="preserve">The information parsed from the current caps</doc>
-        <type name="AudioInfo" c:type="GstAudioInfo"/>
       </field>
       <field name="current_caps">
         <doc xml:space="preserve">The caps set by the subclass</doc>
@@ -455,30 +427,6 @@ downstream specifies a range or a set of acceptable rates).</doc>
           </parameters>
         </callback>
       </field>
-      <field name="convert_buffer">
-        <callback name="convert_buffer">
-          <return-value transfer-ownership="full">
-            <type name="Gst.Buffer" c:type="GstBuffer*"/>
-          </return-value>
-          <parameters>
-            <parameter name="aagg" transfer-ownership="none">
-              <type name="AudioAggregator" c:type="GstAudioAggregator*"/>
-            </parameter>
-            <parameter name="pad" transfer-ownership="none">
-              <type name="Gst.Pad" c:type="GstPad*"/>
-            </parameter>
-            <parameter name="in_info" transfer-ownership="none">
-              <type name="AudioInfo" c:type="GstAudioInfo*"/>
-            </parameter>
-            <parameter name="out_info" transfer-ownership="none">
-              <type name="AudioInfo" c:type="GstAudioInfo*"/>
-            </parameter>
-            <parameter name="buffer" transfer-ownership="none">
-              <type name="Gst.Buffer" c:type="GstBuffer*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
       <field name="_gst_reserved" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="20">
           <type name="gpointer" c:type="gpointer"/>
@@ -537,6 +485,35 @@ See #GstAudioAggregator for more details.</doc>
            glib:get-type="gst_audio_aggregator_pad_get_type"
            glib:type-struct="AudioAggregatorPadClass">
       <doc xml:space="preserve">The default implementation of GstPad used with #GstAudioAggregator</doc>
+      <virtual-method name="convert_buffer">
+        <return-value transfer-ownership="full">
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pad" transfer-ownership="none">
+            <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+          </instance-parameter>
+          <parameter name="in_info" transfer-ownership="none">
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="out_info" transfer-ownership="none">
+            <type name="AudioInfo" c:type="GstAudioInfo*"/>
+          </parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="update_conversion_info">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="pad" transfer-ownership="none">
+            <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <field name="parent">
         <doc xml:space="preserve">The parent #GstAggregatorPad</doc>
         <type name="GstBase.AggregatorPad" c:type="GstAggregatorPad"/>
@@ -561,6 +538,39 @@ See #GstAudioAggregator for more details.</doc>
       <field name="parent_class">
         <type name="GstBase.AggregatorPadClass"
               c:type="GstAggregatorPadClass"/>
+      </field>
+      <field name="convert_buffer">
+        <callback name="convert_buffer">
+          <return-value transfer-ownership="full">
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </return-value>
+          <parameters>
+            <parameter name="pad" transfer-ownership="none">
+              <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+            </parameter>
+            <parameter name="in_info" transfer-ownership="none">
+              <type name="AudioInfo" c:type="GstAudioInfo*"/>
+            </parameter>
+            <parameter name="out_info" transfer-ownership="none">
+              <type name="AudioInfo" c:type="GstAudioInfo*"/>
+            </parameter>
+            <parameter name="buffer" transfer-ownership="none">
+              <type name="Gst.Buffer" c:type="GstBuffer*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="update_conversion_info">
+        <callback name="update_conversion_info">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="pad" transfer-ownership="none">
+              <type name="AudioAggregatorPad" c:type="GstAudioAggregatorPad*"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
       <field name="_gst_reserved" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="20">

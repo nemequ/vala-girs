@@ -479,6 +479,7 @@ namespace Gegl {
 	public struct Matrix2 {
 		[CCode (array_length = false)]
 		public weak double coeff[2];
+		public double determinant ();
 	}
 	[CCode (cheader_filename = "gegl.h", cname = "GeglParamSpecEnum", has_type_id = false)]
 	[GIR (name = "ParamSpecEnum")]
