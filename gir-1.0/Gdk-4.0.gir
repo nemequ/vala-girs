@@ -2674,7 +2674,7 @@ For named cursors, this can happen when using nonstandard names or when
 using an incomplete cursor theme.
 For textured cursors, this can happen when the texture is too large or
 when the #GdkDisplay it is used on does not support textured cursors.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the fallback of the cursor or %NULL to use
     the default cursor as fallback.</doc>
           <type name="Cursor" c:type="GdkCursor*"/>
@@ -2717,7 +2717,7 @@ pixel that will be directly above the cursor.</doc>
       <method name="get_name" c:identifier="gdk_cursor_get_name">
         <doc xml:space="preserve">Returns the name of the cursor. If the cursor is not a named cursor, %NULL
 will be returned and the GdkCursor::texture property will be set.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the name of the cursor or %NULL if it is not
     a named cursor</doc>
           <type name="utf8" c:type="const char*"/>
@@ -2732,7 +2732,7 @@ will be returned and the GdkCursor::texture property will be set.</doc>
       <method name="get_texture" c:identifier="gdk_cursor_get_texture">
         <doc xml:space="preserve">Returns the texture for the cursor. If the cursor is a named cursor, %NULL
 will be returned and the GdkCursor::name property will be set.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the texture for cursor or %NULL if it is a
     named cursor</doc>
           <type name="Texture" c:type="GdkTexture*"/>
@@ -19145,47 +19145,6 @@ The data is assumed to be in CAIRO_FORMAT_ARGB32 format.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <constructor name="new_for_gl" c:identifier="gdk_texture_new_for_gl">
-        <doc xml:space="preserve">Creates a new texture for an existing GL texture.
-
-Note that the GL texture must not be modified until @destroy is called,
-which will happen when the GdkTexture object is finalized, or due to
-an explicit call of gdk_texture_release_gl().</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A newly-created #GdkTexture</doc>
-          <type name="Texture" c:type="GdkTexture*"/>
-        </return-value>
-        <parameters>
-          <parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkGLContext</doc>
-            <type name="GLContext" c:type="GdkGLContext*"/>
-          </parameter>
-          <parameter name="id" transfer-ownership="none">
-            <doc xml:space="preserve">the ID of a texture that was created with @context</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="width" transfer-ownership="none">
-            <doc xml:space="preserve">the nominal width of the texture</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <doc xml:space="preserve">the nominal height of the texture</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="destroy" transfer-ownership="none" scope="async">
-            <doc xml:space="preserve">a destroy notify that will be called when the GL resources
-          are released</doc>
-            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
-          </parameter>
-          <parameter name="data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">data that gets passed to @destroy</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-        </parameters>
-      </constructor>
       <constructor name="new_for_pixbuf"
                    c:identifier="gdk_texture_new_for_pixbuf">
         <doc xml:space="preserve">Creates a new texture object representing the GdkPixbuf.</doc>
@@ -19298,23 +19257,6 @@ cairo_surface_mark_dirty (surface);
         <parameters>
           <instance-parameter name="texture" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkTexture</doc>
-            <type name="Texture" c:type="GdkTexture*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="release_gl" c:identifier="gdk_texture_release_gl">
-        <doc xml:space="preserve">Releases the GL resources held by a #GdkTexture that
-was created with gdk_texture_new_for_gl().
-
-The texture contents are still available via the
-gdk_texture_download() function, after this function
-has been called.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkTexture wrapping a GL texture</doc>
             <type name="Texture" c:type="GdkTexture*"/>
           </instance-parameter>
         </parameters>
@@ -23932,6 +23874,66 @@ will be returned in @x and @y.</doc>
       <return-value transfer-ownership="none">
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
+    </function>
+    <function name="gl_texture_new"
+              c:identifier="gdk_gl_texture_new"
+              introspectable="0">
+      <doc xml:space="preserve">Creates a new texture for an existing GL texture.
+
+Note that the GL texture must not be modified until @destroy is called,
+which will happen when the GdkTexture object is finalized, or due to
+an explicit call of gdk_texture_release_gl().</doc>
+      <return-value>
+        <doc xml:space="preserve">A newly-created #GdkTexture</doc>
+        <type name="Texture" c:type="GdkTexture*"/>
+      </return-value>
+      <parameters>
+        <parameter name="context" transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkGLContext</doc>
+          <type name="GLContext" c:type="GdkGLContext*"/>
+        </parameter>
+        <parameter name="id" transfer-ownership="none">
+          <doc xml:space="preserve">the ID of a texture that was created with @context</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="width" transfer-ownership="none">
+          <doc xml:space="preserve">the nominal width of the texture</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="height" transfer-ownership="none">
+          <doc xml:space="preserve">the nominal height of the texture</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="destroy" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">a destroy notify that will be called when the GL resources
+          are released</doc>
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+        <parameter name="data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">data that gets passed to @destroy</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="gl_texture_release" c:identifier="gdk_gl_texture_release">
+      <doc xml:space="preserve">Releases the GL resources held by a #GdkTexture that
+was created with gdk_texture_new_for_gl().
+
+The texture contents are still available via the
+gdk_texture_download() function, after this function
+has been called.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="texture" transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkTexture wrapping a GL texture</doc>
+          <type name="Texture" c:type="GdkTexture*"/>
+        </parameter>
+      </parameters>
     </function>
     <function name="intern_mime_type" c:identifier="gdk_intern_mime_type">
       <doc xml:space="preserve">Canonicalizes the given mime type and interns the result.
