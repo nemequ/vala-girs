@@ -218,11 +218,11 @@ namespace GWeather {
 		REGION,
 		COUNTRY,
 		ADM1,
-		ADM2,
 		CITY,
 		WEATHER_STATION,
 		DETACHED,
-		NAMED_TIMEZONE
+		NAMED_TIMEZONE;
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_PRESSURE_UNIT_", type_id = "gweather_pressure_unit_get_type ()")]
 	public enum PressureUnit {

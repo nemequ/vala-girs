@@ -480,6 +480,7 @@ namespace Gegl {
 		[CCode (array_length = false)]
 		public weak double coeff[2];
 		public double determinant ();
+		public bool is_scale ();
 	}
 	[CCode (cheader_filename = "gegl.h", cname = "GeglParamSpecEnum", has_type_id = false)]
 	[GIR (name = "ParamSpecEnum")]
@@ -595,6 +596,15 @@ namespace Gegl {
 		DEFAULT,
 		CACHE,
 		DIRTY
+	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_distance_metric_get_type ()")]
+	public enum DistanceMetric {
+		[CCode (cname = "Euclidean")]
+		EUCLIDEAN,
+		[CCode (cname = "Manhattan")]
+		MANHATTAN,
+		[CCode (cname = "Chebyshev")]
+		CHEBYSHEV
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_dither_method_get_type ()")]
 	public enum DitherMethod {

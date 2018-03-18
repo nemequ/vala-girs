@@ -7138,13 +7138,21 @@ interval after the last presentation time, and later than @base_time.</doc>
             <doc xml:space="preserve">base time for determining a presentaton time</doc>
             <type name="gint64" c:type="gint64"/>
           </parameter>
-          <parameter name="refresh_interval_return" transfer-ownership="none">
-            <doc xml:space="preserve">a location to store the determined refresh
- interval, or %NULL. A default refresh interval of 1/60th of
- a second will be stored if no history is present.</doc>
+          <parameter name="refresh_interval_return"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a location to store the
+determined refresh interval, or %NULL. A default refresh interval of
+1/60th of a second will be stored if no history is present.</doc>
             <type name="gint64" c:type="gint64*"/>
           </parameter>
-          <parameter name="presentation_time_return" transfer-ownership="none">
+          <parameter name="presentation_time_return"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">a location to store the next
  candidate presentation time after the given base time.
  0 will be will be stored if no history is present.</doc>
@@ -7935,6 +7943,78 @@ OpenGL ES API, extensions, or shaders.</doc>
         </return-value>
       </function>
     </enumeration>
+    <class name="GLTexture"
+           c:symbol-prefix="gl_texture"
+           c:type="GdkGLTexture"
+           parent="Texture"
+           glib:type-name="GdkGLTexture"
+           glib:get-type="gdk_gl_texture_get_type"
+           glib:type-struct="GLTextureClass">
+      <implements name="Paintable"/>
+      <constructor name="new" c:identifier="gdk_gl_texture_new">
+        <doc xml:space="preserve">Creates a new texture for an existing GL texture.
+
+Note that the GL texture must not be modified until @destroy is called,
+which will happen when the GdkTexture object is finalized, or due to
+an explicit call of gdk_texture_release_gl().</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly-created #GdkTexture</doc>
+          <type name="Texture" c:type="GdkTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkGLContext</doc>
+            <type name="GLContext" c:type="GdkGLContext*"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">the ID of a texture that was created with @context</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">the nominal width of the texture</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">the nominal height of the texture</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="destroy" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">a destroy notify that will be called when the GL resources
+          are released</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">data that gets passed to @destroy</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="release" c:identifier="gdk_gl_texture_release">
+        <doc xml:space="preserve">Releases the GL resources held by a #GdkGLTexture that
+was created with gdk_gl_texture_new().
+
+The texture contents are still available via the
+gdk_texture_download() function, after this function
+has been called.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkTexture wrapping a GL texture</doc>
+            <type name="GLTexture" c:type="GdkGLTexture*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+    </class>
+    <record name="GLTextureClass"
+            c:type="GdkGLTextureClass"
+            disguised="1"
+            glib:is-gtype-struct-for="GLTexture">
+    </record>
     <record name="Geometry" c:type="GdkGeometry">
       <doc xml:space="preserve">The #GdkGeometry struct gives the window manager information about
 a window’s geometry constraints. Normally you would set these on
@@ -17742,6 +17822,92 @@ See gdk_keymap_get_caps_lock_state().</doc>
               c:type="GDK_MAX_TIMECOORD_AXES">
       <type name="gint" c:type="gint"/>
     </constant>
+    <enumeration name="MemoryFormat"
+                 glib:type-name="GdkMemoryFormat"
+                 glib:get-type="gdk_memory_format_get_type"
+                 c:type="GdkMemoryFormat">
+      <member name="b8g8r8a8_premultiplied"
+              value="0"
+              c:identifier="GDK_MEMORY_B8G8R8A8_PREMULTIPLIED"
+              glib:nick="b8g8r8a8-premultiplied">
+      </member>
+      <member name="a8r8g8b8_premultiplied"
+              value="1"
+              c:identifier="GDK_MEMORY_A8R8G8B8_PREMULTIPLIED"
+              glib:nick="a8r8g8b8-premultiplied">
+      </member>
+      <member name="b8g8r8a8"
+              value="2"
+              c:identifier="GDK_MEMORY_B8G8R8A8"
+              glib:nick="b8g8r8a8">
+      </member>
+      <member name="a8r8g8b8"
+              value="3"
+              c:identifier="GDK_MEMORY_A8R8G8B8"
+              glib:nick="a8r8g8b8">
+      </member>
+      <member name="r8g8b8a8"
+              value="4"
+              c:identifier="GDK_MEMORY_R8G8B8A8"
+              glib:nick="r8g8b8a8">
+      </member>
+      <member name="a8b8g8r8"
+              value="5"
+              c:identifier="GDK_MEMORY_A8B8G8R8"
+              glib:nick="a8b8g8r8">
+      </member>
+      <member name="r8g8b8"
+              value="6"
+              c:identifier="GDK_MEMORY_R8G8B8"
+              glib:nick="r8g8b8">
+      </member>
+      <member name="b8g8r8"
+              value="7"
+              c:identifier="GDK_MEMORY_B8G8R8"
+              glib:nick="b8g8r8">
+      </member>
+      <member name="n_formats"
+              value="8"
+              c:identifier="GDK_MEMORY_N_FORMATS"
+              glib:nick="n-formats">
+      </member>
+    </enumeration>
+    <class name="MemoryTexture"
+           c:symbol-prefix="memory_texture"
+           c:type="GdkMemoryTexture"
+           parent="Texture"
+           glib:type-name="GdkMemoryTexture"
+           glib:get-type="gdk_memory_texture_get_type"
+           glib:type-struct="MemoryTextureClass">
+      <implements name="Paintable"/>
+      <constructor name="new" c:identifier="gdk_memory_texture_new">
+        <return-value transfer-ownership="full">
+          <type name="Texture" c:type="GdkTexture*"/>
+        </return-value>
+        <parameters>
+          <parameter name="width" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <type name="MemoryFormat" c:type="GdkMemoryFormat"/>
+          </parameter>
+          <parameter name="bytes" transfer-ownership="none">
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+          <parameter name="stride" transfer-ownership="none">
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </constructor>
+    </class>
+    <record name="MemoryTextureClass"
+            c:type="GdkMemoryTextureClass"
+            disguised="1"
+            glib:is-gtype-struct-for="MemoryTexture">
+    </record>
     <enumeration name="ModifierIntent"
                  version="3.4"
                  glib:type-name="GdkModifierIntent"
@@ -18355,6 +18521,522 @@ is given in the
 [GLib Main Loop][glib-The-Main-Event-Loop].</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <interface name="Paintable"
+               c:symbol-prefix="paintable"
+               c:type="GdkPaintable"
+               glib:type-name="GdkPaintable"
+               glib:get-type="gdk_paintable_get_type"
+               glib:type-struct="PaintableInterface">
+      <virtual-method name="get_current_image" invoker="get_current_image">
+        <doc xml:space="preserve">Gets an immutable paintable for the current contents displayed by @paintable.
+
+This is useful when you want to retain the current state of an animation, for
+example to take a screenshot of a running animation.
+
+If the @paintable is already immutable, it will return itself.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An immutable paintable for the current
+    contents of @paintable.</doc>
+          <type name="Paintable" c:type="GdkPaintable*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_flags" invoker="get_flags">
+        <doc xml:space="preserve">Get flags for the paintable. This is oftentimes useful for optimizations.
+
+See #GdkPaintableFlags for the flags and what they mean.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GdkPaintableFlags for this paintable.</doc>
+          <type name="PaintableFlags" c:type="GdkPaintableFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_intrinsic_aspect_ratio"
+                      invoker="get_intrinsic_aspect_ratio">
+        <doc xml:space="preserve">Gets the preferred aspect ratio the @paintable would like to be displayed at.
+The aspect ration is the width divided by the height, so a value of 0.5 means
+that the @paintable prefers to be displayed twice as high as it is wide.
+Consumers of this interface can use this to preserve aspect ratio when displaying
+this paintable.
+
+This is a purely informational value and does not in any way limit the values
+that may be passed to gdk_paintable_snapshot().
+
+Usually when a @paintable returns non-0 values from
+gdk_paintable_get_intrinsic_width() and gdk_paintable_get_intrinsic_height()
+the aspect ratio should conform to those values, though that is not required.
+
+If the @paintable does not have a preferred aspect ratio, it returns 0.0.
+Negative values are never returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the intrinsic aspect ratio of @paintable or 0.0 if none.</doc>
+          <type name="gdouble" c:type="double"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_intrinsic_height"
+                      invoker="get_intrinsic_height">
+        <doc xml:space="preserve">Gets the preferred height the @paintable would like to be displayed at.
+Consumers of this interface can use this to reserve enough space to draw
+the paintable.
+
+This is a purely informational value and does not in any way limit the values
+that may be passed to gdk_paintable_snapshot().
+
+If the @paintable does not have a preferred height, it returns 0. Negative
+values are never returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the intrinsic height of @paintable or 0 if none.</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_intrinsic_width" invoker="get_intrinsic_width">
+        <doc xml:space="preserve">Gets the preferred width the @paintable would like to be displayed at.
+Consumers of this interface can use this to reserve enough space to draw
+the paintable.
+
+This is a purely informational value and does not in any way limit the values
+that may be passed to gdk_paintable_snapshot().
+
+If the @paintable does not have a preferred width, it returns 0. Negative
+values are never returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the intrinsic width of @paintable or 0 if none.</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="snapshot" invoker="snapshot" version="4.0">
+        <doc xml:space="preserve">Snapshots the given paintable with the given @width and @height at the
+current (0,0) offset of the @snapshot. If @width and @height are not larger
+than zero, this function will do nothing.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+          <parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSnapshot to snapshot to</doc>
+            <type name="Snapshot" c:type="GdkSnapshot*"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">width to snapshot in</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">height to snapshot in</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="compute_concrete_size"
+              c:identifier="gdk_paintable_compute_concrete_size">
+        <doc xml:space="preserve">Applies the sizing algorithm outlined in
+https://drafts.csswg.org/css-images-3/#default-sizing
+to the given @paintable. See that link for more details.
+
+It is not necessary to call this function when both @specified_width
+and @specified_height are known, but it is useful to call this
+function in GtkWidget:measure implementations to compute the
+other dimension when only one dimension is given.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+          <parameter name="specified_width" transfer-ownership="none">
+            <doc xml:space="preserve">the width @paintable could be drawn into or
+    0.0 if unknown</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="specified_height" transfer-ownership="none">
+            <doc xml:space="preserve">the height @paintable could be drawn into or
+    0.0 if unknown</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="default_width" transfer-ownership="none">
+            <doc xml:space="preserve">the width @paintable would be drawn into if
+    no other constraints were given</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="default_height" transfer-ownership="none">
+            <doc xml:space="preserve">the height @paintable would be drawn into if
+    no other constraints were given</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="concrete_width"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">will be set to the concrete width
+    computed.</doc>
+            <type name="gdouble" c:type="double*"/>
+          </parameter>
+          <parameter name="concrete_height"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">will be set to the concrete height
+    computed.</doc>
+            <type name="gdouble" c:type="double*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_current_image"
+              c:identifier="gdk_paintable_get_current_image">
+        <doc xml:space="preserve">Gets an immutable paintable for the current contents displayed by @paintable.
+
+This is useful when you want to retain the current state of an animation, for
+example to take a screenshot of a running animation.
+
+If the @paintable is already immutable, it will return itself.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">An immutable paintable for the current
+    contents of @paintable.</doc>
+          <type name="Paintable" c:type="GdkPaintable*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_flags" c:identifier="gdk_paintable_get_flags">
+        <doc xml:space="preserve">Get flags for the paintable. This is oftentimes useful for optimizations.
+
+See #GdkPaintableFlags for the flags and what they mean.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GdkPaintableFlags for this paintable.</doc>
+          <type name="PaintableFlags" c:type="GdkPaintableFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_intrinsic_aspect_ratio"
+              c:identifier="gdk_paintable_get_intrinsic_aspect_ratio">
+        <doc xml:space="preserve">Gets the preferred aspect ratio the @paintable would like to be displayed at.
+The aspect ration is the width divided by the height, so a value of 0.5 means
+that the @paintable prefers to be displayed twice as high as it is wide.
+Consumers of this interface can use this to preserve aspect ratio when displaying
+this paintable.
+
+This is a purely informational value and does not in any way limit the values
+that may be passed to gdk_paintable_snapshot().
+
+Usually when a @paintable returns non-0 values from
+gdk_paintable_get_intrinsic_width() and gdk_paintable_get_intrinsic_height()
+the aspect ratio should conform to those values, though that is not required.
+
+If the @paintable does not have a preferred aspect ratio, it returns 0.0.
+Negative values are never returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the intrinsic aspect ratio of @paintable or 0.0 if none.</doc>
+          <type name="gdouble" c:type="double"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_intrinsic_height"
+              c:identifier="gdk_paintable_get_intrinsic_height">
+        <doc xml:space="preserve">Gets the preferred height the @paintable would like to be displayed at.
+Consumers of this interface can use this to reserve enough space to draw
+the paintable.
+
+This is a purely informational value and does not in any way limit the values
+that may be passed to gdk_paintable_snapshot().
+
+If the @paintable does not have a preferred height, it returns 0. Negative
+values are never returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the intrinsic height of @paintable or 0 if none.</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_intrinsic_width"
+              c:identifier="gdk_paintable_get_intrinsic_width">
+        <doc xml:space="preserve">Gets the preferred width the @paintable would like to be displayed at.
+Consumers of this interface can use this to reserve enough space to draw
+the paintable.
+
+This is a purely informational value and does not in any way limit the values
+that may be passed to gdk_paintable_snapshot().
+
+If the @paintable does not have a preferred width, it returns 0. Negative
+values are never returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the intrinsic width of @paintable or 0 if none.</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="invalidate_contents"
+              c:identifier="gdk_paintable_invalidate_contents">
+        <doc xml:space="preserve">Called by implementations of #GdkPaintable to invalidate their contents.
+Unless the contents are invalidated, implementations must guarantee that
+multiple calls to GdkPaintable::snapshot produce the same output.
+
+This function will emit the GdkPaintable::invalidate-contents signal.
+
+If a @paintable reports the %GDK_PAINTABLE_STATIC_CONTENTS flag,
+it must not call this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="invalidate_size"
+              c:identifier="gdk_paintable_invalidate_size">
+        <doc xml:space="preserve">Called by implementations of #GdkPaintable to invalidate their size.
+As long as the size is not invalidated, @paintable must return the same values
+for its width, height and intrinsic height.
+
+This function will emit the GdkPaintable::invalidate-size signal.
+
+If a @paintable reports the %GDK_PAINTABLE_STATIC_SIZE flag,
+it must not call this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="snapshot"
+              c:identifier="gdk_paintable_snapshot"
+              version="4.0">
+        <doc xml:space="preserve">Snapshots the given paintable with the given @width and @height at the
+current (0,0) offset of the @snapshot. If @width and @height are not larger
+than zero, this function will do nothing.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="paintable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkPaintable</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </instance-parameter>
+          <parameter name="snapshot" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkSnapshot to snapshot to</doc>
+            <type name="Snapshot" c:type="GdkSnapshot*"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">width to snapshot in</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">height to snapshot in</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+        </parameters>
+      </method>
+      <glib:signal name="invalidate-contents" when="last" version="4.0">
+        <doc xml:space="preserve">Emitted when the contents of the @paintable change.
+
+Examples for such an event would be videos changing to the next frame or
+the icon theme for an icon changing.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="invalidate-size" when="last" version="4.0">
+        <doc xml:space="preserve">Emitted when the intrinsic size of the @paintable changes. This means the values
+reported by at least one of gdk_paintable_get_intrinsic_width(),
+gdk_paintable_get_intrinsic_height() or gdk_paintable_get_intrinsic_aspect_ratio()
+has changed.
+
+Examples for such an event would be a paintable displaying the contents of a toplevel
+window being resized.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </interface>
+    <bitfield name="PaintableFlags"
+              glib:type-name="GdkPaintableFlags"
+              glib:get-type="gdk_paintable_flags_get_type"
+              c:type="GdkPaintableFlags">
+      <doc xml:space="preserve">Flags about this object. Implementations use these for optimizations
+such as caching.</doc>
+      <member name="size"
+              value="1"
+              c:identifier="GDK_PAINTABLE_STATIC_SIZE"
+              glib:nick="size">
+        <doc xml:space="preserve">The size is immutable.
+    The GdkPaintable::invalidate-size signal will never be
+    emitted.</doc>
+      </member>
+      <member name="contents"
+              value="2"
+              c:identifier="GDK_PAINTABLE_STATIC_CONTENTS"
+              glib:nick="contents">
+        <doc xml:space="preserve">The content is immutable.
+    The GdkPaintable::invalidate-content signal will never be
+    emitted.</doc>
+      </member>
+    </bitfield>
+    <record name="PaintableInterface"
+            c:type="GdkPaintableInterface"
+            glib:is-gtype-struct-for="Paintable">
+      <field name="g_iface" readable="0" private="1">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="snapshot">
+        <callback name="snapshot">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="paintable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkPaintable</doc>
+              <type name="Paintable" c:type="GdkPaintable*"/>
+            </parameter>
+            <parameter name="snapshot" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkSnapshot to snapshot to</doc>
+              <type name="Snapshot" c:type="GdkSnapshot*"/>
+            </parameter>
+            <parameter name="width" transfer-ownership="none">
+              <doc xml:space="preserve">width to snapshot in</doc>
+              <type name="gdouble" c:type="double"/>
+            </parameter>
+            <parameter name="height" transfer-ownership="none">
+              <doc xml:space="preserve">height to snapshot in</doc>
+              <type name="gdouble" c:type="double"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_current_image">
+        <callback name="get_current_image">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">An immutable paintable for the current
+    contents of @paintable.</doc>
+            <type name="Paintable" c:type="GdkPaintable*"/>
+          </return-value>
+          <parameters>
+            <parameter name="paintable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkPaintable</doc>
+              <type name="Paintable" c:type="GdkPaintable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_flags">
+        <callback name="get_flags">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">The #GdkPaintableFlags for this paintable.</doc>
+            <type name="PaintableFlags" c:type="GdkPaintableFlags"/>
+          </return-value>
+          <parameters>
+            <parameter name="paintable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkPaintable</doc>
+              <type name="Paintable" c:type="GdkPaintable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_intrinsic_width">
+        <callback name="get_intrinsic_width">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the intrinsic width of @paintable or 0 if none.</doc>
+            <type name="gint" c:type="int"/>
+          </return-value>
+          <parameters>
+            <parameter name="paintable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkPaintable</doc>
+              <type name="Paintable" c:type="GdkPaintable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_intrinsic_height">
+        <callback name="get_intrinsic_height">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the intrinsic height of @paintable or 0 if none.</doc>
+            <type name="gint" c:type="int"/>
+          </return-value>
+          <parameters>
+            <parameter name="paintable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkPaintable</doc>
+              <type name="Paintable" c:type="GdkPaintable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_intrinsic_aspect_ratio">
+        <callback name="get_intrinsic_aspect_ratio">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">the intrinsic aspect ratio of @paintable or 0.0 if none.</doc>
+            <type name="gdouble" c:type="double"/>
+          </return-value>
+          <parameters>
+            <parameter name="paintable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdkPaintable</doc>
+              <type name="Paintable" c:type="GdkPaintable*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <record name="Point" c:type="GdkPoint">
       <doc xml:space="preserve">Defines the x and y coordinates of a point.</doc>
       <field name="x" writable="1">
@@ -19056,6 +19738,20 @@ actions.</doc>
         </parameter>
       </parameters>
     </callback>
+    <class name="Snapshot"
+           c:symbol-prefix="snapshot"
+           c:type="GdkSnapshot"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="GdkSnapshot"
+           glib:get-type="gdk_snapshot_get_type"
+           glib:type-struct="SnapshotClass">
+    </class>
+    <record name="SnapshotClass"
+            c:type="GdkSnapshotClass"
+            disguised="1"
+            glib:is-gtype-struct-for="Snapshot">
+    </record>
     <enumeration name="SubpixelLayout"
                  version="3.22"
                  glib:type-name="GdkSubpixelLayout"
@@ -19117,34 +19813,7 @@ An important aspect of GdkTextures is that they are immutable - once
 the image data has been wrapped in a GdkTexture, it may be uploaded
 to the GPU or used in other ways that make it impractical to allow
 modification.</doc>
-      <constructor name="new_for_data" c:identifier="gdk_texture_new_for_data">
-        <doc xml:space="preserve">Creates a new texture object holding the given data.
-The data is assumed to be in CAIRO_FORMAT_ARGB32 format.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GdkTexture</doc>
-          <type name="Texture" c:type="GdkTexture*"/>
-        </return-value>
-        <parameters>
-          <parameter name="data" transfer-ownership="none">
-            <doc xml:space="preserve">the pixel data</doc>
-            <array zero-terminated="0" c:type="guchar*">
-              <type name="guint8" c:type="guchar"/>
-            </array>
-          </parameter>
-          <parameter name="width" transfer-ownership="none">
-            <doc xml:space="preserve">the number of pixels in each row</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <doc xml:space="preserve">the number of rows</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="stride" transfer-ownership="none">
-            <doc xml:space="preserve">the distance from the beginning of one row to the next, in bytes</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-        </parameters>
-      </constructor>
+      <implements name="Paintable"/>
       <constructor name="new_for_pixbuf"
                    c:identifier="gdk_texture_new_for_pixbuf">
         <doc xml:space="preserve">Creates a new texture object representing the GdkPixbuf.</doc>
@@ -19196,41 +19865,17 @@ gdk_texture_new_from_file() to load it.</doc>
         </parameters>
       </constructor>
       <method name="download" c:identifier="gdk_texture_download">
-        <doc xml:space="preserve">Downloads the @texture into local memory. This may be
-an expensive operation, as the actual texture data may
-reside on a GPU or on a remote display server.
-
-The data format of the downloaded data is equivalent to
-%CAIRO_FORMAT_ARGB32, so every downloaded pixel requires
-4 bytes of memory.
-
-Downloading a texture into a Cairo image surface:
-|[&lt;!-- language="C" --&gt;
-surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-                                      gdk_texture_get_width (texture),
-                                      gdk_texture_get_height (texture));
-gdk_texture_download (texture,
-                      cairo_image_surface_get_data (surface),
-                      cairo_image_surface_get_stride (surface));
-cairo_surface_mark_dirty (surface);
-]|</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="texture" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkTexture</doc>
             <type name="Texture" c:type="GdkTexture*"/>
           </instance-parameter>
           <parameter name="data" transfer-ownership="none">
-            <doc xml:space="preserve">pointer to enough memory to be filled with the
-    downloaded data of @texture</doc>
-            <array zero-terminated="0" c:type="guchar*">
-              <type name="guint8" c:type="guchar"/>
-            </array>
+            <type name="guint8" c:type="guchar*"/>
           </parameter>
           <parameter name="stride" transfer-ownership="none">
-            <doc xml:space="preserve">rowstride in bytes</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
         </parameters>
@@ -23874,66 +24519,6 @@ will be returned in @x and @y.</doc>
       <return-value transfer-ownership="none">
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
-    </function>
-    <function name="gl_texture_new"
-              c:identifier="gdk_gl_texture_new"
-              introspectable="0">
-      <doc xml:space="preserve">Creates a new texture for an existing GL texture.
-
-Note that the GL texture must not be modified until @destroy is called,
-which will happen when the GdkTexture object is finalized, or due to
-an explicit call of gdk_texture_release_gl().</doc>
-      <return-value>
-        <doc xml:space="preserve">A newly-created #GdkTexture</doc>
-        <type name="Texture" c:type="GdkTexture*"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkGLContext</doc>
-          <type name="GLContext" c:type="GdkGLContext*"/>
-        </parameter>
-        <parameter name="id" transfer-ownership="none">
-          <doc xml:space="preserve">the ID of a texture that was created with @context</doc>
-          <type name="guint" c:type="guint"/>
-        </parameter>
-        <parameter name="width" transfer-ownership="none">
-          <doc xml:space="preserve">the nominal width of the texture</doc>
-          <type name="gint" c:type="int"/>
-        </parameter>
-        <parameter name="height" transfer-ownership="none">
-          <doc xml:space="preserve">the nominal height of the texture</doc>
-          <type name="gint" c:type="int"/>
-        </parameter>
-        <parameter name="destroy" transfer-ownership="none" scope="async">
-          <doc xml:space="preserve">a destroy notify that will be called when the GL resources
-          are released</doc>
-          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
-        </parameter>
-        <parameter name="data"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">data that gets passed to @destroy</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="gl_texture_release" c:identifier="gdk_gl_texture_release">
-      <doc xml:space="preserve">Releases the GL resources held by a #GdkTexture that
-was created with gdk_texture_new_for_gl().
-
-The texture contents are still available via the
-gdk_texture_download() function, after this function
-has been called.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="texture" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkTexture wrapping a GL texture</doc>
-          <type name="Texture" c:type="GdkTexture*"/>
-        </parameter>
-      </parameters>
     </function>
     <function name="intern_mime_type" c:identifier="gdk_intern_mime_type">
       <doc xml:space="preserve">Canonicalizes the given mime type and interns the result.

@@ -619,8 +619,8 @@ namespace MM {
 		public bool get_supported_modes ([CCode (array_length_cname = "n_modes", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemModeCombination[] modes);
 		public MM.ModemLock get_unlock_required ();
 		public MM.UnlockRetries get_unlock_retries ();
-		public async GLib.List<MM.Modem> list_bearers (GLib.Cancellable? cancellable) throws GLib.Error;
-		public GLib.List<MM.Modem> list_bearers_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async GLib.List<MM.Bearer> list_bearers (GLib.Cancellable? cancellable) throws GLib.Error;
+		public GLib.List<MM.Bearer> list_bearers_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool peek_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
 		public static bool peek_pending_network_initiated_sessions (MM.ModemOma self, [CCode (array_length_cname = "n_sessions", array_length_pos = 2.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
 		public bool peek_ports ([CCode (array_length_cname = "n_ports", array_length_pos = 1.1, array_length_type = "guint")] out unowned MM.ModemPortInfo[] ports);
