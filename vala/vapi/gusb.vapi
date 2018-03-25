@@ -114,9 +114,11 @@ namespace GUsb {
 		public bool set_configuration (int configuration) throws GLib.Error;
 		[Version (since = "0.2.8")]
 		public bool set_interface_alt (int @interface, uint8 alt) throws GLib.Error;
+		[NoAccessorMethod]
 		public GUsb.Context context { construct; }
 		[NoAccessorMethod]
 		public void* libusb_device { get; construct; }
+		[NoAccessorMethod]
 		public string platform_id { construct; }
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_device_list_get_type ()")]

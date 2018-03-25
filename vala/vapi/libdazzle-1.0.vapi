@@ -1332,6 +1332,7 @@ namespace Dazzle {
 		public uint get_depth ();
 		public unowned GLib.ListModel get_model ();
 		public void pop ();
+		public void push (Gtk.Widget header, GLib.ListModel model, owned Dazzle.StackListCreateWidgetFunc? create_widget_func);
 		public GLib.ListModel model { get; }
 		public virtual signal void header_activated (Gtk.ListBoxRow row);
 		public virtual signal void row_activated (Gtk.ListBoxRow row);
@@ -1849,6 +1850,8 @@ namespace Dazzle {
 	public delegate bool RecursiveIgnoreFunc (GLib.File file);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]
 	public delegate void ShortcutChordTableForeach (Dazzle.ShortcutChord chord, void* chord_data);
+	[CCode (cheader_filename = "dazzle.h", instance_pos = 1.9)]
+	public delegate Gtk.Widget StackListCreateWidgetFunc ([CCode (type = "gpointer")] GLib.Object item);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
 	[Version (since = "3.26")]
 	public delegate void SuggestionPositionFunc (Dazzle.SuggestionEntry entry, ref Gdk.Rectangle area, ref bool is_absolute);
