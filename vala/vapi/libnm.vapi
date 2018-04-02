@@ -56,7 +56,7 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.ByteArray hwaddr_atoba (string asc, size_t length);
 		[CCode (cheader_filename = "NetworkManager.h")]
-		public static uint8 hwaddr_aton (string asc, void* buffer, size_t length);
+		public static uint8 hwaddr_aton (string asc, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] uint8[] buffer);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string hwaddr_canonical (string asc, ssize_t length);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -121,7 +121,7 @@ namespace NM {
 		public static bool is_valid_iface_name (string name) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.8")]
-		public static GLib.HashTable<void*,void*> parse_variant_attributes (string string, char attr_separator, char key_value_separator, bool ignore_unknown, NM.VariantAttributeSpec spec) throws GLib.Error;
+		public static GLib.HashTable<string,GLib.Variant> parse_variant_attributes (string string, char attr_separator, char key_value_separator, bool ignore_unknown, NM.VariantAttributeSpec spec) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool same_ssid ([CCode (array_length_cname = "len1", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] ssid1, [CCode (array_length_cname = "len2", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] ssid2, bool ignore_trailing_null);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -380,7 +380,7 @@ namespace NM {
 		public NM.RemoteConnection connection { get; }
 		public bool @default { get; }
 		public bool default6 { get; }
-		public GLib.GenericArray<void*> devices { get; }
+		public GLib.GenericArray<NM.Device> devices { get; }
 		public NM.DhcpConfig dhcp4_config { get; }
 		public NM.DhcpConfig dhcp6_config { get; }
 		public string id { get; }
@@ -410,7 +410,7 @@ namespace NM {
 		[Version (since = "1.12")]
 		public int64 created { get; }
 		[Version (since = "1.12")]
-		public GLib.GenericArray<void*> devices { get; }
+		public GLib.GenericArray<NM.Device> devices { get; }
 		[Version (since = "1.12")]
 		public uint rollback_timeout { get; }
 	}
@@ -554,21 +554,22 @@ namespace NM {
 		public bool wwan_hardware_get_enabled ();
 		public void wwan_set_enabled (bool enabled);
 		public NM.ActiveConnection activating_connection { get; }
-		public GLib.GenericArray<void*> active_connections { get; }
+		public GLib.GenericArray<NM.ActiveConnection> active_connections { get; }
 		[Version (since = "1.2")]
-		public GLib.GenericArray<void*> all_devices { get; }
+		public GLib.GenericArray<NM.Device> all_devices { get; }
 		[NoAccessorMethod]
 		public bool can_modify { get; }
-		public GLib.GenericArray<void*> checkpoints { get; }
-		public GLib.GenericArray<void*> connections { get; }
+		[Version (since = "1.12")]
+		public GLib.GenericArray<NM.Checkpoint> checkpoints { get; }
+		public GLib.GenericArray<NM.RemoteConnection> connections { get; }
 		public NM.ConnectivityState connectivity { get; }
 		[NoAccessorMethod]
 		public bool connectivity_check_available { get; }
 		[NoAccessorMethod]
 		public bool connectivity_check_enabled { get; set; }
-		public GLib.GenericArray<void*> devices { get; }
+		public GLib.GenericArray<NM.Device> devices { get; }
 		[Version (since = "1.6")]
-		public GLib.GenericArray<void*> dns_configuration { get; }
+		public GLib.GenericArray<GLib.Variant> dns_configuration { get; }
 		[Version (since = "1.6")]
 		public string dns_mode { get; }
 		[Version (since = "1.6")]
@@ -837,7 +838,7 @@ namespace NM {
 		public void set_managed (bool managed);
 		public NM.ActiveConnection active_connection { get; }
 		public bool autoconnect { get; set; }
-		public GLib.GenericArray<void*> available_connections { get; }
+		public GLib.GenericArray<NM.RemoteConnection> available_connections { get; }
 		public NM.DeviceCapabilities capabilities { get; }
 		public NM.DeviceType device_type { get; }
 		public NM.DhcpConfig dhcp4_config { get; }
@@ -894,7 +895,7 @@ namespace NM {
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		public string hw_address { get; }
-		public GLib.GenericArray<void*> slaves { get; }
+		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bridge_get_type ()")]
 	public class DeviceBridge : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -911,7 +912,7 @@ namespace NM {
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		public string hw_address { get; }
-		public GLib.GenericArray<void*> slaves { get; }
+		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bt_get_type ()")]
 	public class DeviceBt : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1206,7 +1207,7 @@ namespace NM {
 		[Version (since = "1.4")]
 		public string config { get; }
 		public string hw_address { get; }
-		public GLib.GenericArray<void*> slaves { get; }
+		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_tun_get_type ()")]
 	public class DeviceTun : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1370,7 +1371,7 @@ namespace NM {
 		public bool request_scan_options (GLib.Variant options, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.2")]
 		public async void request_scan_options_async (GLib.Variant options, GLib.Cancellable? cancellable);
-		public GLib.GenericArray<void*> access_points { get; }
+		public GLib.GenericArray<NM.AccessPoint> access_points { get; }
 		public NM.AccessPoint active_access_point { get; }
 		public uint bitrate { get; }
 		public string hw_address { get; }
@@ -1430,7 +1431,7 @@ namespace NM {
 		public int cinr { get; }
 		[Version (deprecated = true, deprecated_since = "1.2")]
 		public string hw_address { get; }
-		public GLib.GenericArray<void*> nsps { get; }
+		public GLib.GenericArray<NM.WimaxNsp> nsps { get; }
 		[Version (deprecated = true, deprecated_since = "1.2")]
 		public int rssi { get; }
 		[Version (deprecated = true, deprecated_since = "1.2")]
@@ -1530,7 +1531,7 @@ namespace NM {
 		public string gateway { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] nameservers { get; }
-		public GLib.GenericArray<void*> routes { get; }
+		public GLib.GenericArray<NM.IPRoute> routes { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] searches { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -2473,21 +2474,21 @@ namespace NM {
 		[NoAccessorMethod]
 		public int app_iscsi_priority { get; set construct; }
 		[NoAccessorMethod]
-		public GLib.Array<void*> priority_bandwidth { owned get; set; }
+		public GLib.Array<uint> priority_bandwidth { owned get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<void*> priority_flow_control { owned get; set; }
+		public GLib.Array<bool?> priority_flow_control { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingDcbFlags priority_flow_control_flags { get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<void*> priority_group_bandwidth { owned get; set; }
+		public GLib.Array<uint> priority_group_bandwidth { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingDcbFlags priority_group_flags { get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<void*> priority_group_id { owned get; set; }
+		public GLib.Array<uint> priority_group_id { owned get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<void*> priority_strict_bandwidth { owned get; set; }
+		public GLib.Array<bool?> priority_strict_bandwidth { owned get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<void*> priority_traffic_class { owned get; set; }
+		public GLib.Array<uint> priority_traffic_class { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_dummy_get_type ()")]
 	public class SettingDummy : NM.Setting {
@@ -2748,7 +2749,7 @@ namespace NM {
 		public void remove_route (int idx);
 		public bool remove_route_by_value (NM.IPRoute route);
 		[NoAccessorMethod]
-		public GLib.GenericArray<void*> addresses { owned get; set; }
+		public GLib.GenericArray<NM.IPAddress> addresses { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public int dad_timeout { get; set construct; }
@@ -2789,7 +2790,7 @@ namespace NM {
 		[Version (since = "1.10")]
 		public uint route_table { get; set; }
 		[NoAccessorMethod]
-		public GLib.GenericArray<void*> routes { owned get; set; }
+		public GLib.GenericArray<NM.IPRoute> routes { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip_tunnel_get_type ()")]
 	public class SettingIPTunnel : NM.Setting {
@@ -3327,9 +3328,9 @@ namespace NM {
 		public void remove_tfilter (uint idx);
 		public bool remove_tfilter_by_value (NM.TCTfilter tfilter);
 		[NoAccessorMethod]
-		public GLib.GenericArray<void*> qdiscs { owned get; set; }
+		public GLib.GenericArray<NM.TCQdisc> qdiscs { owned get; set; }
 		[NoAccessorMethod]
-		public GLib.GenericArray<void*> tfilters { owned get; set; }
+		public GLib.GenericArray<NM.TCTfilter> tfilters { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_team_get_type ()")]
 	public class SettingTeam : NM.Setting {
@@ -3478,7 +3479,7 @@ namespace NM {
 		public string config { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
-		public GLib.GenericArray<void*> link_watchers { owned get; set; }
+		public GLib.GenericArray<NM.TeamLinkWatcher> link_watchers { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public int mcast_rejoin_count { get; set; }
@@ -3560,7 +3561,7 @@ namespace NM {
 		public int lacp_prio { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
-		public GLib.GenericArray<void*> link_watchers { owned get; set; }
+		public GLib.GenericArray<NM.TeamLinkWatcher> link_watchers { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public int prio { get; set; }
@@ -4632,7 +4633,7 @@ namespace NM {
 		public abstract NM.VpnEditorPluginCapability get_capabilities ();
 		public abstract NM.VpnEditor get_editor (NM.Connection connection) throws GLib.Error;
 		[Version (since = "1.4")]
-		public void* get_plugin_info ();
+		public unowned NM.VpnPluginInfo get_plugin_info ();
 		public abstract string get_suggested_filename (NM.Connection connection);
 		[Version (since = "1.4")]
 		public size_t get_vt (out unowned NM.VpnEditorPluginVT vt, size_t vt_size);
@@ -4642,9 +4643,9 @@ namespace NM {
 		[Version (since = "1.2")]
 		public static NM.VpnEditorPlugin load_from_file (string plugin_name, string check_service, int check_owner, NM.UtilsCheckFilePredicate check_file) throws GLib.Error;
 		[NoWrapper]
-		public abstract void notify_plugin_info_set (void* plugin_info);
+		public abstract void notify_plugin_info_set (NM.VpnPluginInfo plugin_info);
 		[Version (since = "1.4")]
-		public void set_plugin_info (void* plugin_info);
+		public void set_plugin_info (NM.VpnPluginInfo? plugin_info);
 		[NoAccessorMethod]
 		public abstract string description { owned get; }
 		[NoAccessorMethod]

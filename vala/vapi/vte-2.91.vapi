@@ -73,6 +73,7 @@ namespace Vte {
 		[Version (deprecated = true, deprecated_since = "0.52")]
 		public void get_geometry_hints (out Gdk.Geometry hints, int min_rows, int min_columns);
 		public bool get_has_selection ();
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public unowned string get_icon_title ();
 		public bool get_input_enabled ();
 		public bool get_mouse_autohide ();
@@ -202,6 +203,7 @@ namespace Vte {
 		[NoAccessorMethod]
 		[Version (since = "0.50")]
 		public string hyperlink_hover_uri { owned get; }
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public string icon_title { get; }
 		public bool input_enabled { get; set; }
 		[NoAccessorMethod]
@@ -232,6 +234,7 @@ namespace Vte {
 		public virtual signal void eof ();
 		[Version (since = "0.50")]
 		public signal void hyperlink_hover_uri_changed (string uri, Gdk.Rectangle bbox);
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public virtual signal void icon_title_changed ();
 		public virtual signal void iconify_window ();
 		public virtual signal void increase_font_size ();
