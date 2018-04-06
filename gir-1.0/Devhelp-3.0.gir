@@ -358,19 +358,6 @@ found.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_group_by_language"
-              c:identifier="dh_book_manager_get_group_by_language">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">whether the books should be grouped by programming language.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="book_manager" transfer-ownership="none">
-            <doc xml:space="preserve">a #DhBookManager.</doc>
-            <type name="BookManager" c:type="DhBookManager*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="populate"
               c:identifier="dh_book_manager_populate"
               deprecated="1"
@@ -389,29 +376,6 @@ object is created, there is no need to call this function anymore.</doc-deprecat
           </instance-parameter>
         </parameters>
       </method>
-      <method name="set_group_by_language"
-              c:identifier="dh_book_manager_set_group_by_language">
-        <doc xml:space="preserve">Sets whether the books should be grouped by programming language.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="book_manager" transfer-ownership="none">
-            <doc xml:space="preserve">a #DhBookManager.</doc>
-            <type name="BookManager" c:type="DhBookManager*"/>
-          </instance-parameter>
-          <parameter name="group_by_language" transfer-ownership="none">
-            <doc xml:space="preserve">the new value.</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="group-by-language"
-                writable="1"
-                transfer-ownership="none">
-        <doc xml:space="preserve">Whether books should be grouped by programming language.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </property>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
@@ -487,7 +451,30 @@ object is created, there is no need to call this function anymore.</doc-deprecat
           <doc xml:space="preserve">a new #DhBookTree widget.</doc>
           <type name="BookTree" c:type="DhBookTree*"/>
         </return-value>
+        <parameters>
+          <parameter name="profile"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #DhProfile, or %NULL for the default profile.</doc>
+            <type name="Profile" c:type="DhProfile*"/>
+          </parameter>
+        </parameters>
       </constructor>
+      <method name="get_profile"
+              c:identifier="dh_book_tree_get_profile"
+              version="3.30">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #DhProfile of @tree.</doc>
+          <type name="Profile" c:type="DhProfile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tree" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhBookTree.</doc>
+            <type name="BookTree" c:type="DhBookTree*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_selected_book"
               c:identifier="dh_book_tree_get_selected_book">
         <return-value transfer-ownership="full" nullable="1">
@@ -519,6 +506,15 @@ needed.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="profile"
+                version="3.30"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #DhProfile. If set to %NULL, the default profile as returned by
+dh_profile_get_default() is used.</doc>
+        <type name="Profile"/>
+      </property>
       <field name="parent_instance">
         <type name="Gtk.TreeView" c:type="GtkTreeView"/>
       </field>
@@ -1088,6 +1084,358 @@ current language.</doc>
         </parameters>
       </function>
     </enumeration>
+    <class name="Profile"
+           c:symbol-prefix="profile"
+           c:type="DhProfile"
+           parent="GObject.Object"
+           glib:type-name="DhProfile"
+           glib:get-type="dh_profile_get_type"
+           glib:type-struct="ProfileClass">
+      <function name="get_default"
+                c:identifier="dh_profile_get_default"
+                version="3.30">
+        <doc xml:space="preserve">Gets the default #DhProfile object. It has the default #DhSettings object as
+returned by dh_settings_get_default().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the default #DhProfile object.</doc>
+          <type name="Profile" c:type="DhProfile*"/>
+        </return-value>
+      </function>
+      <method name="get_settings"
+              c:identifier="dh_profile_get_settings"
+              version="3.30">
+        <doc xml:space="preserve">Gets the #DhSettings object of @profile. The returned object is guaranteed to
+be the same for the lifetime of @profile.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #DhSettings of @profile.</doc>
+          <type name="Settings" c:type="DhSettings*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="profile" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhProfile.</doc>
+            <type name="Profile" c:type="DhProfile*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="ProfilePrivate" c:type="DhProfilePrivate*"/>
+      </field>
+    </class>
+    <class name="ProfileBuilder"
+           c:symbol-prefix="profile_builder"
+           c:type="DhProfileBuilder"
+           parent="GObject.Object"
+           glib:type-name="DhProfileBuilder"
+           glib:get-type="dh_profile_builder_get_type"
+           glib:type-struct="ProfileBuilderClass">
+      <constructor name="new"
+                   c:identifier="dh_profile_builder_new"
+                   version="3.30">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #DhProfileBuilder.</doc>
+          <type name="ProfileBuilder" c:type="DhProfileBuilder*"/>
+        </return-value>
+      </constructor>
+      <method name="create_object"
+              c:identifier="dh_profile_builder_create_object"
+              version="3.30">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the newly created #DhProfile object.</doc>
+          <type name="Profile" c:type="DhProfile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="builder" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhProfileBuilder.</doc>
+            <type name="ProfileBuilder" c:type="DhProfileBuilder*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_settings"
+              c:identifier="dh_profile_builder_set_settings"
+              version="3.30">
+        <doc xml:space="preserve">Sets the #DhSettings object.
+
+If you don't call this function, the default #DhSettings object as returned
+by dh_settings_get_default() will be used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="builder" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhProfileBuilder.</doc>
+            <type name="ProfileBuilder" c:type="DhProfileBuilder*"/>
+          </instance-parameter>
+          <parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="ProfileBuilderPrivate" c:type="DhProfileBuilderPrivate*"/>
+      </field>
+    </class>
+    <record name="ProfileBuilderClass"
+            c:type="DhProfileBuilderClass"
+            glib:is-gtype-struct-for="ProfileBuilder">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="ProfileBuilderPrivate"
+            c:type="DhProfileBuilderPrivate"
+            disguised="1">
+    </record>
+    <record name="ProfileClass"
+            c:type="DhProfileClass"
+            glib:is-gtype-struct-for="Profile">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="ProfilePrivate" c:type="DhProfilePrivate" disguised="1">
+    </record>
+    <class name="Settings"
+           c:symbol-prefix="settings"
+           c:type="DhSettings"
+           parent="GObject.Object"
+           glib:type-name="DhSettings"
+           glib:get-type="dh_settings_get_type"
+           glib:type-struct="SettingsClass">
+      <function name="get_default"
+                c:identifier="dh_settings_get_default"
+                version="3.30">
+        <doc xml:space="preserve">Gets the default #DhSettings object. It has the default #GSettings paths (see
+#DhSettingsBuilder) and dh_settings_bind_all() has been called.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the default #DhSettings object.</doc>
+          <type name="Settings" c:type="DhSettings*"/>
+        </return-value>
+      </function>
+      <method name="bind_all"
+              c:identifier="dh_settings_bind_all"
+              version="3.30">
+        <doc xml:space="preserve">Binds all the #DhSettings properties to their corresponding #GSettings keys.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="bind_group_books_by_language"
+              c:identifier="dh_settings_bind_group_books_by_language"
+              version="3.30">
+        <doc xml:space="preserve">Binds the #DhSettings:group-books-by-language property to the corresponding
+#GSettings key.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_group_books_by_language"
+              c:identifier="dh_settings_get_group_books_by_language"
+              version="3.30">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the value of the #DhSettings:group-books-by-language property.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_book_enabled"
+              c:identifier="dh_settings_is_book_enabled"
+              version="3.30">
+        <doc xml:space="preserve">Returns whether @book is enabled according to the "books-disabled" #GSettings
+key. If the @book ID is present in "books-disabled", this function returns
+%FALSE, otherwise %TRUE is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether @book is enabled.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </instance-parameter>
+          <parameter name="book" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhBook.</doc>
+            <type name="Book" c:type="DhBook*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_book_enabled"
+              c:identifier="dh_settings_set_book_enabled"
+              version="3.30">
+        <doc xml:space="preserve">Modifies the "books-disabled" #GSettings key. It adds or removes the @book ID
+from "books-disabled".</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </instance-parameter>
+          <parameter name="book" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhBook.</doc>
+            <type name="Book" c:type="DhBook*"/>
+          </parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">the new value.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_group_books_by_language"
+              c:identifier="dh_settings_set_group_books_by_language"
+              version="3.30">
+        <doc xml:space="preserve">Sets the #DhSettings:group-books-by-language property.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="settings" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettings.</doc>
+            <type name="Settings" c:type="DhSettings*"/>
+          </instance-parameter>
+          <parameter name="group_books_by_language" transfer-ownership="none">
+            <doc xml:space="preserve">the new value.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="group-books-by-language"
+                version="3.30"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether books should be grouped by programming language in the UI.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="SettingsPrivate" c:type="DhSettingsPrivate*"/>
+      </field>
+    </class>
+    <class name="SettingsBuilder"
+           c:symbol-prefix="settings_builder"
+           c:type="DhSettingsBuilder"
+           parent="GObject.Object"
+           glib:type-name="DhSettingsBuilder"
+           glib:get-type="dh_settings_builder_get_type"
+           glib:type-struct="SettingsBuilderClass">
+      <constructor name="new"
+                   c:identifier="dh_settings_builder_new"
+                   version="3.30">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #DhSettingsBuilder.</doc>
+          <type name="SettingsBuilder" c:type="DhSettingsBuilder*"/>
+        </return-value>
+      </constructor>
+      <method name="create_object"
+              c:identifier="dh_settings_builder_create_object"
+              version="3.30">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the newly created #DhSettings object.</doc>
+          <type name="Settings" c:type="DhSettings*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="builder" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettingsBuilder.</doc>
+            <type name="SettingsBuilder" c:type="DhSettingsBuilder*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_contents_path"
+              c:identifier="dh_settings_builder_set_contents_path"
+              version="3.30">
+        <doc xml:space="preserve">Sets the path for the "contents" schema.
+
+If you don't call this function, the default path for this schema will be
+used.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="builder" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSettingsBuilder.</doc>
+            <type name="SettingsBuilder" c:type="DhSettingsBuilder*"/>
+          </instance-parameter>
+          <parameter name="contents_path" transfer-ownership="none">
+            <doc xml:space="preserve">the path for the "contents" schema.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv">
+        <type name="SettingsBuilderPrivate"
+              c:type="DhSettingsBuilderPrivate*"/>
+      </field>
+    </class>
+    <record name="SettingsBuilderClass"
+            c:type="DhSettingsBuilderClass"
+            glib:is-gtype-struct-for="SettingsBuilder">
+      <field name="parent_class">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="SettingsBuilderPrivate"
+            c:type="DhSettingsBuilderPrivate"
+            disguised="1">
+    </record>
+    <record name="SettingsClass"
+            c:type="DhSettingsClass"
+            glib:is-gtype-struct-for="Settings">
+      <field name="parent">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <record name="SettingsPrivate" c:type="DhSettingsPrivate" disguised="1">
+    </record>
     <class name="Sidebar"
            c:symbol-prefix="sidebar"
            c:type="DhSidebar"
@@ -1098,7 +1446,11 @@ current language.</doc>
       <implements name="Atk.ImplementorIface"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
-      <constructor name="new" c:identifier="dh_sidebar_new">
+      <constructor name="new"
+                   c:identifier="dh_sidebar_new"
+                   deprecated="1"
+                   deprecated-version="3.30">
+        <doc-deprecated xml:space="preserve">Use dh_sidebar_new2() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a new #DhSidebar widget.</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
@@ -1114,6 +1466,21 @@ you should just pass %NULL.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <function name="new2" c:identifier="dh_sidebar_new2" version="3.30">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #DhSidebar widget.</doc>
+          <type name="Sidebar" c:type="DhSidebar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="profile"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #DhProfile, or %NULL for the default profile.</doc>
+            <type name="Profile" c:type="DhProfile*"/>
+          </parameter>
+        </parameters>
+      </function>
       <virtual-method name="link_selected">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1127,6 +1494,20 @@ you should just pass %NULL.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="get_profile"
+              c:identifier="dh_sidebar_get_profile"
+              version="3.30">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #DhProfile of @sidebar.</doc>
+          <type name="Profile" c:type="DhProfile*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sidebar" transfer-ownership="none">
+            <doc xml:space="preserve">a #DhSidebar.</doc>
+            <type name="Sidebar" c:type="DhSidebar*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="select_uri" c:identifier="dh_sidebar_select_uri">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1171,6 +1552,15 @@ you should just pass %NULL.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="profile"
+                version="3.30"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #DhProfile. If set to %NULL, the default profile as returned by
+dh_profile_get_default() is used.</doc>
+        <type name="Profile"/>
+      </property>
       <field name="parent_instance">
         <type name="Gtk.Grid" c:type="GtkGrid"/>
       </field>

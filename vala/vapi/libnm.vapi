@@ -494,11 +494,13 @@ namespace NM {
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
-		public async NM.Checkpoint checkpoint_create_async (GLib.GenericArray<NM.Device> devices, uint32 rollback_timeout, NM.CheckpointCreateFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool checkpoint_adjust_rollback_timeout (string checkpoint_path, uint32 add_timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
-		public async bool checkpoint_destroy_async (NM.Checkpoint checkpoint, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async NM.Checkpoint checkpoint_create (GLib.GenericArray<NM.Device> devices, uint32 rollback_timeout, NM.CheckpointCreateFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
-		public async GLib.HashTable<string,uint32> checkpoint_rollback_async (NM.Checkpoint checkpoint, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool checkpoint_destroy (string checkpoint_path, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async GLib.HashTable<string,uint32> checkpoint_rollback (string checkpoint_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.10")]
 		public bool connectivity_check_get_available ();
 		[Version (since = "1.10")]
@@ -4734,13 +4736,15 @@ namespace NM {
 	public enum Capability {
 		TEAM
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CHECKPOINT_CREATE_FLAG_", has_type_id = false)]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CHECKPOINT_CREATE_FLAG_", type_id = "nm_checkpoint_create_flags_get_type ()")]
+	[Flags]
 	[Version (since = "1.4")]
 	public enum CheckpointCreateFlags {
 		NONE,
 		DESTROY_ALL,
 		DELETE_NEW_CONNECTIONS,
-		DISCONNECT_NEW_DEVICES
+		DISCONNECT_NEW_DEVICES,
+		ALLOW_OVERLAPPING
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_PERMISSION_", type_id = "nm_client_permission_get_type ()")]
 	public enum ClientPermission {

@@ -513,46 +513,6 @@ The renderer will be realized when it is returned.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="begin_draw_frame"
-              c:identifier="gsk_renderer_begin_draw_frame">
-        <doc xml:space="preserve">Indicates that you are beginning the process of redrawing @region using
-@renderer, and provides you with a #GdkDrawingContext to use for this.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDrawingContext context that should be used to
-draw the contents of the @renderer. This context is owned by GDK.</doc>
-          <type name="Gdk.DrawingContext" c:type="GdkDrawingContext*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="renderer" transfer-ownership="none">
-            <doc xml:space="preserve">a #GskRenderer</doc>
-            <type name="Renderer" c:type="GskRenderer*"/>
-          </instance-parameter>
-          <parameter name="region" transfer-ownership="none">
-            <doc xml:space="preserve">the #cairo_region_t that you wish to draw</doc>
-            <type name="cairo.Region" c:type="const cairo_region_t*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="end_draw_frame" c:identifier="gsk_renderer_end_draw_frame">
-        <doc xml:space="preserve">Release the drawning context returned by gsk_renderer_begin_draw_frame().
-
-Calls to gsk_renderer_begin_draw_frame() and gsk_renderer_end_draw_frame()
-must be paired.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="renderer" transfer-ownership="none">
-            <doc xml:space="preserve">a #GskRenderer</doc>
-            <type name="Renderer" c:type="GskRenderer*"/>
-          </instance-parameter>
-          <parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">the drawing context returned by the matching call to
-    gsk_renderer_begin_draw_frame()</doc>
-            <type name="Gdk.DrawingContext" c:type="GdkDrawingContext*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_display" c:identifier="gsk_renderer_get_display">
         <doc xml:space="preserve">Retrieves the #GdkDisplay used when creating the #GskRenderer.</doc>
         <return-value transfer-ownership="none">
@@ -599,7 +559,12 @@ graph.</doc>
       </method>
       <method name="render" c:identifier="gsk_renderer_render">
         <doc xml:space="preserve">Renders the scene graph, described by a tree of #GskRenderNode instances,
-using the given #GdkDrawingContext.
+ensuring that the given @region gets redrawn.
+
+Renderers must ensure that changes of the contents given by the @root
+node as well as the area given by @region are redrawn. They are however
+free to not redraw any pixel outside of @region if they can guarantee that
+it didn't change.
 
 The @renderer will acquire a reference on the #GskRenderNode tree while
 the rendering is in progress.</doc>
@@ -615,9 +580,10 @@ the rendering is in progress.</doc>
             <doc xml:space="preserve">a #GskRenderNode</doc>
             <type name="RenderNode" c:type="GskRenderNode*"/>
           </parameter>
-          <parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">The drawing context created via gsk_renderer_begin_draw_frame()</doc>
-            <type name="Gdk.DrawingContext" c:type="GdkDrawingContext*"/>
+          <parameter name="region" transfer-ownership="none">
+            <doc xml:space="preserve">the #cairo_region_t that must be redrawn or %NULL for the whole
+    window</doc>
+            <type name="cairo.Region" c:type="const cairo_region_t*"/>
           </parameter>
         </parameters>
       </method>
@@ -670,10 +636,6 @@ transform node and pass that node instead.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The #GdkDisplay used by the #GskRenderer.</doc>
         <type name="Gdk.Display"/>
-      </property>
-      <property name="drawing-context" transfer-ownership="none">
-        <doc xml:space="preserve">The drawing context used when rendering.</doc>
-        <type name="Gdk.DrawingContext"/>
       </property>
       <property name="surface" transfer-ownership="none">
         <type name="Gdk.Surface"/>

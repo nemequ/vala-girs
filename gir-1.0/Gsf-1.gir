@@ -9,6 +9,7 @@ and/or use gtk-doc annotations.  -->
   <include name="GObject" version="2.0"/>
   <include name="Gio" version="2.0"/>
   <include name="libxml2" version="2.0"/>
+  <c:include name="gsf/gsf.h"/>
   <namespace name="Gsf"
              version="1"
              shared-library="libgsf-1.so.114"
@@ -315,20 +316,20 @@ If a property exists with @name, it is replaced (The link is lost)</doc>
             <doc xml:space="preserve">#GsfDocMetaData</doc>
             <type name="DocMetaData" c:type="GsfDocMetaData*"/>
           </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
+          <parameter name="name" transfer-ownership="full">
             <doc xml:space="preserve">the id.</doc>
             <type name="utf8" c:type="char*"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value" transfer-ownership="full">
             <doc xml:space="preserve">#GValue</doc>
             <type name="GObject.Value" c:type="GValue*"/>
           </parameter>
         </parameters>
       </method>
       <method name="lookup" c:identifier="gsf_doc_meta_data_lookup">
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the property with name @id in @meta.  The caller can modify the
-property value and link but not the name.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the property with @name in @meta.  The caller can
+modify the property value and link but not the name.</doc>
           <type name="DocProp" c:type="GsfDocProp*"/>
         </return-value>
         <parameters>
@@ -429,7 +430,8 @@ remove it and its value from the collection</doc>
         </parameters>
       </method>
       <method name="steal" c:identifier="gsf_doc_meta_data_steal">
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the property with @name in @meta.</doc>
           <type name="DocProp" c:type="GsfDocProp*"/>
         </return-value>
         <parameters>
@@ -491,12 +493,9 @@ remove it and its value from the collection</doc>
             <doc xml:space="preserve">#GsfDocMetaData</doc>
             <type name="DocMetaData" c:type="const GsfDocMetaData*"/>
           </instance-parameter>
-          <parameter name="output"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="output" transfer-ownership="none">
             <doc xml:space="preserve">a pointer to a #GsfOutput.</doc>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="XMLOut" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
@@ -548,7 +547,7 @@ New in 1.14.2</doc>
         </parameters>
       </method>
       <method name="get_link" c:identifier="gsf_doc_prop_get_link">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the current link descriptor of @prop.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -726,7 +725,7 @@ The caller is responsible for freeing the result.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="name_by_index" invoker="name_by_index">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the utf8 encoded name of the @i-th child</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -774,7 +773,9 @@ New in 1.14.9.</doc>
           </instance-parameter>
           <parameter name="names" transfer-ownership="none">
             <doc xml:space="preserve">A %NULL terminated array of names (e.g. from g_strsplit)</doc>
-            <type name="utf8" c:type="const char*"/>
+            <array c:type="char*">
+              <type name="utf8" c:type="char"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -859,7 +860,7 @@ gsf_infile_child_by_aname.  Please see the documentation there.</doc>
         </parameters>
       </method>
       <method name="name_by_index" c:identifier="gsf_infile_name_by_index">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the utf8 encoded name of the @i-th child</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
@@ -914,7 +915,7 @@ gsf_infile_child_by_aname.  Please see the documentation there.</doc>
       </field>
       <field name="name_by_index">
         <callback name="name_by_index">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">the utf8 encoded name of the @i-th child</doc>
             <type name="utf8" c:type="const char*"/>
           </return-value>
@@ -1018,11 +1019,12 @@ stored within the directory associated with @ole and stores it in @res.</doc>
       </constructor>
       <method name="get_modules" c:identifier="gsf_infile_msvba_get_modules">
         <doc xml:space="preserve">a collection of names and source code.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%NULL, or a hashtable of names and source code (unknown encoding).</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">
+%NULL, or a #GHashTable of names and source code (unknown encoding).</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
-            <type name="gpointer" c:type="gpointer"/>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
+            <type name="gpointer"/>
           </type>
         </return-value>
         <parameters>
@@ -1035,11 +1037,12 @@ stored within the directory associated with @ole and stores it in @res.</doc>
       <method name="steal_modules"
               c:identifier="gsf_infile_msvba_steal_modules">
         <doc xml:space="preserve">A collection of names and source code which the caller is responsible for destroying.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">%NULL, or a hashtable of names and source code (unknown encoding).</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">%NULL, or
+a #GHashTable of names and source code (unknown encoding).</doc>
           <type name="GLib.HashTable" c:type="GHashTable*">
-            <type name="gpointer" c:type="gpointer"/>
-            <type name="gpointer" c:type="gpointer"/>
+            <type name="utf8"/>
+            <type name="gpointer"/>
           </type>
         </return-value>
         <parameters>
@@ -1163,57 +1166,90 @@ stored within the directory associated with @ole and stores it in @res.</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
-      <virtual-method name="Dup" introspectable="0" throws="1">
-        <return-value>
+      <virtual-method name="Dup" invoker="dup" throws="1">
+        <doc xml:space="preserve">Duplicates input @src leaving the new one at the same offset.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the duplicate, or %NULL on error</doc>
           <type name="Input" c:type="GsfInput*"/>
         </return-value>
         <parameters>
           <instance-parameter name="input" transfer-ownership="none">
+            <doc xml:space="preserve">The input to duplicate</doc>
             <type name="Input" c:type="GsfInput*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="OpenSibling" introspectable="0" throws="1">
-        <return-value>
+      <virtual-method name="OpenSibling" invoker="sibling" throws="1">
+        <doc xml:space="preserve">UNIMPLEMENTED BY ANY BACKEND
+	and it is probably unnecessary.   gsf_input_get_container provides
+	enough power to do what is necessary.
+
+Attempts to open a 'sibling' of @input.  The caller is responsible for
+managing the resulting object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A related #GsfInput or %NULL on failure.</doc>
           <type name="Input" c:type="GsfInput*"/>
         </return-value>
         <parameters>
           <instance-parameter name="input" transfer-ownership="none">
+            <doc xml:space="preserve">The input</doc>
             <type name="Input" c:type="const GsfInput*"/>
           </instance-parameter>
-          <parameter name="path" transfer-ownership="none">
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">name.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="Read">
-        <return-value transfer-ownership="none">
-          <type name="guint8" c:type="const guint8*"/>
+      <virtual-method name="Read" invoker="read" introspectable="0">
+        <doc xml:space="preserve">Read at least @num_bytes.  Does not change the current position if there
+is an error.  Will only read if the entire amount can be read.  Invalidates
+the buffer associated with previous calls to gsf_input_read.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">pointer to the buffer or %NULL if there is an error or 0
+bytes are requested.</doc>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="input" transfer-ownership="none">
+            <doc xml:space="preserve">the input stream</doc>
             <type name="Input" c:type="GsfInput*"/>
           </instance-parameter>
           <parameter name="num_bytes" transfer-ownership="none">
+            <doc xml:space="preserve">number of bytes to read</doc>
             <type name="gsize" c:type="size_t"/>
           </parameter>
-          <parameter name="optional_buffer" transfer-ownership="none">
-            <type name="guint8" c:type="guint8*"/>
+          <parameter name="optional_buffer"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">Pointer to destination memory area</doc>
+            <array zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="Seek">
+      <virtual-method name="Seek" invoker="seek">
+        <doc xml:space="preserve">Move the current location in the input stream.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="input" transfer-ownership="none">
+            <doc xml:space="preserve">the input stream</doc>
             <type name="Input" c:type="GsfInput*"/>
           </instance-parameter>
           <parameter name="offset" transfer-ownership="none">
+            <doc xml:space="preserve">target offset</doc>
             <type name="gsf_off_t" c:type="gsf_off_t"/>
           </parameter>
           <parameter name="whence" transfer-ownership="none">
+            <doc xml:space="preserve">determines whether the offset is relative to the beginning or
+         the end of the stream, or to the current location.</doc>
             <type name="GLib.SeekType" c:type="GSeekType"/>
           </parameter>
         </parameters>
@@ -1339,10 +1375,12 @@ has no name.</doc>
         <doc xml:space="preserve">Read at least @num_bytes.  Does not change the current position if there
 is an error.  Will only read if the entire amount can be read.  Invalidates
 the buffer associated with previous calls to gsf_input_read.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">pointer to the buffer or %NULL if there is an error or 0
 bytes are requested.</doc>
-          <type name="guint8" c:type="const guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="input" transfer-ownership="none">
@@ -1353,9 +1391,14 @@ bytes are requested.</doc>
             <doc xml:space="preserve">number of bytes to read</doc>
             <type name="gsize" c:type="size_t"/>
           </parameter>
-          <parameter name="optional_buffer" transfer-ownership="none">
+          <parameter name="optional_buffer"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">Pointer to destination memory area</doc>
-            <type name="guint8" c:type="guint8*"/>
+            <array zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -1448,7 +1491,10 @@ the data read.</doc>
             <doc xml:space="preserve">the input stream</doc>
             <type name="Input" c:type="GsfInput*"/>
           </instance-parameter>
-          <parameter name="container" transfer-ownership="none">
+          <parameter name="container"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <type name="Infile" c:type="GsfInfile*"/>
           </parameter>
         </parameters>
@@ -1501,7 +1547,10 @@ the data read.</doc>
             <doc xml:space="preserve">the input stream</doc>
             <type name="Input" c:type="GsfInput*"/>
           </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">the new name of the stream, or %NULL.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -1653,13 +1702,15 @@ It is not supported by all derived classes.</doc>
       <field name="g_object_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-      <field name="Dup" introspectable="0">
-        <callback name="Dup" introspectable="0" throws="1">
-          <return-value>
+      <field name="Dup">
+        <callback name="Dup" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">the duplicate, or %NULL on error</doc>
             <type name="Input" c:type="GsfInput*"/>
           </return-value>
           <parameters>
             <parameter name="input" transfer-ownership="none">
+              <doc xml:space="preserve">The input to duplicate</doc>
               <type name="Input" c:type="GsfInput*"/>
             </parameter>
           </parameters>
@@ -1667,18 +1718,30 @@ It is not supported by all derived classes.</doc>
       </field>
       <field name="Read">
         <callback name="Read">
-          <return-value transfer-ownership="none">
-            <type name="guint8" c:type="const guint8*"/>
+          <return-value transfer-ownership="none" nullable="1">
+            <doc xml:space="preserve">pointer to the buffer or %NULL if there is an error or 0
+bytes are requested.</doc>
+            <array zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </return-value>
           <parameters>
             <parameter name="input" transfer-ownership="none">
+              <doc xml:space="preserve">the input stream</doc>
               <type name="Input" c:type="GsfInput*"/>
             </parameter>
             <parameter name="num_bytes" transfer-ownership="none">
+              <doc xml:space="preserve">number of bytes to read</doc>
               <type name="gsize" c:type="size_t"/>
             </parameter>
-            <parameter name="optional_buffer" transfer-ownership="none">
-              <type name="guint8" c:type="guint8*"/>
+            <parameter name="optional_buffer"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve">Pointer to destination memory area</doc>
+              <array zero-terminated="0" c:type="guint8*">
+                <type name="guint8" c:type="guint8"/>
+              </array>
             </parameter>
           </parameters>
         </callback>
@@ -1686,31 +1749,39 @@ It is not supported by all derived classes.</doc>
       <field name="Seek">
         <callback name="Seek">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE on error.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="input" transfer-ownership="none">
+              <doc xml:space="preserve">the input stream</doc>
               <type name="Input" c:type="GsfInput*"/>
             </parameter>
             <parameter name="offset" transfer-ownership="none">
+              <doc xml:space="preserve">target offset</doc>
               <type name="gsf_off_t" c:type="gsf_off_t"/>
             </parameter>
             <parameter name="whence" transfer-ownership="none">
+              <doc xml:space="preserve">determines whether the offset is relative to the beginning or
+         the end of the stream, or to the current location.</doc>
               <type name="GLib.SeekType" c:type="GSeekType"/>
             </parameter>
           </parameters>
         </callback>
       </field>
-      <field name="OpenSibling" introspectable="0">
-        <callback name="OpenSibling" introspectable="0" throws="1">
-          <return-value>
+      <field name="OpenSibling">
+        <callback name="OpenSibling" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">A related #GsfInput or %NULL on failure.</doc>
             <type name="Input" c:type="GsfInput*"/>
           </return-value>
           <parameters>
             <parameter name="input" transfer-ownership="none">
+              <doc xml:space="preserve">The input</doc>
               <type name="Input" c:type="const GsfInput*"/>
             </parameter>
-            <parameter name="path" transfer-ownership="none">
+            <parameter name="name" transfer-ownership="none">
+              <doc xml:space="preserve">name.</doc>
               <type name="utf8" c:type="const char*"/>
             </parameter>
           </parameters>
@@ -1897,7 +1968,9 @@ It is not supported by all derived classes.</doc>
         <parameters>
           <parameter name="buf" transfer-ownership="none">
             <doc xml:space="preserve">The input bytes</doc>
-            <type name="guint8" c:type="const guint8*"/>
+            <array length="1" zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
           <parameter name="length" transfer-ownership="none">
             <doc xml:space="preserve">The length of @buf</doc>
@@ -1917,7 +1990,9 @@ It is not supported by all derived classes.</doc>
         <parameters>
           <parameter name="buf" transfer-ownership="none">
             <doc xml:space="preserve">The input bytes</doc>
-            <type name="guint8" c:type="const guint8*"/>
+            <array length="1" zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
           <parameter name="length" transfer-ownership="none">
             <doc xml:space="preserve">The length of @buf</doc>
@@ -2072,9 +2147,11 @@ ownership reverts to caller when the #GsfInput is closed.</doc>
         <doc xml:space="preserve">A utility routine to read things line by line from the underlying source.
 Trailing newlines and carriage returns are stripped, and the resultant buffer
 can be edited.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the string read, or %NULL on eof.</doc>
-          <type name="guint8" c:type="unsigned char*"/>
+          <array zero-terminated="0" c:type="unsigned char*">
+            <type name="guint8" c:type="unsigned char"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="textline" transfer-ownership="none">
@@ -2087,9 +2164,11 @@ can be edited.</doc>
         <doc xml:space="preserve">A utility routine to read things line by line from the underlying source.
 Trailing newlines and carriage returns are stripped, and the resultant buffer
 can be edited.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the string read, or %NULL on eof.</doc>
-          <type name="guint8" c:type="guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="textline" transfer-ownership="none">
@@ -2664,18 +2743,24 @@ preview image of the document.</doc>
            glib:get-type="gsf_outfile_get_type"
            glib:type-struct="OutfileClass">
       <doc xml:space="preserve">Class representing an output file, counterpart to #GsfInfile.</doc>
-      <virtual-method name="new_child" introspectable="0">
-        <return-value>
+      <virtual-method name="new_child"
+                      invoker="new_child_varg"
+                      introspectable="0">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly created child</doc>
           <type name="Output" c:type="GsfOutput*"/>
         </return-value>
         <parameters>
           <instance-parameter name="outfile" transfer-ownership="none">
+            <doc xml:space="preserve">A #GsfOutfile</doc>
             <type name="Outfile" c:type="GsfOutfile*"/>
           </instance-parameter>
           <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the new child to create</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="is_dir" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE to create a directory, %FALSE to create a plain file</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="first_property_name" transfer-ownership="none">
@@ -2805,17 +2890,21 @@ a @type relation to @parent</doc>
       </field>
       <field name="new_child" introspectable="0">
         <callback name="new_child" introspectable="0">
-          <return-value>
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a newly created child</doc>
             <type name="Output" c:type="GsfOutput*"/>
           </return-value>
           <parameters>
             <parameter name="outfile" transfer-ownership="none">
+              <doc xml:space="preserve">A #GsfOutfile</doc>
               <type name="Outfile" c:type="GsfOutfile*"/>
             </parameter>
             <parameter name="name" transfer-ownership="none">
+              <doc xml:space="preserve">The name of the new child to create</doc>
               <type name="utf8" c:type="const char*"/>
             </parameter>
             <parameter name="is_dir" transfer-ownership="none">
+              <doc xml:space="preserve">%TRUE to create a directory, %FALSE to create a plain file</doc>
               <type name="gboolean" c:type="gboolean"/>
             </parameter>
             <parameter name="first_property_name" transfer-ownership="none">
@@ -3216,61 +3305,88 @@ children.
           </parameter>
         </parameters>
       </function>
-      <virtual-method name="Close">
+      <virtual-method name="Close" invoker="close">
+        <doc xml:space="preserve">Close a stream.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%FALSE on error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="output" transfer-ownership="none">
+            <doc xml:space="preserve">#GsfOutput</doc>
             <type name="Output" c:type="GsfOutput*"/>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="Seek">
+      <virtual-method name="Seek" invoker="seek">
+        <doc xml:space="preserve">Reposition in output stream @output. @whence specifies what the offset is
+relative to: the beginning of the stream (%G_SEEK_SET), current position in
+the stream (%G_SEEK_CUR) or the end of the stream (%G_SEEK_END).
+This function is similar to
+&lt;citerefentry&gt;&lt;refentrytitle&gt;fseek&lt;/refentrytitle&gt;
+&lt;manvolnum&gt;3&lt;/manvolnum&gt;&lt;/citerefentry&gt;.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%FALSE on error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="output" transfer-ownership="none">
+            <doc xml:space="preserve">#GsfOutput</doc>
             <type name="Output" c:type="GsfOutput*"/>
           </instance-parameter>
           <parameter name="offset" transfer-ownership="none">
+            <doc xml:space="preserve">Relative amount to reposition</doc>
             <type name="gsf_off_t" c:type="gsf_off_t"/>
           </parameter>
           <parameter name="whence" transfer-ownership="none">
+            <doc xml:space="preserve">What the offset is relative to.</doc>
             <type name="GLib.SeekType" c:type="GSeekType"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="Vprintf" introspectable="0">
+      <virtual-method name="Vprintf" invoker="vprintf" introspectable="0">
+        <doc xml:space="preserve">Output @args to @output using the format string @format, similar to
+&lt;citerefentry&gt;&lt;refentrytitle&gt;vprintf&lt;/refentrytitle&gt;
+&lt;manvolnum&gt;3&lt;/manvolnum&gt;&lt;/citerefentry&gt;.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">number of bytes printed, a negative value if not successful</doc>
           <type name="gsf_off_t" c:type="gsf_off_t"/>
         </return-value>
         <parameters>
           <instance-parameter name="output" transfer-ownership="none">
+            <doc xml:space="preserve">A #GsfOutput</doc>
             <type name="Output" c:type="GsfOutput*"/>
           </instance-parameter>
           <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">The printf-style format string</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="args" transfer-ownership="none">
+            <doc xml:space="preserve">the arguments for @format</doc>
             <type name="va_list" c:type="va_list"/>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="Write">
+      <virtual-method name="Write" invoker="write">
+        <doc xml:space="preserve">Write @num_bytes of @data to @output.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%FALSE on error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="output" transfer-ownership="none">
+            <doc xml:space="preserve">Output stream</doc>
             <type name="Output" c:type="GsfOutput*"/>
           </instance-parameter>
           <parameter name="num_bytes" transfer-ownership="none">
+            <doc xml:space="preserve">Number of bytes to write</doc>
             <type name="gsize" c:type="size_t"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
-            <type name="guint8" c:type="const guint8*"/>
+            <doc xml:space="preserve">Data to write.</doc>
+            <array length="0" zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
         </parameters>
       </virtual-method>
@@ -3682,10 +3798,12 @@ do anything with this property.</doc>
       <field name="Close">
         <callback name="Close">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%FALSE on error</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="output" transfer-ownership="none">
+              <doc xml:space="preserve">#GsfOutput</doc>
               <type name="Output" c:type="GsfOutput*"/>
             </parameter>
           </parameters>
@@ -3694,16 +3812,20 @@ do anything with this property.</doc>
       <field name="Seek">
         <callback name="Seek">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%FALSE on error.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="output" transfer-ownership="none">
+              <doc xml:space="preserve">#GsfOutput</doc>
               <type name="Output" c:type="GsfOutput*"/>
             </parameter>
             <parameter name="offset" transfer-ownership="none">
+              <doc xml:space="preserve">Relative amount to reposition</doc>
               <type name="gsf_off_t" c:type="gsf_off_t"/>
             </parameter>
             <parameter name="whence" transfer-ownership="none">
+              <doc xml:space="preserve">What the offset is relative to.</doc>
               <type name="GLib.SeekType" c:type="GSeekType"/>
             </parameter>
           </parameters>
@@ -3712,17 +3834,23 @@ do anything with this property.</doc>
       <field name="Write">
         <callback name="Write">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">%FALSE on error.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="output" transfer-ownership="none">
+              <doc xml:space="preserve">Output stream</doc>
               <type name="Output" c:type="GsfOutput*"/>
             </parameter>
             <parameter name="num_bytes" transfer-ownership="none">
+              <doc xml:space="preserve">Number of bytes to write</doc>
               <type name="gsize" c:type="size_t"/>
             </parameter>
             <parameter name="data" transfer-ownership="none">
-              <type name="guint8" c:type="const guint8*"/>
+              <doc xml:space="preserve">Data to write.</doc>
+              <array length="1" zero-terminated="0" c:type="guint8*">
+                <type name="guint8" c:type="guint8"/>
+              </array>
             </parameter>
           </parameters>
         </callback>
@@ -3730,16 +3858,20 @@ do anything with this property.</doc>
       <field name="Vprintf" introspectable="0">
         <callback name="Vprintf" introspectable="0">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">number of bytes printed, a negative value if not successful</doc>
             <type name="gsf_off_t" c:type="gsf_off_t"/>
           </return-value>
           <parameters>
             <parameter name="output" transfer-ownership="none">
+              <doc xml:space="preserve">A #GsfOutput</doc>
               <type name="Output" c:type="GsfOutput*"/>
             </parameter>
             <parameter name="format" transfer-ownership="none">
+              <doc xml:space="preserve">The printf-style format string</doc>
               <type name="utf8" c:type="const char*"/>
             </parameter>
             <parameter name="args" transfer-ownership="none">
+              <doc xml:space="preserve">the arguments for @format</doc>
               <type name="va_list" c:type="va_list"/>
             </parameter>
           </parameters>
@@ -4051,9 +4183,11 @@ in the target encoding.  NULL means use \u1234 or \U12345678 format.</doc>
         </return-value>
       </constructor>
       <method name="get_bytes" c:identifier="gsf_output_memory_get_bytes">
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The data that has been written to @mem, or %NULL</doc>
-          <type name="guint8" c:type="const guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="mem" transfer-ownership="none">
@@ -4450,7 +4584,7 @@ and does only rudimentary range checking</doc>
       </field>
       <method name="check_ns" c:identifier="gsf_xml_in_check_ns">
         <doc xml:space="preserve">According to @state is @str in the namespace @ns_id ?</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a pointer to @str after the namespace if
 successful, otherwise %NULL.</doc>
           <type name="utf8" c:type="const char*"/>
@@ -4536,7 +4670,9 @@ namespace or the current default namespace.</doc>
           </parameter>
           <parameter name="attrs" transfer-ownership="none">
             <doc xml:space="preserve">array of xmlChar const *</doc>
-            <type name="libxml2.Char" c:type="const xmlChar**"/>
+            <array zero-terminated="0" c:type="xmlChar**">
+              <type name="utf8"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -4577,11 +4713,15 @@ data structures necessary to validate a doument based on that description.</doc>
         <parameters>
           <parameter name="nodes" transfer-ownership="none">
             <doc xml:space="preserve">an array of node descriptors</doc>
-            <type name="XMLInNode" c:type="const GsfXMLInNode*"/>
+            <array c:type="GsfXMLInNode*">
+              <type name="XMLInNode" c:type="GsfXMLInNode"/>
+            </array>
           </parameter>
           <parameter name="ns" transfer-ownership="none">
             <doc xml:space="preserve">an array of namespace identifiers</doc>
-            <type name="XMLInNS" c:type="const GsfXMLInNS*"/>
+            <array c:type="GsfXMLInNS*">
+              <type name="XMLInNS" c:type="GsfXMLInNS"/>
+            </array>
           </parameter>
         </parameters>
       </constructor>
@@ -4597,7 +4737,9 @@ data structures necessary to validate a doument based on that description.</doc>
           </instance-parameter>
           <parameter name="nodes" transfer-ownership="none">
             <doc xml:space="preserve">%NULL terminated array of #GsfXMLInNode</doc>
-            <type name="XMLInNode" c:type="const GsfXMLInNode*"/>
+            <array c:type="GsfXMLInNode*">
+              <type name="XMLInNode" c:type="GsfXMLInNode"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -4814,7 +4956,9 @@ data structures necessary to validate a doument based on that description.</doc>
           </parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:space="preserve">Data to be written</doc>
-            <type name="guint8" c:type="const guint8*"/>
+            <array length="2" zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
           <parameter name="len" transfer-ownership="none">
             <doc xml:space="preserve">Length of data</doc>
@@ -5341,7 +5485,9 @@ gsf_xml_out_set_pretty_print will return the same value.</doc>
       <parameters>
         <parameter name="data" transfer-ownership="none">
           <doc xml:space="preserve">data stream</doc>
-          <type name="guint8" c:type="guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">max length of data to decode</doc>
@@ -5358,7 +5504,9 @@ gsf_xml_out_set_pretty_print will return the same value.</doc>
       <parameters>
         <parameter name="in" transfer-ownership="none">
           <doc xml:space="preserve">input stream</doc>
-          <type name="guint8" c:type="const guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">max length of data to decode</doc>
@@ -5366,13 +5514,21 @@ gsf_xml_out_set_pretty_print will return the same value.</doc>
         </parameter>
         <parameter name="out" transfer-ownership="none">
           <doc xml:space="preserve">output stream</doc>
-          <type name="guint8" c:type="guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
-        <parameter name="state" transfer-ownership="none">
+        <parameter name="state"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
           <doc xml:space="preserve">holds the number of bits that are stored in @save</doc>
           <type name="gint" c:type="int*"/>
         </parameter>
-        <parameter name="save" transfer-ownership="none">
+        <parameter name="save"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
           <doc xml:space="preserve">leftover bits that have not yet been decoded</doc>
           <type name="guint" c:type="guint*"/>
         </parameter>
@@ -5389,7 +5545,9 @@ flush off the last little bit.</doc>
       <parameters>
         <parameter name="in" transfer-ownership="none">
           <doc xml:space="preserve">Data to be encoded</doc>
-          <type name="guint8" c:type="const guint8*"/>
+          <array length="1" zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
         <parameter name="inlen" transfer-ownership="none">
           <doc xml:space="preserve">Length of data to be encoded</doc>
@@ -5401,13 +5559,21 @@ flush off the last little bit.</doc>
         </parameter>
         <parameter name="out" transfer-ownership="none">
           <doc xml:space="preserve">Encoded data.</doc>
-          <type name="guint8" c:type="guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
-        <parameter name="state" transfer-ownership="none">
+        <parameter name="state"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
           <doc xml:space="preserve">holds the number of bits that are stored in @save</doc>
           <type name="gint" c:type="int*"/>
         </parameter>
-        <parameter name="save" transfer-ownership="none">
+        <parameter name="save"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
           <doc xml:space="preserve">leftover bits that have not yet been decoded</doc>
           <type name="guint" c:type="guint*"/>
         </parameter>
@@ -5423,7 +5589,9 @@ flush off the last little bit.</doc>
       <parameters>
         <parameter name="data" transfer-ownership="none">
           <doc xml:space="preserve">data stream</doc>
-          <type name="guint8" c:type="const guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">max length of data to encode</doc>
@@ -5442,7 +5610,9 @@ the output @out at a time, saves left-over state in @state and @save
       <parameters>
         <parameter name="in" transfer-ownership="none">
           <doc xml:space="preserve">input stream</doc>
-          <type name="guint8" c:type="const guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
         <parameter name="len" transfer-ownership="none">
           <doc xml:space="preserve">max length of data to decode</doc>
@@ -5454,13 +5624,21 @@ the output @out at a time, saves left-over state in @state and @save
         </parameter>
         <parameter name="out" transfer-ownership="none">
           <doc xml:space="preserve">output stream</doc>
-          <type name="guint8" c:type="guint8*"/>
+          <array zero-terminated="0" c:type="guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
         </parameter>
-        <parameter name="state" transfer-ownership="none">
+        <parameter name="state"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
           <doc xml:space="preserve">holds the number of bits that are stored in @save</doc>
           <type name="gint" c:type="int*"/>
         </parameter>
-        <parameter name="save" transfer-ownership="none">
+        <parameter name="save"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full">
           <doc xml:space="preserve">leftover bits that have not yet been decoded</doc>
           <type name="guint" c:type="guint*"/>
         </parameter>
@@ -6104,7 +6282,9 @@ Open one of @opkg's relationships with type=@type.</doc>
           <type name="utf8" c:type="const char*"/>
         </parameter>
         <parameter name="params" transfer-ownership="none">
-          <type name="GObject.Parameter" c:type="const GParameter*"/>
+          <array length="2" zero-terminated="0" c:type="GParameter*">
+            <type name="GObject.Parameter" c:type="GParameter"/>
+          </array>
         </parameter>
         <parameter name="n_params" transfer-ownership="none">
           <type name="gsize" c:type="size_t"/>
@@ -6117,8 +6297,10 @@ Open one of @opkg's relationships with type=@type.</doc>
         <type name="none" c:type="void"/>
       </return-value>
       <parameters>
-        <parameter name="params" transfer-ownership="none">
-          <type name="GObject.Parameter" c:type="GParameter*"/>
+        <parameter name="params" transfer-ownership="full">
+          <array length="1" zero-terminated="0" c:type="GParameter*">
+            <type name="GObject.Parameter" c:type="GParameter"/>
+          </array>
         </parameter>
         <parameter name="n_params" transfer-ownership="none">
           <type name="gsize" c:type="size_t"/>
