@@ -410,6 +410,8 @@ namespace Gegl {
 		public uint64 tile_cache_total_max { get; }
 		[NoAccessorMethod]
 		public uint64 tile_cache_total_uncloned { get; }
+		[NoAccessorMethod]
+		public uint64 zoom_total { get; }
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
@@ -441,6 +443,7 @@ namespace Gegl {
 	public class TileHandler : Gegl.TileSource {
 		[CCode (has_construct_function = false)]
 		protected TileHandler ();
+		public void damage_rect (Gegl.Rectangle rect);
 		public void set_source (Gegl.TileSource source);
 		[NoAccessorMethod]
 		public GLib.Object source { owned get; set construct; }

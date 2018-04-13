@@ -5232,33 +5232,6 @@ gdk_surface_begin_draw_frame() and gdk_surface_end_draw_frame().</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_surface"
-              c:identifier="gdk_drawing_context_get_surface">
-        <doc xml:space="preserve">Retrieves the surface that created the drawing @context.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkSurface</doc>
-          <type name="Surface" c:type="GdkSurface*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDrawingContext</doc>
-            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="is_valid" c:identifier="gdk_drawing_context_is_valid">
-        <doc xml:space="preserve">Checks whether the given #GdkDrawingContext is valid.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the context is valid</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDrawingContext</doc>
-            <type name="DrawingContext" c:type="GdkDrawingContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <property name="clip"
                 writable="1"
                 construct-only="1"
@@ -20270,73 +20243,6 @@ call gdk_gl_context_make_current() or gdk_gl_context_realize().</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="create_similar_image_surface"
-              c:identifier="gdk_surface_create_similar_image_surface">
-        <doc xml:space="preserve">Create a new image surface that is efficient to draw on the
-given @surface.
-
-Initially the surface contents are all 0 (transparent if contents
-have transparency, black otherwise.)
-
-The @width and @height of the new surface are not affected by
-the scaling factor of the @surface, or by the @scale argument; they
-are the size of the surface in device pixels. If you wish to create
-an image surface capable of holding the contents of @surface you can
-use:
-
-|[&lt;!-- language="C" --&gt;
-  int scale = gdk_surface_get_scale_factor (surface);
-  int width = gdk_surface_get_width (surface) * scale;
-  int height = gdk_surface_get_height (surface) * scale;
-
-  // format is set elsewhere
-  cairo_surface_t *surface =
-    gdk_surface_create_similar_image_surface (surface,
-                                             format,
-                                             width, height,
-                                             scale);
-]|
-
-Note that unlike cairo_surface_create_similar_image(), the new
-surface's device scale is set to @scale, or to the scale factor of
-@surface if @scale is 0.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a pointer to the newly allocated surface. The caller
-owns the surface and should call cairo_surface_destroy() when done
-with it.
-
-This function always returns a valid pointer, but it will return a
-pointer to a “nil” surface if @other is already in an error state
-or any other error occurs.</doc>
-          <type name="cairo.Surface" c:type="cairo_surface_t*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="surface"
-                              transfer-ownership="none"
-                              nullable="1"
-                              allow-none="1">
-            <doc xml:space="preserve">surface to make new surface similar to, or
-  %NULL if none</doc>
-            <type name="Surface" c:type="GdkSurface*"/>
-          </instance-parameter>
-          <parameter name="format" transfer-ownership="none">
-            <doc xml:space="preserve">the format for the new surface</doc>
-            <type name="gint" c:type="cairo_format_t"/>
-          </parameter>
-          <parameter name="width" transfer-ownership="none">
-            <doc xml:space="preserve">width of the new surface</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="height" transfer-ownership="none">
-            <doc xml:space="preserve">height of the new surface</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="scale" transfer-ownership="none">
-            <doc xml:space="preserve">the scale of the new surface, or 0 to use same as @surface</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="create_similar_surface"
               c:identifier="gdk_surface_create_similar_surface">
         <doc xml:space="preserve">Create a new surface that is as compatible as possible with the
@@ -23312,6 +23218,28 @@ cairo_surface_mark_dirty (surface);
           </instance-parameter>
         </parameters>
       </method>
+      <method name="save_to_png" c:identifier="gdk_texture_save_to_png">
+        <doc xml:space="preserve">Store the given @texture to the @filename as a PNG file.
+
+This is a utility function intended for debugging and testing.
+If you want more control over formats, proper error handling or
+want to store to a #GFile or other location, you might want to
+look into using the gdk-pixbuf library.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if saving succeeded, %FALSE on failure.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="texture" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkTexture</doc>
+            <type name="Texture" c:type="GdkTexture*"/>
+          </instance-parameter>
+          <parameter name="filename" transfer-ownership="none">
+            <doc xml:space="preserve">the filename to store to</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="height"
                 writable="1"
                 construct-only="1"
@@ -23620,21 +23548,6 @@ a boolean indicating if a clip area exists.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="cairo_get_drawing_context"
-              c:identifier="gdk_cairo_get_drawing_context">
-      <doc xml:space="preserve">Retrieves the #GdkDrawingContext that created the Cairo
-context @cr.</doc>
-      <return-value transfer-ownership="none" nullable="1">
-        <doc xml:space="preserve">a #GdkDrawingContext, if any is set</doc>
-        <type name="DrawingContext" c:type="GdkDrawingContext*"/>
-      </return-value>
-      <parameters>
-        <parameter name="cr" transfer-ownership="none">
-          <doc xml:space="preserve">a Cairo context</doc>
-          <type name="cairo.Context" c:type="cairo_t*"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="cairo_rectangle" c:identifier="gdk_cairo_rectangle">
       <doc xml:space="preserve">Adds the given rectangle to the current path of @cr.</doc>
       <return-value transfer-ownership="none">
@@ -23727,32 +23640,6 @@ so that the origin of @pixbuf is @pixbuf_x, @pixbuf_y.</doc>
         <parameter name="rgba" transfer-ownership="none">
           <doc xml:space="preserve">a #GdkRGBA</doc>
           <type name="RGBA" c:type="const GdkRGBA*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="cairo_surface_create_from_pixbuf"
-              c:identifier="gdk_cairo_surface_create_from_pixbuf">
-      <doc xml:space="preserve">Creates an image surface with the same contents as
-the pixbuf.</doc>
-      <return-value transfer-ownership="full">
-        <doc xml:space="preserve">a new cairo surface, must be freed with cairo_surface_destroy()</doc>
-        <type name="cairo.Surface" c:type="cairo_surface_t*"/>
-      </return-value>
-      <parameters>
-        <parameter name="pixbuf" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkPixbuf</doc>
-          <type name="GdkPixbuf.Pixbuf" c:type="const GdkPixbuf*"/>
-        </parameter>
-        <parameter name="scale" transfer-ownership="none">
-          <doc xml:space="preserve">the scale of the new surface, or 0 to use same as @surface</doc>
-          <type name="gint" c:type="int"/>
-        </parameter>
-        <parameter name="for_surface"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">The surface this will be drawn to, or %NULL</doc>
-          <type name="Surface" c:type="GdkSurface*"/>
         </parameter>
       </parameters>
     </function>

@@ -3280,9 +3280,14 @@ no longer be updated with g_checksum_update().</doc>
           </instance-parameter>
           <parameter name="buffer" transfer-ownership="none">
             <doc xml:space="preserve">output buffer</doc>
-            <type name="guint8" c:type="guint8*"/>
+            <array length="1" zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
-          <parameter name="digest_len" transfer-ownership="none">
+          <parameter name="digest_len"
+                     direction="inout"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">an inout parameter. The caller initializes it to the size of @buffer.
   After the call it contains the length of the digest.</doc>
             <type name="gsize" c:type="gsize*"/>
@@ -5681,6 +5686,21 @@ including the fractional part.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_timezone"
+              c:identifier="g_date_time_get_timezone"
+              version="2.58">
+        <doc xml:space="preserve">Get the time zone for this @datetime.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the time zone</doc>
+          <type name="TimeZone" c:type="GTimeZone*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="datetime" transfer-ownership="none">
+            <doc xml:space="preserve">a #GDateTime</doc>
+            <type name="DateTime" c:type="GDateTime*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_timezone_abbreviation"
               c:identifier="g_date_time_get_timezone_abbreviation"
               version="2.26">
@@ -8034,9 +8054,14 @@ no longer be updated with g_checksum_update().</doc>
           </instance-parameter>
           <parameter name="buffer" transfer-ownership="none">
             <doc xml:space="preserve">output buffer</doc>
-            <type name="guint8" c:type="guint8*"/>
+            <array length="1" zero-terminated="0" c:type="guint8*">
+              <type name="guint8" c:type="guint8"/>
+            </array>
           </parameter>
-          <parameter name="digest_len" transfer-ownership="none">
+          <parameter name="digest_len"
+                     direction="inout"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">an inout parameter. The caller initializes it to the
   size of @buffer. After the call it contains the length of the digest</doc>
             <type name="gsize" c:type="gsize*"/>
@@ -27283,6 +27308,28 @@ is in effect.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_identifier"
+              c:identifier="g_time_zone_get_identifier"
+              version="2.58">
+        <doc xml:space="preserve">Get the identifier of this #GTimeZone, as passed to g_time_zone_new().
+If the identifier passed at construction time was not recognised, `UTC` will
+be returned. If it was %NULL, the identifier of the local timezone at
+construction time will be returned.
+
+The identifier will be returned in the same format as provided at
+construction time: if provided as a time offset, that will be returned by
+this function.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">identifier for this timezone</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="tz" transfer-ownership="none">
+            <doc xml:space="preserve">a #GTimeZone</doc>
+            <type name="TimeZone" c:type="GTimeZone*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_offset"
               c:identifier="g_time_zone_get_offset"
               version="2.26">
@@ -38689,14 +38736,28 @@ user.</doc>
       </return-value>
     </function>
     <function name="get_language_names_with_category"
-              c:identifier="g_get_language_names_with_category">
+              c:identifier="g_get_language_names_with_category"
+              version="2.58">
+      <doc xml:space="preserve">Computes a list of applicable locale names with a locale category name,
+which can be used to construct the fallback locale-dependent filenames
+or search paths. The returned list is sorted from most desirable to
+least desirable and always contains the default locale "C".
+
+This function consults the environment variables `LANGUAGE`, `LC_ALL`,
+@category_name, and `LANG` to find the list of locales specified by the
+user.
+
+g_get_language_names() returns g_get_language_names_with_category("LC_MESSAGES").</doc>
       <return-value transfer-ownership="none">
-        <array c:type="const gchar* const*">
+        <doc xml:space="preserve">a %NULL-terminated array of strings owned by GLib
+   that must not be modified or freed.</doc>
+        <array c:type="gchar**">
           <type name="utf8"/>
         </array>
       </return-value>
       <parameters>
         <parameter name="category_name" transfer-ownership="none">
+          <doc xml:space="preserve">a locale category name</doc>
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
@@ -45546,7 +45607,7 @@ point in some locales, causing unexpected results.</doc>
     </function>
     <function name="strv_length" c:identifier="g_strv_length" version="2.6">
       <doc xml:space="preserve">Returns the length of the given %NULL-terminated
-string array @str_array.</doc>
+string array @str_array. @str_array must not be %NULL.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">length of @str_array.</doc>
         <type name="guint" c:type="guint"/>
@@ -46908,7 +46969,7 @@ the callback will be invoked in whichever thread is running that main
 context. You can do these steps manually if you need greater control or to
 use a custom main context.
 
-The interval given in terms of monotonic time, not wall clock time.
+The interval given is in terms of monotonic time, not wall clock time.
 See g_get_monotonic_time().</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the ID (greater than 0) of the event source.</doc>
@@ -47107,7 +47168,7 @@ executed.
 The scheduling granularity/accuracy of this timeout source will be
 in seconds.
 
-The interval given in terms of monotonic time, not wall clock time.
+The interval given is in terms of monotonic time, not wall clock time.
 See g_get_monotonic_time().</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">the newly-created timeout source</doc>

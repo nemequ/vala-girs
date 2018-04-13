@@ -1044,7 +1044,7 @@ namespace Dazzle {
 		public Dazzle.ShortcutMatch activate (Gtk.Widget widget, Dazzle.ShortcutChord chord);
 		public void add_action (string accel, string detailed_action_name);
 		public void add_command (string accel, string command);
-		public void add_signalv (string accel, string signal_name, owned GLib.Array<weak GLib.Value?>? values);
+		public void add_signalv (string accel, string signal_name, GLib.Array<GLib.Value?>? values);
 		public unowned string get_name ();
 		public bool load_from_data (string data, ssize_t len) throws GLib.Error;
 		public bool load_from_resource (string resource_path) throws GLib.Error;
@@ -1421,6 +1421,10 @@ namespace Dazzle {
 		public Dazzle.Suggestion model { get; set; }
 		public Gtk.Widget relative_to { get; set; }
 		public Dazzle.Suggestion selected { get; set; }
+		[NoAccessorMethod]
+		public Pango.EllipsizeMode subtitle_ellipsize { get; set; }
+		[NoAccessorMethod]
+		public Pango.EllipsizeMode title_ellipsize { get; set; }
 		public signal void suggestion_activated (Dazzle.Suggestion object);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_row_get_type ()")]

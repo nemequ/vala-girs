@@ -3900,10 +3900,7 @@ zeros before this function is called.</doc>
            glib:type-struct="ObjectClass">
       <doc xml:space="preserve">All the fields in the GObject structure are private
 to the #GObject implementation and should never be accessed directly.</doc>
-      <constructor name="new"
-                   c:identifier="g_object_new"
-                   shadowed-by="new_with_properties"
-                   introspectable="0">
+      <constructor name="new" c:identifier="g_object_new" introspectable="0">
         <doc xml:space="preserve">Creates a new instance of a #GObject subtype and sets its properties.
 
 Construction parameters (see #G_PARAM_CONSTRUCT, #G_PARAM_CONSTRUCT_ONLY)
@@ -3958,8 +3955,8 @@ which are not explicitly specified are set to their default values.</doc>
       </constructor>
       <constructor name="new_with_properties"
                    c:identifier="g_object_new_with_properties"
-                   shadows="new"
-                   version="2.54">
+                   version="2.54"
+                   introspectable="0">
         <doc xml:space="preserve">Creates a new instance of a #GObject subtype and sets its properties using
 the provided arrays. Both arrays must have exactly @n_properties elements,
 and the names and values correspond by index.
@@ -5684,11 +5681,17 @@ Use #GWeakRef if thread-safety is required.</doc>
                    detailed="1"
                    action="1"
                    no-hooks="1">
-        <doc xml:space="preserve">The notify signal is emitted on an object when one of its
-properties has been changed. Note that getting this signal
-doesn't guarantee that the value of the property has actually
-changed, it may also be emitted when the setter for the property
-is called to reinstate the previous value.
+        <doc xml:space="preserve">The notify signal is emitted on an object when one of its properties has
+its value set through g_object_set_property(), g_object_set(), et al.
+
+Note that getting this signal doesn’t itself guarantee that the value of
+the property has actually changed. When it is emitted is determined by the
+derived GObject class. If the implementor did not create the property with
+%G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+in ::notify being emitted, even if the new value is the same as the old.
+If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+and common practice is to avoid doing so if the value remained unchanged.
 
 This signal is typically used to obtain change notification for a
 single property, by specifying the property name as a detail in the

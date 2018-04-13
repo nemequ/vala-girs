@@ -77,6 +77,8 @@ namespace AppStream {
 		public void add_launchable (AppStream.Launchable launchable);
 		[Version (since = "0.6.2")]
 		public void add_provided (AppStream.Provided prov);
+		[Version (since = "0.12.0")]
+		public void add_relation (AppStream.Relation relation);
 		public void add_release (AppStream.Release release);
 		public void add_screenshot (AppStream.Screenshot sshot);
 		public void add_suggested (AppStream.Suggested suggested);
@@ -120,6 +122,8 @@ namespace AppStream {
 		public GLib.List<weak string> get_languages ();
 		[Version (since = "0.11.0")]
 		public unowned AppStream.Launchable get_launchable (AppStream.LaunchableKind kind);
+		[Version (since = "0.11.0")]
+		public unowned GLib.GenericArray<AppStream.Launchable> get_launchables ();
 		[Version (since = "0.9.8")]
 		public AppStream.MergeKind get_merge_kind ();
 		public unowned string get_metadata_license ();
@@ -132,7 +136,11 @@ namespace AppStream {
 		public unowned string get_project_license ();
 		public unowned GLib.GenericArray<AppStream.Provided> get_provided ();
 		public unowned AppStream.Provided get_provided_for_kind (AppStream.ProvidedKind kind);
+		[Version (since = "0.12.0")]
+		public unowned GLib.GenericArray<AppStream.Relation> get_recommends ();
 		public unowned GLib.GenericArray<AppStream.Release> get_releases ();
+		[Version (since = "0.12.0")]
+		public unowned GLib.GenericArray<AppStream.Relation> get_requires ();
 		public unowned GLib.GenericArray<AppStream.Screenshot> get_screenshots ();
 		[Version (since = "0.9.7")]
 		public GLib.GenericArray<weak string> get_search_tokens ();
@@ -366,6 +374,50 @@ namespace AppStream {
 		public static unowned string kind_to_string (AppStream.ProvidedKind kind);
 		public void set_kind (AppStream.ProvidedKind kind);
 	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_relation_get_type ()")]
+	public class Relation : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.11.0")]
+		public Relation ();
+		[Version (since = "0.12.0")]
+		public static AppStream.RelationCompare compare_from_string (string compare_str);
+		[Version (since = "0.12.0")]
+		public static unowned string compare_to_string (AppStream.RelationCompare compare);
+		[Version (since = "0.12.0")]
+		public static unowned string compare_to_symbols_string (AppStream.RelationCompare compare);
+		[Version (since = "0.12.0")]
+		public AppStream.RelationCompare get_compare ();
+		[Version (since = "0.12.0")]
+		public AppStream.RelationItemKind get_item_kind ();
+		[Version (since = "0.12.0")]
+		public AppStream.RelationKind get_kind ();
+		[Version (since = "0.12.0")]
+		public unowned string get_value ();
+		[Version (since = "0.12.0")]
+		public int get_value_int ();
+		[Version (since = "0.12.0")]
+		public unowned string get_version ();
+		[Version (since = "0.12.0")]
+		public static AppStream.RelationItemKind item_kind_from_string (string kind_str);
+		[Version (since = "0.12.0")]
+		public static unowned string item_kind_to_string (AppStream.RelationItemKind kind);
+		[Version (since = "0.12.0")]
+		public static AppStream.RelationKind kind_from_string (string kind_str);
+		[Version (since = "0.12.0")]
+		public static unowned string kind_to_string (AppStream.RelationKind kind);
+		[Version (since = "0.12.0")]
+		public void set_compare (AppStream.RelationCompare compare);
+		[Version (since = "0.12.0")]
+		public void set_item_kind (AppStream.RelationItemKind kind);
+		[Version (since = "0.12.0")]
+		public void set_kind (AppStream.RelationKind kind);
+		[Version (since = "0.12.0")]
+		public void set_value (string value);
+		[Version (since = "0.12.0")]
+		public void set_version (string version);
+		[Version (since = "0.12.0")]
+		public bool version_compare (string version) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_release_get_type ()")]
 	public class Release : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -555,7 +607,8 @@ namespace AppStream {
 		V0_8,
 		V0_9,
 		V0_10,
-		V0_11;
+		V0_11,
+		V0_12;
 		[Version (since = "0.10")]
 		public static AppStream.FormatVersion from_string (string version_str);
 		[Version (since = "0.10")]
@@ -600,7 +653,8 @@ namespace AppStream {
 		FILE_MISSING,
 		WRONG_NAME,
 		READ_ERROR,
-		REMOTE_ERROR
+		REMOTE_ERROR,
+		UNUSUAL
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_LAUNCHABLE_KIND_", has_type_id = false)]
 	public enum LaunchableKind {
@@ -656,6 +710,30 @@ namespace AppStream {
 		FIRMWARE_RUNTIME,
 		FIRMWARE_FLASHED,
 		ID
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_RELATION_COMPARE_", has_type_id = false)]
+	public enum RelationCompare {
+		UNKNOWN,
+		EQ,
+		NE,
+		LT,
+		GT,
+		LE,
+		GE
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_RELATION_ITEM_KIND_", has_type_id = false)]
+	public enum RelationItemKind {
+		UNKNOWN,
+		ID,
+		MODALIAS,
+		KERNEL,
+		MEMORY
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_RELATION_KIND_", has_type_id = false)]
+	public enum RelationKind {
+		UNKNOWN,
+		REQUIRES,
+		RECOMMENDS
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_RELEASE_KIND_", has_type_id = false)]
 	[Version (since = "0.12.0")]

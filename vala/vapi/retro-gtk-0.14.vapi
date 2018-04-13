@@ -22,6 +22,7 @@ namespace Retro {
 		public bool get_is_initiated ();
 		public GLib.Bytes get_memory (Retro.MemoryType memory_type);
 		public size_t get_memory_size (Retro.MemoryType memory_type);
+		public uint get_runahead ();
 		public unowned string get_save_directory ();
 		public GLib.Bytes get_state () throws GLib.Error;
 		public bool get_support_no_game ();
@@ -36,6 +37,7 @@ namespace Retro {
 		public void set_keyboard (Gtk.Widget? widget);
 		public void set_medias ([CCode (array_length = false, array_null_terminated = true)] string[] uris);
 		public void set_memory (Retro.MemoryType memory_type, GLib.Bytes bytes);
+		public void set_runahead (uint runahead);
 		public void set_save_directory (string save_directory);
 		public void set_state (GLib.Bytes bytes) throws GLib.Error;
 		public void set_system_directory (string system_directory);
@@ -45,6 +47,7 @@ namespace Retro {
 		public double frames_per_second { get; }
 		public bool game_loaded { get; }
 		public bool is_initiated { get; }
+		public uint runahead { get; set; }
 		public string save_directory { get; set; }
 		public bool support_no_game { get; }
 		public string system_directory { get; set; }
