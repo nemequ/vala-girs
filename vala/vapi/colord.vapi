@@ -76,7 +76,7 @@ namespace Cd {
 		[Version (since = "0.1.12")]
 		public bool get_has_server ();
 		[Version (since = "0.1.8")]
-		public async GLib.GenericArray<Cd.Profile> get_profiles (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async GLib.GenericArray<weak Cd.Profile> get_profiles (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public GLib.GenericArray<weak Cd.Profile> get_profiles_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.1.8")]

@@ -1614,6 +1614,8 @@ namespace NM {
 	public class RemoteConnection : NM.Object, GLib.AsyncInitable, GLib.Initable, NM.Connection {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
 		public const string DBUS_CONNECTION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_FLAGS")]
+		public const string FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_PATH")]
 		public const string PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_UNSAVED")]
@@ -1626,6 +1628,8 @@ namespace NM {
 		public async bool commit_changes_async (bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool @delete (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool delete_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public NM.SettingsConnectionFlags get_flags ();
 		public GLib.Variant get_secrets (string setting_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.Variant get_secrets_async (string setting_name, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_unsaved ();
@@ -1634,6 +1638,8 @@ namespace NM {
 		public async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
 		public async GLib.Variant update2 (GLib.Variant? settings, NM.SettingsUpdate2Flags flags, GLib.Variant? args, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public uint flags { get; }
 		public bool unsaved { get; }
 		public bool visible { get; }
 	}
@@ -5180,6 +5186,15 @@ namespace NM {
 		AUTO,
 		PBC,
 		PIN
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_CONNECTION_FLAG_", type_id = "nm_settings_connection_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.12")]
+	public enum SettingsConnectionFlags {
+		NONE,
+		UNSAVED,
+		NM_GENERATED,
+		VOLATILE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_UPDATE2_FLAG_", type_id = "nm_settings_update2_flags_get_type ()")]
 	[Flags]

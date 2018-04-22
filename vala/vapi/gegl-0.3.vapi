@@ -286,7 +286,7 @@ namespace Gegl {
 		protected ParamPath ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_seed_get_type ()")]
-	public class ParamSeed : GLib.ParamSpecInt {
+	public class ParamSeed : GLib.ParamSpecUInt {
 		[CCode (has_construct_function = false)]
 		protected ParamSeed ();
 	}
@@ -538,9 +538,9 @@ namespace Gegl {
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecSeed {
-		public weak GLib.ParamSpecInt parent_instance;
-		public int ui_minimum;
-		public int ui_maximum;
+		public weak GLib.ParamSpecUInt parent_instance;
+		public uint ui_minimum;
+		public uint ui_maximum;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecString {

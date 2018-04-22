@@ -2012,13 +2012,19 @@ MT safe.</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
           <parameter name="dest"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">the destination address</doc>
-            <type name="gpointer" c:type="gpointer"/>
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">
+    the destination address</doc>
+            <array length="2" zero-terminated="0" c:type="gpointer">
+              <type name="guint8"/>
+            </array>
           </parameter>
-          <parameter name="size" transfer-ownership="none">
+          <parameter name="size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <doc xml:space="preserve">the size to extract</doc>
             <type name="gsize" c:type="gsize"/>
           </parameter>
@@ -5603,6 +5609,26 @@ be empty</doc>
             <doc xml:space="preserve">a #GstCaps to intersect</doc>
             <type name="Caps" c:type="const GstCaps*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="copy" c:identifier="gst_caps_copy">
+        <doc xml:space="preserve">Creates a new #GstCaps as a copy of the old @caps. The new caps will have a
+refcount of 1, owned by the caller. The structures are copied as well.
+
+Note that this function is the semantic equivalent of a gst_caps_ref()
+followed by a gst_caps_make_writable(). If you only want to hold on to a
+reference to the data, you should use gst_caps_ref().
+
+When you are finished with the caps, call gst_caps_unref() on it.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #GstCaps</doc>
+          <type name="Caps" c:type="GstCaps*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstCaps.</doc>
+            <type name="Caps" c:type="const GstCaps*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="copy_nth" c:identifier="gst_caps_copy_nth">
@@ -35050,10 +35076,26 @@ Free-function: gst_sample_unref</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="set_buffer"
+              c:identifier="gst_sample_set_buffer"
+              version="1.16">
+        <doc xml:space="preserve">Set the buffer associated with @sample. @sample must be writable.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sample" transfer-ownership="none">
+            <type name="Sample" c:type="GstSample*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <type name="Buffer" c:type="GstBuffer*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_buffer_list"
               c:identifier="gst_sample_set_buffer_list"
               version="1.6">
-        <doc xml:space="preserve">Set the buffer list associated with @sample</doc>
+        <doc xml:space="preserve">Set the buffer list associated with @sample. @sample must be writable.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -35065,6 +35107,55 @@ Free-function: gst_sample_unref</doc>
           <parameter name="buffer_list" transfer-ownership="none">
             <doc xml:space="preserve">a #GstBufferList</doc>
             <type name="BufferList" c:type="GstBufferList*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_caps"
+              c:identifier="gst_sample_set_caps"
+              version="1.16">
+        <doc xml:space="preserve">Set the caps associated with @sample. @sample must be writable.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sample" transfer-ownership="none">
+            <type name="Sample" c:type="GstSample*"/>
+          </instance-parameter>
+          <parameter name="caps" transfer-ownership="none">
+            <type name="Caps" c:type="GstCaps*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_info"
+              c:identifier="gst_sample_set_info"
+              version="1.16">
+        <doc xml:space="preserve">Set the info structure associated with @sample. @sample must be writable,
+and @info must not have a parent set already.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sample" transfer-ownership="none">
+            <type name="Sample" c:type="GstSample*"/>
+          </instance-parameter>
+          <parameter name="info" transfer-ownership="none">
+            <type name="Structure" c:type="GstStructure*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_segment"
+              c:identifier="gst_sample_set_segment"
+              version="1.16">
+        <doc xml:space="preserve">Set the segment associated with @sample. @sample must be writable.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="sample" transfer-ownership="none">
+            <type name="Sample" c:type="GstSample*"/>
+          </instance-parameter>
+          <parameter name="segment" transfer-ownership="none">
+            <type name="Segment" c:type="const GstSegment*"/>
           </parameter>
         </parameters>
       </method>
@@ -47860,7 +47951,9 @@ the result.</doc>
       <parameters>
         <parameter name="mem" transfer-ownership="none">
           <doc xml:space="preserve">a pointer to the memory to dump</doc>
-          <type name="guint8" c:type="const guchar*"/>
+          <array length="1" zero-terminated="0" c:type="guchar*">
+            <type name="guint8" c:type="guchar"/>
+          </array>
         </parameter>
         <parameter name="size" transfer-ownership="none">
           <doc xml:space="preserve">the size of the memory block to dump</doc>

@@ -948,11 +948,11 @@ trip.</doc>
       <doc xml:space="preserve">jsonrpc-glib major version component (e.g. 1 if %JSONRPC_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="0" c:type="JSONRPC_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="1" c:type="JSONRPC_MICRO_VERSION">
       <doc xml:space="preserve">jsonrpc-glib micro version component (e.g. 3 if %JSONRPC_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="28" c:type="JSONRPC_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="29" c:type="JSONRPC_MINOR_VERSION">
       <doc xml:space="preserve">jsonrpc-glib minor version component (e.g. 2 if %JSONRPC_VERSION is 1.2.3)</doc>
       <type name="gint" c:type="gint"/>
     </constant>
@@ -1017,6 +1017,14 @@ trip.</doc>
         <type name="utf8" c:type="const char**"/>
       </field>
     </record>
+    <record name="MessageGetStrv" c:type="JsonrpcMessageGetStrv">
+      <field name="magic" writable="1">
+        <type name="MessageMagic" c:type="JsonrpcMessageMagic"/>
+      </field>
+      <field name="valptr" writable="1">
+        <type name="utf8" c:type="char***"/>
+      </field>
+    </record>
     <record name="MessageGetVariant" c:type="JsonrpcMessageGetVariant">
       <field name="magic" writable="1">
         <type name="MessageMagic" c:type="JsonrpcMessageMagic"/>
@@ -1070,6 +1078,14 @@ trip.</doc>
       </field>
       <field name="val" writable="1">
         <type name="utf8" c:type="const char*"/>
+      </field>
+    </record>
+    <record name="MessagePutStrv" c:type="JsonrpcMessagePutStrv">
+      <field name="magic" writable="1">
+        <type name="MessageMagic" c:type="JsonrpcMessageMagic"/>
+      </field>
+      <field name="val" writable="1">
+        <type name="utf8" c:type="const char* const*"/>
       </field>
     </record>
     <class name="OutputStream"
@@ -1281,6 +1297,19 @@ been buffered, and there is no guarantee the peer received it.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="client_closed">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Server" c:type="JsonrpcServer*"/>
+          </instance-parameter>
+          <parameter name="client" transfer-ownership="none">
+            <type name="Client" c:type="JsonrpcClient*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="handle_call">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -1445,6 +1474,18 @@ loop.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="client-closed" when="last" version="3.30">
+        <doc xml:space="preserve">This signal is emitted when a new client has been lost.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">A #JsonrpcClient</doc>
+            <type name="Client"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="handle-call" when="last" version="3.26">
         <doc xml:space="preserve">This method is emitted when the client requests a method call.
 
@@ -1560,25 +1601,37 @@ failure), using jsonrpc_client_reply() or jsonrpc_client_reply_async().</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_reserved1">
+      <field name="client_closed">
+        <callback name="client_closed">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Server" c:type="JsonrpcServer*"/>
+            </parameter>
+            <parameter name="client" transfer-ownership="none">
+              <type name="Client" c:type="JsonrpcClient*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_reserved1" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="_reserved2">
+      <field name="_reserved2" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="_reserved3">
+      <field name="_reserved3" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="_reserved4">
+      <field name="_reserved4" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="_reserved5">
+      <field name="_reserved5" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="_reserved6">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="_reserved7">
+      <field name="_reserved6" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
     </record>
@@ -1611,7 +1664,7 @@ failure), using jsonrpc_client_reply() or jsonrpc_client_reply_async().</doc>
         </parameter>
       </parameters>
     </callback>
-    <constant name="VERSION_S" value="3.28.0" c:type="JSONRPC_VERSION_S">
+    <constant name="VERSION_S" value="3.29.1" c:type="JSONRPC_VERSION_S">
       <doc xml:space="preserve">jsonrpc-glib version, encoded as a string, useful for printing and
 concatenation.</doc>
       <type name="utf8" c:type="gchar*"/>

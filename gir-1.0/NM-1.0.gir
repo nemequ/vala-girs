@@ -13441,6 +13441,11 @@ object, and must not be modified.</doc>
               c:type="NM_REMOTE_CONNECTION_DBUS_CONNECTION">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="REMOTE_CONNECTION_FLAGS"
+              value="flags"
+              c:type="NM_REMOTE_CONNECTION_FLAGS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="REMOTE_CONNECTION_PATH"
               value="path"
               c:type="NM_REMOTE_CONNECTION_PATH">
@@ -13631,6 +13636,21 @@ changed.</doc>
             <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_flags"
+              c:identifier="nm_remote_connection_get_flags"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the flags of the connection of type #NMSettingsConnectionFlags.</doc>
+          <type name="SettingsConnectionFlags"
+                c:type="NMSettingsConnectionFlags"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_secrets"
@@ -13909,6 +13929,11 @@ been written to disk, or if the connection has never been saved.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="flags" version="1.12" transfer-ownership="none">
+        <doc xml:space="preserve">The flags of the connection as unsigned integer. The values
+correspond to the #NMSettingsConnectionFlags enum.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
       <property name="unsaved" transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the remote connection contains changes that have not been saved
 to disk, %FALSE if the connection is the same as its on-disk representation.</doc>
@@ -21635,7 +21660,11 @@ Currently this only applies to 802-1x authentication.</doc>
         <doc xml:space="preserve">Whether or not the connection should be automatically connected by
 NetworkManager when the resources for the connection are available.
 %TRUE to automatically activate the connection, %FALSE to require manual
-intervention to activate the connection.</doc>
+intervention to activate the connection.
+
+Note that autoconnect is not implemented for VPN profiles. See
+#NMSettingConnection:secondaries as an alternative to automatically
+connect VPN profiles.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="autoconnect-priority"
@@ -21665,7 +21694,9 @@ to autoconnect again.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">Whether or not slaves of this connection should be automatically brought up
 when NetworkManager activates this connection. This only has a real effect
-for master connections.
+for master connections. The properties #NMSettingConnection:autoconnect,
+#NMSettingConnection:autoconnect-priority and #NMSettingConnection:autoconnect-retries
+are unrelated to this setting.
 The permitted values are: 0: leave slave connections untouched,
 1: activate all the slave connections with this connection, -1: default.
 If -1 (default) is set, global connection.autoconnect-slaves is read to
@@ -23964,8 +23995,10 @@ and ignore route attributes. Now, @route must match exactly.</doc>
 addresses on the network.  If an address conflict is detected, the
 activation will fail.  A zero value means that no duplicate address
 detection is performed, -1 means the default value (either configuration
-ipvx.dad-timeout override or 3 seconds).  A value greater than zero is a
-timeout in milliseconds.</doc>
+ipvx.dad-timeout override or zero).  A value greater than zero is a
+timeout in milliseconds.
+
+The property is currently implemented only for IPv4.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="dhcp-hostname" writable="1" transfer-ownership="none">
@@ -31210,6 +31243,47 @@ WPS can be disabled by setting this property to a value of 1.</doc>
         <doc xml:space="preserve">use PIN method</doc>
       </member>
     </enumeration>
+    <bitfield name="SettingsConnectionFlags"
+              version="1.12"
+              glib:type-name="NMSettingsConnectionFlags"
+              glib:get-type="nm_settings_connection_flags_get_type"
+              c:type="NMSettingsConnectionFlags">
+      <doc xml:space="preserve">Flags describing the current activation state.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="NM_SETTINGS_CONNECTION_FLAG_NONE"
+              glib:nick="none">
+        <doc xml:space="preserve">an alias for numeric zero, no flags set.</doc>
+      </member>
+      <member name="unsaved"
+              value="1"
+              c:identifier="NM_SETTINGS_CONNECTION_FLAG_UNSAVED"
+              glib:nick="unsaved">
+        <doc xml:space="preserve">the connection is not saved to disk.
+  That either means, that the connection is in-memory only and currently
+  is not backed by a file. Or, that the connection is backed by a file,
+  but has modifications in-memory that were not persisted to disk.</doc>
+      </member>
+      <member name="nm_generated"
+              value="2"
+              c:identifier="NM_SETTINGS_CONNECTION_FLAG_NM_GENERATED"
+              glib:nick="nm-generated">
+        <doc xml:space="preserve">A connection is "nm-generated" if
+ it was generated by NetworkManger. If the connection gets modified or saved
+ by the user, the flag gets cleared. A nm-generated is also unsaved
+ and has no backing file as it is in-memory only.</doc>
+      </member>
+      <member name="volatile"
+              value="4"
+              c:identifier="NM_SETTINGS_CONNECTION_FLAG_VOLATILE"
+              glib:nick="volatile">
+        <doc xml:space="preserve">The connection will be deleted
+ when it disconnects. That is for in-memory connections (unsaved), which are
+ currently active but deleted on disconnect. Volatile connections are
+ always unsaved, but they are also no backing file on disk and are entirely
+ in-memory only.</doc>
+      </member>
+    </bitfield>
     <enumeration name="SettingsError"
                  glib:type-name="NMSettingsError"
                  glib:get-type="nm_settings_error_get_type"
@@ -32660,7 +32734,7 @@ generating the dynamic WEP keys automatically</doc>
               c:identifier="NM_VLAN_FLAG_GVRP"
               glib:nick="gvrp">
         <doc xml:space="preserve">indicates that this interface should use GVRP to register
- itself with it's switch</doc>
+ itself with its switch</doc>
       </member>
       <member name="loose_binding"
               value="4"
@@ -32675,7 +32749,7 @@ generating the dynamic WEP keys automatically</doc>
               c:identifier="NM_VLAN_FLAG_MVRP"
               glib:nick="mvrp">
         <doc xml:space="preserve">indicates that this interface should use MVRP to register
- itself with it's switch</doc>
+ itself with its switch</doc>
       </member>
     </bitfield>
     <enumeration name="VlanPriorityMap"
@@ -36575,7 +36649,7 @@ length.</doc>
  characters. If set to %NULL, it will return a pointer to an internal, static
  buffer (shared with nm_utils_inet6_ntop()).  Beware, that the internal
  buffer will be overwritten with ever new call of nm_utils_inet4_ntop() or
- nm_utils_inet6_ntop() that does not provied it's own @dst buffer. Also,
+ nm_utils_inet6_ntop() that does not provide its own @dst buffer. Also,
  using the internal buffer is not thread safe. When in doubt, pass your own
  @dst buffer to avoid these issues.</doc>
           <type name="utf8" c:type="char*"/>
@@ -36606,7 +36680,7 @@ length.</doc>
  characters. If set to %NULL, it will return a pointer to an internal, static
  buffer (shared with nm_utils_inet4_ntop()).  Beware, that the internal
  buffer will be overwritten with ever new call of nm_utils_inet4_ntop() or
- nm_utils_inet6_ntop() that does not provied it's own @dst buffer. Also,
+ nm_utils_inet6_ntop() that does not provide its own @dst buffer. Also,
  using the internal buffer is not thread safe. When in doubt, pass your own
  @dst buffer to avoid these issues.</doc>
           <type name="utf8" c:type="char*"/>

@@ -601,7 +601,7 @@ web view or a new one created and added to a new tab or window.</doc>
       <method name="get_back_item"
               c:identifier="webkit_back_forward_list_get_back_item">
         <doc xml:space="preserve">Returns the item that precedes the current item.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #WebKitBackForwardListItem
    preceding the current item or %NULL.</doc>
           <type name="BackForwardListItem"
@@ -656,7 +656,7 @@ web view or a new one created and added to a new tab or window.</doc>
       <method name="get_current_item"
               c:identifier="webkit_back_forward_list_get_current_item">
         <doc xml:space="preserve">Returns the current item in @back_forward_list.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a #WebKitBackForwardListItem
    or %NULL if @back_forward_list is empty.</doc>
           <type name="BackForwardListItem"
@@ -673,7 +673,7 @@ web view or a new one created and added to a new tab or window.</doc>
       <method name="get_forward_item"
               c:identifier="webkit_back_forward_list_get_forward_item">
         <doc xml:space="preserve">Returns the item that follows the current item.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #WebKitBackForwardListItem
    following the current item or %NULL.</doc>
           <type name="BackForwardListItem"
@@ -742,9 +742,9 @@ web view or a new one created and added to a new tab or window.</doc>
       <method name="get_nth_item"
               c:identifier="webkit_back_forward_list_get_nth_item">
         <doc xml:space="preserve">Returns the item at a given index relative to the current item.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #WebKitBackForwardListItem
-   located at the specified index relative to the current item.</doc>
+   located at the specified index relative to the current item or %NULL.</doc>
           <type name="BackForwardListItem"
                 c:type="WebKitBackForwardListItem*"/>
         </return-value>
@@ -4728,13 +4728,31 @@ from an untrusted source.</doc>
             glib:get-type="webkit_javascript_result_get_type"
             c:symbol-prefix="javascript_result">
       <method name="get_global_context"
-              c:identifier="webkit_javascript_result_get_global_context">
+              c:identifier="webkit_javascript_result_get_global_context"
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.22">
         <doc xml:space="preserve">Get the global Javascript context that should be used with the
 &lt;function&gt;JSValueRef&lt;/function&gt; returned by webkit_javascript_result_get_value().</doc>
-        <return-value transfer-ownership="full">
+        <doc-deprecated xml:space="preserve">Use jsc_value_get_context() instead.</doc-deprecated>
+        <return-value>
           <doc xml:space="preserve">the &lt;function&gt;JSGlobalContextRef&lt;/function&gt; for the #WebKitJavascriptResult</doc>
-          <type name="JavaScriptCore.GlobalContext"
-                c:type="JSGlobalContextRef"/>
+          <type c:type="JSGlobalContextRef"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="js_result" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitJavascriptResult</doc>
+            <type name="JavascriptResult" c:type="WebKitJavascriptResult*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_js_value"
+              c:identifier="webkit_javascript_result_get_js_value"
+              version="2.22">
+        <doc xml:space="preserve">Get the #JSCValue of @js_result.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #JSCValue of the #WebKitJavascriptResult</doc>
+          <type name="JavaScriptCore.Value" c:type="JSCValue*"/>
         </return-value>
         <parameters>
           <instance-parameter name="js_result" transfer-ownership="none">
@@ -4744,12 +4762,16 @@ from an untrusted source.</doc>
         </parameters>
       </method>
       <method name="get_value"
-              c:identifier="webkit_javascript_result_get_value">
+              c:identifier="webkit_javascript_result_get_value"
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.22">
         <doc xml:space="preserve">Get the value of @js_result. You should use the &lt;function&gt;JSGlobalContextRef&lt;/function&gt;
 returned by webkit_javascript_result_get_global_context() to use the &lt;function&gt;JSValueRef&lt;/function&gt;.</doc>
-        <return-value transfer-ownership="full">
+        <doc-deprecated xml:space="preserve">Use webkit_javascript_result_get_js_value() instead.</doc-deprecated>
+        <return-value>
           <doc xml:space="preserve">the &lt;function&gt;JSValueRef&lt;/function&gt; of the #WebKitJavascriptResult</doc>
-          <type name="JavaScriptCore.Value" c:type="JSValueRef"/>
+          <type c:type="JSValueRef"/>
         </return-value>
         <parameters>
           <instance-parameter name="js_result" transfer-ownership="none">
@@ -4839,7 +4861,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="20" c:type="WEBKIT_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="21" c:type="WEBKIT_MINOR_VERSION">
       <doc xml:space="preserve">Like webkit_get_minor_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -5430,7 +5452,9 @@ contains only "192.168.1.1", then a connection to "example.com" will use the pro
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">an optional list of hosts/IP addresses to not use a proxy for.</doc>
-            <type name="utf8" c:type="const gchar* const*"/>
+            <array c:type="gchar**">
+              <type name="utf8" c:type="gchar*"/>
+            </array>
           </parameter>
         </parameters>
       </constructor>
@@ -13423,14 +13447,17 @@ this particular #WebKitWebView.</doc>
         </parameters>
       </method>
       <method name="get_javascript_global_context"
-              c:identifier="webkit_web_view_get_javascript_global_context">
+              c:identifier="webkit_web_view_get_javascript_global_context"
+              introspectable="0"
+              deprecated="1"
+              deprecated-version="2.22">
         <doc xml:space="preserve">Get the global JavaScript context used by @web_view to deserialize the
 result values of scripts executed with webkit_web_view_run_javascript().</doc>
-        <return-value transfer-ownership="full">
+        <doc-deprecated xml:space="preserve">Use jsc_value_get_context() instead.</doc-deprecated>
+        <return-value>
           <doc xml:space="preserve">the &lt;function&gt;JSGlobalContextRef&lt;/function&gt; used by @web_view to deserialize
    the result values of scripts.</doc>
-          <type name="JavaScriptCore.GlobalContext"
-                c:type="JSGlobalContextRef"/>
+          <type c:type="JSGlobalContextRef"/>
         </return-value>
         <parameters>
           <instance-parameter name="web_view" transfer-ownership="none">
@@ -14155,8 +14182,7 @@ web_view_javascript_finished (GObject      *object,
                               gpointer      user_data)
 {
     WebKitJavascriptResult *js_result;
-    JSValueRef              value;
-    JSGlobalContextRef      context;
+    JSCValue               *value;
     GError                 *error = NULL;
 
     js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW (object), result, &amp;error);
@@ -14166,19 +14192,17 @@ web_view_javascript_finished (GObject      *object,
         return;
     }
 
-    context = webkit_javascript_result_get_global_context (js_result);
-    value = webkit_javascript_result_get_value (js_result);
-    if (JSValueIsString (context, value)) {
-        JSStringRef js_str_value;
-        gchar      *str_value;
-        gsize       str_length;
+    value = webkit_javascript_result_get_js_value (js_result);
+    if (jsc_value_is_string (value)) {
+        JSCException *exception;
+        gchar        *str_value;
 
-        js_str_value = JSValueToStringCopy (context, value, NULL);
-        str_length = JSStringGetMaximumUTF8CStringSize (js_str_value);
-        str_value = (gchar *)g_malloc (str_length);
-        JSStringGetUTF8CString (js_str_value, str_value, str_length);
-        JSStringRelease (js_str_value);
-        g_print ("Script result: %s\n", str_value);
+        str_value = jsc_value_to_string (value);
+        exception = jsc_context_get_exception (jsc_value_get_context (value));
+        if (exception)
+            g_warning ("Error running javascript: %s", jsc_exception_get_message (exception));
+        else
+            g_print ("Script result: %s\n", str_value);
         g_free (str_value);
     } else {
         g_warning ("Error running javascript: unexpected return value");
@@ -16328,6 +16352,38 @@ webkit_website_data_manager_fetch_finish() to get the result of the operation.</
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_resource_load_statistics_directory"
+              c:identifier="webkit_website_data_manager_get_resource_load_statistics_directory"
+              version="2.22">
+        <doc xml:space="preserve">Get the #WebKitWebsiteDataManager:resource-load-statistics-directory property.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the directory where resource load statistics are stored or %NULL if @manager is ephemeral.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_resource_load_statistics_enabled"
+              c:identifier="webkit_website_data_manager_get_resource_load_statistics_enabled"
+              version="2.22">
+        <doc xml:space="preserve">Get whether collection of resource load statistics for intelligent tracking prevention is enabled or not.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if collection of resource load statistics is enabled, or %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_websql_directory"
               c:identifier="webkit_website_data_manager_get_websql_directory"
               version="2.10">
@@ -16433,6 +16489,25 @@ webkit_website_data_manager_remove_finish() to get the result of the operation.<
           </parameter>
         </parameters>
       </method>
+      <method name="set_resource_load_statistics_enabled"
+              c:identifier="webkit_website_data_manager_set_resource_load_statistics_enabled"
+              version="2.22">
+        <doc xml:space="preserve">Enable collection of resource load statistics for intelligent tracking prevention.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="manager" transfer-ownership="none">
+            <doc xml:space="preserve">a #WebKitWebsiteDataManager</doc>
+            <type name="WebsiteDataManager"
+                  c:type="WebKitWebsiteDataManager*"/>
+          </instance-parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">value to set</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="base-cache-directory"
                 version="2.10"
                 writable="1"
@@ -16492,6 +16567,14 @@ parameters to configure data directories will be ignored.</doc>
                 construct-only="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The directory where offline web application cache will be stored.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="resource-load-statistics-directory"
+                version="2.22"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The directory where resource load statistics will be stored.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="websql-directory"
@@ -16609,8 +16692,14 @@ parameters to configure data directories will be ignored.</doc>
               glib:nick="cookies">
         <doc xml:space="preserve">Cookies.</doc>
       </member>
+      <member name="resource_load_statistics"
+              value="512"
+              c:identifier="WEBKIT_WEBSITE_DATA_RESOURCE_LOAD_STATISTICS"
+              glib:nick="resource-load-statistics">
+        <doc xml:space="preserve">Resource load statistics. Since 2.22.</doc>
+      </member>
       <member name="all"
-              value="511"
+              value="1023"
               c:identifier="WEBKIT_WEBSITE_DATA_ALL"
               glib:nick="all">
         <doc xml:space="preserve">All types.</doc>

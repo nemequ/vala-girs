@@ -77,6 +77,8 @@ namespace Jsonrpc {
 		public void remove_handler (uint handler_id);
 		[Version (since = "3.28")]
 		public virtual signal void client_accepted (Jsonrpc.Client client);
+		[Version (since = "3.30")]
+		public virtual signal void client_closed (Jsonrpc.Client client);
 		[Version (since = "3.26")]
 		public virtual signal bool handle_call (Jsonrpc.Client client, string method, GLib.Variant id, GLib.Variant @params);
 		[Version (since = "3.26")]
@@ -121,6 +123,11 @@ namespace Jsonrpc {
 		public weak string valptr;
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+	public struct MessageGetStrv {
+		public Jsonrpc.MessageMagic magic;
+		public weak string valptr;
+	}
+	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
 	public struct MessageGetVariant {
 		public Jsonrpc.MessageMagic magic;
 		public weak GLib.Variant variantptr;
@@ -152,6 +159,11 @@ namespace Jsonrpc {
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
 	public struct MessagePutString {
+		public Jsonrpc.MessageMagic magic;
+		public weak string val;
+	}
+	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+	public struct MessagePutStrv {
 		public Jsonrpc.MessageMagic magic;
 		public weak string val;
 	}

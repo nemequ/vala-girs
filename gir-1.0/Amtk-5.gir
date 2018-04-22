@@ -116,7 +116,8 @@ of accelerators in the format understood by gtk_accelerator_parse().</doc>
       <method name="get_label"
               c:identifier="amtk_action_info_get_label"
               version="2.0">
-        <doc xml:space="preserve">Gets the label. The label has normally a mnemonic.</doc>
+        <doc xml:space="preserve">Gets the label. The label has normally a mnemonic. To remove the mnemonic,
+there is the amtk_utils_remove_mnemonic() function.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the label (i.e. a short description), or %NULL.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -251,7 +252,8 @@ in the format understood by gtk_accelerator_parse().</doc>
       <method name="set_label"
               c:identifier="amtk_action_info_set_label"
               version="2.0">
-        <doc xml:space="preserve">Sets the label with a mnemonic.</doc>
+        <doc xml:space="preserve">Sets the label with a mnemonic. To know how to encode the mnemonic, see the
+documentation of gtk_label_new_with_mnemonic().</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1003,6 +1005,69 @@ set the menu and also possibly set a tooltip to the arrow.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_shortcut"
+              c:identifier="amtk_factory_create_shortcut"
+              version="5.0">
+        <doc xml:space="preserve">Calls amtk_factory_create_shortcut_full() with the
+#AmtkFactory:default-flags.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GtkShortcutsShortcut for @action_name.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="factory" transfer-ownership="none">
+            <doc xml:space="preserve">an #AmtkFactory.</doc>
+            <type name="Factory" c:type="AmtkFactory*"/>
+          </instance-parameter>
+          <parameter name="action_name" transfer-ownership="none">
+            <doc xml:space="preserve">an action name.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_shortcut_full"
+              c:identifier="amtk_factory_create_shortcut_full"
+              version="5.0">
+        <doc xml:space="preserve">This function ignores the #AmtkFactory:default-flags property and takes the
+@flags argument instead.
+
+This function creates a new #GtkShortcutsShortcut for @action_name.
+
+For the #GtkShortcutsShortcut:title, the tooltip has the priorioty, with the
+label as fallback if the tooltip is %NULL (the mnemonic is removed from the
+label with amtk_utils_remove_mnemonic()). This can be controlled with the
+%AMTK_FACTORY_IGNORE_TOOLTIP and %AMTK_FACTORY_IGNORE_LABEL flags.
+
+The #GtkShortcutsShortcut:accelerator property is set with only the *first*
+accel returned by amtk_action_info_get_accels(). This step can be ignored
+with %AMTK_FACTORY_IGNORE_ACCELS or %AMTK_FACTORY_IGNORE_ACCELS_FOR_DOC.
+
+The #GtkShortcutsShortcut:action-name property is set to @action_name if the
+%AMTK_FACTORY_IGNORE_GACTION flag isn't set. Note that with
+#GtkShortcutsShortcut:action-name all accelerators are displayed (if set to
+the #GtkApplication).
+
+So depending on whether you want to show only the first accelerator or all
+accelerators, you need to set @flags appropriately.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a new #GtkShortcutsShortcut for @action_name.</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="factory" transfer-ownership="none">
+            <doc xml:space="preserve">an #AmtkFactory.</doc>
+            <type name="Factory" c:type="AmtkFactory*"/>
+          </instance-parameter>
+          <parameter name="action_name" transfer-ownership="none">
+            <doc xml:space="preserve">an action name.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">#AmtkFactoryFlags.</doc>
+            <type name="FactoryFlags" c:type="AmtkFactoryFlags"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="create_simple_menu"
               c:identifier="amtk_factory_create_simple_menu"
               version="5.0">
@@ -1587,6 +1652,55 @@ in a #GtkStatusbar, or as a tooltip.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="shortcuts_group_new"
+              c:identifier="amtk_shortcuts_group_new"
+              version="5.0">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">a new #GtkShortcutsGroup.</doc>
+        <type name="Gtk.Container" c:type="GtkContainer*"/>
+      </return-value>
+      <parameters>
+        <parameter name="title" transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkShortcutsGroup:title.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="shortcuts_section_new"
+              c:identifier="amtk_shortcuts_section_new"
+              version="5.0">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">a new #GtkShortcutsSection.</doc>
+        <type name="Gtk.Container" c:type="GtkContainer*"/>
+      </return-value>
+      <parameters>
+        <parameter name="title" transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkShortcutsSection:title.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="shortcuts_window_new"
+              c:identifier="amtk_shortcuts_window_new"
+              version="5.0">
+      <doc xml:space="preserve">Creates a new #GtkShortcutsWindow. The #GtkWindow:modal property is set to
+%TRUE.
+
+It is on purpose that the return type is #GtkShortcutsWindow, not #GtkWidget
+or something else, so in C when you declare the variable as
+#GtkShortcutsWindow it's easier to find it later (searching "GtkShortcuts"
+will return something in your codebase).</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">a new #GtkShortcutsWindow.</doc>
+        <type name="Gtk.ShortcutsWindow" c:type="GtkShortcutsWindow*"/>
+      </return-value>
+      <parameters>
+        <parameter name="parent" transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkWindow:transient-for.</doc>
+          <type name="Gtk.Window" c:type="GtkWindow*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="utils_bind_g_action_to_gtk_action"
               c:identifier="amtk_utils_bind_g_action_to_gtk_action"
               version="4.0">
@@ -1706,6 +1820,24 @@ gtk_recent_chooser_get_current_uri() is not updated when #GtkMenuItem's of a
         <parameter name="item" transfer-ownership="none">
           <doc xml:space="preserve">a #GtkMenuItem.</doc>
           <type name="Gtk.MenuItem" c:type="GtkMenuItem*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_remove_mnemonic"
+              c:identifier="amtk_utils_remove_mnemonic"
+              version="5.0">
+      <doc xml:space="preserve">Removes the mnemonics from @str. Single underscores are removed, and two
+consecutive underscores are replaced by one underscore (see the documentation
+of gtk_label_new_with_mnemonic()).</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the new string with the mnemonics removed. Free
+with g_free() when no longer needed.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a string.</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>
