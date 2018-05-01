@@ -463,7 +463,7 @@ namespace Camel {
 		[Version (since = "3.0")]
 		public virtual bool transfer_messages_to_sync (GLib.GenericArray<string> message_uids, Camel.Folder destination, bool delete_originals, out GLib.GenericArray<string> transferred_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.32")]
-		public void unlock ();
+		public void @unlock ();
 		public string description { get; set construct; }
 		public string display_name { get; set construct; }
 		public string full_name { get; set construct; }
@@ -656,7 +656,7 @@ namespace Camel {
 		public virtual void* summary_header_save () throws GLib.Error;
 		public void touch ();
 		[Version (since = "2.32")]
-		public void unlock ();
+		public void @unlock ();
 		public uint deleted_count { get; }
 		public Camel.Folder folder { get; construct; }
 		public uint junk_count { get; }

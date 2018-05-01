@@ -108,6 +108,7 @@ namespace Vte {
 		[Version (deprecated = true, deprecated_since = "0.40")]
 		public void match_set_cursor (int tag, Gdk.Cursor? cursor);
 		public void match_set_cursor_name (int tag, string cursor_name);
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public void match_set_cursor_type (int tag, Gdk.CursorType cursor_type);
 		public void paste_primary ();
 		public Vte.Pty pty_new_sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;

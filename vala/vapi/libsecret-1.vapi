@@ -171,7 +171,7 @@ namespace Secret {
 		public bool set_alias_to_dbus_path_sync (string alias, string? collection_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool store (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, Secret.Value value, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool store_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, Secret.Value value, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async int unlock (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> unlocked) throws GLib.Error;
+		public async int @unlock (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> unlocked) throws GLib.Error;
 		public async int unlock_dbus_paths (string paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked) throws GLib.Error;
 		public int unlock_dbus_paths_sync (string paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked) throws GLib.Error;
 		public int unlock_sync (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> unlocked) throws GLib.Error;
