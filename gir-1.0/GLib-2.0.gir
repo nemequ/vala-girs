@@ -7810,6 +7810,62 @@ without calling the key and value destroy functions.</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="steal_extended"
+                c:identifier="g_hash_table_steal_extended"
+                version="2.58">
+        <doc xml:space="preserve">Looks up a key in the #GHashTable, stealing the original key and the
+associated value and returning %TRUE if the key was found. If the key was
+not found, %FALSE is returned.
+
+If found, the stolen key and value are removed from the hash table without
+calling the key and value destroy functions, and ownership is transferred to
+the caller of this method; as with g_hash_table_steal().
+
+You can pass %NULL for @lookup_key, provided the hash and equal functions
+of @hash_table are %NULL-safe.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the key was found in the #GHashTable</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="hash_table" transfer-ownership="none">
+            <doc xml:space="preserve">a #GHashTable</doc>
+            <type name="GLib.HashTable" c:type="GHashTable*">
+              <type name="gpointer" c:type="gpointer"/>
+              <type name="gpointer" c:type="gpointer"/>
+            </type>
+          </parameter>
+          <parameter name="lookup_key"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the key to look up</doc>
+            <type name="gpointer" c:type="gconstpointer"/>
+          </parameter>
+          <parameter name="stolen_key"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for the
+   original key</doc>
+            <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+          <parameter name="stolen_value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     nullable="1"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location
+   for the value associated with the key</doc>
+            <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="unref" c:identifier="g_hash_table_unref" version="2.10">
         <doc xml:space="preserve">Atomically decrements the reference count of @hash_table by one.
 If the reference count drops to 0, all keys and values will be
@@ -18017,7 +18073,8 @@ pointer was not found.</doc>
         <doc xml:space="preserve">Removes the pointer at the given index from the pointer array.
 The following elements are moved down one place. If @array has
 a non-%NULL #GDestroyNotify function it is called for the removed
-element.</doc>
+element. If so, the return value from this function will potentially point
+to freed memory (depending on the #GDestroyNotify implementation).</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the pointer which was removed</doc>
           <type name="gpointer" c:type="gpointer"/>
@@ -18042,7 +18099,9 @@ element.</doc>
 The last element in the array is used to fill in the space, so
 this function does not preserve the order of the array. But it
 is faster than g_ptr_array_remove_index(). If @array has a non-%NULL
-#GDestroyNotify function it is called for the removed element.</doc>
+#GDestroyNotify function it is called for the removed element. If so, the
+return value from this function will potentially point to freed memory
+(depending on the #GDestroyNotify implementation).</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the pointer which was removed</doc>
           <type name="gpointer" c:type="gpointer"/>
@@ -18220,6 +18279,58 @@ This is guaranteed to be a stable sort since version 2.32.</doc>
                      allow-none="1">
             <doc xml:space="preserve">data to pass to @compare_func</doc>
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="steal_index"
+                c:identifier="g_ptr_array_steal_index"
+                version="2.58"
+                introspectable="0">
+        <doc xml:space="preserve">Removes the pointer at the given index from the pointer array.
+The following elements are moved down one place. The #GDestroyNotify for
+@array is *not* called on the removed element; ownership is transferred to
+the caller of this function.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the pointer which was removed</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <parameter name="array" transfer-ownership="none">
+            <doc xml:space="preserve">a #GPtrArray</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="gpointer" c:type="gpointer"/>
+            </array>
+          </parameter>
+          <parameter name="index_" transfer-ownership="none">
+            <doc xml:space="preserve">the index of the pointer to steal</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="steal_index_fast"
+                c:identifier="g_ptr_array_steal_index_fast"
+                version="2.58"
+                introspectable="0">
+        <doc xml:space="preserve">Removes the pointer at the given index from the pointer array.
+The last element in the array is used to fill in the space, so
+this function does not preserve the order of the array. But it
+is faster than g_ptr_array_steal_index(). The #GDestroyNotify for @array is
+*not* called on the removed element; ownership is transferred to the caller
+of this function.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the pointer which was removed</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <parameter name="array" transfer-ownership="none">
+            <doc xml:space="preserve">a #GPtrArray</doc>
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="gpointer" c:type="gpointer"/>
+            </array>
+          </parameter>
+          <parameter name="index_" transfer-ownership="none">
+            <doc xml:space="preserve">the index of the pointer to steal</doc>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </function>
@@ -19874,10 +19985,12 @@ the string passed to g_regex_new().</doc>
         </parameters>
       </method>
       <method name="match" c:identifier="g_regex_match" version="2.14">
-        <doc xml:space="preserve">Scans for a match in string for the pattern in @regex.
+        <doc xml:space="preserve">Scans for a match in @string for the pattern in @regex.
 The @match_options are combined with the match options specified
 when the @regex structure was created, letting you have more
 flexibility in reusing #GRegex structures.
+
+Unless %G_REGEX_RAW is specified in the options, @string must be valid UTF-8.
 
 A #GMatchInfo structure, used to get information on the match,
 is stored in @match_info if not %NULL. Note that if @match_info
@@ -19990,7 +20103,7 @@ freeing or modifying @string then the behaviour is undefined.</doc>
               version="2.14"
               throws="1">
         <doc xml:space="preserve">Using the standard algorithm for regular expression matching only
-the longest match in the string is retrieved, it is not possible
+the longest match in the @string is retrieved, it is not possible
 to obtain all the available matches. For instance matching
 "&lt;a&gt; &lt;b&gt; &lt;c&gt;" against the pattern "&lt;.*&gt;"
 you get "&lt;a&gt; &lt;b&gt; &lt;c&gt;".
@@ -20015,6 +20128,8 @@ is not able to capture substrings, so backreferences do not work.
 Setting @start_position differs from just passing over a shortened
 string and setting #G_REGEX_MATCH_NOTBOL in the case of a pattern
 that begins with any kind of lookbehind assertion, such as "\b".
+
+Unless %G_REGEX_RAW is specified in the options, @string must be valid UTF-8.
 
 A #GMatchInfo structure, used to get information on the match, is
 stored in @match_info if not %NULL. Note that if @match_info is
@@ -20041,7 +20156,7 @@ freeing or modifying @string then the behaviour is undefined.</doc>
             </array>
           </parameter>
           <parameter name="string_len" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gssize" c:type="gssize"/>
           </parameter>
           <parameter name="start_position" transfer-ownership="none">
@@ -20068,7 +20183,7 @@ freeing or modifying @string then the behaviour is undefined.</doc>
               c:identifier="g_regex_match_full"
               version="2.14"
               throws="1">
-        <doc xml:space="preserve">Scans for a match in string for the pattern in @regex.
+        <doc xml:space="preserve">Scans for a match in @string for the pattern in @regex.
 The @match_options are combined with the match options specified
 when the @regex structure was created, letting you have more
 flexibility in reusing #GRegex structures.
@@ -20076,6 +20191,8 @@ flexibility in reusing #GRegex structures.
 Setting @start_position differs from just passing over a shortened
 string and setting #G_REGEX_MATCH_NOTBOL in the case of a pattern
 that begins with any kind of lookbehind assertion, such as "\b".
+
+Unless %G_REGEX_RAW is specified in the options, @string must be valid UTF-8.
 
 A #GMatchInfo structure, used to get information on the match, is
 stored in @match_info if not %NULL. Note that if @match_info is
@@ -20133,7 +20250,7 @@ print_uppercase_words (const gchar *string)
             </array>
           </parameter>
           <parameter name="string_len" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gssize" c:type="gssize"/>
           </parameter>
           <parameter name="start_position" transfer-ownership="none">
@@ -20215,7 +20332,7 @@ begins with any kind of lookbehind assertion, such as "\b".</doc>
             </array>
           </parameter>
           <parameter name="string_len" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gssize" c:type="gssize"/>
           </parameter>
           <parameter name="start_position" transfer-ownership="none">
@@ -20298,7 +20415,7 @@ g_hash_table_destroy (h);
             </array>
           </parameter>
           <parameter name="string_len" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gssize" c:type="gssize"/>
           </parameter>
           <parameter name="start_position" transfer-ownership="none">
@@ -20350,7 +20467,7 @@ assertion, such as "\b".</doc>
             </array>
           </parameter>
           <parameter name="string_len" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gssize" c:type="gssize"/>
           </parameter>
           <parameter name="start_position" transfer-ownership="none">
@@ -20451,7 +20568,7 @@ it using g_strfreev()</doc>
             </array>
           </parameter>
           <parameter name="string_len" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gssize" c:type="gssize"/>
           </parameter>
           <parameter name="start_position" transfer-ownership="none">
@@ -20566,7 +20683,7 @@ in @length.</doc>
             </array>
           </parameter>
           <parameter name="length" transfer-ownership="none">
-            <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+            <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
@@ -22991,14 +23108,14 @@ when comparing the length to zero.</doc>
               c:identifier="g_sequence_insert_sorted"
               version="2.14"
               introspectable="0">
-        <doc xml:space="preserve">Inserts @data into @sequence using @func to determine the new
+        <doc xml:space="preserve">Inserts @data into @seq using @cmp_func to determine the new
 position. The sequence must already be sorted according to @cmp_func;
 otherwise the new position of @data is undefined.
 
-@cmp_func is called with two items of the @seq and @user_data.
+@cmp_func is called with two items of the @seq, and @cmp_data.
 It should return 0 if the items are equal, a negative value
 if the first item comes before the second, and a positive value
-if the second  item comes before the first.
+if the second item comes before the first.
 
 Note that when adding a large amount of data to a #GSequence,
 it is more efficient to do unsorted insertions and then call
@@ -23045,11 +23162,6 @@ It should return 0 if the iterators are equal, a negative
 value if the first iterator comes before the second, and a
 positive value if the second iterator comes before the first.
 
-It is called with two iterators pointing into @seq. It should
-return 0 if the iterators are equal, a negative value if the
-first iterator comes before the second, and a positive value
-if the second iterator comes before the first.
-
 Note that when adding a large amount of data to a #GSequence,
 it is more efficient to do unsorted insertions and then call
 g_sequence_sort() or g_sequence_sort_iter().</doc>
@@ -23078,7 +23190,7 @@ g_sequence_sort() or g_sequence_sort_iter().</doc>
                      transfer-ownership="none"
                      nullable="1"
                      allow-none="1">
-            <doc xml:space="preserve">user data passed to @cmp_func</doc>
+            <doc xml:space="preserve">user data passed to @iter_cmp</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -23112,7 +23224,7 @@ item is equal, it is not guaranteed that it is the first which is
 returned. In that case, you can use g_sequence_iter_next() and
 g_sequence_iter_prev() to get others.
 
-@cmp_func is called with two items of the @seq and @user_data.
+@cmp_func is called with two items of the @seq, and @cmp_data.
 It should return 0 if the items are equal, a negative value if
 the first item comes before the second, and a positive value if
 the second item comes before the first.
@@ -23166,7 +23278,7 @@ This function will fail if the data contained in the sequence is
 unsorted.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">an #GSequenceIter pointing to the position of
-    the first item found equal to @data according to @cmp_func
+    the first item found equal to @data according to @iter_cmp
     and @cmp_data, or %NULL if no such item exists</doc>
           <type name="SequenceIter" c:type="GSequenceIter*"/>
         </return-value>
@@ -23223,7 +23335,7 @@ unsorted.</doc>
         <doc xml:space="preserve">Returns an iterator pointing to the position where @data would
 be inserted according to @cmp_func and @cmp_data.
 
-@cmp_func is called with two items of the @seq and @user_data.
+@cmp_func is called with two items of the @seq, and @cmp_data.
 It should return 0 if the items are equal, a negative value if
 the first item comes before the second, and a positive value if
 the second item comes before the first.
@@ -23348,7 +23460,7 @@ if the second comes before the first.</doc>
               version="2.14"
               introspectable="0">
         <doc xml:space="preserve">Like g_sequence_sort(), but uses a #GSequenceIterCompareFunc instead
-of a GCompareDataFunc as the compare function
+of a #GCompareDataFunc as the compare function
 
 @cmp_func is called with two iterators pointing into @seq. It should
 return 0 if the iterators are equal, a negative value if the first
@@ -23466,13 +23578,13 @@ sequences.</doc>
       <function name="move_range"
                 c:identifier="g_sequence_move_range"
                 version="2.14">
-        <doc xml:space="preserve">Inserts the (@begin, @end) range at the destination pointed to by ptr.
+        <doc xml:space="preserve">Inserts the (@begin, @end) range at the destination pointed to by @dest.
 The @begin and @end iters must point into the same sequence. It is
 allowed for @dest to point to a different sequence than the one pointed
 into by @begin and @end.
 
-If @dest is NULL, the range indicated by @begin and @end is
-removed from the sequence. If @dest iter points to a place within
+If @dest is %NULL, the range indicated by @begin and @end is
+removed from the sequence. If @dest points to a place within
 the (@begin, @end) range, the range does not move.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -23601,12 +23713,13 @@ function is called on the existing data that @iter pointed to.</doc>
                 c:identifier="g_sequence_sort_changed"
                 version="2.14"
                 introspectable="0">
-        <doc xml:space="preserve">Moves the data pointed to a new position as indicated by @cmp_func. This
+        <doc xml:space="preserve">Moves the data pointed to by @iter to a new position as indicated by
+@cmp_func. This
 function should be called for items in a sequence already sorted according
 to @cmp_func whenever some aspect of an item changes so that @cmp_func
 may return different values for that item.
 
-@cmp_func is called with two items of the @seq and @user_data.
+@cmp_func is called with two items of the @seq, and @cmp_data.
 It should return 0 if the items are equal, a negative value if
 the first item comes before the second, and a positive value if
 the second item comes before the first.</doc>
@@ -23639,7 +23752,8 @@ the second item comes before the first.</doc>
 a #GSequenceIterCompareFunc instead of a #GCompareDataFunc as
 the compare function.
 
-@iter_cmp is called with two iterators pointing into @seq. It should
+@iter_cmp is called with two iterators pointing into the #GSequence that
+@iter points into. It should
 return 0 if the iterators are equal, a negative value if the first
 iterator comes before the second, and a positive value if the second
 iterator comes before the first.</doc>
@@ -36002,6 +36116,43 @@ thread.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="canonicalize_filename"
+              c:identifier="g_canonicalize_filename"
+              version="2.58">
+      <doc xml:space="preserve">Gets the canonical file name from @filename. All triple slashes are turned into
+single slashes, and all `..` and `.`s resolved against @relative_to.
+
+Symlinks are not followed, and the returned path is guaranteed to be absolute.
+
+If @filename is an absolute path, @relative_to is ignored. Otherwise,
+@relative_to will be prepended to @filename to make it absolute. @relative_to
+must be an absolute path, or %NULL. If @relative_to is %NULL, it'll fallback
+to g_get_current_dir().
+
+This function never fails, and will canonicalize file paths even if they don't
+exist.
+
+No file system I/O is done.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated string with the
+canonical file path</doc>
+        <type name="filename" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <doc xml:space="preserve">the name of the file</doc>
+          <type name="filename" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="relative_to"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the relative directory, or %NULL
+to use the current working directory</doc>
+          <type name="filename" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="chdir" c:identifier="g_chdir" version="2.8">
       <doc xml:space="preserve">A wrapper for the POSIX chdir() function. The function changes the
 current directory of the process to @path.
@@ -39485,6 +39636,63 @@ without calling the key and value destroy functions.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="hash_table_steal_extended"
+              c:identifier="g_hash_table_steal_extended"
+              moved-to="HashTable.steal_extended"
+              version="2.58">
+      <doc xml:space="preserve">Looks up a key in the #GHashTable, stealing the original key and the
+associated value and returning %TRUE if the key was found. If the key was
+not found, %FALSE is returned.
+
+If found, the stolen key and value are removed from the hash table without
+calling the key and value destroy functions, and ownership is transferred to
+the caller of this method; as with g_hash_table_steal().
+
+You can pass %NULL for @lookup_key, provided the hash and equal functions
+of @hash_table are %NULL-safe.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the key was found in the #GHashTable</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="hash_table" transfer-ownership="none">
+          <doc xml:space="preserve">a #GHashTable</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="gpointer" c:type="gpointer"/>
+            <type name="gpointer" c:type="gpointer"/>
+          </type>
+        </parameter>
+        <parameter name="lookup_key"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the key to look up</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+        <parameter name="stolen_key"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   nullable="1"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for the
+   original key</doc>
+          <type name="gpointer" c:type="gpointer*"/>
+        </parameter>
+        <parameter name="stolen_value"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   nullable="1"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location
+   for the value associated with the key</doc>
+          <type name="gpointer" c:type="gpointer*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="hash_table_unref"
               c:identifier="g_hash_table_unref"
               moved-to="HashTable.unref"
@@ -40485,7 +40693,12 @@ This has no effect on structured log messages (using g_log_structured() or
 g_log_structured_array()). To change the fatal behaviour for specific log
 messages, programs must install a custom log writer function using
 g_log_set_writer_func(). See
-[Using Structured Logging][using-structured-logging].</doc>
+[Using Structured Logging][using-structured-logging].
+
+This function is mostly intended to be used with
+%G_LOG_LEVEL_CRITICAL.  You should typically not set
+%G_LOG_LEVEL_WARNING, %G_LOG_LEVEL_MESSAGE, %G_LOG_LEVEL_INFO or
+%G_LOG_LEVEL_DEBUG as fatal except inside of test programs.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the old fatal mask for the log domain</doc>
         <type name="LogLevelFlags" c:type="GLogLevelFlags"/>
@@ -42821,7 +43034,7 @@ in @length.</doc>
           </array>
         </parameter>
         <parameter name="length" transfer-ownership="none">
-          <doc xml:space="preserve">the length of @string, or -1 if @string is nul-terminated</doc>
+          <doc xml:space="preserve">the length of @string, in bytes, or -1 if @string is nul-terminated</doc>
           <type name="gint" c:type="gint"/>
         </parameter>
       </parameters>
@@ -43044,13 +43257,13 @@ sequences.</doc>
               c:identifier="g_sequence_move_range"
               moved-to="Sequence.move_range"
               version="2.14">
-      <doc xml:space="preserve">Inserts the (@begin, @end) range at the destination pointed to by ptr.
+      <doc xml:space="preserve">Inserts the (@begin, @end) range at the destination pointed to by @dest.
 The @begin and @end iters must point into the same sequence. It is
 allowed for @dest to point to a different sequence than the one pointed
 into by @begin and @end.
 
-If @dest is NULL, the range indicated by @begin and @end is
-removed from the sequence. If @dest iter points to a place within
+If @dest is %NULL, the range indicated by @begin and @end is
+removed from the sequence. If @dest points to a place within
 the (@begin, @end) range, the range does not move.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>

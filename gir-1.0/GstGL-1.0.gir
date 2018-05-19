@@ -607,6 +607,19 @@ is available and current in the calling thread.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <method name="find_gl_context"
+              c:identifier="gst_gl_base_filter_find_gl_context">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether an OpenGL context could be retrieved or created successfully</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="filter" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLBaseFilter</doc>
+            <type name="GLBaseFilter" c:type="GstGLBaseFilter*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="context" transfer-ownership="none">
         <type name="GLContext"/>
       </property>
@@ -3415,12 +3428,20 @@ See also: gst_gl_filter_render_to_target()</doc>
         <doc xml:space="preserve">Three components of bit depth 5, 6 and 5 stored in the R, G,
                 and B texture components respectively.</doc>
       </member>
+      <member name="rgb16" value="32852" c:identifier="GST_GL_RGB16">
+        <doc xml:space="preserve">Three 16-bit components stored in the R, G, and B
+              texture components</doc>
+      </member>
       <member name="rgba" value="6408" c:identifier="GST_GL_RGBA">
         <doc xml:space="preserve">Four components stored in the R, G, B, and A texture
               components respectively.</doc>
       </member>
       <member name="rgba8" value="32856" c:identifier="GST_GL_RGBA8">
         <doc xml:space="preserve">Four 8-bit components stored in the R, G, B, and A texture
+               components respectively.</doc>
+      </member>
+      <member name="rgba16" value="32859" c:identifier="GST_GL_RGBA16">
+        <doc xml:space="preserve">Four 16-bit components stored in the R, G, B, and A texture
                components respectively.</doc>
       </member>
       <member name="depth_component16"
@@ -12964,7 +12985,7 @@ user-defined purposes.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="GL_COLOR_CONVERT_FORMATS"
-              value="{ RGBA, RGB, RGBx, BGR, BGRx, BGRA, xRGB, xBGR, ARGB, ABGR, Y444, I420, YV12, Y42B, Y41B, NV12, NV21, YUY2, UYVY, AYUV, GRAY8, GRAY16_LE, GRAY16_BE, RGB16, BGR16 }"
+              value="{ RGBA, RGB, RGBx, BGR, BGRx, BGRA, xRGB, xBGR, ARGB, ABGR, Y444, I420, YV12, Y42B, Y41B, NV12, NV21, YUY2, UYVY, AYUV, GRAY8, GRAY16_LE, GRAY16_BE, RGB16, BGR16, ARGB64 }"
               c:type="GST_GL_COLOR_CONVERT_FORMATS">
       <doc xml:space="preserve">The currently supported formats that can be converted</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -13019,7 +13040,7 @@ user-defined purposes.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="GL_MEMORY_VIDEO_FORMATS_STR"
-              value="{ RGBA, BGRA, RGBx, BGRx, ARGB, ABGR, xRGB, xBGR, RGB, BGR, RGB16, BGR16, AYUV, I420, YV12, NV12, NV21, YUY2, UYVY, Y41B, Y42B, Y444, GRAY8, GRAY16_LE, GRAY16_BE }"
+              value="{ RGBA, BGRA, RGBx, BGRx, ARGB, ABGR, xRGB, xBGR, RGB, BGR, RGB16, BGR16, AYUV, I420, YV12, NV12, NV21, YUY2, UYVY, Y41B, Y42B, Y444, GRAY8, GRAY16_LE, GRAY16_BE, ARGB64 }"
               c:type="GST_GL_MEMORY_VIDEO_FORMATS_STR">
       <doc xml:space="preserve">List of video formats that are supported by #GstGLMemory</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -13344,6 +13365,52 @@ The returned #GstGLContext will be shared with a GStreamer created OpenGL contex
         <parameter name="plane" transfer-ownership="none">
           <doc xml:space="preserve">the plane number in @vinfo</doc>
           <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="gl_format_is_supported"
+              c:identifier="gst_gl_format_is_supported">
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Whether @format is supported by @context based on the OpenGL API,
+         version, or available OpenGL extension/s.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="context" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstGLContext</doc>
+          <type name="GLContext" c:type="GstGLContext*"/>
+        </parameter>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstGLFormat to check is supported by @context</doc>
+          <type name="GLFormat" c:type="GstGLFormat"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="gl_format_type_from_sized_gl_format"
+              c:identifier="gst_gl_format_type_from_sized_gl_format">
+      <doc xml:space="preserve">Get the unsized format and type from @format for usage in glReadPixels,
+glTex{Sub}Image*, glTexImage* and similar functions.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="format" transfer-ownership="none">
+          <doc xml:space="preserve">the sized internal #GstGLFormat</doc>
+          <type name="GLFormat" c:type="GstGLFormat"/>
+        </parameter>
+        <parameter name="unsized_format"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">location for the resulting unsized #GstGLFormat</doc>
+          <type name="GLFormat" c:type="GstGLFormat*"/>
+        </parameter>
+        <parameter name="gl_type"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">location for the resulting GL type</doc>
+          <type name="guint" c:type="guint*"/>
         </parameter>
       </parameters>
     </function>

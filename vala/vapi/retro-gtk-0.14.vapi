@@ -22,12 +22,15 @@ namespace Retro {
 		public bool get_is_initiated ();
 		public GLib.Bytes get_memory (Retro.MemoryType memory_type);
 		public size_t get_memory_size (Retro.MemoryType memory_type);
+		public unowned Retro.Option get_option (string key);
 		public uint get_runahead ();
 		public unowned string get_save_directory ();
 		public GLib.Bytes get_state () throws GLib.Error;
 		public bool get_support_no_game ();
 		public unowned string get_system_directory ();
+		public bool has_option (string key);
 		public Retro.ControllerIterator iterate_controllers ();
+		public Retro.OptionIterator iterate_options ();
 		public void reset ();
 		public void run ();
 		public void set_content_directory (string content_directory);
@@ -54,6 +57,7 @@ namespace Retro {
 		public signal void audio_output ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gulong")] uint8[] data, double sample_rate);
 		public signal void log (string log_domain, GLib.LogLevelFlags log_level, string message);
 		public signal bool message (string message, uint frames);
+		public signal void options_set ();
 		public signal bool shutdown ();
 		public signal void video_output (Retro.Pixdata pixdata);
 	}
@@ -143,6 +147,24 @@ namespace Retro {
 		[CCode (has_construct_function = false)]
 		public ModuleQuery (bool recursive);
 		public Retro.ModuleIterator iterator ();
+	}
+	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_option_get_type ()")]
+	public class Option : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Option ();
+		public unowned string get_description ();
+		public unowned string get_key ();
+		public unowned string get_value ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_values ();
+		public void set_value (string value) throws GLib.Error;
+		public signal void value_changed ();
+	}
+	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_option_iterator_get_type ()")]
+	public class OptionIterator : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected OptionIterator ();
+		public bool next (out uint key, out Retro.Option? option);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "retro_pixdata_get_type ()")]
 	[Compact]

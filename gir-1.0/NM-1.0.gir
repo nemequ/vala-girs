@@ -12097,7 +12097,7 @@ returned array and thus it is safe for callers to reference and keep using it.</
         <doc xml:space="preserve">Gets the routes.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GPtrArray containing
-#NMIPRoutes. This is the internal copy used by the configuration, and must
+#NMIPRoute&lt;!-- --&gt;s. This is the internal copy used by the configuration, and must
 not be modified. The library never modifies the returned array and thus it is
 safe for callers to reference and keep using it.</doc>
           <array name="GLib.PtrArray" c:type="GPtrArray*">
@@ -24047,24 +24047,34 @@ distinct from an empty list of properties.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Intra-connection DNS priority.
+        <doc xml:space="preserve">DNS servers priority.
 
-The relative priority to be used when determining the order of DNS
-servers in resolv.conf.  A lower value means that servers will be on top
-of the file.  Zero selects the default value, which is 50 for VPNs and
-100 for other connections.  Note that the priority is to order DNS
-settings for multiple active connections. It does not disambiguate
-multiple DNS servers within the same connection profile. For that,
-just specify the DNS servers in the desired order.
-When multiple devices have configurations with the same priority, the
-one with an active default route will be preferred.
-Note that when using dns=dnsmasq the order is meaningless
-since dnsmasq forwards queries to all known servers at the same time.
+The relative priority for DNS servers specified by this setting.  A lower
+value is better (higher priority).  Zero selects the default value, which
+is 50 for VPNs and 100 for other connections.
 
-Negative values have the special effect of excluding other configurations
-with a greater priority value; so in presence of at least a negative
-priority, only DNS servers from connections with the lowest priority
-value will be used.</doc>
+Note that the priority is to order DNS settings for multiple active
+connections.  It does not disambiguate multiple DNS servers within the
+same connection profile.
+
+When using dns=default, servers with higher priority will be on top of
+resolv.conf.  To prioritize a given server over another one within the
+same connection, just specify them in the desired order.  When multiple
+devices have configurations with the same priority, the one with an
+active default route will be preferred.  Negative values have the special
+effect of excluding other configurations with a greater priority value;
+so in presence of at least a negative priority, only DNS servers from
+connections with the lowest priority value will be used.
+
+When using a DNS resolver that supports split-DNS as dns=dnsmasq or
+dns=systemd-resolved, each connection is used to query domains in its
+search list.  Queries for domains not present in any search list are
+routed through connections having the '~.' special wildcard domain, which
+is added automatically to connections with the default route (or can be
+added manually).  When multiple connections specify the same domain, the
+one with the highest priority (lowest numerical value) wins.  If a
+connection specifies a domain which is subdomain of another domain with a
+negative DNS priority value, the subdomain is ignored.</doc>
         <type name="gint" c:type="gint"/>
       </property>
       <property name="dns-search" writable="1" transfer-ownership="none">

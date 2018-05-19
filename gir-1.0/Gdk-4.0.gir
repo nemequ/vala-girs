@@ -5101,7 +5101,10 @@ context.</doc>
         <doc xml:space="preserve">The #GdkDisplay that the drag context belongs to.</doc>
         <type name="Display"/>
       </property>
-      <property name="formats" transfer-ownership="none">
+      <property name="formats"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">The possible formats that the context can provide its data in.</doc>
         <type name="ContentFormats"/>
       </property>
@@ -18559,6 +18562,48 @@ is given in the
                glib:type-name="GdkPaintable"
                glib:get-type="gdk_paintable_get_type"
                glib:type-struct="PaintableInterface">
+      <doc xml:space="preserve">#GdkPaintable is a simple interface used by GDK and GDK to represent
+objects that can be painted anywhere at any size without requiring any
+sort of layout. The interface is inspired by similar concepts elsewhere,
+such as #ClutterContent, &lt;ulink
+linkend="https://www.w3.org/TR/css-images-4/#paint-source"&gt;HTML/CSS Paint
+Sources&lt;/ulink&gt; or &lt;ulink linkend="https://www.w3.org/TR/SVG2/pservers.html"&gt;
+SVG Paint Servers&lt;/ulink&gt;.
+
+A #GdkPaintable can be snapshot at any time and size using
+gdk_paintable_snapshot(). How the paintable interprets that size and if it
+scales or centers itself into the given rectangle is implementation defined,
+though if you are implementing a #GdkPaintable and don't know what to do, it
+is suggested that you scale your paintable ignoring any potential aspect ratio.
+
+The contents that a #GdkPaintable produces may depend on the #GdkSnapshot passed
+to it. For example, paintables may decide to use more detailed images on higher
+resolution screens or when OpenGL is available. A #GdkPaintable will however
+always produce the same output for the same snapshot.
+
+A #GdkPaintable may change its contents, meaning that it will now produce a
+different output with the same snpashot. Once that happens, it will call
+gdk_paintable_invalidate_contents() which will emit the
+#GdkPaintable::invalidate-contents signal.
+If a paintable is known to never change its contents, it will set the
+%GDK_PAINTABLE_STATIC_CONTENT flag. If a consumer cannot deal with changing
+contents, it may call gdk_paintable_get_static_image() which will return a
+static paintable and use that.
+
+A paintable can report an intrinsic (or preferred) size or aspect ratio it
+wishes to be rendered at, though it doesn't have to. Consumers of the interface
+can use this information to layout thepaintable appropriately.
+Just like the contents, the size of a paintable can change. A paintable will
+indicate this by calling gdk_paintable_invalidate_size() which will emit the
+#GdkPaintable::invalidate-size signal.
+And just like for contents, if a paintable is known to never change its size,
+it will set the %GDK_PAINTABLE_STATIC_SIZE flag.
+
+Besides API for applications, there are some functions that are only
+useful for implementing subclasses and should not be used by applications:
+gdk_paintable_invalidate_contents(),
+gdk_paintable_invalidate_size(),
+gdk_paintable_new_empty().</doc>
       <function name="new_empty" c:identifier="gdk_paintable_new_empty">
         <doc xml:space="preserve">Returns a paintable that has the given intrinsic size and draws nothing.
 This is often useful for implementing the GdkPaintableClass:get_current_image()
@@ -18684,7 +18729,7 @@ values are never returned.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="snapshot" invoker="snapshot" version="4.0">
+      <virtual-method name="snapshot" invoker="snapshot">
         <doc xml:space="preserve">Snapshots the given paintable with the given @width and @height at the
 current (0,0) offset of the @snapshot. If @width and @height are not larger
 than zero, this function will do nothing.</doc>
@@ -18913,9 +18958,7 @@ it must not call this function.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="snapshot"
-              c:identifier="gdk_paintable_snapshot"
-              version="4.0">
+      <method name="snapshot" c:identifier="gdk_paintable_snapshot">
         <doc xml:space="preserve">Snapshots the given paintable with the given @width and @height at the
 current (0,0) offset of the @snapshot. If @width and @height are not larger
 than zero, this function will do nothing.</doc>
@@ -18941,7 +18984,7 @@ than zero, this function will do nothing.</doc>
           </parameter>
         </parameters>
       </method>
-      <glib:signal name="invalidate-contents" when="last" version="4.0">
+      <glib:signal name="invalidate-contents" when="last">
         <doc xml:space="preserve">Emitted when the contents of the @paintable change.
 
 Examples for such an event would be videos changing to the next frame or
@@ -18950,7 +18993,7 @@ the icon theme for an icon changing.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="invalidate-size" when="last" version="4.0">
+      <glib:signal name="invalidate-size" when="last">
         <doc xml:space="preserve">Emitted when the intrinsic size of the @paintable changes. This means the values
 reported by at least one of gdk_paintable_get_intrinsic_width(),
 gdk_paintable_get_intrinsic_height() or gdk_paintable_get_intrinsic_aspect_ratio()
@@ -18989,6 +19032,12 @@ such as caching.</doc>
     <record name="PaintableInterface"
             c:type="GdkPaintableInterface"
             glib:is-gtype-struct-for="Paintable">
+      <doc xml:space="preserve">The list of functions that can be implemented for the #GdkPaintable interface.
+Note that apart from the first function, no function is mandatory to implement,
+though it is a good idea to implement GdkPaintable:get_current_image() for
+non-static paintables and GdkPaintable:get_flags() if the image is not dynamic
+as the default implementation returns no flags and that will make the
+implementation likely quite slow.</doc>
       <field name="g_iface" readable="0" private="1">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
@@ -23947,23 +23996,6 @@ all subsequent calls will be ignored.</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="drag_drop_succeeded"
-              c:identifier="gdk_drag_drop_succeeded">
-      <doc xml:space="preserve">Returns whether the dropped data has been successfully
-transferred. This function is intended to be used while
-handling a %GDK_DROP_FINISHED event, its return value is
-meaningless at other times.</doc>
-      <return-value transfer-ownership="none">
-        <doc xml:space="preserve">%TRUE if the drop was successful.</doc>
-        <type name="gboolean" c:type="gboolean"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-      </parameters>
-    </function>
     <function name="drag_status" c:identifier="gdk_drag_status">
       <doc xml:space="preserve">Selects one of the actions offered by the drag source.
 
@@ -24011,6 +24043,8 @@ This function is called by the drag destination.</doc>
       </parameters>
     </function>
     <function name="drop_read_async" c:identifier="gdk_drop_read_async">
+      <doc xml:space="preserve">Asynchronously read the dropped data from a DND context
+in a format that complies with one of the mime types.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -24020,17 +24054,20 @@ This function is called by the drag destination.</doc>
           <type name="DragContext" c:type="GdkDragContext*"/>
         </parameter>
         <parameter name="mime_types" transfer-ownership="none">
+          <doc xml:space="preserve">pointer to an array of mime types</doc>
           <array c:type="char**">
             <type name="utf8"/>
           </array>
         </parameter>
         <parameter name="io_priority" transfer-ownership="none">
+          <doc xml:space="preserve">the io priority for the read operation</doc>
           <type name="gint" c:type="int"/>
         </parameter>
         <parameter name="cancellable"
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore</doc>
           <type name="Gio.Cancellable" c:type="GCancellable*"/>
         </parameter>
         <parameter name="callback"
@@ -24039,12 +24076,14 @@ This function is called by the drag destination.</doc>
                    allow-none="1"
                    scope="async"
                    closure="5">
+          <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
           <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
         </parameter>
         <parameter name="user_data"
                    transfer-ownership="none"
                    nullable="1"
                    allow-none="1">
+          <doc xml:space="preserve">the data to pass to @callback</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -24052,6 +24091,7 @@ This function is called by the drag destination.</doc>
     <function name="drop_read_finish"
               c:identifier="gdk_drop_read_finish"
               throws="1">
+      <doc xml:space="preserve">Finishes an async drop read operation, see gdk_drop_read_async().</doc>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve">the #GInputStream, or %NULL</doc>
         <type name="Gio.InputStream" c:type="GInputStream*"/>
@@ -24065,33 +24105,12 @@ This function is called by the drag destination.</doc>
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full">
+          <doc xml:space="preserve">return location for the used mime type</doc>
           <type name="utf8" c:type="const char**"/>
         </parameter>
         <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve">a #GAsyncResult</doc>
           <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="drop_reply" c:identifier="gdk_drop_reply">
-      <doc xml:space="preserve">Accepts or rejects a drop.
-
-This function is called by the drag destination in response
-to a drop initiated by the drag source.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="accepted" transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the drop is accepted</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </parameter>
-        <parameter name="time_" transfer-ownership="none">
-          <doc xml:space="preserve">the timestamp for this operation</doc>
-          <type name="guint32" c:type="guint32"/>
         </parameter>
       </parameters>
     </function>
